@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="Client exchanges" Language="1033" Version="!(bind.FileVersion.MainApp)" Manufacturer="ASNA" UpgradeCode="b65cd5bf-9a3e-477c-8838-8b43ea9872ff">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <!--<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />-->
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="SqlPlusDbSync.Client.Setup" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <UIRef Id="WixUI_InstallDir" />
+    <WixVariable Id="WixUILicenseRtf" Value="lic.rtf" />
+
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="WARE32" Name="WARE32">
+        <Directory Id="INSTALLFOLDER" Name="EXE">
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="SqlPlusDbSync.Client.exe" Guid="fe29b5d8-86f8-4ea9-912b-3242db61a877">
+        <File Id="MainApp" Source="$(var.SqlPlusDbSync.Client.TargetPath)" />
+      </Component>
+      <Component Id="SqlPlusDbSync.Client.exe.config" Guid="33115315-958b-4021-b66f-e0450977bf6e">
+        <File Id="MainAppConfig" Source="$(var.SqlPlusDbSync.Client.TargetPath).config" />
+      </Component>
+      <Component Id="SqlPlusDbSync.Platform.dll" Guid="04470b39-d9b0-4d44-8066-362d811281dc">
+        <File Id="PlatformDll" Source="$(var.SqlPlusDbSync.Client.TargetDir)SqlPlusDbSync.Platform.dll" />
+      </Component>
+      <Component Id="Config_storage.json" Guid="3e82f093-eb1a-4c40-9ced-11aaef364f3b">
+        <File Id="DefaultConfig" Source="$(var.SqlPlusDbSync.Client.TargetDir)Config_storage.json" />
+      </Component>
+
+    </ComponentGroup>
+
+    <CustomAction Id="ExecPortOpen" Directory="INSTALLFOLDER" Execute="commit" Impersonate="no" ExeCommand="cmd.exe /c &quot;SqlPlusDbSync.Client.exe install&quot;" Return="check" />
+    <InstallExecuteSequence>
+      <Custom Action="ExecPortOpen" After="InstallInitialize" />
+    </InstallExecuteSequence>
+
+  </Fragment>
+</Wix>

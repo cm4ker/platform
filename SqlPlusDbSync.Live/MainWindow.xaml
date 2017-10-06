@@ -1,0 +1,60 @@
+﻿<Window x:Class="SqlPlusDbSync.Live.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:graphxctrl="clr-namespace:GraphX.Controls;assembly=GraphX.WPF.Controls"
+        xmlns:local="clr-namespace:SqlPlusDbSync.Live"
+        mc:Ignorable="d"
+        Title="Контроль обменов" Height="520" Width="900" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+    <Grid>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="/Templates/ThemedGraphXTemplates.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_Файл">
+                    <MenuItem Header="_Закрыть"/>
+                </MenuItem>
+                <MenuItem Header="_Обмены">
+                    <MenuItem Header="_Запустить мониторинг"/>
+                    <MenuItem Header="_Остановить мониторинг"/>
+                    <Separator></Separator>
+                    <MenuItem Header="_Остановить обмен везде"/>
+                    <MenuItem Header="_Запустить обмен везде"/>
+                </MenuItem>
+                <MenuItem Header="_Обслуживание">
+                    <MenuItem Header="_Выпустить обновление"/>
+                    <MenuItem Header="_Выполнить SQL"/>
+                    <MenuItem Header="_Отправить команду"></MenuItem>
+                </MenuItem>
+            </Menu>
+            <StackPanel></StackPanel>
+        </DockPanel>
+
+        <TabControl Grid.Row="1" TabStripPlacement="Bottom">
+            <TabItem Header="Активные сессии">
+                <DataGrid ItemsSource="{Binding Sessions}" AutoGenerateColumns="True">
+
+                </DataGrid>
+            </TabItem>
+
+            <TabItem  Header="Карта обменов" Name="Map">
+                <graphxctrl:ZoomControl Grid.Column="0" x:Name="zoomctrl" Grid.Row="1">
+                    <local:GraphAreaExample x:Name="Area"/>
+                </graphxctrl:ZoomControl>
+            </TabItem>
+        </TabControl>
+
+
+    </Grid>
+</Window>
+

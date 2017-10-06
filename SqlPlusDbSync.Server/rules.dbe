@@ -1,0 +1,378 @@
+﻿DEFINE POINT SimplePoint FROM CLL ON CLL_NUMPRINT VALUE TableRowGuid
+DEFINE OWNER SimpleOwner FROM CLL ON CLL_NUMPRINT VALUE TableRowGuid
+
+DEFINE OBJECT ШДРасширение AS TABLE 
+        Hdr_PRO(unique(Hdr_Unicode), exclude(hp_idn))
+
+DEFINE OBJECT ШДРасширение2 AS TABLE 
+        LG_Info(unique(Hdr_ID), exclude(LI_ID))
+
+DEFINE OBJECT ШДЧек AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode in (11,12,13,29,111,112,300,301,311)
+
+DEFINE OBJECT ШДПриходАптека AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 1
+
+DEFINE OBJECT ШДПриходАптека3 AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 3
+
+DEFINE OBJECT ШДПриходАптека24 AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 24
+
+DEFINE OBJECT ШДПриходИзАптек AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 204
+
+DEFINE OBJECT ШДЗаказУПоставщика AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 205
+
+DEFINE OBJECT ШДПриходОстатки AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 28
+
+DEFINE OBJECT ШДИнвентаризацияПриход AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 15
+
+DEFINE OBJECT ШДИнвентаризацияРасход AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 16
+
+DEFINE OBJECT ШДМежскладскаяПередача AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode), owner(SimpleOwner, Skd_Unicode)) WHERE Hdr.Prm_Unicode equals 2
+
+DEFINE OBJECT ШДМежскладскаяПередачаЧужаяАптека AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Hdr_Obj2Code)) WHERE Hdr.Prm_Unicode equals 2
+
+DEFINE OBJECT ШДРазборкаТовара AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 14
+
+DEFINE OBJECT ШДПереоценка AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 23
+
+DEFINE OBJECT ШДМелкооптовыйОтпуск AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 4
+
+DEFINE OBJECT ШДВозвратПоставщику AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 5
+
+DEFINE OBJECT ШДВозвратПокупателем AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 6
+
+DEFINE OBJECT ШДСписание AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 26
+
+DEFINE OBJECT ШДРаспоряжениеНаПереброску201 AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 201
+
+DEFINE OBJECT ШДПереброскаВАптеки AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 202
+
+DEFINE OBJECT ШДПереоценкаТПЛ AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 303
+
+DEFINE OBJECT ШДПриходОфис101 AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 101
+
+DEFINE OBJECT ШДПриходОфис102 AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 102
+
+DEFINE OBJECT ШДРаспоряжениеНаПереоценку501 AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 501
+
+DEFINE OBJECT ШДРаспоряжениеНаПереброску702 AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 702
+
+DEFINE OBJECT СтрокаБазовый AS TABLE 
+    Str(unique(Str_UniCode), exclude(str_idn)) WHERE Str.Str_RelToPrt equals 0
+
+DEFINE OBJECT СтрокаПриходаБазовый AS TABLE 
+    Str(unique(Str_UniCode), exclude(str_idn)) WHERE Str.Str_RelToPrt equals 1
+
+DEFINE OBJECT СтрокаРасходаБазовый AS TABLE 
+    Str(unique(Str_UniCode), exclude(str_idn)) WHERE Str.Str_RelToPrt equals -1
+
+DEFINE OBJECT ИнформацияСтроки AS TABLE 
+    StrInfo(unique(infoid), exclude(Info_IDN))
+
+DEFINE OBJECT ДополнениеСтроки AS TABLE 
+    Str_Add(unique(sa_unicode), exclude(sa_idn))
+
+DEFINE OBJECT РасширениеСтроки AS TABLE 
+    Str2(unique(Str2_Unicode))
+
+DEFINE OBJECT СтрокаПрихода AS OBJECT СтрокаПриходаБазовый
+    REFERENCES
+        R1 ONE_TO_MANY: ИнформацияСтроки ON СтрокаПриходаБазовый.Str_InfoId equals ИнформацияСтроки.InfoId
+        R2 ONE_TO_MANY: ДополнениеСтроки ON СтрокаПриходаБазовый.Str_UniCode equals ДополнениеСтроки.sa_unicode
+        R3 ONE_TO_MANY: РасширениеСтроки ON СтрокаПриходаБазовый.Str_UniCode equals РасширениеСтроки.Str2_Unicode
+
+DEFINE OBJECT СтрокаРасхода AS OBJECT СтрокаРасходаБазовый
+    REFERENCES
+        R1 ONE_TO_MANY: ИнформацияСтроки ON СтрокаРасходаБазовый.Str_InfoId equals ИнформацияСтроки.InfoId
+        R2 ONE_TO_MANY: ДополнениеСтроки ON СтрокаРасходаБазовый.Str_UniCode equals ДополнениеСтроки.sa_unicode
+        R3 ONE_TO_MANY: РасширениеСтроки ON СтрокаРасходаБазовый.Str_UniCode equals РасширениеСтроки.Str2_Unicode
+
+DEFINE TRANSFER OBJECT ШДПКО AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 21
+
+DEFINE TRANSFER OBJECT ШДРКО AS TABLE 
+        Hdr(unique(Hdr_Unicode), exclude(hdr_idn), point(SimplePoint, Skd_UniCode)) WHERE Hdr.Prm_Unicode equals 22
+
+DEFINE TRANSFER OBJECT ПриходАптека3 AS OBJECT ШДПриходАптека3
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПриходАптека3.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДПриходАптека3.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПриходАптека3.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+
+DEFINE TRANSFER OBJECT ПриходОфис101 AS OBJECT ШДПриходОфис101
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПриходОфис101.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДПриходОфис101.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПриходОфис101.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS
+        DIRECTION DOWN
+
+DEFINE TRANSFER OBJECT ПриходОфис102 AS OBJECT ШДПриходОфис102
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПриходОфис102.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДПриходОфис102.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПриходОфис102.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS
+        DIRECTION DOWN
+DEFINE TRANSFER OBJECT ПриходАптека24 AS OBJECT ШДПриходАптека24
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПриходАптека24.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДПриходАптека24.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПриходАптека24.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS
+        DIRECTION UP
+
+DEFINE TRANSFER OBJECT ПриходИзАптек204 AS OBJECT ШДПриходИзАптек
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПриходИзАптек.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДПриходИзАптек.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПриходИзАптек.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS 
+        DIRECTION UP
+        
+DEFINE TRANSFER OBJECT ЗаказУПоставщика25 AS OBJECT ШДЗаказУПоставщика
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДЗаказУПоставщика.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДЗаказУПоставщика.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДЗаказУПоставщика.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    EVENTS
+        BEFORE SAVE:
+            BEGIN_INVOKE
+                var doc = sender as ЗаказУПоставщика25; 
+                doc.Prm_Unicode = 523;
+            END_INVOKE;
+    OPTIONS
+        DIRECTION UP
+
+DEFINE TRANSFER OBJECT ПриходОстатки28 AS OBJECT ШДПриходОстатки
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПриходОстатки.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДПриходОстатки.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПриходОстатки.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS
+        DIRECTION UP
+
+DEFINE TRANSFER OBJECT ИнвентаризацияПриход15 AS OBJECT ШДИнвентаризацияПриход
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДИнвентаризацияПриход.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДИнвентаризацияПриход.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДИнвентаризацияПриход.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS
+        DIRECTION UP
+
+DEFINE TRANSFER OBJECT ИнвентаризацияРасход16 AS OBJECT ШДИнвентаризацияРасход
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДИнвентаризацияРасход.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДИнвентаризацияРасход.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДИнвентаризацияРасход.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS
+        DIRECTION UP
+        
+DEFINE TRANSFER OBJECT МежскладскаяПередача2 AS OBJECT ШДМежскладскаяПередача
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДМежскладскаяПередача.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: СтрокаРасхода ON ШДМежскладскаяПередача.Hdr_UniCode equals СтрокаРасхода.Hdr_UniCode
+        R3 ONE_TO_MANY: ШДРасширение ON ШДМежскладскаяПередача.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R4 ONE_TO_MANY: ШДРасширение2 ON ШДМежскладскаяПередача.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    EVENTS
+        BEFORE SAVE:
+            BEGIN_INVOKE
+                args.Register = false;
+            END_INVOKE;
+    OPTIONS
+        DIRECTION UP
+
+DEFINE TRANSFER OBJECT МежскладскаяПередачаИзОфиса2 AS OBJECT ШДМежскладскаяПередача
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДМежскладскаяПередача.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: СтрокаРасхода ON ШДМежскладскаяПередача.Hdr_UniCode equals СтрокаРасхода.Hdr_UniCode
+        R3 ONE_TO_MANY: ШДРасширение ON ШДМежскладскаяПередача.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R4 ONE_TO_MANY: ШДРасширение2 ON ШДМежскладскаяПередача.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    EVENTS
+        BEFORE SAVE:
+            BEGIN_INVOKE
+                args.Register = false;
+                if(!args.IsOwner)
+                {
+                    sender.СтрокаПрихода.Clear();
+                }
+            END_INVOKE;
+        AFTER LOAD:
+            BEGIN_INVOKE
+                var doc = sender as МежскладскаяПередачаИзОфиса2;
+                if(!doc.Hdr_BoolFld02YN)
+                {
+                    Console.Write("Starting canceling document");
+                    args.Cancel = true;
+                }
+            END_INVOKE;
+    OPTIONS
+        DIRECTION DOWN
+
+DEFINE TRANSFER OBJECT МежскладскаяПередачаЧужаяАптека2 AS OBJECT ШДМежскладскаяПередачаЧужаяАптека
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДМежскладскаяПередача.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДМежскладскаяПередача.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДМежскладскаяПередача.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS
+        DIRECTION DOWN
+
+DEFINE TRANSFER OBJECT РазборкаТовара14 AS OBJECT ШДРазборкаТовара
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДРазборкаТовара.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: СтрокаРасхода ON ШДРазборкаТовара.Hdr_UniCode equals СтрокаРасхода.Hdr_UniCode
+        R3 ONE_TO_MANY: ШДРасширение ON ШДРазборкаТовара.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R4 ONE_TO_MANY: ШДРасширение2 ON ШДРазборкаТовара.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+
+DEFINE TRANSFER OBJECT Переоценка23 AS OBJECT ШДПереоценка
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПереоценка.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: СтрокаРасхода ON ШДПереоценка.Hdr_UniCode equals СтрокаРасхода.Hdr_UniCode
+        R3 ONE_TO_MANY: ШДРасширение ON ШДПереоценка.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R4 ONE_TO_MANY: ШДРасширение2 ON ШДПереоценка.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS 
+        DIRECTION UP
+
+DEFINE TRANSFER OBJECT МелкооптовыйОтпуск4 AS OBJECT ШДМелкооптовыйОтпуск
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДМелкооптовыйОтпуск.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДМелкооптовыйОтпуск.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДМелкооптовыйОтпуск.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS 
+        DIRECTION UP
+
+DEFINE TRANSFER OBJECT ВозвратПоставщику5 AS OBJECT ШДВозвратПоставщику
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДВозвратПоставщику.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДВозвратПоставщику.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДВозвратПоставщику.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    OPTIONS 
+        DIRECTION UP
+
+DEFINE TRANSFER OBJECT Списание26 AS OBJECT ШДСписание
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДСписание.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДСписание.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДСписание.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+
+DEFINE TRANSFER OBJECT РаспоряжениеНаПереброску201 AS OBJECT ШДРаспоряжениеНаПереброску201
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДРаспоряжениеНаПереброску201.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДРаспоряжениеНаПереброску201.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДРаспоряжениеНаПереброску201.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+	OPTIONS 
+        DIRECTION UP
+	POINT(SimplePoint, ШДРаспоряжениеНаПереброску201.Hdr_Obj2Code)
+
+DEFINE TRANSFER OBJECT ПереброскаВАптеки202 AS OBJECT ШДПереброскаВАптеки
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПереброскаВАптеки.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение  ON ШДПереброскаВАптеки.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПереброскаВАптеки.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+
+DEFINE TRANSFER OBJECT ПереоценкаТПЛ303 AS OBJECT ШДПереоценкаТПЛ
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПереоценкаТПЛ.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДПереоценкаТПЛ.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПереоценкаТПЛ.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+
+DEFINE TRANSFER OBJECT ВозвратПокупателем6 AS OBJECT ШДВозвратПокупателем
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДВозвратПокупателем.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДВозвратПокупателем.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДВозвратПокупателем.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+
+DEFINE TRANSFER OBJECT Переоценка14 AS OBJECT ШДПереоценка
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПереоценка.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДПереоценка.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПереоценка.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+
+
+DEFINE TRANSFER OBJECT ПриходАптека1 AS OBJECT ШДПриходАптека
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаПрихода ON ШДПриходАптека.Hdr_UniCode equals СтрокаПрихода.Hdr_UniCode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДПриходАптека.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДПриходАптека.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    EVENTS
+        BEFORE DELETE:
+            BEGIN_INVOKE
+                var invoice = sender as ПриходАптека1;
+                var dbInvoice = args.Env.Manager.Load(invoice.Key) as ПриходАптека1;
+                dbInvoice.DcmState = -1;
+                
+                args.Env.Manager.Save(dbInvoice); 
+                
+                // Careful! After this start execute "BeforeSave" trigger. 
+                // You can using dynamic properties for prevent it
+                // just something like dbInvoice.DynamicPorperties.NotUsingBeforeSave = true;
+                // but! This is important. Then you try to access to the this property in
+                // "BeforeSave" trigger and this property is absent the rule throw exception
+                // For garantee, you can load object with initialized NotUsingBeforeSave property in "AfterLoad" trigger.
+                
+                //Prevent next code execution...
+                args.Cancel = true;
+            END_INVOKE;
+        BEFORE SAVE:
+            BEGIN_INVOKE
+                if(args.IsServer)
+                    args.Register = false;
+            END_INVOKE;
+    OPTIONS 
+        DIRECTION UP
+
+DEFINE TRANSFER OBJECT ДокументЧек AS OBJECT ШДЧек
+    REFERENCES
+        R1 ONE_TO_MANY: СтрокаРасхода   ON ШДЧек.Hdr_Unicode equals СтрокаРасхода.Hdr_Unicode
+        R2 ONE_TO_MANY: ШДРасширение ON ШДЧек.Hdr_UniCode equals ШДРасширение.Hdr_Unicode
+        R3 ONE_TO_MANY: ШДРасширение2 ON ШДЧек.Hdr_UniCode equals ШДРасширение2.Hdr_ID
+    EVENTS
+         BEFORE DELETE:
+            BEGIN_INVOKE
+                var cheque = sender as ДокументЧек;
+                var dbCheque = args.Env.Manager.Load(cheque.Key) as ДокументЧек;
+                dbCheque.DcmState = -1;
+                args.Env.Manager.Save(dbCheque); 
+                args.Cancel = true;
+            END_INVOKE;
+         BEFORE SAVE:
+            BEGIN_INVOKE
+                if(args.IsServer)
+                    args.Register = false;
+            END_INVOKE;    
+    OPTIONS 
+        DIRECTION UP
+    POINT(SimplePoint, ШДЧек.Skd_UniCode)
+
+
+DEFINE TRANSFER OBJECT Номенклатура AS TABLE
+    Cmp(unique(tablerowguid))
+        OPTIONS
+        DIRECTION DOWN
+
+DEFINE TRANSFER OBJECT Контрагент AS TABLE
+    Cll(unique(tablerowguid))
+    OPTIONS
+        DIRECTION DOWN
