@@ -25,16 +25,6 @@
     <Content Include="Lic.rtf" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SqlPlusDbSync.Server\SqlPlusDbSync.Server.csproj">
-      <Name>SqlPlusDbSync.Server</Name>
-      <Project>{3acc632f-063f-43e7-b9b3-7fb9603bc3b4}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <WixExtension Include="WixUIExtension">
       <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
       <Name>WixUIExtension</Name>

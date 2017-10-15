@@ -60,13 +60,33 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
+    <Compile Include="Configuration\SCondition.cs" />
+    <Compile Include="Configuration\SDirection.cs" />
+    <Compile Include="Configuration\SEvent.cs" />
+    <Compile Include="Configuration\SField.cs" />
+    <Compile Include="Configuration\SObjectQueryProcessor.cs" />
+    <Compile Include="Configuration\SObjectVisitor.cs" />
+    <Compile Include="Configuration\SOperand.cs" />
+    <Compile Include="Configuration\SRelation.cs" />
+    <Compile Include="Configuration\SSchema.cs" />
+    <Compile Include="Configuration\STable.cs" />
+    <Compile Include="Configuration\SType.cs" />
+    <Compile Include="Configuration\SValue.cs" />
+    <Compile Include="Configuration\SWhereCondition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Syntax\ErrorListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SqlPlusDbSync.Data\SqlPlusDbSync.Data.csproj">
       <Project>{A8A0244F-C6A5-455E-B48B-08763490FD3A}</Project>
       <Name>SqlPlusDbSync.Data</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr4 Include="Syntax\DbObjects.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>SqlPlusDbSync.Platform</CustomToolNamespace>
+    </Antlr4>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

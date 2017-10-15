@@ -1,19 +1,20 @@
 using System;
 using System.Xml;
+using SqlPlusDbSync.Configuration.Configuration;
 using SqlPlusDbSync.Platform.Configuration;
 
 namespace SqlPlusDbSync.Platform
 {
     public class ObjectResults
     {
-        public ObjectResults(SType sType, Guid id, byte[] version)
+        public ObjectResults(PType pType, Guid id, byte[] version)
         {
-            SType = sType;
+            PType = pType;
             Id = id;
             Version = version;
         }
 
-        public SType SType { get; set; }
+        public PType PType { get; set; }
         public Guid Id { get; set; }
         
         public byte[] Version { get; set; }

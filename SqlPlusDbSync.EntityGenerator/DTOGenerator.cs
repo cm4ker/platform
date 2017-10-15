@@ -1,21 +1,28 @@
-﻿using System;
+﻿/*
+ Необходимо создать сущности трёх типов типов:
+ 1) Дата сущности (DTO Objects)
+ 2) Сущности с предопределённой логикой (Entity)
+ 3) Кастомные сущности (Classes), которые олицитворяют собой класс обработки данных и не хранятся в базе данных
+*/
+
+using System;
 using System.CodeDom.Compiler;
-using System.Data;
 using System.Text;
 using CodeGeneration.Syntax;
 using Microsoft.CSharp;
 using SqlPlusDbSync.Platform.EntityObject;
-using SqlPlusDbSync.Shared;
 
-namespace SqlPlusDbSync.Platform
+namespace SqlPlusDbSync.EntityGenerator
 {
-    public class EntityGenerator
+
+    public class DTOGenerator
     {
-        public EntityGenerator()
+        public DTOGenerator()
         {
+
         }
 
-        public void Generate(Core core)
+        public void Generate()
         {
             var doc = new DocumentSyntax();
             var ns = new NamespaceSyntax("EntityLibrary");

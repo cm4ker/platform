@@ -77,9 +77,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj">
+    <ProjectReference Include="..\CodeGenerator\CodeGeneratorHelper.csproj">
       <Project>{A178231D-8A29-4882-8608-7824FD05B06B}</Project>
-      <Name>CodeGenerator</Name>
+      <Name>CodeGeneratorHelper</Name>
     </ProjectReference>
     <ProjectReference Include="..\QueryCompiler\QueryCompiler\QueryCompiler.csproj">
       <Project>{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}</Project>

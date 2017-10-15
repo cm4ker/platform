@@ -1,9 +1,10 @@
 using System;
+using SqlPlusDbSync.Configuration.Configuration;
 using SqlPlusDbSync.Platform.Configuration;
 
 namespace SqlPlusDbSync.Platform
 {
-    public class TypeType : SType
+    public class TypeType : PType
     {
         public TypeType()
         {

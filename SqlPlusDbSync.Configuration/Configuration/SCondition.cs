@@ -1,17 +1,19 @@
+using SqlPlusDbSync.Configuration.Configuration;
+
 namespace SqlPlusDbSync.Platform.Configuration
 {
     public class SCondition
     {
-        private readonly SType _o1;
+        private readonly PType _o1;
         private readonly string _fieldName1;
-        private readonly SType _o2;
+        private readonly PType _o2;
         private readonly string _fieldName2;
 
         public SCondition()
         {
         }
 
-        public SCondition(SType o1, string fieldName1, SType o2, string fieldName2)
+        public SCondition(PType o1, string fieldName1, PType o2, string fieldName2)
         {
             _o1 = o1;
             _fieldName1 = fieldName1;
@@ -20,11 +22,11 @@ namespace SqlPlusDbSync.Platform.Configuration
         }
 
 
-        public SType Object1
+        public PType Object1
         {
             get { return _o1; }
         }
-        public SType Object2
+        public PType Object2
         {
             get { return _o2; }
         }
