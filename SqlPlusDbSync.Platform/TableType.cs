@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using SqlPlusDbSync.Configuration.Configuration;
 using SqlPlusDbSync.Platform.Configuration;
 
 namespace SqlPlusDbSync.Platform
 {
-    public class TableType : SType
+    public class TableType : PType
     {
         public TableType()
         {

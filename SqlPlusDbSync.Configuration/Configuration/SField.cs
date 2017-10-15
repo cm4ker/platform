@@ -1,3 +1,5 @@
+using SqlPlusDbSync.Configuration.Configuration;
+
 namespace SqlPlusDbSync.Platform.Configuration
 {
     public class SField : IArgument
@@ -15,7 +17,7 @@ namespace SqlPlusDbSync.Platform.Configuration
         public bool IsIdentifier { get; set; }
 
 
-        public SType Owner { get; set; }
+        public PType Owner { get; set; }
         public SPoint Point { get; set; }
         public SPoint OwnerPoint { get; set; }
         public SSchema Schema { get; set; }
@@ -28,7 +30,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return _fullName;
         }
 
-        public SField GetCopyFieldWithOwner(SType owner)
+        public SField GetCopyFieldWithOwner(PType owner)
         {
             var clone = this.MemberwiseClone() as SField;
             clone.Owner = owner;

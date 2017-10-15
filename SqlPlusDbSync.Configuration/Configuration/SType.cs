@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using SqlPlusDbSync.Platform.Configuration;
 
-namespace SqlPlusDbSync.Platform.Configuration
+namespace SqlPlusDbSync.Configuration.Configuration
 {
-    public abstract class SType : STypeBase
+    public class PType : PTypeBase
     {
         private readonly List<SEvent> _events;
-        private readonly List<SRelation> _relations;
         private readonly List<SField> _fields;
 
-        protected SType()
+        protected PType()
         {
             _events = new List<SEvent>();
-            _relations = new List<SRelation>();
             _fields = new List<SField>();
         }
 
@@ -26,14 +26,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             get { return _fields; }
         }
 
-
-
         public virtual SCondition Condition { get; set; }
-
-        public virtual List<SRelation> Relations
-        {
-            get { return _relations; }
-        }
 
         public virtual List<SField> GetFields()
         {
@@ -41,38 +34,22 @@ namespace SqlPlusDbSync.Platform.Configuration
         }
 
         public virtual bool IsTransfered { get; set; }
-        public virtual SType Source { get; set; }
+
+        public virtual PType Source { get; set; }
 
         public virtual SField GetIdentity()
         {
             return Fields.Find(x => x.IsIdentifier);
         }
 
-        public virtual TableType GetTableObject()
-        {
-            if (this is TableType) return this as TableType;
-            else return this.Source.GetTableObject();
-        }
-
-        public virtual string GetFullName()
-        {
-            return GetFullName(this).TrimStart('.');
-        }
-
-        private string GetFullName(SType obj)
-        {
-            if (obj is TableType) return $"{(obj as TableType).Name}.{(obj as TableType).Table.Name}";
-            return $"{obj.Name}.{GetFullName(Source)}";
-        }
     }
 
-
-    public abstract class SComplexType : SObjectType
+    public abstract class PComplexType : PObjectType
     {
-        private readonly SObjectType _objectType;
+        private readonly PObjectType _objectType;
         private readonly List<SEvent> _events;
 
-        protected SComplexType(SObjectType objectType)
+        protected PComplexType(PObjectType objectType)
         {
             _objectType = objectType;
             _events = new List<SEvent>();
@@ -86,16 +63,16 @@ namespace SqlPlusDbSync.Platform.Configuration
 
     }
 
-    public abstract class SDTOType : SObjectType
+    public abstract class SDTOType : PObjectType
     {
         public virtual SCondition TableSplitter { get; set; }
     }
 
-    public abstract class SObjectType : STypeBase
+    public abstract class PObjectType : PTypeBase
     {
         private readonly List<SField> _propertyes;
 
-        public SObjectType()
+        public PObjectType()
         {
             _propertyes = new List<SField>();
             Id = Guid.NewGuid();
@@ -109,44 +86,84 @@ namespace SqlPlusDbSync.Platform.Configuration
         }
     }
 
-    public abstract class STypeBase
+    public abstract class PTypeBase
     {
-        protected STypeBase()
+        protected PTypeBase()
         {
 
         }
 
         public virtual string Name { get; set; }
+
         public virtual string Description { get; set; }
+
+        public abstract bool IsNullable { get; set; }
+
+        public abstract int ColumnSize { get; set; }
+
+        public abstract int Precision { get; set; }
+
+        public abstract int Scale { get; set; }
+
         public abstract bool IsComplexType { get; }
+
+
+        public abstract SqlDbType Type { get; set; }
     }
 
-    public class SNumeric : STypeBase
+    public class PNumeric : PTypeBase
     {
+        public override bool IsNullable { get; set; }
+        public override int ColumnSize { get; set; }
+        public override SqlDbType Type { get; set; }
+        public override int Precision { get; set; }
+        public override int Scale { get; set; }
+
         public override bool IsComplexType
         {
             get { return false; }
         }
     }
 
-    public class SBoolean : STypeBase
+    public class PBoolean : PTypeBase
     {
+        public override bool IsNullable { get; set; }
+        public override int ColumnSize { get; set; }
+        public override SqlDbType Type { get; set; }
+        public override int Precision { get; set; }
+        public override int Scale { get; set; }
+
         public override bool IsComplexType
         {
             get { return false; }
         }
     }
 
-    public class SDateTime : STypeBase
+    public class PDateTime : PTypeBase
     {
+        public override bool IsNullable { get; set; }
+        public override int ColumnSize { get; set; }
+        public override SqlDbType Type { get; set; }
+        public override int Precision { get; set; }
+        public override int Scale { get; set; }
+
         public override bool IsComplexType
         {
             get { return false; }
         }
     }
 
-    public class SText : STypeBase
+    public class PText : PTypeBase
     {
+        public override bool IsNullable { get; set; }
+        public override int ColumnSize { get; set; }
+
+        public override int Precision { get; set; }
+        public override int Scale { get; set; }
+
+        public override SqlDbType Type { get; set; }
+
+
         public override bool IsComplexType
         {
             get { return false; }

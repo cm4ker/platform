@@ -11,6 +11,7 @@ using System.Xml;
 using Antlr4.Runtime;
 using QueryCompiler;
 using SqlPlusDbSync.Configuration;
+using SqlPlusDbSync.Configuration.Configuration;
 using SqlPlusDbSync.Data.Database;
 using SqlPlusDbSync.Platform.Configuration;
 using SqlPlusDbSync.Platform.EntityObject;
@@ -23,14 +24,14 @@ namespace SqlPlusDbSync.Platform
 {
     public class Core
     {
-        private List<SType> _supportedObjects;
+        private List<PType> _supportedObjects;
         private readonly List<SObjectEntityManager> _managers;
         private readonly AsnaDatabaseContext _context;
 
         public Core(AsnaDatabaseContext context, bool handleMode = false)
         {
             _context = context;
-            _supportedObjects = new List<SType>();
+            _supportedObjects = new List<PType>();
             _managers = new List<SObjectEntityManager>();
 
             PlatformInitializer pi = new PlatformInitializer();
@@ -84,7 +85,7 @@ namespace SqlPlusDbSync.Platform
 
             dboParser.AddErrorListener(listener);
             Logger.LogInfo("Start parse rules");
-            _supportedObjects = visitor.Visit(dboParser.eval()) as List<SType>;
+            _supportedObjects = visitor.Visit(dboParser.eval()) as List<PType>;
             Logger.LogInfo("End parse rules");
 
             Logger.LogInfo("Init entity managers...");
@@ -126,18 +127,18 @@ namespace SqlPlusDbSync.Platform
             Init();
         }
 
-        public List<SType> SupportedObjects
+        public List<PType> SupportedObjects
         {
             get { return _supportedObjects; }
         }
 
-        private bool CanBeTransferedFromCurrentPoint(SType sType)
+        private bool CanBeTransferedFromCurrentPoint(PType pType)
         {
-            if (sType.Direction == SDirection.Any) return true;
+            if (pType.Direction == SDirection.Any) return true;
 
-            if (_context.IsServer && sType.Direction == SDirection.Down) return true;
+            if (_context.IsServer && pType.Direction == SDirection.Down) return true;
 
-            if (!_context.IsServer && sType.Direction == SDirection.Up) return true;
+            if (!_context.IsServer && pType.Direction == SDirection.Up) return true;
 
             return false;
         }
@@ -162,7 +163,7 @@ namespace SqlPlusDbSync.Platform
                 else
                     sq.Parameters["@MinVersion"].SetValue(uncommitedVersion);
 
-                var deletedObjects = new List<Tuple<SType, Guid, byte[], string, string>>();
+                var deletedObjects = new List<Tuple<PType, Guid, byte[], string, string>>();
 
                 using (var cmd = _context.Connection.CreateCommand())
                 {
@@ -180,7 +181,7 @@ namespace SqlPlusDbSync.Platform
                             if (!reader.GetSqlXml(3).IsNull)
                             {
                                 //sobject, id, version, xml represent, table name
-                                deletedObjects.Add(new Tuple<SType, Guid, byte[], string, string>(sObject, reader.GetGuid(0), (byte[])reader.GetValue(1), reader.GetSqlXml(3).Value, reader.GetString(2)));
+                                deletedObjects.Add(new Tuple<PType, Guid, byte[], string, string>(sObject, reader.GetGuid(0), (byte[])reader.GetValue(1), reader.GetSqlXml(3).Value, reader.GetString(2)));
                             }
                             else
                             {
@@ -246,7 +247,7 @@ namespace SqlPlusDbSync.Platform
 
                 foreach (var item in result)
                 {
-                    var entity = GetObject(item.SType, item.Id);
+                    var entity = GetObject(item.PType, item.Id);
                     if (entity == null) continue;
                     if (entity.DynamicProperties.Cancel) continue;
 
@@ -269,7 +270,7 @@ namespace SqlPlusDbSync.Platform
 
                 foreach (var item in result)
                 {
-                    var entity = GetObject(item.SType, item.Id);
+                    var entity = GetObject(item.PType, item.Id);
                     if (entity.DynamicProperties.Cancel) continue;
                     entity.Version = item.Version;
                     entity.Key = item.Id;
@@ -281,9 +282,9 @@ namespace SqlPlusDbSync.Platform
             return entities;
         }
 
-        public DTOObject GetObject(SType sType, object id)
+        public DTOObject GetObject(PType pType, object id)
         {
-            var mrg = GetEntityManager(sType);
+            var mrg = GetEntityManager(pType);
             return mrg.Load(id);
         }
         private SObjectEntityManager GetEntityManager(DTOObject entiity)
@@ -291,7 +292,7 @@ namespace SqlPlusDbSync.Platform
             var entityType = entiity.GetType();
             return _managers.Find(x => x.SType.Name == entityType.Name);
         }
-        private SObjectEntityManager GetEntityManager(SType sobject)
+        private SObjectEntityManager GetEntityManager(PType sobject)
         {
             var result = _managers.Find(x => x.SType.Equals(sobject));
             if (result is null) throw new Exception("Object not supporrted");

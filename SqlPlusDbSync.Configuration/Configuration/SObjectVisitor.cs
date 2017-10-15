@@ -5,13 +5,14 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using QueryCompiler;
 using QueryCompiler.Schema;
+using SqlPlusDbSync.Configuration.Configuration;
 using SqlPlusDbSync.Data.Database;
 
 namespace SqlPlusDbSync.Platform.Configuration
 {
     public class SObjectVisitor : DbObjectsBaseVisitor<object>
     {
-        private List<SType> _objects = new List<SType>();
+        private List<PType> _objects = new List<PType>();
         private List<SEvent> _events = new List<SEvent>();
         private List<SPoint> _points = new List<SPoint>();
         private List<SPoint> _ownerPoints = new List<SPoint>();
@@ -164,7 +165,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return _objects;
         }
 
-        private void SetDefaultOptions(SType obj)
+        private void SetDefaultOptions(PType obj)
         {
             obj.Direction = SDirection.Any;
         }
@@ -191,7 +192,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return result;
         }
 
-        public SField VisitColumnList(DbObjectsParser.ColumnListContext context, SType owner)
+        public SField VisitColumnList(DbObjectsParser.ColumnListContext context, PType owner)
         {
             var field = VisitColumnList(context) as SField;
             field.Owner = owner;
@@ -205,13 +206,13 @@ namespace SqlPlusDbSync.Platform.Configuration
             return result;
         }
 
-        private TableType GetParentTableObject(SType obj)
+        private TableType GetParentTableObject(PType obj)
         {
             if (obj is TableType) return (TableType)obj;
             return GetParentTableObject(obj.Source);
         }
 
-        private SType GetObject(string objectName)
+        private PType GetObject(string objectName)
         {
             var result = _objects.FirstOrDefault(x => x.Name == objectName);
             if (result == null) throw new ObjectNotfound(objectName);
@@ -306,7 +307,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return _objects;
         }
 
-        public void VisitOptions(DbObjectsParser.ObjectOptionsContext context, SType owner)
+        public void VisitOptions(DbObjectsParser.ObjectOptionsContext context, PType owner)
         {
             if (context is null)
             {

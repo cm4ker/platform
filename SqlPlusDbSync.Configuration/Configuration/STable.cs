@@ -11,6 +11,5 @@ namespace SqlPlusDbSync.Platform.Configuration
 
         public string Name { get; set; }
         public List<SField> Fields { get; set; }
-
     }
 }

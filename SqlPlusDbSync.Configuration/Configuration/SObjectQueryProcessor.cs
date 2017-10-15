@@ -7,6 +7,7 @@ using System.Xml;
 using FluentMigrator.Runner.Versioning;
 using QueryCompiler;
 using QueryCompiler.Queries;
+using SqlPlusDbSync.Configuration.Configuration;
 using SqlPlusDbSync.Data.Database;
 using SqlPlusDbSync.Platform.EntityObject;
 using IQueryable = QueryCompiler.Queries.IQueryable;
@@ -79,7 +80,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return insertQuery;
         }
 
-        public DBBatch GetDeleteQuery(DTOObject dtoObject, SType sType)
+        public DBBatch GetDeleteQuery(DTOObject dtoObject, PType pType)
         {
             var result = new DBBatch();
             var entityType = dtoObject.GetType();
@@ -89,8 +90,8 @@ namespace SqlPlusDbSync.Platform.Configuration
                 result.AddQuery(new DBSetVariableClause(new DBVariable(SQLVariables.CONTEXT_INFO), new DBHexConstant(0x1234)));
             }
 
-            if (!(sType is TableType))
-                foreach (var rel in sType.Relations)
+            if (!(pType is TableType))
+                foreach (var rel in pType.Relations)
                 {
                     var prop = entityType.GetProperty(rel.Type.Name);
                     if (prop is null) throw new Exception($"Property name {rel.Type.Name} not found");
@@ -103,7 +104,7 @@ namespace SqlPlusDbSync.Platform.Configuration
                     }
                 }
 
-            var to = sType.GetTableObject();
+            var to = pType.GetTableObject();
 
             var deleteQuery = GetTableObjectDeleteQuery(to);
             deleteQuery.Parameters[0].SetValue(dtoObject.Key);
@@ -117,7 +118,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return result;
         }
 
-        public DBBatch GetSaveQuery(DTOObject dtoObject, SType sType, SaveAction action = SaveAction.None)
+        public DBBatch GetSaveQuery(DTOObject dtoObject, PType pType, SaveAction action = SaveAction.None)
         {
             if (action == SaveAction.None)
                 action = dtoObject.DynamicProperties.Action;
@@ -130,8 +131,8 @@ namespace SqlPlusDbSync.Platform.Configuration
                 result.AddQuery(new DBSetVariableClause(new DBVariable(SQLVariables.CONTEXT_INFO), new DBHexConstant(0x1234)));
             }
 
-            if (!(sType is TableType))
-                foreach (var rel in sType.Relations)
+            if (!(pType is TableType))
+                foreach (var rel in pType.Relations)
                 {
                     var prop = entityType.GetProperty(rel.Type.Name);
                     if (prop is null) throw new Exception($"Property name {rel.Type.Name} not found");
@@ -144,7 +145,7 @@ namespace SqlPlusDbSync.Platform.Configuration
                     }
                 }
 
-            var to = sType.GetTableObject();
+            var to = pType.GetTableObject();
 
             if (action == SaveAction.Update)
             {
@@ -152,7 +153,7 @@ namespace SqlPlusDbSync.Platform.Configuration
 
                 int paramIndex = 0;
 
-                foreach (var field in sType.Fields)
+                foreach (var field in pType.Fields)
                 {
                     var prop = entityType.GetProperty(field.Name);
                     if (prop is null) throw new Exception($"Property name {field.Name} not found");
@@ -174,17 +175,17 @@ namespace SqlPlusDbSync.Platform.Configuration
 
             if (action == SaveAction.Delete)
             {
-                result.AddBatch(GetDeleteQuery(dtoObject, sType));
+                result.AddBatch(GetDeleteQuery(dtoObject, pType));
             }
 
             if (action == SaveAction.Insert)
             {
                 var insertQuery = GetTableObjectInsertQuery(to);
 
-                for (int i = 0; i < sType.Fields.Count; i++)
+                for (int i = 0; i < pType.Fields.Count; i++)
                 {
-                    var prop = entityType.GetProperty(sType.Fields[i].Name);
-                    if (prop is null) throw new Exception($"Property name {sType.Fields[i].Name} not found");
+                    var prop = entityType.GetProperty(pType.Fields[i].Name);
+                    if (prop is null) throw new Exception($"Property name {pType.Fields[i].Name} not found");
 
                     insertQuery.Parameters[i].SetValue(prop.GetValue(dtoObject, null));
                 }
@@ -210,7 +211,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return result;
         }
 
-        public DBSelectQuery GetSelectQuery(SType sobject, int depth = 0)
+        public DBSelectQuery GetSelectQuery(PType sobject, int depth = 0)
         {
             if (_cache.TryGetValue(new Tuple<string, Type>(sobject.Name, typeof(DBSelectQuery)), out var query))
             {
@@ -257,7 +258,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return selectQuery.Clone() as DBSelectQuery;
         }
 
-        public DBSelectQuery GetSelectGraphQuery(SType sobject, int depth = 0)
+        public DBSelectQuery GetSelectGraphQuery(PType sobject, int depth = 0)
         {
             var selectQuery = _qc.CreateSelect();
 
@@ -317,7 +318,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return selectQuery;
         }
 
-        private List<SField> GetIdentityFields(SType sobject)
+        private List<SField> GetIdentityFields(PType sobject)
         {
             var result = new List<SField>();
             if (sobject is TableType) result.Add(sobject.GetIdentity());
@@ -333,7 +334,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return result;
         }
 
-        public DBSelectQuery GetSingleSelectQuery(SType sobject)
+        public DBSelectQuery GetSingleSelectQuery(PType sobject)
         {
             var selectQuery = GetSelectQuery(sobject);
 
@@ -344,7 +345,7 @@ namespace SqlPlusDbSync.Platform.Configuration
             return selectQuery;
         }
 
-        public DBSelectQuery GetSingleSelectGraphQuery(SType sobject)
+        public DBSelectQuery GetSingleSelectGraphQuery(PType sobject)
         {
             var selectQuery = GetSelectGraphQuery(sobject);
 
@@ -355,17 +356,17 @@ namespace SqlPlusDbSync.Platform.Configuration
             return selectQuery;
         }
 
-        public DBSelectQuery GetObjectOwnerQuery(SType sType)
+        public DBSelectQuery GetObjectOwnerQuery(PType pType)
         {
-            var sFieldOwnerPoint = sType.Fields.Find(x => x.OwnerPoint != null);
+            var sFieldOwnerPoint = pType.Fields.Find(x => x.OwnerPoint != null);
             if (sFieldOwnerPoint != null)
             {
-                var objectTable = sType.GetTableObject().GetDBTable(_qc);
+                var objectTable = pType.GetTableObject().GetDBTable(_qc);
                 var ownerPoint = sFieldOwnerPoint.OwnerPoint;
                 var ownerTable = _qc.CreateTable(ownerPoint.From.Name, "OwnerPointInfo");
                 ownerTable.FillFieldsFromSchema();
 
-                var identy = sType.GetIdentity();
+                var identy = pType.GetIdentity();
                 var identityField = objectTable.GetField(identy.Name) as DBTableField;
 
                 var sq = _qc.CreateSelect().Top(1);
@@ -382,9 +383,9 @@ namespace SqlPlusDbSync.Platform.Configuration
             return null;
         }
 
-        public DBSelectQuery GetPackageQuery(SType sType)
+        public DBSelectQuery GetPackageQuery(PType pType)
         {
-            var to = sType.GetTableObject();
+            var to = pType.GetTableObject();
 
             DBSelectPipe pipe = new DBSelectPipe();
 
@@ -409,7 +410,7 @@ namespace SqlPlusDbSync.Platform.Configuration
                     DBClause.CreateConstant(to.WhereCondition.Operand.Value));
             }
             
-            var sFieldPoint = sType.Fields.Find(x => x.Point != null);
+            var sFieldPoint = pType.Fields.Find(x => x.Point != null);
             if (sFieldPoint != null)
             {
                 var pointInfo = sFieldPoint.Point;
@@ -454,7 +455,7 @@ namespace SqlPlusDbSync.Platform.Configuration
 
             return newselect;
         }
-        public DBSelectQuery GetSelectFromXml(SType sobject, string xml)
+        public DBSelectQuery GetSelectFromXml(PType sobject, string xml)
         {
             var to = sobject.GetTableObject();
             DBSelectQuery sq = _qc.CreateSelect();

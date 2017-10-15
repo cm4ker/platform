@@ -97,19 +97,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\SDirection.cs" />
-    <Compile Include="EntityGenerator.cs" />
-    <Compile Include="Configuration\SSchema.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="DynamicExecutor.cs" />
-    <Compile Include="EntityObject\DTOObject.cs" />
-    <Compile Include="EntityObject\Mapper.cs" />
-    <Compile Include="EntityObject\SObjectEntityManager.cs" />
     <Compile Include="EventType.cs" />
     <Compile Include="IArgument.cs" />
-    <Compile Include="Migrations\InitMigration.cs" />
-    <Compile Include="Migrations\Runner.cs" />
-    <Compile Include="Migrations\VersionTable.cs" />
     <Compile Include="ObjectNotfound.cs" />
     <Compile Include="TypeType.cs" />
     <Compile Include="ObjectResults.cs" />
@@ -117,28 +108,16 @@
     <Compile Include="PlatformHelper.cs" />
     <Compile Include="PlatformInitializer.cs" />
     <Compile Include="SaveAction.cs" />
-    <Compile Include="Configuration\SCondition.cs" />
-    <Compile Include="Configuration\SEvent.cs" />
-    <Compile Include="Configuration\SField.cs" />
-    <Compile Include="Configuration\SType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Configuration\SObjectQueryProcessor.cs" />
-    <Compile Include="Configuration\SObjectVisitor.cs" />
-    <Compile Include="Configuration\SOperand.cs" />
-    <Compile Include="Configuration\SRelation.cs" />
-    <Compile Include="Configuration\STable.cs" />
-    <Compile Include="Configuration\SValue.cs" />
-    <Compile Include="Configuration\SWhereCondition.cs" />
-    <Compile Include="Syntax\ErrorListener.cs" />
     <Compile Include="TableType.cs" />
     <Compile Include="TypeWrapper.cs" />
     <Compile Include="UntypedToTypedPropertyContractResolver.cs" />
     <Compile Include="UntypedToTypedValueConverter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CodeGenerator\CodeGenerator.csproj">
+    <ProjectReference Include="..\CodeGenerator\CodeGeneratorHelper.csproj">
       <Project>{A178231D-8A29-4882-8608-7824FD05B06B}</Project>
-      <Name>CodeGenerator</Name>
+      <Name>CodeGeneratorHelper</Name>
     </ProjectReference>
     <ProjectReference Include="..\QueryCompiler\QueryCompiler\QueryCompiler.csproj">
       <Project>{7f8c9e0e-21af-47c5-bea0-23944f90229c}</Project>
@@ -156,14 +135,6 @@
       <Project>{C3970110-FA10-4E25-A69C-F83C6649ED22}</Project>
       <Name>SqlPlusDbSync.Shared</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Antlr4 Include="Syntax\DbObjects.g4">
-      <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace>SqlPlusDbSync.Platform</CustomToolNamespace>
-      <Listener>True</Listener>
-      <Visitor>True</Visitor>
-    </Antlr4>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

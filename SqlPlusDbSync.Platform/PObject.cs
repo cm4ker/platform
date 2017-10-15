@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using SqlPlusDbSync.Configuration.Configuration;
 using SqlPlusDbSync.Platform.Configuration;
 
 
@@ -17,7 +18,7 @@ namespace SqlPlusDbSync.Platform
     /// </summary>
     public class PObject
     {
-        private readonly SType _sobject;
+        private readonly PType _sobject;
         private readonly Dictionary<string, object> _properties;
 
         public PObject()
@@ -25,7 +26,7 @@ namespace SqlPlusDbSync.Platform
             _properties = new Dictionary<string, object>();
         }
 
-        public PObject(SType sobject)
+        public PObject(PType sobject)
         {
             _sobject = sobject;
             _properties = new Dictionary<string, object>();
@@ -167,15 +168,15 @@ namespace SqlPlusDbSync.Platform
             this[_sobject.Source.Name] = dynObj;
         }
 
-        public static PObject FromJson(JObject json, SType sType)
+        public static PObject FromJson(JObject json, PType pType)
         {
-            if (sType is null) throw new NullReferenceException();
+            if (pType is null) throw new NullReferenceException();
 
-            var dynObj = new PObject(sType);
+            var dynObj = new PObject(pType);
 
-            if (sType is TableType)
+            if (pType is TableType)
             {
-                var to = sType as TableType;
+                var to = pType as TableType;
 
                 foreach (JProperty token in json["Properties"])
                 {
@@ -201,7 +202,7 @@ namespace SqlPlusDbSync.Platform
                     foreach (var item in token.Value)
                     {
                         (dynObj[token.Name] as List<PObject>).Add(FromJson(item as JObject,
-                            sType.Relations.Find(x => x.Type.Name == token.Name).Type));
+                            pType.Relations.Find(x => x.Type.Name == token.Name).Type));
                     }
                 else
                 {
@@ -210,7 +211,7 @@ namespace SqlPlusDbSync.Platform
 
             }
 
-            dynObj[sType.Source.Name] = FromJson(json["Properties"][sType.Source.Name] as JObject, sType.Source);
+            dynObj[pType.Source.Name] = FromJson(json["Properties"][pType.Source.Name] as JObject, pType.Source);
 
             return dynObj;
         }
