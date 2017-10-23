@@ -58,10 +58,6 @@
       <Project>{E5B657B1-9C4A-40DD-A068-5EF2F67C0C5A}</Project>
       <Name>SqlPlusDbSync.Platform</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SqlPlusDbSync.Shared\SqlPlusDbSync.Shared.csproj">
-      <Project>{C3970110-FA10-4E25-A69C-F83C6649ED22}</Project>
-      <Name>SqlPlusDbSync.Shared</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

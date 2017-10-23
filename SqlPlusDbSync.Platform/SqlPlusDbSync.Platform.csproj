@@ -127,10 +127,6 @@
       <Project>{A8A0244F-C6A5-455E-B48B-08763490FD3A}</Project>
       <Name>SqlPlusDbSync.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SqlPlusDbSync.Shared\SqlPlusDbSync.Shared.csproj">
-      <Project>{C3970110-FA10-4E25-A69C-F83C6649ED22}</Project>
-      <Name>SqlPlusDbSync.Shared</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
