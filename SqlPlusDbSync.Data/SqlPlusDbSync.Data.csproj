@@ -72,12 +72,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SqlPlusDbSync.Shared\SqlPlusDbSync.Shared.csproj">
-      <Project>{c3970110-fa10-4e25-a69c-f83c6649ed22}</Project>
-      <Name>SqlPlusDbSync.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Mapper\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

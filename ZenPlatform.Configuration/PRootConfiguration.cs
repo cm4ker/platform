@@ -1,4 +1,5 @@
-﻿using SqlPlusDbSync.Configuration;
+﻿using System.Collections.Generic;
+using SqlPlusDbSync.Configuration;
 
 namespace ZenPlatform.Configuration
 {
