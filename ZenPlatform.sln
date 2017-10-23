@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.UnitTest", "T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Shared", "SqlPlusDbSync.Shared\SqlPlusDbSync.Shared.csproj", "{C3970110-FA10-4E25-A69C-F83C6649ED22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryCompiler", "QueryCompiler\QueryCompiler\QueryCompiler.csproj", "{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGeneratorHelper", "CodeGenerator\CodeGeneratorHelper.csproj", "{A178231D-8A29-4882-8608-7824FD05B06B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Exchanges", "SqlPlusDbSync.Exchanges\SqlPlusDbSync.Exchanges.csproj", "{BB41CF37-D4E7-4577-8C66-C15215B0C20C}"
@@ -83,14 +81,6 @@ Global
 		{C3970110-FA10-4E25-A69C-F83C6649ED22}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C3970110-FA10-4E25-A69C-F83C6649ED22}.Release|x86.ActiveCfg = Release|Any CPU
 		{C3970110-FA10-4E25-A69C-F83C6649ED22}.Release|x86.Build.0 = Release|Any CPU
-		{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}.Debug|x86.Build.0 = Debug|Any CPU
-		{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}.Release|x86.ActiveCfg = Release|Any CPU
-		{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}.Release|x86.Build.0 = Release|Any CPU
 		{A178231D-8A29-4882-8608-7824FD05B06B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A178231D-8A29-4882-8608-7824FD05B06B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A178231D-8A29-4882-8608-7824FD05B06B}.Debug|x86.ActiveCfg = Debug|Any CPU

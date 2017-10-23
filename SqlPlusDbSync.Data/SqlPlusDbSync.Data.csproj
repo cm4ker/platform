@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -72,10 +72,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QueryCompiler\QueryCompiler\QueryCompiler.csproj">
-      <Project>{7F8C9E0E-21AF-47C5-BEA0-23944F90229C}</Project>
-      <Name>QueryCompiler</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SqlPlusDbSync.Shared\SqlPlusDbSync.Shared.csproj">
       <Project>{c3970110-fa10-4e25-a69c-f83c6649ed22}</Project>
       <Name>SqlPlusDbSync.Shared</Name>
