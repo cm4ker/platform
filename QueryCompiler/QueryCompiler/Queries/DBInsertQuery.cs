@@ -15,7 +15,7 @@ namespace QueryCompiler.Queries
         private DBValuesClause _values;
         private DBTable _insertTable;
 
-        public DBInsertQuery()
+        internal DBInsertQuery()
         {
             _values = new DBValuesClause();
             _compileExpression = "{InsertExpression}\n{ValuesExpression}";

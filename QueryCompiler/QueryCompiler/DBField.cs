@@ -17,15 +17,16 @@ namespace QueryCompiler
         {
             _owner = owner;
             _name = name;
-
-            CompileExpression = "{Name}";
-
-            Schema = this.GetUnknownSchema();
         }
 
         public IDBAliasedFieldContainer Owner
         {
             get { return _owner; }
+        }
+
+        public override string CompileExpression
+        {
+            get { return "{Name}"; }
         }
 
         public DBFieldSchema Schema { get; set; }
@@ -37,7 +38,7 @@ namespace QueryCompiler
 
         public override string Compile(bool recompile = false)
         {
-            return StandartCompilers.SimpleCompiler(CompileExpression, new { Name = _name });
+            return StandartCompilers.SimpleCompiler(this.CompileExpression, new { Name = _name });
         }
 
         public override object Clone()

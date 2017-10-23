@@ -7,69 +7,39 @@
 
 using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CodeGeneration.Syntax;
 using Microsoft.CSharp;
-using SqlPlusDbSync.Platform.EntityObject;
+using SqlPlusDbSync.Configuration;
+using SqlPlusDbSync.Entity.EntityObject;
 
 namespace SqlPlusDbSync.EntityGenerator
 {
-
     public class DTOGenerator
     {
-        public DTOGenerator()
+        private readonly List<PObjectType> _pobjects;
+        private DynamicAssemblyCompiller _asmCompiller;
+        private const string Namespace = "DTOLibrary";
+
+        public DTOGenerator(List<PObjectType> pobjects)
         {
+            _pobjects = pobjects;
+
+            _asmCompiller = new DynamicAssemblyCompiller();
 
         }
 
         public void Generate()
         {
-            var doc = new DocumentSyntax();
-            var ns = new NamespaceSyntax("EntityLibrary");
-
-            doc.AddNamespace(ns);
-
-            doc.AddUsing(new UsingSyntax("System"));
-            doc.AddUsing(new UsingSyntax("System.Collections.Generic"));
-            doc.AddUsing(new UsingSyntax("System.Reflection"));
-
-            var assemblyVersion = new AttributeSyntax("AssemblyVersion", "assembly");
-            assemblyVersion.AddConstrunctorParam(new StringValueSyntax("1.0.0.0"));
-
-            doc.AddAttribute(assemblyVersion);
-
-            //doc.AddUsing(new UsingSyntax("SqlPlusDbSync.Platform"));
-            doc.AddUsing(new UsingSyntax(typeof(DTOObject).Namespace));
-            foreach (var sobject in core.SupportedObjects)
-            {
-                var cls = new ClassSyntax(sobject.Name, new TypeSyntax(typeof(DTOObject)));
-                //var attr = new AttributeSyntax("Table");
-                //attr.AddConstrunctorParam(new StringValueSyntax(sobject.GetTableObject().Name));
-
-                foreach (var property in sobject.Fields)
-                {
-                    var prop = new PropertySyntax(property.Name, new TypeSyntax(PlatformHelper.GetClrType(property.Schema.Type, property.Schema.IsNullable)));
-                    cls.AddProperty(prop);
-                }
-                if (!(sobject is TableType))
-                    foreach (var table in sobject.Relations)
-                    {
-                        var prop = new PropertySyntax(table.Type.Name, new TypeSyntax($"List<{table.Type.Name}>"));
-                        cls.AddProperty(prop);
-                    }
-
-                //cls.AddAttribute(attr);
-                ns.AddClass(cls);
-            }
-
-            DynamicAssemblyCompiller asmCompiller = new DynamicAssemblyCompiller();
-            asmCompiller.Compile(doc.ToString());
+            _asmCompiller.Compile(GetModuleText());
         }
 
-        public void GenerateLinkedEntity(Core core)
+        public string GetModuleText()
         {
             var doc = new DocumentSyntax();
-            var ns = new NamespaceSyntax("EntityLibrary");
+            var ns = new NamespaceSyntax(Namespace);
 
             doc.AddNamespace(ns);
 
@@ -82,33 +52,59 @@ namespace SqlPlusDbSync.EntityGenerator
 
             doc.AddAttribute(assemblyVersion);
 
-            //doc.AddUsing(new UsingSyntax("SqlPlusDbSync.Platform"));
-            doc.AddUsing(new UsingSyntax(typeof(DTOObject).Namespace));
-            foreach (var sobject in core.SupportedObjects)
-            {
-                var cls = new ClassSyntax(sobject.Name, new TypeSyntax(typeof(DTOObject)));
-                //var attr = new AttributeSyntax("Table");
-                //attr.AddConstrunctorParam(new StringValueSyntax(sobject.GetTableObject().Name));
+            doc.AddUsing(new UsingSyntax(typeof(DTO).Namespace));
 
-                foreach (var property in sobject.Fields)
+            foreach (var pObjectType in _pobjects)
+            {
+                if (string.IsNullOrEmpty(pObjectType.Name)) throw new Exception("Object must have name");
+
+                var cls = new ClassSyntax(pObjectType.Name);
+
+                foreach (var property in pObjectType.Propertyes)
                 {
-                    var prop = new PropertySyntax(property.Name, new TypeSyntax(PlatformHelper.GetClrType(property.Schema.Type, property.Schema.IsNullable)));
-                    cls.AddProperty(prop);
-                }
-                if (!(sobject is TableType))
-                    foreach (var table in sobject.Relations)
+
+
+                    if (property.Types.Count == 0)
+                        throw new Exception("Property MUST have any type");
+
+                    if (property.Types.Count == 1)
                     {
-                        var prop = new PropertySyntax(table.Type.Name, new TypeSyntax($"List<{table.Type.Name}>"));
+                        PropertySyntax prop;
+                        var ptype = property.Types.First();
+                        if (ptype is PPrimetiveType)
+                        {
+                            var primitiveType = ptype as PPrimetiveType;
+                            prop = new PropertySyntax(property.Name, new TypeSyntax(primitiveType.CLRType));
+                        }
+                        else
+                        {
+                            var objectType = ptype as PObjectType;
+                            prop = new PropertySyntax(property.Name, new TypeSyntax(typeof(Guid)));
+                        }
+
                         cls.AddProperty(prop);
                     }
-
-                //cls.AddAttribute(attr);
+                    else
+                    {
+                        PropertySyntax typeSplitter = null;
+                        foreach (var type in property.Types)
+                        {
+                            if (type is PPrimetiveType)
+                            {
+                                cls.AddProperty(new PropertySyntax($"{property.Name}_{type.Name}", new TypeSyntax((type as PPrimetiveType).CLRType)));
+                            }
+                            if (type is PObjectType)
+                            {
+                                cls.AddProperty(new PropertySyntax($"{property.Name}_RefType", new TypeSyntax(typeof(byte))));
+                                cls.AddProperty(new PropertySyntax($"{property.Name}_Ref", new TypeSyntax(typeof(Guid))));
+                            }
+                        }
+                    }
+                }
                 ns.AddClass(cls);
             }
 
-            DynamicAssemblyCompiller asmCompiller = new DynamicAssemblyCompiller();
-            asmCompiller.Compile(doc.ToString());
-
+            return doc.ToString();
         }
 
         public class DynamicAssemblyCompiller
@@ -148,7 +144,7 @@ namespace SqlPlusDbSync.EntityGenerator
                         sb.AppendLine(String.Format("Error ({0}): {1}", error.ErrorNumber, error.ErrorText));
                     }
 
-                    Logger.LogWarning(sb.ToString());
+                    //Logger.LogWarning(sb.ToString());
                 }
             }
         }

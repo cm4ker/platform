@@ -86,33 +86,6 @@ namespace QueryCompiler
             return new DBFieldSchema(SqlDbType.Variant, field.Name, 0, 0, 0, false, false, false, true);
         }
 
-        //public static DBLogicalOperation And(this DBLogicalOperation op, DBClause clause1)
-        //{
-        //    var newOp = new DBLogicalOperation(op.Owner, DBLogicalChainType.And, clause1, );
-        //    op.Owner.Operations.Add(newOp);
-        //    return newOp;
-        //}
-
-        //public static DBLogicalOperation Or(this DBLogicalOperation op, DBClause clause1)
-        //{
-        //    var newOp = new DBLogicalOperation(op.Owner, DBLogicalChainType.Or, clause1);
-        //    op.Owner.Operations.Add(newOp);
-
-        //    return newOp;
-        //}
-
-        //public static DBLogicalOperation AndOr(this DBLogicalOperation op, DBClause clause1)
-        //{
-        //    var newOp = new DBLogicalOperation(op.Owner, op, DBLogicalChainType.Or, clause1);
-        //    return newOp;
-        //}
-
-        //public static DBLogicalOperation AndAnd(this DBLogicalOperation op, DBClause clause1)
-        //{
-        //    var newOp = new DBLogicalOperation(op.Owner, op, DBLogicalChainType.And, clause1);
-        //    return newOp;
-        //}
-
         public static int RandomCharsInParams() => 12;
 
 

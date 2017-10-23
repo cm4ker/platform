@@ -75,6 +75,7 @@
     <Compile Include="DBUnionClause.cs" />
     <Compile Include="DBValuesClause.cs" />
     <Compile Include="FieldNotFoundException.cs" />
+    <Compile Include="Queries\DBCreateDatabase.cs" />
     <Compile Include="Queries\DBCreateTableQuery.cs" />
     <Compile Include="Queries\DBDeleteQuery.cs" />
     <Compile Include="DBField.cs" />
@@ -111,7 +112,7 @@
     <Compile Include="Interfaces\IDBToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DBQueryCompiler.cs" />
+    <Compile Include="DBQueryFactory.cs" />
     <Compile Include="Schema\DBContext.cs" />
     <Compile Include="Schema\DBFieldSchema.cs" />
     <Compile Include="Schema\DBGlobalContext.cs" />

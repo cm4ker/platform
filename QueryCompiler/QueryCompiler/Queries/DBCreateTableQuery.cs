@@ -14,7 +14,7 @@ namespace QueryCompiler.Queries
         private List<DBFieldSchema> _fields;
 
 
-        public DBCreateTableQuery()
+        internal DBCreateTableQuery()
         {
             _fields = new List<DBFieldSchema>();
         }

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
+    <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryCompiler.csproj" />
+  </ItemGroup>
+
+</Project>

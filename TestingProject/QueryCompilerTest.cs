@@ -8,14 +8,26 @@ namespace SqlPlusDbSync.UnitTest
     [TestClass]
     public class QueryCompilerTest
     {
-        private AsnaDatabaseContext _context;
-        private DBQueryCompiler _queryCompiler;
+        private PlatformContext _context;
+        private DBQueryFactory _queryFactory;
 
         public QueryCompilerTest()
         {
-            _context = new AsnaDatabaseContext("Data Source=(local);Initial Catalog=asna_apt_194;Integrated Security=True");
-            _queryCompiler = new DBQueryCompiler(_context);
+            _context = new PlatformContext("Data Source=(local);Initial Catalog=asna_apt_194;Integrated Security=True");
+            _queryFactory = new DBQueryFactory(_context);
         }
+
+
+        [TestMethod]
+        public void CreateDatabaseTest()
+        {
+            using (var db =
+                new PlatformContext("Data Source=(local);Initial Catalog=SJDGHFJSDHFLJSD;Integrated Security=True"))
+            {
+
+            }
+        }
+
 
         [TestMethod]
         public void SetClauseTest()

@@ -40,10 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="Migrations\InitMigration.cs" />
-    <Compile Include="Migrations\Runner.cs" />
-    <Compile Include="Migrations\VersionTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QueryCompiler\QueryCompiler\QueryCompiler.csproj">
+      <Project>{7f8c9e0e-21af-47c5-bea0-23944f90229c}</Project>
+      <Name>QueryCompiler</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
