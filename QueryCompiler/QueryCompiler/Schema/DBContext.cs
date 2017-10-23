@@ -164,7 +164,6 @@ namespace QueryCompiler.Schema
             {
                 var connectionString = fs.ReadToEnd();
                 var p = connectionString.Split(';');
-                //"Data Source=pc701;Initial Catalog=asna_apt_194;Integrated Security=True";
 
                 var initialCatalog = p.FirstOrDefault(x => x.ToLower().Contains("initial catalog")) ??
                                      throw new Exception("need requered parameter Initial Catalog");
@@ -177,8 +176,6 @@ namespace QueryCompiler.Schema
                 SqlConnectionStringBuilder scsb = new SqlConnectionStringBuilder();
                 scsb.InitialCatalog = initialCatalog.Split('=')[1];
                 scsb.DataSource = dataSource.Split('=')[1];
-
-                //scsb.MultipleActiveResultSets = true;
 
                 if (integratedSecurity is null)
                 {
@@ -199,15 +196,19 @@ namespace QueryCompiler.Schema
         {
             try
             {
-
                 var connection = new SqlConnection(connectionString);
-
                 connection.Open();
+
                 return connection;
             }
-            catch
+            catch (SqlException e) when (e.Number == 4060)
             {
-                return null;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
 
         }

@@ -11,10 +11,10 @@ namespace QueryCompiler
             Schema = owner.SchemaFields.Find(x => x.ColumnName == name);
         }
 
-        public DBTableField(DBTable owner, string name, DBFieldSchema schema) : base(owner, name)
+        public DBTableField(DBTable owner, string name) : base(owner, name)
         {
             base.CompileExpression = "[{OwnerName}].[{Name}]";
-            Schema = schema;
+            
         }
 
         public override string Compile(bool recompile = false)

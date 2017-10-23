@@ -13,29 +13,27 @@ namespace QueryCompiler
         private readonly List<DBClause> _fields;
         private string _compileExpression;
         private string _alias;
-        private readonly List<DBFieldSchema> _fieldsSchema;
 
-        public DBTable(string name, DBSchemaManager manager, string alias = "")
+        public DBTable(string name, string alias = "")
         {
             _name = name;
             _fields = new List<DBClause>();
             _compileExpression = "[{Name}]";
             _alias = alias;
-            _fieldsSchema = manager.GetTableSchema(this);
+            
         }
 
-        public DBTable(string name, List<DBFieldSchema> fieldsSchema, string alias = "")
+        public DBTable(string name, string alias = "")
         {
             _name = name;
             _fields = new List<DBClause>();
             _compileExpression = "[{Name}]";
             _alias = alias;
-            _fieldsSchema = fieldsSchema;
+  
         }
 
         public DBTableField DeclareField(string name)
         {
-            var schema = _fieldsSchema.Find(x => x.ColumnName.ToLower() == name.ToLower());
             var result = new DBTableField(this, name, schema);
             _fields.Add(result);
             return result;

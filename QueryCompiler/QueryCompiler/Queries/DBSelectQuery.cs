@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using QueryCompiler.Interfaces;
@@ -13,6 +15,8 @@ namespace QueryCompiler.Queries
         private string _intoTable;
         private uint _topCount;
 
+        private DbCommand _dbCommand;
+
         private List<DBClause> _fields;
 
         private DBFromClause _from;
@@ -23,18 +27,19 @@ namespace QueryCompiler.Queries
 
         private string _compiled;
 
-        public DBSelectQuery()
+        internal DBSelectQuery()
         {
             _fields = new List<DBClause>();
-            // _compileExpression = $"{{SelectExpression}}\n{{FromExpression}}\n{{WhereExpression}}\n{{GroupByExpression}}\n{{HavingExpression}}\n{{OrderByExpression}}";
             _from = new DBFromClause();
             _where = new DBWhereClause();
             _orderby = new DBOrderByClause();
             _groupby = new DBGroupByClause();
+            _dbCommand = new SqlCommand();
         }
 
         public void Select(DBClause clause)
         {
+            ProcessNewClause(clause);
             _fields.Add(clause);
         }
 
@@ -80,29 +85,45 @@ namespace QueryCompiler.Queries
 
         public DBOrderByClause OrderBy(DBClause clause)
         {
+            ProcessNewClause(clause);
             _orderby.ThenOrderBy(clause);
             return _orderby;
         }
 
         public DBOrderByClause OrderByDesc(DBClause clause)
         {
+            ProcessNewClause(clause);
             _orderby.ThenOrderByDesc(clause);
             return _orderby;
         }
 
         public DBGroupByClause GroupBy(DBClause clause)
         {
+            ProcessNewClause(clause);
             _groupby.ThenGroupBy(clause);
             return _groupby;
         }
 
+        private void ProcessNewClause(DBClause clause)
+        {
+            var param = clause as DBParameter;
+            if (param != null)
+            {
+                _dbCommand.Parameters.Add(param.SqlParameter);
+            }
+        }
+
         public DBLogicalOperation Where(DBClause clause1, CompareType type, DBClause clause2)
         {
+            ProcessNewClause(clause1);
+            ProcessNewClause(clause2);
             return _where.Where(clause1, type, clause2);
         }
 
         public DBLogicalOperation WhereNot(DBClause clause1, CompareType type, DBClause clause2)
         {
+            ProcessNewClause(clause1);
+            ProcessNewClause(clause2);
             return _where.WhereNot(clause1, type, clause2);
         }
 
@@ -120,16 +141,10 @@ namespace QueryCompiler.Queries
             }
         }
 
-        private IDBTableDataSource FindTableDataSourceByAliase(string alias)
-        {
-            return _from.Tables.Find(x => x.Alias == alias);
-        }
-
         public DBJoinClause Join(IDBTableDataSource table, JoinType joinType = JoinType.Inner)
         {
             return _from.Join(table, joinType);
         }
-
 
         public List<DBClause> Fields
         {
@@ -143,11 +158,16 @@ namespace QueryCompiler.Queries
 
         public object Clone()
         {
-            var clone = this.MemberwiseClone() as DBSelectQuery;
-            clone._where = _where.Clone() as DBWhereClause;
-            clone._fields = _fields.ToList();
-            clone._from = _from.Clone() as DBFromClause;
-            return clone;
+            if (this.MemberwiseClone() is DBSelectQuery clone)
+            {
+                clone._where = _where.Clone() as DBWhereClause;
+                clone._fields = _fields.ToList();
+                clone._from = _from.Clone() as DBFromClause;
+                return clone;
+            }
+
+            throw new Exception("Can't clone this object");
+
         }
 
         public string Compile(bool recompile = false)
@@ -204,12 +224,16 @@ namespace QueryCompiler.Queries
             set { _compileExpression = value; }
         }
 
+        public DbCommand GetDbCommand()
+        {
+            _dbCommand.CommandText = Compile();
+            return _dbCommand;
+        }
+
         public List<IDBTableDataSource> Tables
         {
             get { return _from.Tables; }
         }
-
-
 
         public DBClause GetField(string name)
         {

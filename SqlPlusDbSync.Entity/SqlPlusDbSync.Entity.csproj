@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="EntityObject\DTOObject.cs" />
+    <Compile Include="EntityObject\DTO.cs" />
     <Compile Include="EntityObject\Mapper.cs" />
     <Compile Include="EntityObject\SObjectEntityManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

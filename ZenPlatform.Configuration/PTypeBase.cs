@@ -1,0 +1,14 @@
+namespace SqlPlusDbSync.Configuration
+{
+    public abstract class PTypeBase
+    {
+        protected PTypeBase()
+        {
+
+        }
+
+        public virtual string Name { get; }
+
+        public virtual string Description { get; set; }
+    }
+}

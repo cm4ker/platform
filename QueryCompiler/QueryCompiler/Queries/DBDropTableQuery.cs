@@ -9,7 +9,7 @@ namespace QueryCompiler.Queries
     {
         private string _tableName;
 
-        public DBDropTableQuery()
+        internal DBDropTableQuery()
         {
 
         }

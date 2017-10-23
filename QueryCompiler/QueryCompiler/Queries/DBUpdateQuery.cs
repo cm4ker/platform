@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using QueryCompiler.Interfaces;
@@ -22,7 +23,7 @@ namespace QueryCompiler.Queries
 
 
 
-        public DBUpdateQuery()
+        internal DBUpdateQuery()
         {
             _from = new DBFromClause();
             _where = new DBWhereClause();
@@ -76,7 +77,9 @@ namespace QueryCompiler.Queries
             {
                 throw new Exception("Trying to update fields in differend tables");
             }
-            _updateTable = field.Owner as DBTable;
+            if (_updateTable is null)
+                _updateTable = field.Owner as DBTable;
+
             _setUpdate.AddField(field);
         }
 
@@ -124,7 +127,7 @@ namespace QueryCompiler.Queries
 
     public interface IQueryable : IDBToken
     {
-
+        DbCommand GetDbCommand();
     }
 
     public interface IParametrized

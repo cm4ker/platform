@@ -20,7 +20,7 @@ namespace QueryCompiler.Queries
         private string _whereExpression;
         private DBTable _deleteTable;
 
-        public DBDeleteQuery()
+        internal DBDeleteQuery()
         {
             _from = new DBFromClause();
             _where = new DBWhereClause();
