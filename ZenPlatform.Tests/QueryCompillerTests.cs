@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Serialization;
 using ZenPlatform.QueryCompiler;
@@ -42,6 +43,7 @@ FROM
             q.Table("Test")
                 .Field("SimpleField", typeof(int), 10, 1, 12, false, false, false, false);
 
+            Debug.WriteLine(q.Compile());
             Console.WriteLine(q.Compile());
         }
     }
