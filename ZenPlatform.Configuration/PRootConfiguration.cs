@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SqlPlusDbSync.Configuration;
+using ZenPlatform.Configuration.Data;
 
 namespace ZenPlatform.Configuration
 {

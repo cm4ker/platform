@@ -44,10 +44,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CodeGenerator\CodeGeneratorHelper.csproj">
-      <Project>{a178231d-8a29-4882-8608-7824fd05b06b}</Project>
-      <Name>CodeGeneratorHelper</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SqlPlusDbSync.Configuration\SqlPlusDbSync.Configuration.csproj">
       <Project>{bdc9f548-0c67-4301-87db-b777c79a5ae5}</Project>
       <Name>SqlPlusDbSync.Configuration</Name>

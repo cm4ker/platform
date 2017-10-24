@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Configuration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Data", "SqlPlusDbSync.Data\SqlPlusDbSync.Data.csproj", "{A8A0244F-C6A5-455E-B48B-08763490FD3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGeneratorHelper", "CodeGenerator\CodeGeneratorHelper.csproj", "{A178231D-8A29-4882-8608-7824FD05B06B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Exchanges", "SqlPlusDbSync.Exchanges\SqlPlusDbSync.Exchanges.csproj", "{BB41CF37-D4E7-4577-8C66-C15215B0C20C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Entity", "SqlPlusDbSync.Entity\SqlPlusDbSync.Entity.csproj", "{0068D838-B0FA-40B9-BDD5-52D3146BD896}"
@@ -19,15 +17,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Migrator", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.EntityGenerator", "SqlPlusDbSync.EntityGenerator\SqlPlusDbSync.EntityGenerator.csproj", "{3E4E7E85-7AE7-49C8-97D1-2B4337E1662E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.QueryCompiler", "ZenPlatform.QueryCompiler\ZenPlatform.QueryCompiler.csproj", "{A60AF134-9E5A-4802-A20A-D770F9EEADA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryCompiler", "ZenPlatform.QueryCompiler\ZenPlatform.QueryCompiler.csproj", "{A60AF134-9E5A-4802-A20A-D770F9EEADA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Tests", "ZenPlatform.Tests\ZenPlatform.Tests.csproj", "{D52C49C5-0F1F-467F-A730-BAAF1D0E6D22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Tests", "ZenPlatform.Tests\ZenPlatform.Tests.csproj", "{D52C49C5-0F1F-467F-A730-BAAF1D0E6D22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Configuration", "ZenPlatform.Configuration\ZenPlatform.Configuration.csproj", "{83A2D27E-C01A-4338-997A-8F407573DA0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration", "ZenPlatform.Configuration\ZenPlatform.Configuration.csproj", "{83A2D27E-C01A-4338-997A-8F407573DA0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Data", "ZenPlatform.Data\ZenPlatform.Data.csproj", "{5811219B-6CB7-4AAB-92BA-BD941FC43883}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Data", "ZenPlatform.Data\ZenPlatform.Data.csproj", "{5811219B-6CB7-4AAB-92BA-BD941FC43883}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Migration", "ZenPlatform.Migration\ZenPlatform.Migration.csproj", "{5F9D872F-2B23-440F-AC83-99D20293349D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Migration", "ZenPlatform.Migration\ZenPlatform.Migration.csproj", "{5F9D872F-2B23-440F-AC83-99D20293349D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.CSharpCodeBuilder", "ZenPlatform.CSharpCodeBuilder\ZenPlatform.CSharpCodeBuilder.csproj", "{4A7467AC-ED2E-4A96-8537-1CE038038E9B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.PlatformCodeGenerator", "ZenPlatform.PlatformCodeGenerator\ZenPlatform.PlatformCodeGenerator.csproj", "{6018B169-B349-4405-8A6E-9CDC77DD104F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ConfigurationDataComponent", "ZenPlatform.ConfigurationDataComponent\ZenPlatform.ConfigurationDataComponent.csproj", "{595EFE31-5BF9-4C4D-B93E-55AA3831E216}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,14 +65,6 @@ Global
 		{A8A0244F-C6A5-455E-B48B-08763490FD3A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A8A0244F-C6A5-455E-B48B-08763490FD3A}.Release|x86.ActiveCfg = Release|Any CPU
 		{A8A0244F-C6A5-455E-B48B-08763490FD3A}.Release|x86.Build.0 = Release|Any CPU
-		{A178231D-8A29-4882-8608-7824FD05B06B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A178231D-8A29-4882-8608-7824FD05B06B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A178231D-8A29-4882-8608-7824FD05B06B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A178231D-8A29-4882-8608-7824FD05B06B}.Debug|x86.Build.0 = Debug|Any CPU
-		{A178231D-8A29-4882-8608-7824FD05B06B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A178231D-8A29-4882-8608-7824FD05B06B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A178231D-8A29-4882-8608-7824FD05B06B}.Release|x86.ActiveCfg = Release|Any CPU
-		{A178231D-8A29-4882-8608-7824FD05B06B}.Release|x86.Build.0 = Release|Any CPU
 		{BB41CF37-D4E7-4577-8C66-C15215B0C20C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BB41CF37-D4E7-4577-8C66-C15215B0C20C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB41CF37-D4E7-4577-8C66-C15215B0C20C}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -141,6 +137,30 @@ Global
 		{5F9D872F-2B23-440F-AC83-99D20293349D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5F9D872F-2B23-440F-AC83-99D20293349D}.Release|x86.ActiveCfg = Release|Any CPU
 		{5F9D872F-2B23-440F-AC83-99D20293349D}.Release|x86.Build.0 = Release|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9B}.Debug|x86.Build.0 = Debug|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9B}.Release|x86.ActiveCfg = Release|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9B}.Release|x86.Build.0 = Release|Any CPU
+		{6018B169-B349-4405-8A6E-9CDC77DD104F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6018B169-B349-4405-8A6E-9CDC77DD104F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6018B169-B349-4405-8A6E-9CDC77DD104F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6018B169-B349-4405-8A6E-9CDC77DD104F}.Debug|x86.Build.0 = Debug|Any CPU
+		{6018B169-B349-4405-8A6E-9CDC77DD104F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6018B169-B349-4405-8A6E-9CDC77DD104F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6018B169-B349-4405-8A6E-9CDC77DD104F}.Release|x86.ActiveCfg = Release|Any CPU
+		{6018B169-B349-4405-8A6E-9CDC77DD104F}.Release|x86.Build.0 = Release|Any CPU
+		{595EFE31-5BF9-4C4D-B93E-55AA3831E216}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{595EFE31-5BF9-4C4D-B93E-55AA3831E216}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{595EFE31-5BF9-4C4D-B93E-55AA3831E216}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{595EFE31-5BF9-4C4D-B93E-55AA3831E216}.Debug|x86.Build.0 = Debug|Any CPU
+		{595EFE31-5BF9-4C4D-B93E-55AA3831E216}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{595EFE31-5BF9-4C4D-B93E-55AA3831E216}.Release|Any CPU.Build.0 = Release|Any CPU
+		{595EFE31-5BF9-4C4D-B93E-55AA3831E216}.Release|x86.ActiveCfg = Release|Any CPU
+		{595EFE31-5BF9-4C4D-B93E-55AA3831E216}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
