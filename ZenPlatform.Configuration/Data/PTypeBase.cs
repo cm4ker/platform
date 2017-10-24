@@ -1,4 +1,4 @@
-namespace SqlPlusDbSync.Configuration
+namespace ZenPlatform.Configuration.Data
 {
     public abstract class PTypeBase
     {

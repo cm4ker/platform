@@ -1,13 +1,13 @@
 using System;
 using System.Data;
 
-namespace SqlPlusDbSync.Configuration
+namespace ZenPlatform.Configuration.Data
 {
-    public class PGuid : PPrimetiveType
+    public class PString : PPrimetiveType
     {
         public override string Name
         {
-            get { return "Guid"; }
+            get { return "String"; }
         }
 
         public override bool IsNullable { get; set; }
@@ -18,12 +18,12 @@ namespace SqlPlusDbSync.Configuration
 
         public override SqlDbType DBType
         {
-            get { return SqlDbType.UniqueIdentifier; }
+            get { return SqlDbType.NVarChar; }
         }
 
         public override Type CLRType
         {
-            get { return typeof(Guid); }
+            get { return typeof(string); }
         }
 
     }

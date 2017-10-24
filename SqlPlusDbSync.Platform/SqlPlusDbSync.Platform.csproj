@@ -115,10 +115,6 @@
     <Compile Include="UntypedToTypedValueConverter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CodeGenerator\CodeGeneratorHelper.csproj">
-      <Project>{A178231D-8A29-4882-8608-7824FD05B06B}</Project>
-      <Name>CodeGeneratorHelper</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SqlPlusDbSync.Configuration\SqlPlusDbSync.Configuration.csproj">
       <Project>{BDC9F548-0C67-4301-87DB-B777C79A5AE5}</Project>
       <Name>SqlPlusDbSync.Configuration</Name>

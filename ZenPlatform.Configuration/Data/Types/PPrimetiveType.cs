@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 
-namespace SqlPlusDbSync.Configuration
+namespace ZenPlatform.Configuration.Data
 {
     public abstract class PPrimetiveType : PTypeBase
     {

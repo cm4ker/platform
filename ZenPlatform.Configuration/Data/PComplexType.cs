@@ -1,4 +1,4 @@
-﻿namespace SqlPlusDbSync.Configuration
+﻿namespace ZenPlatform.Configuration.Data
 {
     /// <summary>
     /// Комплексный тип данных

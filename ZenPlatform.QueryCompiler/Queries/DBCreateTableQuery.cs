@@ -24,10 +24,10 @@ namespace ZenPlatform.QueryCompiler.Queries
             return this;
         }
 
-        public DBCreateTableQuery Field(string fieldName, Type type, int size, short numericPrecision, short numericScale, bool isIdentity, bool isUnique, bool isKey, bool isNullable)
+        public DBCreateTableQuery Field(string fieldName, DBType type, int size, short numericPrecision, short numericScale, bool isIdentity, bool isUnique, bool isKey, bool isNullable)
         {
             //TODO: Реализовать правильное добавление полей и компиляцию запроса
-            _fields.Add(new DBFieldSchema(DBHelper.GetDBType(type), fieldName, size, numericPrecision, numericScale, isIdentity, isKey, isUnique));
+            _fields.Add(new DBFieldSchema(type, fieldName, size, numericPrecision, numericScale, isIdentity, isKey, isUnique));
             return this;
         }
 

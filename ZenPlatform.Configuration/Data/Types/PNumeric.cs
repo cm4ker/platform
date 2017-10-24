@@ -1,25 +1,25 @@
 using System;
 using System.Data;
 
-namespace SqlPlusDbSync.Configuration
+namespace ZenPlatform.Configuration.Data
 {
-    public class PDateTime : PPrimetiveType
+    public class PNumeric : PPrimetiveType
     {
         public override string Name
         {
-            get { return "DateTime"; }
+            get { return "Numeric"; }
         }
 
         public override bool IsNullable { get; set; }
         public override int ColumnSize { get; set; }
         public override SqlDbType DBType
         {
-            get { return SqlDbType.DateTime; }
+            get { return SqlDbType.Decimal; }
         }
 
         public override Type CLRType
         {
-            get { return (IsNullable) ? typeof(DateTime?) : typeof(DateTime); }
+            get { return (IsNullable) ? typeof(decimal?) : typeof(decimal); }
         }
         public override int Precision { get; set; }
         public override int Scale { get; set; }

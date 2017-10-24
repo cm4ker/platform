@@ -4,7 +4,6 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Data\" />
     <Folder Include="Class\" />
     <Folder Include="Interface\" />
     <Folder Include="Role\" />

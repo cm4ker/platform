@@ -1,28 +1,29 @@
 using System;
 using System.Data;
 
-namespace SqlPlusDbSync.Configuration
+namespace ZenPlatform.Configuration.Data
 {
-    public class PBoolean : PPrimetiveType
+    public class PDateTime : PPrimetiveType
     {
         public override string Name
         {
-            get { return "Boolean"; }
+            get { return "DateTime"; }
         }
 
         public override bool IsNullable { get; set; }
         public override int ColumnSize { get; set; }
         public override SqlDbType DBType
         {
-            get { return SqlDbType.Bit; }
+            get { return SqlDbType.DateTime; }
         }
 
         public override Type CLRType
         {
-            get { return (IsNullable) ? typeof(bool?) : typeof(bool); }
+            get { return (IsNullable) ? typeof(DateTime?) : typeof(DateTime); }
         }
         public override int Precision { get; set; }
         public override int Scale { get; set; }
+
 
     }
 }

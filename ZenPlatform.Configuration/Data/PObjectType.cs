@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SqlPlusDbSync.Configuration
+namespace ZenPlatform.Configuration.Data
 {
     public abstract class PObjectType : PTypeBase
     {
