@@ -20,13 +20,18 @@ namespace ZenPlatform.DataComponent
     {
         protected EntityManagerBase(Entity2SqlBase sqlProvider) : base(sqlProvider)
         {
-
+    
         }
-
+        
+        //TODO: Сделать async API task 86
+        
         public abstract T Create();
         public abstract void Save(T entity);
         public abstract T Load();
         public abstract void Delete(T entity);
         public abstract IEnumerable<T> GetList();
+        
+       
+        
     }
 }

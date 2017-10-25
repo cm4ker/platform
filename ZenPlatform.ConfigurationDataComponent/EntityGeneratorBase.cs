@@ -14,6 +14,7 @@ namespace ZenPlatform.ConfigurationDataComponent
 
         public virtual void GenerateEntityClass(DocumentSyntax document, PObjectType conf)
         {
+     //
             throw new NotImplementedException();
         }
     }
