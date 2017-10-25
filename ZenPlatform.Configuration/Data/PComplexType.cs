@@ -13,5 +13,7 @@
             _objectType = objectType;
             Propertyes.AddRange(_objectType.Propertyes);
         }
+
+        public PObjectType Owner => _objectType;
     }
 }
