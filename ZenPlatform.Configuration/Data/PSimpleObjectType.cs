@@ -9,5 +9,7 @@ namespace ZenPlatform.Configuration.Data
         {
 
         }
+
+        public override bool IsAbstractType => false;
     }
 }

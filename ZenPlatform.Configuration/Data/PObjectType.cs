@@ -17,11 +17,13 @@ namespace ZenPlatform.Configuration.Data
             Id = Guid.NewGuid();
         }
 
+        //TODO: —делать ссылку на используемый компонент дл€ данного объекта. —сылка будет присваиватьс€ из менеджера компонентов
+
         /// <summary>
         /// Ёто абстрактный тип.
         /// ≈сли да, в таком случае от этого класса можно только наследоватьс€. Ёкзепл€р этого класса создавать нельз€
         /// </summary>
-        public bool IsAbstractType { get; set; }
+        public virtual bool IsAbstractType { get; set; }
 
         public Guid Id { get; set; }
 
