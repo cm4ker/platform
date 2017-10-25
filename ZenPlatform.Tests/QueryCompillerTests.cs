@@ -41,7 +41,7 @@ FROM
         {
             var q = _factory.GetCreateTable();
             q.Table("Test")
-                .Field("SimpleField", typeof(int), 10, 1, 12, false, false, false, false);
+             .Field("SimpleField", QueryCompiler.Schema.DBType.Int, 10, 1, 12, false, false, false, false);
 
             Debug.WriteLine(q.Compile());
             Console.WriteLine(q.Compile());
