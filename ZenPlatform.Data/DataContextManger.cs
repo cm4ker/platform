@@ -21,12 +21,11 @@ namespace ZenPlatform.Data
             }
             else
             {
-                //TODO: Необхоидмо добавить проект конфигурации
+                //TODO: Необхоидмо добавить проект конфигурации нео
 
                 throw new NotImplementedException();
                 return new DataContext("");
             }
-
         }
     }
 }
