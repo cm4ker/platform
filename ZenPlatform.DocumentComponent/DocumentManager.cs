@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ZenPlatform.ConfigurationDataComponent;
 using ZenPlatform.Data;
 using ZenPlatform.DataComponent;
+using ZenPlatform.System;
 
 namespace ZenPlatform.DocumentComponent
 {
@@ -15,7 +16,7 @@ namespace ZenPlatform.DocumentComponent
     {
         private readonly Entity2SqlBase _sqlProvider;
 
-        public DocumentManager(Entity2SqlBase sqlProvider) : base(sqlProvider)
+        public DocumentManager(Entity2SqlBase sqlProvider, Session session) : base(sqlProvider, session)
         {
             _sqlProvider = sqlProvider;
         }
@@ -27,7 +28,17 @@ namespace ZenPlatform.DocumentComponent
 
         public override void Save(DocumentEntity entity)
         {
-            throw new NotImplementedException();
+            var context = Session.DataContextManger.GetContext();
+            try
+            {
+                context.BeginTransaction();
+                //TODO: Необходимо написать механизм определения инструкции. Insert\Update. Для этого необходимо сделать следующие задачи: Механизм кэширования(чтобы смотреть, елси объект в кэше не нужно дёргать его из БД)
+                context.CommitTransaction();
+            }
+            catch (Exception ex)
+            {
+                context.RollbackTransaction();
+            }
         }
 
         public override DocumentEntity Load()
