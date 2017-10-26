@@ -27,7 +27,7 @@ namespace ZenPlatform.DataComponent
         }
 
         //TODO: Сделать async API task 86
-
+   
         public abstract T Create();
         public abstract void Save(T entity);
         public abstract T Load();

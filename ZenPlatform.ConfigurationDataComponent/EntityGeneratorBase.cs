@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.CSharpCodeBuilder.Syntax;
@@ -12,7 +14,28 @@ namespace ZenPlatform.DataComponent
     {
         protected EntityGeneratorBase()
         {
+        }
 
+
+        public AccessorListSyntax GetStandardAccessorListSyntax()
+        {
+            return SyntaxFactory.AccessorList(
+                SyntaxFactory.List(
+                    new[]
+                    {
+                        SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
+                        SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                    }));
+        }
+
+        public PropertyDeclarationSyntax GetStandartProperty(string name, string type)
+        {
+            return
+                SyntaxFactory.PropertyDeclaration(
+                    SyntaxFactory.ParseTypeName(type),
+                    name).WithAccessorList(GetStandardAccessorListSyntax());
         }
 
         public virtual void GenerateEntityClass(DocumentSyntax document, PObjectType conf)
@@ -37,11 +60,11 @@ namespace ZenPlatform.DataComponent
                     var propType = prop.Types.First();
 
                     if (propType is PObjectType)
-                        members.Add(generator.PropertyDeclaration(prop.Name, generator.IdentifierName(propType.Name))); // cs.AddProperty(new PropertySyntax(prop.Name, new TypeSyntax(propType.Name)));
+                        members.Add(GetStandartProperty(prop.Name, propType.Name));
+
 
                     if (propType is PPrimetiveType primitiveType)
-                        //members.Add(generator);
-                        members.Add(generator.PropertyDeclaration(prop.Name, generator.IdentifierName(primitiveType.CLRType.CSharpName()), Accessibility.NotApplicable, );//cs.AddProperty(new PropertySyntax(prop.Name, new TypeSyntax(primitiveType.CLRType)));
+                        members.Add(GetStandartProperty(prop.Name, primitiveType.CLRType.CSharpName()));
                 }
                 else
                 {
@@ -50,35 +73,32 @@ namespace ZenPlatform.DataComponent
                     {
                         if (type is PObjectType && !alreadyHaveObjectTypeField)
                         {
-                            members.Add(generator.PropertyDeclaration($"{prop.Name}_Ref", generator.IdentifierName("Guid")));//cs.AddProperty(new PropertySyntax($"{prop.Name}_Ref", new TypeSyntax(typeof(Guid))));
-                            members.Add(generator.PropertyDeclaration($"{prop.Name}_Type", generator.IdentifierName("int")));// cs.AddProperty(new PropertySyntax($"{prop.Name}_Type", new TypeSyntax(typeof(int))));
+                            members.Add(GetStandartProperty($"{prop.Name}_Ref", "Guid"));
+                            members.Add(GetStandartProperty($"{prop.Name}_Type", "int"));
                             alreadyHaveObjectTypeField = true;
                         }
 
                         if (type is PPrimetiveType primitiveType)
-                            members.Add(generator.PropertyDeclaration($"{prop.Name}_{primitiveType.Name}", generator.IdentifierName(primitiveType.CLRType.CSharpName())));// cs.AddProperty(new PropertySyntax($"{prop.Name}_{primitiveType.Name}", new TypeSyntax(primitiveType.CLRType)));
+                            members.Add(GetStandartProperty($"{prop.Name}_{primitiveType.Name}",
+                                primitiveType.CLRType.CSharpName()));
                     }
                 }
             }
 
 
-            //// Массив объектов SyntaxNode как членов класса
-            //var members = new SyntaxNode[] { lastNameField,
-            //    firstNameField, lastNameProperty, firstNameProperty,
-            //    cloneMethodWithInterfaceType, constructor };
-
             // Генерируем класс
             var classDefinition = generator.ClassDeclaration(
                 "Person", typeParameters: null,
                 accessibility: Accessibility.Public,
-                modifiers: DeclarationModifiers.Abstract,
+                modifiers: DeclarationModifiers.None,
                 baseType: null,
                 interfaceTypes: null,
                 members: members);
 
             // Объявляем пространство имен
-            var namespaceDeclaration =
-                generator.NamespaceDeclaration("MyTypes", classDefinition);
+            NamespaceDeclarationSyntax namespaceDeclaration =
+                generator.NamespaceDeclaration("MyTypes", classDefinition) as NamespaceDeclarationSyntax;
+            namespaceDeclaration.AddMembers(classDefinition as MemberDeclarationSyntax);
 
             // Получаем CompilationUnit (файл кода)
             // для сгенерированного кода
