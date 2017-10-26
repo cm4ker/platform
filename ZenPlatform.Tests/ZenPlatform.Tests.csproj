@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryCompiler.csproj" />
   </ItemGroup>
 

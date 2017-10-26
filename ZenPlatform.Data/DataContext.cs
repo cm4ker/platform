@@ -57,7 +57,7 @@ namespace ZenPlatform.Data
 
             return cmd;
         }
-
+        
         public void Dispose()
         {
             _connection.Close();

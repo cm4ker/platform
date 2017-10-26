@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Serialization;
 using ZenPlatform.QueryCompiler;

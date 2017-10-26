@@ -1,4 +1,5 @@
-﻿using ZenPlatform.ConfigurationDataComponent;
+﻿using System;
+using ZenPlatform.ConfigurationDataComponent;
 using ZenPlatform.QueryCompiler.Queries;
 
 namespace ZenPlatform.DocumentComponent
@@ -11,22 +12,22 @@ namespace ZenPlatform.DocumentComponent
     {
         public override DBSelectQuery GetSelect()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override DBUpdateQuery GetUpdate()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override DBDeleteQuery GetDelete()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override DBInsertQuery GetInsert()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }
