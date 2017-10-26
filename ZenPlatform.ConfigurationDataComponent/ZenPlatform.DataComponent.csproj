@@ -8,6 +8,7 @@
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.CSharpCodeBuilder\ZenPlatform.CSharpCodeBuilder.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryCompiler.csproj" />
+    <ProjectReference Include="..\ZenPlatform.System\ZenPlatform.System.csproj" />
   </ItemGroup>
 
 </Project>

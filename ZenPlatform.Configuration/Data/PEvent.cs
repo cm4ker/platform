@@ -9,7 +9,7 @@ namespace ZenPlatform.Configuration.Data
 
     public class PEvent
     {
-        public PEvent(PEventType eventType, string Name)
+        public PEvent(PEventType eventType, string name)
         {
 
         }

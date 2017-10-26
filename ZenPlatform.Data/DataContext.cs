@@ -5,6 +5,8 @@ using System.Data.Common;
 
 namespace ZenPlatform.Data
 {
+    
+
     public class DataContext : IDisposable
     {
         private readonly SqlConnection _connection;

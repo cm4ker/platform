@@ -27,13 +27,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Data", "ZenPlat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Migration", "ZenPlatform.Migration\ZenPlatform.Migration.csproj", "{5F9D872F-2B23-440F-AC83-99D20293349D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.CSharpCodeBuilder", "ZenPlatform.CSharpCodeBuilder\ZenPlatform.CSharpCodeBuilder.csproj", "{4A7467AC-ED2E-4A96-8537-1CE038038E9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.CSharpCodeBuilder", "ZenPlatform.CSharpCodeBuilder\ZenPlatform.CSharpCodeBuilder.csproj", "{4A7467AC-ED2E-4A96-8537-1CE038038E9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.PlatformCodeGenerator", "ZenPlatform.PlatformCodeGenerator\ZenPlatform.PlatformCodeGenerator.csproj", "{6018B169-B349-4405-8A6E-9CDC77DD104F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.PlatformCodeGenerator", "ZenPlatform.PlatformCodeGenerator\ZenPlatform.PlatformCodeGenerator.csproj", "{6018B169-B349-4405-8A6E-9CDC77DD104F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.DataComponent", "ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj", "{595EFE31-5BF9-4C4D-B93E-55AA3831E216}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.DataComponent", "ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj", "{595EFE31-5BF9-4C4D-B93E-55AA3831E216}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.DocumentComponent", "ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj", "{1416F06A-2DD0-4573-8BEB-75547AADAF10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.DocumentComponent", "ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj", "{1416F06A-2DD0-4573-8BEB-75547AADAF10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Core", "ZenPlatform.Core\ZenPlatform.Core.csproj", "{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.System", "ZenPlatform.System\ZenPlatform.System.csproj", "{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -171,6 +175,22 @@ Global
 		{1416F06A-2DD0-4573-8BEB-75547AADAF10}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1416F06A-2DD0-4573-8BEB-75547AADAF10}.Release|x86.ActiveCfg = Release|Any CPU
 		{1416F06A-2DD0-4573-8BEB-75547AADAF10}.Release|x86.Build.0 = Release|Any CPU
+		{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}.Debug|x86.Build.0 = Debug|Any CPU
+		{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}.Release|x86.ActiveCfg = Release|Any CPU
+		{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}.Release|x86.Build.0 = Release|Any CPU
+		{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}.Debug|x86.Build.0 = Debug|Any CPU
+		{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}.Release|x86.ActiveCfg = Release|Any CPU
+		{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
