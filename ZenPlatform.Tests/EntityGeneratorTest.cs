@@ -1,10 +1,13 @@
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DocumentComponent;
+using ZenPlatform.System;
+using ZenPlatform.Tests.Annotations;
 
 namespace ZenPlatform.Tests
 {
@@ -28,7 +31,11 @@ namespace ZenPlatform.Tests
             o.Propertyes.Add(prop1);
             o.Propertyes.Add(prop2);
 
-            deg.GenerateEntityClass(null, o);
+            var nodeDto = deg.GenerateDtoClass(o);
+            var nodeEntity = deg.GenerateEntityClass(o);
+
+            Console.WriteLine(nodeDto.ToString());
+            Console.WriteLine(nodeEntity.ToString());
         }
     }
 
@@ -62,26 +69,42 @@ namespace ZenPlatform.Tests
         public string SomePropertyInDto2
         {
             get { return _someDto2.SomePropInDto2; }
-            set { _someDto2.SomePropInDto2 = value; }
+            set
+            {
+                _someDto2.SomePropInDto2 = value;
+                OnPropertyChanged();
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     public class SomeEntity1 : INotifyPropertyChanged
     {
         private SomeDto1 _dto;
         private SomeEntity2 _someEntity2;
+        private Session _session;
 
-        public SomeEntity1(SomeDto1 dto)
+        public SomeEntity1(SomeDto1 dto, Session session)
         {
             _dto = dto;
+            _session = session;
+
         }
 
         public string Prop1
         {
             get { return _dto.Prop1; }
-            set { _dto.Prop1 = value; }
+            set
+            {
+                _dto.Prop1 = value;
+                OnPropertyChanged();
+            }
         }
 
         internal object Key
@@ -93,18 +116,28 @@ namespace ZenPlatform.Tests
         {
             get
             {
-                _someEntity2 =
-                    _someEntity2 ??
-                    throw new Exception("NEED REALIZATION"); // Data.SomeManager.Load(_dto.SomeEntity_Ref);
+                throw new Exception("NEED REALIZATION"); /* _session.SomeManager.Load(_dto.SomeEntity_Ref);
+                                                         —войство SomeManager объ€вл€етс€ как
+                                                         public static SomeEntityManager SomeManager(this Session session)
+                                                         { 
+                                                            return (SomeEntityManager)session.GetManager("SomeEntityMamanger");
+                                                         }*/
                 return _someEntity2;
             }
             set
             {
-                _dto.SomeEntity_Ref = (Guid) value.Key;
+                _dto.SomeEntity_Ref = (Guid)value.Key;
                 _someEntity2 = value;
+                OnPropertyChanged();
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
