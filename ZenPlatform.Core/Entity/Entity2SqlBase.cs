@@ -1,6 +1,6 @@
 ﻿using ZenPlatform.QueryCompiler.Queries;
 
-namespace ZenPlatform.ConfigurationDataComponent
+namespace ZenPlatform.Core.Entity
 {
     public abstract class Entity2SqlBase
     {

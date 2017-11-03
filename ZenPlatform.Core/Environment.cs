@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Core.Entity;
 
-namespace ZenPlatform.System
+namespace ZenPlatform.Core
 {
     public class Environment
     {
@@ -13,6 +14,7 @@ namespace ZenPlatform.System
             _locking = new object();
             Sessions = new List<Session>();
             Globals = new Dictionary<string, object>();
+            Managers = new List<EntityManagerBase>();
         }
 
         public Dictionary<string, object> Globals { get; set; }
@@ -47,6 +49,18 @@ namespace ZenPlatform.System
                 var session = Sessions.FirstOrDefault(x => x.Id == id) ?? throw new Exception("Session not found");
                 Sessions.Remove(session);
             }
+        }
+
+        public List<EntityManagerBase> Managers { get; }
+
+        public void RegisterManager(EntityManagerBase manager)
+        {
+            Managers.Add(manager);
+        }
+
+        public void UnregisterManager(EntityManagerBase manager)
+        {
+            Managers.Remove(manager);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace ZenPlatform.Configuration.Data
         public PProperty(PObjectType owner)
         {
             _owner = owner;
-
+            // _owner.Propertyes.Add(this);
             Types = new List<PTypeBase>();
         }
 

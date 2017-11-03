@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using QueryCompiler.Schema;
-using SqlPlusDbSync.Shared;
+﻿using QueryCompiler.Schema;
+
 
 namespace SqlPlusDbSync.Data.Database
 {
