@@ -10,10 +10,16 @@ namespace ZenPlatform.Configuration
     {
         public PRootConfiguration()
         {
-            DataSection = new List<PObjectType>();
+            DataSectionComponents = new List<PComponent>();
         }
 
         public string ConfigurationName { get; set; }
-        public IEnumerable<PObjectType> DataSection { get; set; }
+
+        public IList<PComponent> DataSectionComponents { get; set; }
+
+        public void RegisterDataComponent(PComponent component)
+        {
+            DataSectionComponents.Add(component);
+        }
     }
 }

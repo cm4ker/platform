@@ -4,9 +4,10 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZenPlatform.Configuration.Data;
+using ZenPlatform.Core;
+using ZenPlatform.Core.Entity;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DocumentComponent;
-using ZenPlatform.System;
 using ZenPlatform.Tests.Annotations;
 
 namespace ZenPlatform.Tests
@@ -18,21 +19,35 @@ namespace ZenPlatform.Tests
         public void DcoumentCodeGenerate()
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
-            PSimpleObjectType o = new PSimpleObjectType("Test");
+            PSimpleObjectType invoice = new PSimpleObjectType("Invoice");
 
-            var prop1 = new PProperty(o);
+            PSimpleObjectType contractor = new PSimpleObjectType("Contractor");
+
+            var contractorNameProperty = new PProperty(contractor);
+            contractorNameProperty.Types.Add(new PString());
+            contractorNameProperty.Name = "Name";
+
+            contractor.Propertyes.Add(contractorNameProperty);
+
+            var prop1 = new PProperty(invoice);
             prop1.Types.Add(new PDateTime());
             prop1.Name = "StartDate";
 
-            var prop2 = new PProperty(o);
+            var prop2 = new PProperty(invoice);
             prop2.Types.Add(new PNumeric());
             prop2.Name = "SomeNumber";
 
-            o.Propertyes.Add(prop1);
-            o.Propertyes.Add(prop2);
+            var contractorProperty = new PProperty(invoice);
+            contractorProperty.Types.Add(contractor);
+            contractorProperty.Name = "Contractor";
 
-            var nodeDto = deg.GenerateDtoClass(o);
-            var nodeEntity = deg.GenerateEntityClass(o);
+
+            invoice.Propertyes.Add(contractorProperty);
+            invoice.Propertyes.Add(prop1);
+            invoice.Propertyes.Add(prop2);
+
+            var nodeDto = deg.GenerateDtoClass(invoice);
+            var nodeEntity = deg.GenerateEntityClass(invoice);
 
             Console.WriteLine(nodeDto.ToString());
             Console.WriteLine(nodeEntity.ToString());

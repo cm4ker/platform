@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using ZenPlatform.ConfigurationDataComponent;
+using ZenPlatform.Core;
+using ZenPlatform.Core.Entity;
 using ZenPlatform.Data;
 using ZenPlatform.DataComponent;
-using ZenPlatform.System;
 
 namespace ZenPlatform.DocumentComponent
 {

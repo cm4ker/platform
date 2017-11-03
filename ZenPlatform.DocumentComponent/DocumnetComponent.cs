@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.ConfigurationDataComponent;
+using ZenPlatform.Core.Entity;
 using ZenPlatform.CSharpCodeBuilder.Syntax;
 using ZenPlatform.DataComponent;
+
 
 namespace ZenPlatform.DocumentComponent
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using ZenPlatform.ConfigurationDataComponent;
+using ZenPlatform.Core.Entity;
 using ZenPlatform.QueryCompiler.Queries;
 
 namespace ZenPlatform.DocumentComponent

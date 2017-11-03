@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using ZenPlatform.ConfigurationDataComponent;
-using ZenPlatform.System;
 
-namespace ZenPlatform.DataComponent
+namespace ZenPlatform.Core.Entity
 {
 
     public abstract class EntityManagerBase

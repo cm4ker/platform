@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.ConfigurationDataComponent;
+using ZenPlatform.Core.Entity;
 
 namespace ZenPlatform.DataComponent
 {

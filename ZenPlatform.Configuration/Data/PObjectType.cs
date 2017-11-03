@@ -29,7 +29,6 @@ namespace ZenPlatform.Configuration.Data
 
         public string TableName { get; set; }
 
-
         public List<PProperty> Propertyes
         {
             get { return _propertyes; }
