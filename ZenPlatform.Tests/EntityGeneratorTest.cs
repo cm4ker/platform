@@ -28,8 +28,8 @@ namespace ZenPlatform.Tests
             prop2.Types.Add(new PNumeric());
             prop2.Name = "SomeNumber";
 
-            invoice.Propertyes.Add(prop1);
-            invoice.Propertyes.Add(prop2);
+            invoice.Properties.Add(prop1);
+            invoice.Properties.Add(prop2);
 
 
             return invoice;
@@ -43,7 +43,7 @@ namespace ZenPlatform.Tests
             contractorNameProperty.Types.Add(new PString());
             contractorNameProperty.Name = "Name";
 
-            contractor.Propertyes.Add(contractorNameProperty);
+            contractor.Properties.Add(contractorNameProperty);
 
             return contractor;
         }
@@ -61,7 +61,7 @@ namespace ZenPlatform.Tests
             contractorProperty.Name = "Contractor";
 
 
-            invoice.Propertyes.Add(contractorProperty);
+            invoice.Properties.Add(contractorProperty);
 
             var nodeDto = deg.GenerateDtoClass(invoice);
             Console.WriteLine(nodeDto.ToString());
@@ -81,7 +81,7 @@ namespace ZenPlatform.Tests
             contractorProperty.Name = "Contractor";
 
 
-            invoice.Propertyes.Add(contractorProperty);
+            invoice.Properties.Add(contractorProperty);
 
             var nodeEntity = deg.GenerateEntityClass(invoice);
 
@@ -101,7 +101,7 @@ namespace ZenPlatform.Tests
             contractorProperty.Name = "Contractor";
 
 
-            invoice.Propertyes.Add(contractorProperty);
+            invoice.Properties.Add(contractorProperty);
 
 
             var helpers = deg.GenerateHelpersForEntity();
