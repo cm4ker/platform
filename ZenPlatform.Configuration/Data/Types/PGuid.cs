@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using DBType = ZenPlatform.QueryBuilder.Schema.DBType;
 
 namespace ZenPlatform.Configuration.Data
 {
@@ -16,9 +17,9 @@ namespace ZenPlatform.Configuration.Data
         public override int Precision { get; set; }
         public override int Scale { get; set; }
 
-        public override SqlDbType DBType
+        public override DBType DBType
         {
-            get { return SqlDbType.UniqueIdentifier; }
+            get { return DBType.UniqueIdentifier; }
         }
 
         public override Type CLRType

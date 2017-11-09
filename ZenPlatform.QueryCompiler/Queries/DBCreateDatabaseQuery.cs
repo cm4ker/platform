@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZenPlatform.QueryCompiler.Queries
+namespace ZenPlatform.QueryBuilder.Queries
 {
     public class DBCreateDatabaseQuery : IQueryable
     {

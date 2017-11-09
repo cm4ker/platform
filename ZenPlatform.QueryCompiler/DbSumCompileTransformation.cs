@@ -1,6 +1,6 @@
 using System;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     /// <summary>
     /// This class is obsolete

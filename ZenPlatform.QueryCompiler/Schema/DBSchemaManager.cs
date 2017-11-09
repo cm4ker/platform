@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 
-namespace ZenPlatform.QueryCompiler.Schema
+namespace ZenPlatform.QueryBuilder.Schema
 {
     //public class DBSchemaManager
     //{

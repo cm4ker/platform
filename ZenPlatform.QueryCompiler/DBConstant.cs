@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     /// <summary>
     /// This is string constant in query.

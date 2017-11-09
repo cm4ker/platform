@@ -1,4 +1,4 @@
-namespace ZenPlatform.QueryCompiler.Schema
+namespace ZenPlatform.QueryBuilder.Schema
 {
     public enum DBType
     {

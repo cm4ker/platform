@@ -1,6 +1,6 @@
 using System.Data;
 
-namespace ZenPlatform.QueryCompiler.Schema
+namespace ZenPlatform.QueryBuilder.Schema
 {
     public class DBFieldSchema
     {
@@ -8,13 +8,13 @@ namespace ZenPlatform.QueryCompiler.Schema
         private bool _isKey;
         private bool _isUnique;
         private string _columnName;
-        private short _numericPrecision;
-        private short _numericScale;
+        private int _numericPrecision;
+        private int _numericScale;
         private bool _isIdentity;
         private bool _isNullable;
         private int _columnSize;
 
-        public DBFieldSchema(DBType type, string columnName, int columnSize, short numericPrecision, short numericScale, bool isIdentity, bool isKey = false, bool isUnique = false, bool isNullable = false)
+        public DBFieldSchema(DBType type, string columnName, int columnSize, int numericPrecision, int numericScale, bool isIdentity, bool isKey = false, bool isUnique = false, bool isNullable = false)
         {
             _columnSize = columnSize;
             _type = type;
@@ -59,13 +59,13 @@ namespace ZenPlatform.QueryCompiler.Schema
             set { _type = value; }
         }
 
-        public short NumericPrecision
+        public int NumericPrecision
         {
             get { return _numericPrecision; }
             set { _numericPrecision = value; }
         }
 
-        public short NumericScale
+        public int NumericScale
         {
             get { return _numericScale; }
             set { _numericScale = value; }
