@@ -1,6 +1,6 @@
 using System;
 
-namespace ZenPlatform.QueryCompiler.Interfaces
+namespace ZenPlatform.QueryBuilder.Interfaces
 {
     public interface IDBToken : ICloneable
     {

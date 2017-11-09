@@ -11,7 +11,7 @@
         protected PComplexType(string name, PObjectType objectType) : base(name)
         {
             _objectType = objectType;
-            Propertyes.AddRange(_objectType.Propertyes);
+            Properties.AddRange(_objectType.Properties);
         }
 
         public PObjectType Owner => _objectType;

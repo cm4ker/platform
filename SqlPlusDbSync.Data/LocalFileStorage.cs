@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
-using SqlPlusDbSync.Shared;
+//using SqlPlusDbSync.Shared;
 
 namespace SqlPlusDbSync.Data
 {
@@ -29,7 +29,7 @@ namespace SqlPlusDbSync.Data
 
             if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{type.Name}_storage.json")))
             {
-                Logger.LogDebug("File not exists");
+                //Logger.LogDebug("File not exists");
                 var constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { }, null);
                 var obj = constructor.Invoke(new object[] { });
                 Save(obj);

@@ -1,8 +1,8 @@
 using System;
 using System.Text;
-using ZenPlatform.QueryCompiler.Interfaces;
+using ZenPlatform.QueryBuilder.Interfaces;
 
-namespace ZenPlatform.QueryCompiler.Queries
+namespace ZenPlatform.QueryBuilder.Queries
 {
     /// <summary>
     /// Represents DELETE instruction
@@ -19,7 +19,7 @@ namespace ZenPlatform.QueryCompiler.Queries
         private string _whereExpression;
         private DBTable _deleteTable;
 
-        internal DBDeleteQuery()
+        public DBDeleteQuery()
         {
             _from = new DBFromClause();
             _where = new DBWhereClause();

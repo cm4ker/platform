@@ -35,7 +35,7 @@ namespace ZenPlatform.Configuration.Data
         /// Указывает на то, что используется композитный ключ.
         /// Если не устанавливать это свойство, в таком случае при добавлении объекта 
         /// </summary>
-        public bool CompositeUnique { get; set; }
+        /// public bool CompositeUnique { get; set; }
 
         /// <summary>
         /// Псевдоним, если установить это свойство, то оно перезапишет Name

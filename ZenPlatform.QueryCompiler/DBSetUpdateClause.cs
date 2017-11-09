@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ZenPlatform.QueryCompiler.Interfaces;
+using ZenPlatform.QueryBuilder.Interfaces;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class DBSetUpdateClause : IDBToken
     {
@@ -20,7 +20,7 @@ namespace ZenPlatform.QueryCompiler
         public void AddField(DBTableField field)
         {
             _fields.Add(field);
-            var paramName = $"{field.Name}_{DBHelper.GetRandomString(DBHelper.RandomCharsInParams())}";
+            var paramName = $"{field.Name}";
             _parameters.Add(new DBParameter(paramName, field.Schema.Type, field.Schema.IsNullable));
         }
 
@@ -43,7 +43,7 @@ namespace ZenPlatform.QueryCompiler
             {
                 var param = _parameters[_fields.IndexOf(field)];
                 if (_fields.IndexOf(field) > 0) sb.Append(",");
-                sb.AppendLine($"{field.Name} = {param.Name}");
+                sb.AppendLine($"{field.Name} = {param.Compile()}");
 
                 //new SqlParameter($"@{paramName}", field.Schema.Type)
             }

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using DbType = ZenPlatform.QueryBuilder.Schema.DBType;
 
 namespace ZenPlatform.Configuration.Data
 {
@@ -12,9 +13,9 @@ namespace ZenPlatform.Configuration.Data
 
         public override bool IsNullable { get; set; }
         public override int ColumnSize { get; set; }
-        public override SqlDbType DBType
+        public override DbType DBType
         {
-            get { return SqlDbType.DateTime; }
+            get { return DbType.DateTime; }
         }
 
         public override Type CLRType

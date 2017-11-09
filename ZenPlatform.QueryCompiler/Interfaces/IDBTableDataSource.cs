@@ -1,4 +1,4 @@
-namespace ZenPlatform.QueryCompiler.Interfaces
+namespace ZenPlatform.QueryBuilder.Interfaces
 {
     public interface IDBTableDataSource : IDBAliasedFieldContainer
     {

@@ -2,9 +2,9 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
-using ZenPlatform.QueryCompiler.Queries;
+using ZenPlatform.QueryBuilder.Queries;
 
-namespace ZenPlatform.QueryCompiler.Schema
+namespace ZenPlatform.QueryBuilder.Schema
 {
     //public abstract class DBContext : IDBContext, IDisposable
     //{

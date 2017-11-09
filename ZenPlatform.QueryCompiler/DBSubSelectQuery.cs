@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ZenPlatform.QueryCompiler.Interfaces;
-using ZenPlatform.QueryCompiler.Queries;
+using ZenPlatform.QueryBuilder.Interfaces;
+using ZenPlatform.QueryBuilder.Queries;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class DBSubSelectQuery : IDBTableDataSource, IParametrized
     {
@@ -12,12 +12,12 @@ namespace ZenPlatform.QueryCompiler
 
         private string _compileExpression;
         private string _alias;
-        private readonly List<DBClause> _fields;
+        private readonly List<DBField> _fields;
 
         public DBSubSelectQuery(IDBFieldContainer query, string alias)
         {
             _query = query;
-            _fields = new List<DBClause>();
+            _fields = new List<DBField>();
             SetAliase(alias);
             _compileExpression = "({Query})";
 
@@ -82,13 +82,13 @@ namespace ZenPlatform.QueryCompiler
             get { return _alias; }
         }
 
-        public List<DBClause> Fields
+        public List<DBField> Fields
 
         {
             get { return _fields; }
         }
 
-        public DBClause GetField(string name)
+        public DBField GetField(string name)
         {
             foreach (var field in _fields)
             {

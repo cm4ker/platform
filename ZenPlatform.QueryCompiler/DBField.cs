@@ -1,7 +1,7 @@
-using ZenPlatform.QueryCompiler.Interfaces;
-using ZenPlatform.QueryCompiler.Schema;
+using ZenPlatform.QueryBuilder.Interfaces;
+using ZenPlatform.QueryBuilder.Schema;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     /// <summary>
     /// Represents field. 

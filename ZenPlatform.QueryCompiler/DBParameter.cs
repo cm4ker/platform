@@ -1,6 +1,7 @@
-using ZenPlatform.QueryCompiler.Schema;
+using System;
+using ZenPlatform.QueryBuilder.Schema;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
 
 
@@ -35,7 +36,7 @@ namespace ZenPlatform.QueryCompiler
 
         public override string Compile(bool recompile = false)
         {
-            return _name;
+            return String.Format("@{0}",_name);
         }
 
         public override bool Equals(object obj)

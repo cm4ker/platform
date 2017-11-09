@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ZenPlatform.QueryCompiler.Interfaces;
+using ZenPlatform.QueryBuilder.Interfaces;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class DBGroupByClause : IDBToken
     {

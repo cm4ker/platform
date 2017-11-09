@@ -1,7 +1,7 @@
 ﻿using System;
-using ZenPlatform.QueryCompiler.Interfaces;
+using ZenPlatform.QueryBuilder.Interfaces;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class DBUnionClause : IDBToken
     {
