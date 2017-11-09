@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using ZenPlatform.QueryCompiler.Schema;
+using ZenPlatform.QueryBuilder.Schema;
 
-namespace ZenPlatform.QueryCompiler.Queries
+namespace ZenPlatform.QueryBuilder.Queries
 {
     public class DBCreateTableQuery : IQueryable
     {

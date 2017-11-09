@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ZenPlatform.QueryCompiler.Interfaces;
-using ZenPlatform.QueryCompiler.Queries;
+using ZenPlatform.QueryBuilder.Interfaces;
+using ZenPlatform.QueryBuilder.Queries;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class DBSelectPipe : IDBFieldContainer, IParametrized
     {
         private readonly Dictionary<DBSelectQuery, DBSelectConjunctionTypes> _queryes;
-        private readonly List<DBClause> _fields;
+        private readonly List<DBField> _fields;
 
         public DBSelectPipe()
         {
             _queryes = new Dictionary<DBSelectQuery, DBSelectConjunctionTypes>();
-            _fields = new List<DBClause>();
+            _fields = new List<DBField>();
         }
 
         public DBSubSelectQuery AsSubQuery(string alias)
@@ -103,12 +103,12 @@ namespace ZenPlatform.QueryCompiler
 
         }
 
-        public List<DBClause> Fields
+        public List<DBField> Fields
         {
             get { return _fields; }
         }
 
-        public DBClause GetField(string name)
+        public DBField GetField(string name)
         {
             if (!_queryes.Any()) throw new FieldNotFoundException(name);
             return _queryes.First().Key.GetField(name);

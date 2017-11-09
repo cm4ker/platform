@@ -1,8 +1,8 @@
 using System;
 using System.Text;
-using ZenPlatform.QueryCompiler.Queries;
+using ZenPlatform.QueryBuilder.Queries;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class DBSetVariableClause : IQueryable
     {

@@ -1,7 +1,7 @@
 using System;
-using ZenPlatform.QueryCompiler.Interfaces;
+using ZenPlatform.QueryBuilder.Interfaces;
 
-namespace ZenPlatform.QueryCompiler.Queries
+namespace ZenPlatform.QueryBuilder.Queries
 {
     public abstract class DBQuery : IDBToken
     {

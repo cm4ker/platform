@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using ZenPlatform.QueryCompiler.Schema;
+using ZenPlatform.QueryBuilder.Schema;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
 
     /// <summary>

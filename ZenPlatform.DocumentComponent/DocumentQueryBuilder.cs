@@ -1,7 +1,9 @@
 ﻿using System;
+using ZenPlatform.Configuration.Data;
 using ZenPlatform.ConfigurationDataComponent;
 using ZenPlatform.Core.Entity;
-using ZenPlatform.QueryCompiler.Queries;
+using ZenPlatform.DataComponent;
+using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.DocumentComponent
 {
@@ -9,8 +11,12 @@ namespace ZenPlatform.DocumentComponent
     /// <summary>
     /// Компонент отвечат за то, чтобы сгенерировать инструкции для CRUD операций
     /// </summary>
-    public class Document2Sql : Entity2SqlBase
+    public class DocumentQueryBuilder : QueryBuilderComponent
     {
+        public DocumentQueryBuilder(PObjectType objectType) : base(objectType)
+        {
+        }
+
         public override DBSelectQuery GetSelect()
         {
             throw new NotImplementedException();

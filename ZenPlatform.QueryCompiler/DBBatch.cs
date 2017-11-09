@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ZenPlatform.QueryCompiler.Interfaces;
-using ZenPlatform.QueryCompiler.Queries;
-using IQueryable = ZenPlatform.QueryCompiler.Queries.IQueryable;
+using ZenPlatform.QueryBuilder.Interfaces;
+using ZenPlatform.QueryBuilder.Queries;
+using IQueryable = ZenPlatform.QueryBuilder.Queries.IQueryable;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     /// <summary>
     /// Container for queryes. 

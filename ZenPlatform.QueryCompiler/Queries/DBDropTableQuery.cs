@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace ZenPlatform.QueryCompiler.Queries
+namespace ZenPlatform.QueryBuilder.Queries
 {
     public class DBDropTableQuery : IQueryable
     {

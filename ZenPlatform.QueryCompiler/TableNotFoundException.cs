@@ -1,6 +1,6 @@
 using System;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     internal class TableNotFoundException : Exception
     {

@@ -6,13 +6,22 @@ namespace ZenPlatform.Configuration.Data
     public abstract class PObjectType : PTypeBase
     {
         private readonly string _name;
-        private readonly List<PProperty> _propertyes;
+        private readonly List<PProperty> _properties;
         private readonly List<PEvent> _events;
 
         protected PObjectType(string name)
         {
             _name = name;
-            _propertyes = new List<PProperty>();
+            _properties = new List<PProperty>();
+
+            var property = new PProperty(this)
+            {
+                Unique = true,
+                Name = "Id", 
+            };
+            property.Types.Add(new PGuid());
+            _properties.Add(property);
+
             _events = new List<PEvent>();
             Id = Guid.NewGuid();
         }
@@ -29,9 +38,9 @@ namespace ZenPlatform.Configuration.Data
 
         public string TableName { get; set; }
 
-        public List<PProperty> Propertyes
+        public List<PProperty> Properties
         {
-            get { return _propertyes; }
+            get { return _properties; }
         }
 
         public List<PEvent> Events

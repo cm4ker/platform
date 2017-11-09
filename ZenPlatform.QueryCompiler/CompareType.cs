@@ -1,4 +1,4 @@
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     /// <summary>
     /// Comparison type for logical operations

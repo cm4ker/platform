@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.Reflection.Metadata;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Serialization;
-using ZenPlatform.QueryCompiler;
-using ZenPlatform.QueryCompiler.Queries;
+using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.Tests
 {
@@ -42,7 +42,7 @@ FROM
         {
             var q = _factory.GetCreateTable();
             q.Table("Test")
-             .Field("SimpleField", QueryCompiler.Schema.DBType.Int, 10, 1, 12, false, false, false, false);
+             .Field("SimpleField", QueryBuilder.Schema.DBType.Int, 10, 1, 12, false, false, false, false);
 
             Debug.WriteLine(q.Compile());
             Console.WriteLine(q.Compile());

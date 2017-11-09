@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Platform", "SqlPlusDbSync.Platform\SqlPlusDbSync.Platform.csproj", "{E5B657B1-9C4A-40DD-A068-5EF2F67C0C5A}"
 EndProject
@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Migrator", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.EntityGenerator", "SqlPlusDbSync.EntityGenerator\SqlPlusDbSync.EntityGenerator.csproj", "{3E4E7E85-7AE7-49C8-97D1-2B4337E1662E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryCompiler", "ZenPlatform.QueryCompiler\ZenPlatform.QueryCompiler.csproj", "{A60AF134-9E5A-4802-A20A-D770F9EEADA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryBuilder", "ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj", "{A60AF134-9E5A-4802-A20A-D770F9EEADA9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Tests", "ZenPlatform.Tests\ZenPlatform.Tests.csproj", "{D52C49C5-0F1F-467F-A730-BAAF1D0E6D22}"
 EndProject
@@ -35,9 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.DataComponent",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.DocumentComponent", "ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj", "{1416F06A-2DD0-4573-8BEB-75547AADAF10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Core", "ZenPlatform.Core\ZenPlatform.Core.csproj", "{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core", "ZenPlatform.Core\ZenPlatform.Core.csproj", "{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.System", "ZenPlatform.System\ZenPlatform.System.csproj", "{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.System", "ZenPlatform.System\ZenPlatform.System.csproj", "{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

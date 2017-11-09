@@ -1,4 +1,4 @@
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public static class SQLTokens
     {

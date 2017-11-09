@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class DBLogicalOperation : DBClause
     {

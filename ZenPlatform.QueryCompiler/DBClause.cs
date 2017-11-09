@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using ZenPlatform.QueryCompiler.Interfaces;
-using ZenPlatform.QueryCompiler.Schema;
+using ZenPlatform.QueryBuilder.Interfaces;
+using ZenPlatform.QueryBuilder.Schema;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     /// <summary>
     /// Represents any accepted token in query
@@ -74,7 +74,7 @@ namespace ZenPlatform.QueryCompiler
             return new DBSelectField(owner, quotedObject, alias);
         }
 
-        public static DBClause CreateParameter(string name, SqlDbType type)
+        public static DBParameter CreateParameter(string name, DBType type)
         {
             return new DBParameter(name, type);
         }

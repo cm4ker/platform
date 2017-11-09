@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ZenPlatform.QueryCompiler.Interfaces
+namespace ZenPlatform.QueryBuilder.Interfaces
 {
     public interface IDBTablesContainer
     {

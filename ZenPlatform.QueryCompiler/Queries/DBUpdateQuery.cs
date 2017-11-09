@@ -1,9 +1,9 @@
 using System;
 using System.Data.Common;
 using System.Text;
-using ZenPlatform.QueryCompiler.Interfaces;
+using ZenPlatform.QueryBuilder.Interfaces;
 
-namespace ZenPlatform.QueryCompiler.Queries
+namespace ZenPlatform.QueryBuilder.Queries
 {
     public class DBUpdateQuery : IDataChangeQuery
     {
@@ -21,7 +21,7 @@ namespace ZenPlatform.QueryCompiler.Queries
 
 
 
-        internal DBUpdateQuery()
+        public DBUpdateQuery()
         {
             _from = new DBFromClause();
             _where = new DBWhereClause();
@@ -51,7 +51,7 @@ namespace ZenPlatform.QueryCompiler.Queries
         public DBTable UpdateTable
         {
             get { return _updateTable; }
-            //set { _updateTable = value; }
+            set { _updateTable = value; }
         }
 
         public DBParameterCollection Parameters => _parameters;//new DBParameterCollection(_setUpdate.Parameters.Union(_where.Parameters));

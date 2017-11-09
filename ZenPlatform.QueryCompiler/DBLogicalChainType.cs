@@ -1,4 +1,4 @@
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public enum DBLogicalChainType
     {

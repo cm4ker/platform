@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using ZenPlatform.QueryCompiler.Interfaces;
+using ZenPlatform.QueryBuilder.Interfaces;
 
-namespace ZenPlatform.QueryCompiler.Queries
+namespace ZenPlatform.QueryBuilder.Queries
 {
-    public class DBSelectQuery : IDBTablesContainer, IDBFieldContainer, IQueryable, IParametrized
+    public class DBSelectQuery : IDBTablesContainer, IDBFieldContainer, IDataChangeQuery
     {
         private string _compileExpression;
 
         private string _intoTable;
         private uint _topCount;
 
-        private List<DBClause> _fields;
+        private List<DBField> _fields;
 
         private DBFromClause _from;
         private DBWhereClause _where;
@@ -24,16 +24,16 @@ namespace ZenPlatform.QueryCompiler.Queries
 
         private string _compiled;
 
-        internal DBSelectQuery()
+        public DBSelectQuery()
         {
-            _fields = new List<DBClause>();
+            _fields = new List<DBField>();
             _from = new DBFromClause();
             _where = new DBWhereClause();
             _orderby = new DBOrderByClause();
             _groupby = new DBGroupByClause();
         }
 
-        public void Select(DBClause clause)
+        public void Select(DBField clause)
         {
 
             _fields.Add(clause);
@@ -129,7 +129,7 @@ namespace ZenPlatform.QueryCompiler.Queries
             return _from.Join(table, joinType);
         }
 
-        public List<DBClause> Fields
+        public List<DBField> Fields
         {
             get { return _fields; }
         }
@@ -213,7 +213,7 @@ namespace ZenPlatform.QueryCompiler.Queries
             get { return _from.Tables; }
         }
 
-        public DBClause GetField(string name)
+        public DBField GetField(string name)
         {
             foreach (var table in Tables)
             {
