@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.Core.Entity
 {
-    public abstract class Entity2SqlBase
+    public abstract class SqlBuilder
     {
         public abstract DBSelectQuery GetSelect();
         public abstract DBUpdateQuery GetUpdate();

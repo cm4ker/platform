@@ -21,5 +21,7 @@ namespace ZenPlatform.Configuration
         {
             DataSectionComponents.Add(component);
         }
+
+
     }
 }

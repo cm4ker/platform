@@ -6,7 +6,7 @@ namespace ZenPlatform.Core
 {
     public class Session
     {
-        public Session(Environment env, int id)
+        public Session(PlatformEnvironment env, int id)
         {
             Environment = env;
             Id = id;
@@ -18,7 +18,7 @@ namespace ZenPlatform.Core
         public int Id { get; }
 
         public DataContextManger DataContextManger { get; }
-        public Environment Environment { get; }
+        public PlatformEnvironment Environment { get; }
 
         //TODO: Все компоненты инициализируются для сессии, так что необходимо, чтобы компоненты были доступны из сессии, либо на уровне ниже
 

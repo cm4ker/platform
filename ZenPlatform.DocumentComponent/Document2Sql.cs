@@ -9,7 +9,7 @@ namespace ZenPlatform.DocumentComponent
     /// <summary>
     /// Компонент отвечат за то, чтобы сгенерировать инструкции для CRUD операций
     /// </summary>
-    public class Document2Sql : Entity2SqlBase
+    public class Document2Sql : SqlBuilder
     {
         public override DBSelectQuery GetSelect()
         {

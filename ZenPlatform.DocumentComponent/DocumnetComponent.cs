@@ -11,20 +11,25 @@ namespace ZenPlatform.DocumentComponent
 {
     public class DocumnetComponent : DataComponentBase
     {
-        public DocumnetComponent()
+        public DocumnetComponent(PComponent component) : base(component)
         {
             Generator = new DocumentEntityGenerator();
             EntityBase = typeof(DocumentEntity);
-            Manager = new DocumentManager(new Document2Sql(), null);
+            Manager = new DocumentManager(new Document2Sql());
         }
 
-        public override IEnumerable<PPrimetiveType> GetSupportedEntityPrimitiveTypes()
+        private void Initialization()
         {
-            throw new NotImplementedException();
+            Component.RegisterCodeRule(Generator.GetInForeignPropertySetActionRule());
+            Component.RegisterCodeRule(Generator.GetClassPostfixRule());
+            Component.RegisterCodeRule(Generator.GetClassPostfixRule());
         }
 
         public override Type EntityBase { get; }
         public override EntityManagerBase Manager { get; }
         public override EntityGeneratorBase Generator { get; }
+
+
+
     }
 }

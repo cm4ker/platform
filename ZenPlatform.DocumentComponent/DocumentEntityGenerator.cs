@@ -11,7 +11,6 @@ using ZenPlatform.Core;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.CSharpCodeBuilder.Syntax;
 using ZenPlatform.DataComponent;
-using Environment = ZenPlatform.Core.Environment;
 
 namespace ZenPlatform.DocumentComponent
 {
@@ -38,9 +37,9 @@ namespace ZenPlatform.DocumentComponent
             return
                 SyntaxFactory.PropertyDeclaration(
                     SyntaxFactory.ParseTypeName(type),
-                    name).WithAccessorList(GetStandardAccessorListSyntax());
+                    name).WithAccessorList(GetStandardAccessorListSyntax())
+                    .WithModifiers(SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.PublicKeyword)));
         }
-
         public virtual SyntaxNode GenerateDtoClass(PObjectType conf)
         {
             var workspace = new AdhocWorkspace();
@@ -53,8 +52,6 @@ namespace ZenPlatform.DocumentComponent
             if (conf.IsAbstractType) return null;
 
             var members = new List<SyntaxNode>();
-
-            members.Add(GetStandartProperty("Key", "Guid"));
 
             foreach (var prop in conf.Propertyes)
             {
@@ -73,12 +70,14 @@ namespace ZenPlatform.DocumentComponent
                 else
                 {
                     bool alreadyHaveObjectTypeField = false;
+
                     foreach (var type in prop.Types)
                     {
                         if (type is PObjectType && !alreadyHaveObjectTypeField)
                         {
                             members.Add(GetStandartProperty($"{prop.Name}_Ref", "Guid"));
                             members.Add(GetStandartProperty($"{prop.Name}_Type", "int"));
+
                             alreadyHaveObjectTypeField = true;
                         }
 
@@ -90,7 +89,7 @@ namespace ZenPlatform.DocumentComponent
             }
 
             var classDefinition = generator.ClassDeclaration(
-                   $"{conf.Name}Dto",
+                   $"{conf.Name}{DtoPrefix}",
                    typeParameters: null,
                    accessibility: Accessibility.Public,
                    modifiers: DeclarationModifiers.None,
@@ -98,48 +97,62 @@ namespace ZenPlatform.DocumentComponent
                    interfaceTypes: null,
                    members: members);
 
-            NamespaceDeclarationSyntax namespaceDeclaration =
-                generator.NamespaceDeclaration("EntityDeclaration", classDefinition) as NamespaceDeclarationSyntax;
-
             var newNode = generator.CompilationUnit(classDefinition).NormalizeWhitespace();
             return newNode;
         }
+
+        /// <summary>
+        /// Генерация сущности - класс который является промежуточным между DTO и пользователем
+        /// </summary>
+        /// <param name="conf"></param>
+        /// <returns></returns>
         public virtual SyntaxNode GenerateEntityClass(PObjectType conf)
         {
+            var dtoClassName = $"{conf.Name}{DtoPrefix}";
+
             var workspace = new AdhocWorkspace();
 
             var generator = SyntaxGenerator.GetGenerator(
                   workspace, LanguageNames.CSharp);
 
-            var usingDirectives = generator.NamespaceImportDeclaration("System");
-
             if (conf.IsAbstractType) return null;
 
             var members = new List<SyntaxNode>();
 
-            var dtoPrivateField = generator.FieldDeclaration($"_dto", SyntaxFactory.ParseTypeName($"{conf.Name}Dto"));
+            var dtoPrivateField = generator.FieldDeclaration(DtoPrivateFieldName, SyntaxFactory.ParseTypeName(dtoClassName));
 
+
+            //TODO: Алгоритм для обхода полей объекта
+            /*
+                Если поле PrimitiveType, при условии что этот тип один - взять имя свойства как имя поля, взять тип свойства как тип поля
+                Если поле ObjectType(Другой объект конфигурации) - Взять и имя свойства, как имя свойста, взять тип, как наименование типа Entity
+                                
+            */
             foreach (var prop in conf.Propertyes)
             {
                 if (prop.Types.Count == 1)
                 {
                     var propType = prop.Types.First();
 
-                    if (propType is PObjectType)
+                    if (propType is PObjectType objectProprty)
                     {
-                        members.Add(GetStandartProperty(prop.Name, propType.Name));
+                        var component = objectProprty.OwnerComponent.GetCodeRule();
+                        var pobjectProperty = SyntaxFactory.PropertyDeclaration();
+
+                        members.Add(null);
+                        //members.Add(GetStandartProperty(prop.Name, propType.Name));
                     }
 
                     if (propType is PPrimetiveType primitiveType)
                     {
                         var getAcessorStatement = new SyntaxNode[]
                         {
-                          SyntaxFactory.ParseStatement($"return _dto.{prop.Name};")
+                          SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.Name};")
                         };
 
                         var setAcessorStatement = new SyntaxNode[]
                           {
-                              SyntaxFactory.ParseStatement($"_dto.{prop.Name} = value;"),
+                              SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.Name} = value;"),
                               SyntaxFactory.ParseStatement("OnPropertyChanged();")
                     };
 
@@ -171,82 +184,55 @@ namespace ZenPlatform.DocumentComponent
                 }
             }
 
+
+            var parameterList = SyntaxFactory.ParseParameterList($"[NotNull] {nameof(Session)} session, {dtoClassName} dto");
+            var statementsParams = parameterList.Parameters.ToArray<SyntaxNode>();
+            var baseConstructorArguments = SyntaxFactory.ArgumentList();
+            baseConstructorArguments =
+                baseConstructorArguments.AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseExpression("session")));
+
             var statementsBody = new SyntaxNode[]
             {
-                SyntaxFactory.ParseStatement("PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));")
+                SyntaxFactory.ParseStatement($"{DtoPrivateFieldName} = dto;")
             };
 
-            var parameterList = SyntaxFactory.ParseParameterList("[CallerMemberName] string propertyName = null");
-            var statementsParams = new SyntaxNode[]
-            {
-                parameterList.Parameters.First()
-            };
-
-            var npcMethod = generator.MethodDeclaration("OnPropertyChanged", statements: statementsBody, parameters: statementsParams);
-            var npcEvent = generator.EventDeclaration("PropertyChanged",
-                SyntaxFactory.IdentifierName("PropertyChangedEventHandler"));
-
-            members.Add(npcEvent);
-            members.Add(npcMethod);
-
-            parameterList = SyntaxFactory.ParseParameterList($"[NotNull] {nameof(Session)} session, {conf.Name}Dto dto");
-            statementsParams = parameterList.Parameters.ToArray<SyntaxNode>();
+            var constructor = generator.ConstructorDeclaration(null, statementsParams, Accessibility.Public, statements: statementsBody, baseConstructorArguments: baseConstructorArguments.Arguments);
 
 
-            statementsBody = new SyntaxNode[]
-            {
-                SyntaxFactory.ParseStatement("Session = session;"),
-                SyntaxFactory.ParseStatement("Environment = session.Environment;"),
-                SyntaxFactory.ParseStatement("_dto = dto;")
-            };
-
-            var constructor = generator.ConstructorDeclaration(null, statementsParams, Accessibility.Public, statements: statementsBody);
-
-            var sessionGetBody = SyntaxFactory.Block
-             (
-                SyntaxFactory.ParseStatement($"return session;")
-            );
-
-            var environmentGetBody = SyntaxFactory.Block(
-
-                SyntaxFactory.ParseStatement($"return session.Environment;")
-            );
-
-            var sessionProperty = SyntaxFactory.PropertyDeclaration(
-                    SyntaxFactory.ParseTypeName(nameof(Session)),
-                    "Session"
-                )
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithBody(sessionGetBody)
-                );
-
-            //var sessionProperty = generator.PropertyDeclaration("Session",
-            //    SyntaxFactory.IdentifierName(nameof(Session)), Accessibility.Public,
-            //    getAccessorStatements: sessionGetAcessorStatement);
-
-            var environmentProperty = SyntaxFactory.PropertyDeclaration(
-                    SyntaxFactory.ParseTypeName(nameof(Environment)),
-                    "Environment"
-                )
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithBody(environmentGetBody)
-                );
-
-            //var environmentProperty = generator.PropertyDeclaration("Environment",
-            //    SyntaxFactory.IdentifierName(nameof(Environment)), Accessibility.Public,
-            //    getAccessorStatements: environmentGetBody);
-
-            members.Insert(0, environmentProperty);
-            members.Insert(0, sessionProperty);
             members.Insert(0, constructor);
             members.Insert(0, dtoPrivateField);
+
+            #region CRUD methods
+
+            var saveBody = new SyntaxNode[]
+            {
+                SyntaxFactory.ParseStatement("throw new NotImplementedException();")
+            };
+            var saveMethod = generator.MethodDeclaration("Save", statements: saveBody, accessibility: Accessibility.Public);
+
+            var loadBody = new SyntaxNode[]
+            {
+                SyntaxFactory.ParseStatement("throw new NotImplementedException();")
+            };
+            var loadMethod = generator.MethodDeclaration("Load", statements: loadBody, accessibility: Accessibility.Public);
+
+            var deleteBody = new SyntaxNode[]
+            {
+                SyntaxFactory.ParseStatement("throw new NotImplementedException();")
+            };
+            var deleteMethod = generator.MethodDeclaration("Delete", statements: deleteBody, accessibility: Accessibility.Public);
+
+            members.Add(saveMethod);
+            members.Add(loadMethod);
+            members.Add(deleteMethod);
+            #endregion
 
             var classDefinition = generator.ClassDeclaration(
                     $"{conf.Name}Entity",
                    typeParameters: null,
                    accessibility: Accessibility.Public,
                    modifiers: DeclarationModifiers.None,
-                   baseType: null,
+                   baseType: SyntaxFactory.ParseTypeName("DocumentEntityBase"),
                    interfaceTypes: null,
                    members: members);
 
@@ -257,5 +243,46 @@ namespace ZenPlatform.DocumentComponent
             return newNode;
         }
 
+        /*
+        TODO: Необходимо сгенерировать следующее API для работы с сущностями:
+              Session.Document.Invoice.Save();
+              Session.Register.Incommings.GetRange();
+              Session.Reference.Nomenclature.Create();
+         */
+
+        public SyntaxNode GenerateHelpersForEntity()
+        {
+            var workspace = new AdhocWorkspace();
+
+            var generator = SyntaxGenerator.GetGenerator(
+                workspace, LanguageNames.CSharp);
+
+            var managerClass = SyntaxFactory.ClassDeclaration("ManagerExtension")
+                                    .WithModifiers(
+                                    SyntaxTokenList.Create(
+                                        SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                                        .Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword)));
+
+            var field = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("SomeType"), "SomeName")
+                .WithModifiers(
+                SyntaxTokenList.Create(
+                        SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword)));
+
+            managerClass = managerClass.AddMembers(field);
+
+            return generator.CompilationUnit(managerClass).NormalizeWhitespace(); ;
+
+        }
+
+        /*
+        public static partial class DocumentsManager
+        {
+            public static DocumentManagerBase<Invoice> InvoiceManager(this Session session)
+            {
+                return session.Environment.Managers[0] as DocumentManagerBase<Invoice>;
+            }
+        }
+        */
     }
 }

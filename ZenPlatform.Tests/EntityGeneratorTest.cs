@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.Core;
@@ -15,19 +16,9 @@ namespace ZenPlatform.Tests
     [TestClass]
     public class EntityGeneratorTest
     {
-        [TestMethod]
-        public void DcoumentCodeGenerate()
+        private PSimpleObjectType CreateInvoice()
         {
-            DocumentEntityGenerator deg = new DocumentEntityGenerator();
-            PSimpleObjectType invoice = new PSimpleObjectType("Invoice");
-
-            PSimpleObjectType contractor = new PSimpleObjectType("Contractor");
-
-            var contractorNameProperty = new PProperty(contractor);
-            contractorNameProperty.Types.Add(new PString());
-            contractorNameProperty.Name = "Name";
-
-            contractor.Propertyes.Add(contractorNameProperty);
+            PSimpleObjectType invoice = new PSimpleObjectType("Invoice"); ;
 
             var prop1 = new PProperty(invoice);
             prop1.Types.Add(new PDateTime());
@@ -37,20 +28,85 @@ namespace ZenPlatform.Tests
             prop2.Types.Add(new PNumeric());
             prop2.Name = "SomeNumber";
 
+            invoice.Propertyes.Add(prop1);
+            invoice.Propertyes.Add(prop2);
+
+
+            return invoice;
+        }
+
+        private PSimpleObjectType CreateContractor()
+        {
+            PSimpleObjectType contractor = new PSimpleObjectType("Contractor");
+
+            var contractorNameProperty = new PProperty(contractor);
+            contractorNameProperty.Types.Add(new PString());
+            contractorNameProperty.Name = "Name";
+
+            contractor.Propertyes.Add(contractorNameProperty);
+
+            return contractor;
+        }
+
+        [TestMethod]
+        public void DocumentComponentGenerateDto()
+        {
+            DocumentEntityGenerator deg = new DocumentEntityGenerator();
+
+            var invoice = CreateInvoice();
+            var contractor = CreateContractor();
+
             var contractorProperty = new PProperty(invoice);
             contractorProperty.Types.Add(contractor);
             contractorProperty.Name = "Contractor";
 
 
             invoice.Propertyes.Add(contractorProperty);
-            invoice.Propertyes.Add(prop1);
-            invoice.Propertyes.Add(prop2);
 
             var nodeDto = deg.GenerateDtoClass(invoice);
+            Console.WriteLine(nodeDto.ToString());
+        }
+
+
+        [TestMethod]
+        public void DcoumentComponentGenerateEntity()
+        {
+            DocumentEntityGenerator deg = new DocumentEntityGenerator();
+
+            var invoice = CreateInvoice();
+            var contractor = CreateContractor();
+
+            var contractorProperty = new PProperty(invoice);
+            contractorProperty.Types.Add(contractor);
+            contractorProperty.Name = "Contractor";
+
+
+            invoice.Propertyes.Add(contractorProperty);
+
             var nodeEntity = deg.GenerateEntityClass(invoice);
 
-            Console.WriteLine(nodeDto.ToString());
             Console.WriteLine(nodeEntity.ToString());
+        }
+
+        [TestMethod]
+        public void DcoumentComponentGenerateHelpers()
+        {
+            DocumentEntityGenerator deg = new DocumentEntityGenerator();
+
+            var invoice = CreateInvoice();
+            var contractor = CreateContractor();
+
+            var contractorProperty = new PProperty(invoice);
+            contractorProperty.Types.Add(contractor);
+            contractorProperty.Name = "Contractor";
+
+
+            invoice.Propertyes.Add(contractorProperty);
+
+
+            var helpers = deg.GenerateHelpersForEntity();
+            Console.WriteLine(helpers.ToString());
+
         }
     }
 
@@ -74,11 +130,6 @@ namespace ZenPlatform.Tests
         public SomeEntity2(SomeDto2 dto)
         {
             _someDto2 = dto;
-        }
-
-        internal object Key
-        {
-            get { return _someDto2.Key; }
         }
 
         public string SomePropertyInDto2
@@ -122,10 +173,6 @@ namespace ZenPlatform.Tests
             }
         }
 
-        internal object Key
-        {
-            get { return _dto.Key; }
-        }
 
         public SomeEntity2 SomeEntity
         {
@@ -141,7 +188,6 @@ namespace ZenPlatform.Tests
             }
             set
             {
-                _dto.SomeEntity_Ref = (Guid)value.Key;
                 _someEntity2 = value;
                 OnPropertyChanged();
             }
