@@ -76,9 +76,7 @@ namespace ZenPlatform.QueryCompiler
             {
                 result.Operations.Add(op);
             }
-
-
-
+            
             return result;
         }
 

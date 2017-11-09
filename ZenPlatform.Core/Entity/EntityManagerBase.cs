@@ -2,37 +2,18 @@
 
 namespace ZenPlatform.Core.Entity
 {
-
+    /// <summary>
+    /// Менеджер - это НАБОР ЛОГИКИ для манипулирования сущностями (Entity)
+    /// Менеджер только лишь инкапсулирует это в себе.
+    /// </summary>
     public abstract class EntityManagerBase
     {
-        protected EntityManagerBase(Entity2SqlBase sqlProvider, Session session)
+        protected EntityManagerBase(SqlBuilder sqlBuilder)
         {
-            SqlProvider = sqlProvider;
-            Session = session;
+            SqlBuilder = sqlBuilder;
         }
 
-        protected Entity2SqlBase SqlProvider { get; }
-        protected Session Session { get; }
-    }
-
-
-    public abstract class EntityManagerBase<T> : EntityManagerBase
-        where T : EntityBase, new()
-    {
-        protected EntityManagerBase(Entity2SqlBase sqlProvider, Session session) : base(sqlProvider, session)
-        {
-
-        }
-
-        //TODO: Сделать async API task 86
-   
-        public abstract T Create();
-        public abstract void Save(T entity);
-        public abstract T Load();
-        public abstract void Delete(T entity);
-        public abstract IEnumerable<T> GetList();
-
-
+        protected SqlBuilder SqlBuilder { get; }
 
     }
 }

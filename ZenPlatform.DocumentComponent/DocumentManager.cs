@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using ZenPlatform.Configuration.Data;
 using ZenPlatform.ConfigurationDataComponent;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Entity;
@@ -8,55 +10,74 @@ using ZenPlatform.DataComponent;
 
 namespace ZenPlatform.DocumentComponent
 {
+    /*
+     TODO: Необходимо реализовать генерацию кода для менеджера. Добавить хелперов
 
-    /// <summary>
-    /// Менеджер - связываеющее звено, для SQL компонента, сущности объекта и базы данных 
-    /// 
-    /// </summary>
-    public class DocumentManager : EntityManagerBase<DocumentEntity>
+        Статичный класс ManagerHelper помогает из сессии получать менеджеры
+        Session.Documents.Invoice.Create(Session);
+    */
+
+    public class DocumentManager : EntityManagerBase
     {
-        private readonly Entity2SqlBase _sqlProvider;
-
-        public DocumentManager(Entity2SqlBase sqlProvider, Session session) : base(sqlProvider, session)
+        public DocumentManager(SqlBuilder sqlBuilder) : base(sqlBuilder)
         {
-            _sqlProvider = sqlProvider;
+
         }
 
-        public override DocumentEntity Create()
+        //TODO: Сделать async API task 86
+
+        private bool CheckType(Type type)
+        {
+            return type.BaseType == typeof(DocumentEntity);
+        }
+
+        public DocumentEntity Create(Session session, PObjectType config)
+        {
+            var def = session.Environment.GetDefinition(config.Id);
+
+            if (!CheckType(def.EntityType)) throw new Exception($"Wrong manager for entity type: {def.EntityType}");
+
+            var dto = Activator.CreateInstance(def.DtoType);
+            var document = CreateEntityFromDto(session, def.EntityType, dto);
+            // Activator.CreateInstance(def.EntityType, session, dto) as DocumentEntity;
+
+            return document;
+        }
+
+
+        public void Save(Session session, DocumentEntity entity)
+        {
+
+        }
+
+
+        public async void SaveAsync(Session session, DocumentEntity entity)
+        {
+
+        }
+
+        private DocumentEntity CreateEntityFromDto(Session session, Type entityType, object dto)
+        {
+            var document = Activator.CreateInstance(entityType, session, dto) as DocumentEntity;
+            return document;
+        }
+
+        public DocumentEntity Load(Session session, Type entityType, object key)
+        {
+            var def = session.Environment.GetDefinition(entityType);
+
+            var dto = LoadDtoObject(session, def.DtoType, key);
+
+            return CreateEntityFromDto(session, entityType, dto);
+        }
+
+        public object LoadDtoObject(Session session, Type type, object key)
         {
             throw new NotImplementedException();
         }
 
-        public override void Save(DocumentEntity entity)
+        public void Delete(Session session, DocumentEntity entity)
         {
-            var context = Session.DataContextManger.GetContext();
-            try
-            {
-                context.BeginTransaction();
-                //TODO: Необходимо написать механизм определения инструкции. Insert\Update. Для этого необходимо сделать следующие задачи: Механизм кэширования(чтобы смотреть, елси объект в кэше не нужно дёргать его из БД)
-                context.CommitTransaction();
-            }
-            catch (Exception ex)
-            {
-                context.RollbackTransaction();
-            }
         }
-
-        public override DocumentEntity Load()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Delete(DocumentEntity entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<DocumentEntity> GetList()
-        {
-            throw new NotImplementedException();
-        }
-
-
     }
 }

@@ -6,9 +6,11 @@ namespace ZenPlatform.Configuration.Data
 {
     public class PComponent
     {
+        private readonly IList<PObjectType> _objects;
+        private readonly IDictionary<PGeneratedCodeRuleType, PGeneratedCodeRule> _rules;
         public PComponent()
         {
-            Objects = new List<PObjectType>();
+            _objects = new List<PObjectType>();
         }
 
         /// <summary>
@@ -20,6 +22,28 @@ namespace ZenPlatform.Configuration.Data
         /// <summary>
         /// Объекты, которые пренадлежат компоненту
         /// </summary>
-        public IEnumerable<PObjectType> Objects { get; }
+        public IEnumerable<PObjectType> Objects
+        {
+            get { return _objects; }
+        }
+
+        public void RegisterObject(PObjectType obj)
+        {
+            _objects.Add(obj);
+            obj.OwnerComponent = this;
+
+        }
+
+        public void RegisterCodeRule(PGeneratedCodeRule rule)
+        {
+            _rules.Add(rule.Type, rule);
+        }
+
+        public PGeneratedCodeRule GetCodeRule(PGeneratedCodeRuleType type)
+        {
+            return _rules[type];
+
+        }
+
     }
 }

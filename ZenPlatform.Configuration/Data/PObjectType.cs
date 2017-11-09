@@ -17,6 +17,11 @@ namespace ZenPlatform.Configuration.Data
             Id = Guid.NewGuid();
         }
 
+        /// <summary>
+        /// Компонент-владелец
+        /// </summary>
+        public PComponent OwnerComponent { get; set; }
+
         //TODO: Сделать ссылку на используемый компонент для данного объекта. Ссылка будет присваиваться из менеджера компонентов
 
         /// <summary>
