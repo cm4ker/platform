@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZenPlatform.QueryCompiler.Queries
+namespace ZenPlatform.QueryBuilder.Queries
 {
     /// <summary>
     /// Represents INSERT instruction
@@ -15,7 +15,7 @@ namespace ZenPlatform.QueryCompiler.Queries
         private DBValuesClause _values;
         private DBTable _insertTable;
 
-        internal DBInsertQuery()
+        public DBInsertQuery()
         {
             _values = new DBValuesClause();
             _compileExpression = "{InsertExpression}\n{ValuesExpression}";
@@ -24,7 +24,10 @@ namespace ZenPlatform.QueryCompiler.Queries
         public DBTable InsertTable
         {
             get { return _insertTable; }
+            set { _insertTable = value; }
         }
+
+        
 
         public void AddField(DBTableField field)
         {

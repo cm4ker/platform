@@ -1,4 +1,4 @@
-﻿using ZenPlatform.QueryCompiler.Queries;
+﻿using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.Core.Entity
 {

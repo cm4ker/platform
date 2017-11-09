@@ -1,6 +1,6 @@
 using System;
 
-namespace ZenPlatform.QueryCompiler.Schema
+namespace ZenPlatform.QueryBuilder.Schema
 {
     public class NotInitializedException : Exception
     {

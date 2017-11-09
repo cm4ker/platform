@@ -56,7 +56,7 @@ namespace ZenPlatform.DocumentComponent
 
             members.Add(GetStandartProperty("Key", "Guid"));
 
-            foreach (var prop in conf.Propertyes)
+            foreach (var prop in conf.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
@@ -119,7 +119,7 @@ namespace ZenPlatform.DocumentComponent
 
             var dtoPrivateField = generator.FieldDeclaration($"_dto", SyntaxFactory.ParseTypeName($"{conf.Name}Dto"));
 
-            foreach (var prop in conf.Propertyes)
+            foreach (var prop in conf.Properties)
             {
                 if (prop.Types.Count == 1)
                 {

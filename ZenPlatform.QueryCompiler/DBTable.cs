@@ -1,21 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
-using ZenPlatform.QueryCompiler.Interfaces;
-using ZenPlatform.QueryCompiler.Schema;
+using ZenPlatform.QueryBuilder.Interfaces;
+using ZenPlatform.QueryBuilder.Schema;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class DBTable : IDBTableDataSource, IDbAliasedDbToken
     {
         private readonly string _name;
-        private readonly List<DBClause> _fields;
+        private readonly List<DBField> _fields;
         private string _compileExpression;
         private string _alias;
 
         public DBTable(string name, string alias = "")
         {
             _name = name;
-            _fields = new List<DBClause>();
+            _fields = new List<DBField>();
             _compileExpression = "[{Name}]";
             _alias = alias;
 
@@ -46,7 +46,7 @@ namespace ZenPlatform.QueryCompiler
 
         public string Alias
         {
-            get { return _alias; }
+            get { return string.IsNullOrEmpty(_alias) ? _name : _alias; }
         }
 
         public string Name
@@ -59,7 +59,7 @@ namespace ZenPlatform.QueryCompiler
             return this.MemberwiseClone();
         }
 
-        public List<DBClause> Fields
+        public List<DBField> Fields
         {
             get { return _fields; }
         }
@@ -69,7 +69,7 @@ namespace ZenPlatform.QueryCompiler
 
         }
 
-        public DBClause GetField(string name)
+        public DBField GetField(string name)
         {
             return _fields.First(x => (x as DBTableField).Name.ToLower() == name.ToLower());
         }

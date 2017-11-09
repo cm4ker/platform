@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class Class1
     {

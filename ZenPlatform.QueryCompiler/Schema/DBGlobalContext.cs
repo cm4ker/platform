@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ZenPlatform.QueryCompiler.Schema
+namespace ZenPlatform.QueryBuilder.Schema
 {
     public class DBGlobalContext
     {

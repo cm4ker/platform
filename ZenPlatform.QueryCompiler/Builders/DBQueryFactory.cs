@@ -1,17 +1,24 @@
-﻿using ZenPlatform.QueryCompiler.Queries;
-using ZenPlatform.QueryCompiler.Schema;
+﻿using ZenPlatform.QueryBuilder.Queries;
+using ZenPlatform.QueryBuilder.Schema;
+using System;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     public class DBQueryFactory
     {
-        //private readonly DBContext _context;
-        //private readonly DBSchemaManager _schemaManager;
 
-        public DBQueryFactory()//DBContext context)
+        private static DBQueryFactory _instance = new DBQueryFactory();
+
+        public static DBQueryFactory Instance { get { return _instance; } }
+
+        public T GetQuery<T>() where T : IQueryable
         {
-            //_context = context;
-            //_schemaManager = new DBSchemaManager(_context);
+            return (T)Activator.CreateInstance(typeof(T));
+        }
+
+        public DBQueryFactory()
+        {
+           
         }
 
         public DBSelectQuery GetSelect()
@@ -54,5 +61,6 @@ namespace ZenPlatform.QueryCompiler
             DBTable table = new DBTable(name, alias);
             return table;
         }
+        
     }
 }

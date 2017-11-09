@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using DbType = ZenPlatform.QueryBuilder.Schema.DBType;
 
 namespace ZenPlatform.Configuration.Data
 {
@@ -13,7 +14,7 @@ namespace ZenPlatform.Configuration.Data
 
         public abstract bool IsNullable { get; set; }
 
-        public abstract SqlDbType DBType { get; }
+        public abstract DbType DBType { get; }
         public abstract Type CLRType { get; }
     }
 }

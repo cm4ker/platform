@@ -27,7 +27,7 @@ namespace ZenPlatform.Tests
             contractorNameProperty.Types.Add(new PString());
             contractorNameProperty.Name = "Name";
 
-            contractor.Propertyes.Add(contractorNameProperty);
+            contractor.Properties.Add(contractorNameProperty);
 
             var prop1 = new PProperty(invoice);
             prop1.Types.Add(new PDateTime());
@@ -42,9 +42,9 @@ namespace ZenPlatform.Tests
             contractorProperty.Name = "Contractor";
 
 
-            invoice.Propertyes.Add(contractorProperty);
-            invoice.Propertyes.Add(prop1);
-            invoice.Propertyes.Add(prop2);
+            invoice.Properties.Add(contractorProperty);
+            invoice.Properties.Add(prop1);
+            invoice.Properties.Add(prop2);
 
             var nodeDto = deg.GenerateDtoClass(invoice);
             var nodeEntity = deg.GenerateEntityClass(invoice);

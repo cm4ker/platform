@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ZenPlatform.QueryCompiler.Interfaces;
+using ZenPlatform.QueryBuilder.Interfaces;
 
-namespace ZenPlatform.QueryCompiler
+namespace ZenPlatform.QueryBuilder
 {
     /// <summary>
     /// Represents JOIN clause between two datasources (table\query\udtf)

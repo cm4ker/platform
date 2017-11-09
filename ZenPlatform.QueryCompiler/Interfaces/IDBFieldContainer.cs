@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using ZenPlatform.QueryCompiler.Queries;
+using ZenPlatform.QueryBuilder.Queries;
 
-namespace ZenPlatform.QueryCompiler.Interfaces
+namespace ZenPlatform.QueryBuilder.Interfaces
 {
     public interface IDBFieldContainer : IDBToken
     {
-        List<DBClause> Fields { get; }
-        DBClause GetField(string name);
+        List<DBField> Fields { get; }
+        DBField GetField(string name);
     }
 
     public interface IDBAliasedFieldContainer : IDBFieldContainer, IDbAliasedDbToken
