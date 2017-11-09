@@ -15,7 +15,7 @@ namespace ZenPlatform.DocumentComponent
         {
             Generator = new DocumentEntityGenerator();
             EntityBase = typeof(DocumentEntity);
-            Manager = new DocumentManager(new Document2Sql());
+            Manager = new DocumentManager(null);
         }
 
         private void Initialization()
