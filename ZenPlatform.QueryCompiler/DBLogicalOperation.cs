@@ -16,6 +16,7 @@ namespace ZenPlatform.QueryBuilder
             _parameters.OnChange += _parameters_OnChange;
             _owner = owner;
             _chainType = chainType;
+            
 
         }
 

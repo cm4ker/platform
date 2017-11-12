@@ -11,7 +11,7 @@ namespace ZenPlatform.QueryBuilder
     /// </summary>
     public class DBJoinClause : IDBToken
     {
-        private readonly IDBTableDataSource _tds;
+        private readonly IDBDataSource _tds;
         private readonly JoinType _jt;
         private DBClause _clause1;
         private DBClause _clause2;
@@ -19,7 +19,7 @@ namespace ZenPlatform.QueryBuilder
 
         private List<DBClause> _clauses;
 
-        public DBJoinClause(IDBTableDataSource tds, JoinType jt)
+        public DBJoinClause(IDBDataSource tds, JoinType jt)
         {
             _tds = tds;
             _jt = jt;
@@ -60,7 +60,7 @@ namespace ZenPlatform.QueryBuilder
             return On(clause1, compare, clause2);
         }
 
-        public IDBTableDataSource DbTableDataSorce
+        public IDBDataSource DbTableDataSorce
         {
             get { return _tds; }
         }

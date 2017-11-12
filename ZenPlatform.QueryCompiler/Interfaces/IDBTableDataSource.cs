@@ -1,6 +1,11 @@
 namespace ZenPlatform.QueryBuilder.Interfaces
 {
-    public interface IDBTableDataSource : IDBAliasedFieldContainer
+    public interface IDBTableDataSource : IDBDataSource
+    {
+        string Name { get; }
+    }
+
+    public interface IDBDataSource : IDBAliasedFieldContainer
     {
 
     }
