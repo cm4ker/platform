@@ -8,7 +8,7 @@ namespace ZenPlatform.DataComponent.Interfaces
 {
     public interface IQueryBuilder
     {
-        IDataChangeQuery Build(PObjectType objectType);
+        IQueryable Build(PObjectType objectType);
 
     }
 }

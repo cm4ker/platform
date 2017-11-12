@@ -53,7 +53,7 @@ namespace ZenPlatform.DocumentComponent
 
             var members = new List<SyntaxNode>();
 
-            foreach (var prop in conf.Propertyes)
+            foreach (var prop in conf.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
@@ -128,7 +128,7 @@ namespace ZenPlatform.DocumentComponent
                 Если поле ObjectType(Другой объект конфигурации) - Взять и имя свойства, как имя свойста, взять тип, как наименование типа Entity
                                 
             */
-            foreach (var prop in conf.Propertyes)
+            foreach (var prop in conf.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
@@ -136,8 +136,8 @@ namespace ZenPlatform.DocumentComponent
 
                     if (propType is PObjectType objectProprty)
                     {
-                        var component = objectProprty.OwnerComponent.GetCodeRule();
-                        var pobjectProperty = SyntaxFactory.PropertyDeclaration();
+                        //var component = objectProprty.OwnerComponent.GetCodeRule();
+                        //var pobjectProperty = SyntaxFactory.PropertyDeclaration();
 
                         members.Add(null);
                         //members.Add(GetStandartProperty(prop.Name, propType.Name));

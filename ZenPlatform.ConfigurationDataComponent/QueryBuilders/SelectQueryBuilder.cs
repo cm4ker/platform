@@ -7,13 +7,14 @@ using ZenPlatform.Configuration.Data;
 using ZenPlatform.QueryBuilder.Queries;
 using ZenPlatform.QueryBuilder;
 using DBType = ZenPlatform.QueryBuilder.Schema.DBType;
+using IQueryable = ZenPlatform.QueryBuilder.Queries.IQueryable;
 
 namespace ZenPlatform.DataComponent.QueryBuilders
 {
     public class SelectQueryBuilder: IQueryBuilder
     {
 
-        public IDataChangeQuery Build(PObjectType objectType)
+        public IQueryable Build(PObjectType objectType)
         {
             var query = DBQueryFactory.Instance.GetSelect();
 

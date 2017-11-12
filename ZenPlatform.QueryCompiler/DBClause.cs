@@ -58,17 +58,17 @@ namespace ZenPlatform.QueryBuilder
             return new DBClauseField(owner, name);
         }
 
-        public static DBClause CreateSelectField(IDBAliasedFieldContainer owner, string name, string alias = "")
+        public static DBClause CreateSelectField(IDBTableDataSource owner, string name, string alias = "")
         {
             return new DBSelectField(owner, name, alias);
         }
 
-        public static DBClause CreateSelectField(IDBAliasedFieldContainer owner, DBFieldSchema schema, string name, string alias = "")
+        public static DBClause CreateSelectField(IDBTableDataSource owner, DBFieldSchema schema, string name, string alias = "")
         {
             return new DBSelectField(owner, name, schema, alias);
         }
 
-        public static DBClause CreateSelectField(IDBAliasedFieldContainer owner, object obj, string alias = "")
+        public static DBClause CreateSelectField(IDBTableDataSource owner, object obj, string alias = "")
         {
             string quotedObject = "'" + obj + "'";
             return new DBSelectField(owner, quotedObject, alias);

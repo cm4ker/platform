@@ -7,7 +7,7 @@ using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.QueryBuilder
 {
-    public class DBSelectPipe : IDBFieldContainer, IParametrized
+    public class DBSelectPipe : IDBFieldContainer, IDataReturnQuery
     {
         private readonly Dictionary<DBSelectQuery, DBSelectConjunctionTypes> _queryes;
         private readonly List<DBField> _fields;

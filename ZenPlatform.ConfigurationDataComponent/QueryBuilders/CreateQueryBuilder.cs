@@ -6,12 +6,13 @@ using ZenPlatform.Configuration.Data;
 using ZenPlatform.DataComponent.Interfaces;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Queries;
+using IQueryable = ZenPlatform.QueryBuilder.Queries.IQueryable;
 
 namespace ZenPlatform.DataComponent.QueryBuilders
 {
     public class CreateQueryBuilder : IQueryBuilder
     {
-        public IDataChangeQuery Build(PObjectType objectType)
+        public IQueryable Build(PObjectType objectType)
         {
             var query = DBQueryFactory.Instance.GetInsert();
 

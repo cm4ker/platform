@@ -58,6 +58,12 @@ namespace ZenPlatform.QueryBuilder
         public static string UNION = "UNION";
         public static string ALL = "ALL";
         public static string CREATE = "CREATE";
+
+        public static string ALTER = "ALTER";
+        public static string COLUMN = "COLUMN";
+        public static string DATABASE = "DATABASE";
+        public static string IF = "IF";
+        public static string EXISTS = "EXISTS";
     }
 
     public static class SQLVariables

@@ -48,6 +48,14 @@ namespace ZenPlatform.QueryBuilder
 
         public DBSelectField ToSelectField()
         {
+            if (_owner is IDBTableDataSource)
+                return new DBSelectField(_owner as IDBTableDataSource, _name);
+            else throw new System.Exception("Field owner must be IDBTableDataSource."); // to do Сделать отдельный класс исключений. или ваще снести эту функцию.
+        }
+
+        /*
+        public DBSelectField ToSelectField()
+        {
 
 
             var result = DBClause.CreateSelectField(_owner, new DBFieldSchema(
@@ -63,7 +71,8 @@ namespace ZenPlatform.QueryBuilder
 
             return result;
         }
-
+        */
+        /*
         public DBSelectField ToSelectField(IDBAliasedFieldContainer owner)
         {
 
@@ -81,7 +90,7 @@ namespace ZenPlatform.QueryBuilder
 
             return result;
         }
-
+        */
         public DBField Clone(IDBAliasedFieldContainer owner)
         {
             var result = this.MemberwiseClone() as DBField;

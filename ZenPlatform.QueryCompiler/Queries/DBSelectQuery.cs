@@ -7,7 +7,7 @@ using ZenPlatform.QueryBuilder.Interfaces;
 
 namespace ZenPlatform.QueryBuilder.Queries
 {
-    public class DBSelectQuery : IDBTablesContainer, IDBFieldContainer, IDataChangeQuery
+    public class DBSelectQuery : IDBTablesContainer, IDBFieldContainer, IDataReturnQuery
     {
         private string _compileExpression;
 
@@ -33,10 +33,35 @@ namespace ZenPlatform.QueryBuilder.Queries
             _groupby = new DBGroupByClause();
         }
 
-        public void Select(DBField clause)
+
+        public DBSelectQuery(string tableName): this()
+        {
+            DBTable dbTable = new DBTable(tableName);
+            _from.AddTable(dbTable);
+        }
+
+        public DBSelectQuery Select(string fieldName)
+        {
+            _fields.Add(new DBSelectField(_from.RootTable, fieldName));
+            return this;
+        }
+
+        public DBSelectQuery Select(params string[] fieldsName)
+        {
+            foreach (var fieldName in fieldsName)
+            {
+                Select(fieldName);
+            }
+
+            return this;
+
+        }
+
+        public DBSelectQuery Select(DBField clause)
         {
 
             _fields.Add(clause);
+            return this;
         }
 
         public void SelectAllFieldsFromSourceTables(string prefixAll = "")
@@ -61,15 +86,27 @@ namespace ZenPlatform.QueryBuilder.Queries
             return this;
         }
 
+        public DBSelectQuery From(String tableName)
+        {
+            From(new DBTable(tableName));
+            return this;
+        }
+
         public DBSelectQuery From(DBTable table)
         {
             _from.AddTable(table);
             return this;
         }
 
-        public DBSelectQuery From(DBSubSelectQuery table)
+        public DBSelectQuery From(DBSelectQuery subquery, string alias)
         {
-            _from.AddTable(table);
+            _from.AddTable(new DBSubSelectQuery(subquery, alias));
+            return this;
+        }
+
+        public DBSelectQuery From(DBSubSelectQuery subquery)
+        {
+            _from.AddTable(subquery);
             return this;
         }
 
@@ -97,6 +134,12 @@ namespace ZenPlatform.QueryBuilder.Queries
             _groupby.ThenGroupBy(clause);
             return _groupby;
         }
+
+        public  void Where(string fieldName1, CompareType type, string fieldName2)
+        {
+           // _where.Where(new DBSelectField(), type, new DBSelectField());
+        }
+
 
         public DBLogicalOperation Where(DBClause clause1, CompareType type, DBClause clause2)
         {
@@ -208,7 +251,7 @@ namespace ZenPlatform.QueryBuilder.Queries
         }
 
 
-        public List<IDBTableDataSource> Tables
+        public List<IDBDataSource> Tables
         {
             get { return _from.Tables; }
         }
@@ -219,7 +262,7 @@ namespace ZenPlatform.QueryBuilder.Queries
             {
                 foreach (var field in table.Fields)
                 {
-                    if (table.Alias + '.' + (field as DBField).Name == name)
+                    if (table.Alias + '.' + field.Name == name)
                         return field;
                 }
             }
