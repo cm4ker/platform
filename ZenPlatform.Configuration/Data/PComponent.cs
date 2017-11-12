@@ -11,6 +11,7 @@ namespace ZenPlatform.Configuration.Data
         public PComponent()
         {
             _objects = new List<PObjectType>();
+            _rules = new Dictionary<PGeneratedCodeRuleType, PGeneratedCodeRule>();
         }
 
         /// <summary>
@@ -42,7 +43,6 @@ namespace ZenPlatform.Configuration.Data
         public PGeneratedCodeRule GetCodeRule(PGeneratedCodeRuleType type)
         {
             return _rules[type];
-
         }
 
     }

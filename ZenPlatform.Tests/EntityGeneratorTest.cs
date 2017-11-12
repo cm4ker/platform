@@ -16,8 +16,20 @@ namespace ZenPlatform.Tests
     [TestClass]
     public class EntityGeneratorTest
     {
+        private PComponent DocumentComponent()
+        {
+            var c = new PComponent();
+            c.Name = "Document";
+
+            new DocumnetComponent(c);
+
+            return c;
+        }
+
         private PSimpleObjectType CreateInvoice()
         {
+
+
             PSimpleObjectType invoice = new PSimpleObjectType("Invoice"); ;
 
             var prop1 = new PProperty(invoice);
@@ -76,6 +88,11 @@ namespace ZenPlatform.Tests
             var invoice = CreateInvoice();
             var contractor = CreateContractor();
 
+            var component = DocumentComponent();
+
+            invoice.OwnerComponent = component;
+            contractor.OwnerComponent = component;
+
             var contractorProperty = new PProperty(invoice);
             contractorProperty.Types.Add(contractor);
             contractorProperty.Name = "Contractor";
@@ -83,10 +100,39 @@ namespace ZenPlatform.Tests
 
             invoice.Properties.Add(contractorProperty);
 
-            var nodeEntity = deg.GenerateEntityClass(invoice);
+            var invoiceClass = deg.GenerateEntityClass(invoice);
+            var contractorClass = deg.GenerateEntityClass(contractor);
 
-            Console.WriteLine(nodeEntity.ToString());
+            Console.WriteLine(contractorClass.ToString());
+            Console.WriteLine(invoiceClass.ToString());
         }
+
+        [TestMethod]
+        public void DocumentSessionExtensionGeneration()
+        {
+            DocumentEntityGenerator deg = new DocumentEntityGenerator();
+
+            var invoice = CreateInvoice();
+            var contractor = CreateContractor();
+
+            var component = DocumentComponent();
+
+            var contractorProperty = new PProperty(invoice);
+            contractorProperty.Types.Add(contractor);
+            contractorProperty.Name = "Contractor";
+
+            invoice.Properties.Add(contractorProperty);
+
+            component.RegisterObject(invoice);
+            component.RegisterObject(contractor);
+
+            var extension = deg.GenerateExtension(component);
+            var inface = deg.GenerateInterface(component);
+
+            Console.WriteLine(extension.ToString());
+            Console.WriteLine(inface.ToString());
+        }
+
 
         [TestMethod]
         public void DcoumentComponentGenerateHelpers()
@@ -107,98 +153,6 @@ namespace ZenPlatform.Tests
             var helpers = deg.GenerateHelpersForEntity();
             Console.WriteLine(helpers.ToString());
 
-        }
-    }
-
-
-    public class SomeDto1 : EntityBase
-    {
-        public string Prop1 { get; set; }
-
-        public Guid SomeEntity_Ref { get; set; }
-    }
-
-    public class SomeDto2 : EntityBase
-    {
-        public string SomePropInDto2 { get; set; }
-    }
-
-    public class SomeEntity2 : INotifyPropertyChanged
-    {
-        private SomeDto2 _someDto2;
-
-        public SomeEntity2(SomeDto2 dto)
-        {
-            _someDto2 = dto;
-        }
-
-        public string SomePropertyInDto2
-        {
-            get { return _someDto2.SomePropInDto2; }
-            set
-            {
-                _someDto2.SomePropInDto2 = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
-    public class SomeEntity1 : INotifyPropertyChanged
-    {
-        private SomeDto1 _dto;
-        private SomeEntity2 _someEntity2;
-        private Session _session;
-
-        public SomeEntity1(SomeDto1 dto, Session session)
-        {
-            _dto = dto;
-            _session = session;
-
-        }
-
-        public string Prop1
-        {
-            get { return _dto.Prop1; }
-            set
-            {
-                _dto.Prop1 = value;
-                OnPropertyChanged();
-            }
-        }
-
-
-        public SomeEntity2 SomeEntity
-        {
-            get
-            {
-                throw new Exception("NEED REALIZATION"); /* _session.SomeManager.Load(_dto.SomeEntity_Ref);
-                                                         —войство SomeManager объ€вл€етс€ как
-                                                         public static SomeEntityManager SomeManager(this Session session)
-                                                         { 
-                                                            return (SomeEntityManager)session.GetManager("SomeEntityMamanger");
-                                                         }*/
-                return _someEntity2;
-            }
-            set
-            {
-                _someEntity2 = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

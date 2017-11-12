@@ -31,9 +31,9 @@ namespace ZenPlatform.DocumentComponent
             return type.BaseType == typeof(DocumentEntity);
         }
 
-        public DocumentEntity Create(Session session, PObjectType config)
+        public DocumentEntity Create(Session session, Type entityType)
         {
-            var def = session.Environment.GetDefinition(config.Id);
+            var def = session.Environment.GetDefinition(entityType);
 
             if (!CheckType(def.EntityType)) throw new Exception($"Wrong manager for entity type: {def.EntityType}");
 
@@ -78,6 +78,45 @@ namespace ZenPlatform.DocumentComponent
 
         public void Delete(Session session, DocumentEntity entity)
         {
+        }
+
+        public object GetKey(Session session, DocumentEntity entity)
+        {
+            //Todo: Необходиом получить ключ, в не зависимости от отго, какого типа ключ, составной или не составной
+            throw new NotImplementedException();
+        }
+    }
+
+
+    public class DocumentEntityManager<T> where T : DocumentEntity
+    {
+        private DocumentManager _documentManager;
+        private Session _session;
+
+        public DocumentEntityManager(Session session)
+        {
+            _documentManager = session.Environment.GetManager(typeof(T)) as DocumentManager;
+            _session = session;
+        }
+
+        public T Load(object key)
+        {
+            return _documentManager.Load(_session, typeof(T), key) as T;
+        }
+
+        public void Delete(T entity)
+        {
+            _documentManager.Delete(_session, entity);
+        }
+
+        public void Save(T entity)
+        {
+            _documentManager.Save(_session, entity);
+        }
+
+        public T Create()
+        {
+            return _documentManager.Create(_session, typeof(T)) as T;
         }
     }
 }

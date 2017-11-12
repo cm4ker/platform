@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.ConfigurationDataComponent;
 using ZenPlatform.Core;
@@ -20,6 +21,35 @@ namespace ZenPlatform.DocumentComponent
         {
         }
 
+        /*
+         * Необходимо соблюдать формат возвращаемых шаблонов для генерации инструкций
+         * Например
+         * 
+         * Для докумета необходимо, чтобы в чужих свойствах передавался идентификатор для того, чтобы можно было загрузить документ
+         * Инструкция get должна выглядить следующим образом:
+         * 
+         * Session.{ComponentName}.{ObjectName}.Load({Params}) => Session.Document.Invoice.Load(_dto.InvoiceKey)
+         * 
+         * для инструкции set:
+         * 
+         * {Valriable} = Session.{ComponentName}.{ObjectName}.GetKey({Value}); => _dto.InvoiceKey = Session.Document.Invoice.GetKey(value);
+         */
+
+        public override PGeneratedCodeRule GetInForeignPropertySetActionRule()
+        {
+            return new PGeneratedCodeRule(PGeneratedCodeRuleType.InForeignPropertyGetActionRule, "Session.{ComponentName}.{ObjectName}.Load({Params})");
+        }
+
+        public override PGeneratedCodeRule GetInForeignPropertyGetActionRule()
+        {
+            return new PGeneratedCodeRule(PGeneratedCodeRuleType.InForeignPropertySetActionRule, "{SetVariable} = Session.{ComponentName}.{ObjectName}.GetKey({Params});");
+        }
+
+        public override PGeneratedCodeRule GetClassPostfixRule()
+        {
+            return new PGeneratedCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule, "Entity");
+        }
+
         protected AccessorListSyntax GetStandardAccessorListSyntax()
         {
             return SyntaxFactory.AccessorList(
@@ -32,6 +62,7 @@ namespace ZenPlatform.DocumentComponent
                             .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                     }));
         }
+
         protected PropertyDeclarationSyntax GetStandartProperty(string name, string type)
         {
             return
@@ -40,6 +71,7 @@ namespace ZenPlatform.DocumentComponent
                     name).WithAccessorList(GetStandardAccessorListSyntax())
                     .WithModifiers(SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.PublicKeyword)));
         }
+
         public virtual SyntaxNode GenerateDtoClass(PObjectType conf)
         {
             var workspace = new AdhocWorkspace();
@@ -53,7 +85,7 @@ namespace ZenPlatform.DocumentComponent
 
             var members = new List<SyntaxNode>();
 
-            foreach (var prop in conf.Propertyes)
+            foreach (var prop in conf.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
@@ -128,7 +160,7 @@ namespace ZenPlatform.DocumentComponent
                 Если поле ObjectType(Другой объект конфигурации) - Взять и имя свойства, как имя свойста, взять тип, как наименование типа Entity
                                 
             */
-            foreach (var prop in conf.Propertyes)
+            foreach (var prop in conf.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
@@ -136,11 +168,47 @@ namespace ZenPlatform.DocumentComponent
 
                     if (propType is PObjectType objectProprty)
                     {
-                        var component = objectProprty.OwnerComponent.GetCodeRule();
-                        var pobjectProperty = SyntaxFactory.PropertyDeclaration();
+                        var component = objectProprty.OwnerComponent;
 
-                        members.Add(null);
-                        //members.Add(GetStandartProperty(prop.Name, propType.Name));
+                        var propEnittyPreffix = component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule).GetExpression();
+                        var propEntityPostfix = component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule).GetExpression();
+
+                        var getRule = component.GetCodeRule(PGeneratedCodeRuleType.InForeignPropertyGetActionRule);
+                        var setRule = component.GetCodeRule(PGeneratedCodeRuleType.InForeignPropertySetActionRule);
+
+                        var getExp = getRule.GetExpression().NamedFormat(new StandartGetExpressionParameters()
+                        {
+                            ComponentName = component.Name,
+                            ObjectName = propType.Name,
+                            Params = $"{DtoPrivateFieldName}.{prop.Name}"
+                        });
+                        var setExp = setRule.GetExpression().NamedFormat(new StandartSetExpressionParameters()
+                        {
+                            ComponentName = component.Name,
+                            SetVariable = $"{DtoPrivateFieldName}.{prop.Name}",
+                            ObjectName = propType.Name,
+                            Params = "value"
+                        });
+
+
+                        var getAcessorStatement = new SyntaxNode[]
+                        {
+                            SyntaxFactory.ParseStatement($"return {getExp};")
+                        };
+
+                        var setAcessorStatement = new SyntaxNode[]
+                        {
+                            SyntaxFactory.ParseStatement($"{setExp}"),
+                            SyntaxFactory.ParseStatement("OnPropertyChanged();")
+                        };
+
+                        var csProperty =
+                            generator.PropertyDeclaration(
+                                prop.Name,
+                                SyntaxFactory.IdentifierName($"{propEnittyPreffix}{propType.Name}{propEntityPostfix}"),
+                                Accessibility.Public,
+                                DeclarationModifiers.None, getAcessorStatement, setAcessorStatement);
+                        members.Add(csProperty);
                     }
 
                     if (propType is PPrimetiveType primitiveType)
@@ -227,11 +295,14 @@ namespace ZenPlatform.DocumentComponent
             members.Add(deleteMethod);
             #endregion
 
+            var preffix = conf.OwnerComponent.GetCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule).GetExpression();
+            var postfix = conf.OwnerComponent.GetCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule).GetExpression();
+
             var classDefinition = generator.ClassDeclaration(
-                    $"{conf.Name}Entity",
+                    $"{preffix}{conf.Name}{postfix}",
                    typeParameters: null,
                    accessibility: Accessibility.Public,
-                   modifiers: DeclarationModifiers.None,
+                   modifiers: DeclarationModifiers.Partial,
                    baseType: SyntaxFactory.ParseTypeName("DocumentEntityBase"),
                    interfaceTypes: null,
                    members: members);
@@ -240,6 +311,125 @@ namespace ZenPlatform.DocumentComponent
                 generator.NamespaceDeclaration("MyTypes", classDefinition) as NamespaceDeclarationSyntax;
 
             var newNode = generator.CompilationUnit(classDefinition).NormalizeWhitespace();
+            return newNode;
+        }
+
+
+        /*
+         * Необходимо сгенерировать Extension methods для класса Session, чтобы
+         * появился следующий функционал
+         * 
+         * Session.Document().Invoice.Load()
+         * Session.Document().Invoice.Save()
+         * Session.Document().Invoice.Delete()
+         * Session.Document().Invoice.Create()
+         * 
+         * DocumentInterface - класс в котором содержится всё подмножество объектов компонента
+         * 
+         * public class DocumentInterface
+         * {
+         *      public DocumentInterface(Session session)
+         *      {
+         *          Session = session;
+         *      }
+         *      
+         *      public Session Session { get; }
+         *      
+         *      public DocumentEntityManager<InvoiceEntity> Invoice { get { return new DocumentEntityManager<InvoiceEntity>(Session);} }
+         *      
+         *      public DocumentEntityManager<InvoiceOutEntity> InvoiceOut { get { return new DocumentEntityManager<InvoiceOutEntity>(Session);} }      
+         *      
+         *      public DocumentEntityManager<ChequeEntity> Cheque { get { return new DocumentEntityManager<ChequeEntity>(Session);} }      
+         *      
+         * }
+         * 
+         * public static class DocumentComponentSessionExtension
+         * {
+         *      public static DocumentInterface Document(this Session session)
+         *      {
+         *          return new DocumentInterface(session);
+         *      }
+         * }
+         */
+
+
+        /// <summary>
+        /// Метод для генерации интерфейса сущностей, привязанных к конмоменту
+        /// </summary>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        public SyntaxNode GenerateInterface(PComponent component)
+        {
+            var workspace = new AdhocWorkspace();
+
+            var generator = SyntaxGenerator.GetGenerator(
+                workspace, LanguageNames.CSharp);
+
+            var constructorBody = SyntaxFactory.Block(SyntaxFactory.ParseStatement("Session = session;"));
+            var parameters = SyntaxFactory.ParseParameterList("Session session");
+
+            var constructor = generator.ConstructorDeclaration("DocumentInterface",
+                parameters.Parameters,
+                statements: constructorBody.Statements,
+                accessibility: Accessibility.Public);
+
+            var interfaceClass = SyntaxFactory.ClassDeclaration("DocumentInterface")
+                .AddMembers(constructor as MemberDeclarationSyntax)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+            var preffix = component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule);
+            var postfix = component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule);
+
+            foreach (var componentObject in component.Objects)
+            {
+                var getBody = SyntaxFactory.Block(
+                    SyntaxFactory.ParseStatement($"return new DocumentEntityManager<{preffix.GetExpression()}{componentObject.Name}{postfix.GetExpression()}>(Session);")
+                    );
+                var getAccessor = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, getBody);
+
+                var componentProperty = SyntaxFactory.PropertyDeclaration(
+                    SyntaxFactory.ParseTypeName($"DocumentEntityManager<{preffix.GetExpression()}{componentObject.Name}{postfix.GetExpression()}>"),
+                    componentObject.Name).
+                    WithAccessorList(SyntaxFactory.AccessorList().AddAccessors(getAccessor));
+
+                interfaceClass = interfaceClass.AddMembers(componentProperty);
+
+            }
+
+            var newNode = generator.CompilationUnit(interfaceClass).NormalizeWhitespace();
+
+            return newNode;
+        }
+
+        /// <summary>
+        /// Метод для генерации компонен
+        /// </summary>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        public SyntaxNode GenerateExtension(PComponent component)
+        {
+            var workspace = new AdhocWorkspace();
+
+            var generator = SyntaxGenerator.GetGenerator(
+                workspace, LanguageNames.CSharp);
+
+            var body = SyntaxFactory.Block(SyntaxFactory.ParseStatement("return new DocumentInterface(session);"));
+            var parameters = SyntaxFactory.ParseParameterList("this Session session");
+
+            var method = generator.MethodDeclaration("Document",
+                parameters.Parameters,
+                statements: body.Statements,
+                returnType: SyntaxFactory.ParseTypeName("DocumentInterface"),
+                accessibility: Accessibility.Public,
+                modifiers: DeclarationModifiers.Static);
+
+            var staticClass = SyntaxFactory.ClassDeclaration("DocumentComponentSessionExtension")
+                .AddMembers(method as MemberDeclarationSyntax)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+
+            var newNode = generator.CompilationUnit(staticClass).NormalizeWhitespace();
+
             return newNode;
         }
 
