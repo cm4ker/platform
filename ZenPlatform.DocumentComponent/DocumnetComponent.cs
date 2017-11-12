@@ -16,13 +16,15 @@ namespace ZenPlatform.DocumentComponent
             Generator = new DocumentEntityGenerator();
             EntityBase = typeof(DocumentEntity);
             Manager = new DocumentManager(null);
+            Initialization();
         }
 
         private void Initialization()
         {
             Component.RegisterCodeRule(Generator.GetInForeignPropertySetActionRule());
+            Component.RegisterCodeRule(Generator.GetInForeignPropertyGetActionRule());
             Component.RegisterCodeRule(Generator.GetClassPostfixRule());
-            Component.RegisterCodeRule(Generator.GetClassPostfixRule());
+            Component.RegisterCodeRule(Generator.GetClassPrefixRule());
         }
 
         public override Type EntityBase { get; }
