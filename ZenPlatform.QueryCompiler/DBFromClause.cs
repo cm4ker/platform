@@ -14,7 +14,7 @@ namespace ZenPlatform.QueryBuilder
     /// </summary>
     public class DBFromClause : IDBTablesContainer
     {
-        private IDBTableDataSource _root;
+        private IDBDataSource _root;
         private List<DBJoinClause> _joins;
 
 
@@ -24,12 +24,12 @@ namespace ZenPlatform.QueryBuilder
             CompileExpression = $"{SQLTokens.FROM}\n\t{{Table}}\n\t{{Joins}}";
         }
 
-        public void AddTable(IDBTableDataSource tds)
+        public void AddTable(IDBDataSource tds)
         {
             _root = tds;
         }
 
-        public DBJoinClause Join(IDBTableDataSource tds, JoinType joinType = JoinType.Left)
+        public DBJoinClause Join(IDBDataSource tds, JoinType joinType = JoinType.Left)
         {
             var jc = new DBJoinClause(tds, joinType);
             _joins.Add(jc);
@@ -82,14 +82,14 @@ namespace ZenPlatform.QueryBuilder
 
         public string CompileExpression { get; set; }
 
-        public IDBTableDataSource RootTalbe => _root;
+        public IDBDataSource RootTable => _root;
 
-        public List<IDBTableDataSource> Tables
+        public List<IDBDataSource> Tables
         {
             get { return _joins.Select(x => x.DbTableDataSorce).Union(new[] { _root }).ToList(); }
         }
 
-        public IDBTableDataSource GetTable(string alias)
+        public IDBDataSource GetTable(string alias)
         {
             throw new NotImplementedException();
         }

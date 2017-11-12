@@ -1,8 +1,10 @@
 using System.Data;
+using System.Text;
+using ZenPlatform.QueryBuilder.Interfaces;
 
 namespace ZenPlatform.QueryBuilder.Schema
 {
-    public class DBFieldSchema
+    public class DBFieldSchema: IDBToken
     {
         private DBType _type;
         private bool _isKey;
@@ -75,6 +77,20 @@ namespace ZenPlatform.QueryBuilder.Schema
         {
             get { return _isIdentity; }
             set { _isIdentity = value; }
+        }
+
+        public string CompileExpression { get; set; }
+
+        public object Clone()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string Compile(bool recompile = false)
+        {
+            var sb = new StringBuilder();
+            //sb.Append("{0} {1} {2}[{3}]", SQLTokens.DROP, SQLTokens.DATABASE, DropIfExist ? $"{SQLTokens.IF} {SQLTokens.EXISTS} " : "", _databaseName);
+            return sb.ToString();
         }
     }
 }

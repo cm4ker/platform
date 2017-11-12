@@ -131,4 +131,9 @@ namespace ZenPlatform.QueryBuilder.Queries
     {
 
     }
+
+    public interface IDataReturnQuery : IQueryable, IParametrized
+    {
+
+    }
 }

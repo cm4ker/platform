@@ -5,7 +5,7 @@ using ZenPlatform.QueryBuilder.Schema;
 
 namespace ZenPlatform.QueryBuilder
 {
-    public class DBTable : IDBTableDataSource, IDbAliasedDbToken
+    public class DBTable : IDBTableDataSource
     {
         private readonly string _name;
         private readonly List<DBField> _fields;

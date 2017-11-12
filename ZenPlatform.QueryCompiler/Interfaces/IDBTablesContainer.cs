@@ -4,7 +4,7 @@ namespace ZenPlatform.QueryBuilder.Interfaces
 {
     public interface IDBTablesContainer
     {
-        List<IDBTableDataSource> Tables { get; }
+        List<IDBDataSource> Tables { get; }
     }
 
 

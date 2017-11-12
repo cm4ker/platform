@@ -6,6 +6,8 @@ namespace ZenPlatform.QueryBuilder.Queries
     {
         private readonly string _databaseName;
 
+        
+
         public DBCreateDatabaseQuery(string databaseName)
         {
             _databaseName = databaseName;
