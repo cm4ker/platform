@@ -5,7 +5,7 @@ using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.QueryBuilder
 {
-    public class DBSubSelectQuery : IDBTableDataSource, IParametrized
+    public class DBSubSelectQuery : IDBDataSource, IDataReturnQuery
     {
         private readonly IDBFieldContainer _query;
 
@@ -21,9 +21,9 @@ namespace ZenPlatform.QueryBuilder
             SetAliase(alias);
             _compileExpression = "({Query})";
 
-            UpdateFields();
+          //  UpdateFields();
         }
-
+        /*
         private void UpdateFields()
         {
             foreach (var field in _query.Fields)
@@ -51,7 +51,7 @@ namespace ZenPlatform.QueryBuilder
                 }
             }
         }
-
+        */
         public object Clone()
         {
             throw new NotImplementedException();
@@ -59,7 +59,9 @@ namespace ZenPlatform.QueryBuilder
 
         public string Compile(bool recompile = false)
         {
-            return StandartCompilers.CompileAliasedObject(_query.Compile(), _alias);
+            if (string.IsNullOrEmpty(_alias)) throw new Exception("The Subquery must have alias.");
+            return $"({_query.Compile()}) {SQLTokens.AS} {_alias}";
+            //return StandartCompilers.CompileAliasedObject(_query.Compile(), _alias);
         }
 
         public string CompileExpression
@@ -71,10 +73,10 @@ namespace ZenPlatform.QueryBuilder
         public void SetAliase(string alias)
         {
             _alias = alias;
-            foreach (DBSelectField field in _fields)
-            {
-                field.SetAliase($"{field.Owner.Alias}.{field.Name}");
-            }
+            //foreach (DBSelectField field in _fields)
+           // {
+           //     field.SetAliase($"{field.Owner.Alias}.{field.Name}");
+            //}
         }
 
         public string Alias

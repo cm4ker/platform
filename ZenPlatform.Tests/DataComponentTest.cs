@@ -35,6 +35,34 @@ namespace ZenPlatform.Tests
         }
 
         [TestMethod]
+        public void QueryBuilderTest()
+        {
+            var q = new DBSelectQuery("teble1").Select("qwe", "vdvdfv");
+
+            var q2 = new DBSelectQuery();
+            q2.From(q,"t1").Select("tttt","ewrewr");
+
+
+
+            Assert.AreEqual(1, 1);
+
+            Console.WriteLine(q.Compile());
+
+        }
+
+        [TestMethod]
+        public void AlterTableQueryBuilderTest()
+        {
+            var query = new DBAlterTableQuery("testTable");
+
+            query.DropColumn("testField");
+            query.DropColumn("testField2");
+
+            var s = query.Compile();
+
+        }
+
+        [TestMethod]
         public void SelectQueryBuilderTest()
         {
             var builder = new QueryBuilderComponent(_pObject);

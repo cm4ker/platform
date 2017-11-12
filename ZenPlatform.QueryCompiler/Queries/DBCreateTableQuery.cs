@@ -12,10 +12,14 @@ namespace ZenPlatform.QueryBuilder.Queries
         private string _tableName;
         private List<DBFieldSchema> _fields;
 
-
-        internal DBCreateTableQuery()
+        public DBCreateTableQuery()
         {
             _fields = new List<DBFieldSchema>();
+        }
+
+        public DBCreateTableQuery(string tableName):this()
+        {
+            _tableName = tableName;
         }
 
         public DBCreateTableQuery Table(string tableName)

@@ -7,13 +7,14 @@ namespace ZenPlatform.QueryBuilder
     {
         private string _alias;
 
-        public DBSelectField(IDBAliasedFieldContainer owner, string name, string alias = "") : base(owner, name)
+        public DBSelectField(IDBDataSource owner, string name, string alias = "") : base(owner, name)
         {
             _alias = alias;
             base.CompileExpression = "[{OwnerName}].[{Name}]";
         }
 
-        public DBSelectField(IDBAliasedFieldContainer owner, string name, DBFieldSchema schema, string alias = "") : this(owner, name, alias)
+
+        public DBSelectField(IDBDataSource owner, string name, DBFieldSchema schema, string alias = "") : this(owner, name, alias)
         {
             Schema = schema;
         }

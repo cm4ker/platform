@@ -7,11 +7,13 @@ using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Queries;
 using ZenPlatform.QueryBuilder.Schema;
 
+using IQueryable = ZenPlatform.QueryBuilder.Queries.IQueryable;
+
 namespace ZenPlatform.DataComponent.QueryBuilders
 {
     public class DeleteQueryBuilder : IQueryBuilder
     {
-        public IDataChangeQuery Build(PObjectType objectType)
+        public IQueryable Build(PObjectType objectType)
         {
             var query = DBQueryFactory.Instance.GetDelete();
 
