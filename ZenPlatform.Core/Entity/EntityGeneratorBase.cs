@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Data;
 
 namespace ZenPlatform.Core.Entity
 {
@@ -12,9 +13,6 @@ namespace ZenPlatform.Core.Entity
 
         }
 
-        public virtual string DtoNamespace { get; } = "DtoNamespase";
-
-        public virtual string EntityNamespace { get; } = "EntityNamespace";
 
         /// <summary>
         /// Префикс объектов DTO, необходим для внутренних нужд класса
@@ -27,12 +25,22 @@ namespace ZenPlatform.Core.Entity
         //TODO: Необходимо реализовать все типы правил в базовом классе и выдавать Exception
         //в случае, если свойство не реализовано, а оно где-то вызвалось. 
         //Это явно укажет на то, что объект не может быть использован для такого сценария
-        public virtual PGeneratedCodeRule GetClassPostfixRule()
+
+        /// <summary>
+        /// Получить правило именования постфикса для сущности
+        /// </summary>
+        /// <returns></returns>
+        public virtual PGeneratedCodeRule GetEntityClassPostfixRule()
         {
             return new PGeneratedCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule, "");
         }
 
-        public virtual PGeneratedCodeRule GetClassPrefixRule()
+
+        /// <summary>
+        /// Получить правило именования префикса для сущности
+        /// </summary>
+        /// <returns></returns>
+        public virtual PGeneratedCodeRule GetEntityClassPrefixRule()
         {
             return new PGeneratedCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule, "");
         }
@@ -51,11 +59,25 @@ namespace ZenPlatform.Core.Entity
             throw new Exception("This object type can't be a foreign property. You must exclude this prop type from object. Look at stack trace for object name.");
         }
 
+        public virtual PGeneratedCodeRule GetNamespaceRule()
+        {
+            return new PGeneratedCodeRule(PGeneratedCodeRuleType.NamespaceRule, "DefaultNamespace");
+        }
+
+        /// <summary>
+        /// Получить от компонента готовую сгенерированную структуру с разбивкой по файлам
+        /// </summary>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        public virtual Dictionary<string, string> GenerateFilesFromComponent(PComponent component)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /*
      * Нужно организовать такой интерфейс для другого билдера, чтобы он мог сделать следующее
-     * В свойстве, когда PObjectType = другой компанент, сгенерировать правильную инстуркцию по получению и по созранению
+     * В свойстве, когда PObjectType = другой компанент, сгенерировать правильную инстуркцию по получению и по сохранению
      * Например.
      * 
      * Есть документ Invoice

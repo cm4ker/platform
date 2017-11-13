@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Data;
+using ZenPlatform.Core.Entity;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Queries;
 using ZenPlatform.QueryBuilder.Schema;
@@ -75,7 +76,7 @@ namespace ZenPlatform.DataComponent
         public virtual DBUpdateQuery GetUpdate()
         {
             var query = new DBUpdateQuery();
-            
+
             query.UpdateTable = MakeTable(_objectType);
 
             foreach (var field in query.UpdateTable.Fields.Where(f => !f.Schema.IsKey))
@@ -107,7 +108,7 @@ namespace ZenPlatform.DataComponent
         public virtual DBInsertQuery GetInsert()
         {
             var query = new DBInsertQuery();
-            
+
             query.InsertTable = MakeTable(_objectType);
 
             foreach (var field in query.InsertTable.Fields.Where(f => !f.Schema.IsKey))
@@ -117,5 +118,6 @@ namespace ZenPlatform.DataComponent
 
             return query;
         }
+
     }
 }

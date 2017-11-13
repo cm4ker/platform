@@ -17,24 +17,24 @@ namespace ZenPlatform.DocumentComponent
         {
         }
 
-        public override DBSelectQuery GetSelect()
-        {
-            throw new NotImplementedException();
-        }
+        //public override DBSelectQuery GetSelect()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public override DBUpdateQuery GetUpdate()
-        {
-            throw new NotImplementedException();
-        }
+        //public override DBUpdateQuery GetUpdate()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public override DBDeleteQuery GetDelete()
-        {
-            throw new NotImplementedException();
-        }
+        //public override DBDeleteQuery GetDelete()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public override DBInsertQuery GetInsert()
-        {
-            throw new NotImplementedException();
-        }
+        //public override DBInsertQuery GetInsert()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
