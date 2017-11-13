@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Entity;
+using ZenPlatform.CSharpCodeBuilder;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DocumentComponent;
 using ZenPlatform.Tests.Annotations;
@@ -152,6 +153,30 @@ namespace ZenPlatform.Tests
 
             var helpers = deg.GenerateHelpersForEntity();
             Console.WriteLine(helpers.ToString());
+
+        }
+
+        [TestMethod]
+        public void GenerateSolutionTest()
+        {
+            DocumentEntityGenerator deg = new DocumentEntityGenerator();
+
+            var invoice = CreateInvoice();
+            var contractor = CreateContractor();
+
+            var component = DocumentComponent();
+
+            var contractorProperty = new PProperty(invoice);
+            contractorProperty.Types.Add(contractor);
+            contractorProperty.Name = "Contractor";
+
+            invoice.Properties.Add(contractorProperty);
+
+            component.RegisterObject(invoice);
+            component.RegisterObject(contractor);
+
+            CodeBuilder cb = new CodeBuilder();
+            cb.Generate(deg, component);
 
         }
     }

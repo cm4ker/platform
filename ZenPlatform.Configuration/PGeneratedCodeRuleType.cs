@@ -44,7 +44,13 @@ namespace ZenPlatform.Configuration
         /// <summary>
         /// Правила генерации поля получения
         /// </summary>
-        InForeignPropertyGetActionRule
+        InForeignPropertyGetActionRule,
+
+
+        /// <summary>
+        /// Правила для генерации namespace
+        /// </summary>
+        NamespaceRule
     }
 
     public class PGeneratedCodeRule

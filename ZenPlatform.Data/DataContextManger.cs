@@ -21,10 +21,11 @@ namespace ZenPlatform.Data
             }
             else
             {
-                //TODO: Необхоидмо добавить проект конфигурации нео
+                //TODO: Необходимо, чтобы на уровене платформы была какая-то конфигурация, откуда можно было бы взять connectionString
+                //DefaultPath, TimeOuts, ConnectionCount и так далее.
 
-                throw new NotImplementedException();
-                return new DataContext("");
+                //throw new NotImplementedException();
+                return new DataContext("Data source=(local);Initial catalog=TestDatabase; Integrated security=true;");
             }
         }
     }

@@ -8,12 +8,10 @@ namespace ZenPlatform.Core.Entity
     /// </summary>
     public abstract class EntityManagerBase
     {
-        protected EntityManagerBase(SqlBuilder sqlBuilder)
+        protected EntityManagerBase()
         {
-            SqlBuilder = sqlBuilder;
-        }
 
-        protected SqlBuilder SqlBuilder { get; }
+        }
 
     }
 }

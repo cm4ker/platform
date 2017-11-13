@@ -36,7 +36,8 @@ namespace ZenPlatform.Core
         {
             lock (_locking)
             {
-                var id = Sessions.Max(x => x.Id) + 1;
+
+                var id = (Sessions.Count == 0) ? 1 : Sessions.Max(x => x.Id) + 1;
                 var session = new Session(this, id);
 
                 Sessions.Add(session);
@@ -77,6 +78,12 @@ namespace ZenPlatform.Core
             }
         }
 
+
+        /// <summary>
+        /// Получить менеджер по типу сущности
+        /// </summary>
+        /// <param name="type">Тип Entity</param>
+        /// <returns></returns>
         public EntityManagerBase GetManager(Type type)
         {
             if (Managers.TryGetValue(type, out var manager))
@@ -102,9 +109,14 @@ namespace ZenPlatform.Core
             throw new Exception($"Entity definition {key} not found");
         }
 
-        public EntityDefinition GetDefinition(Type entityType)
+        /// <summary>
+        /// Получить описание по типу
+        /// </summary>
+        /// <param name="type">Типом может быть объект DTO или объект Entity</param>
+        /// <returns></returns>
+        public EntityDefinition GetDefinition(Type type)
         {
-            var entityDefinition = Entityes.First(x => x.Value.EntityType == entityType).Value;
+            var entityDefinition = Entityes.First(x => x.Value.EntityType == type || x.Value.DtoType == type).Value;
             return entityDefinition;
         }
     }

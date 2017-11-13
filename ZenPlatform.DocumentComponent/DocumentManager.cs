@@ -19,7 +19,7 @@ namespace ZenPlatform.DocumentComponent
 
     public class DocumentManager : EntityManagerBase
     {
-        public DocumentManager(SqlBuilder sqlBuilder) : base(sqlBuilder)
+        public DocumentManager()
         {
 
         }
@@ -71,9 +71,41 @@ namespace ZenPlatform.DocumentComponent
             return CreateEntityFromDto(session, entityType, dto);
         }
 
+        /// <summary>
+        /// Загрузить DTO сущность объекта
+        /// </summary>
+        /// <param name="session">Сессия в которой загружаем</param>
+        /// <param name="type">Тип Entity от DTO, которого хотим загрузить</param>
+        /// <param name="key">Ключ</param>
+        /// <returns></returns>
         public object LoadDtoObject(Session session, Type type, object key)
         {
-            throw new NotImplementedException();
+            var context = session.DataContextManger.GetContext();
+            var def = session.Environment.GetDefinition(type);
+            var pObjectType = def.EntityConfig;
+            var sqlBuilder = new QueryBuilderComponent(pObjectType);
+
+
+            //TODO:Сделать получение запроса обратно для объекта обра
+            //var selsct = sqlBuilder.GetSelect();
+            var selectQuery = "SELECT * FROM Invoice";
+            var command = context.CreateCommand();
+            command.CommandText = selectQuery;
+            var reader = command.ExecuteReader();
+
+            if (reader.Read())
+            {
+                var dto = Activator.CreateInstance(type);
+
+                foreach (var prop in type.GetProperties())
+                {
+                    prop.SetValue(dto, reader[prop.Name]);
+                }
+
+                return dto;
+            }
+
+            return null;
         }
 
         public void Delete(Session session, DocumentEntity entity)
@@ -117,6 +149,11 @@ namespace ZenPlatform.DocumentComponent
         public T Create()
         {
             return _documentManager.Create(_session, typeof(T)) as T;
+        }
+
+        public Guid GetKey(T entity)
+        {
+            return new Guid();
         }
     }
 }

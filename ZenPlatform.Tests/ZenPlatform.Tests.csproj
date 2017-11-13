@@ -12,5 +12,6 @@
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />
+    <ProjectReference Include="..\ZenPlatform.ReadyForDeployProject\ZenPlatform.ReadyForDeployProject.csproj" />
   </ItemGroup>
 </Project>
