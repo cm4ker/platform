@@ -81,9 +81,9 @@ namespace ZenPlatform.QueryBuilder
             return newOp;
         }
 
-        public static DBFieldSchema GetUnknownSchema(this DBField field)
+        public static DBFieldSchema GetUnknownSchema()
         {
-            return new DBFieldSchema(DBType.Variant, field.Name, 0, 0, 0, false, false, false, true);
+            return new DBFieldSchema(DBType.Variant, 0, 0, 0, false, false, false, true);
         }
 
         public static int RandomCharsInParams() => 12;

@@ -23,16 +23,33 @@ namespace ZenPlatform.QueryBuilder.Queries
 
         }
 
+        public DBAlterTableQuery(DBTable table) : this()
+        {
+            _table = table;
+        }
+
         public DBAlterTableQuery(string tableName) : this()
         {
             _table = new DBTable(tableName);
+        }
+
+        public DBAlterTableQuery AlterColumn(DBField field)
+        {
+            _alterColumns.Add(field);
+            return this;
+        }
+
+        public DBAlterTableQuery AlterColumns(IEnumerable<DBField> fields)
+        {
+            _alterColumns.AddRange(fields);
+            return this;
         }
 
         public DBAlterTableQuery AlterColumn(DBType type, string columnName, int columnSize, int numericPrecision, int numericScale, bool isIdentity, bool isKey = false, bool isUnique = false, bool isNullable = false)
         {
             _alterColumns.Add(new DBTableField(_table, columnName)
             {
-                Schema = new DBFieldSchema(type, columnName, columnSize, numericPrecision, numericScale, isIdentity, isKey, isUnique, isNullable)
+                Schema = new DBFieldSchema(type,  columnSize, numericPrecision, numericScale, isIdentity, isKey, isUnique, isNullable)
             });
             return this;
         }
@@ -43,11 +60,35 @@ namespace ZenPlatform.QueryBuilder.Queries
             return this;
         }
 
+        public DBAlterTableQuery DropColumn(DBField field)
+        {
+            _dropColumns.Add(field);
+            return this;
+        }
+
+        public DBAlterTableQuery DropColumns(IEnumerable<DBField> fields)
+        {
+            _dropColumns.AddRange(fields);
+            return this;
+        }
+
+        public DBAlterTableQuery AddColumn(DBField field)
+        {
+            _addColumns.Add(field);
+            return this;
+        }
+
+        public DBAlterTableQuery AddColumns(IEnumerable<DBField> fields)
+        {
+            _addColumns.AddRange(fields);
+            return this;
+        }
+
         public DBAlterTableQuery AddColumn(DBType type, string columnName, int columnSize, int numericPrecision, int numericScale, bool isIdentity, bool isKey = false, bool isUnique = false, bool isNullable = false)
         {
             _addColumns.Add(new DBTableField(_table, columnName)
             {
-                Schema = new DBFieldSchema(type, columnName, columnSize, numericPrecision, numericScale, isIdentity, isKey, isUnique, isNullable)
+                Schema = new DBFieldSchema(type, columnSize, numericPrecision, numericScale, isIdentity, isKey, isUnique, isNullable)
             });
             return this;
         }
@@ -66,7 +107,7 @@ namespace ZenPlatform.QueryBuilder.Queries
                 foreach (var field in _addColumns)
                 {
 
-                    sb.AppendFormat("{0} {1} {2} {3}{4}", SQLTokens.ALTER, SQLTokens.COLUMN, field.Name, field.Schema.Type.Compile(),
+                    sb.AppendFormat("{0} {1} {2}{3}", SQLTokens.ADD, field.Name, field.Schema.Compile(),
                         _addColumns.IndexOf(field) != _addColumns.Count - 1 ? "," : ";");
 
                 }
@@ -91,7 +132,7 @@ namespace ZenPlatform.QueryBuilder.Queries
 
             if (_alterColumns.Count > 0)
             {
-                foreach (var field in _addColumns)
+                foreach (var field in _alterColumns)
                 {
 
                     sb.AppendFormat("{0} {1} {2} {3}{4}", SQLTokens.ALTER, SQLTokens.COLUMN, field.Name, field.Schema.Type.Compile(),

@@ -17,7 +17,7 @@ namespace ZenPlatform.DataComponent
             _objectType = objectType;
         }
 
-        protected DBTable MakeTable(PObjectType objectType)
+        public DBTable MakeTable(PObjectType objectType)
         {
             DBTable table = new DBTable(objectType.TableName);
             foreach (var property in objectType.Properties)
@@ -28,7 +28,7 @@ namespace ZenPlatform.DataComponent
                 var typeProperty = property.Types.FirstOrDefault() as PPrimetiveType;
 
 
-                var schema = new DBFieldSchema(typeProperty.DBType, property.Name, typeProperty.ColumnSize,
+                var schema = new DBFieldSchema(typeProperty.DBType, typeProperty.ColumnSize,
                     typeProperty.Precision, typeProperty.Scale, false, property.Unique,
                     false, property.Unique ? false : typeProperty.IsNullable);
 
