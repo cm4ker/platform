@@ -9,29 +9,39 @@ namespace ZenPlatform.QueryBuilder.Queries
 {
     public class DBCreateTableQuery : IQueryable
     {
-        private string _tableName;
-        private List<DBFieldSchema> _fields;
+        private List<DBField> _fields;
+        private DBTable _table;
 
         public DBCreateTableQuery()
         {
-            _fields = new List<DBFieldSchema>();
+            _fields = new List<DBField>();
+        }
+
+        public DBCreateTableQuery(DBTable table) : this()
+        {
+            _table = table;
+            foreach (var field in table.Fields)
+            {
+                _fields.Add(field);
+            }
         }
 
         public DBCreateTableQuery(string tableName):this()
         {
-            _tableName = tableName;
+            _table = new DBTable(tableName);
         }
 
         public DBCreateTableQuery Table(string tableName)
         {
-            _tableName = tableName;
+            _table = new DBTable(tableName);
             return this;
         }
 
-        public DBCreateTableQuery Field(string fieldName, DBType type, int size, short numericPrecision, short numericScale, bool isIdentity, bool isUnique, bool isKey, bool isNullable)
+        public DBCreateTableQuery Field(string columnName, DBType type, int size, short numericPrecision, short numericScale, bool isIdentity, bool isUnique, bool isKey, bool isNullable)
         {
-            //TODO: Реализовать правильное добавление полей и компиляцию запроса
-            _fields.Add(new DBFieldSchema(type, fieldName, size, numericPrecision, numericScale, isIdentity, isKey, isUnique));
+            var field = new DBTableField(_table, columnName);
+            field.Schema = new DBFieldSchema(type, size, numericPrecision, numericScale, isIdentity, isKey, isUnique);
+            _fields.Add(field);
             return this;
         }
 
@@ -45,13 +55,11 @@ namespace ZenPlatform.QueryBuilder.Queries
             if (!_fields.Any()) throw new Exception("You MUST declare any fields");
 
             var sb = new StringBuilder();
-            sb.AppendFormat("{0} {1} [{2}] (\n\t", SQLTokens.CREATE, SQLTokens.TABLE, _tableName);
+            sb.AppendFormat("{0} {1} [{2}] (\n", SQLTokens.CREATE, SQLTokens.TABLE, _table.Name);
 
             foreach (var field in _fields)
             {
-                if (_fields.IndexOf(field) > 0)
-                    sb.Append(",");
-                sb.AppendFormat("[{0}] {1}\n\t", field.ColumnName, field.Type.Compile());
+                sb.AppendFormat("\t[{0}] {1}{2}\n", field.Name, field.Schema.Compile(), _fields.IndexOf(field) != _fields.Count -1 ? "," : "");
             }
             sb.AppendLine(")");
 

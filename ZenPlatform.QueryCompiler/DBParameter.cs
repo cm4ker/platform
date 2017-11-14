@@ -15,6 +15,11 @@ namespace ZenPlatform.QueryBuilder
     {
         private readonly string _name;
 
+        public DBParameter(string name)
+        {
+            _name = name;
+        }
+
         public DBParameter(string name, DBType type)
         {
             _name = name;

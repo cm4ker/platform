@@ -41,6 +41,7 @@ namespace ZenPlatform.QueryBuilder
         public static string SUM = "SUM";
 
         public static string IDENTITY_INSERT = "IDENTITY_INSERT";
+        public static string IDENTITY = "IDENTITY";
         public static string OFF = "OFF";
 
         public static string IN = "IN";
@@ -64,6 +65,9 @@ namespace ZenPlatform.QueryBuilder
         public static string DATABASE = "DATABASE";
         public static string IF = "IF";
         public static string EXISTS = "EXISTS";
+        public static string PRIMARY = "PRIMARY";
+        public static string KEY = "KEY";
+        public static string ADD = "ADD";
     }
 
     public static class SQLVariables
