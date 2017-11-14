@@ -40,6 +40,11 @@ namespace ZenPlatform.QueryBuilder.Queries
             _from.AddTable(dbTable);
         }
 
+        public DBSelectQuery(DBTable table) :this()
+        {
+            _from.AddTable(table);
+        }
+
         public DBSelectQuery Select(string fieldName)
         {
             _fields.Add(new DBSelectField(_from.RootTable, fieldName));
@@ -57,9 +62,14 @@ namespace ZenPlatform.QueryBuilder.Queries
 
         }
 
+        public DBSelectQuery Select(params DBField[] clauses)
+        {
+            _fields.AddRange(clauses);
+            return this;
+        }
+
         public DBSelectQuery Select(DBField clause)
         {
-
             _fields.Add(clause);
             return this;
         }
@@ -135,9 +145,10 @@ namespace ZenPlatform.QueryBuilder.Queries
             return _groupby;
         }
 
-        public  void Where(string fieldName1, CompareType type, string fieldName2)
+        public  void Where(string fieldName, CompareType type)
         {
-           // _where.Where(new DBSelectField(), type, new DBSelectField());
+            
+            _where.Where(new DBSelectField(_from.RootTable,fieldName), type, new DBParameter(fieldName));
         }
 
 

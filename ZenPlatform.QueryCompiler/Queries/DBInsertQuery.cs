@@ -29,7 +29,7 @@ namespace ZenPlatform.QueryBuilder.Queries
 
         
 
-        public void AddField(DBTableField field)
+        public void AddField(DBField field)
         {
             if (_insertTable != null && field.Owner as DBTable != _insertTable)
             {
@@ -39,7 +39,7 @@ namespace ZenPlatform.QueryBuilder.Queries
             _values.AddField(field);
         }
 
-        public List<DBTableField> Fields => _values.Fields;
+        public List<DBField> Fields => _values.Fields;
 
         public DBParameterCollection Parameters => new DBParameterCollection(_values.Parameters);
 

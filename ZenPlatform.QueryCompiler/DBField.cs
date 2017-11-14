@@ -91,6 +91,19 @@ namespace ZenPlatform.QueryBuilder
             return result;
         }
         */
+
+        public bool Equals(DBField field)
+        {
+            if (field == null || GetType() != field.GetType())
+            {
+                return false;
+            }
+
+            return this.Name == field.Name && this.Schema.Equals(field.Schema);
+
+
+        }
+
         public DBField Clone(IDBAliasedFieldContainer owner)
         {
             var result = this.MemberwiseClone() as DBField;
