@@ -127,12 +127,17 @@ namespace ZenPlatform.QueryBuilder.Queries
         DBParameterCollection Parameters { get; }
     }
 
-    public interface IDataChangeQuery : IQueryable, IParametrized
+    public interface IDataChangeQuery : IParametrizedQuery
     {
 
     }
 
-    public interface IDataReturnQuery : IQueryable, IParametrized
+    public interface IDataReturnQuery : IParametrizedQuery
+    {
+
+    }
+
+    public interface IParametrizedQuery : IQueryable, IParametrized
     {
 
     }

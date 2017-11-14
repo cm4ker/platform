@@ -21,7 +21,7 @@ namespace ZenPlatform.DataComponent.QueryBuilders
                 var typeProperty = property.Types.FirstOrDefault() as PPrimetiveType;
 
 
-                var schema = new DBFieldSchema(typeProperty.DBType, property.Name, typeProperty.ColumnSize,
+                var schema = new DBFieldSchema(typeProperty.DBType, typeProperty.ColumnSize,
                     typeProperty.Precision, typeProperty.Scale, false, property.Unique,
                     false, property.Unique ? false : typeProperty.IsNullable);
 

@@ -7,24 +7,24 @@ namespace ZenPlatform.QueryBuilder
 {
     public class DBValuesClause : IDBToken
     {
-        private List<DBTableField> _fields;
+        private List<DBField> _fields;
         private List<DBParameter> _parameters;
 
 
         public DBValuesClause()
         {
-            _fields = new List<DBTableField>();
+            _fields = new List<DBField>();
             _parameters = new List<DBParameter>();
         }
 
-        public void AddField(DBTableField field)
+        public void AddField(DBField field)
         {
             _fields.Add(field);
             var paramName = $"{field.Name}";
             _parameters.Add(new DBParameter(paramName, field.Schema.Type, field.Schema.IsNullable));
         }
 
-        public List<DBTableField> Fields
+        public List<DBField> Fields
         {
             get { return _fields; }
         }
