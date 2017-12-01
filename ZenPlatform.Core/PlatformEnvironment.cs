@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZenPlatform.Configuration.Data;
+using ZenPlatform.Configuration;
 using ZenPlatform.Core.Entity;
 
 namespace ZenPlatform.Core
@@ -9,6 +9,19 @@ namespace ZenPlatform.Core
     public class PlatformEnvironment
     {
         private object _locking;
+
+        /*
+         *  Среда должна обеспечиватьдоступ к конфигурации. Так как именно в среду будет загружаться конфигурация 
+         *  И из среды она будет выгружаться. 
+         *  
+         *  Необходимо реализовать следующий интерфейс:
+         *      
+         *      Env.ConfigurationManager.Load(string path)      -- Загружает конфигурацию из каталога
+         *      Env.ConfigurationManager.LoadDb()               -- Загружает конфигурацию базы данных
+         *      Env.ConfigurationManager.UnLoad(string path)    -- Выгружает конфигурацию конфигурацию
+         *      Env.ConfigurationManager.Apply()                -- Применяет текущую загруженную конфигурацию, в этот момент применяются все изменения
+         *      
+         */
 
         public PlatformEnvironment()
         {
@@ -30,7 +43,7 @@ namespace ZenPlatform.Core
 
         public IDictionary<Type, EntityManagerBase> Managers { get; }
 
-
+        public ConfigurationManager ConfigurationManager { get; }
 
         public Session CreateSession()
         {
@@ -63,8 +76,6 @@ namespace ZenPlatform.Core
             }
         }
 
-
-
         public void RegisterManager(Type type, EntityManagerBase manager)
         {
             Managers.Add(type, manager);
@@ -77,7 +88,6 @@ namespace ZenPlatform.Core
                 Managers.Remove(type);
             }
         }
-
 
         /// <summary>
         /// Получить менеджер по типу сущности
@@ -119,21 +129,5 @@ namespace ZenPlatform.Core
             var entityDefinition = Entityes.First(x => x.Value.EntityType == type || x.Value.DtoType == type).Value;
             return entityDefinition;
         }
-    }
-
-    public class EntityDefinition
-    {
-        public EntityDefinition(PObjectType entityConfig, Type entityType, Type dtoType)
-        {
-            EntityConfig = entityConfig;
-            EntityType = entityType;
-            DtoType = dtoType;
-
-        }
-
-        public Guid Key => EntityConfig.Id;
-        public PObjectType EntityConfig { get; }
-        public Type EntityType { get; }
-        public Type DtoType { get; }
     }
 }

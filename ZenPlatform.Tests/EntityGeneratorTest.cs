@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
@@ -17,64 +18,16 @@ namespace ZenPlatform.Tests
     [TestClass]
     public class EntityGeneratorTest
     {
-        private PComponent DocumentComponent()
-        {
-            var c = new PComponent();
-            c.Name = "Document";
-
-            new DocumnetComponent(c);
-
-            return c;
-        }
-
-        private PSimpleObjectType CreateInvoice()
-        {
-
-
-            PSimpleObjectType invoice = new PSimpleObjectType("Invoice"); ;
-
-            var prop1 = new PProperty(invoice);
-            prop1.Types.Add(new PDateTime());
-            prop1.Name = "StartDate";
-
-            var prop2 = new PProperty(invoice);
-            prop2.Types.Add(new PNumeric());
-            prop2.Name = "SomeNumber";
-
-            invoice.Properties.Add(prop1);
-            invoice.Properties.Add(prop2);
-
-
-            return invoice;
-        }
-
-        private PSimpleObjectType CreateContractor()
-        {
-            PSimpleObjectType contractor = new PSimpleObjectType("Contractor");
-
-            var contractorNameProperty = new PProperty(contractor);
-            contractorNameProperty.Types.Add(new PString());
-            contractorNameProperty.Name = "Name";
-
-            contractor.Properties.Add(contractorNameProperty);
-
-            return contractor;
-        }
+        private ConfigurationFactory _factory = new ConfigurationFactory();
 
         [TestMethod]
         public void DocumentComponentGenerateDto()
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
+            var com = _factory.CreateDocumentComponent();
+            var invoice = com.Objects.ToArray()[0];
+            var contractor = com.Objects.ToArray()[1];
 
-            var invoice = CreateInvoice();
-            var contractor = CreateContractor();
-
-            var contractorProperty = new PProperty(invoice);
-            contractorProperty.Types.Add(contractor);
-            contractorProperty.Name = "Contractor";
-
-
-            invoice.Properties.Add(contractorProperty);
 
             var nodeDto = deg.GenerateDtoClass(invoice);
             Console.WriteLine(nodeDto.ToString());
@@ -86,20 +39,10 @@ namespace ZenPlatform.Tests
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
 
-            var invoice = CreateInvoice();
-            var contractor = CreateContractor();
+            var com = _factory.CreateDocumentComponent();
+            var invoice = com.Objects.ToArray()[0];
+            var contractor = com.Objects.ToArray()[1];
 
-            var component = DocumentComponent();
-
-            invoice.OwnerComponent = component;
-            contractor.OwnerComponent = component;
-
-            var contractorProperty = new PProperty(invoice);
-            contractorProperty.Types.Add(contractor);
-            contractorProperty.Name = "Contractor";
-
-
-            invoice.Properties.Add(contractorProperty);
 
             var invoiceClass = deg.GenerateEntityClass(invoice);
             var contractorClass = deg.GenerateEntityClass(contractor);
@@ -113,22 +56,10 @@ namespace ZenPlatform.Tests
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
 
-            var invoice = CreateInvoice();
-            var contractor = CreateContractor();
+            var com = _factory.CreateDocumentComponent();
 
-            var component = DocumentComponent();
-
-            var contractorProperty = new PProperty(invoice);
-            contractorProperty.Types.Add(contractor);
-            contractorProperty.Name = "Contractor";
-
-            invoice.Properties.Add(contractorProperty);
-
-            component.RegisterObject(invoice);
-            component.RegisterObject(contractor);
-
-            var extension = deg.GenerateExtension(component);
-            var inface = deg.GenerateInterface(component);
+            var extension = deg.GenerateExtension(com);
+            var inface = deg.GenerateInterface(com);
 
             Console.WriteLine(extension.ToString());
             Console.WriteLine(inface.ToString());
@@ -140,17 +71,6 @@ namespace ZenPlatform.Tests
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
 
-            var invoice = CreateInvoice();
-            var contractor = CreateContractor();
-
-            var contractorProperty = new PProperty(invoice);
-            contractorProperty.Types.Add(contractor);
-            contractorProperty.Name = "Contractor";
-
-
-            invoice.Properties.Add(contractorProperty);
-
-
             var helpers = deg.GenerateHelpersForEntity();
             Console.WriteLine(helpers.ToString());
 
@@ -161,22 +81,10 @@ namespace ZenPlatform.Tests
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
 
-            var invoice = CreateInvoice();
-            var contractor = CreateContractor();
-
-            var component = DocumentComponent();
-
-            var contractorProperty = new PProperty(invoice);
-            contractorProperty.Types.Add(contractor);
-            contractorProperty.Name = "Contractor";
-
-            invoice.Properties.Add(contractorProperty);
-
-            component.RegisterObject(invoice);
-            component.RegisterObject(contractor);
+            var com = _factory.CreateDocumentComponent();
 
             CodeBuilder cb = new CodeBuilder();
-            cb.Generate(deg, component);
+            cb.Generate(deg, com);
 
         }
     }

@@ -9,6 +9,9 @@
     <Folder Include="Scheduler\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />
   </ItemGroup>
 </Project>
