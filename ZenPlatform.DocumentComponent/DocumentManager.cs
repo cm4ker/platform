@@ -45,9 +45,11 @@ namespace ZenPlatform.DocumentComponent
         }
 
 
+
         public void Save(Session session, DocumentEntity entity)
         {
-
+            var def = session.Environment.GetDefinition(entity.GetType());
+            
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace ZenPlatform.Configuration.Data
 {
@@ -15,10 +16,20 @@ namespace ZenPlatform.Configuration.Data
         }
 
         /// <summary>
+        /// Путь до библиотеки компонента
+        /// </summary>
+        public string ComponentPath { get; set; }
+
+        /// <summary>
         /// Имя компонента
         /// (Документы, Справочники, Регистры и так далее)
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Идентификатор компонента
+        /// </summary>
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Объекты, которые пренадлежат компоненту
@@ -28,11 +39,31 @@ namespace ZenPlatform.Configuration.Data
             get { return _objects; }
         }
 
-        public void RegisterObject(PObjectType obj)
+        /// <summary>
+        /// Создать объект в компоненте
+        /// </summary>
+        /// <typeparam name="T">Тип объекта (унаследованный от PObjectType), который мы хотим создать</typeparam>
+        /// <param name="name">Имя объекта</param>
+        /// <returns></returns>
+        public T CreateObject<T>(string name) where T : PObjectType
         {
+            var obj = Activator.CreateInstance(typeof(T), name, this) as T;
             _objects.Add(obj);
-            obj.OwnerComponent = this;
+            return obj;
+        }
 
+        /// <summary>
+        /// Создать объект в компоненте
+        /// </summary>
+        /// <typeparam name="T">Тип объекта (унаследованный от PObjectType), который мы хотим создать</typeparam>
+        /// <param name="name">Имя объекта</param>
+        /// <param name="id">Идентификатор</param>
+        /// <returns>Экземпляр объекта PObjectType</returns>
+        public T CreateObject<T>(string name, Guid id) where T : PObjectType
+        {
+            var obj = Activator.CreateInstance(typeof(T), name, id, this) as T;
+            _objects.Add(obj);
+            return obj;
         }
 
         public void RegisterCodeRule(PGeneratedCodeRule rule)
@@ -44,6 +75,5 @@ namespace ZenPlatform.Configuration.Data
         {
             return _rules[type];
         }
-
     }
 }

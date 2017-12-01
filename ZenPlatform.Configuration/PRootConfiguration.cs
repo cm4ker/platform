@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ZenPlatform.Configuration.Data;
 
 namespace ZenPlatform.Configuration
@@ -8,20 +9,33 @@ namespace ZenPlatform.Configuration
     /// </summary>
     public class PRootConfiguration
     {
+        private List<PComponent> _dataSectionComponents;
+
         public PRootConfiguration()
         {
-            DataSectionComponents = new List<PComponent>();
+
+            _dataSectionComponents = new List<PComponent>();
+
+            Id = Guid.NewGuid();
+        }
+
+        public PRootConfiguration(Guid id)
+        {
+            Id = id;
         }
 
         public string ConfigurationName { get; set; }
 
-        public IList<PComponent> DataSectionComponents { get; set; }
+        public IEnumerable<PComponent> DataSectionComponents
+        {
+            get { return _dataSectionComponents; }
+        }
 
         public void RegisterDataComponent(PComponent component)
         {
-            DataSectionComponents.Add(component);
+            _dataSectionComponents.Add(component);
         }
 
-
+        public Guid Id { get; }
     }
 }
