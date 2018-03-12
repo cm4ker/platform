@@ -1,5 +1,6 @@
 ﻿using System;
 using ZenPlatform.Configuration.Data;
+using ZenPlatform.Configuration.Data.Types.Complex;
 
 namespace ZenPlatform.Core
 {

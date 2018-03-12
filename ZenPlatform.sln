@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlPlusDbSync.Platform", "SqlPlusDbSync.Platform\SqlPlusDbSync.Platform.csproj", "{E5B657B1-9C4A-40DD-A068-5EF2F67C0C5A}"
 EndProject
@@ -49,7 +49,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.UIGeneration2",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.TestWPFGeneration", "ZenPlatform.TestWPFGeneration\ZenPlatform.TestWPFGeneration.csproj", "{81E44B95-D0CA-4C4C-98B8-AAD2250B019C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ApplicationServer", "ZenPlatform.ApplicationServer\ZenPlatform.ApplicationServer.csproj", "{4276280D-D771-4572-A690-AF8188163F4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ApplicationServer", "ZenPlatform.ApplicationServer\ZenPlatform.ApplicationServer.csproj", "{4276280D-D771-4572-A690-AF8188163F4F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Interface", "ZenPlatform.Interface\ZenPlatform.Interface.csproj", "{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -251,6 +253,14 @@ Global
 		{4276280D-D771-4572-A690-AF8188163F4F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4276280D-D771-4572-A690-AF8188163F4F}.Release|x86.ActiveCfg = Release|Any CPU
 		{4276280D-D771-4572-A690-AF8188163F4F}.Release|x86.Build.0 = Release|Any CPU
+		{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}.Debug|x86.Build.0 = Debug|Any CPU
+		{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}.Release|x86.ActiveCfg = Release|Any CPU
+		{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ZenPlatform.ConfigurationDataComponent;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.DataComponent;

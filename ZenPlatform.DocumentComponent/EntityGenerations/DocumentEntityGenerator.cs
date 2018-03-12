@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Data;
-using ZenPlatform.ConfigurationDataComponent;
+using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.CSharpCodeBuilder.Syntax;
