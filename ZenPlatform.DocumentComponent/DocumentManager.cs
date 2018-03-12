@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ZenPlatform.Configuration.Data;
-using ZenPlatform.ConfigurationDataComponent;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.Data;

@@ -29,7 +29,8 @@ namespace ZenPlatform.Tests
         public void ConfigurationUnloadLoadTesting()
         {
             var confManager = new ConfigurationManager();
-            confManager.Unload(CreateConfiguration(), AppDomain.CurrentDomain.BaseDirectory+ "\\SimpleConf");
+            confManager.Unload(CreateConfiguration(), AppDomain.CurrentDomain.BaseDirectory + "\\SimpleConf");
+            var conf = confManager.Load(AppDomain.CurrentDomain.BaseDirectory + "\\SimpleConf\\SimpleTestConfiguration.json");
         }
 
         [TestMethod]

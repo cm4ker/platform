@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Xml;
 using Newtonsoft.Json;
+using ZenPlatform.Configuration.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Data
 {
@@ -9,10 +12,11 @@ namespace ZenPlatform.Configuration.Data
     {
         private readonly IList<PObjectType> _objects;
         private readonly IDictionary<PGeneratedCodeRuleType, PGeneratedCodeRule> _rules;
-        public PComponent()
+        public PComponent(Guid id)
         {
             _objects = new List<PObjectType>();
             _rules = new Dictionary<PGeneratedCodeRuleType, PGeneratedCodeRule>();
+            Id = (id == Guid.Empty) ? Guid.NewGuid() : id;
         }
 
         /// <summary>
@@ -52,6 +56,16 @@ namespace ZenPlatform.Configuration.Data
             return obj;
         }
 
+        public PObjectType GetObject(Guid id)
+        {
+            return _objects.FirstOrDefault(x => x.Id == id);
+        }
+
+        public PObjectType GetObject(string name)
+        {
+            return _objects.FirstOrDefault(x => x.Name == name);
+        }
+
         /// <summary>
         /// Создать объект в компоненте
         /// </summary>
@@ -68,7 +82,8 @@ namespace ZenPlatform.Configuration.Data
 
         public void RegisterCodeRule(PGeneratedCodeRule rule)
         {
-            _rules.Add(rule.Type, rule);
+            if (!_rules.ContainsKey(rule.Type))
+                _rules.Add(rule.Type, rule);
         }
 
         public PGeneratedCodeRule GetCodeRule(PGeneratedCodeRuleType type)

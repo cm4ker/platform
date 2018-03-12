@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Data;
-using ZenPlatform.ConfigurationDataComponent;
+using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.Core.Entity;
+using ZenPlatform.DataComponent.Configuration;
 
 namespace ZenPlatform.DataComponent
 {
@@ -12,10 +14,13 @@ namespace ZenPlatform.DataComponent
     /// <summary>
     /// Базовый класс компонента, от которого необходимо наследоваться, чтобы объявить новый компонент
     /// </summary>
-    public abstract class DataComponentBase
+    public abstract class DataComponentBase<TMigrationComponent, TObjectConfiguration, TEntityGenerator, TManager> : IConfigurationManagerComponent
+        where TMigrationComponent : DataComponentMigrationBase
+        where TObjectConfiguration : PDataObjectType
+        where TEntityGenerator : EntityGeneratorBase
+        where TManager : EntityManagerBase
+
     {
-
-
         /*TODO: Продумать интерфейс базового компонента
         1) Наименование компанента
         2) Версия
@@ -32,6 +37,7 @@ namespace ZenPlatform.DataComponent
         /// <param name="component">Настройки компонента, сюда компонент может публиковать какие-то структуры для общения с другими компонентами</param>
         protected DataComponentBase(PComponent component)
         {
+            ObjectConfigurationType = typeof(TObjectConfiguration);
             Component = component;
         }
 
@@ -40,16 +46,16 @@ namespace ZenPlatform.DataComponent
         public virtual string Name => "Unknown";
         public virtual string Version => this.GetType().Assembly.GetName().Version.ToString();
 
-        public abstract Type ObjectConfigurationType { get; }
+        public virtual Type ObjectConfigurationType { get; }
         public abstract EntityManagerBase Manager { get; }
         public abstract EntityGeneratorBase Generator { get; }
 
-        public virtual DataComponentObject ConfigurationUnLoadHandler(PObjectType pobject)
+        public virtual DataComponentObject ConfigurationUnloadHandler(PObjectType pobject)
         {
             throw new NotImplementedException("You can't load configuration for this component. Please detach component from configuration by changing ComponentPath property.");
         }
 
-        public virtual void ConfigurationComponentObjectLoadHandler(PComponent component, DataComponentObject componentObject)
+        public virtual PObjectType ConfigurationComponentObjectLoadHandler(PComponent component, DataComponentObject componentObject)
         {
             throw new NotImplementedException("You can't load configuration for this component. Please detach component from configuration by changing ComponentPath property.");
         }

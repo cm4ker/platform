@@ -10,7 +10,7 @@ namespace ZenPlatform.Tests
     {
         public PComponent CreateDocumentComponent()
         {
-            var c = new PComponent();
+            var c = new PComponent(Guid.Empty);
             c.Name = "Document";
             c.ComponentPath = "ZenPlatform.DocumentComponent.dll";
 

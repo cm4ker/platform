@@ -22,6 +22,7 @@ namespace ZenPlatform.Configuration
         public PRootConfiguration(Guid id)
         {
             Id = id;
+            _dataSectionComponents = new List<PComponent>();
         }
 
         public string ConfigurationName { get; set; }

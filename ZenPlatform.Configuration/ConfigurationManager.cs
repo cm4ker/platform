@@ -17,9 +17,84 @@ namespace ZenPlatform.Configuration
     public class ConfigurationManager
     {
 
-        public PRootConfiguration Load(string path)
+        public PRootConfiguration Load(string mainPath)
         {
-            return new PRootConfiguration();
+            var root = Deserialize(mainPath) as RootConfiguration;
+            var proot = new PRootConfiguration(root.Id);
+            proot.ConfigurationName = root.ConfigurationName;
+
+            PComponent activeComponent = null;
+            IConfigurationManagerComponent componentModule = null;
+
+            /*
+             * Внимание!!! Из за этой зашивки порядок ссылок на файлы очень важен.
+             * Сначала должен идти компонент, только затем подвязанные к нему объекты.
+             * В последующем алгоритм сканирования можно поменять
+             */
+
+            var types = new List<PTypeBase>() { new PBoolean(), new PDateTime(), new PString(), new PGuid(), new PNumeric() };
+
+            foreach (var file in root.IncludedFiles)
+            {
+                var obj = Deserialize(file);
+                switch (obj)
+                {
+                    case DataComponent dc:
+
+                        activeComponent = new PComponent(dc.Id);
+                        activeComponent.Name = dc.Name;
+                        activeComponent.ComponentPath = dc.ComponentPath;
+                        activeComponent.Id = dc.Id;
+
+                        proot.RegisterDataComponent(activeComponent);
+
+                        componentModule = GetComponentConfigurationManager(activeComponent);
+                        break;
+                    case DataComponentObject dco:
+
+                        var pobj = componentModule.ConfigurationComponentObjectLoadHandler(activeComponent, dco);
+                        types.Add(pobj);
+                        break;
+                }
+            }
+            /*
+             * Мне просто лень заморачиваться сейчас и придумывать
+             * какой-либо изящный алгоритм для загрузки.
+             * Проблема: у нас есть свойства у объектов. Эти свойства имеют некий тип(ы).
+             * Чтобы правильно загрузить тип, нам необходима ссылка на PTypeBase, которая
+             * доступна только после того, как мы прогрузим объекты без свойств.
+             * Для того чтобы корректно прогрузить свойства, мы идём пофайлам второй раз.
+             */
+
+            foreach (var file in root.IncludedFiles)
+            {
+                var obj = Deserialize(file);
+                switch (obj)
+                {
+                    case DataComponentObject dco:
+
+                        var pcomponent = proot.DataSectionComponents.First(x => x.Id == dco.ComponentId);
+                        var pobj = pcomponent.GetObject(dco.Id);
+
+                        var cm = GetComponentConfigurationManager(pcomponent);
+
+                        foreach (var property in dco.Properties)
+                        {
+                            cm.ConfigurationObjectPropertyLoadHandler(pobj, property, types);
+                        }
+                        break;
+                }
+            }
+
+            return proot;
+        }
+
+        private IConfigurationManagerComponent GetComponentConfigurationManager(PComponent pcomponent)
+        {
+            var componentAssembly = Assembly.LoadFrom(pcomponent.ComponentPath);
+            var componentType = componentAssembly.DefinedTypes.First(x =>
+                x.ImplementedInterfaces.Contains(typeof(IConfigurationManagerComponent)));
+            return Activator.CreateInstance(componentType, pcomponent) as IConfigurationManagerComponent;
         }
 
         public void Unload(PRootConfiguration conf, string folder)
@@ -35,11 +110,10 @@ namespace ZenPlatform.Configuration
                 var com = new DataComponent();
                 com.ComponentPath = pcomponent.ComponentPath;
                 com.Name = pcomponent.Name;
-
+                com.Id = pcomponent.Id;
                 var componentAssembly = Assembly.LoadFrom(pcomponent.ComponentPath);
-                var componentType = componentAssembly.DefinedTypes.First(x => x.BaseType.Name == "DataComponentBase");
-                var componentLoadMethod = componentType.GetDeclaredMethod("ConfigurationUnLoadHandler");
-                var component = Activator.CreateInstance(componentType, pcomponent);
+                var componentType = componentAssembly.DefinedTypes.First(x => x.ImplementedInterfaces.Contains(typeof(IConfigurationManagerComponent)));
+                IConfigurationManagerComponent component = Activator.CreateInstance(componentType, pcomponent) as IConfigurationManagerComponent;
 
                 var dataFolder = Path.Combine(folder, $"Data\\{com.Name}");
                 var dataObjectFolder = Path.Combine(folder, $"Data\\{com.Name}\\Objects");
@@ -50,12 +124,13 @@ namespace ZenPlatform.Configuration
                 if (!Directory.Exists(dataObjectFolder))
                     Directory.CreateDirectory(dataObjectFolder);
 
+                var componentPath = Path.Combine(dataFolder, com.Name + ".json");
+                root.IncludedFiles.Add(componentPath);
+
                 foreach (var pobj in pcomponent.Objects)
                 {
                     //TODO: Необходимо вынести менеджер конфигурации в отдельную сборку
-
                     /*
-                     * 
                      * Конфигурация должна загружаться и выгружаться с помощью стороннего компонента
                      * 
                      * Это необходимо также для генерации кода, когда мы делаем сборку приложения по конфигурации,
@@ -73,37 +148,39 @@ namespace ZenPlatform.Configuration
                      * Platform <- ConfigurationManager, Configuration
                      * Migration <- ConfigurationManager, Configuration
                      * CodeGeneration <- ConfigurationManager, Configuration
-                     * 
                      */
 
-                    var componentObject = componentLoadMethod.Invoke(component, new object[] { pobj }) as DataComponentObject;
+                    var componentObject = component.ConfigurationUnloadHandler(pobj);
 
                     var componentObjectPath = Path.Combine(dataObjectFolder, componentObject.Name + ".json");
 
-                    using (StreamWriter sw = new StreamWriter(componentObjectPath, false))
-                    {
-                        sw.WriteLine(JsonConvert.SerializeObject(componentObject, Formatting.Indented));
-                    }
-
+                    Serialize(componentObject, componentObjectPath);
                     root.IncludedFiles.Add(componentObjectPath);
                 }
 
-                var componentPath = Path.Combine(dataFolder, com.Name + ".json");
-
-                root.IncludedFiles.Add(componentPath);
-
-                using (StreamWriter sw = new StreamWriter(componentPath, false))
-                {
-                    sw.WriteLine(JsonConvert.SerializeObject(com, Formatting.Indented));
-                }
+                Serialize(com, componentPath);
             }
 
             #endregion
 
             var rootPath = Path.Combine(folder, root.ConfigurationName + ".json");
-            using (StreamWriter sw = new StreamWriter(rootPath, false))
+
+            Serialize(root, rootPath);
+        }
+
+        private void Serialize(object obj, string path)
+        {
+            using (StreamWriter sw = new StreamWriter(path, false))
             {
-                sw.WriteLine(JsonConvert.SerializeObject(root, Formatting.Indented));
+                sw.WriteLine(JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All }));
+            }
+        }
+
+        private object Deserialize(string path)
+        {
+            using (StreamReader sr = new StreamReader(path))
+            {
+                return JsonConvert.DeserializeObject(sr.ReadToEnd(), new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
             }
         }
     }
@@ -115,7 +192,6 @@ namespace ZenPlatform.Configuration
             IncludedFiles = new List<string>();
         }
 
-
         public string ConfigurationName { get; set; }
         public List<string> IncludedFiles { get; set; }
         public Guid Id { get; set; }
@@ -123,6 +199,7 @@ namespace ZenPlatform.Configuration
 
     public class DataComponent
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string ComponentPath { get; set; }
     }
@@ -168,81 +245,4 @@ namespace ZenPlatform.Configuration
         }
     }
 
-    public class SimpleObjectConverter : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool CanWrite
-        {
-            get { return false; }
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(PSimpleObjectType) == objectType;
-        }
-    }
-
-    public class ComponentConverter : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            var result = new PComponent();
-
-            if (reader.TokenType == JsonToken.Null)
-                return null;
-            var contract = serializer.ContractResolver.ResolveContract(objectType) as JsonObjectContract;
-            if (contract == null)
-                throw new JsonSerializationException("invalid type " + objectType.FullName);
-            var value = existingValue ?? contract.DefaultCreator();
-            var jObj = JObject.Load(reader);
-
-            var objectsPropertyValue = jObj.GetValue(nameof(PComponent.Objects));
-
-            foreach (var jToken in objectsPropertyValue.Children())
-            {
-                var child = (JObject)jToken;
-                var item = result.CreateObject<PSimpleObjectType>(child?.GetValue(nameof(PSimpleObjectType.Name)).ToString());
-
-
-                var itemPropertiesValue = child.GetValue(nameof(PObjectType.Properties)).Children();
-                foreach (var itemProperty in itemPropertiesValue)
-                {
-                    var property = new PSimpleProperty(item);
-                    item.Properties.Add(property);
-                    serializer.Populate(itemProperty.CreateReader(), property);
-                }
-
-                //serializer.Populate(child.CreateReader(), item);
-            }
-
-            result.ComponentPath = jObj.GetValue(nameof(PComponent.ComponentPath)).ToString();
-            result.Name = jObj.GetValue(nameof(PComponent.Name)).ToString();
-
-            return result;
-        }
-
-        public override bool CanWrite
-        {
-            get { return false; }
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(PComponent) == objectType;
-        }
-    }
 }

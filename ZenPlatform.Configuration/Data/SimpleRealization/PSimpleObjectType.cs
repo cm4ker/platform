@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using ZenPlatform.Configuration.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Data.SimpleRealization
 {
@@ -8,6 +9,7 @@ namespace ZenPlatform.Configuration.Data.SimpleRealization
     /// </summary>
     public class PSimpleObjectType : PObjectType
     {
+
         public PSimpleObjectType(string name, Guid id, PComponent owner) : base(name, id, owner)
         {
             Init();

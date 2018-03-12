@@ -4,6 +4,7 @@ using System.Reflection.Metadata;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Serialization;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.Tests

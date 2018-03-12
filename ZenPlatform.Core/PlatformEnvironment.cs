@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration;
@@ -31,6 +32,8 @@ namespace ZenPlatform.Core
             Globals = new Dictionary<string, object>();
             Managers = new Dictionary<Type, EntityManagerBase>();
             Entityes = new Dictionary<Guid, EntityDefinition>();
+
+            Sessions.Add(new SystemSession(this, 1));
         }
 
 
@@ -57,6 +60,15 @@ namespace ZenPlatform.Core
 
                 return session;
             }
+        }
+
+        public SystemSession GetSystemSession()
+        {
+            var session = Sessions[0] as SystemSession;
+            if (session is null)
+                throw new InvalidOperationException("System session is not created. The system go down.");
+
+            return session;
         }
 
         public void RemoveSession(Session session)

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using ZenPlatform.Configuration.Data.Types.Complex;
 
-namespace ZenPlatform.Configuration.Data
+namespace ZenPlatform.Configuration.Data.Types.Complex
 {
     public abstract class PObjectType : PTypeBase
     {

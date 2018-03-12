@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Configuration.Data;
+using ZenPlatform.Configuration.Data.SimpleRealization;
+using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.QueryBuilders;
 using ZenPlatform.QueryBuilder.Queries;
@@ -17,21 +19,22 @@ namespace ZenPlatform.Tests
 
         public DataComponentTest()
         {
-            _pObject = new PSimpleObjectType("test");
-            var property = new PProperty(_pObject)
+            var factory = new ConfigurationFactory();
+            _pObject = factory.CreateInvoice(factory.CreateDocumentComponent());
+            var property = new PSimpleProperty(_pObject)
             {
                 Name = "test_property"
             };
             property.Types.Add(new PString());
             _pObject.Properties.Add(property);
 
-            property = new PProperty(_pObject)
+            property = new PSimpleProperty(_pObject)
             {
                 Name = "test_property2",
             };
             property.Types.Add(new PGuid());
             _pObject.Properties.Add(property);
-            _pObject.TableName = "test_table";
+            //_pObject.Name = "test_table";
         }
 
         [TestMethod]
@@ -40,7 +43,7 @@ namespace ZenPlatform.Tests
             var q = new DBSelectQuery("teble1").Select("qwe", "vdvdfv");
 
             var q2 = new DBSelectQuery();
-            q2.From(q,"t1").Select("tttt","ewrewr");
+            q2.From(q, "t1").Select("tttt", "ewrewr");
 
 
 
