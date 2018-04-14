@@ -1,20 +1,22 @@
 ﻿using System;
-using ZenPlatform.Configuration.Data.Types.Complex;
 
-namespace ZenPlatform.Configuration.Data
+namespace ZenPlatform.Configuration.Data.Types.Complex
 {
     /// <summary>
     /// Комплексный тип данных
+    /// Этот тип данных позволяет осуществлять наследование.
+    /// 
+    /// Наследование реализуется на уровне компонента и есть ли возможность поддерживать его или нет - решать создателям компонента
+    /// 
+    /// Допустим у нас есть абстрактный тип "ДокументПрихода". Из этого типа можно создать новые документы:
+    ///     - ПриходнаяНакладная
+    ///     - ВозвратТовараОтПокупатлея
+    /// 
     /// На этом уровне появляется привязка к событиям
     /// </summary>
-    public class PComplexType : PObjectType
+    public abstract class PComplexType : PObjectType
     {
         private PObjectType _objectType;
-
-        protected PComplexType(string name, PObjectType objectType) : base(name, Guid.Empty, objectType.OwnerComponent)
-        {
-            Init(objectType);
-        }
 
         protected PComplexType(string name, Guid guid, PObjectType objectType) : base(name, guid, objectType.OwnerComponent)
         {

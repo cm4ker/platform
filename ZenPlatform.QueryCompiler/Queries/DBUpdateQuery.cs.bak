@@ -75,18 +75,10 @@ namespace ZenPlatform.QueryBuilder.Queries
             {
                 throw new Exception("Trying to update fields in differend tables");
             }
-            _updateTable = field.Owner as DBTable;
-            _setUpdate.AddField(field);
-        }
+            if (_updateTable is null)
+                _updateTable = field.Owner as DBTable;
 
-        public void AddField(DBTableField destField, DBClause value)
-        {
-            if (_updateTable != null && destField.Owner as DBTable != _updateTable)
-            {
-                throw new Exception("Trying to update fields in differend tables");
-            }
-            _updateTable = destField.Owner as DBTable;
-            _setUpdate.AddField(destField, value);
+            _setUpdate.AddField(field);
         }
 
         public DBLogicalOperation Where(DBClause clause1, CompareType type, DBClause clause2)
@@ -135,17 +127,12 @@ namespace ZenPlatform.QueryBuilder.Queries
         DBParameterCollection Parameters { get; }
     }
 
-    public interface IDataChangeQuery : IParametrizedQuery
+    public interface IDataChangeQuery : IQueryable, IParametrized
     {
 
     }
 
-    public interface IDataReturnQuery : IParametrizedQuery
-    {
-
-    }
-
-    public interface IParametrizedQuery : IQueryable, IParametrized
+    public interface IDataReturnQuery : IQueryable, IParametrized
     {
 
     }

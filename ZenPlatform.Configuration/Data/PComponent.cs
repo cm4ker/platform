@@ -51,7 +51,7 @@ namespace ZenPlatform.Configuration.Data
         /// <returns></returns>
         public T CreateObject<T>(string name) where T : PObjectType
         {
-            var obj = Activator.CreateInstance(typeof(T), name, this) as T;
+            var obj = Activator.CreateInstance(typeof(T), name, Guid.NewGuid(), this) as T;
             _objects.Add(obj);
             return obj;
         }

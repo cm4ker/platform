@@ -18,13 +18,13 @@ namespace ZenPlatform.Tests
     [TestClass]
     public class EntityGeneratorTest
     {
-        private ConfigurationFactory _factory = new ConfigurationFactory();
+
 
         [TestMethod]
         public void DocumentComponentGenerateDto()
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
-            var com = _factory.CreateDocumentComponent();
+            var com = ConfigurationFactory.CreateDocumentComponent();
             var invoice = com.Objects.ToArray()[0];
             var contractor = com.Objects.ToArray()[1];
 
@@ -39,7 +39,7 @@ namespace ZenPlatform.Tests
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
 
-            var com = _factory.CreateDocumentComponent();
+            var com = ConfigurationFactory.CreateDocumentComponent();
             var invoice = com.Objects.ToArray()[0];
             var contractor = com.Objects.ToArray()[1];
 
@@ -56,7 +56,7 @@ namespace ZenPlatform.Tests
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
 
-            var com = _factory.CreateDocumentComponent();
+            var com = ConfigurationFactory.CreateDocumentComponent();
 
             var extension = deg.GenerateExtension(com);
             var inface = deg.GenerateInterface(com);
@@ -81,7 +81,7 @@ namespace ZenPlatform.Tests
         {
             DocumentEntityGenerator deg = new DocumentEntityGenerator();
 
-            var com = _factory.CreateDocumentComponent();
+            var com = ConfigurationFactory.CreateDocumentComponent();
 
             CodeBuilder cb = new CodeBuilder();
             cb.Generate(deg, com);

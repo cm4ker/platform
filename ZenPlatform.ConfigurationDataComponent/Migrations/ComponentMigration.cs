@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
-using ZenPlatform.Configuration.Data;
 using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.Core;
 
-namespace ZenPlatform.DataComponent
+namespace ZenPlatform.DataComponent.Migrations
 {
 
     /// <summary>
     /// Комопнент предназначенный для миграции сущностей
     /// </summary>
-    public abstract class DataComponentMigrationBase
+    public abstract class DataComponentMigrationBase<T>
+        where T : PObjectType
     {
-        private readonly List<DataComponentObjectMigrationBase> _objects;
+        private readonly List<DataComponentObjectMigrationBase<T>> _objects;
 
-        public DataComponentMigrationBase(SystemSession session)
+        protected DataComponentMigrationBase(SystemSession session)
         {
             Session = session;
-            _objects = new List<DataComponentObjectMigrationBase>();
+            _objects = new List<DataComponentObjectMigrationBase<T>>();
         }
 
         public SystemSession Session { get; }
@@ -25,12 +25,12 @@ namespace ZenPlatform.DataComponent
         /// <summary>
         /// Объекты для рассмотрения
         /// </summary>
-        public IEnumerable<DataComponentObjectMigrationBase> Objects
+        public IEnumerable<DataComponentObjectMigrationBase<T>> Objects
         {
             get { return _objects; }
         }
 
-        public void AddMigrationObject(DataComponentObjectMigrationBase obj)
+        public void AddMigrationObject(DataComponentObjectMigrationBase<T> obj)
         {
             _objects.Add(obj);
         }
@@ -43,14 +43,15 @@ namespace ZenPlatform.DataComponent
 
     /// <summary>
     /// Компонент, который отвечает за миграцию конкретного объекта. Здесь заложена логика его мигрирования
-    /// У объекта есть несколько состояний в которых он находится
+    /// У объекта есть несколько состояний в которых он может находится
     /// 1) Создан - Объект только лишь создан и не содержит в себе никаких данных
     /// 2) Обработан - Объект выполнил подготовку к мигрированию (сгенерировал скрипты и так далее)
     /// 3) Выполнен - Объект мигрировал
     /// </summary>
-    public abstract class DataComponentObjectMigrationBase
+    public abstract class DataComponentObjectMigrationBase<T>
+        where T : PObjectType
     {
-        protected DataComponentObjectMigrationBase(SystemSession session, PObjectType newObjectType, PObjectType oldObjectType)
+        protected DataComponentObjectMigrationBase(SystemSession session, T newObjectType, T oldObjectType)
         {
             Session = session;
             NewObjectType = newObjectType;
@@ -63,9 +64,9 @@ namespace ZenPlatform.DataComponent
         public ObjectMigrationStatus MigrationStatus { get; set; }
         public MigrationChangesType MigrationChangesType { get; set; }
 
-        protected PObjectType NewObjectType { get; }
+        protected T NewObjectType { get; }
 
-        protected PObjectType OldObjectType { get; }
+        protected T OldObjectType { get; }
 
         protected SystemSession Session { get; }
     }
@@ -82,8 +83,20 @@ namespace ZenPlatform.DataComponent
 
     public enum ObjectMigrationStatus
     {
+        /// <summary>
+        /// Миграция создана и готова для дальнейших манипуляций
+        /// </summary>
         Created,
-        Processed,
+
+        /// <summary>
+        /// Миграция подготовлена. Созданы все условия для миграции. Стало понятно какие изменения будут
+        /// внесены в базу данных. Какой уровень вмешательства будет в базу.
+        /// </summary>
+        Prepared,
+
+        /// <summary>
+        /// Миграция полностью завершила свою работу
+        /// </summary>
         Complited
     }
     /*

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.Configuration.Data.SimpleRealization;
+using ZenPlatform.DocumentComponent;
 
 namespace ZenPlatform.Tests
 {
-    public class ConfigurationFactory
+    public static class ConfigurationFactory
     {
-        public PComponent CreateDocumentComponent()
+        public static PComponent CreateDocumentComponent()
         {
             var c = new PComponent(Guid.Empty);
             c.Name = "Document";
@@ -27,11 +28,11 @@ namespace ZenPlatform.Tests
             return c;
         }
 
-        public PSimpleObjectType CreateInvoice(PComponent component)
+        public static PDocumentObjectType CreateInvoice(PComponent component)
         {
-            PSimpleObjectType invoice = component.CreateObject<PSimpleObjectType>("Invoice");
+            PDocumentObjectType invoice = component.CreateObject<PDocumentObjectType>("Invoice");
 
-            invoice.TableName = "Invoices";
+            invoice.RelTableName = "Invoices";
             invoice.Description = "Some description of document";
 
             var prop1 = new PSimpleProperty(invoice);
@@ -49,7 +50,7 @@ namespace ZenPlatform.Tests
             return invoice;
         }
 
-        public PSimpleObjectType CreateContractor(PComponent component)
+        public static PSimpleObjectType CreateContractor(PComponent component)
         {
             PSimpleObjectType contractor = component.CreateObject<PSimpleObjectType>("Contractor"); ;
             contractor.TableName = "Contractors";

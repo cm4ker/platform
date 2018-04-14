@@ -14,13 +14,13 @@ namespace ZenPlatform.Tests.UITest
     public class SimpleFormGenerationTest
     {
 
-        private ConfigurationFactory _factory = new ConfigurationFactory();
+      
 
         [TestMethod]
         public void GenerateFromClass()
         {
 
-            var com = _factory.CreateDocumentComponent();
+            var com = ConfigurationFactory.CreateDocumentComponent();
 
             var gfm = new GenerateFormModel(ProjectType.Wpf);
             gfm.AddNameToUIControls = true;

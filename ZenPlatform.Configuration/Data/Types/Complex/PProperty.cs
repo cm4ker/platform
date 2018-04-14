@@ -38,14 +38,19 @@ namespace ZenPlatform.Configuration.Data.Types.Complex
         /// </summary>
         public bool Unique { get; set; }
 
+        /*
         /// <summary>
         /// Указывает на то, что используется композитный ключ.
         /// Если не устанавливать это свойство, в таком случае при добавлении объекта 
         /// </summary>
         /// public bool CompositeUnique { get; set; }
+        */
 
         /// <summary>
         /// Псевдоним, если установить это свойство, то оно перезапишет Name
+        /// 
+        /// Используется для обращения в коде. Т.е. будет использована следующая транслитерация
+        /// Свойство AliasNamed имеет аттрибут Column("Name") Следовательно, при построении запроса будет корректое обращение к колонке
         /// </summary>
         public string Alias { get; set; }
 

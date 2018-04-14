@@ -7,6 +7,7 @@ using ZenPlatform.Configuration.Data;
 using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.DataComponent.Configuration;
+using ZenPlatform.DataComponent.Migrations;
 
 namespace ZenPlatform.DataComponent
 {
@@ -14,9 +15,10 @@ namespace ZenPlatform.DataComponent
     /// <summary>
     /// Базовый класс компонента, от которого необходимо наследоваться, чтобы объявить новый компонент
     /// </summary>
-    public abstract class DataComponentBase<TMigrationComponent, TObjectConfiguration, TEntityGenerator, TManager> : IConfigurationManagerComponent
-        where TMigrationComponent : DataComponentMigrationBase
+    public abstract class DataComponentBase<TMigrationComponent, TObjectConfiguration, TComplexObjectConfiguration, TEntityGenerator, TManager> : IConfigurationManagerComponent
+        where TMigrationComponent : DataComponentMigrationBase<TObjectConfiguration>
         where TObjectConfiguration : PDataObjectType
+        where TComplexObjectConfiguration : PDataComplexObjectType
         where TEntityGenerator : EntityGeneratorBase
         where TManager : EntityManagerBase
 
@@ -38,6 +40,7 @@ namespace ZenPlatform.DataComponent
         protected DataComponentBase(PComponent component)
         {
             ObjectConfigurationType = typeof(TObjectConfiguration);
+            ComplexObjectConfigurationType = typeof(TComplexObjectConfiguration);
             Component = component;
         }
 
@@ -47,6 +50,7 @@ namespace ZenPlatform.DataComponent
         public virtual string Version => this.GetType().Assembly.GetName().Version.ToString();
 
         public virtual Type ObjectConfigurationType { get; }
+        public virtual Type ComplexObjectConfigurationType { get; }
         public abstract EntityManagerBase Manager { get; }
         public abstract EntityGeneratorBase Generator { get; }
 
