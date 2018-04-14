@@ -24,15 +24,17 @@ namespace ZenPlatform.Configuration.Data.Types.Complex
         /// <summary>
         /// Ёто абстрактный тип.
         /// ≈сли да, в таком случае от этого класса можно только наследоватьс€. Ёкзепл€р этого класса создавать нельз€
+        /// 
+        /// ƒл€ того, чтобы наследоватьс€ от класса используйте абстракцию <see cref="PComplexType"/>
         /// </summary>
         public virtual bool IsAbstractType { get; set; }
 
+        /// <inheritdoc />
         public override Guid Id { get; }
-
-        //public string TableName { get; set; }
 
         public List<PProperty> Properties { get; }
 
+        /// <inheritdoc />
         public override string Name { get; }
 
     }

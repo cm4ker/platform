@@ -87,9 +87,7 @@ namespace ZenPlatform.QueryBuilder
 
         public DBLogicalClause Owner => _owner;
         public DBParameterCollection Parameters => _parameters;
-
-
-
+        
         public override string Compile(bool recompile = false)
         {
             var sb = new StringBuilder();

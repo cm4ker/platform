@@ -8,11 +8,12 @@ using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.CSharpCodeBuilder.Syntax;
 using ZenPlatform.DataComponent;
+using ZenPlatform.DocumentComponent.Migrations;
 
 
 namespace ZenPlatform.DocumentComponent
 {
-    public class DocumnetComponent : DataComponentBase<DocumentComponentMigration, PSimpleObjectType, DocumentEntityGenerator, DocumentManager>
+    public class DocumnetComponent : DataComponentBase<DocumentComponentMigration, PDocumentObjectType, PDocumentComplexObjectType, DocumentEntityGenerator, DocumentManager>
     {
         public DocumnetComponent(PComponent component) : base(component)
         {

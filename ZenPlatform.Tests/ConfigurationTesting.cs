@@ -15,11 +15,11 @@ namespace ZenPlatform.Tests
     [TestClass]
     public class ConfigurationTesting
     {
-        ConfigurationFactory _factory = new ConfigurationFactory();
+
         private PRootConfiguration CreateConfiguration()
         {
             var conf = new PRootConfiguration();
-            conf.RegisterDataComponent(_factory.CreateDocumentComponent());
+            conf.RegisterDataComponent(ConfigurationFactory.CreateDocumentComponent());
             conf.ConfigurationName = "SimpleTestConfiguration";
 
             return conf;
@@ -38,7 +38,7 @@ namespace ZenPlatform.Tests
         {
             PlatformEnvironment e = new PlatformEnvironment();
 
-            var pcomponent = _factory.CreateDocumentComponent();
+            var pcomponent = ConfigurationFactory.CreateDocumentComponent();
 
             e.RegisterEntity(new EntityDefinition(pcomponent.Objects.ToArray()[1], typeof(ContractorEntity), typeof(ContractorDto)));
             e.RegisterEntity(new EntityDefinition(pcomponent.Objects.ToArray()[0], typeof(InvoiceEntity), typeof(InvoiceDto)));

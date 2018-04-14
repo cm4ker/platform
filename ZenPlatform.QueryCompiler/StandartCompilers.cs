@@ -7,20 +7,12 @@ namespace ZenPlatform.QueryBuilder
 
         public static string CompileAliasedObject(string expression, string alias)
         {
+            alias = (string.IsNullOrEmpty(alias)) ? "" : $"{SQLTokens.AS} [{alias}]";
 
-            var @as = (string.IsNullOrEmpty(alias)) ? "" : SQLTokens.AS;
-            alias = (string.IsNullOrEmpty(alias)) ? "" : $"[{alias}]";
-
-            return expression + string.Format(" {0} {1}", @as, alias);
+            if (string.IsNullOrEmpty(alias))
+                return expression;
+            return expression + string.Format(" {0}", alias);
         }
-
-
-        //public static string SimpleCompiler(string compileExpression, dynamic parameters)
-        //{
-        //    return Smart.Format(compileExpression, parameters).Trim();
-        //}
-
-
 
         public static string CompileComparer(CompareType compare)
         {
