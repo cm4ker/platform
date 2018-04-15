@@ -534,7 +534,7 @@ namespace ZenPlatform.DocumentComponent
             yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Annotations"));
             yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.DocumentComponent"));
         }
-
+         
         private AccessorListSyntax GetEmptyAccessor()
         {
             return SyntaxFactory.AccessorList(
