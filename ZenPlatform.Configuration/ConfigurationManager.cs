@@ -24,7 +24,7 @@ namespace ZenPlatform.Configuration
             proot.ConfigurationName = root.ConfigurationName;
 
             PComponent activeComponent = null;
-            IConfigurationManagerComponent componentModule = null;
+            IConfigurationComponentHandler componentModule = null;
 
             /*
              * Внимание!!! Из за этой зашивки порядок ссылок на файлы очень важен.
@@ -52,7 +52,7 @@ namespace ZenPlatform.Configuration
                         break;
                     case DataComponentObject dco:
 
-                        var pobj = componentModule.ConfigurationComponentObjectLoadHandler(activeComponent, dco);
+                        var pobj = componentModule.UnpackObject(activeComponent, dco);
                         types.Add(pobj);
                         break;
                 }
@@ -80,7 +80,7 @@ namespace ZenPlatform.Configuration
 
                         foreach (var property in dco.Properties)
                         {
-                            cm.ConfigurationObjectPropertyLoadHandler(pobj, property, types);
+                            cm.UnpackProperty(pobj, property, types);
                         }
                         break;
                 }
@@ -89,12 +89,12 @@ namespace ZenPlatform.Configuration
             return proot;
         }
 
-        private IConfigurationManagerComponent GetComponentConfigurationManager(PComponent pcomponent)
+        private IConfigurationComponentHandler GetComponentConfigurationManager(PComponent pcomponent)
         {
             var componentAssembly = Assembly.LoadFrom(pcomponent.ComponentPath);
             var componentType = componentAssembly.DefinedTypes.First(x =>
-                x.ImplementedInterfaces.Contains(typeof(IConfigurationManagerComponent)));
-            return Activator.CreateInstance(componentType, pcomponent) as IConfigurationManagerComponent;
+                x.ImplementedInterfaces.Contains(typeof(IConfigurationComponentHandler)));
+            return Activator.CreateInstance(componentType, pcomponent) as IConfigurationComponentHandler;
         }
 
         public void Unload(PRootConfiguration conf, string folder)
@@ -112,8 +112,8 @@ namespace ZenPlatform.Configuration
                 com.Name = pcomponent.Name;
                 com.Id = pcomponent.Id;
                 var componentAssembly = Assembly.LoadFrom(pcomponent.ComponentPath);
-                var componentType = componentAssembly.DefinedTypes.First(x => x.ImplementedInterfaces.Contains(typeof(IConfigurationManagerComponent)));
-                IConfigurationManagerComponent component = Activator.CreateInstance(componentType, pcomponent) as IConfigurationManagerComponent;
+                var componentType = componentAssembly.DefinedTypes.First(x => x.ImplementedInterfaces.Contains(typeof(IConfigurationComponentHandler)));
+                IConfigurationComponentHandler component = Activator.CreateInstance(componentType, pcomponent) as IConfigurationComponentHandler;
 
                 var dataFolder = Path.Combine(folder, $"Data\\{com.Name}");
                 var dataObjectFolder = Path.Combine(folder, $"Data\\{com.Name}\\Objects");
@@ -150,7 +150,7 @@ namespace ZenPlatform.Configuration
                      * CodeGeneration <- ConfigurationManager, Configuration
                      */
 
-                    var componentObject = component.ConfigurationUnloadHandler(pobj);
+                    var componentObject = component.PackObject(pobj);
 
                     var componentObjectPath = Path.Combine(dataObjectFolder, componentObject.Name + ".json");
 

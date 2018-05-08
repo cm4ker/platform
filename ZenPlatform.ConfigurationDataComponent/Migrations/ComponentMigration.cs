@@ -4,41 +4,35 @@ using ZenPlatform.Core;
 
 namespace ZenPlatform.DataComponent.Migrations
 {
-
     /// <summary>
     /// Комопнент предназначенный для миграции сущностей
     /// </summary>
-    public abstract class DataComponentMigrationBase<T>
-        where T : PObjectType
+    public abstract class DataComponentMigrationBase
     {
-        private readonly List<DataComponentObjectMigrationBase<T>> _objects;
+        private List<DataComponentObjectMigrationBase> _migrators;
 
         protected DataComponentMigrationBase(SystemSession session)
         {
             Session = session;
-            _objects = new List<DataComponentObjectMigrationBase<T>>();
+            _migrators = new List<DataComponentObjectMigrationBase>();
         }
 
         public SystemSession Session { get; }
 
-
-        /// <summary>
-        /// Объекты для рассмотрения
-        /// </summary>
-        public IEnumerable<DataComponentObjectMigrationBase<T>> Objects
+        public void AddMigrator(DataComponentObjectMigrationBase migrator)
         {
-            get { return _objects; }
+            _migrators.Add(migrator);
         }
 
-        public void AddMigrationObject(DataComponentObjectMigrationBase<T> obj)
+        public void ApplyMigration(PObjectType oldObject, PObjectType newObject)
         {
-            _objects.Add(obj);
+            //TODO: Найти первый подходящий мигратор для объекта и сделать миграцию... 
         }
+    }
 
-        public virtual bool Migrate()
-        {
-            return true;
-        }
+
+    public abstract class DataComponentObjectMigrationBase
+    {
     }
 
     /// <summary>
