@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DefaultNamespace;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZenPlatform.Configuration;
@@ -15,7 +14,6 @@ namespace ZenPlatform.Tests
     [TestClass]
     public class ConfigurationTesting
     {
-
         private PRootConfiguration CreateConfiguration()
         {
             var conf = new PRootConfiguration();
@@ -30,26 +28,26 @@ namespace ZenPlatform.Tests
         {
             var confManager = new ConfigurationManager();
             confManager.Unload(CreateConfiguration(), AppDomain.CurrentDomain.BaseDirectory + "\\SimpleConf");
-            var conf = confManager.Load(AppDomain.CurrentDomain.BaseDirectory + "\\SimpleConf\\SimpleTestConfiguration.json");
+            var conf = confManager.Load(AppDomain.CurrentDomain.BaseDirectory +
+                                        "\\SimpleConf\\SimpleTestConfiguration.json");
         }
 
         [TestMethod]
         public void SimpleTest()
         {
-            PlatformEnvironment e = new PlatformEnvironment();
-
-            var pcomponent = ConfigurationFactory.CreateDocumentComponent();
-
-            e.RegisterEntity(new EntityDefinition(pcomponent.Objects.ToArray()[1], typeof(ContractorEntity), typeof(ContractorDto)));
-            e.RegisterEntity(new EntityDefinition(pcomponent.Objects.ToArray()[0], typeof(InvoiceEntity), typeof(InvoiceDto)));
-
-            e.RegisterManager(typeof(ContractorEntity), new DocumentManager());
-            e.RegisterManager(typeof(InvoiceEntity), new DocumentManager());
-
-            var session = e.CreateSession();
-
-            var invoice = session.Document().Invoice.Load("someKey");
-
+//            PlatformEnvironment e = new PlatformEnvironment();
+//
+//            var pcomponent = ConfigurationFactory.CreateDocumentComponent();
+//
+//            e.RegisterEntity(new EntityDefinition(pcomponent.Objects.ToArray()[1], typeof(ContractorEntity), typeof(ContractorDto)));
+//            e.RegisterEntity(new EntityDefinition(pcomponent.Objects.ToArray()[0], typeof(InvoiceEntity), typeof(InvoiceDto)));
+//
+//            e.RegisterManager(typeof(ContractorEntity), new DocumentManager());
+//            e.RegisterManager(typeof(InvoiceEntity), new DocumentManager());
+//
+//            var session = e.CreateSession();
+//
+//            var invoice = session.Document().Invoice.Load("someKey");
         }
     }
 }
