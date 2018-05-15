@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root>
+    <ProjectName>Библиотека</ProjectName>
+    <!-- RC, RTM, Alpha, Beta, Gamma  -->
+    <ProjectVersion>0.0.0.1 Alpha</ProjectVersion>
+    <Data>
+        <Components>
+            <Component Name="Document" Id="0000000002">
+                <File Path="./Components/DocumentComponent.dll"/>
+                <AttachComponent Id="0000000001"/>
+            </Component>
+            <Component Name="Table" Id="0000000001">
+                <File Path="./Components/TableComponent.dll"/>
+                <ShowInConfigTree>False</ShowInConfigTree>
+                <IsComponentAddon>True</IsComponentAddon>
+            </Component>
+            <Component Name="Reference" Id="0000000003">
+                <File Path="./Components/ReferenceComponent.dll"/>
+                <AttachComponent Name="Table"/>
+            </Component>
+            <Component Name="AccumulateRegister" Id="0000000004">
+                <File Path="./Components/AccumulateRegisterComponent.dll"/>
+            </Component>
+            <Component Name="InformationRegister" Id="0000000005">
+                <File Path="./Components/InformationRefisterComponent.dll"/>
+            </Component>
+        </Components>
+        <IncludedFiles>
+            <File Path="./Data/Documents/ВыдачаКниги.xml" ComponentName="Document"/>
+            <File Path="./Data/Documents/ВозвратКниги.xml" ComponentName="Document"/>
+            <File Path="./Data/Documents/УтеряКниги.xml" ComponentName="Document"/>
+            <File Path="./Data/Documents/ПоступлениеКниги.xml" ComponentName="Document"/>
+            <File Path="./Data/References/Книга.xml" ComponentName="Reference"/>
+            <File Path="./Data/References/Автор.xml" ComponentName="Reference"/>
+            <File Path="./Data/AccumulateRegister/ОстатокНаСкладе.xml" ComponentName="AccumulateRegister"/>
+            <File Path="./Data/InfoRegister/ИсторияВыдачиКниг.xml" ComponentName="InformationRegister"/>
+        </IncludedFiles>
+    </Data>
+    <Interface>
+        <IncludedFiles>
+            <File Path="./Interface/РабочийСтол.xml"/>
+        </IncludedFiles>
+    </Interface>
+    <Roles>
+        <IncludedFiles>
+            <File Path="./Roles/Директор.xml"/>
+            <File Path="./Roles/РаботникСклада.xml"/>
+            <File Path="./Roles/РаботникВыдачи.xml"/>
+        </IncludedFiles>
+    </Roles>
+    <Modules>
+        <IncludedFiles>
+
+        </IncludedFiles>
+    </Modules>
+</Root>
