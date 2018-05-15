@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+    <Id>0000-0000-0000000-0000-0000</Id>
+    <Name>ВыдачаКниги</Name>
+    <UseNumeration>true</UseNumeration>
+    <NumerationPattern>ВК-0#######</NumerationPattern>
+    <IsAbstract>false</IsAbstract>
+    <CanBePosted>true</CanBePosted>
+    
+    <RelatedComponents>
+        
+    </RelatedComponents>
+    
+    <Properties>
+        
+    </Properties>
+       
+    <Module>
+        public void Process()
+        {
+            
+        }
+    </Module>
+</Document>
