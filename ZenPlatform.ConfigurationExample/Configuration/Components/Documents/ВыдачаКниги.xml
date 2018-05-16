@@ -6,19 +6,24 @@
     <NumerationPattern>ВК-0#######</NumerationPattern>
     <IsAbstract>false</IsAbstract>
     <CanBePosted>true</CanBePosted>
-    
-    <RelatedComponents>
-        
-    </RelatedComponents>
-    
+
     <Properties>
-        
+        <Property Id="SOMEGUID" TypeId="SOME_GUID" DateCase="DateTime" Name="ДатаДокумента"/>
+        <Property Id="SOMEGUID" TypeId="SOME_GUID" Length="30" Name="НомерДокумента"/>
+        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Читатель"/>
+        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="ВыдаваемыеКниги"/>
     </Properties>
-       
+
+    <IncludedFiles>
+        <File Path="./ВыдачаКниги/Tables/ВыдаваемыеКниги.xml" ComponentId="Table"/>
+    </IncludedFiles>
+
     <Module>
-        public void Process()
+        public override void Post()
         {
-            
+            ВыдаваемыеКниги.Clear();
+
+        //Some code here
         }
     </Module>
 </Document>

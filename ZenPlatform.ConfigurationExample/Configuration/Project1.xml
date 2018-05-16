@@ -7,16 +7,16 @@
         <Components>
             <Component Name="Document" Id="0000000002">
                 <File Path="./Components/DocumentComponent.dll"/>
-                <AttachComponent Id="0000000001"/>
             </Component>
             <Component Name="Table" Id="0000000001">
                 <File Path="./Components/TableComponent.dll"/>
-                <ShowInConfigTree>False</ShowInConfigTree>
-                <IsComponentAddon>True</IsComponentAddon>
+                <Attaches>
+                    <Ref Id="0000000002"/>
+                    <Ref Id="0000000003"/>
+                </Attaches>
             </Component>
             <Component Name="Reference" Id="0000000003">
                 <File Path="./Components/ReferenceComponent.dll"/>
-                <AttachComponent Name="Table"/>
             </Component>
             <Component Name="AccumulateRegister" Id="0000000004">
                 <File Path="./Components/AccumulateRegisterComponent.dll"/>
@@ -32,6 +32,7 @@
             <File Path="./Data/Documents/ПоступлениеКниги.xml" ComponentName="Document"/>
             <File Path="./Data/References/Книга.xml" ComponentName="Reference"/>
             <File Path="./Data/References/Автор.xml" ComponentName="Reference"/>
+            <File Path="./Data/References/Читатели.xml" ComponentName="Reference"/>
             <File Path="./Data/AccumulateRegister/ОстатокНаСкладе.xml" ComponentName="AccumulateRegister"/>
             <File Path="./Data/InfoRegister/ИсторияВыдачиКниг.xml" ComponentName="InformationRegister"/>
         </IncludedFiles>
