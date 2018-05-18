@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AccumulateRegister>
+    <Id>SOME_GUID</Id>
+    <Name>ОстатокНаСкладе</Name>
+    <IsAbstract>False</IsAbstract>
+
+    <!-- Тип регистра накопления
+    
+    Возможные типы значения:
+        Turnovers,
+        RemainsAndTurnovers
+        
+     -->
+    <AccumulateRegisterType>
+        RemainsAndTurnovers
+    </AccumulateRegisterType>
+
+    <Properties>
+        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Книга">
+            <AccumulateRegisterPropertyTypes>
+                <!-- Тип свойства регистра накопления. Возможные варианты:
+                    - Dimension     - Измерение
+                    - Aggregate     - Агрегат
+                    - Simple        - Обычное поле
+                 -->
+                <PropertyType>Dimension</PropertyType>
+            </AccumulateRegisterPropertyTypes>
+        </Property>
+        
+        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Автор">
+            <AccumulateRegisterPropertyTypes>
+                <PropertyType>Dimension</PropertyType>
+            </AccumulateRegisterPropertyTypes>
+        </Property>
+        
+        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Количество"> 
+         <AccumulateRegisterPropertyTypes>
+                <PropertyType>Aggregate</PropertyType>
+            </AccumulateRegisterPropertyTypes>
+        </Property>
+        
+        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Комментарий"> 
+         <AccumulateRegisterPropertyTypes>
+                <PropertyType>Simple</PropertyType>
+            </AccumulateRegisterPropertyTypes>
+        </Property>
+    </Properties>
+
+</AccumulateRegister>

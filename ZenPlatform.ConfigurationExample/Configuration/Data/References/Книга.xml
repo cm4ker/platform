@@ -6,12 +6,20 @@
 
   <!--Ссылка на поле для представления объекта-->
   <DisplayProperty>SOME_GUID</DisplayProperty>
+  
+  <!-- Представление объекта может быть с помощью паттерна:
+  <DisplayPattern> 
+    {(НаименованиеPropertyGuid)} Автор: {(АвторPropertyGuid).(НаименованиеPropertyGuid)}
+  </DisplayPattern>
+  Вот так он хранится непосредственно в конфигурации
+  <DisplayPattern> 
+    {(a4df9f47-b2d9-49a9-b237-09220857c051)} Автор: {(fdadada7-b2d9-49a9-b1234-09220857c051).(bfcacda7-b2d9-49a9-b1234-12340857c051)}
+  </DisplayPattern>
+   -->
+
 
   <Properties>
-    <Property Id="SOMEGUID" TypeId="SOME_GUID" DateCase="DateTime" Name="ДатаДокумента"/>
     <Property Id="SOMEGUID" TypeId="SOME_GUID" Length="30" Name="Наименование"/>
     <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Автор"/>
   </Properties>
-
-
 </Reference>
