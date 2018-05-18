@@ -3,7 +3,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Configuration\Data" />
+    <Folder Include="Configuration\Data\References\" />
     <Folder Include="Configuration\Interface" />
     <Folder Include="Configuration\Roles" />
   </ItemGroup>

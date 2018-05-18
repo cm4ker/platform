@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Id>0000-0000-0000000-0000-0000</Id>
+  <Name>УтеряКниги</Name>
+  <UseNumeration>true</UseNumeration>
+  <NumerationPattern>Утр-0#######</NumerationPattern>
+  <IsAbstract>false</IsAbstract>
+  <CanBePosted>true</CanBePosted>
+
+  <Properties>
+    <Property Id="SOMEGUID" TypeId="SOME_GUID" DateCase="DateTime" Name="ДатаДокумента"/>
+    <Property Id="SOMEGUID" TypeId="SOME_GUID" Length="30" Name="НомерДокумента"/>
+    <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Читатель"/>
+    <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Книга"/>
+  </Properties>
+
+  <DocumentModule>
+    public override void Post()
+    {
+    //Business logic here
+    }
+  </DocumentModule>
+</Document>
