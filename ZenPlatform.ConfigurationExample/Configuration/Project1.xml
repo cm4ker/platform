@@ -5,36 +5,36 @@
     <ProjectVersion>0.0.0.1 Alpha</ProjectVersion>
     <Data>
         <Components>
-            <Component Name="Document" Id="0000000002">
+            <Component Name="Document" Id="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc">
                 <File Path="./Components/DocumentComponent.dll"/>
             </Component>
-            <Component Name="Table" Id="0000000001">
+            <Component Name="Table" Id="3e93d572-5a56-11e8-9c2d-fa7ae01bbebc">
                 <File Path="./Components/TableComponent.dll"/>
                 <Attaches>
-                    <Ref Id="0000000002"/>
-                    <Ref Id="0000000003"/>
+                    <Ref Id="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>
+                    <Ref Id="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>
                 </Attaches>
             </Component>
-            <Component Name="Reference" Id="0000000003">
+            <Component Name="Reference" Id="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc">
                 <File Path="./Components/ReferenceComponent.dll"/>
             </Component>
-            <Component Name="AccumulateRegister" Id="0000000004">
+            <Component Name="AccumulateRegister" Id="3e93d04a-5a56-11e8-9c2d-fa7ae01bbebc">
                 <File Path="./Components/AccumulateRegisterComponent.dll"/>
             </Component>
-            <Component Name="InformationRegister" Id="0000000005">
+            <Component Name="InformationRegister" Id="3e93d180-5a56-11e8-9c2d-fa7ae01bbebc">
                 <File Path="./Components/InformationRefisterComponent.dll"/>
             </Component>
         </Components>
         <IncludedFiles>
-            <File Path="./Data/Documents/ВыдачаКниги.xml" ComponentName="Document"/>
-            <File Path="./Data/Documents/ВозвратКниги.xml" ComponentName="Document"/>
-            <File Path="./Data/Documents/УтеряКниги.xml" ComponentName="Document"/>
-            <File Path="./Data/Documents/ПоступлениеКниги.xml" ComponentName="Document"/>
-            <File Path="./Data/References/Книга.xml" ComponentName="Reference"/>
-            <File Path="./Data/References/Автор.xml" ComponentName="Reference"/>
-            <File Path="./Data/References/Читатели.xml" ComponentName="Reference"/>
-            <File Path="./Data/AccumulateRegister/ОстатокНаСкладе.xml" ComponentName="AccumulateRegister"/>
-            <File Path="./Data/InfoRegister/ИсторияВыдачиКниг.xml" ComponentName="InformationRegister"/>
+            <File Path="./Data/Documents/ВыдачаКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>
+            <File Path="./Data/Documents/ВозвратКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>
+            <File Path="./Data/Documents/УтеряКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>
+            <File Path="./Data/Documents/ПоступлениеКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>
+            <File Path="./Data/References/Книга.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>
+            <File Path="./Data/References/Автор.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>
+            <File Path="./Data/References/Читатели.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>
+            <File Path="./Data/AccumulateRegister/ОстатокНаСкладе.xml" ComponentId="3e93d04a-5a56-11e8-9c2d-fa7ae01bbebc"/>
+            <File Path="./Data/InfoRegister/ИсторияВыдачиКниг.xml" ComponentId="3e93d180-5a56-11e8-9c2d-fa7ae01bbebc"/>
         </IncludedFiles>
     </Data>
     <Interface>

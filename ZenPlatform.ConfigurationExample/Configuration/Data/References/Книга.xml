@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Reference>
+  <Id>SOME_GUID</Id>
+  <Name>Книга</Name>
+  <IsAbstract>False</IsAbstract>
+
+  <!--Ссылка на поле для представления объекта-->
+  <DisplayProperty>SOME_GUID</DisplayProperty>
+
+  <Properties>
+    <Property Id="SOMEGUID" TypeId="SOME_GUID" DateCase="DateTime" Name="ДатаДокумента"/>
+    <Property Id="SOMEGUID" TypeId="SOME_GUID" Length="30" Name="Наименование"/>
+    <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Автор"/>
+  </Properties>
+
+
+</Reference>
