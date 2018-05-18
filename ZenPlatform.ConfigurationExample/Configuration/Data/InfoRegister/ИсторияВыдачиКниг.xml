@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<InfoRegister>
+    <Id>SOME_GUID</Id>
+    <Name>ИсторияВыдачиКниг</Name>
+    <IsAbstract>False</IsAbstract>
+</InfoRegister>
