@@ -65,7 +65,7 @@ namespace ZenPlatform.DocumentComponent
 
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
-            if (conf.IsAbstractType) return null;
+            if (conf.IsAbstract) return null;
 
             var members = new List<SyntaxNode>();
 
@@ -145,7 +145,7 @@ namespace ZenPlatform.DocumentComponent
             var usings = generator.NamespaceImportDeclaration("System");
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
-            if (conf.IsAbstractType) return null;
+            if (conf.IsAbstract) return null;
 
             var members = new List<SyntaxNode>();
 

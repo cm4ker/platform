@@ -4,11 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using Newtonsoft.Json;
+using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Data
 {
     /*
+     * UPDATE. Дискрэймлер: Всё фигня, Миша, давай по новой!
+     *
+     * Компонет НИКОГДА не выпячивает наружу создание PObjectType, а занимается этим внутри! Вообще, это не задача класса PComponent
+     * Это лишь обёртка для взаимодействия с другими компоннетами. Все зарегистрированные объекты хранятся в конфигурации, в разделе Data
+     *
+     *  TODO: необходимо в классе PRootConfiguration, в разделе Data сделать коллекцию свойств и заполннять её при загрузке
+     *
+     * Всё что 
+     *
      * Почему было избрано решение, что компонент конфигурации сам должен создавать объекты
      *
      * Объекты должны создаваться внутри Реализации компонента, например DocumentComponent
@@ -38,11 +48,12 @@ namespace ZenPlatform.Configuration.Data
         private readonly IList<PObjectType> _objects;
         private readonly IDictionary<PGeneratedCodeRuleType, PGeneratedCodeRule> _rules;
 
-        public PComponent(Guid id)
+        public PComponent(Guid id, IComponenConfigurationtLoader loader)
         {
-            _objects = new List<PObjectType>();
             _rules = new Dictionary<PGeneratedCodeRuleType, PGeneratedCodeRule>();
             Id = (id == Guid.Empty) ? Guid.NewGuid() : id;
+
+            Loader = loader;
         }
 
         /// <summary>
@@ -61,65 +72,7 @@ namespace ZenPlatform.Configuration.Data
         /// </summary>
         public Guid Id { get; set; }
 
-        /// <summary>
-        /// Объекты, которые пренадлежат компоненту
-        /// </summary>
-        public IEnumerable<PObjectType> Objects
-        {
-            get { return _objects; }
-        }
-
-        /// <summary>
-        /// Создать объект в компоненте
-        /// </summary>
-        /// <typeparam name="T">Тип объекта (унаследованный от PObjectType), который мы хотим создать</typeparam>
-        /// <param name="name">Имя объекта</param>
-        /// <returns></returns>
-        [Obsolete(
-            "Эта штука устарела, смотри комментарий в файле Configuration/Data/PComponent.cs. Кратко: теперь свойства создаются внутри компонента и затем должны обязательно быть зарегистрированны в PComponent")]
-        public T CreateObject<T>(string name) where T : PObjectType
-        {
-            var obj = Activator.CreateInstance(typeof(T), name, Guid.NewGuid(), this) as T;
-            _objects.Add(obj);
-            return obj;
-        }
-
-        /// <summary>
-        /// Регистрация объекта в компоненте
-        /// </summary>
-        /// <param name="obj"></param>
-        public void RegisterObject(PObjectType obj)
-        {
-            //Объект обязательно должен принадлежать этому компоненту, иначе регистрация не валидна
-            if (obj.OwnerComponent != this)
-                throw new InvalidOperationException(
-                    "Нельзя регистрировать объект в компоненте, который ему не принадлежит");
-            _objects.Add(obj);
-        }
-
-        public PObjectType GetObject(Guid id)
-        {
-            return _objects.FirstOrDefault(x => x.Id == id);
-        }
-
-        public PObjectType GetObject(string name)
-        {
-            return _objects.FirstOrDefault(x => x.Name == name);
-        }
-
-        /// <summary>
-        /// Создать объект в компоненте
-        /// </summary>
-        /// <typeparam name="T">Тип объекта (унаследованный от PObjectType), который мы хотим создать</typeparam>
-        /// <param name="name">Имя объекта</param>
-        /// <param name="id">Идентификатор</param>
-        /// <returns>Экземпляр объекта PObjectType</returns>
-        public T CreateObject<T>(string name, Guid id) where T : PObjectType
-        {
-            var obj = Activator.CreateInstance(typeof(T), name, id, this) as T;
-            _objects.Add(obj);
-            return obj;
-        }
+        public IComponenConfigurationtLoader Loader { get; }
 
         /// <summary>
         /// Зарегистрировать правило для генерации кода

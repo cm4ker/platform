@@ -27,12 +27,27 @@ namespace ZenPlatform.Configuration.Data.Types.Complex
         /// 
         /// Для того, чтобы наследоваться от класса используйте абстракцию <see cref="PComplexType"/>
         /// </summary>
-        public virtual bool IsAbstractType { get; set; }
+        public virtual bool IsAbstract { get; set; }
+
+        /// <summary>
+        /// Это тип от которого нельзя наследоваться
+        /// </summary>
+        public virtual bool IsSealed { get; set; }
+
+        /// <summary>
+        /// Ссылка на родителя, нельзя установить, в случае, если IsSealed = true
+        /// В этом лучае Parent будет всегда null
+        /// </summary>
+        public PObjectType Parent { get; set; }
 
         /// <inheritdoc />
         public override Guid Id { get; }
 
-        public List<PProperty> Properties { get; }
+
+        /// <summary>
+        /// Список свойств объекта
+        /// </summary>
+        public virtual List<PProperty> Properties { get; }
 
         /// <inheritdoc />
         public override string Name { get; }

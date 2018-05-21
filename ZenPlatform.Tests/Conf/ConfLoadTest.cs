@@ -1,0 +1,84 @@
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Xml.Serialization;
+using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.ConfigurationLoader;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.Data;
+using ZenPlatform.DocumentComponent.Configuration;
+
+namespace ZenPlatform.Tests.Conf
+{
+    [TestClass]
+    public class ConfLoadTest
+    {
+        private const string ConfigurationPath = "./Configuration";
+
+        [TestMethod]
+        public void RootLoad()
+        {
+            using (var tr = new StreamReader(Path.Combine(ConfigurationPath, "Project1.xml")))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(XmlConfRoot));
+                var result = (XmlConfRoot)serializer.Deserialize(tr);
+
+                Assert.AreNotEqual(null, result);
+                Assert.AreEqual(typeof(XmlConfRoot), result.GetType());
+
+
+                Assert.AreEqual("Управление библиотекой", result.ProjectName);
+                Assert.AreEqual("0.0.0.1 Alpha", result.ProjectVersion);
+
+                Assert.IsNotNull(result.Data);
+
+                Assert.IsNotNull(result.Data.Components);
+
+                Assert.AreEqual(5, result.Data.Components.Count);
+                Assert.AreEqual(9, result.Data.IncludedFiles.Count);
+
+                var tableComponent = result.Data.Components.Find(x => x.Name == "Table");
+
+                Assert.AreEqual(2, tableComponent.Attaches.Count);
+
+                Assert.AreEqual(1, result.Modules.IncludedFiles.Count);
+
+                Assert.AreEqual(2, result.Languages.Count);
+            }
+        }
+
+        [TestMethod]
+        public void DocumentLoad()
+        {
+            using (var tr = new StreamReader(Path.Combine(ConfigurationPath, "Project1.xml")))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(XmlConfRoot));
+                var result = (XmlConfRoot)serializer.Deserialize(tr);
+
+                var xmlCom = result.Data.Components.Find(x => x.Name == "Document");
+
+                var docs = result.Data.IncludedFiles.Where(x => x.ComponentId == xmlCom.Id);
+
+                var com = new PComponent(xmlCom.Id);
+                com.ComponentPath = xmlCom.File.Path;
+                com.Name = xmlCom.Name;
+
+                PRootConfiguration configuration = new PRootConfiguration(result.ProjectId);
+                configuration.ProjectName = result.ProjectName;
+
+                foreach (var doc in docs)
+                {
+                    var loader = new DocumentConfigurationLoader();
+                    var documentPobject = loader.Load(Path.Combine(ConfigurationPath, doc.Path), com);
+
+                    Assert.IsNotNull(documentPobject);
+                    Assert.AreEqual(typeof(PDocumentObjectType), documentPobject.GetType());
+                }
+            }
+        }
+
+    }
+}

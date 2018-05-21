@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Document>
-  <Id>0000-0000-0000000-0000-0000</Id>
+  <Id>b8fb081f-bd52-49e7-b06c-069d81b6de0b</Id>
   <Name>УтеряКниги</Name>
   <UseNumeration>true</UseNumeration>
   <NumerationPattern>Утр-0#######</NumerationPattern>
@@ -8,10 +8,10 @@
   <CanBePosted>true</CanBePosted>
 
   <Properties>
-    <Property Id="SOMEGUID" TypeId="SOME_GUID" DateCase="DateTime" Name="ДатаДокумента"/>
-    <Property Id="SOMEGUID" TypeId="SOME_GUID" Length="30" Name="НомерДокумента"/>
-    <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Читатель"/>
-    <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Книга"/>
+    <Property Id="7d2cb9ee-0115-4394-aedc-4f61b4a9daa1" TypeId="37bda46b-b0c2-4c6c-88ad-203eed8a87e2" DateCase="DateTime" Name="ДатаДокумента"/>
+    <Property Id="c159981a-ef1c-4e15-85a1-1743ab0e86b9" TypeId="c8dfb97f-7d13-4e05-a6a4-55739e89bd02" Length="30" Name="НомерДокумента"/>
+    <Property Id="1c73c7f2-6a10-4388-8a6d-8f468f72323d" TypeId="31d8a152-cbd0-499f-ba96-c8a23e9a5c39" Name="Читатель"/>
+    <Property Id="cdf3fc13-9e36-4d2c-98d6-308334433c5f" TypeId="47f878f9-eff9-42f6-9f28-ae21b57a355f" Name="Книга"/>
   </Properties>
 
   <DocumentModule>

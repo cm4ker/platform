@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ZenPlatform.DataComponent.QueryBuilders;
+using ZenPlatform.DocumentComponent.Configuration;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Queries;
 using ZenPlatform.QueryBuilder.Schema;

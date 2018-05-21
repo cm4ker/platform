@@ -22,13 +22,6 @@ namespace ZenPlatform.DataComponent.Configuration
         }
     }
 
-    public abstract class PDataComplexObjectType : PComplexType
-    {
-        protected PDataComplexObjectType(string name, Guid guid, PObjectType objectType) : base(name, guid, objectType)
-        {
-        }
-    }
-
     /// <summary>
     /// Контракт для реализации свойства объекта, обязателен для реализции в компоненте
     /// </summary>
