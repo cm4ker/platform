@@ -20,10 +20,10 @@ namespace ZenPlatform.DataComponent.QueryBuilders
                     throw new NotSupportedException("objectType не должен содержать свойства с несколькими типами.");
 
                 var typeProperty = property.Types.FirstOrDefault() as PPrimetiveType;
-               
-                var schema = new DBFieldSchema(typeProperty.DBType, property.Name, typeProperty.ColumnSize,
-                    typeProperty.Precision, typeProperty.Scale, false, property.Unique,
-                    false, property.Unique ? false : typeProperty.IsNullable);
+
+                DBFieldSchema schema = null; // new DBFieldSchema(typeProperty.DBType, property.Name, typeProperty.ColumnSize,
+                                             //typeProperty.Precision, typeProperty.Scale, false, property.Unique,
+                                             //false, property.Unique ? false : typeProperty.IsNullable);
 
                 var field = new DBTableField(table, property.Name)
                 {

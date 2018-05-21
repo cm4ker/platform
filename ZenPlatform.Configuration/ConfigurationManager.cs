@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using ZenPlatform.Configuration.Data;
-using ZenPlatform.Configuration.Data.SimpleRealization;
 
 namespace ZenPlatform.Configuration
 {

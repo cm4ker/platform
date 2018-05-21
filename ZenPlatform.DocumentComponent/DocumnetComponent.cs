@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Data;
-using ZenPlatform.Configuration.Data.SimpleRealization;
 using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.CSharpCodeBuilder.Syntax;
 using ZenPlatform.DataComponent;
+using ZenPlatform.DocumentComponent.Configuration;
 
 
 namespace ZenPlatform.DocumentComponent
@@ -30,7 +30,6 @@ namespace ZenPlatform.DocumentComponent
 
         private void RegisterSupportedTypes()
         {
-            SupportedTypesManager.RegisterType(typeof(PDocumentComplexObjectType));
             SupportedTypesManager.RegisterType(typeof(PDocumentObjectType));
         }
 

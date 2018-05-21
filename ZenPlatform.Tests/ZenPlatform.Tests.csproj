@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
@@ -9,6 +9,7 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.ConfigurationExample\ZenPlatform.ConfigurationExample.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />

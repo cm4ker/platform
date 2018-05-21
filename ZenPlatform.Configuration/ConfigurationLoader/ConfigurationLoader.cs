@@ -1,0 +1,102 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Xml.Serialization;
+using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.Data;
+
+namespace ZenPlatform.Configuration.ConfigurationLoader
+{
+    public class ConfigurationLoader
+    {
+        private DirectoryInfo _directory;
+        private FileInfo _pathToProject;
+
+
+        public ConfigurationLoader(string pathToProjectToProjectXmlFile)
+        {
+            _pathToProject = new FileInfo(pathToProjectToProjectXmlFile);
+            _directory = _pathToProject.Directory;
+        }
+
+        public PRootConfiguration Load()
+        {
+            //Шаг 1: загружаем корневой файл проекта
+            using (var tr = new StreamReader(_pathToProject.FullName))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(XmlConfRoot));
+                var xmlConf = (XmlConfRoot)serializer.Deserialize(tr);
+
+                var conf = new PRootConfiguration(xmlConf.ProjectId);
+                conf.ProjectName = xmlConf.ProjectName;
+
+                //Шаг : загружаем языки
+                foreach (var language in xmlConf.Languages)
+                {
+                    conf.Languages.Add(new PLanguage(language.Alias, language.Name));
+                }
+
+                //Шаг : загружаем присоединённые компоненты данных
+                LoadComponents(xmlConf, conf);
+
+                //Шаг : загружаем типы данных
+                foreach (var file in xmlConf.Data.IncludedFiles)
+                {
+                    var component = conf.Data.Components.First(x => x.Id == file.ComponentId);
+                    var pObj = component.Loader.Load(Path.Combine(_directory.Name, file.Path), component);
+                    conf.Data.Types.Add(pObj);
+                }
+
+                //Шаг : Загружаем все свойства типов данных
+                foreach (var file in xmlConf.Data.IncludedFiles)
+                {
+                    var component = conf.Data.Components.First(x => x.Id == file.ComponentId);
+                    component.Loader.LoadDependencies(Path.Combine(_directory.Name, file.Path), conf.Data.Types);
+                }
+
+                return conf;
+            }
+        }
+
+
+        private void LoadComponents(XmlConfRoot xmlConf, PRootConfiguration conf)
+        {
+            foreach (var xmlConfComponent in xmlConf.Data.Components)
+            {
+                var componentPath = xmlConfComponent.File.Path;
+                var comAssembly = Assembly.LoadFile(componentPath);
+
+                var staticClassAttributes = TypeAttributes.AutoLayout | TypeAttributes.AnsiClass | TypeAttributes.Class |
+                                            TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit;
+
+                var loader = comAssembly.GetTypes()
+                    .FirstOrDefault(x => x.IsPublic && !x.IsAbstract && x.GetInterfaces().Contains(typeof(IComponenConfigurationtLoader)));
+
+                if (loader != null)
+                {
+                    //Если компонент реализует компонент для доступа к данным и загрузчик конфигурации, в таком случае мы можем выполнить загрузку
+                    var loaderInstance = (IComponenConfigurationtLoader)Activator.CreateInstance(loader);
+
+                    var pComponent = new PComponent(xmlConfComponent.Id, loaderInstance);
+                    pComponent.Name = xmlConfComponent.Name;
+                    pComponent.ComponentPath = xmlConfComponent.File.Path;
+
+                    conf.Data.Components.Add(pComponent);
+                }
+                else
+                {
+                    throw new InvalidComponentException();
+                }
+            }
+        }
+    }
+}
+
+public class InvalidComponentException : Exception
+{
+}
+}

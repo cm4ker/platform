@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using Microsoft.CodeAnalysis.Options;
+using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.Data;
 
 namespace ZenPlatform.Configuration
@@ -9,34 +12,63 @@ namespace ZenPlatform.Configuration
     /// </summary>
     public class PRootConfiguration
     {
-        private List<PComponent> _dataSectionComponents;
-
-        public PRootConfiguration()
+        public PRootConfiguration() : this(Guid.NewGuid())
         {
-
-            _dataSectionComponents = new List<PComponent>();
-
-            Id = Guid.NewGuid();
         }
 
         public PRootConfiguration(Guid id)
         {
             Id = id;
-            _dataSectionComponents = new List<PComponent>();
+            Data = new PDataSectionConfiguration();
+            Languages = new List<PLanguage>();
         }
 
-        public string ConfigurationName { get; set; }
+        public string ProjectName { get; set; }
 
-        public IEnumerable<PComponent> DataSectionComponents
-        {
-            get { return _dataSectionComponents; }
-        }
+        public PDataSectionConfiguration Data { get; }
 
-        public void RegisterDataComponent(PComponent component)
-        {
-            _dataSectionComponents.Add(component);
-        }
+        public List<PLanguage> Languages { get; }
 
         public Guid Id { get; }
+    }
+
+    public class PRole
+    {
+
+    }
+
+    /// <summary>
+    /// Язык, поддерживает регистрацию ресурсов, хранит перевод
+    /// </summary>
+    public class PLanguage
+    {
+        public PLanguage(string alias, string fullName)
+        {
+            Alias = alias;
+            FullName = fullName;
+
+            Resources = new Dictionary<string, string>();
+        }
+
+        public Dictionary<string, string> Resources { get; }
+
+        public string Alias { get; }
+        public string FullName { get; }
+    }
+
+    /// <summary>
+    /// Секция данных. Содержит в себе описания всех подключенных компонентов и зарегистрированных типов
+    /// </summary>
+    public class PDataSectionConfiguration
+    {
+        public PDataSectionConfiguration()
+        {
+            Components = new List<PComponent>();
+            Types = new List<IComponentType>();
+        }
+
+        public List<PComponent> Components { get; set; }
+        public List<IComponentType> Types { get; set; }
+
     }
 }

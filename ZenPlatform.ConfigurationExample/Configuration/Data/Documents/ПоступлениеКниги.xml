@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Document>
-  <Id>0000-0000-0000000-0000-0000</Id>
+  <Id>cb8c806c-4177-44ea-9f41-8ead5bbb391a</Id>
   <Name>ПоступлениеКниги</Name>
   <UseNumeration>true</UseNumeration>
   <NumerationPattern>ПТ-0#######</NumerationPattern>
@@ -8,9 +8,9 @@
   <CanBePosted>true</CanBePosted>
 
   <Properties>
-    <Property Id="SOMEGUID" TypeId="SOME_GUID" DateCase="DateTime" Name="ДатаДокумента"/>
-    <Property Id="SOMEGUID" TypeId="SOME_GUID" Length="30" Name="НомерДокумента"/>
-    <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Книга"/>
+    <Property Id="4db47d5d-f50f-4dea-a908-4e31981c33c8" TypeId="37bda46b-b0c2-4c6c-88ad-203eed8a87e2" DateCase="DateTime" Name="ДатаДокумента"/>
+    <Property Id="1c73c7f2-6a10-4388-8a6d-8f468f72323d" TypeId="c8dfb97f-7d13-4e05-a6a4-55739e89bd02" Length="30" Name="НомерДокумента"/>
+    <Property Id="cdf3fc13-9e36-4d2c-98d6-308334433c5f" TypeId="31d8a152-cbd0-499f-ba96-c8a23e9a5c39" Name="Книга"/>
   </Properties>
 
   <DocumentModule>

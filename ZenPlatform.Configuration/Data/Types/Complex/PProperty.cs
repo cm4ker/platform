@@ -14,10 +14,9 @@ namespace ZenPlatform.Configuration.Data.Types.Complex
     {
         private readonly PObjectType _owner;
 
-        public PProperty(PObjectType owner)
+        protected PProperty(PObjectType owner)
         {
             _owner = owner;
-            // _owner.Propertyes.Add(this);
             Types = new List<PTypeBase>();
             Id = Guid.NewGuid();
         }
