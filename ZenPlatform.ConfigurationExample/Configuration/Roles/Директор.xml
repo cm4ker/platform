@@ -1,57 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Role>
     <Name>Директор</Name>
-    <InterfaceUsage/>
+    <Id>8153c296-2dce-4eb2-9338-069d11e99360</Id>
     <PlatformRules>
         <!-- Пользователь являлется администратором данных  -->
         <IsDataAdministrator>true</IsDataAdministrator>
 
         <!-- Пользователю разрешено обновлять базу данных -->
-        <UpdateDataBase>true</UpdateDataBase>
+        <CanUpdateDataBase>true</CanUpdateDataBase>
 
         <!-- Монопольный режим управления данными -->
-        <MonopolisticMode>true</MonopolisticMode>
+        <CanMonopolisticMode>true</CanMonopolisticMode>
 
         <!-- Пользователю разрешено подключаться к приложению (активный пользователь) -->
         <IsActiveUser>true</IsActiveUser>
 
         <!-- Пользователю разрешено смотреть за логом регистрации данных -->
-        <ActionLogView>true</ActionLogView>
+        <CanActionLogView>true</CanActionLogView>
 
         <!-- Пользователю разрешено пользоваться тонким клиентом -->
-        <ThinClient>true</ThinClient>
+        <CanUseThinClient>true</CanUseThinClient>
 
         <!-- Пользователю можно заходить через веб -->
-        <WebClient>true</WebClient>
+        <CanUseWebClient>true</CanUseWebClient>
 
         <!-- Пользователю разрешено подключаться через API для доступа к данным -->
-        <ExternalConnection>true</ExternalConnection>
+        <CanUseExternalConnection>true</CanUseExternalConnection>
 
         <!-- Пользователю можно пользоваться внешними обработками -->
-        <OpenProcessingModules>true</OpenProcessingModules>
+        <CanOpenExternalModules>true</CanOpenExternalModules>
 
         <!-- Пользователю разрешено открывать консоль данных-->
         <ConsoleAccess>true</ConsoleAccess>
     </PlatformRules>
     <DataRules>
         <Rule ObjectId="SOME_GUID">
-            <!-- Позволять роли читать данные -->
-            <AllowRead>true</AllowRead>
-            
-            <!-- Позволять роли просматривать данные -->
-            <AllowView>true</AllowView>
-            
-            <!-- Позволять роли добавлять данные -->
-            <AllowAdd>true</AllowAdd>
+            <Content>
+                <![CDATA["
+                    <!-- Позволять роли читать данные -->
+                    <AllowRead>true</AllowRead>
 
-            <!-- Позволять роли удалять данные из программного кода -->
-            <AllowDelete>true</AllowDelete>
+                    <!-- Позволять роли просматривать данные -->
+                    <AllowView>true</AllowView>
 
-            <!-- Позволять роли удалять данные только из интерфейса -->
-            <AllowInteractiveDelete>true</AllowInteractiveDelete>
-            
-            <!-- Позволять роли обновлять данные -->
-            <AllowUpdate>true</AllowUpdate>
+                    <!-- Позволять роли добавлять данные -->
+                    <AllowAdd>true</AllowAdd>
+
+                    <!-- Позволять роли удалять данные из программного кода -->
+                    <AllowDelete>true</AllowDelete>
+
+                    <!-- Позволять роли удалять данные только из интерфейса -->
+                    <AllowInteractiveDelete>true</AllowInteractiveDelete>
+
+                    <!-- Позволять роли обновлять данные -->
+                    <AllowUpdate>true</AllowUpdate>"]]>
+            </Content>
         </Rule>
     </DataRules>
 </Role>

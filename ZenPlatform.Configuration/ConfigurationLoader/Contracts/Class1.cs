@@ -17,6 +17,14 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         PComponent OwnerComponent { get; }
     }
 
+    public interface IRule
+    {
+        Guid Id { get; }
+        string Name { get; }
+        PComponent ComponentOwner { get; }
+    }
+
+
     /// <summary>
     /// Загрузчик конфигурации.
     /// </summary>
@@ -30,7 +38,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         /// <param name="pathToXml"></param>
         /// <param name="component"></param>
         /// <returns></returns>
-        IComponentType Load(string pathToXml, PComponent component);
+        IComponentType LoadComponentType(string pathToXml, PComponent component);
 
         /// <summary>
         /// Загрузить зависимости типа
@@ -38,7 +46,14 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         /// <param name="pathToXml"></param>
         /// <param name="supportedObjects"></param>
         /// <returns></returns>
-        IComponentType LoadDependencies(string pathToXml, List<IComponentType> supportedObjects);
+        IComponentType LoadComponentTypeDependencies(string pathToXml, List<IComponentType> supportedObjects);
+
+        /// <summary>
+        /// Загрузить роль из контента
+        /// </summary>
+        /// <param name="xmlContent">xml фрагмент, сериализованной роли в компоненте</param>
+        /// <returns></returns>
+        IRule LoadComponentRole(string xmlContent);
     }
 
 }

@@ -47,7 +47,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
                 foreach (var file in xmlConf.Data.IncludedFiles)
                 {
                     var component = conf.Data.Components.First(x => x.Id == file.ComponentId);
-                    var pObj = component.Loader.Load(Path.Combine(_directory.Name, file.Path), component);
+                    var pObj = component.Loader.LoadComponentType(Path.Combine(_directory.Name, file.Path), component);
                     conf.Data.Types.Add(pObj);
                 }
 
@@ -55,13 +55,36 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
                 foreach (var file in xmlConf.Data.IncludedFiles)
                 {
                     var component = conf.Data.Components.First(x => x.Id == file.ComponentId);
-                    component.Loader.LoadDependencies(Path.Combine(_directory.Name, file.Path), conf.Data.Types);
+                    component.Loader.LoadComponentTypeDependencies(Path.Combine(_directory.Name, file.Path), conf.Data.Types);
+                }
+
+                //Шаг : Загружаем роли
+                foreach (var file in xmlConf.Roles.IncludedFiles)
+                {
+                    using (var roleFile = new StreamReader(Path.Combine(_directory.Name, file.Path)))
+                    {
+                        var ser = new XmlSerializer(typeof(XmlConfRole));
+                        var roleInstance = (XmlConfRole)ser.Deserialize(roleFile);
+
+                        var prole = new PRole();
+                        prole.RoleName = roleInstance.Name;
+
+                        //TODO: заполнить правила платформы (PlatformRules) 
+
+                        foreach (var orule in roleInstance.DataRules)
+                        {
+                            var pobject = conf.Data.Types.First(x => x.Id == orule.ObjectId);
+
+                            prole.ObjectRules.Add(pobject.OwnerComponent.Loader.LoadComponentRole(orule.Content));
+                        }
+
+                        conf.Roles.Add(prole);
+                    }
                 }
 
                 return conf;
             }
         }
-
 
         private void LoadComponents(XmlConfRoot xmlConf, PRootConfiguration conf)
         {
@@ -85,6 +108,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
                     pComponent.Name = xmlConfComponent.Name;
                     pComponent.ComponentPath = xmlConfComponent.File.Path;
 
+                    //Необходимо зарегистрировать конфигурацию
+                    pComponent.Configuration = conf;
+
                     conf.Data.Components.Add(pComponent);
                 }
                 else
@@ -93,6 +119,8 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
                 }
             }
         }
+
+
     }
 }
 

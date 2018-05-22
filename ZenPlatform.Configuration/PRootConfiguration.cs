@@ -29,12 +29,42 @@ namespace ZenPlatform.Configuration
 
         public List<PLanguage> Languages { get; }
 
+        public List<PRole> Roles { get; set; }
+
         public Guid Id { get; }
     }
 
     public class PRole
     {
+        public PRole()
+        {
+            PlatformRules = new PPlatformRules();
+            ObjectRules = new List<IRule>();
+        }
 
+        public string RoleName { get; set; }
+
+        public PPlatformRules PlatformRules { get; }
+        public List<IRule> ObjectRules { get; set; }
+
+
+    }
+
+    public class PPlatformRules
+    {
+        //TODO: Перенести все свойства 
+    }
+
+    public abstract class PObjectRule : IRule
+    {
+        public PObjectRule(Guid objectId, PComponent component)
+        {
+            ObjectId = objectId;
+            ComponentOwner = component;
+        }
+
+        public Guid ObjectId { get; }
+        public PComponent ComponentOwner { get; }
     }
 
     /// <summary>
