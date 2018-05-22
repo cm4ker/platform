@@ -13,13 +13,17 @@ using ZenPlatform.Core;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.CSharpCodeBuilder.Syntax;
 using ZenPlatform.DataComponent;
+using ZenPlatform.DocumentComponent.Configuration;
 
 namespace ZenPlatform.DocumentComponent
 {
     public class DocumentEntityGenerator : EntityGeneratorBase
     {
-        public DocumentEntityGenerator()
+
+
+        public DocumentEntityGenerator(PComponent component) : base(component)
         {
+
         }
 
         /*
@@ -360,14 +364,14 @@ namespace ZenPlatform.DocumentComponent
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
-        public SyntaxNode GenerateInterface(PComponent component)
+        public SyntaxNode GenerateInterface()
         {
             var workspace = new AdhocWorkspace();
 
             var generator = SyntaxGenerator.GetGenerator(
                 workspace, LanguageNames.CSharp);
 
-            var nsRule = component.GetCodeRule(PGeneratedCodeRuleType.NamespaceRule);
+            var nsRule = Component.GetCodeRule(PGeneratedCodeRuleType.NamespaceRule);
             var systemUsing = generator.NamespaceImportDeclaration("System");
             var coreUsing = generator.NamespaceImportDeclaration(nameof(ZenPlatform.Core));
 
@@ -396,10 +400,10 @@ namespace ZenPlatform.DocumentComponent
                 .AddMembers(sessionProperty)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
 
-            var preffix = component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule);
-            var postfix = component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule);
+            var preffix = Component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule);
+            var postfix = Component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule);
 
-            foreach (var componentObject in component.Objects)
+            foreach (var componentObject in GetTypes<PDocumentObjectType>())
             {
                 var getBody = SyntaxFactory.Block(
                     SyntaxFactory.ParseStatement($"return new DocumentEntityManager<{preffix.GetExpression()}{componentObject.Name}{postfix.GetExpression()}>(Session);")
@@ -429,14 +433,14 @@ namespace ZenPlatform.DocumentComponent
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
-        public SyntaxNode GenerateExtension(PComponent component)
+        public SyntaxNode GenerateExtension()
         {
             var workspace = new AdhocWorkspace();
 
             var generator = SyntaxGenerator.GetGenerator(
                 workspace, LanguageNames.CSharp);
 
-            var nsRule = component.GetCodeRule(PGeneratedCodeRuleType.NamespaceRule);
+            var nsRule = Component.GetCodeRule(PGeneratedCodeRuleType.NamespaceRule);
             var usings = generator.NamespaceImportDeclaration("System");
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
@@ -465,14 +469,14 @@ namespace ZenPlatform.DocumentComponent
             return newNode;
         }
 
-        public override Dictionary<string, string> GenerateFilesFromComponent(PComponent component)
+        public override Dictionary<string, string> GenerateFilesFromComponent()
         {
             var result = new Dictionary<string, string>();
 
-            result.Add($"Extension{component.Name}.cs", GenerateExtension(component).ToString());
-            result.Add($"Interface{component.Name}.cs", GenerateInterface(component).ToString());
+            result.Add($"Extension{Component.Name}.cs", GenerateExtension().ToString());
+            result.Add($"Interface{Component.Name}.cs", GenerateInterface().ToString());
 
-            foreach (var componentObject in component.Objects)
+            foreach (var componentObject in GetTypes<PDocumentObjectType>())
             {
                 result.Add($"ComponentObject{componentObject.Name}Dto.cs", GenerateDtoClass(componentObject).ToString());
                 result.Add($"ComponentObject{componentObject.Name}Entity.cs", GenerateEntityClass(componentObject).ToString());
@@ -534,7 +538,7 @@ namespace ZenPlatform.DocumentComponent
             yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Annotations"));
             yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.DocumentComponent"));
         }
-         
+
         private AccessorListSyntax GetEmptyAccessor()
         {
             return SyntaxFactory.AccessorList(
