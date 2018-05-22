@@ -9,15 +9,19 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.AacumulateRegisterComponent\ZenPlatform.AcumulateRegisterComponent.csproj" />
     <ProjectReference Include="..\ZenPlatform.ConfigurationExample\ZenPlatform.ConfigurationExample.csproj">
       <Private>true</Private>
     </ProjectReference>
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj" />
+    <ProjectReference Include="..\ZenPlatform.InformationRegisterComponent\ZenPlatform.InformationRegisterComponent.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />
+    <ProjectReference Include="..\ZenPlatform.ReferenceComponent\ZenPlatform.ReferenceComponent.csproj" />
+    <ProjectReference Include="..\ZenPlatform.TableComponent\ZenPlatform.TableComponent.csproj" />
     <ProjectReference Include="..\ZenPlatform.UIGeneration2\ZenPlatform.UIGeneration2.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(OutDir)ZenPlatform.DocumentComponent.dll&quot; &quot;$(OutDir)Configuration\Components\DocumentComponent.dll&quot; /Y&#xD;&#xA;copy &quot;$(OutDir)ZenPlatform.TableComponent.dll&quot; &quot;$(OutDir)Configuration\Components\TableComponent.dll&quot; /Y" />
+    <Exec Command="copy &quot;$(OutDir)ZenPlatform.DocumentComponent.dll&quot; &quot;$(OutDir)Configuration\Components\DocumentComponent.dll&quot; /Y&#xD;&#xA;copy &quot;$(OutDir)ZenPlatform.TableComponent.dll&quot; &quot;$(OutDir)Configuration\Components\TableComponent.dll&quot; /Y&#xD;&#xA;copy &quot;$(OutDir)ZenPlatform.AcumulateRegisterComponent.dll&quot; &quot;$(OutDir)Configuration\Components\AcumulateRegisterComponent.dll&quot; /Y&#xD;&#xA;copy &quot;$(OutDir)ZenPlatform.InformationRegisterComponent.dll&quot; &quot;$(OutDir)Configuration\Components\InformationRegisterComponent.dll&quot; /Y&#xD;&#xA;copy &quot;$(OutDir)ZenPlatform.ReferenceComponent.dll&quot; &quot;$(OutDir)Configuration\Components\ReferenceComponent.dll&quot; /Y" />
   </Target>
 </Project>
