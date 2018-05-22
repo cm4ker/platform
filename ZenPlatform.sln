@@ -45,7 +45,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.InformationRegi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{DCBBB387-C25A-4571-8267-BEAA839EB1E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.AacumulateRegisterComponent", "ZenPlatform.AacumulateRegisterComponent\ZenPlatform.AacumulateRegisterComponent.csproj", "{619F2E8F-1843-410B-AEF6-DF1AE66DF170}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.AcumulateRegisterComponent", "ZenPlatform.AacumulateRegisterComponent\ZenPlatform.AcumulateRegisterComponent.csproj", "{619F2E8F-1843-410B-AEF6-DF1AE66DF170}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

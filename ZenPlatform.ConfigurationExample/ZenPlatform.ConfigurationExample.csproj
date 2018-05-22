@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="Configuration\Components\" />
     <Folder Include="Configuration\Data\References\" />
     <Folder Include="Configuration\Interface" />
     <Folder Include="Configuration\Roles" />
@@ -14,18 +15,6 @@
     <ProjectReference Include="..\ZenPlatform.TableComponent\ZenPlatform.TableComponent.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Configuration\Components\AccumulateRegisterComponent.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Configuration\Components\InformationRefisterComponent.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Configuration\Components\ReferenceComponent.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Configuration\Components\TableComponent.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Configuration\Data\AccumulateRegister\ОстатокНаСкладе.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
