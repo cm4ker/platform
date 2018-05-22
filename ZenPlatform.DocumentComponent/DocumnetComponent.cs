@@ -16,6 +16,7 @@ namespace ZenPlatform.DocumentComponent
     {
         public DocumnetComponent(PComponent component) : base(component)
         {
+            
         }
 
         public override void OnInitializing()

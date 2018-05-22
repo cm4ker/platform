@@ -12,7 +12,7 @@ namespace ZenPlatform.DocumentComponent.Configuration
 {
     public class DocumentConfigurationLoader : IComponenConfigurationtLoader
     {
-        public IComponentType Load(string pathToXml, PComponent component)
+        public IComponentType LoadComponentType(string pathToXml, PComponent component)
         {
             XmlConfDocument conf;
             using (var sr = new StreamReader(pathToXml))
@@ -31,7 +31,18 @@ namespace ZenPlatform.DocumentComponent.Configuration
             return doc;
         }
 
-        public IComponentType LoadDependencies(string pathToXml, List<IComponentType> supportedObjects)
+        public IComponentType LoadComponentTypeDependencies(string pathToXml, List<IComponentType> supportedObjects)
+        {
+            throw new NotImplementedException();
+        }
+
+        //TODO: Оставить что-то одно
+        IRule LoadComponentRole(string xmlContent)
+        {
+            throw new NotImplementedException();
+        }
+
+        IRule IComponenConfigurationtLoader.LoadComponentRole(string xmlContent)
         {
             throw new NotImplementedException();
         }

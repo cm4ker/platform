@@ -56,6 +56,8 @@ namespace ZenPlatform.Configuration.Data
             Loader = loader;
         }
 
+        public PRootConfiguration Configuration { get; internal set; }
+
         /// <summary>
         /// Путь до библиотеки компонента
         /// </summary>
@@ -72,6 +74,9 @@ namespace ZenPlatform.Configuration.Data
         /// </summary>
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// Загрузчик конфигурации. Устанавливается при чтении корреного файла проекта
+        /// </summary>
         public IComponenConfigurationtLoader Loader { get; }
 
         /// <summary>

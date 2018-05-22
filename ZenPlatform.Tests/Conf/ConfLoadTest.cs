@@ -72,7 +72,7 @@ namespace ZenPlatform.Tests.Conf
                 foreach (var doc in docs)
                 {
                     var loader = new DocumentConfigurationLoader();
-                    var documentPobject = loader.Load(Path.Combine(ConfigurationPath, doc.Path), com);
+                    var documentPobject = loader.LoadComponentType(Path.Combine(ConfigurationPath, doc.Path), com);
 
                     Assert.IsNotNull(documentPobject);
                     Assert.AreEqual(typeof(PDocumentObjectType), documentPobject.GetType());
