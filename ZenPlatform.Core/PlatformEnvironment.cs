@@ -46,8 +46,6 @@ namespace ZenPlatform.Core
 
         public IDictionary<Type, EntityManagerBase> Managers { get; }
 
-        public ConfigurationManager ConfigurationManager { get; }
-
         public Session CreateSession()
         {
             lock (_locking)

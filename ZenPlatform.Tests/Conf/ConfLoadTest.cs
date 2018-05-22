@@ -51,33 +51,10 @@ namespace ZenPlatform.Tests.Conf
         }
 
         [TestMethod]
-        public void DocumentLoad()
+        public void FullConfigurationLoad()
         {
-            using (var tr = new StreamReader(Path.Combine(ConfigurationPath, "Project1.xml")))
-            {
-                XmlSerializer serializer = new XmlSerializer(typeof(XmlConfRoot));
-                var result = (XmlConfRoot)serializer.Deserialize(tr);
-
-                var xmlCom = result.Data.Components.Find(x => x.Name == "Document");
-
-                var docs = result.Data.IncludedFiles.Where(x => x.ComponentId == xmlCom.Id);
-
-                var com = new PComponent(xmlCom.Id);
-                com.ComponentPath = xmlCom.File.Path;
-                com.Name = xmlCom.Name;
-
-                PRootConfiguration configuration = new PRootConfiguration(result.ProjectId);
-                configuration.ProjectName = result.ProjectName;
-
-                foreach (var doc in docs)
-                {
-                    var loader = new DocumentConfigurationLoader();
-                    var documentPobject = loader.LoadComponentType(Path.Combine(ConfigurationPath, doc.Path), com);
-
-                    Assert.IsNotNull(documentPobject);
-                    Assert.AreEqual(typeof(PDocumentObjectType), documentPobject.GetType());
-                }
-            }
+            ConfigurationLoader cl = new ConfigurationLoader(Path.Combine(ConfigurationPath, "Project1.xml"));
+            var root = cl.Load();
         }
 
     }

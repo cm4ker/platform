@@ -19,8 +19,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
 
     public interface IRule
     {
-        Guid Id { get; }
-        string Name { get; }
+        Guid ObjectId { get; }
         PComponent ComponentOwner { get; }
     }
 

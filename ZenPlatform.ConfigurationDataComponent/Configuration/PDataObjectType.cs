@@ -32,20 +32,20 @@ namespace ZenPlatform.DataComponent.Configuration
         }
     }
 
-    public sealed class SupportedTypeManager
-    {
-        private List<Type> _supportedObjects;
+    //public sealed class SupportedTypeManager
+    //{
+    //    private List<Type> _supportedObjects;
 
-        private IEnumerable<Type> SupportedTypes
-        {
-            get { return _supportedObjects; }
-        }
+    //    private IEnumerable<Type> SupportedTypes
+    //    {
+    //        get { return _supportedObjects; }
+    //    }
 
-        public void RegisterType(Type type)
-        {
-            if (!type.IsSubclassOf(typeof(PDataObjectType))) throw new Exception("Регистрация неправильного типа");
+    //    public void RegisterType(Type type)
+    //    {
+    //        if (!type.IsSubclassOf(typeof(PDataObjectType))) throw new Exception("Регистрация неправильного типа");
 
-            _supportedObjects.Add(type);
-        }
-    }
+    //        _supportedObjects.Add(type);
+    //    }
+    //}
 }

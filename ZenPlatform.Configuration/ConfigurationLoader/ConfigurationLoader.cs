@@ -51,6 +51,8 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
                     conf.Data.Types.Add(pObj);
                 }
 
+                LoadRoles(xmlConf, conf);
+
                 //Шаг : Загружаем все свойства типов данных
                 foreach (var file in xmlConf.Data.IncludedFiles)
                 {
@@ -58,29 +60,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
                     component.Loader.LoadComponentTypeDependencies(Path.Combine(_directory.Name, file.Path), conf.Data.Types);
                 }
 
-                //Шаг : Загружаем роли
-                foreach (var file in xmlConf.Roles.IncludedFiles)
-                {
-                    using (var roleFile = new StreamReader(Path.Combine(_directory.Name, file.Path)))
-                    {
-                        var ser = new XmlSerializer(typeof(XmlConfRole));
-                        var roleInstance = (XmlConfRole)ser.Deserialize(roleFile);
 
-                        var prole = new PRole();
-                        prole.RoleName = roleInstance.Name;
-
-                        //TODO: заполнить правила платформы (PlatformRules) 
-
-                        foreach (var orule in roleInstance.DataRules)
-                        {
-                            var pobject = conf.Data.Types.First(x => x.Id == orule.ObjectId);
-
-                            prole.ObjectRules.Add(pobject.OwnerComponent.Loader.LoadComponentRole(orule.Content));
-                        }
-
-                        conf.Roles.Add(prole);
-                    }
-                }
 
                 return conf;
             }
@@ -90,14 +70,13 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
         {
             foreach (var xmlConfComponent in xmlConf.Data.Components)
             {
-                var componentPath = xmlConfComponent.File.Path;
-                var comAssembly = Assembly.LoadFile(componentPath);
+                var componentPath = Path.Combine(_directory.ToString(), xmlConfComponent.File.Path);
+                FileInfo fi = new FileInfo(componentPath);
 
-                var staticClassAttributes = TypeAttributes.AutoLayout | TypeAttributes.AnsiClass | TypeAttributes.Class |
-                                            TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit;
+                var comAssembly = Assembly.LoadFile(fi.FullName);
 
                 var loader = comAssembly.GetTypes()
-                    .FirstOrDefault(x => x.IsPublic && !x.IsAbstract && x.GetInterfaces().Contains(typeof(IComponenConfigurationtLoader)));
+                   .FirstOrDefault(x => x.IsPublic && !x.IsAbstract && x.GetInterfaces().Contains(typeof(IComponenConfigurationtLoader)));
 
                 if (loader != null)
                 {
@@ -120,11 +99,36 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
             }
         }
 
+        private void LoadRoles(XmlConfRoot xmlConf, PRootConfiguration conf)
+        {
+            //Шаг : Загружаем роли
+            foreach (var file in xmlConf.Roles.IncludedFiles)
+            {
+                using (var roleFile = new StreamReader(Path.Combine(_directory.Name, file.Path)))
+                {
+                    var ser = new XmlSerializer(typeof(XmlConfRole));
+                    var roleInstance = (XmlConfRole)ser.Deserialize(roleFile);
 
+                    var prole = new PRole();
+                    prole.RoleName = roleInstance.Name;
+
+                    //TODO: заполнить правила платформы (PlatformRules) 
+
+                    foreach (var orule in roleInstance.DataRules)
+                    {
+                        var pobject = conf.Data.Types.First(x => x.Id == orule.ObjectId);
+
+                        prole.ObjectRules.Add(pobject.OwnerComponent.Loader.LoadComponentRole(orule.Content));
+                    }
+
+                    conf.Roles.Add(prole);
+                }
+            }
+        }
     }
 }
 
 public class InvalidComponentException : Exception
 {
 }
-}
+

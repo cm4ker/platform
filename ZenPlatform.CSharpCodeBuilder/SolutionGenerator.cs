@@ -43,7 +43,7 @@ namespace ZenPlatform.CSharpCodeBuilder
                 File.Delete(file);
             }
 
-            var files = generator.GenerateFilesFromComponent(component);
+            var files = generator.GenerateFilesFromComponent();
 
             foreach (var file in files)
             {

@@ -8,10 +8,13 @@
     <Folder Include="Configuration\Roles" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ZenPlatform.TableComponent\ZenPlatform.TableComponent.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="Configuration\Components\AccumulateRegisterComponent.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Configuration\Components\DocumentComponent.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\Components\InformationRefisterComponent.dll">
@@ -54,4 +57,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(OutDir)ZenPlatform.DocumentComponent.dll&quot; &quot;$(OutDir)Configuration\Components\DocumentComponent.dll&quot; /Y" />
+  </Target>
 </Project>

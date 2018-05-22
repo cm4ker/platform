@@ -48,7 +48,7 @@ namespace ZenPlatform.DataComponent
              * но мы как-то должны попытаться вызвать его поля
              */
 
-            SupportedTypesManager = new SupportedTypeManager();
+            //SupportedTypesManager = new SupportedTypeManager();
         }
 
         protected PComponent Component { get; }
@@ -68,32 +68,18 @@ namespace ZenPlatform.DataComponent
         public EntityGeneratorBase Generator { get; protected set; }
 
 
-        /// <summary>
-        /// Список поддерживаемых типов
-        /// </summary>
-        protected SupportedTypeManager SupportedTypesManager { get; }
+
+        //Пометка: выпилено, компонент не хранит в себе эту инфомрацию для доступа извне,
+        //но если нужно, тогда это будет скорее всего в  другом формате
+        ///// <summary>
+        ///// Список поддерживаемых типов
+        ///// </summary>
+        //protected SupportedTypeManager SupportedTypesManager { get; }
 
         #region Configuration
 
-        public virtual DataComponentObject ConfigurationUnloadHandler(PObjectType pobject)
-        {
-            throw new NotImplementedException(
-                "You can't load configuration for this component. Please detach component from configuration by changing ComponentPath property.");
-        }
-
-        public virtual PObjectType ConfigurationComponentObjectLoadHandler(PComponent component,
-            DataComponentObject componentObject)
-        {
-            throw new NotImplementedException(
-                "You can't load configuration for this component. Please detach component from configuration by changing ComponentPath property.");
-        }
-
-        public virtual void ConfigurationObjectPropertyLoadHandler(PObjectType pObject,
-            DataComponentObjectProperty objectProperty, List<PTypeBase> registeredTypes)
-        {
-            throw new NotImplementedException(
-                "You can't load configuration for this component. Please detach component from configuration by changing ComponentPath property.");
-        }
+        //NOTE: Было выпилено в task-94, так как был полностью переписан механизм загрузки конфигурации.
+        //Теперь всё реализовано через отдельный интерфейс, смотри IComponenConfigurationtLoader
 
         #endregion
 

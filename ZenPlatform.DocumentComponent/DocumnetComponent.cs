@@ -16,12 +16,12 @@ namespace ZenPlatform.DocumentComponent
     {
         public DocumnetComponent(PComponent component) : base(component)
         {
-            
+
         }
 
         public override void OnInitializing()
         {
-            Generator = new DocumentEntityGenerator();
+            Generator = new DocumentEntityGenerator(Component);
             Manager = new DocumentManager();
 
             RegisterSupportedTypes();
@@ -31,7 +31,8 @@ namespace ZenPlatform.DocumentComponent
 
         private void RegisterSupportedTypes()
         {
-            SupportedTypesManager.RegisterType(typeof(PDocumentObjectType));
+            //Выпилено 
+           // SupportedTypesManager.RegisterType(typeof(PDocumentObjectType));
         }
 
         private void RegisterCodeRules()
