@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.Data;
 
 namespace ZenPlatform.Core.Entity
 {
     public abstract class EntityGeneratorBase
     {
-        protected EntityGeneratorBase()
+        protected EntityGeneratorBase(PComponent component)
         {
-
+            Component = component;
         }
 
+
+        protected PComponent Component { get; }
+
+        protected IEnumerable<T> GetTypes<T>() where T : IComponentType
+        {
+            return Component.Configuration.Data.Types.Where(x => x is T).Cast<T>();
+        }
 
         /// <summary>
         /// Префикс объектов DTO, необходим для внутренних нужд класса
@@ -69,7 +78,7 @@ namespace ZenPlatform.Core.Entity
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
-        public virtual Dictionary<string, string> GenerateFilesFromComponent(PComponent component)
+        public virtual Dictionary<string, string> GenerateFilesFromComponent()
         {
             throw new NotImplementedException();
         }

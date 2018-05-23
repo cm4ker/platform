@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using ZenPlatform.Configuration.Data;
+using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.DataComponent.Interfaces;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Queries;
 using IQueryable = ZenPlatform.QueryBuilder.Queries.IQueryable;
 
@@ -26,9 +28,6 @@ namespace ZenPlatform.DataComponent.QueryBuilders
             }
 
             return query;
-            
-
-
         }
 
     }

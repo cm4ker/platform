@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using ZenPlatform.Configuration.Data;
+using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Schema;
 
@@ -12,7 +13,7 @@ namespace ZenPlatform.DataComponent.QueryBuilders
     {
         public DBTable Convert(PObjectType objectType)
         {
-            DBTable table = new DBTable(objectType.TableName);
+            DBTable table = new DBTable(objectType.Name);
             foreach (var property in objectType.Properties)
             {
                 if (property.Types.Count > 1)
@@ -20,12 +21,11 @@ namespace ZenPlatform.DataComponent.QueryBuilders
 
                 var typeProperty = property.Types.FirstOrDefault() as PPrimetiveType;
 
+                DBFieldSchema schema = null; // new DBFieldSchema(typeProperty.DBType, property.Name, typeProperty.ColumnSize,
+                                             //typeProperty.Precision, typeProperty.Scale, false, property.Unique,
+                                             //false, property.Unique ? false : typeProperty.IsNullable);
 
-                var schema = new DBFieldSchema(typeProperty.DBType, typeProperty.ColumnSize,
-                    typeProperty.Precision, typeProperty.Scale, false, property.Unique,
-                    false, property.Unique ? false : typeProperty.IsNullable);
-
-                var field = new DBTableField(table, property.Name)
+                var field = new DBTableField(table, property.DatabaseColumnName)
                 {
                     Schema = schema
                 };

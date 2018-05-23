@@ -12,7 +12,6 @@ namespace ZenPlatform.Core
             Id = id;
 
             DataContextManger = new DataContextManger();
-
         }
 
         public int Id { get; }
@@ -33,5 +32,29 @@ namespace ZenPlatform.Core
             return Environment.Globals[key];
         }
 
+    }
+
+    /// <summary>
+    /// Пользовательская сессия - по виду этой сессии мы можем запрещать незакконные операции - например мигрирование базы данных
+    /// Пользователь не может выполнять инструкции связанные с изменением схемы, он лишь манипулирует данными
+    /// </summary>
+    public class UserSesion : Session
+    {
+        public UserSesion(PlatformEnvironment env, int id) : base(env, id)
+        {
+
+        }
+    }
+
+    /// <summary>
+    /// Системная сессия, нужна для того, чтобы выполнять операции, которые не может выполнить пользователь
+    /// Например обновление схемы данных
+    /// </summary>
+    public class SystemSession : Session
+    {
+        public SystemSession(PlatformEnvironment env, int id) : base(env, id)
+        {
+
+        }
     }
 }

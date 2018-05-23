@@ -7,21 +7,27 @@ namespace ZenPlatform.QueryBuilder
 {
     public class DBSetUpdateClause : IDBToken
     {
-        private List<DBTableField> _fields;
+        private Dictionary<DBTableField, DBClause> _fields;
         private DBParameterCollection _parameters;
 
 
         public DBSetUpdateClause()
         {
-            _fields = new List<DBTableField>();
+            _fields = new Dictionary<DBTableField, DBClause>();
             _parameters = new DBParameterCollection();
         }
 
         public void AddField(DBTableField field)
         {
-            _fields.Add(field);
-            var paramName = $"{field.Name}";
-            _parameters.Add(new DBParameter(paramName, field.Schema.Type, field.Schema.IsNullable));
+             var paramName = $"{field.Name}_{DBHelper.GetRandomString(DBHelper.RandomCharsInParams())}";
+            var parameter = new DBParameter(paramName, field.Schema.Type, field.Schema.IsNullable);
+            _fields.Add(field, parameter);
+            _parameters.Add(parameter);
+        }
+
+        public void AddField(DBTableField destField, DBClause value)
+        {
+            _fields.Add(destField, value);
         }
 
         public DBParameterCollection Parameters
@@ -39,13 +45,12 @@ namespace ZenPlatform.QueryBuilder
             StringBuilder sb = new StringBuilder();
 
             sb.AppendLine(SQLTokens.SET);
-            foreach (var field in _fields)
+            var index = 0;
+            foreach (var item in _fields)
             {
-                var param = _parameters[_fields.IndexOf(field)];
-                if (_fields.IndexOf(field) > 0) sb.Append(",");
-                sb.AppendLine($"{field.Name} = {param.Compile()}");
-
-                //new SqlParameter($"@{paramName}", field.Schema.Type)
+                if (index > 0) sb.Append(",");
+                sb.AppendLine($"{item.Key.Name} = {item.Value.Compile(recompile)}");
+                index++;
             }
             return sb.ToString();
         }

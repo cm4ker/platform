@@ -9,6 +9,14 @@
     <Folder Include="Scheduler\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.common\2.4.0\lib\netstandard1.3\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

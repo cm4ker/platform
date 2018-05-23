@@ -68,16 +68,20 @@ namespace ZenPlatform.QueryBuilder
 
         public string Compile(bool recompile = false)
         {
-            var joins = new StringBuilder();
+            if (_root is null) return "";
+
+            var sb = new StringBuilder();
+
+            sb.AppendLine(SQLTokens.FROM);
+
+            sb.Append($"\t{_root.Compile().Replace("\n", "\n\t")}\n");
 
             foreach (var join in _joins)
             {
-                joins.AppendLine(join.Compile());
+                sb.AppendLine(join.Compile().Replace("\n", "\n\t"));
             }
 
-            if (_root is null) return "";
-
-            return $"{SQLTokens.FROM}\n\t{_root.Compile().Replace("\n", "\n\t")}\n\t{joins.Replace("\n", "\n\t")}";
+            return sb.ToString().Trim('\n');
         }
 
         public string CompileExpression { get; set; }

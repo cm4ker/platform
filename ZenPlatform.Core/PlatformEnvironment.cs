@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using ZenPlatform.Configuration.Data;
+using ZenPlatform.Configuration;
 using ZenPlatform.Core.Entity;
 
 namespace ZenPlatform.Core
@@ -9,6 +10,19 @@ namespace ZenPlatform.Core
     public class PlatformEnvironment
     {
         private object _locking;
+
+        /*
+         *  Среда должна обеспечиватьдоступ к конфигурации. Так как именно в среду будет загружаться конфигурация 
+         *  И из среды она будет выгружаться. 
+         *  
+         *  Необходимо реализовать следующий интерфейс:
+         *      
+         *      Env.ConfigurationManager.Load(string path)      -- Загружает конфигурацию из каталога
+         *      Env.ConfigurationManager.LoadDb()               -- Загружает конфигурацию базы данных
+         *      Env.ConfigurationManager.UnLoad(string path)    -- Выгружает конфигурацию конфигурацию
+         *      Env.ConfigurationManager.Apply()                -- Применяет текущую загруженную конфигурацию, в этот момент применяются все изменения
+         *      
+         */
 
         public PlatformEnvironment()
         {
@@ -18,6 +32,8 @@ namespace ZenPlatform.Core
             Globals = new Dictionary<string, object>();
             Managers = new Dictionary<Type, EntityManagerBase>();
             Entityes = new Dictionary<Guid, EntityDefinition>();
+
+            Sessions.Add(new SystemSession(this, 1));
         }
 
 
@@ -29,8 +45,6 @@ namespace ZenPlatform.Core
         public IDictionary<Guid, EntityDefinition> Entityes { get; }
 
         public IDictionary<Type, EntityManagerBase> Managers { get; }
-
-
 
         public Session CreateSession()
         {
@@ -44,6 +58,15 @@ namespace ZenPlatform.Core
 
                 return session;
             }
+        }
+
+        public SystemSession GetSystemSession()
+        {
+            var session = Sessions[0] as SystemSession;
+            if (session is null)
+                throw new InvalidOperationException("System session is not created. The system go down.");
+
+            return session;
         }
 
         public void RemoveSession(Session session)
@@ -63,8 +86,6 @@ namespace ZenPlatform.Core
             }
         }
 
-
-
         public void RegisterManager(Type type, EntityManagerBase manager)
         {
             Managers.Add(type, manager);
@@ -77,7 +98,6 @@ namespace ZenPlatform.Core
                 Managers.Remove(type);
             }
         }
-
 
         /// <summary>
         /// Получить менеджер по типу сущности
@@ -119,21 +139,5 @@ namespace ZenPlatform.Core
             var entityDefinition = Entityes.First(x => x.Value.EntityType == type || x.Value.DtoType == type).Value;
             return entityDefinition;
         }
-    }
-
-    public class EntityDefinition
-    {
-        public EntityDefinition(PObjectType entityConfig, Type entityType, Type dtoType)
-        {
-            EntityConfig = entityConfig;
-            EntityType = entityType;
-            DtoType = dtoType;
-
-        }
-
-        public Guid Key => EntityConfig.Id;
-        public PObjectType EntityConfig { get; }
-        public Type EntityType { get; }
-        public Type DtoType { get; }
     }
 }
