@@ -27,7 +27,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
     /// <summary>
     /// Загрузчик конфигурации.
     /// </summary>
-    public interface IComponenConfigurationtLoader
+    public interface IComponenConfigurationLoader
     {
         /// <summary>
         /// Первичная загрузка xml файла конфигурации.
@@ -40,7 +40,8 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         IComponentType LoadComponentType(string pathToXml, PComponent component);
 
         /// <summary>
-        /// Загрузить зависимости типа
+        /// Загрузить зависимости для типа
+        /// Поиск компонента будет осуществляться 
         /// </summary>
         /// <param name="pathToXml"></param>
         /// <param name="supportedObjects"></param>
@@ -50,9 +51,10 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         /// <summary>
         /// Загрузить роль из контента
         /// </summary>
+        /// <param name="obj">Объект, к которому прикрепляются правила</param>
         /// <param name="xmlContent">xml фрагмент, сериализованной роли в компоненте</param>
         /// <returns></returns>
-        IRule LoadComponentRole(string xmlContent);
+        IRule LoadComponentRole(IComponentType obj, string xmlContent);
     }
 
 }

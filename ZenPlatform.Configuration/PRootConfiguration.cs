@@ -21,6 +21,7 @@ namespace ZenPlatform.Configuration
             Id = id;
             Data = new PDataSectionConfiguration();
             Languages = new List<PLanguage>();
+            Roles = new List<PRole>();
         }
 
         public string ProjectName { get; set; }

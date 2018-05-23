@@ -28,12 +28,12 @@ namespace ZenPlatform.DocumentComponent.QueryBuilders
 
             foreach (var property in pDocumentObjectType.Properties)
             {
-                result.Select(property.Name);
+                result.Select(property.DatabaseColumnName);
             }
 
             var id = pDocumentObjectType.Properties.Single(x => x.Unique);
 
-            result.Where(table.DeclareField(id.Name), CompareType.Equals, DBClause.CreateParameter("Id", DBType.UniqueIdentifier));
+            result.Where(table.DeclareField(id.DatabaseColumnName), CompareType.Equals, DBClause.CreateParameter("Id", DBType.UniqueIdentifier));
 
             return result;
         }

@@ -81,11 +81,11 @@ namespace ZenPlatform.DocumentComponent
 
                     if (propType is PObjectType)
                     {
-                        members.Add(GetPropertyWithEmptyAccessor($"{prop.Name}_Ref", "Guid"));
+                        members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Ref", "Guid"));
                     }
 
                     if (propType is PPrimetiveType primitiveType)
-                        members.Add(GetPropertyWithEmptyAccessor(prop.Name, primitiveType.CLRType.CSharpName()));
+                        members.Add(GetPropertyWithEmptyAccessor(prop.DatabaseColumnName, primitiveType.CLRType.CSharpName()));
                 }
                 else
                 {
@@ -95,14 +95,14 @@ namespace ZenPlatform.DocumentComponent
                     {
                         if (type is PObjectType && !alreadyHaveObjectTypeField)
                         {
-                            members.Add(GetPropertyWithEmptyAccessor($"{prop.Name}_Ref", "Guid"));
-                            members.Add(GetPropertyWithEmptyAccessor($"{prop.Name}_Type", "int"));
+                            members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Ref", "Guid"));
+                            members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Type", "int"));
 
                             alreadyHaveObjectTypeField = true;
                         }
 
                         if (type is PPrimetiveType primitiveType)
-                            members.Add(GetPropertyWithEmptyAccessor($"{prop.Name}_{primitiveType.Name}",
+                            members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_{primitiveType.Name}",
                                 primitiveType.CLRType.CSharpName()));
                     }
                 }
@@ -182,12 +182,12 @@ namespace ZenPlatform.DocumentComponent
                         {
                             ComponentName = propertyComponent.Name,
                             ObjectName = propType.Name,
-                            Params = $"{DtoPrivateFieldName}.{prop.Name}_Ref"
+                            Params = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref"
                         });
                         var setExp = setRule.GetExpression().NamedFormat(new StandartSetExpressionParameters()
                         {
                             ComponentName = propertyComponent.Name,
-                            SetVariable = $"{DtoPrivateFieldName}.{prop.Name}_Ref",
+                            SetVariable = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref",
                             ObjectName = propType.Name,
                             Params = "value"
                         });
@@ -206,7 +206,7 @@ namespace ZenPlatform.DocumentComponent
 
                         var csProperty =
                             generator.PropertyDeclaration(
-                                prop.Name,
+                                prop.DatabaseColumnName,
                                 SyntaxFactory.IdentifierName($"{propEnittyPreffix}{propType.Name}{propEntityPostfix}"),
                                 Accessibility.Public,
                                 DeclarationModifiers.None, getAcessorStatement, setAcessorStatement);
@@ -217,18 +217,18 @@ namespace ZenPlatform.DocumentComponent
                     {
                         var getAcessorStatement = new SyntaxNode[]
                         {
-                          SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.Name};")
+                          SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.DatabaseColumnName};")
                         };
 
                         var setAcessorStatement = new SyntaxNode[]
                           {
-                              SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.Name} = value;"),
+                              SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.DatabaseColumnName} = value;"),
                               SyntaxFactory.ParseStatement("OnPropertyChanged();")
                     };
 
                         var csProperty =
                             generator.PropertyDeclaration(
-                                prop.Name,
+                                prop.DatabaseColumnName,
                                 SyntaxFactory.IdentifierName(primitiveType.CLRType.CSharpName()),
                                 Accessibility.Public,
                                 DeclarationModifiers.None, getAcessorStatement, setAcessorStatement);
@@ -242,13 +242,13 @@ namespace ZenPlatform.DocumentComponent
                     {
                         if (type is PObjectType && !alreadyHaveObjectTypeField)
                         {
-                            members.Add(GetPropertyWithEmptyAccessor($"{prop.Name}_Ref", "Guid"));
-                            members.Add(GetPropertyWithEmptyAccessor($"{prop.Name}_Type", "int"));
+                            members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Ref", "Guid"));
+                            members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Type", "int"));
                             alreadyHaveObjectTypeField = true;
                         }
 
                         if (type is PPrimetiveType primitiveType)
-                            members.Add(GetPropertyWithEmptyAccessor($"{prop.Name}_{primitiveType.Name}",
+                            members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_{primitiveType.Name}",
                                 primitiveType.CLRType.CSharpName()));
                     }
                 }

@@ -36,13 +36,19 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         public XmlConfDateCaseType DateCase { get; set; }
 
         [XmlAttribute]
-        public string Name { get; set; }
+        public string Alias { get; set; }
 
         [XmlAttribute]
         public int Length { get; set; }
 
         [XmlAttribute]
         public int Precision { get; set; }
+
+        /// <summary>
+        /// Колонка привязанная к базе данных
+        /// </summary>
+        [XmlAttribute]
+        public string DatabaseColumnName { get; set; }
     }
 
 

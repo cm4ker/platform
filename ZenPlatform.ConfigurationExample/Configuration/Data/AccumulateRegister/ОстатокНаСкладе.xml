@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<AccumulateRegister>
-    <Id>SOME_GUID</Id>
+<AcсumulateRegister>
+    <Id>ce9d527f-87c1-457b-bec1-8c536db20d48</Id>
     <Name>ОстатокНаСкладе</Name>
-    <IsAbstract>False</IsAbstract>
+    <IsAbstract>false</IsAbstract>
 
     <!-- Тип регистра накопления
     
@@ -16,7 +16,7 @@
     </AccumulateRegisterType>
 
     <Properties>
-        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Книга">
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Книга">
             <AccumulateRegisterPropertyTypes>
                 <!-- Тип свойства регистра накопления. Возможные варианты:
                     - Dimension     - Измерение
@@ -27,23 +27,23 @@
             </AccumulateRegisterPropertyTypes>
         </Property>
         
-        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Автор">
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Автор">
             <AccumulateRegisterPropertyTypes>
                 <PropertyType>Dimension</PropertyType>
             </AccumulateRegisterPropertyTypes>
         </Property>
         
-        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Количество"> 
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Количество"> 
          <AccumulateRegisterPropertyTypes>
                 <PropertyType>Aggregate</PropertyType>
             </AccumulateRegisterPropertyTypes>
         </Property>
         
-        <Property Id="SOMEGUID" TypeId="SOME_GUID" Name="Комментарий"> 
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Комментарий"> 
          <AccumulateRegisterPropertyTypes>
                 <PropertyType>Simple</PropertyType>
             </AccumulateRegisterPropertyTypes>
         </Property>
     </Properties>
 
-</AccumulateRegister>
+</AcсumulateRegister>
