@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AcсumulateRegister>
+    <Id>ce9d527f-87c1-457b-bec1-8c536db20d48</Id>
+    <Name>ОстатокНаСкладе</Name>
+    <IsAbstract>false</IsAbstract>
+
+    <!-- Тип регистра накопления
+    
+    Возможные типы значения:
+        Turnovers,
+        RemainsAndTurnovers
+        
+     -->
+    <AccumulateRegisterType>
+        RemainsAndTurnovers
+    </AccumulateRegisterType>
+
+    <Properties>
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Книга">
+            <AccumulateRegisterPropertyTypes>
+                <!-- Тип свойства регистра накопления. Возможные варианты:
+                    - Dimension     - Измерение
+                    - Aggregate     - Агрегат
+                    - Simple        - Обычное поле
+                 -->
+                <PropertyType>Dimension</PropertyType>
+            </AccumulateRegisterPropertyTypes>
+        </Property>
+        
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Автор">
+            <AccumulateRegisterPropertyTypes>
+                <PropertyType>Dimension</PropertyType>
+            </AccumulateRegisterPropertyTypes>
+        </Property>
+        
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Количество"> 
+         <AccumulateRegisterPropertyTypes>
+                <PropertyType>Aggregate</PropertyType>
+            </AccumulateRegisterPropertyTypes>
+        </Property>
+        
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Комментарий"> 
+         <AccumulateRegisterPropertyTypes>
+                <PropertyType>Simple</PropertyType>
+            </AccumulateRegisterPropertyTypes>
+        </Property>
+    </Properties>
+
+</AcсumulateRegister>

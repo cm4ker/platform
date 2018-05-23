@@ -103,7 +103,7 @@ namespace ZenPlatform.QueryBuilder.Queries
             var sb = new StringBuilder();
             sb.AppendFormat("{0} {1} [{2}] \n", SQLTokens.ALTER, SQLTokens.TABLE, _table.Name);
             if (_addColumns.Count > 0)
-            { 
+            {
                 foreach (var field in _addColumns)
                 {
 
@@ -146,5 +146,33 @@ namespace ZenPlatform.QueryBuilder.Queries
 
             throw new Exception("The instruction must contain drop, alter or add columns.");
         }
+
+
+    }
+
+
+    public class DBRenameTableQuery : IQueryable
+    {
+        /// <summary>
+        /// Переименовать таблицу
+        /// </summary>
+        /// <param name="oldName">Старое имя. Содержит в себе также и схему. Например schema_name.[some_table_name.mycool]</param>
+        /// <param name="newName">Новое имя. Содержит в себе схему.</param>
+        public DBRenameTableQuery(string oldName, string newName)
+        {
+
+        }
+
+        public object Clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Compile(bool recompile = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string CompileExpression { get; set; }
     }
 }

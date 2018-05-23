@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ZenPlatform.Configuration.Data;
-using ZenPlatform.ConfigurationDataComponent;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.Data;
 using ZenPlatform.DataComponent;
+using ZenPlatform.DataComponent.QueryBuilders;
 
 namespace ZenPlatform.DocumentComponent
 {
@@ -45,8 +45,10 @@ namespace ZenPlatform.DocumentComponent
         }
 
 
+
         public void Save(Session session, DocumentEntity entity)
         {
+            var def = session.Environment.GetDefinition(entity.GetType());
 
         }
 
@@ -83,7 +85,7 @@ namespace ZenPlatform.DocumentComponent
             var context = session.DataContextManger.GetContext();
             var def = session.Environment.GetDefinition(type);
             var pObjectType = def.EntityConfig;
-            var sqlBuilder = new QueryBuilderComponent(pObjectType);
+            //var sqlBuilder = new QueryBuilderComponent(pObjectType);
 
 
             //TODO:Сделать получение запроса обратно для объекта обра

@@ -75,10 +75,18 @@ namespace ZenPlatform.QueryBuilder.Queries
             {
                 throw new Exception("Trying to update fields in differend tables");
             }
-            if (_updateTable is null)
-                _updateTable = field.Owner as DBTable;
-
+            _updateTable = field.Owner as DBTable;
             _setUpdate.AddField(field);
+        }
+
+        public void AddField(DBTableField destField, DBClause value)
+        {
+            if (_updateTable != null && destField.Owner as DBTable != _updateTable)
+            {
+                throw new Exception("Trying to update fields in differend tables");
+            }
+            _updateTable = destField.Owner as DBTable;
+            _setUpdate.AddField(destField, value);
         }
 
         public DBLogicalOperation Where(DBClause clause1, CompareType type, DBClause clause2)

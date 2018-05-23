@@ -1,12 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj" />
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
   </ItemGroup>
-
 </Project>

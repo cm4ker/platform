@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using ZenPlatform.QueryBuilder.Interfaces;
 
@@ -49,11 +50,13 @@ namespace ZenPlatform.QueryBuilder
 
         public string Compile(bool recompile = false)
         {
+            if (_logicalClause is null) throw new Exception("The logical clause can not be null");
+
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine(SQLTokens.WHERE);
+            sb.Append($"{SQLTokens.WHERE} \n");
 
-            sb.AppendFormat("{0} ", _logicalClause.Compile());
+            sb.AppendFormat("\t {0}", _logicalClause.Compile());
 
             return sb.ToString();
         }
