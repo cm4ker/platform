@@ -48,7 +48,7 @@ namespace ZenPlatform.Configuration.Data
         private readonly IList<PObjectType> _objects;
         private readonly IDictionary<PGeneratedCodeRuleType, PGeneratedCodeRule> _rules;
 
-        public PComponent(Guid id, IComponenConfigurationtLoader loader)
+        public PComponent(Guid id, IComponenConfigurationLoader loader)
         {
             _rules = new Dictionary<PGeneratedCodeRuleType, PGeneratedCodeRule>();
             Id = (id == Guid.Empty) ? Guid.NewGuid() : id;
@@ -77,7 +77,7 @@ namespace ZenPlatform.Configuration.Data
         /// <summary>
         /// Загрузчик конфигурации. Устанавливается при чтении корреного файла проекта
         /// </summary>
-        public IComponenConfigurationtLoader Loader { get; }
+        public IComponenConfigurationLoader Loader { get; }
 
         /// <summary>
         /// Зарегистрировать правило для генерации кода

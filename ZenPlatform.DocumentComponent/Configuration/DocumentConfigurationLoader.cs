@@ -4,47 +4,28 @@ using System.IO;
 using System.Text;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.Configuration.Exceptions;
+using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.DocumentComponent.Configuration.XmlConfiguration;
 
 namespace ZenPlatform.DocumentComponent.Configuration
 {
-    public class DocumentConfigurationLoader : IComponenConfigurationtLoader
+    public class DocumentConfigurationLoader : ConfigurationLoaderBase
+        <XmlConfDocument, PDocumentObjectType, PDocumentObjectProperty>
     {
-        public IComponentType LoadComponentType(string pathToXml, PComponent component)
+        protected override IComponentType CreateNewComponentType(PComponent component, XmlConfDocument conf)
         {
-            XmlConfDocument conf;
-            using (var sr = new StreamReader(pathToXml))
-            {
-                var s = new XmlSerializer(typeof(XmlConfDocument));
-                conf = s.Deserialize(sr) as XmlConfDocument ?? throw new InvalidLoadConfigurationException(pathToXml);
-            }
-
-
-
-            if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
-            if (conf.Id == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
-
-            PDocumentObjectType doc = new PDocumentObjectType(conf.Name, conf.Id, component);
-
-            return doc;
+            return new PDocumentObjectType(conf.Name, conf.Id, component);
         }
 
-        public IComponentType LoadComponentTypeDependencies(string pathToXml, List<IComponentType> supportedObjects)
-        {
-            throw new NotImplementedException();
-        }
 
-        //TODO: Оставить что-то одно
-        IRule LoadComponentRole(string xmlContent)
+        public override IRule LoadComponentRole(IComponentType obj, string xmlContent)
         {
-            throw new NotImplementedException();
-        }
-
-        IRule IComponenConfigurationtLoader.LoadComponentRole(string xmlContent)
-        {
-            throw new NotImplementedException();
+            var docRule = xmlContent.Deserialize<XmlConfDocumentRule>();
+            
+            return new DefaultObjectRule(obj.Id, obj.OwnerComponent);
         }
     }
 

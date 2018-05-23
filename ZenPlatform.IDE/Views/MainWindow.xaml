@@ -1,0 +1,31 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ZenPlatform.IDE.ViewModels;assembly=ZenPlatform.IDE"
+        Icon="resm:ZenPlatform.IDE.Assets.avalonia-logo.ico"
+        Title="ZenPlatform.IDE"
+        Height="500" Width="800"
+        Design.Height="200" Design.Width="300">
+
+  <Design.DataContext>
+    <vm:MainWindowViewModel/>
+  </Design.DataContext>
+  <Grid Background="LightBlue" RowDefinitions="20,30,*,*,*" ColumnDefinitions="200,*,*">
+    <Grid Grid.ColumnSpan="3" Background="Orange">
+      <Menu>
+        <MenuItem Header="Меню">
+          <MenuItem Header="Сохранить"></MenuItem>
+          <MenuItem Header="Выходы"></MenuItem>
+        </MenuItem>
+      </Menu>
+    </Grid>
+    <Grid Grid.Row="1" Grid.ColumnSpan="4" Background="Gray"> </Grid>
+    <Grid Grid.Row="2" Grid.RowSpan="4" Background="Red">
+      <TreeView Items="{Binding Tree}">
+
+      </TreeView>
+    </Grid>
+    <Grid Grid.Row="2" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Background="DarkBlue">
+      <TextBlock Grid.Column="1" Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Grid>
+  </Grid>
+</Window>

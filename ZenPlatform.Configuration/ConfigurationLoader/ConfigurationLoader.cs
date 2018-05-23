@@ -76,12 +76,12 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
                 var comAssembly = Assembly.LoadFile(fi.FullName);
 
                 var loader = comAssembly.GetTypes()
-                   .FirstOrDefault(x => x.IsPublic && !x.IsAbstract && x.GetInterfaces().Contains(typeof(IComponenConfigurationtLoader)));
+                   .FirstOrDefault(x => x.IsPublic && !x.IsAbstract && x.GetInterfaces().Contains(typeof(IComponenConfigurationLoader)));
 
                 if (loader != null)
                 {
                     //Если компонент реализует компонент для доступа к данным и загрузчик конфигурации, в таком случае мы можем выполнить загрузку
-                    var loaderInstance = (IComponenConfigurationtLoader)Activator.CreateInstance(loader);
+                    var loaderInstance = (IComponenConfigurationLoader)Activator.CreateInstance(loader);
 
                     var pComponent = new PComponent(xmlConfComponent.Id, loaderInstance);
                     pComponent.Name = xmlConfComponent.Name;
@@ -118,7 +118,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
                     {
                         var pobject = conf.Data.Types.First(x => x.Id == orule.ObjectId);
 
-                        prole.ObjectRules.Add(pobject.OwnerComponent.Loader.LoadComponentRole(orule.Content));
+                        prole.ObjectRules.Add(pobject.OwnerComponent.Loader.LoadComponentRole(pobject, orule.Content));
                     }
 
                     conf.Roles.Add(prole);

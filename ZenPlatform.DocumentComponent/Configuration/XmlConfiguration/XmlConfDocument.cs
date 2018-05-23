@@ -27,4 +27,26 @@ namespace ZenPlatform.DocumentComponent.Configuration.XmlConfiguration
     public class XmlConfDocumentProperty : XmlConfComponentPropertyBase
     {
     }
+
+    [XmlRoot("DocumentRule")]
+    public class XmlConfDocumentRule
+    {
+        [XmlElement]
+        public bool AllowRead { get; set; }
+
+        [XmlElement]
+        public bool AllowView { get; set; }
+
+        [XmlElement]
+        public bool AllowAdd { get; set; }
+
+        [XmlElement]
+        public bool AllowDelete { get; set; }
+
+        [XmlElement]
+        public bool AllowInteractiveDelete { get; set; }
+
+        [XmlElement]
+        public bool AllowUpdate { get; set; }
+    }
 }

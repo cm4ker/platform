@@ -29,7 +29,7 @@ namespace ZenPlatform.Configuration.Data.Types.Complex
         /// <summary>
         /// Наименование столбца в базе данных
         /// </summary>
-        public string Name { get; set; }
+        public string DatabaseColumnName { get; set; }
 
         /// <summary>
         /// Столбец уникальности

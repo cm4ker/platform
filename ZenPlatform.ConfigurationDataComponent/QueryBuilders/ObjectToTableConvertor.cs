@@ -25,7 +25,7 @@ namespace ZenPlatform.DataComponent.QueryBuilders
                                              //typeProperty.Precision, typeProperty.Scale, false, property.Unique,
                                              //false, property.Unique ? false : typeProperty.IsNullable);
 
-                var field = new DBTableField(table, property.Name)
+                var field = new DBTableField(table, property.DatabaseColumnName)
                 {
                     Schema = schema
                 };

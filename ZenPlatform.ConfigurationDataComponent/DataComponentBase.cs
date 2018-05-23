@@ -79,7 +79,7 @@ namespace ZenPlatform.DataComponent
         #region Configuration
 
         //NOTE: Было выпилено в task-94, так как был полностью переписан механизм загрузки конфигурации.
-        //Теперь всё реализовано через отдельный интерфейс, смотри IComponenConfigurationtLoader
+        //Теперь всё реализовано через отдельный интерфейс, смотри IComponenConfigurationLoader
 
         #endregion
 

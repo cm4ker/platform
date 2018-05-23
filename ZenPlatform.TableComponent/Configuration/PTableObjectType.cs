@@ -26,7 +26,7 @@ namespace ZenPlatform.DocumentComponent.Configuration
             var property = new PTableObjectProperty(this)
             {
                 Unique = true,
-                Name = "Id"
+                DatabaseColumnName = "Id"
             };
             property.Types.Add(new PGuid());
 
