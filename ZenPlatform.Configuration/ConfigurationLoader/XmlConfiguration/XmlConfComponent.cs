@@ -9,8 +9,11 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         [XmlAttribute]
         public Guid Id { get; set; }
 
-        [XmlAttribute]
+        [XmlIgnore]
         public string Name { get; set; }
+
+        [XmlIgnore]
+        public XmlConfRoot Root { get; set; }
 
         [XmlElement]
         public XmlConfFile File { get; set; }

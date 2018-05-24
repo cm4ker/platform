@@ -40,13 +40,13 @@ namespace ZenPlatform.Tests.Conf
                 Assert.AreEqual(5, result.Data.Components.Count);
                 Assert.AreEqual(9, result.Data.IncludedFiles.Count);
 
-                var tableComponent = result.Data.Components.Find(x => x.Name == "Table");
+                //var tableComponent = result.Data.Components.Find(x => x.Name == "Table");
 
-                Assert.AreEqual(2, tableComponent.Attaches.Count);
+                //Assert.AreEqual(2, tableComponent.Attaches.Count);
 
-                Assert.AreEqual(1, result.Modules.IncludedFiles.Count);
+                //Assert.AreEqual(1, result.Modules.IncludedFiles.Count);
 
-                Assert.AreEqual(2, result.Languages.Count);
+                //Assert.AreEqual(2, result.Languages.Count);
             }
         }
 
