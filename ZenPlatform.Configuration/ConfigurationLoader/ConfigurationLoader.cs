@@ -71,31 +71,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
             foreach (var xmlConfComponent in xmlConf.Data.Components)
             {
                 var componentPath = Path.Combine(_directory.ToString(), xmlConfComponent.File.Path);
-                FileInfo fi = new FileInfo(componentPath);
-
-                var comAssembly = Assembly.LoadFile(fi.FullName);
-
-                var loader = comAssembly.GetTypes()
-                   .FirstOrDefault(x => x.IsPublic && !x.IsAbstract && x.GetInterfaces().Contains(typeof(IComponenConfigurationLoader)));
-
-                if (loader != null)
-                {
-                    //Если компонент реализует компонент для доступа к данным и загрузчик конфигурации, в таком случае мы можем выполнить загрузку
-                    var loaderInstance = (IComponenConfigurationLoader)Activator.CreateInstance(loader);
-
-                    var pComponent = new PComponent(xmlConfComponent.Id, loaderInstance);
-                    pComponent.Name = xmlConfComponent.Name;
-                    pComponent.ComponentPath = xmlConfComponent.File.Path;
-
-                    //Необходимо зарегистрировать конфигурацию
-                    pComponent.Configuration = conf;
-
-                    conf.Data.Components.Add(pComponent);
-                }
-                else
-                {
-                    throw new InvalidComponentException();
-                }
+                var pComponent = new PComponent(conf, xmlConfComponent.Id, componentPath);
             }
         }
 

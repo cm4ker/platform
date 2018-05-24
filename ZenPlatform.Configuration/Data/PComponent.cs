@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using Newtonsoft.Json;
@@ -45,39 +48,90 @@ namespace ZenPlatform.Configuration.Data
     /// </summary>
     public class PComponent
     {
-        private readonly IList<PObjectType> _objects;
         private readonly IDictionary<PGeneratedCodeRuleType, PGeneratedCodeRule> _rules;
+        private IComponenConfigurationLoader _loader;
+        private ComponentInformation _componentInfo;
 
-        public PComponent(Guid id, IComponenConfigurationLoader loader)
+
+        /// <summary>
+        /// Внимание! После создания объекта, он будет автоматически зарегистрирован в передаваемой конфигурации, как аргумент конструктора 
+        /// </summary>
+        /// <param name="conf"></param>
+        /// <param name="id"></param>
+        /// <param name="componentPath"></param>
+        public PComponent(PRootConfiguration conf, Guid id, string componentPath)
         {
             _rules = new Dictionary<PGeneratedCodeRuleType, PGeneratedCodeRule>();
             Id = (id == Guid.Empty) ? Guid.NewGuid() : id;
 
-            Loader = loader;
+            if (string.IsNullOrEmpty(componentPath))
+            {
+                throw new InvalidComponentException();
+            }
+
+            ComponentPath = componentPath;
+
+            FileInfo fi = new FileInfo(ComponentPath);
+            ComponentAssembly = Assembly.LoadFile(fi.FullName);
+
+
+            var typeInfo = ComponentAssembly.GetTypes().FirstOrDefault(x => x.BaseType == typeof(ComponentInformation));
+
+            if (typeInfo != null)
+                _componentInfo = (ComponentInformation)Activator.CreateInstance(typeInfo);
+            else
+                _componentInfo = new ComponentInformation();
+
+            Configuration = conf;
+            conf.Data.Components.Add(this);
         }
 
-        public PRootConfiguration Configuration { get; internal set; }
+        /// <summary>
+        /// Инициализировать загручик компоннента
+        /// </summary>
+        private void CreateLoader()
+        {
+
+            var loaderType = ComponentAssembly.GetTypes()
+                                 .FirstOrDefault(x => x.IsPublic && !x.IsAbstract && x.GetInterfaces().Contains(typeof(IComponenConfigurationLoader))) ?? throw new InvalidComponentException();
+
+            _loader = (IComponenConfigurationLoader)Activator.CreateInstance(loaderType);
+
+        }
+
+        private Assembly ComponentAssembly { get; }
+
+        public PRootConfiguration Configuration { get; }
 
         /// <summary>
         /// Путь до библиотеки компонента
         /// </summary>
-        public string ComponentPath { get; set; }
+        private string ComponentPath { get; }
 
         /// <summary>
         /// Имя компонента
         /// (Документы, Справочники, Регистры и так далее)
         /// </summary>
-        public string Name { get; set; }
+        public string Name => _componentInfo.ComponentName;
 
         /// <summary>
         /// Идентификатор компонента
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid Id { get; }
 
         /// <summary>
         /// Загрузчик конфигурации. Устанавливается при чтении корреного файла проекта
         /// </summary>
-        public IComponenConfigurationLoader Loader { get; }
+        public IComponenConfigurationLoader Loader
+        {
+            get
+            {
+                if (_loader is null)
+                    CreateLoader();
+
+                return _loader;
+            }
+        }
 
         /// <summary>
         /// Зарегистрировать правило для генерации кода
