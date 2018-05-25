@@ -1,95 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Threading;
-using System.Xml.Serialization;
-using Microsoft.Build.Utilities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
-using Task = System.Threading.Tasks.Task;
 
-namespace ZenPlatform.Tests.Conf
+namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
 {
-    [TestClass]
-    public class SerializationTesting
-    {
-        [TestMethod]
-        public void Test()
-        {
-            using (var sw = new StringWriter())
-            {
-                var parent = new Parent();
-                parent.Name = "Test object";
-
-                parent.Children.Add(new Child() { Name = "Hello", Parent = parent });
-
-                XmlSerializer serializer = new XmlSerializer(typeof(Parent));
-                serializer.Serialize(sw, parent);
-
-                using (var sr = new StringReader(sw.ToString()))
-                {
-                    var o = serializer.Deserialize(sr);
-                }
-            }
-        }
-
-
-        static WeakReference TestFunc()
-        {
-            var obj = new Data(10);
-            WeakReference weakRef = new WeakReference(obj);
-            Console.WriteLine("Leaving the block");
-
-            return weakRef;
-        }
-
-        [TestMethod]
-        public void WeakTest()
-        {
-            WeakReference weakRef;
-            {
-                weakRef = new WeakReference(new Data(10));
-                Console.WriteLine("Leaving the block");
-            }
-
-            Console.WriteLine("GC.Collect()");
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-
-            System.Threading.Thread.Sleep(2000);
-            Console.WriteLine("weakRef.IsAlive == {0}", weakRef.IsAlive);
-
-            Console.WriteLine("Leaving the program");
-        }
-
-
-        public class Data
-        {
-            private byte[] _data;
-            private string _name;
-
-            public Data(int size)
-            {
-                _data = new byte[size * 1024];
-                _name = size.ToString();
-            }
-
-            // Simple property.
-            public string Name
-            {
-                get { return _name; }
-            }
-
-            ~Data()
-            {
-                Console.WriteLine("~TestClass()");
-            }
-        }
-
-    }
 
     /// <summary>
     /// Defines the contract for an object that has a parent object
@@ -235,35 +149,4 @@ namespace ZenPlatform.Tests.Conf
         #endregion
     }
 
-    public class Parent
-    {
-        public Parent()
-        {
-            this.Children = new ChildItemCollection<Parent, Child>(this);
-        }
-
-        public string Name { get; set; }
-
-        public ChildItemCollection<Parent, Child> Children { get; private set; }
-    }
-
-    public class Child : IChildItem<Parent>
-    {
-        public string Name { get; set; }
-
-        [XmlIgnore]
-        public Parent Parent { get; set; }
-
-        Parent IChildItem<Parent>.Parent
-        {
-            get
-            {
-                return this.Parent;
-            }
-            set
-            {
-                this.Parent = value;
-            }
-        }
-    }
 }

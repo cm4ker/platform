@@ -71,7 +71,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader
             foreach (var xmlConfComponent in xmlConf.Data.Components)
             {
                 var componentPath = Path.Combine(_directory.ToString(), xmlConfComponent.File.Path);
-                var pComponent = new PComponent(conf, xmlConfComponent.Id, componentPath);
+               // var pComponent = new PComponent(conf, xmlConfComponent.Id, componentPath);
             }
         }
 

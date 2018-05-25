@@ -5,13 +5,16 @@ using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
 {
 
     [XmlRoot("Root")]
-    public class XmlConfRoot : IXmlSerializable
+    public class XmlConfRoot
     {
+        private XmlConfData _data;
+
         public XmlConfRoot()
         {
             ProjectId = Guid.NewGuid();
@@ -34,7 +37,17 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         public string ProjectVersion { get; set; }
 
         [XmlElement(Type = typeof(XmlConfData), ElementName = "Data")]
-        public XmlConfData Data { get; set; }
+        public XmlConfData Data
+        {
+            get => _data;
+
+            set
+            {
+                _data = value;
+                ((IChildItem<XmlConfRoot>)_data).Parent = this;
+            }
+
+        }
 
         [XmlElement]
         public XmlConfInterface Interface { get; set; }
@@ -59,11 +72,13 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         /// <returns></returns>
         public static XmlConfRoot Load(string path)
         {
-            using (var tr = new StreamReader(path))
-            {
-                XmlSerializer serializer = new XmlSerializer(typeof(XmlConfRoot));
-                return (XmlConfRoot)serializer.Deserialize(tr);
-            }
+            //Начальная загрузка 
+            XmlConfRoot conf = XmlConfHelper.DeserializeFromFile<XmlConfRoot>(path);
+            
+            //Инициализация компонентов данных
+            conf.Data.LoadComponents();
+
+            return conf;
         }
 
         /// <summary>
@@ -90,21 +105,6 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
                 XmlSerializer serializer = new XmlSerializer(typeof(XmlConfRoot));
                 serializer.Serialize(tr, this);
             }
-        }
-
-        public XmlSchema GetSchema()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ReadXml(XmlReader reader)
-        {
-
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
-            throw new NotImplementedException();
         }
     }
 }

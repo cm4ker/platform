@@ -21,12 +21,16 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         public static T DeserializeFromFile<T>(string fileName)
             where T : class
         {
+            BaseDirectory = Path.GetDirectoryName(fileName);
+
             XmlSerializer ser = new XmlSerializer(typeof(T));
             using (var sr = new StreamReader(fileName))
             {
                 return (T)ser.Deserialize(sr);
             }
         }
+
+        public static string BaseDirectory { get; private set; }
     }
 
 }

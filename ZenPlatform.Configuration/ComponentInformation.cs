@@ -15,5 +15,11 @@ namespace ZenPlatform.Configuration
         /// Описание компонента
         /// </summary>
         public virtual string ComponentDescription => "Это неопределённый компонент, для корректного отображения описания и названия компонента, необходимо переопределить созать класс-описание унаследованный от класса ComponentInformation";
+
+
+        /// <summary>
+        /// Идентификатор компонента, обязателен к переопределению 
+        /// </summary>
+        public virtual Guid ComponentId => Guid.Empty;
     }
 }
