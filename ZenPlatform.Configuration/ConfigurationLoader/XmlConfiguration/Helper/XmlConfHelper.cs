@@ -6,5 +6,6 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Helper
 {
     public static class XmlConfHelper
     {
+       
     }
 }
