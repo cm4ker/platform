@@ -8,18 +8,25 @@ using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
 {
-    public class XmlConfComponent : IChildItem<XmlConfData>
+    /// <summary>
+    /// Описание компонента
+    /// </summary>
+    public class XCComponent : IChildItem<XmlConfData>
     {
         private XmlConfData _parent;
         private bool _isLoaded;
         private ComponentInformation _info;
+        private IComponenConfigurationLoader _loader;
 
+
+        /// <summary>
+        /// Информация о компоненте
+        /// </summary>
         [XmlIgnore]
         public ComponentInformation Info
         {
             get => _info;
         }
-
 
         [XmlIgnore]
         public bool IsLoaded
@@ -27,7 +34,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
             get => _isLoaded;
         }
 
-        public Assembly ComponentAssembly { get; set; }
+        [XmlElement] public XmlConfFile File { get; set; }
+
+        [XmlIgnore] public Assembly ComponentAssembly { get; set; }
 
         public void LoadComponent()
         {
@@ -37,28 +46,25 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
             var typeInfo = ComponentAssembly.GetTypes().FirstOrDefault(x => x.BaseType == typeof(ComponentInformation));
 
             if (typeInfo != null)
-                _info = (ComponentInformation)Activator.CreateInstance(typeInfo);
+                _info = (ComponentInformation) Activator.CreateInstance(typeInfo);
             else
                 _info = new ComponentInformation();
+
+            var loaderType = ComponentAssembly.GetTypes()
+                                 .FirstOrDefault(x =>
+                                     x.IsPublic && !x.IsAbstract &&
+                                     x.GetInterfaces().Contains(typeof(IComponenConfigurationLoader))) ??
+                             throw new InvalidComponentException();
+
+
+            _loader = (IComponenConfigurationLoader) Activator.CreateInstance(loaderType);
         }
 
-        [XmlIgnore]
-        public XmlConfRoot Root => _parent.Parent;
+        [XmlIgnore] public XmlConfRoot Root => _parent.Parent;
 
-        [XmlIgnore]
-        public XmlConfData Parent => _parent;
+        [XmlIgnore] public XmlConfData Parent => _parent;
 
-        #region SerializebleElements
-
-
-        [XmlElement]
-        public XmlConfFile File { get; set; }
-
-        [XmlArray("Attaches")]
-        [XmlArrayItem(ElementName = "Attach", Type = typeof(XmlConfAttach))]
-        public List<XmlConfAttach> Attaches { get; set; }
-
-        #endregion
+        [XmlIgnore] public IComponenConfigurationLoader Loader => _loader;
 
         XmlConfData IChildItem<XmlConfData>.Parent
         {

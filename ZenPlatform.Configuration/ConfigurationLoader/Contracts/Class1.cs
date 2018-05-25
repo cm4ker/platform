@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.IO;
 using System.Text;
-using ZenPlatform.Configuration.Data;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+
+//using ZenPlatform.Configuration.Data;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
 {
-
     /// <summary>
     /// Интерфейс типа который может представлять компонент
     /// </summary>
@@ -14,13 +17,13 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         Guid Id { get; }
 
         //TODO : здесь должна быть ссылка на компонент, пока оставил PComponent
-        PComponent OwnerComponent { get; }
+        //PComponent OwnerComponent { get; }
     }
 
     public interface IRule
     {
         Guid ObjectId { get; }
-        PComponent ComponentOwner { get; }
+        // PComponent ComponentOwner { get; }
     }
 
 
@@ -30,31 +33,47 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
     public interface IComponenConfigurationLoader
     {
         /// <summary>
-        /// Первичная загрузка xml файла конфигурации.
-        /// Это касается только лишь типов. Т.е. мы не можем загрузить тип
-        /// полностью, пока не прогрузим все типы, потому что тут могут быть циклические зависимости
+        /// Загружает тип компонента, так как загружаются теперь сами xml файлы, то мы должны в результате
+        /// лишь проверить все зависимости, после загрузки всех типов
         /// </summary>
-        /// <param name="pathToXml"></param>
+        /// <param name="path"></param>
         /// <param name="component"></param>
         /// <returns></returns>
-        IComponentType LoadComponentType(string pathToXml, PComponent component);
+        XCObjectTypeBase LoadComponentType(string path, XCComponent component);
 
         /// <summary>
-        /// Загрузить зависимости для типа
-        /// Поиск компонента будет осуществляться 
+        /// Проверить зависимости типа.
+        /// В случае, если тип будет не найден, выбрасывается TypeNotFoundException
         /// </summary>
-        /// <param name="pathToXml"></param>
-        /// <param name="supportedObjects"></param>
-        /// <returns></returns>
-        IComponentType LoadComponentTypeDependencies(string pathToXml, List<IComponentType> supportedObjects);
+        void CheckDependencies(XCObjectTypeBase type);
 
-        /// <summary>
-        /// Загрузить роль из контента
-        /// </summary>
-        /// <param name="obj">Объект, к которому прикрепляются правила</param>
-        /// <param name="xmlContent">xml фрагмент, сериализованной роли в компоненте</param>
-        /// <returns></returns>
-        IRule LoadComponentRole(IComponentType obj, string xmlContent);
+        XmlConfTypeRuleBase LoadTypeRule(XCObjectTypeBase type, string xmlContent);
+
+//        /// <summary>
+//        /// Первичная загрузка xml файла конфигурации.
+//        /// Это касается только лишь типов. Т.е. мы не можем загрузить тип
+//        /// полностью, пока не прогрузим все типы, потому что тут могут быть циклические зависимости
+//        /// </summary>
+//        /// <param name="pathToXml"></param>
+//        /// <param name="component"></param>
+//        /// <returns></returns>
+//        IComponentType LoadComponentType(string pathToXml, PComponent component);
+//
+//        /// <summary>
+//        /// Загрузить зависимости для типа
+//        /// Поиск компонента будет осуществляться 
+//        /// </summary>
+//        /// <param name="pathToXml"></param>
+//        /// <param name="supportedObjects"></param>
+//        /// <returns></returns>
+//        IComponentType LoadComponentTypeDependencies(string pathToXml, List<IComponentType> supportedObjects);
+//
+//        /// <summary>
+//        /// Загрузить роль из контента
+//        /// </summary>
+//        /// <param name="obj">Объект, к которому прикрепляются правила</param>
+//        /// <param name="xmlContent">xml фрагмент, сериализованной роли в компоненте</param>
+//        /// <returns></returns>
+//        IRule LoadComponentRole(IComponentType obj, string xmlContent);
     }
-
 }

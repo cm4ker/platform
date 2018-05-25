@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Class\" />
+    <Folder Include="Data" />
     <Folder Include="Role\" />
     <Folder Include="Scheduler\" />
   </ItemGroup>

@@ -5,7 +5,7 @@ using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 namespace ZenPlatform.AcumulateRegisterComponent.Configuration.XmlConfiguration
 {
     [XmlRoot("AcсumulateRegister")]
-    public class XmlConfAcumulateRegister : XmlConfComponentBase
+    public class XmlConfAcumulateRegister : XCObjectTypeBase
     {
       
         [XmlElement]
@@ -20,7 +20,7 @@ namespace ZenPlatform.AcumulateRegisterComponent.Configuration.XmlConfiguration
 
     }
 
-    public class XmlConfAcumulateRegisterProperty : XmlConfComponentPropertyBase
+    public class XmlConfAcumulateRegisterProperty : XCObjectPropertyBase
     {
     }
 }

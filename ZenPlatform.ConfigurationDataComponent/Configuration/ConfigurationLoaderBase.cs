@@ -17,9 +17,9 @@ namespace ZenPlatform.DataComponent.Configuration
     public abstract class ConfigurationLoaderBase
         <TXmlConf, TPObjectType, TPObjectProperty>
         : IComponenConfigurationLoader
-    where TXmlConf : XmlConfComponentBase
-    where TPObjectType : PObjectType, IComponentType
-    where TPObjectProperty : PProperty
+        where TXmlConf : XCObjectTypeBase
+        where TPObjectType : PObjectType, IComponentType
+        where TPObjectProperty : PProperty
     {
         protected TXmlConf GetConf(string pathToXml)
         {
@@ -36,17 +36,24 @@ namespace ZenPlatform.DataComponent.Configuration
             }
         }
 
+        public XCObjectTypeBase LoadComponentType(string path)
+        {
+            return GetConf(path);
+        }
+
+        [Obsolete]
         public IComponentType LoadComponentType(string pathToXml, PComponent component)
         {
             var conf = GetConf(pathToXml);
             return CreateNewComponentType(component, conf);
         }
 
-
+        [Obsolete]
         protected abstract IComponentType CreateNewComponentType(PComponent component, TXmlConf conf);
 
-
-        public virtual IComponentType LoadComponentTypeDependencies(string pathToXml, List<IComponentType> supportedObjects)
+        [Obsolete]
+        public virtual IComponentType LoadComponentTypeDependencies(string pathToXml,
+            List<IComponentType> supportedObjects)
         {
             var conf = GetConf(pathToXml);
             var objectType = supportedObjects.Find(x => x.Id == conf.Id) as TPObjectType;
@@ -58,11 +65,12 @@ namespace ZenPlatform.DataComponent.Configuration
             return objectType;
         }
 
+        [Obsolete]
         protected virtual void RelsolveDependencies(TPObjectType obj, TXmlConf conf, List<IComponentType> anotherDeps)
         {
-
         }
 
+        [Obsolete]
         public virtual IRule LoadComponentRole(IComponentType obj, string xmlContent)
         {
             throw new NotImplementedException();
