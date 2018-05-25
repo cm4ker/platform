@@ -1,47 +1,47 @@
 ﻿using System;
+using System.Xml;
+using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.DataComponent.Configuration;
 
 namespace ZenPlatform.DocumentComponent.Configuration
 {
-    public class PDocumentObjectProperty : PProperty
+    public class DocumentProperty : XCObjectPropertyBase, IChildItem<Document>
     {
-        public PDocumentObjectProperty(PObjectType owner) : base(owner)
-        {
+        private Document _parent;
 
+        public DocumentProperty() : base()
+        {
+        }
+
+        [XmlIgnore] public Document Parent => _parent;
+
+        Document IChildItem<Document>.Parent
+        {
+            get => _parent;
+            set => _parent = value;
         }
     }
 
-    public class PDocumentObjectType : PObjectType, IComponentType
+    public class Document : XCObjectTypeBase
     {
-        public PDocumentObjectType(string name, Guid id, PComponent owner) : base(name, id, owner)
+        public Document()
         {
-            Init();
+            Properties = new ChildItemCollection<Document, DocumentProperty>(this);
         }
 
-        private void Init()
-        {
-            var property = new PDocumentObjectProperty(this)
-            {
-                Unique = true,
-                DatabaseColumnName = "Id"
-            };
-            property.Types.Add(new PGuid());
-
-            Properties.Add(property);
-        }
+        public ChildItemCollection<Document, DocumentProperty> Properties { get; }
 
         /// <summary>
         /// Имя связанной таблицы
         /// 
         /// При миграции присваивается движком. В последствии хранится в конфигурации.
         /// </summary>
+        [XmlElement]
         public string RelTableName { get; set; }
-
     }
-
-
-
 }

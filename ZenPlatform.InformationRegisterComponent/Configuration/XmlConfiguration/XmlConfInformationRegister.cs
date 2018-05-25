@@ -5,7 +5,7 @@ using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 namespace ZenPlatform.InformationRegisterComponent.Configuration.XmlConfiguration
 {
     [XmlRoot("InformationRegister")]
-    public class XmlConfInformationRegister : XmlConfComponentBase
+    public class XmlConfInformationRegister : XCObjectTypeBase
     {
         [XmlArray]
         [XmlArrayItem(ElementName = "Property", Type = typeof(XmlConfInformationRegisterProperty))]
@@ -13,7 +13,7 @@ namespace ZenPlatform.InformationRegisterComponent.Configuration.XmlConfiguratio
 
     }
 
-    public class XmlConfInformationRegisterProperty : XmlConfComponentPropertyBase
+    public class XmlConfInformationRegisterProperty : XCObjectPropertyBase
     {
     }
 }

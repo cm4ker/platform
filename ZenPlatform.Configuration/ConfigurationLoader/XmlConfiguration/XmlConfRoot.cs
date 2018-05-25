@@ -9,11 +9,11 @@ using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
 {
-
     [XmlRoot("Root")]
     public class XmlConfRoot
     {
         private XmlConfData _data;
+        private XmlConfRoles _roles;
 
         public XmlConfRoot()
         {
@@ -27,14 +27,11 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
             Languages = new List<XmlConfLanguage>();
         }
 
-        [XmlElement("ProjectId")]
-        public Guid ProjectId { get; set; }
+        [XmlElement("ProjectId")] public Guid ProjectId { get; set; }
 
-        [XmlElement("ProjectName")]
-        public string ProjectName { get; set; }
+        [XmlElement("ProjectName")] public string ProjectName { get; set; }
 
-        [XmlElement("ProjectVersion")]
-        public string ProjectVersion { get; set; }
+        [XmlElement("ProjectVersion")] public string ProjectVersion { get; set; }
 
         [XmlElement(Type = typeof(XmlConfData), ElementName = "Data")]
         public XmlConfData Data
@@ -44,22 +41,26 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
             set
             {
                 _data = value;
-                ((IChildItem<XmlConfRoot>)_data).Parent = this;
+                ((IChildItem<XmlConfRoot>) _data).Parent = this;
             }
-
         }
 
-        [XmlElement]
-        public XmlConfInterface Interface { get; set; }
+        [XmlElement] public XmlConfInterface Interface { get; set; }
 
         [XmlElement]
-        public XmlConfRoles Roles { get; set; }
+        public XmlConfRoles Roles
+        {
+            get => _roles;
+            set
+            {
+                _roles = value;
+                ((IChildItem<XmlConfRoot>) _roles).Parent = this;
+            }
+        }
 
-        [XmlElement]
-        public XmlConfModules Modules { get; set; }
+        [XmlElement] public XmlConfModules Modules { get; set; }
 
-        [XmlElement]
-        public XmlConfSchedules Schedules { get; set; }
+        [XmlElement] public XmlConfSchedules Schedules { get; set; }
 
         [XmlArray]
         [XmlArrayItem(ElementName = "Language", Type = typeof(XmlConfLanguage))]
@@ -74,9 +75,12 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         {
             //Начальная загрузка 
             XmlConfRoot conf = XmlConfHelper.DeserializeFromFile<XmlConfRoot>(path);
-            
+
+            //Инициализация ролевой системы
+            conf.Roles.Load();
+
             //Инициализация компонентов данных
-            conf.Data.LoadComponents();
+            conf.Data.Load();
 
             return conf;
         }

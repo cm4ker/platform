@@ -1,5 +1,6 @@
 ﻿using System;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.Configuration.Data.Types.Complex;
 

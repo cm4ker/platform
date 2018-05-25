@@ -13,7 +13,7 @@ using ZenPlatform.DocumentComponent.Configuration.XmlConfiguration;
 namespace ZenPlatform.DocumentComponent.Configuration
 {
     public class DocumentConfigurationLoader : ConfigurationLoaderBase
-        <XmlConfDocument, PDocumentObjectType, PDocumentObjectProperty>
+        <XmlConfDocument, PDocumentObjectType, DocumentProperty>
     {
         protected override IComponentType CreateNewComponentType(PComponent component, XmlConfDocument conf)
         {

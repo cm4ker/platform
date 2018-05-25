@@ -5,7 +5,7 @@ using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 namespace ZenPlatform.ReferenceComponent.Configuration.XmlConfiguration
 {
     [XmlRoot("Reference")]
-    public class XmlConfReference : XmlConfComponentBase
+    public class XmlConfReference : XCObjectTypeBase
     {
         [XmlArray]
         [XmlArrayItem(ElementName = "Property", Type = typeof(XmlConfReferenceProperty))]
@@ -13,7 +13,7 @@ namespace ZenPlatform.ReferenceComponent.Configuration.XmlConfiguration
 
     }
 
-    public class XmlConfReferenceProperty : XmlConfComponentPropertyBase
+    public class XmlConfReferenceProperty : XCObjectPropertyBase
     {
     }
 }
