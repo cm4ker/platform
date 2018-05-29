@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 
 namespace ZenPlatform.DocumentComponent.Configuration.XmlConfiguration
 {
@@ -25,7 +26,7 @@ namespace ZenPlatform.DocumentComponent.Configuration.XmlConfiguration
     }
 
     [XmlRoot("DocumentRule")]
-    public class XmlConfDocumentRule : XmlConfTypeRuleBase
+    public class XmlConfDocumentRule : XCDataRuleContent
     {
         [XmlElement] public bool AllowRead { get; set; }
 

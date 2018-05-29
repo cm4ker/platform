@@ -7,19 +7,20 @@ using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
 {
     [Serializable]
-    public class XmlConfData : IChildItem<XmlConfRoot>
+    public class XCData : IChildItem<XCRoot>
     {
-        private XmlConfRoot _parent;
+        private XCRoot _parent;
 
-        public XmlConfData()
+        public XCData()
         {
             IncludedFiles = new List<XmlConfFile>();
-            Components = new ChildItemCollection<XmlConfData, XCComponent>(this);
+            Components = new ChildItemCollection<XCData, XCComponent>(this);
             PlatformTypes = new List<XCTypeBase>();
 
             //Инициализируем типы, они нужны для правильного построения зависимостей
@@ -36,14 +37,13 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
 
         [XmlArray("Components")]
         [XmlArrayItem(ElementName = "Component", Type = typeof(XCComponent))]
-        public ChildItemCollection<XmlConfData, XCComponent> Components { get; }
+        public ChildItemCollection<XCData, XCComponent> Components { get; }
 
 
         public void Load()
         {
             LoadComponents();
             LoadFiles();
-            LoadRules();
         }
 
         #region Loading
@@ -66,9 +66,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
                     throw new ComponentNotFoundException();
 
                 var componentType =
-                    component.Loader.LoadComponentType(Path.Combine(XmlConfHelper.BaseDirectory, includedFile.Path),
-                        component);
-
+                    component.Loader.LoadObject(Path.Combine(XmlConfHelper.BaseDirectory, includedFile.Path));
                 ((IChildItem<XCComponent>) componentType).Parent = component;
 
                 PlatformTypes.Add(componentType);
@@ -76,24 +74,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
 
             foreach (var xct in ComponentTypes)
             {
-                xct.Parent.Loader.CheckDependencies(xct);
-            }
-        }
-
-        private void LoadRules()
-        {
-            foreach (var role in Parent.Roles.Items)
-            {
-                foreach (var rule in role.DataRules)
-                {
-                    var type = ComponentTypes.FirstOrDefault(x => x.Id == rule.ObjectId);
-                    if (type is null)
-                        throw new TypeNotFoundException();
-
-                    //так как с правила объекта обрабатывает сам компонент, то нет смысла их выносить наружу.
-                    //мы лишь только дадим возможность компоненту загрузить эти правила в объект
-                    type.Parent.Loader.LoadTypeRule(type, rule.Content);
-                }
+                xct.LoadDependencies();
             }
         }
 
@@ -105,10 +86,10 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         public IEnumerable<XCObjectTypeBase> ComponentTypes =>
             PlatformTypes.Where(x => x is XCObjectTypeBase).Cast<XCObjectTypeBase>();
 
-        [XmlIgnore] public XmlConfRoot Parent => _parent;
+        [XmlIgnore] public XCRoot Parent => _parent;
 
 
-        XmlConfRoot IChildItem<XmlConfRoot>.Parent
+        XCRoot IChildItem<XCRoot>.Parent
         {
             get => _parent;
             set => _parent = value;

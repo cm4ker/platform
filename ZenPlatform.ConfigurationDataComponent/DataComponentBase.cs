@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.Data;
-using ZenPlatform.Configuration.Data.Types.Complex;
+﻿using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Core.Entity;
-using ZenPlatform.DataComponent.Configuration;
-using ZenPlatform.DataComponent.Migrations;
 
 namespace ZenPlatform.DataComponent
 {
@@ -38,7 +30,7 @@ namespace ZenPlatform.DataComponent
         /// Базовый компонент данных. Является основой для всех компонентов.
         /// </summary>
         /// <param name="component">Настройки компонента, сюда компонент может публиковать какие-то структуры для общения с другими компонентами</param>
-        protected DataComponentBase(PComponent component)
+        protected DataComponentBase(XCComponent component)
         {
             Component = component;
 
@@ -51,7 +43,7 @@ namespace ZenPlatform.DataComponent
             //SupportedTypesManager = new SupportedTypeManager();
         }
 
-        protected PComponent Component { get; }
+        protected XCComponent Component { get; }
 
 
         /// <summary>
@@ -66,7 +58,6 @@ namespace ZenPlatform.DataComponent
 
         public EntityManagerBase Manager { get; protected set; }
         public EntityGeneratorBase Generator { get; protected set; }
-
 
 
         //Пометка: выпилено, компонент не хранит в себе эту инфомрацию для доступа извне,

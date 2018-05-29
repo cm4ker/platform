@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace ZenPlatform.ApplicationServer
 {
@@ -8,24 +10,22 @@ namespace ZenPlatform.ApplicationServer
     {
         static void Main()
         {
-            WeakReference weakRef = new WeakReference(new Data());
-            Console.WriteLine("run GC");
+            var s = new XmlSerializer(typeof(XmlData));
 
-            GC.Collect();
+            using (var sw = new StringWriter())
+            {
+                s.Serialize(sw, new XmlData() {Content = "Test"});
+                Console.WriteLine(sw.ToString());
+            }
 
-            Thread.Sleep(1000);
-
-            Console.WriteLine("IsAlive = {0}", weakRef.IsAlive);
             Console.ReadKey();
         }
     }
-    
-    public class Data
-    {
-        ~Data()
-        {
-            Console.WriteLine("Destructor call");
-        }
-    }
 
+
+    [XmlType(AnonymousType = true)]
+    public class XmlData
+    {
+        public string Content { get; set; }
+    }
 }
