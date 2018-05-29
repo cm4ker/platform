@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Configuration.Data;
 using ZenPlatform.Configuration.Data.Types.Complex;
 using ZenPlatform.Core.Entity;
@@ -14,7 +15,7 @@ namespace ZenPlatform.DocumentComponent
 {
     public class DocumnetComponent : DataComponentBase<DocumentEntityGenerator, DocumentManager>
     {
-        public DocumnetComponent(PComponent component) : base(component)
+        public DocumnetComponent(XCComponent component) : base(component)
         {
 
         }

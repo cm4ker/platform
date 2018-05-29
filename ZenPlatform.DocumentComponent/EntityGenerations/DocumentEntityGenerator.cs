@@ -1,29 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.Data;
-using ZenPlatform.Configuration.Data.Types.Complex;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Entity;
 using ZenPlatform.CSharpCodeBuilder.Syntax;
 using ZenPlatform.DataComponent;
-using ZenPlatform.DocumentComponent.Configuration;
+using Document = ZenPlatform.DocumentComponent.Configuration.Document;
+
 
 namespace ZenPlatform.DocumentComponent
 {
     public class DocumentEntityGenerator : EntityGeneratorBase
     {
-
-
-        public DocumentEntityGenerator(PComponent component) : base(component)
+        public DocumentEntityGenerator(XCComponent component) : base(component)
         {
-
         }
 
         /*
@@ -40,52 +37,55 @@ namespace ZenPlatform.DocumentComponent
          * {Valriable} = Session.{ComponentName}.{ObjectName}.GetKey({Value}); => _dto.InvoiceKey = Session.Document.Invoice.GetKey(value);
          */
 
-        public override PGeneratedCodeRule GetInForeignPropertySetActionRule()
+        public override CodeGenRule GetInForeignPropertySetActionRule()
         {
-            return new PGeneratedCodeRule(PGeneratedCodeRuleType.InForeignPropertyGetActionRule, "Session.{ComponentName}().{ObjectName}.Load({Params})");
+            return new CodeGenRule(CodeGenRuleType.InForeignPropertyGetActionRule,
+                "Session.{ComponentName}().{ObjectName}.Load({Params})");
         }
 
-        public override PGeneratedCodeRule GetInForeignPropertyGetActionRule()
+        public override CodeGenRule GetInForeignPropertyGetActionRule()
         {
-            return new PGeneratedCodeRule(PGeneratedCodeRuleType.InForeignPropertySetActionRule, "{SetVariable} = Session.{ComponentName}().{ObjectName}.GetKey({Params});");
+            return new CodeGenRule(CodeGenRuleType.InForeignPropertySetActionRule,
+                "{SetVariable} = Session.{ComponentName}().{ObjectName}.GetKey({Params});");
         }
 
-        public override PGeneratedCodeRule GetEntityClassPostfixRule()
+        public override CodeGenRule GetEntityClassPostfixRule()
         {
-            return new PGeneratedCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule, "Entity");
+            return new CodeGenRule(CodeGenRuleType.EntityClassPostfixRule, "Entity");
         }
 
-        public virtual SyntaxNode GenerateDtoClass(PObjectType conf)
+        public virtual SyntaxNode GenerateDtoClass(Document document)
         {
-            var component = conf.OwnerComponent;
-            var nsRule = component.GetCodeRule(PGeneratedCodeRuleType.NamespaceRule);
+            var component = document.Parent;
+            var nsRule = component.GetCodeRule(CodeGenRuleType.NamespaceRule);
 
             var workspace = new AdhocWorkspace();
 
             var generator = SyntaxGenerator.GetGenerator(
-                  workspace, LanguageNames.CSharp);
+                workspace, LanguageNames.CSharp);
 
             var usings = generator.NamespaceImportDeclaration("System");
 
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
-            if (conf.IsAbstract) return null;
+            if (document.IsAbstract) return null;
 
             var members = new List<SyntaxNode>();
 
-            foreach (var prop in conf.Properties)
+            foreach (var prop in document.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
                     var propType = prop.Types.First();
 
-                    if (propType is PObjectType)
+                    if (propType is XCObjectTypeBase)
                     {
                         members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Ref", "Guid"));
                     }
 
-                    if (propType is PPrimetiveType primitiveType)
-                        members.Add(GetPropertyWithEmptyAccessor(prop.DatabaseColumnName, primitiveType.CLRType.CSharpName()));
+                    if (propType is XCPremitiveType primitiveType)
+                        members.Add(GetPropertyWithEmptyAccessor(prop.DatabaseColumnName,
+                            primitiveType.CLRType.CSharpName()));
                 }
                 else
                 {
@@ -93,7 +93,7 @@ namespace ZenPlatform.DocumentComponent
 
                     foreach (var type in prop.Types)
                     {
-                        if (type is PObjectType && !alreadyHaveObjectTypeField)
+                        if (type is XCObjectTypeBase && !alreadyHaveObjectTypeField)
                         {
                             members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Ref", "Guid"));
                             members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Type", "int"));
@@ -101,7 +101,7 @@ namespace ZenPlatform.DocumentComponent
                             alreadyHaveObjectTypeField = true;
                         }
 
-                        if (type is PPrimetiveType primitiveType)
+                        if (type is XCPremitiveType primitiveType)
                             members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_{primitiveType.Name}",
                                 primitiveType.CLRType.CSharpName()));
                     }
@@ -109,13 +109,13 @@ namespace ZenPlatform.DocumentComponent
             }
 
             var classDefinition = generator.ClassDeclaration(
-                   $"{conf.Name}{DtoPrefix}",
-                   typeParameters: null,
-                   accessibility: Accessibility.Public,
-                   modifiers: DeclarationModifiers.None,
-                   baseType: null,
-                   interfaceTypes: null,
-                   members: members) as MemberDeclarationSyntax;
+                $"{document.Name}{DtoPrefix}",
+                typeParameters: null,
+                accessibility: Accessibility.Public,
+                modifiers: DeclarationModifiers.None,
+                baseType: null,
+                interfaceTypes: null,
+                members: members) as MemberDeclarationSyntax;
 
 
             ns = ns.AddMembers(classDefinition);
@@ -131,21 +131,17 @@ namespace ZenPlatform.DocumentComponent
         /// </summary>
         /// <param name="conf"></param>
         /// <returns></returns>
-        public virtual SyntaxNode GenerateEntityClass(PObjectType conf)
+        public virtual SyntaxNode GenerateEntityClass(Document conf)
         {
-            var component = conf.OwnerComponent;
-
-
-
             var dtoClassName = $"{conf.Name}{DtoPrefix}";
 
             var workspace = new AdhocWorkspace();
 
             var generator = SyntaxGenerator.GetGenerator(
-                  workspace, LanguageNames.CSharp);
+                workspace, LanguageNames.CSharp);
 
 
-            var nsRule = component.GetCodeRule(PGeneratedCodeRuleType.NamespaceRule);
+            var nsRule = conf.Parent.GetCodeRule(CodeGenRuleType.NamespaceRule);
             var usings = generator.NamespaceImportDeclaration("System");
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
@@ -153,7 +149,8 @@ namespace ZenPlatform.DocumentComponent
 
             var members = new List<SyntaxNode>();
 
-            var dtoPrivateField = generator.FieldDeclaration(DtoPrivateFieldName, SyntaxFactory.ParseTypeName(dtoClassName));
+            var dtoPrivateField =
+                generator.FieldDeclaration(DtoPrivateFieldName, SyntaxFactory.ParseTypeName(dtoClassName));
 
 
             //TODO: Алгоритм для обхода полей объекта
@@ -168,25 +165,27 @@ namespace ZenPlatform.DocumentComponent
                 {
                     var propType = prop.Types.First();
 
-                    if (propType is PObjectType objectProprty)
+                    if (propType is XCObjectTypeBase objectProprty)
                     {
-                        var propertyComponent = objectProprty.OwnerComponent;
+                        var propertyComponent = objectProprty.Parent;
 
-                        var propEnittyPreffix = propertyComponent.GetCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule).GetExpression();
-                        var propEntityPostfix = propertyComponent.GetCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule).GetExpression();
+                        var propEnittyPreffix = propertyComponent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule)
+                            .GetExpression();
+                        var propEntityPostfix = propertyComponent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule)
+                            .GetExpression();
 
-                        var getRule = propertyComponent.GetCodeRule(PGeneratedCodeRuleType.InForeignPropertyGetActionRule);
-                        var setRule = propertyComponent.GetCodeRule(PGeneratedCodeRuleType.InForeignPropertySetActionRule);
+                        var getRule = propertyComponent.GetCodeRule(CodeGenRuleType.InForeignPropertyGetActionRule);
+                        var setRule = propertyComponent.GetCodeRule(CodeGenRuleType.InForeignPropertySetActionRule);
 
                         var getExp = getRule.GetExpression().NamedFormat(new StandartGetExpressionParameters()
                         {
-                            ComponentName = propertyComponent.Name,
+                            ComponentSpace = propertyComponent.Info.ComponentSpaceName,
                             ObjectName = propType.Name,
                             Params = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref"
                         });
                         var setExp = setRule.GetExpression().NamedFormat(new StandartSetExpressionParameters()
                         {
-                            ComponentName = propertyComponent.Name,
+                            ComponentSpace = propertyComponent.Info.ComponentSpaceName,
                             SetVariable = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref",
                             ObjectName = propType.Name,
                             Params = "value"
@@ -213,18 +212,18 @@ namespace ZenPlatform.DocumentComponent
                         members.Add(csProperty);
                     }
 
-                    if (propType is PPrimetiveType primitiveType)
+                    if (propType is XCPremitiveType primitiveType)
                     {
                         var getAcessorStatement = new SyntaxNode[]
                         {
-                          SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.DatabaseColumnName};")
+                            SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.DatabaseColumnName};")
                         };
 
                         var setAcessorStatement = new SyntaxNode[]
-                          {
-                              SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.DatabaseColumnName} = value;"),
-                              SyntaxFactory.ParseStatement("OnPropertyChanged();")
-                    };
+                        {
+                            SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.DatabaseColumnName} = value;"),
+                            SyntaxFactory.ParseStatement("OnPropertyChanged();")
+                        };
 
                         var csProperty =
                             generator.PropertyDeclaration(
@@ -240,21 +239,22 @@ namespace ZenPlatform.DocumentComponent
                     bool alreadyHaveObjectTypeField = false;
                     foreach (var type in prop.Types)
                     {
-                        if (type is PObjectType && !alreadyHaveObjectTypeField)
+                        if (type is XCObjectTypeBase && !alreadyHaveObjectTypeField)
                         {
                             members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Ref", "Guid"));
                             members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_Type", "int"));
                             alreadyHaveObjectTypeField = true;
                         }
 
-                        if (type is PPrimetiveType primitiveType)
+                        if (type is XCPremitiveType primitiveType)
                             members.Add(GetPropertyWithEmptyAccessor($"{prop.DatabaseColumnName}_{primitiveType.Name}",
                                 primitiveType.CLRType.CSharpName()));
                     }
                 }
             }
 
-            var parameterList = SyntaxFactory.ParseParameterList($"[NotNull] {nameof(Session)} session, {dtoClassName} dto");
+            var parameterList =
+                SyntaxFactory.ParseParameterList($"[NotNull] {nameof(Session)} session, {dtoClassName} dto");
             var statementsParams = parameterList.Parameters.ToArray<SyntaxNode>();
             var baseConstructorArguments = SyntaxFactory.ArgumentList();
             baseConstructorArguments =
@@ -265,7 +265,8 @@ namespace ZenPlatform.DocumentComponent
                 SyntaxFactory.ParseStatement($"{DtoPrivateFieldName} = dto;")
             };
 
-            var constructor = generator.ConstructorDeclaration(null, statementsParams, Accessibility.Public, statements: statementsBody, baseConstructorArguments: baseConstructorArguments.Arguments);
+            var constructor = generator.ConstructorDeclaration(null, statementsParams, Accessibility.Public,
+                statements: statementsBody, baseConstructorArguments: baseConstructorArguments.Arguments);
 
 
             members.Insert(0, constructor);
@@ -275,40 +276,47 @@ namespace ZenPlatform.DocumentComponent
 
             var saveBody = new SyntaxNode[]
             {
-                SyntaxFactory.ParseStatement($"Session.{component.Name}().{conf.Name}.Save(this);")
+                SyntaxFactory.ParseStatement($"Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.Save(this);")
             };
-            var saveMethod = generator.MethodDeclaration("Save", statements: saveBody, accessibility: Accessibility.Public);
+            var saveMethod =
+                generator.MethodDeclaration("Save", statements: saveBody, accessibility: Accessibility.Public);
 
             var loadBody = new SyntaxNode[]
             {
-                SyntaxFactory.ParseStatement($"var key = Session.{component.Name}().{conf.Name}.GetKey(this);"),
-                SyntaxFactory.ParseStatement($"var entity = Session.{component.Name}().{conf.Name}.Load(key);"),
+                SyntaxFactory.ParseStatement(
+                    $"var key = Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.GetKey(this);"),
+                SyntaxFactory.ParseStatement(
+                    $"var entity = Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.Load(key);"),
                 SyntaxFactory.ParseStatement($"_dto = entity._dto;"),
             };
-            var loadMethod = generator.MethodDeclaration("Load", statements: loadBody, accessibility: Accessibility.Public);
+            var loadMethod =
+                generator.MethodDeclaration("Load", statements: loadBody, accessibility: Accessibility.Public);
 
             var deleteBody = new SyntaxNode[]
             {
-                SyntaxFactory.ParseStatement($"Session.{component.Name}().{conf.Name}.Delete(this);")
+                SyntaxFactory.ParseStatement(
+                    $"Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.Delete(this);")
             };
-            var deleteMethod = generator.MethodDeclaration("Delete", statements: deleteBody, accessibility: Accessibility.Public);
+            var deleteMethod =
+                generator.MethodDeclaration("Delete", statements: deleteBody, accessibility: Accessibility.Public);
 
             members.Add(saveMethod);
             members.Add(loadMethod);
             members.Add(deleteMethod);
+
             #endregion
 
-            var preffix = conf.OwnerComponent.GetCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule).GetExpression();
-            var postfix = conf.OwnerComponent.GetCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule).GetExpression();
+            var preffix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
+            var postfix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
 
             var classDefinition = generator.ClassDeclaration(
-                    $"{preffix}{conf.Name}{postfix}",
-                   typeParameters: null,
-                   accessibility: Accessibility.Public,
-                   modifiers: DeclarationModifiers.Partial,
-                   baseType: SyntaxFactory.ParseTypeName(nameof(DocumentEntity)),
-                   interfaceTypes: null,
-                   members: members) as MemberDeclarationSyntax;
+                $"{preffix}{conf.Name}{postfix}",
+                typeParameters: null,
+                accessibility: Accessibility.Public,
+                modifiers: DeclarationModifiers.Partial,
+                baseType: SyntaxFactory.ParseTypeName(nameof(DocumentEntity)),
+                interfaceTypes: null,
+                members: members) as MemberDeclarationSyntax;
 
 
             ns = ns.AddMembers(classDefinition);
@@ -360,7 +368,7 @@ namespace ZenPlatform.DocumentComponent
 
 
         /// <summary>
-        /// Метод для генерации интерфейса сущностей, привязанных к конмоменту
+        /// Метод для генерации интерфейса сущностей, привязанных к компоменту
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
@@ -371,7 +379,7 @@ namespace ZenPlatform.DocumentComponent
             var generator = SyntaxGenerator.GetGenerator(
                 workspace, LanguageNames.CSharp);
 
-            var nsRule = Component.GetCodeRule(PGeneratedCodeRuleType.NamespaceRule);
+            var nsRule = Component.GetCodeRule(CodeGenRuleType.NamespaceRule);
             var systemUsing = generator.NamespaceImportDeclaration("System");
             var coreUsing = generator.NamespaceImportDeclaration(nameof(ZenPlatform.Core));
 
@@ -389,31 +397,32 @@ namespace ZenPlatform.DocumentComponent
 
             var sessionProperty =
                 SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(nameof(Session)), "Session")
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
-                .WithAccessorList(
-                    SyntaxFactory.AccessorList().AddAccessors(
-                        SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))));
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                    .WithAccessorList(
+                        SyntaxFactory.AccessorList().AddAccessors(
+                            SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))));
 
             var interfaceClass = SyntaxFactory.ClassDeclaration("DocumentInterface")
                 .AddMembers(constructor as MemberDeclarationSyntax)
                 .AddMembers(sessionProperty)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
 
-            var preffix = Component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule);
-            var postfix = Component.GetCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule);
+            var preffix = Component.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule);
+            var postfix = Component.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule);
 
-            foreach (var componentObject in GetTypes<PDocumentObjectType>())
+            foreach (var obj in Component.Types)
             {
                 var getBody = SyntaxFactory.Block(
-                    SyntaxFactory.ParseStatement($"return new DocumentEntityManager<{preffix.GetExpression()}{componentObject.Name}{postfix.GetExpression()}>(Session);")
-                    );
+                    SyntaxFactory.ParseStatement(
+                        $"return new DocumentEntityManager<{preffix.GetExpression()}{obj.Name}{postfix.GetExpression()}>(Session);")
+                );
                 var getAccessor = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, getBody);
 
                 var componentProperty = SyntaxFactory.PropertyDeclaration(
-                    SyntaxFactory.ParseTypeName($"DocumentEntityManager<{preffix.GetExpression()}{componentObject.Name}{postfix.GetExpression()}>"),
-                    componentObject.Name).
-                    WithAccessorList(SyntaxFactory.AccessorList().AddAccessors(getAccessor))
+                        SyntaxFactory.ParseTypeName(
+                            $"DocumentEntityManager<{preffix.GetExpression()}{obj.Name}{postfix.GetExpression()}>"),
+                        obj.Name).WithAccessorList(SyntaxFactory.AccessorList().AddAccessors(getAccessor))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
 
                 interfaceClass = interfaceClass.AddMembers(componentProperty);
@@ -440,7 +449,7 @@ namespace ZenPlatform.DocumentComponent
             var generator = SyntaxGenerator.GetGenerator(
                 workspace, LanguageNames.CSharp);
 
-            var nsRule = Component.GetCodeRule(PGeneratedCodeRuleType.NamespaceRule);
+            var nsRule = Component.GetCodeRule(CodeGenRuleType.NamespaceRule);
             var usings = generator.NamespaceImportDeclaration("System");
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
@@ -473,13 +482,15 @@ namespace ZenPlatform.DocumentComponent
         {
             var result = new Dictionary<string, string>();
 
-            result.Add($"Extension{Component.Name}.cs", GenerateExtension().ToString());
-            result.Add($"Interface{Component.Name}.cs", GenerateInterface().ToString());
+            result.Add($"Extension{Component.Info.ComponentSpaceName}.cs", GenerateExtension().ToString());
+            result.Add($"Interface{Component.Info.ComponentSpaceName}.cs", GenerateInterface().ToString());
 
-            foreach (var componentObject in GetTypes<PDocumentObjectType>())
+            foreach (var obj in Component.Types)
             {
-                result.Add($"ComponentObject{componentObject.Name}Dto.cs", GenerateDtoClass(componentObject).ToString());
-                result.Add($"ComponentObject{componentObject.Name}Entity.cs", GenerateEntityClass(componentObject).ToString());
+                result.Add($"ComponentObject{obj.Name}Dto.cs",
+                    GenerateDtoClass(obj as Document).ToString());
+                result.Add($"ComponentObject{obj.Name}Entity.cs",
+                    GenerateEntityClass(obj as Document).ToString());
             }
 
             return result;
@@ -501,16 +512,16 @@ namespace ZenPlatform.DocumentComponent
                 workspace, LanguageNames.CSharp);
 
             var managerClass = SyntaxFactory.ClassDeclaration("ManagerExtension")
-                                    .WithModifiers(
-                                    SyntaxTokenList.Create(
-                                        SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                                        .Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword)));
+                .WithModifiers(
+                    SyntaxTokenList.Create(
+                            SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword)));
 
             var field = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("SomeType"), "SomeName")
                 .WithModifiers(
-                SyntaxTokenList.Create(
-                        SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword)));
+                    SyntaxTokenList.Create(
+                            SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword)));
 
             managerClass = managerClass.AddMembers(field);
 
@@ -518,8 +529,8 @@ namespace ZenPlatform.DocumentComponent
                 .AddUsings(GetStandartNamespaces().ToArray())
                 .AddMembers(managerClass).NormalizeWhitespace();
 
-            return generator.CompilationUnit(managerClass).NormalizeWhitespace(); ;
-
+            return generator.CompilationUnit(managerClass).NormalizeWhitespace();
+            ;
         }
 
         /*
@@ -560,6 +571,5 @@ namespace ZenPlatform.DocumentComponent
                         name).WithAccessorList(GetEmptyAccessor())
                     .WithModifiers(SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.PublicKeyword)));
         }
-
     }
 }

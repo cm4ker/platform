@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
+namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex
 {
     /// <summary>
     /// Описание типа компонента
@@ -29,10 +24,23 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
 
         [XmlIgnore] public XCComponent Parent => _parent;
 
+        [XmlIgnore] protected XCRoot Root => _parent.Root;
+
+        [XmlIgnore] protected XCData Data => Root.Data;
+
         XCComponent IChildItem<XCComponent>.Parent
         {
             get => _parent;
             set => _parent = value;
+        }
+
+        /// <summary>
+        /// Загрузить зависимости.
+        /// Внимание, этот метод вызывается после полной загрузки всех типов в конфигурации.
+        /// Поэтому в нём можно обращаться к Data.PlatformTypes 
+        /// </summary>
+        public virtual void LoadDependencies()
+        {
         }
     }
 }

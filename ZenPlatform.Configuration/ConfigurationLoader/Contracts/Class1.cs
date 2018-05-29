@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Text;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 
 //using ZenPlatform.Configuration.Data;
 
@@ -33,47 +34,17 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
     public interface IComponenConfigurationLoader
     {
         /// <summary>
-        /// Загружает тип компонента, так как загружаются теперь сами xml файлы, то мы должны в результате
-        /// лишь проверить все зависимости, после загрузки всех типов
+        /// Загрузить тип компонента
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="component"></param>
+        /// <param name="path">Путь до файла компонента</param>
         /// <returns></returns>
-        XCObjectTypeBase LoadComponentType(string path, XCComponent component);
+        XCObjectTypeBase LoadObject(string path);
 
         /// <summary>
-        /// Проверить зависимости типа.
-        /// В случае, если тип будет не найден, выбрасывается TypeNotFoundException
+        /// Загрузить правила компонента, необходимо для RLS
         /// </summary>
-        void CheckDependencies(XCObjectTypeBase type);
-
-        XmlConfTypeRuleBase LoadTypeRule(XCObjectTypeBase type, string xmlContent);
-
-//        /// <summary>
-//        /// Первичная загрузка xml файла конфигурации.
-//        /// Это касается только лишь типов. Т.е. мы не можем загрузить тип
-//        /// полностью, пока не прогрузим все типы, потому что тут могут быть циклические зависимости
-//        /// </summary>
-//        /// <param name="pathToXml"></param>
-//        /// <param name="component"></param>
-//        /// <returns></returns>
-//        IComponentType LoadComponentType(string pathToXml, PComponent component);
-//
-//        /// <summary>
-//        /// Загрузить зависимости для типа
-//        /// Поиск компонента будет осуществляться 
-//        /// </summary>
-//        /// <param name="pathToXml"></param>
-//        /// <param name="supportedObjects"></param>
-//        /// <returns></returns>
-//        IComponentType LoadComponentTypeDependencies(string pathToXml, List<IComponentType> supportedObjects);
-//
-//        /// <summary>
-//        /// Загрузить роль из контента
-//        /// </summary>
-//        /// <param name="obj">Объект, к которому прикрепляются правила</param>
-//        /// <param name="xmlContent">xml фрагмент, сериализованной роли в компоненте</param>
-//        /// <returns></returns>
-//        IRule LoadComponentRole(IComponentType obj, string xmlContent);
+        /// <param name="xml"></param>
+        /// <returns></returns>
+        XCDataRuleBase LoadRule(XCDataRuleContent content);
     }
 }

@@ -8,26 +8,27 @@ using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
-using ZenPlatform.Configuration.Data;
-using ZenPlatform.Configuration.Data.Types.Complex;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 using ZenPlatform.Configuration.Exceptions;
 
 namespace ZenPlatform.DataComponent.Configuration
 {
-    public abstract class ConfigurationLoaderBase
-        <TXmlConf, TPObjectType, TPObjectProperty>
-        : IComponenConfigurationLoader
-        where TXmlConf : XCObjectTypeBase
-        where TPObjectType : PObjectType, IComponentType
-        where TPObjectProperty : PProperty
+    public abstract class ConfigurationLoaderBase<TObjectType> : IComponenConfigurationLoader
+        where TObjectType : XCObjectTypeBase
     {
-        protected TXmlConf GetConf(string pathToXml)
+        /// <summary>
+        /// Загрузить компонент возвращает загруженный компонент
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        protected virtual TObjectType LoadObjectAction(string path)
         {
-            using (var sr = new StreamReader(pathToXml))
+            using (var sr = new StreamReader(path))
             {
-                var s = new XmlSerializer(typeof(TXmlConf));
+                var s = new XmlSerializer(typeof(TObjectType));
 
-                var conf = s.Deserialize(sr) as TXmlConf ?? throw new InvalidLoadConfigurationException(pathToXml);
+                var conf = s.Deserialize(sr) as TObjectType ?? throw new InvalidLoadConfigurationException(path);
 
                 if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
                 if (conf.Id == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
@@ -36,44 +37,19 @@ namespace ZenPlatform.DataComponent.Configuration
             }
         }
 
-        public XCObjectTypeBase LoadComponentType(string path)
-        {
-            return GetConf(path);
-        }
-
-        [Obsolete]
-        public IComponentType LoadComponentType(string pathToXml, PComponent component)
-        {
-            var conf = GetConf(pathToXml);
-            return CreateNewComponentType(component, conf);
-        }
-
-        [Obsolete]
-        protected abstract IComponentType CreateNewComponentType(PComponent component, TXmlConf conf);
-
-        [Obsolete]
-        public virtual IComponentType LoadComponentTypeDependencies(string pathToXml,
-            List<IComponentType> supportedObjects)
-        {
-            var conf = GetConf(pathToXml);
-            var objectType = supportedObjects.Find(x => x.Id == conf.Id) as TPObjectType;
-
-            if (objectType is null) throw new InvalidOperationException();
-
-            RelsolveDependencies(objectType, conf, supportedObjects);
-
-            return objectType;
-        }
-
-        [Obsolete]
-        protected virtual void RelsolveDependencies(TPObjectType obj, TXmlConf conf, List<IComponentType> anotherDeps)
-        {
-        }
-
-        [Obsolete]
-        public virtual IRule LoadComponentRole(IComponentType obj, string xmlContent)
+        protected virtual XCDataRuleBase LoadRuleAction(XCDataRuleContent content)
         {
             throw new NotImplementedException();
+        }
+
+        public XCObjectTypeBase LoadObject(string path)
+        {
+            return LoadObjectAction(path);
+        }
+
+        public XCDataRuleBase LoadRule(XCDataRuleContent content)
+        {
+            return LoadRuleAction(content);
         }
     }
 }

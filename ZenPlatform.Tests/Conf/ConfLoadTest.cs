@@ -21,7 +21,7 @@ namespace ZenPlatform.Tests.Conf
         [TestMethod]
         public void RootLoad()
         {
-            var conf = XmlConfRoot.Load(Path.Combine(ConfigurationPath, "Project1.xml"));
+            var conf = XCRoot.Load(Path.Combine(ConfigurationPath, "Project1.xml"));
 
             //using (var tr = new StreamReader(Path.Combine(ConfigurationPath, "Project1.xml")))
             //{
@@ -29,7 +29,7 @@ namespace ZenPlatform.Tests.Conf
             //    var result = (XmlConfRoot)serializer.Deserialize(tr);
 
             Assert.AreNotEqual(null, conf);
-            Assert.AreEqual(typeof(XmlConfRoot), conf.GetType());
+            Assert.AreEqual(typeof(XCRoot), conf.GetType());
 
             Assert.AreEqual("Управление библиотекой", conf.ProjectName);
             Assert.AreEqual("0.0.0.1 Alpha", conf.ProjectVersion);
