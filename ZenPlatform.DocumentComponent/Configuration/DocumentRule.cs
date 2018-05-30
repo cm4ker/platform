@@ -6,7 +6,7 @@ namespace ZenPlatform.DocumentComponent.Configuration
     [XmlRoot("DocumentRule")]
     public class DocumentRule : XCDataRuleBase
     {
-        public DocumentRule(XCDataRuleContent content) : base(content)
+        public DocumentRule()
         {
         }
 

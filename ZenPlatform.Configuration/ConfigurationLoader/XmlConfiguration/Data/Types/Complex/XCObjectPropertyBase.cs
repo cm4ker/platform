@@ -11,42 +11,55 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
     /// </summary>
     public abstract class XCObjectPropertyBase
     {
+        protected XCObjectPropertyBase()
+        {
+            Types = new List<XCTypeBase>();
+            Id = Guid.NewGuid();
+        }
+
         /// <summary>
         /// Уникальный идентификатор свойства
         /// </summary>
-        [XmlAttribute] public Guid Id { get; set; }
+        [XmlAttribute]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Указывает на то, является ли поле системным.
         /// Системные поля нельзя удалить напрямую, нельзя редактировать.
         /// На них можно лишь воздействовать через какие-нибудь другие свойства
         /// </summary>
-        [XmlAttribute] public bool IsSystemProperty { get; set; }
+        [XmlAttribute]
+        public bool IsSystemProperty { get; set; }
 
         /// <summary>
         /// Вид даты (только для числовых типов)
         /// </summary>
-        [XmlAttribute] public XCDateCaseType DateCase { get; set; }
+        [XmlAttribute]
+        public XCDateCaseType DateCase { get; set; }
 
         /// <summary>
         /// Псевдоним в системе
         /// </summary>
-        [XmlAttribute] public string Alias { get; set; }
+        [XmlAttribute]
+        public string Alias { get; set; }
 
         /// <summary>
         /// Длина только для Двоичных\Числовых\Строковых данных
         /// </summary>
-        [XmlAttribute] public int Length { get; set; }
+        [XmlAttribute]
+        public int Length { get; set; }
 
         /// <summary>
         /// Точность, только для числовых типов
         /// </summary>
-        [XmlAttribute] public int Precision { get; set; }
+        [XmlAttribute]
+        public int Precision { get; set; }
 
         /// <summary>
         /// Уникальность, только для ключевых полей
         /// </summary>
-        [XmlAttribute] public bool Unique { get; set; }
+        [XmlAttribute]
+        public bool Unique { get; set; }
 
         [XmlArray]
         [XmlArrayItem(ElementName = "Type")]
@@ -57,6 +70,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         /// </summary>
         [XmlAttribute]
         public string DatabaseColumnName { get; set; }
+
         /*
          * DatabaseColumnName = Fld_035
          * |Fld_035_TypeId|Fld_035_TypeRef|Fld_035_Binary|Fld_035_Guid|Fld_035_Int|Fld_035_DateTime|Fld_035_String
@@ -73,6 +87,5 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
          *      В таком случае на каждый тип отводится своя колонка. Биндинг должен осуществляться таким
          *      не хитрым мапированием: Свойство, Тип -> Колонка
          */
-
     }
 }
