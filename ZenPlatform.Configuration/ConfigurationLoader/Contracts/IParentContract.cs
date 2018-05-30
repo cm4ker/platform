@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
@@ -20,7 +23,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
     /// </summary>
     /// <typeparam name="TParent">Type of the parent object</typeparam>
     /// <typeparam name="TChildren">Type of the child items</typeparam>
-    public class ChildItemCollection<TParent, TChildren> : IList<TChildren>
+    public class ChildItemCollection<TParent, TChildren> : IList<TChildren>, INotifyCollectionChanged, INotifyPropertyChanged
         where TParent : class
         where TChildren : IChildItem<TParent>
     {
@@ -52,6 +55,8 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
             if (item != null)
                 item.Parent = _parent;
             _collection.Insert(index, item);
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
         public void RemoveAt(int index)
@@ -60,6 +65,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
             _collection.RemoveAt(index);
             if (oldItem != null)
                 oldItem.Parent = null;
+
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { oldItem }));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
         public TChildren this[int index]
@@ -76,6 +84,10 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
                 _collection[index] = value;
                 if (oldItem != null)
                     oldItem.Parent = null;
+
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new[] { value }, new[] { oldItem }));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
+
             }
         }
 
@@ -88,6 +100,8 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
             if (item != null)
                 item.Parent = _parent;
             _collection.Add(item);
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
         public void Clear()
@@ -97,7 +111,10 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
                 if (item != null)
                     item.Parent = null;
             }
+            var oldItems = _collection.ToArray();
             _collection.Clear();
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
         public bool Contains(TChildren item)
@@ -108,6 +125,8 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         public void CopyTo(TChildren[] array, int arrayIndex)
         {
             _collection.CopyTo(array, arrayIndex);
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, array, arrayIndex));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
         public int Count
@@ -125,6 +144,8 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
             bool b = _collection.Remove(item);
             if (item != null)
                 item.Parent = null;
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { item }));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
             return b;
         }
 
@@ -147,6 +168,10 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         }
 
         #endregion
+
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
 }

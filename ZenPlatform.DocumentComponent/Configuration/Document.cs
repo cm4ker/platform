@@ -1,4 +1,8 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 
@@ -7,17 +11,61 @@ namespace ZenPlatform.DocumentComponent.Configuration
     [XmlRoot("Document")]
     public class Document : XCObjectTypeBase
     {
+        private bool _canBePosted;
+
         public Document()
         {
             Properties = new ChildItemCollection<Document, DocumentProperty>(this);
+            Properties.CollectionChanged += Properties_CollectionChanged;
         }
 
+        private void Properties_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                for (int i = 0; i < Properties.Count - 1; i++)
+                {
+                    for (int j = i + 1; j < Properties.Count; j++)
+                    {
+                        var mailElement = Properties[i];
+                        var compareElement = Properties[j];
+
+                        if (mailElement.Alias.Equals(compareElement.Alias)
+                            || mailElement.DatabaseColumnName.Equals(compareElement.DatabaseColumnName))
+                        {
+                            throw new Exception("Свойства не целостны");
+                        }
+                    }
+                }
+            }
+        }
 
         [XmlElement] public bool UseNumaration { get; set; }
 
         [XmlElement] public string NumericPattern { get; set; }
 
-        [XmlElement] public bool CanBePosted { get; set; }
+        /// <summary>
+        /// Имеет ли документ силу или нет
+        /// </summary>
+        [XmlElement]
+        public bool CanBePosted
+        {
+            get => _canBePosted;
+            set
+            {
+                _canBePosted = value;
+
+                var prop = Properties.FirstOrDefault(x => x.Alias == "Posted");
+                if (value && prop is null)
+                {
+                    Properties.Add(StandartDocumentPropertyHelper.CreatePostedProperty());
+                }
+                if (!value)
+                {
+                    Properties.Remove(prop);
+                }
+            }
+        }
 
         [XmlArray]
         [XmlArrayItem(ElementName = "Property", Type = typeof(DocumentProperty))]

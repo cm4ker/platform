@@ -5,14 +5,10 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Ty
 {
     public class XCGuid : XCPremitiveType
     {
-        public override Guid Id
-        {
-            get
-            {
-                return new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 4);
-            }
-        }
+        public override int Id => 4;
 
+        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 4);
+        
         public override string Name
         {
             get { return "Guid"; }

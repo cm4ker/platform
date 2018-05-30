@@ -41,6 +41,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Ty
         /// </summary>
         public virtual void LoadDependencies()
         {
+
         }
     }
 }
