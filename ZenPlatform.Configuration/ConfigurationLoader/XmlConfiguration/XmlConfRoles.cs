@@ -29,8 +29,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
             {
                 var role = XmlConfHelper.DeserializeFromFile<XCRole>(Path.Combine(XmlConfHelper.BaseDirectory,
                     includedFile.Path));
-
                 Items.Add(role);
+
+                role.Load();
             }
         }
 

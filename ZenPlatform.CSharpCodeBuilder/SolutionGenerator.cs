@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-
-using System.Composition;
-using System.Composition.Hosting;
-using System.Composition.Hosting.Core;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Xml.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Host.Mef;
-using ZenPlatform.Configuration.Data;
 using ZenPlatform.Core.Entity;
-
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 
 namespace ZenPlatform.CSharpCodeBuilder
 {
@@ -22,7 +12,7 @@ namespace ZenPlatform.CSharpCodeBuilder
     {
         private const string folderName = "generated";
 
-        public void Generate(EntityGeneratorBase generator, PComponent component)
+        public void Generate(EntityGeneratorBase generator, XCComponent component)
         {
             //TODO : Необходимо сделать единую точку входа для генерации файлов
             /*
@@ -76,20 +66,15 @@ namespace ZenPlatform.CSharpCodeBuilder
 
     public class AddFilesToProject : Task
     {
-        [Required]
-        public string ProjectPath { get; set; }
+        [Required] public string ProjectPath { get; set; }
 
-        [Required]
-        public string FilePath { get; set; }
+        [Required] public string FilePath { get; set; }
 
-        [Required]
-        public string BinPath { get; set; }
+        [Required] public string BinPath { get; set; }
 
-        [Required]
-        public string HooksPath { get; set; }
+        [Required] public string HooksPath { get; set; }
 
-        [Required]
-        public string ProjectDir { get; set; }
+        [Required] public string ProjectDir { get; set; }
 
 
         /// <summary>
@@ -100,7 +85,6 @@ namespace ZenPlatform.CSharpCodeBuilder
         /// </returns>
         public override bool Execute()
         {
-
             try
             {
                 var binRelative = BinPath.Replace(ProjectDir + "\\", "");
@@ -142,18 +126,21 @@ namespace ZenPlatform.CSharpCodeBuilder
                     item.SetAttributeValue("Include", binRelative);
                     if (itemGroup != null) itemGroup.Add(item);
                 }
+
                 if (!foundHooks)
                 {
                     XElement item = new XElement(ns + "Compile");
                     item.SetAttributeValue("Include", hooksRelative);
                     if (itemGroup != null) itemGroup.Add(item);
                 }
+
                 if (!foundFile)
                 {
                     XElement item = new XElement(ns + "Compile");
                     item.SetAttributeValue("Include", fileRelative);
                     if (itemGroup != null) itemGroup.Add(item);
                 }
+
                 if (!foundBin || !foundHooks || !foundFile)
                 {
                     document.Save(ProjectPath);

@@ -20,7 +20,6 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
             DataRules = new ChildItemCollection<XCRole, XCDataRuleContent>(this);
         }
 
-
         [XmlElement] public Guid Id { get; set; }
 
         [XmlElement] public string Name { get; set; }
@@ -48,43 +47,22 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
             get => _parent;
             set => _parent = value;
         }
-    }
 
-    /// <summary>
-    /// Правла для роли на уровне платформы
-    /// Эти правила общедоступны
-    /// </summary>
-    public class XCPlatformRule : IChildItem<XCRole>
-    {
-        private XCRole _parent;
-
-        [XmlElement] public bool IsDataAdministrator { get; set; }
-
-        [XmlElement] public bool CanUpdateDatabase { get; set; }
-
-        [XmlElement] public bool CanMonopolisticMode { get; set; }
-
-        [XmlElement] public bool IsActiveUser { get; set; }
-
-        [XmlElement] public bool CanActionLogView { get; set; }
-
-        [XmlElement] public bool CanUseThinClient { get; set; }
-
-        [XmlElement] public bool CanUseWebClient { get; set; }
-
-        [XmlElement] public bool CanUseExternalConnection { get; set; }
-
-        [XmlElement] public bool CanOpenExternalModules { get; set; }
-
-        [XmlIgnore] public XCRole Parent => _parent;
-
-        XCRole IChildItem<XCRole>.Parent
+        internal void Load()
         {
-            get => _parent;
-            set => _parent = value;
+            foreach (var dataRule in DataRules)
+            {
+                dataRule.Load();
+            }
         }
     }
 
+    /// <summary>
+    /// Контент, содержащий в себе правила.
+    /// Служит премежуточным звеном между правилами компонента и конфигурацией
+    ///
+    /// Это сделано для того, чтобы абстрогировать правила от компонента и предоставить единый интерфейс
+    /// </summary>
     public class XCDataRuleContent : IChildItem<XCRole>
     {
         private XCRole _parent;
@@ -101,19 +79,23 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         public string Content
         {
             get => Rule?.Serialize();
-            set
-            {
-                _content = value;
-                Rule = Object?.Parent?.Loader?.LoadRule(this);
-            }
+            set { _content = value; }
         }
 
-        [XmlIgnore] public XCDataRuleBase Rule { get; private set; }
+        [XmlIgnore] public string RealContent => _content;
+
+        /// <summary>
+        /// Привязанная роль к контенту
+        /// </summary>
+        [XmlIgnore]
+        public XCDataRuleBase Rule { get; private set; }
 
         /// <summary>
         /// Объект к которому принадлежит правило
         /// </summary>
-        public XCObjectTypeBase Object => Role.Root.Data.PlatformTypes.First(x => x.Guid == ObjectId) as XCObjectTypeBase;
+        [XmlIgnore]
+        public XCObjectTypeBase Object =>
+            Role.Root.Data.PlatformTypes.First(x => x.Guid == ObjectId) as XCObjectTypeBase;
 
         [XmlIgnore] public XCRole Role => _parent;
 
@@ -121,19 +103,29 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         XCRole IChildItem<XCRole>.Parent
         {
             get => _parent;
-            set => _parent = value;
+            set { _parent = value; }
+        }
+
+        public void Load()
+        {
+            Rule = Object.Parent.Loader.LoadRule(this);
         }
     }
 
-    public class XCDataRuleBase
+    public class XCDataRuleBase : IChildItem<XCDataRuleContent>
     {
-        private readonly XCDataRuleContent _content;
+        private XCDataRuleContent _parent;
 
-        public XCDataRuleBase(XCDataRuleContent content)
+        public XCDataRuleBase()
         {
-            _content = content;
         }
 
-        internal XCDataRuleContent Parent => _content;
+        public XCDataRuleContent Parent => _parent;
+
+        XCDataRuleContent IChildItem<XCDataRuleContent>.Parent
+        {
+            get => _parent;
+            set => _parent = value;
+        }
     }
 }

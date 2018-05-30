@@ -49,6 +49,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         public void LoadComponent()
         {
             FileInfo fi = new FileInfo(Path.Combine(XmlConfHelper.BaseDirectory, this.File.Path));
+
+            if (!fi.Exists) throw new FileNotFoundException(fi.FullName);
+
             ComponentAssembly = Assembly.LoadFile(fi.FullName);
 
             var typeInfo = ComponentAssembly.GetTypes().FirstOrDefault(x => x.BaseType == typeof(ComponentInformation));

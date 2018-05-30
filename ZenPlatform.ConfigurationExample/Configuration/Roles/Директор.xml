@@ -34,9 +34,9 @@
         <ConsoleAccess>true</ConsoleAccess>
     </PlatformRules>
     <DataRules>
-        <Rule ObjectId="1cacb030-db55-48b6-99be-4884dfe189b7">
+        <Rule ObjectId="351badbe-7887-4c1e-900c-4907dc0c2905">
             <Content>
-                <![CDATA["<DocumentRule>
+                <![CDATA[<DocumentRule>
                       <!-- Позволять роли читать данные -->
                       <AllowRead>true</AllowRead>
 
@@ -54,7 +54,7 @@
 
                       <!-- Позволять роли обновлять данные -->
                       <AllowUpdate>true</AllowUpdate>
-                    </DocumentRule>"]]>
+                    </DocumentRule>]]>
             </Content>
         </Rule>
     </DataRules>

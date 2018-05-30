@@ -5,7 +5,6 @@ using System.Linq;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
-using ZenPlatform.Configuration.Data;
 
 namespace ZenPlatform.Core.Entity
 {

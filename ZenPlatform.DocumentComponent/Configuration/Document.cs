@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
@@ -19,7 +20,8 @@ namespace ZenPlatform.DocumentComponent.Configuration
             Properties.CollectionChanged += Properties_CollectionChanged;
         }
 
-        private void Properties_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Properties_CollectionChanged(object sender,
+            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
@@ -30,10 +32,19 @@ namespace ZenPlatform.DocumentComponent.Configuration
                         var mailElement = Properties[i];
                         var compareElement = Properties[j];
 
-                        if (mailElement.Alias.Equals(compareElement.Alias)
-                            || mailElement.DatabaseColumnName.Equals(compareElement.DatabaseColumnName))
+                        try
                         {
-                            throw new Exception("Свойства не целостны");
+                            if (mailElement.Alias == compareElement.Alias
+                                || (!string.IsNullOrEmpty(mailElement.DatabaseColumnName)
+                                    && !string.IsNullOrEmpty(compareElement.DatabaseColumnName)
+                                    && mailElement.DatabaseColumnName == compareElement.DatabaseColumnName))
+                            {
+                                throw new Exception("Свойства не целостны");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Write("Error");
                         }
                     }
                 }
@@ -60,6 +71,7 @@ namespace ZenPlatform.DocumentComponent.Configuration
                 {
                     Properties.Add(StandartDocumentPropertyHelper.CreatePostedProperty());
                 }
+
                 if (!value)
                 {
                     Properties.Remove(prop);
