@@ -113,7 +113,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         /// <summary>
         /// Объект к которому принадлежит правило
         /// </summary>
-        public XCObjectTypeBase Object => Role.Root.Data.PlatformTypes.First(x => x.Id == ObjectId) as XCObjectTypeBase;
+        public XCObjectTypeBase Object => Role.Root.Data.PlatformTypes.First(x => x.Guid == ObjectId) as XCObjectTypeBase;
 
         [XmlIgnore] public XCRole Role => _parent;
 

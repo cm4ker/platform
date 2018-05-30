@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 
 namespace ZenPlatform.ApplicationServer
 {
@@ -10,18 +11,9 @@ namespace ZenPlatform.ApplicationServer
     {
         static void Main()
         {
-            var s = new XmlSerializer(typeof(XmlData));
 
-            using (var sw = new StringWriter())
-            {
-                s.Serialize(sw, new XmlData() {Content = "Test"});
-                Console.WriteLine(sw.ToString());
-            }
-
-            Console.ReadKey();
         }
     }
-
 
     [XmlType(AnonymousType = true)]
     public class XmlData

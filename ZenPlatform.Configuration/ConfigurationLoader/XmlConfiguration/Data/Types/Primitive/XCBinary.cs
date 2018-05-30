@@ -5,10 +5,10 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Ty
 {
     public class XCBinary : XCPremitiveType
     {
-        public override Guid Id
-        {
-            get { return new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 10); }
-        }
+        public override int Id => 1;
+
+        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 1);
+
 
         public override string Name
         {
@@ -26,9 +26,6 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Ty
             get { return DBType.Binary; }
         }
 
-        public override Type CLRType
-        {
-            get { return typeof(byte[]); }
-        }
+        public override Type CLRType => (IsNullable) ? typeof(byte?[]) : typeof(byte[]);
     }
 }

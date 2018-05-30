@@ -31,7 +31,7 @@ namespace ZenPlatform.DataComponent.Configuration
                 var conf = s.Deserialize(sr) as TObjectType ?? throw new InvalidLoadConfigurationException(path);
 
                 if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
-                if (conf.Id == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
+                if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
 
                 return conf;
             }

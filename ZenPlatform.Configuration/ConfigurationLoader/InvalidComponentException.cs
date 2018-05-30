@@ -105,6 +105,9 @@
 
 using System;
 
-public class InvalidComponentException : Exception
+namespace ZenPlatform.Configuration.ConfigurationLoader
 {
+    public class InvalidComponentException : Exception
+    {
+    }
 }
