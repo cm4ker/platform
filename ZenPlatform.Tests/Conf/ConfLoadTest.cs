@@ -37,8 +37,8 @@ namespace ZenPlatform.Tests.Conf
 
             Assert.IsNotNull(conf.Data.Components);
 
-//            Assert.AreEqual(5, conf.Data.Components.Count);
-//            Assert.AreEqual(9, conf.Data.IncludedFiles.Count);
+            //Assert.AreEqual(5, conf.Data.Components.Count);
+            //Assert.AreEqual(9, conf.Data.IncludedFiles.Count);
 
             //var tableComponent = result.Data.Components.Find(x => x.Name == "Table");
 
@@ -56,6 +56,5 @@ namespace ZenPlatform.Tests.Conf
 //            ConfigurationLoader cl = new ConfigurationLoader(Path.Combine(ConfigurationPath, "Project1.xml"));
 //            var root = cl.Load();
         }
-
     }
 }
