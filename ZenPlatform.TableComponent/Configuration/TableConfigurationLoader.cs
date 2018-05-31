@@ -11,7 +11,7 @@ namespace ZenPlatform.TableComponent.Configuration
     {
         protected override IComponentType CreateNewComponentType(PComponent component, XmlConfTable conf)
         {
-            return new PTableObjectType(conf.Name, conf.Id, component);
+            return new PTableObjectType(conf.Name, conf.Guid, component);
         }
     }
 

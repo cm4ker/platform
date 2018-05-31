@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 
 namespace ZenPlatform.DocumentComponent.Configuration.XmlConfiguration
 {
     [XmlRoot("Table")]
-    public class XmlConfTable : XmlConfComponentBase
+    public class XmlConfTable : XCObjectTypeBase
     {
       
         [XmlElement]
@@ -22,7 +23,7 @@ namespace ZenPlatform.DocumentComponent.Configuration.XmlConfiguration
 
     }
 
-    public class XmlConfTableProperty : XmlConfComponentPropertyBase
+    public class XmlConfTableProperty : XCObjectPropertyBase
     {
     }
 }

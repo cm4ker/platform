@@ -4,24 +4,19 @@ using System.ComponentModel;
 using System.Linq;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.Data;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 
 namespace ZenPlatform.Core.Entity
 {
     public abstract class EntityGeneratorBase
     {
-        protected EntityGeneratorBase(PComponent component)
+        protected EntityGeneratorBase(XCComponent component)
         {
             Component = component;
         }
 
 
-        protected PComponent Component { get; }
-
-        protected IEnumerable<T> GetTypes<T>() where T : IComponentType
-        {
-            return Component.Configuration.Data.Types.Where(x => x is T).Cast<T>();
-        }
+        protected XCComponent Component { get; }
 
         /// <summary>
         /// Префикс объектов DTO, необходим для внутренних нужд класса
@@ -39,9 +34,9 @@ namespace ZenPlatform.Core.Entity
         /// Получить правило именования постфикса для сущности
         /// </summary>
         /// <returns></returns>
-        public virtual PGeneratedCodeRule GetEntityClassPostfixRule()
+        public virtual CodeGenRule GetEntityClassPostfixRule()
         {
-            return new PGeneratedCodeRule(PGeneratedCodeRuleType.EntityClassPostfixRule, "");
+            return new CodeGenRule(CodeGenRuleType.EntityClassPostfixRule, "");
         }
 
 
@@ -49,28 +44,30 @@ namespace ZenPlatform.Core.Entity
         /// Получить правило именования префикса для сущности
         /// </summary>
         /// <returns></returns>
-        public virtual PGeneratedCodeRule GetEntityClassPrefixRule()
+        public virtual CodeGenRule GetEntityClassPrefixRule()
         {
-            return new PGeneratedCodeRule(PGeneratedCodeRuleType.EntityClassPrefixRule, "");
+            return new CodeGenRule(CodeGenRuleType.EntityClassPrefixRule, "");
         }
 
-        public virtual PGeneratedCodeRule GetInForeignPropertySetActionRule()
+        public virtual CodeGenRule GetInForeignPropertySetActionRule()
         {
-            return new PGeneratedCodeRule(PGeneratedCodeRuleType.InForeignPropertySetActionRule, null);
+            return new CodeGenRule(CodeGenRuleType.InForeignPropertySetActionRule, null);
             //Obsolete
-            throw new Exception("This object type can't be a foreign property. You must exclude this prop type from object. Look at stack trace for object name.");
+            throw new Exception(
+                "This object type can't be a foreign property. You must exclude this prop type from object. Look at stack trace for object name.");
         }
 
-        public virtual PGeneratedCodeRule GetInForeignPropertyGetActionRule()
+        public virtual CodeGenRule GetInForeignPropertyGetActionRule()
         {
-            return new PGeneratedCodeRule(PGeneratedCodeRuleType.InForeignPropertyGetActionRule, null);
+            return new CodeGenRule(CodeGenRuleType.InForeignPropertyGetActionRule, null);
             //Obsolete
-            throw new Exception("This object type can't be a foreign property. You must exclude this prop type from object. Look at stack trace for object name.");
+            throw new Exception(
+                "This object type can't be a foreign property. You must exclude this prop type from object. Look at stack trace for object name.");
         }
 
-        public virtual PGeneratedCodeRule GetNamespaceRule()
+        public virtual CodeGenRule GetNamespaceRule()
         {
-            return new PGeneratedCodeRule(PGeneratedCodeRuleType.NamespaceRule, "DefaultNamespace");
+            return new CodeGenRule(CodeGenRuleType.NamespaceRule, "DefaultNamespace");
         }
 
         /// <summary>
@@ -125,6 +122,5 @@ namespace ZenPlatform.Core.Entity
 
     public class PublicMethodDefinition
     {
-
     }
 }

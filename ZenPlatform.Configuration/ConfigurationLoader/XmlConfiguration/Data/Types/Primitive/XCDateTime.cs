@@ -1,18 +1,13 @@
 using System;
-using System.Data;
 using DbType = ZenPlatform.QueryBuilder.Schema.DBType;
 
-namespace ZenPlatform.Configuration.Data
+namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive
 {
-    public class PDateTime : PPrimetiveType
+    public class XCDateTime : XCPremitiveType
     {
-        public override Guid Id
-        {
-            get
-            {
-                return new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 3);
-            }
-        }
+        public override int Id => 3;
+
+        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 3);
 
         public override string Name
         {

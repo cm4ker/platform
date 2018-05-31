@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ZenPlatform.Configuration.Data.Types.Complex;
 
 namespace ZenPlatform.DataComponent
 {

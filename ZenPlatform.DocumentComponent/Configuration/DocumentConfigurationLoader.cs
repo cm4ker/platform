@@ -1,32 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
-using ZenPlatform.Configuration.Data;
-using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.DataComponent.Configuration;
-using ZenPlatform.DocumentComponent.Configuration.XmlConfiguration;
 
 namespace ZenPlatform.DocumentComponent.Configuration
 {
-    public class DocumentConfigurationLoader : ConfigurationLoaderBase
-        <XmlConfDocument, PDocumentObjectType, PDocumentObjectProperty>
+    public class DocumentConfigurationLoader : ConfigurationLoaderBase<Document>
     {
-        protected override IComponentType CreateNewComponentType(PComponent component, XmlConfDocument conf)
+        protected override Document LoadObjectAction(string path)
         {
-            return new PDocumentObjectType(conf.Name, conf.Id, component);
+            using (var sr = new StreamReader(path))
+            {
+                var ser = new XmlSerializer(typeof(Document));
+                return ser.Deserialize(sr) as Document ?? throw new Exception();
+            }
         }
 
-
-        public override IRule LoadComponentRole(IComponentType obj, string xmlContent)
+        protected override XCDataRuleBase LoadRuleAction(XCDataRuleContent content)
         {
-            var docRule = xmlContent.Deserialize<XmlConfDocumentRule>();
-            
-            return new DefaultObjectRule(obj.Id, obj.OwnerComponent);
+            using (var sr = new StringReader(content.RealContent))
+            {
+                var ser = new XmlSerializer(typeof(DocumentRule));
+                var rule = ser.Deserialize(sr) as DocumentRule ?? throw new Exception();
+
+                ((IChildItem<XCDataRuleContent>) rule).Parent = content;
+
+                return rule;
+            }
         }
     }
-
 }
