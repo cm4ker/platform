@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
 {
-    public class XmlConfAttach
+    public class XCAttach
     {
         [XmlAttribute]
         public XmlConfRefMode Mode { get; set; }

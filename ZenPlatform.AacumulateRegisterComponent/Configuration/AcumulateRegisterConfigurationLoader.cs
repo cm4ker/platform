@@ -16,7 +16,7 @@ namespace ZenPlatform.AcumulateRegisterComponent.Configuration
     {
         protected override IComponentType CreateNewComponentType(PComponent component, XmlConfAcumulateRegister conf)
         {
-            return new PAcumulateRegisterObjectType(conf.Name, conf.Id, component);
+            return new PAcumulateRegisterObjectType(conf.Name, conf.Guid, component);
         }
 
         protected override void RelsolveDependencies(PAcumulateRegisterObjectType obj, XmlConfAcumulateRegister conf, List<IComponentType> anotherDeps)

@@ -74,6 +74,11 @@ namespace ZenPlatform.QueryBuilder
             return new DBSelectField(owner, quotedObject, alias);
         }
 
+        public static DBParameter CreateParameter(string name)
+        {
+            return new DBParameter(name);
+        }
+
         public static DBParameter CreateParameter(string name, DBType type)
         {
             return new DBParameter(name, type);

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ZenPlatform.Configuration
 {
-    public enum PGeneratedCodeRuleType
+    public enum CodeGenRuleType
     {
         /// <summary>
         /// Префикс класса
@@ -53,21 +53,21 @@ namespace ZenPlatform.Configuration
         NamespaceRule
     }
 
-    public class PGeneratedCodeRule
+    public class CodeGenRule
     {
         private readonly string _expression;
 
-        public PGeneratedCodeRule(PGeneratedCodeRuleType type, string expression)
+        public CodeGenRule(CodeGenRuleType type, string expression)
         {
             Type = type;
             _expression = expression;
         }
 
-        public PGeneratedCodeRuleType Type { get; }
+        public CodeGenRuleType Type { get; }
 
         public string GetExpression()
         {
-            if (_expression is null) throw new Exception("This GenerationCodeType not implemented");
+            if (_expression is null) throw new NotImplementedException();
             return _expression;
         }
     }
