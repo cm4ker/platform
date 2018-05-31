@@ -4,6 +4,11 @@ using System.Threading;
 
 namespace ZenPlatform.Data
 {
+    /// <summary>
+    /// Менеджер контекста данных
+    /// Позволяет получить доступ к данным
+    /// Клиент может получить доступ к контексту
+    /// </summary>
     public class DataContextManger
     {
         private Dictionary<int, DataContext> _contexts;
@@ -13,20 +18,24 @@ namespace ZenPlatform.Data
             _contexts = new Dictionary<int, DataContext>();
         }
 
+        /// <summary>
+        /// Получить контекст данных.
+        /// Внимание, на каждый поток выдаётся отдельный контекст данных.
+        /// Так что транзакция обязана выполниться в одном потоке.
+        /// </summary>
+        /// <returns></returns>
         public DataContext GetContext()
         {
-            if (_contexts.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var context))
+            if (!_contexts.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var context))
             {
-                return context;
-            }
-            else
-            {
-                //TODO: Необходимо, чтобы на уровене платформы была какая-то конфигурация, откуда можно было бы взять connectionString
-                //DefaultPath, TimeOuts, ConnectionCount и так далее.
+                //TODO: Брать connection string и файла конфигурации
+                context =
+                    new DataContext("Data source=(local);Initial catalog=TestDatabase; Integrated security=true;");
 
-                //throw new NotImplementedException();
-                return new DataContext("Data source=(local);Initial catalog=TestDatabase; Integrated security=true;");
+                _contexts.Add(Thread.CurrentThread.ManagedThreadId, context);
             }
+
+            return context;
         }
     }
 }

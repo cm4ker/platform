@@ -20,7 +20,6 @@ namespace ZenPlatform.DocumentComponent
     {
         public DocumentManager()
         {
-
         }
 
         //TODO: Сделать async API task 86
@@ -44,17 +43,14 @@ namespace ZenPlatform.DocumentComponent
         }
 
 
-
         public void Save(Session session, DocumentEntity entity)
         {
             var def = session.Environment.GetDefinition(entity.GetType());
-
         }
 
 
         public async void SaveAsync(Session session, DocumentEntity entity)
         {
-
         }
 
         private DocumentEntity CreateEntityFromDto(Session session, Type entityType, object dto)
@@ -83,8 +79,6 @@ namespace ZenPlatform.DocumentComponent
         {
             var context = session.DataContextManger.GetContext();
             var def = session.Environment.GetDefinition(type);
-            var pObjectType = def.EntityConfig;
-            //var sqlBuilder = new QueryBuilderComponent(pObjectType);
 
 
             //TODO:Сделать получение запроса обратно для объекта обра

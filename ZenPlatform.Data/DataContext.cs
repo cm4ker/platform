@@ -5,8 +5,10 @@ using System.Data.Common;
 
 namespace ZenPlatform.Data
 {
-    
-
+    /// <summary>
+    /// Контекст данных.
+    /// Позволяет выполнять запросы в базе данных
+    /// </summary>
     public class DataContext : IDisposable
     {
         private readonly SqlConnection _connection;

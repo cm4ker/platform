@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using ZenPlatform.Configuration;
 using ZenPlatform.Core.Entity;
@@ -10,10 +11,12 @@ namespace ZenPlatform.Core
     public class PlatformEnvironment
     {
         private object _locking;
+        private SystemSession _systemSession;
+
 
         /*
          *  Среда должна обеспечиватьдоступ к конфигурации. Так как именно в среду будет загружаться конфигурация 
-         *  И из среды она будет выгружаться. 
+         *  
          *  
          *  Необходимо реализовать следующий интерфейс:
          *      
@@ -32,10 +35,19 @@ namespace ZenPlatform.Core
             Globals = new Dictionary<string, object>();
             Managers = new Dictionary<Type, EntityManagerBase>();
             Entityes = new Dictionary<Guid, EntityDefinition>();
-
-            Sessions.Add(new SystemSession(this, 1));
         }
 
+        /// <summary>
+        /// Инициализация среды.
+        /// На этом этапе происходит создание подключения к базе
+        /// Загрузка конфигурации и так далее
+        /// </summary>
+        public void Initialize()
+        {
+            _systemSession = new SystemSession(this, 1);
+
+            Sessions.Add(_systemSession);
+        }
 
 
         public Dictionary<string, object> Globals { get; set; }
@@ -50,7 +62,6 @@ namespace ZenPlatform.Core
         {
             lock (_locking)
             {
-
                 var id = (Sessions.Count == 0) ? 1 : Sessions.Max(x => x.Id) + 1;
                 var session = new Session(this, id);
 
@@ -62,11 +73,10 @@ namespace ZenPlatform.Core
 
         public SystemSession GetSystemSession()
         {
-            var session = Sessions[0] as SystemSession;
-            if (session is null)
+            if (_systemSession is null)
                 throw new InvalidOperationException("System session is not created. The system go down.");
 
-            return session;
+            return _systemSession;
         }
 
         public void RemoveSession(Session session)

@@ -15,6 +15,7 @@ namespace ZenPlatform.DocumentComponent
             Generator = new DocumentEntityGenerator(Component);
             Manager = new DocumentManager();
 
+
             RegisterSupportedTypes();
             RegisterCodeRules();
             base.OnInitializing();
