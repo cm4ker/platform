@@ -8,6 +8,9 @@ using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 
 namespace ZenPlatform.Core.Entity
 {
+    /// <summary>
+    /// База для генерации сущностей
+    /// </summary>
     public abstract class EntityGeneratorBase
     {
         protected EntityGeneratorBase(XCComponent component)
