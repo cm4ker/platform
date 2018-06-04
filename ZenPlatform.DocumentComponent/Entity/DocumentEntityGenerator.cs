@@ -4,18 +4,17 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive;
+using ZenPlatform.Contracts;
 using ZenPlatform.Core;
-using ZenPlatform.Core.Entity;
-using ZenPlatform.CSharpCodeBuilder.Syntax;
 using ZenPlatform.DataComponent;
+using ZenPlatform.DataComponent.Entity;
 using Document = ZenPlatform.DocumentComponent.Configuration.Document;
 
 
-namespace ZenPlatform.DocumentComponent
+namespace ZenPlatform.DocumentComponent.Entity
 {
     public class DocumentEntityGenerator : EntityGeneratorBase
     {
@@ -530,7 +529,6 @@ namespace ZenPlatform.DocumentComponent
                 .AddMembers(managerClass).NormalizeWhitespace();
 
             return generator.CompilationUnit(managerClass).NormalizeWhitespace();
-            ;
         }
 
         /*

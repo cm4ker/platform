@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 
-namespace ZenPlatform.CSharpCodeBuilder.Syntax
+namespace ZenPlatform.DataComponent
 {
     public static class SyntaxHelper
     {

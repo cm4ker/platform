@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using ZenPlatform.Builder;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
@@ -37,17 +38,9 @@ namespace ZenPlatform.Tests.Conf
 
             Assert.IsNotNull(conf.Data.Components);
 
-            //Assert.AreEqual(5, conf.Data.Components.Count);
-            //Assert.AreEqual(9, conf.Data.IncludedFiles.Count);
+            XCCompiller c = new XCCompiller(conf, "./");
 
-            //var tableComponent = result.Data.Components.Find(x => x.Name == "Table");
-
-            //Assert.AreEqual(2, tableComponent.Attaches.Count);
-
-            //Assert.AreEqual(1, result.Modules.IncludedFiles.Count);
-
-            //Assert.AreEqual(2, result.Languages.Count);
-            //}
+            c.Build();
         }
 
         [TestMethod]

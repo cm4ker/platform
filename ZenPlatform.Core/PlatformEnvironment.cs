@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ZenPlatform.Configuration;
-using ZenPlatform.Core.Entity;
+using ZenPlatform.Contracts.Entity;
+
 
 namespace ZenPlatform.Core
 {
@@ -33,7 +34,7 @@ namespace ZenPlatform.Core
 
             Sessions = new List<Session>();
             Globals = new Dictionary<string, object>();
-            Managers = new Dictionary<Type, EntityManagerBase>();
+            Managers = new Dictionary<Type, IEntityManager>();
             Entityes = new Dictionary<Guid, EntityDefinition>();
         }
 
@@ -56,7 +57,7 @@ namespace ZenPlatform.Core
 
         public IDictionary<Guid, EntityDefinition> Entityes { get; }
 
-        public IDictionary<Type, EntityManagerBase> Managers { get; }
+        public IDictionary<Type, IEntityManager> Managers { get; }
 
         public Session CreateSession()
         {
@@ -96,7 +97,7 @@ namespace ZenPlatform.Core
             }
         }
 
-        public void RegisterManager(Type type, EntityManagerBase manager)
+        public void RegisterManager(Type type, IEntityManager manager)
         {
             Managers.Add(type, manager);
         }
@@ -114,7 +115,7 @@ namespace ZenPlatform.Core
         /// </summary>
         /// <param name="type">Тип Entity</param>
         /// <returns></returns>
-        public EntityManagerBase GetManager(Type type)
+        public IEntityManager GetManager(Type type)
         {
             if (Managers.TryGetValue(type, out var manager))
             {

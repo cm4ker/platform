@@ -1,38 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.IO;
-using System.Text;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+﻿using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
-
-//using ZenPlatform.Configuration.Data;
+using ZenPlatform.Contracts.Data;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
 {
     /// <summary>
-    /// Интерфейс типа который может представлять компонент
-    /// </summary>
-    public interface IComponentType
-    {
-        Guid Id { get; }
-
-        //TODO : здесь должна быть ссылка на компонент, пока оставил PComponent
-        //PComponent OwnerComponent { get; }
-    }
-
-    public interface IRule
-    {
-        Guid ObjectId { get; }
-        // PComponent ComponentOwner { get; }
-    }
-
-
-    /// <summary>
     /// Загрузчик конфигурации.
     /// </summary>
-    public interface IComponenConfigurationLoader
+    public interface IXCLoader
     {
+        /// <summary>
+        /// Инициализировать компомент
+        /// При вызове этого метода будет инициализирована сущность <see cref="DataComponentBase"/>
+        /// </summary>
+        IDataComponent GetComponentImpl(XCComponent component);
+
         /// <summary>
         /// Загрузить тип компонента
         /// </summary>

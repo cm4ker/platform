@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Contracts;
 
-namespace ZenPlatform.Core.Entity
+namespace ZenPlatform.DataComponent.Entity
 {
     /// <summary>
     /// База для генерации сущностей
     /// </summary>
-    public abstract class EntityGeneratorBase
+    public abstract class EntityGeneratorBase : IEntityGenerator
     {
         protected EntityGeneratorBase(XCComponent component)
         {

@@ -1,5 +1,5 @@
 using System;
-using Newtonsoft.Json;
+using System.Xml.Serialization;
 using DbType = ZenPlatform.QueryBuilder.Schema.DBType;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive
@@ -14,8 +14,8 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Ty
 
         public abstract bool IsNullable { get; set; }
 
-        [JsonIgnore] public abstract DbType DBType { get; }
+        [XmlIgnore] public abstract DbType DBType { get; }
 
-        [JsonIgnore] public abstract Type CLRType { get; }
+        [XmlIgnore] public abstract Type CLRType { get; }
     }
 }

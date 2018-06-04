@@ -62,7 +62,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         public bool Unique { get; set; }
 
         [XmlArray]
-        [XmlArrayItem(ElementName = "Type")]
+        [XmlArrayItem(ElementName = "Type", Type = typeof(XCFakeType))]
         public List<XCTypeBase> Types { get; }
 
         /// <summary>

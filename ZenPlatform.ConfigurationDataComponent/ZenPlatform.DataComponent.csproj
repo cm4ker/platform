@@ -1,22 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.4.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.8.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
-    <ProjectReference Include="..\ZenPlatform.CSharpCodeBuilder\ZenPlatform.CSharpCodeBuilder.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />
     <ProjectReference Include="..\ZenPlatform.System\ZenPlatform.System.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Runtime.Caching">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Runtime.Caching.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Remove="git" />
