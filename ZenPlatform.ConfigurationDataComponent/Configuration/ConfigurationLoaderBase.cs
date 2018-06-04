@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Claims;
-using System.Text;
 using System.Xml.Serialization;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 using ZenPlatform.Configuration.Exceptions;
+using ZenPlatform.Contracts.Data;
 
 namespace ZenPlatform.DataComponent.Configuration
 {
-    public abstract class ConfigurationLoaderBase<TObjectType> : IComponenConfigurationLoader
+    public abstract class ConfigurationLoaderBase<TObjectType> : IXCLoader
         where TObjectType : XCObjectTypeBase
     {
         /// <summary>
@@ -38,6 +37,11 @@ namespace ZenPlatform.DataComponent.Configuration
         }
 
         protected virtual XCDataRuleBase LoadRuleAction(XCDataRuleContent content)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual IDataComponent GetComponentImpl(XCComponent component)
         {
             throw new NotImplementedException();
         }

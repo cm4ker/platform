@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 
 namespace ZenPlatform.DocumentComponent.Configuration
@@ -20,8 +23,7 @@ namespace ZenPlatform.DocumentComponent.Configuration
             Properties.CollectionChanged += Properties_CollectionChanged;
         }
 
-        private void Properties_CollectionChanged(object sender,
-            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Properties_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
@@ -90,5 +92,26 @@ namespace ZenPlatform.DocumentComponent.Configuration
         /// </summary>
         [XmlElement]
         public string RelTableName { get; set; }
+
+        public override void LoadDependencies()
+        {
+            foreach (var property in Properties)
+            {
+                var configurationTypes = new List<XCTypeBase>();
+
+                foreach (var propertyType in property.Types)
+                {
+                    var type = Data.PlatformTypes.First(x => x.Guid == propertyType.Guid && x.Id == propertyType.Id);
+                    //Если по какой то причине тип поля не найден, в таком случае считаем, что конфигурация битая и выкидываем исключение
+                    if (type == null) throw new Exception("Invalid configuration");
+
+                    configurationTypes.Add(type);
+                }
+
+                //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные 
+                property.Types.Clear();
+                property.Types.AddRange(configurationTypes);
+            }
+        }
     }
 }

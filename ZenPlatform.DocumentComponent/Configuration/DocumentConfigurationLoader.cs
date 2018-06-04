@@ -3,12 +3,18 @@ using System.IO;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Contracts.Data;
 using ZenPlatform.DataComponent.Configuration;
 
 namespace ZenPlatform.DocumentComponent.Configuration
 {
     public class DocumentConfigurationLoader : ConfigurationLoaderBase<Document>
     {
+        public override IDataComponent GetComponentImpl(XCComponent component)
+        {
+            return new DocumnetComponent(component);
+        }
+
         protected override Document LoadObjectAction(string path)
         {
             using (var sr = new StreamReader(path))

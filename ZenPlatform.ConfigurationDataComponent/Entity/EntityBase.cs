@@ -1,11 +1,11 @@
-﻿using System;
+﻿using ZenPlatform.Contracts.Entity;
 
-namespace ZenPlatform.Core.Entity
+namespace ZenPlatform.DataComponent.Entity
 {
     /// <summary>
     /// Базовая сущность для объявляемого типа
     /// </summary>
-    public abstract class EntityBase
+    public abstract class EntityBase : IEntity
     {
     }
 }

@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ZenPlatform.CSharpCodeBuilder.Syntax;
 
 namespace ZenPlatform.PlatformCodeGenerator
 {

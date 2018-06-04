@@ -37,8 +37,9 @@ namespace ZenPlatform.DocumentComponent.Configuration
             {
                 Alias = "Posted",
                 Id = Guid.Parse("27495aa2-4a50-4c3a-854c-564940aee515"),
-                Types = { PlatformTypes.Binary },
-                IsSystemProperty = true
+                Types = {PlatformTypes.Boolean},
+                IsSystemProperty = true,
+                DatabaseColumnName = "IsPosted"
             };
         }
 
@@ -48,7 +49,7 @@ namespace ZenPlatform.DocumentComponent.Configuration
             {
                 Alias = "Id",
                 Id = Guid.Parse("905208c8-e892-414f-bd48-acd70b2a901b"),
-                Types = { PlatformTypes.Guid },
+                Types = {PlatformTypes.Guid},
                 IsSystemProperty = true
             };
         }

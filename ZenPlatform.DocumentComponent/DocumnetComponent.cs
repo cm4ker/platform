@@ -1,10 +1,11 @@
 ﻿using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.DataComponent;
+using ZenPlatform.DocumentComponent.Entity;
 
 
 namespace ZenPlatform.DocumentComponent
 {
-    public class DocumnetComponent : DataComponentBase<DocumentEntityGenerator, DocumentManager>
+    public class DocumnetComponent : DataComponentBase
     {
         public DocumnetComponent(XCComponent component) : base(component)
         {
@@ -14,7 +15,6 @@ namespace ZenPlatform.DocumentComponent
         {
             Generator = new DocumentEntityGenerator(Component);
             Manager = new DocumentManager();
-
 
             RegisterSupportedTypes();
             RegisterCodeRules();

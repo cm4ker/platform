@@ -1,18 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Linq;
-using ZenPlatform.Core.Entity;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 
-namespace ZenPlatform.CSharpCodeBuilder
+namespace ZenPlatform.Builder
 {
     public class CodeBuilder
     {
-        private const string folderName = "generated";
+        private const string folderName = "bin";
 
-        public void Generate(EntityGeneratorBase generator, XCComponent component)
+        public void Generate(XCComponent component)
         {
             //TODO : Необходимо сделать единую точку входа для генерации файлов
             /*
@@ -24,6 +23,9 @@ namespace ZenPlatform.CSharpCodeBuilder
              *      
              * !!!Для версии 0.0.0.1 просто генерируем файлы и ложим их в определённую папку, скажем 'Generated'
              */
+
+            var generator = component.ComponentImpl.Generator;
+
 
             if (!Directory.Exists(folderName))
                 Directory.CreateDirectory(folderName);

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ZenPlatform.Core;
-using ZenPlatform.Core.Entity;
 using ZenPlatform.Data;
 using ZenPlatform.DataComponent;
+using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.DataComponent.QueryBuilders;
 
 namespace ZenPlatform.DocumentComponent
@@ -16,7 +16,7 @@ namespace ZenPlatform.DocumentComponent
         Session.Documents.Invoice.Create(Session);
     */
 
-    public class DocumentManager : EntityManagerBase
+    public class DocumentManager : EntityManager
     {
         public DocumentManager()
         {

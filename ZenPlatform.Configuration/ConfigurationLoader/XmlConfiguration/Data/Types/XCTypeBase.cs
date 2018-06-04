@@ -35,7 +35,6 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Ty
         public virtual string Description { get; set; }
     }
 
-
     public static class PlatformTypes
     {
         public static XCBinary Binary = new XCBinary();
@@ -44,5 +43,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Ty
         public static XCBoolean Boolean = new XCBoolean();
         public static XCNumeric Numeric = new XCNumeric();
         public static XCGuid Guid = new XCGuid();
+    }
+
+    public class XCFakeType : XCTypeBase
+    {
     }
 }

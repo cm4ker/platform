@@ -2,8 +2,8 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using ZenPlatform.Core;
-using ZenPlatform.Core.Entity;
 using ZenPlatform.DataComponent;
+using ZenPlatform.DataComponent.Entity;
 
 namespace ZenPlatform.DocumentComponent
 {

@@ -1,17 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using ZenPlatform.Contracts.Entity;
 
-namespace ZenPlatform.Core.Entity
+namespace ZenPlatform.DataComponent.Entity
 {
     /// <summary>
     /// Менеджер - это НАБОР ЛОГИКИ для манипулирования сущностями (Entity)
     /// Менеджер только лишь инкапсулирует это в себе.
     /// </summary>
-    public abstract class EntityManagerBase
+    public abstract class EntityManager : IEntityManager
     {
-        protected EntityManagerBase()
+        protected EntityManager()
         {
-
         }
-
     }
 }

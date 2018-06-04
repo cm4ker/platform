@@ -8,6 +8,8 @@ using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
+using ZenPlatform.Contracts;
+using ZenPlatform.Contracts.Data;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
 {
@@ -19,7 +21,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
         private XCData _parent;
         private bool _isLoaded;
         private ComponentInformation _info;
-        private IComponenConfigurationLoader _loader;
+        private IXCLoader _loader;
+        private IDataComponent _componentImpl;
+
         private readonly IDictionary<CodeGenRuleType, CodeGenRule> _codeGenRules;
 
         public XCComponent()
@@ -64,18 +68,24 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
             var loaderType = ComponentAssembly.GetTypes()
                                  .FirstOrDefault(x =>
                                      x.IsPublic && !x.IsAbstract &&
-                                     x.GetInterfaces().Contains(typeof(IComponenConfigurationLoader))) ??
+                                     x.GetInterfaces().Contains(typeof(IXCLoader))) ??
                              throw new InvalidComponentException();
 
 
-            _loader = (IComponenConfigurationLoader) Activator.CreateInstance(loaderType);
+            _loader = (IXCLoader) Activator.CreateInstance(loaderType);
+
+            _componentImpl = _loader.GetComponentImpl(this);
+            _componentImpl.OnInitializing();
         }
 
         [XmlIgnore] public XCRoot Root => _parent.Parent;
 
         [XmlIgnore] public XCData Parent => _parent;
 
-        [XmlIgnore] public IComponenConfigurationLoader Loader => _loader;
+        [XmlIgnore] public IXCLoader Loader => _loader;
+
+        [XmlIgnore] public IDataComponent ComponentImpl => _componentImpl;
+
 
         [XmlIgnore] public IEnumerable<XCObjectTypeBase> Types => _parent.ComponentTypes.Where(x => x.Parent == this);
 

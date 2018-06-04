@@ -1,18 +1,14 @@
 ﻿using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
-using ZenPlatform.Core.Entity;
+using ZenPlatform.Contracts.Data;
+using ZenPlatform.Contracts.Entity;
+using ZenPlatform.DataComponent.Entity;
 
 namespace ZenPlatform.DataComponent
 {
     /// <summary>
     /// Базовый класс компонента, от которого необходимо наследоваться, чтобы объявить новый компонент в категории "Данные"
     /// </summary>
-    /// <typeparam name="TMigrationComponent">Компонент миграции</typeparam>
-    /// <typeparam name="TEntityGenerator"></typeparam>
-    /// <typeparam name="TManager"></typeparam>
-    public abstract class DataComponentBase<TEntityGenerator,
-        TManager>
-        where TEntityGenerator : EntityGeneratorBase
-        where TManager : EntityManagerBase
+    public abstract class DataComponentBase : IDataComponent
     {
         /*
         TODO: Продумать интерфейс базового компонента
@@ -56,8 +52,8 @@ namespace ZenPlatform.DataComponent
         public virtual string Name => "Unknown";
         public virtual string Version => this.GetType().Assembly.GetName().Version.ToString();
 
-        public EntityManagerBase Manager { get; protected set; }
-        public EntityGeneratorBase Generator { get; protected set; }
+        public IEntityManager Manager { get; protected set; }
+        public IEntityGenerator Generator { get; protected set; }
 
 
         //Пометка: выпилено, компонент не хранит в себе эту инфомрацию для доступа извне,
