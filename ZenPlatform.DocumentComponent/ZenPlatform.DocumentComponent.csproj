@@ -6,9 +6,6 @@
     <ProjectReference Include="..\ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.common\2.4.0\lib\netstandard1.3\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <HintPath>System</HintPath>
     </Reference>

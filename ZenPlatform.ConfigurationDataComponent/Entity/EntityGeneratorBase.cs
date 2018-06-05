@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Editing;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Contracts;
@@ -14,8 +16,16 @@ namespace ZenPlatform.DataComponent.Entity
         protected EntityGeneratorBase(XCComponent component)
         {
             Component = component;
+
+            Workspace = new AdhocWorkspace();
+            Generator = SyntaxGenerator.GetGenerator(Workspace, LanguageNames.CSharp);
+
+
         }
 
+
+        protected Workspace Workspace { get; }
+        protected SyntaxGenerator Generator { get; }
 
         protected XCComponent Component { get; }
 

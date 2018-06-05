@@ -46,8 +46,8 @@ namespace ZenPlatform.Tests.Conf
         [TestMethod]
         public void FullConfigurationLoad()
         {
-//            ConfigurationLoader cl = new ConfigurationLoader(Path.Combine(ConfigurationPath, "Project1.xml"));
-//            var root = cl.Load();
+            //            ConfigurationLoader cl = new ConfigurationLoader(Path.Combine(ConfigurationPath, "Project1.xml"));
+            //            var root = cl.Load();
         }
     }
 }

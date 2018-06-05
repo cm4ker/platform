@@ -11,6 +11,7 @@ using ZenPlatform.Contracts;
 using ZenPlatform.Core;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.Entity;
+using ZenPlatform.DocumentComponent.Configuration;
 using Document = ZenPlatform.DocumentComponent.Configuration.Document;
 
 
@@ -134,14 +135,9 @@ namespace ZenPlatform.DocumentComponent.Entity
         {
             var dtoClassName = $"{conf.Name}{DtoPrefix}";
 
-            var workspace = new AdhocWorkspace();
-
-            var generator = SyntaxGenerator.GetGenerator(
-                workspace, LanguageNames.CSharp);
-
 
             var nsRule = conf.Parent.GetCodeRule(CodeGenRuleType.NamespaceRule);
-            var usings = generator.NamespaceImportDeclaration("System");
+            var usings = Generator.NamespaceImportDeclaration("System");
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
             if (conf.IsAbstract) return null;
@@ -149,7 +145,7 @@ namespace ZenPlatform.DocumentComponent.Entity
             var members = new List<SyntaxNode>();
 
             var dtoPrivateField =
-                generator.FieldDeclaration(DtoPrivateFieldName, SyntaxFactory.ParseTypeName(dtoClassName));
+                Generator.FieldDeclaration(DtoPrivateFieldName, SyntaxFactory.ParseTypeName(dtoClassName));
 
 
             //TODO: Алгоритм для обхода полей объекта
@@ -158,80 +154,13 @@ namespace ZenPlatform.DocumentComponent.Entity
                 Если поле ObjectType(Другой объект конфигурации) - Взять и имя свойства, как имя свойста, взять тип, как наименование типа Entity
                                 
             */
+
+            //Генерируем свойства
             foreach (var prop in conf.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
-                    var propType = prop.Types.First();
-
-                    if (propType is XCObjectTypeBase objectProprty)
-                    {
-                        var propertyComponent = objectProprty.Parent;
-
-                        var propEnittyPreffix = propertyComponent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule)
-                            .GetExpression();
-                        var propEntityPostfix = propertyComponent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule)
-                            .GetExpression();
-
-                        var getRule = propertyComponent.GetCodeRule(CodeGenRuleType.InForeignPropertyGetActionRule);
-                        var setRule = propertyComponent.GetCodeRule(CodeGenRuleType.InForeignPropertySetActionRule);
-
-                        var getExp = getRule.GetExpression().NamedFormat(new StandartGetExpressionParameters()
-                        {
-                            ComponentSpace = propertyComponent.Info.ComponentSpaceName,
-                            ObjectName = propType.Name,
-                            Params = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref"
-                        });
-                        var setExp = setRule.GetExpression().NamedFormat(new StandartSetExpressionParameters()
-                        {
-                            ComponentSpace = propertyComponent.Info.ComponentSpaceName,
-                            SetVariable = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref",
-                            ObjectName = propType.Name,
-                            Params = "value"
-                        });
-
-
-                        var getAcessorStatement = new SyntaxNode[]
-                        {
-                            SyntaxFactory.ParseStatement($"return {getExp};")
-                        };
-
-                        var setAcessorStatement = new SyntaxNode[]
-                        {
-                            SyntaxFactory.ParseStatement($"{setExp}"),
-                            SyntaxFactory.ParseStatement("OnPropertyChanged();")
-                        };
-
-                        var csProperty =
-                            generator.PropertyDeclaration(
-                                prop.DatabaseColumnName,
-                                SyntaxFactory.IdentifierName($"{propEnittyPreffix}{propType.Name}{propEntityPostfix}"),
-                                Accessibility.Public,
-                                DeclarationModifiers.None, getAcessorStatement, setAcessorStatement);
-                        members.Add(csProperty);
-                    }
-
-                    if (propType is XCPremitiveType primitiveType)
-                    {
-                        var getAcessorStatement = new SyntaxNode[]
-                        {
-                            SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.DatabaseColumnName};")
-                        };
-
-                        var setAcessorStatement = new SyntaxNode[]
-                        {
-                            SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.DatabaseColumnName} = value;"),
-                            SyntaxFactory.ParseStatement("OnPropertyChanged();")
-                        };
-
-                        var csProperty =
-                            generator.PropertyDeclaration(
-                                prop.DatabaseColumnName,
-                                SyntaxFactory.IdentifierName(primitiveType.CLRType.CSharpName()),
-                                Accessibility.Public,
-                                DeclarationModifiers.None, getAcessorStatement, setAcessorStatement);
-                        members.Add(csProperty);
-                    }
+                    members.Add(GenerateEntityClassPropertyOneType(prop));
                 }
                 else
                 {
@@ -252,6 +181,7 @@ namespace ZenPlatform.DocumentComponent.Entity
                 }
             }
 
+            //Объявляем конструктор
             var parameterList =
                 SyntaxFactory.ParseParameterList($"[NotNull] {nameof(Session)} session, {dtoClassName} dto");
             var statementsParams = parameterList.Parameters.ToArray<SyntaxNode>();
@@ -264,7 +194,7 @@ namespace ZenPlatform.DocumentComponent.Entity
                 SyntaxFactory.ParseStatement($"{DtoPrivateFieldName} = dto;")
             };
 
-            var constructor = generator.ConstructorDeclaration(null, statementsParams, Accessibility.Public,
+            var constructor = Generator.ConstructorDeclaration(null, statementsParams, Accessibility.Public,
                 statements: statementsBody, baseConstructorArguments: baseConstructorArguments.Arguments);
 
 
@@ -278,7 +208,7 @@ namespace ZenPlatform.DocumentComponent.Entity
                 SyntaxFactory.ParseStatement($"Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.Save(this);")
             };
             var saveMethod =
-                generator.MethodDeclaration("Save", statements: saveBody, accessibility: Accessibility.Public);
+                Generator.MethodDeclaration("Save", statements: saveBody, accessibility: Accessibility.Public);
 
             var loadBody = new SyntaxNode[]
             {
@@ -289,7 +219,7 @@ namespace ZenPlatform.DocumentComponent.Entity
                 SyntaxFactory.ParseStatement($"_dto = entity._dto;"),
             };
             var loadMethod =
-                generator.MethodDeclaration("Load", statements: loadBody, accessibility: Accessibility.Public);
+                Generator.MethodDeclaration("Load", statements: loadBody, accessibility: Accessibility.Public);
 
             var deleteBody = new SyntaxNode[]
             {
@@ -297,7 +227,7 @@ namespace ZenPlatform.DocumentComponent.Entity
                     $"Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.Delete(this);")
             };
             var deleteMethod =
-                generator.MethodDeclaration("Delete", statements: deleteBody, accessibility: Accessibility.Public);
+                Generator.MethodDeclaration("Delete", statements: deleteBody, accessibility: Accessibility.Public);
 
             members.Add(saveMethod);
             members.Add(loadMethod);
@@ -308,7 +238,7 @@ namespace ZenPlatform.DocumentComponent.Entity
             var preffix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
             var postfix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
 
-            var classDefinition = generator.ClassDeclaration(
+            var classDefinition = Generator.ClassDeclaration(
                 $"{preffix}{conf.Name}{postfix}",
                 typeParameters: null,
                 accessibility: Accessibility.Public,
@@ -327,7 +257,80 @@ namespace ZenPlatform.DocumentComponent.Entity
             return newNode;
         }
 
+        public virtual SyntaxNode GenerateEntityClassPropertyOneType(DocumentProperty prop)
+        {
+            var propertyTypeName = string.Empty;
 
+            SyntaxNode[] getAcessorStatement = default(SyntaxNode[]),
+                         setAcessorStatement = default(SyntaxNode[]);
+
+            SyntaxNode csProperty = null;
+            var propType = prop.Types.First();
+
+            if (propType is XCObjectTypeBase objectProprty)
+            {
+                var propertyComponent = objectProprty.Parent;
+
+                var propEnittyPreffix = propertyComponent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule)
+                    .GetExpression();
+                var propEntityPostfix = propertyComponent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule)
+                    .GetExpression();
+
+                var getRule = propertyComponent.GetCodeRule(CodeGenRuleType.InForeignPropertyGetActionRule);
+                var setRule = propertyComponent.GetCodeRule(CodeGenRuleType.InForeignPropertySetActionRule);
+
+                var getExp = getRule.GetExpression().NamedFormat(new StandartGetExpressionParameters()
+                {
+                    ComponentSpace = propertyComponent.Info.ComponentSpaceName,
+                    ObjectName = propType.Name,
+                    Params = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref"
+                });
+
+                var setExp = setRule.GetExpression().NamedFormat(new StandartSetExpressionParameters()
+                {
+                    ComponentSpace = propertyComponent.Info.ComponentSpaceName,
+                    SetVariable = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref",
+                    ObjectName = propType.Name,
+                    Params = "value"
+                });
+
+
+                getAcessorStatement = new SyntaxNode[]
+                {
+                            SyntaxFactory.ParseStatement($"return {getExp};")
+                };
+
+                setAcessorStatement = new SyntaxNode[]
+               {
+                            SyntaxFactory.ParseStatement($"{setExp}"),
+                            SyntaxFactory.ParseStatement("OnPropertyChanged();")
+               };
+
+                propertyTypeName = $"{propEnittyPreffix}{propType.Name}{propEntityPostfix}";
+            }
+
+            if (propType is XCPremitiveType primitiveType)
+            {
+                getAcessorStatement = new SyntaxNode[]
+               {
+                            SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.DatabaseColumnName};")
+               };
+                setAcessorStatement = new SyntaxNode[]
+                {
+                            SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.DatabaseColumnName} = value;"),
+                            SyntaxFactory.ParseStatement("OnPropertyChanged();")
+                };
+
+                propertyTypeName = primitiveType.CLRType.CSharpName();
+            }
+
+            return Generator.PropertyDeclaration(
+                               prop.Alias,
+                               SyntaxFactory.IdentifierName(propertyTypeName),
+                               Accessibility.Public,
+                               DeclarationModifiers.None, getAcessorStatement, setAcessorStatement);
+
+        }
         /*
          * Необходимо сгенерировать Extension methods для класса Session, чтобы
          * появился следующий функционал

@@ -7,9 +7,4 @@
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="ZenPlatform.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\ZenPlatform.Tests\bin\Debug\netcoreapp2.0\ZenPlatform.Core.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
