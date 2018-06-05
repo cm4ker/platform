@@ -1,4 +1,6 @@
-﻿using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+﻿using System.Collections.Generic;
+using System.Runtime.Caching;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Contracts.Data;
 using ZenPlatform.Contracts.Entity;
 using ZenPlatform.DataComponent.Entity;
@@ -54,7 +56,7 @@ namespace ZenPlatform.DataComponent
 
         public IEntityManager Manager { get; protected set; }
         public IEntityGenerator Generator { get; protected set; }
-
+        public Dictionary<string, ObjectCache> Caches { get; protected set; }
 
         //Пометка: выпилено, компонент не хранит в себе эту инфомрацию для доступа извне,
         //но если нужно, тогда это будет скорее всего в  другом формате

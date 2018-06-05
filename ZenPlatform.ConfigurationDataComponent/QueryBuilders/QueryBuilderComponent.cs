@@ -1,35 +1,54 @@
 ﻿using System;
+using System.Collections.Generic;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
+using ZenPlatform.Core;
+using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.DataComponent.QueryBuilders
 {
     /// <summary>
-    /// Контракт, который необходимо сделать, чтобы обеспечить все доступные операции
+    /// Контракт, который необходимо сделать, чтобы загрузка данных
+    /// из\в базу данных была максимально быстрой
     /// </summary>
-    public abstract class QueryBuilderComponentBase
+    public abstract class ObjectToDatabase<T>
+        where T : XCObjectTypeBase
     {
-        public virtual DBSelectQuery SelectSingleObject(XCObjectTypeBase obj, object key)
+        private readonly T _type;
+
+        protected ObjectToDatabase(T type)
+        {
+            _type = type;
+        }
+
+        public T XCType => _type;
+
+        public virtual EntityBase SelectSingleObject(Session session, object key)
         {
             throw new NotImplementedException();
         }
 
-        public virtual DBSelectQuery SelectMultiplyObjects(XCObjectTypeBase obj, object[] keys)
+        public virtual IEnumerable<EntityBase> SelectMultiplyObjects(Session session, object[] keys)
         {
             throw new NotImplementedException();
         }
 
-        public virtual DBUpdateQuery UpdateSingleObject(XCObjectTypeBase obj, object model)
+        public virtual IEnumerable<EntityBase> SelectAllObjects(Session session)
         {
             throw new NotImplementedException();
         }
 
-        public virtual DBUpdateQuery UpdateMultiplyObjects(XCObjectTypeBase obj, object[] models)
+        public virtual void UpdateSingleObject(Session session, EntityBase entity)
         {
             throw new NotImplementedException();
         }
 
-        public virtual DBInsertQuery InsertSingleObject(XCObjectTypeBase obj, object model)
+        public virtual void UpdateMultiplyObjects(Session session, EntityBase[] entityes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void InsertSingleObject(Session session, EntityBase model)
         {
             throw new NotImplementedException();
         }

@@ -1,4 +1,6 @@
-﻿using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+﻿using System.Collections.Generic;
+using System.Runtime.Caching;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DocumentComponent.Entity;
 
@@ -15,6 +17,10 @@ namespace ZenPlatform.DocumentComponent
         {
             Generator = new DocumentEntityGenerator(Component);
             Manager = new DocumentManager();
+
+            
+            
+            Caches = new Dictionary<string, ObjectCache>();
 
             RegisterSupportedTypes();
             RegisterCodeRules();

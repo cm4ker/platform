@@ -70,6 +70,8 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
                 ((IChildItem<XCComponent>) componentType).Parent = component;
 
                 PlatformTypes.Add(componentType);
+
+                componentType.Initialize();
             }
 
             foreach (var xct in ComponentTypes)

@@ -109,7 +109,7 @@ namespace ZenPlatform.DocumentComponent.Entity
             }
 
             var classDefinition = generator.ClassDeclaration(
-                $"{document.Name}{DtoPrefix}",
+                GetDtoClassName(document),
                 typeParameters: null,
                 accessibility: Accessibility.Public,
                 modifiers: DeclarationModifiers.None,
@@ -129,18 +129,18 @@ namespace ZenPlatform.DocumentComponent.Entity
         /// <summary>
         /// Генерация сущности - класс который является промежуточным между DTO и пользователем
         /// </summary>
-        /// <param name="conf"></param>
+        /// <param name="document"></param>
         /// <returns></returns>
-        public virtual SyntaxNode GenerateEntityClass(Document conf)
+        public virtual SyntaxNode GenerateEntityClass(Document document)
         {
-            var dtoClassName = $"{conf.Name}{DtoPrefix}";
+            var dtoClassName = GetDtoClassName(document);
 
 
-            var nsRule = conf.Parent.GetCodeRule(CodeGenRuleType.NamespaceRule);
+            var nsRule = document.Parent.GetCodeRule(CodeGenRuleType.NamespaceRule);
             var usings = Generator.NamespaceImportDeclaration("System");
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
-            if (conf.IsAbstract) return null;
+            if (document.IsAbstract) return null;
 
             var members = new List<SyntaxNode>();
 
@@ -156,7 +156,7 @@ namespace ZenPlatform.DocumentComponent.Entity
             */
 
             //Генерируем свойства
-            foreach (var prop in conf.Properties)
+            foreach (var prop in document.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
@@ -205,7 +205,8 @@ namespace ZenPlatform.DocumentComponent.Entity
 
             var saveBody = new SyntaxNode[]
             {
-                SyntaxFactory.ParseStatement($"Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.Save(this);")
+                SyntaxFactory.ParseStatement(
+                    $"Session.{document.Parent.Info.ComponentSpaceName}().{document.Name}.Save(this);")
             };
             var saveMethod =
                 Generator.MethodDeclaration("Save", statements: saveBody, accessibility: Accessibility.Public);
@@ -213,9 +214,9 @@ namespace ZenPlatform.DocumentComponent.Entity
             var loadBody = new SyntaxNode[]
             {
                 SyntaxFactory.ParseStatement(
-                    $"var key = Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.GetKey(this);"),
+                    $"var key = Session.{document.Parent.Info.ComponentSpaceName}().{document.Name}.GetKey(this);"),
                 SyntaxFactory.ParseStatement(
-                    $"var entity = Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.Load(key);"),
+                    $"var entity = Session.{document.Parent.Info.ComponentSpaceName}().{document.Name}.Load(key);"),
                 SyntaxFactory.ParseStatement($"_dto = entity._dto;"),
             };
             var loadMethod =
@@ -224,7 +225,7 @@ namespace ZenPlatform.DocumentComponent.Entity
             var deleteBody = new SyntaxNode[]
             {
                 SyntaxFactory.ParseStatement(
-                    $"Session.{conf.Parent.Info.ComponentSpaceName}().{conf.Name}.Delete(this);")
+                    $"Session.{document.Parent.Info.ComponentSpaceName}().{document.Name}.Delete(this);")
             };
             var deleteMethod =
                 Generator.MethodDeclaration("Delete", statements: deleteBody, accessibility: Accessibility.Public);
@@ -235,11 +236,11 @@ namespace ZenPlatform.DocumentComponent.Entity
 
             #endregion
 
-            var preffix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
-            var postfix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
+//            var preffix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
+//            var postfix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
 
             var classDefinition = Generator.ClassDeclaration(
-                $"{preffix}{conf.Name}{postfix}",
+                GetEntityClassName(document),
                 typeParameters: null,
                 accessibility: Accessibility.Public,
                 modifiers: DeclarationModifiers.Partial,
@@ -257,12 +258,12 @@ namespace ZenPlatform.DocumentComponent.Entity
             return newNode;
         }
 
-        public virtual SyntaxNode GenerateEntityClassPropertyOneType(DocumentProperty prop)
+        private SyntaxNode GenerateEntityClassPropertyOneType(DocumentProperty prop)
         {
             var propertyTypeName = string.Empty;
 
             SyntaxNode[] getAcessorStatement = default(SyntaxNode[]),
-                         setAcessorStatement = default(SyntaxNode[]);
+                setAcessorStatement = default(SyntaxNode[]);
 
             SyntaxNode csProperty = null;
             var propType = prop.Types.First();
@@ -297,14 +298,14 @@ namespace ZenPlatform.DocumentComponent.Entity
 
                 getAcessorStatement = new SyntaxNode[]
                 {
-                            SyntaxFactory.ParseStatement($"return {getExp};")
+                    SyntaxFactory.ParseStatement($"return {getExp};")
                 };
 
                 setAcessorStatement = new SyntaxNode[]
-               {
-                            SyntaxFactory.ParseStatement($"{setExp}"),
-                            SyntaxFactory.ParseStatement("OnPropertyChanged();")
-               };
+                {
+                    SyntaxFactory.ParseStatement($"{setExp}"),
+                    SyntaxFactory.ParseStatement("OnPropertyChanged();")
+                };
 
                 propertyTypeName = $"{propEnittyPreffix}{propType.Name}{propEntityPostfix}";
             }
@@ -312,24 +313,23 @@ namespace ZenPlatform.DocumentComponent.Entity
             if (propType is XCPremitiveType primitiveType)
             {
                 getAcessorStatement = new SyntaxNode[]
-               {
-                            SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.DatabaseColumnName};")
-               };
+                {
+                    SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.DatabaseColumnName};")
+                };
                 setAcessorStatement = new SyntaxNode[]
                 {
-                            SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.DatabaseColumnName} = value;"),
-                            SyntaxFactory.ParseStatement("OnPropertyChanged();")
+                    SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.DatabaseColumnName} = value;"),
+                    SyntaxFactory.ParseStatement("OnPropertyChanged();")
                 };
 
                 propertyTypeName = primitiveType.CLRType.CSharpName();
             }
 
             return Generator.PropertyDeclaration(
-                               prop.Alias,
-                               SyntaxFactory.IdentifierName(propertyTypeName),
-                               Accessibility.Public,
-                               DeclarationModifiers.None, getAcessorStatement, setAcessorStatement);
-
+                prop.Alias,
+                SyntaxFactory.IdentifierName(propertyTypeName),
+                Accessibility.Public,
+                DeclarationModifiers.None, getAcessorStatement, setAcessorStatement);
         }
         /*
          * Необходимо сгенерировать Extension methods для класса Session, чтобы

@@ -1,5 +1,6 @@
-﻿using ZenPlatform.Contracts.Entity;
-using ZenPlatform.DataComponent.Entity;
+﻿using System.Collections.Generic;
+using System.Runtime.Caching;
+using ZenPlatform.Contracts.Entity;
 
 namespace ZenPlatform.Contracts.Data
 {
@@ -14,5 +15,6 @@ namespace ZenPlatform.Contracts.Data
         string Version { get; }
         IEntityManager Manager { get; }
         IEntityGenerator Generator { get; }
+        Dictionary<string, ObjectCache> Caches { get; }
     }
 }

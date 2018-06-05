@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Xml.Serialization;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
@@ -112,6 +113,11 @@ namespace ZenPlatform.DocumentComponent.Configuration
                 property.Types.Clear();
                 property.Types.AddRange(configurationTypes);
             }
+        }
+
+        public override void Initialize()
+        {
+            Parent.ComponentImpl.Caches.Add(this.Name, new MemoryCache(this.Name));
         }
     }
 }

@@ -1,12 +1,7 @@
 ﻿using System.Collections.Generic;
-using ZenPlatform.Contracts;
 
-namespace ZenPlatform.DataComponent.Entity
-{
-  
-}
 
-namespace ZenPlatform.DataComponent.Entity
+namespace ZenPlatform.Contracts.Entity
 {
     public interface IEntityGenerator
     {
@@ -28,6 +23,20 @@ namespace ZenPlatform.DataComponent.Entity
         /// </summary>
         /// <returns></returns>
         CodeGenRule GetEntityClassPrefixRule();
+
+        /// <summary>
+        /// Получить имя класса dto
+        /// </summary>
+        /// <param name="obj">XCObjectTypeBase</param>
+        /// <returns></returns>
+        string GetDtoClassName(object obj);
+
+        /// <summary>
+        /// Получить имя класса сущности
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        string GetEntityClassName(object obj);
 
         CodeGenRule GetInForeignPropertySetActionRule();
         CodeGenRule GetInForeignPropertyGetActionRule();

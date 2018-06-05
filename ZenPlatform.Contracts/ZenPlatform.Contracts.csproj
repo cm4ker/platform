@@ -2,4 +2,9 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Runtime.Caching, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\.nuget\packages\system.runtime.caching\4.5.0\ref\netstandard2.0\System.Runtime.Caching.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
