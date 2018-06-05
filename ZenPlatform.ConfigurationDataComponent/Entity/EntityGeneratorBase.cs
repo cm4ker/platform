@@ -4,7 +4,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 using ZenPlatform.Contracts;
+using ZenPlatform.Contracts.Entity;
 
 namespace ZenPlatform.DataComponent.Entity
 {
@@ -19,8 +21,6 @@ namespace ZenPlatform.DataComponent.Entity
 
             Workspace = new AdhocWorkspace();
             Generator = SyntaxGenerator.GetGenerator(Workspace, LanguageNames.CSharp);
-
-
         }
 
 
@@ -36,6 +36,18 @@ namespace ZenPlatform.DataComponent.Entity
 
         public virtual string DtoPrivateFieldName { get; } = "_dto";
 
+        public virtual string GetDtoClassName(XCObjectTypeBase obj)
+        {
+            return $"{obj.Name}{DtoPrefix}";
+        }
+
+        public virtual string GetEntityClassName(XCObjectTypeBase obj)
+        {
+            var preffix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
+            var postfix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
+
+            return $"{preffix}{obj.Name}{postfix}";
+        }
 
         //TODO: Необходимо реализовать все типы правил в базовом классе и выдавать Exception
         //в случае, если свойство не реализовано, а оно где-то вызвалось. 
@@ -58,6 +70,16 @@ namespace ZenPlatform.DataComponent.Entity
         public virtual CodeGenRule GetEntityClassPrefixRule()
         {
             return new CodeGenRule(CodeGenRuleType.EntityClassPrefixRule, "");
+        }
+
+        public string GetDtoClassName(object obj)
+        {
+            return GetDtoClassName(obj as XCObjectTypeBase);
+        }
+
+        public string GetEntityClassName(object obj)
+        {
+            return GetEntityClassName(obj as XCObjectTypeBase);
         }
 
         public virtual CodeGenRule GetInForeignPropertySetActionRule()

@@ -10,19 +10,16 @@ using ZenPlatform.QueryBuilder.Schema;
 
 namespace ZenPlatform.DocumentComponent.QueryBuilders
 {
-
     /// <summary>
     /// Компонент отвечат за то, чтобы сгенерировать инструкции для CRUD операций
     /// </summary>
-    public class DocumentQueryBuilder : QueryBuilderComponentBase
+    public class DocumentQueryBuilder
     {
-
         public DocumentQueryBuilder()
         {
-
         }
 
-        public override DBSelectQuery SelectSingleObject(XCObjectTypeBase obj, object key)
+        public DBSelectQuery SelectSingleObject(XCObjectTypeBase obj, object key)
         {
             if (!(obj is Document doc)) throw new Exception();
 

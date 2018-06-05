@@ -34,6 +34,17 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Ty
             set => _parent = value;
         }
 
+
+        /// <summary>
+        /// Инициализировать сущность.
+        /// Для примера: здесь можно сделать регистрацию кэша объектов
+        /// Вызывается после связки Компонент(Parent) -> Тип(Child)
+        /// </summary>
+        public virtual void Initialize()
+        {
+        }
+
+
         /// <summary>
         /// Загрузить зависимости.
         /// Внимание, этот метод вызывается после полной загрузки всех типов в конфигурации.
@@ -41,7 +52,6 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Ty
         /// </summary>
         public virtual void LoadDependencies()
         {
-
         }
     }
 }

@@ -3,7 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Contracts.Entity;
 
 
@@ -34,6 +37,7 @@ namespace ZenPlatform.Core
 
             Sessions = new List<Session>();
             Globals = new Dictionary<string, object>();
+
             Managers = new Dictionary<Type, IEntityManager>();
             Entityes = new Dictionary<Guid, EntityDefinition>();
         }
@@ -48,8 +52,31 @@ namespace ZenPlatform.Core
             _systemSession = new SystemSession(this, 1);
 
             Sessions.Add(_systemSession);
+
+            foreach (var type in Root.Data.ComponentTypes)
+            {
+                var componentImpl = type.Parent.ComponentImpl;
+                var manager = componentImpl.Manager;
+                var className = componentImpl.Generator.GetEntityClassName(type);
+                var dtoClassName = componentImpl.Generator.GetDtoClassName(type);
+                var csEntityType = Build.GetType(className);
+                var csDtoType = Build.GetType(dtoClassName);
+
+                RegisterManager(csEntityType, manager);
+                RegisterEntity(new EntityDefinition(type, csEntityType, csDtoType));
+            }
+
+            //TODO: добавить проверку миграций
         }
 
+        public XCRoot Root { get; set; }
+
+
+        /// <summary>
+        /// Сборка конфигурации.
+        /// В сборке хранятся все типы и бизнес логика
+        /// </summary>
+        public Assembly Build { get; set; }
 
         public Dictionary<string, object> Globals { get; set; }
 

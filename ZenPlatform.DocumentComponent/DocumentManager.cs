@@ -48,11 +48,6 @@ namespace ZenPlatform.DocumentComponent
             var def = session.Environment.GetDefinition(entity.GetType());
         }
 
-
-        public async void SaveAsync(Session session, DocumentEntity entity)
-        {
-        }
-
         private DocumentEntity CreateEntityFromDto(Session session, Type entityType, object dto)
         {
             var document = Activator.CreateInstance(entityType, session, dto) as DocumentEntity;
@@ -78,27 +73,15 @@ namespace ZenPlatform.DocumentComponent
         public object LoadDtoObject(Session session, Type type, object key)
         {
             var context = session.DataContextManger.GetContext();
+            
             var def = session.Environment.GetDefinition(type);
 
+            var dto = def.EntityConfig.Parent.ComponentImpl.Caches[def.EntityConfig.Name].Get(key.ToString());
 
-            //TODO:Сделать получение запроса обратно для объекта обра
-            //var selsct = sqlBuilder.GetSelect();
-            var selectQuery = "SELECT * FROM Invoice";
-            var command = context.CreateCommand();
-            command.CommandText = selectQuery;
-            var reader = command.ExecuteReader();
-
-            if (reader.Read())
-            {
-                var dto = Activator.CreateInstance(type);
-
-                foreach (var prop in type.GetProperties())
-                {
-                    prop.SetValue(dto, reader[prop.Name]);
-                }
-
+            if (dto != null)
                 return dto;
-            }
+
+            //TODO: загрузить объект из базы данных
 
             return null;
         }
