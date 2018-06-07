@@ -87,7 +87,7 @@ namespace ZenPlatform.DocumentComponent.Configuration
         public ChildItemCollection<Document, DocumentProperty> Properties { get; }
 
         /// <summary>
-        /// Имя связанной таблицы
+        /// Имя связанной таблицы документа
         /// 
         /// При миграции присваивается движком. В последствии хранится в конфигурации.
         /// </summary>
@@ -118,6 +118,9 @@ namespace ZenPlatform.DocumentComponent.Configuration
         public override void Initialize()
         {
             Parent.ComponentImpl.Caches.Add(this.Name, new MemoryCache(this.Name));
+
+            if (Properties.FirstOrDefault(x => x.Unique) == null)
+                Properties.Add(StandartDocumentPropertyHelper.CreateUniqueProperty());
         }
     }
 }

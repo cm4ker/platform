@@ -50,7 +50,8 @@ namespace ZenPlatform.DocumentComponent.Configuration
                 Alias = "Id",
                 Id = Guid.Parse("905208c8-e892-414f-bd48-acd70b2a901b"),
                 Types = {PlatformTypes.Guid},
-                IsSystemProperty = true
+                IsSystemProperty = true,
+                Unique = true
             };
         }
     }

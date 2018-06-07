@@ -9,16 +9,16 @@ namespace ZenPlatform.QueryBuilder
     /// </summary>
     public abstract class DBField : DBClause
     {
-        private IDBAliasedFieldContainer _owner;
+        private IDBFieldContainer _owner;
         private string _name;
 
-        protected DBField(IDBAliasedFieldContainer owner, string name)
+        protected DBField(IDBFieldContainer owner, string name)
         {
             _owner = owner;
             _name = name;
         }
 
-        public IDBAliasedFieldContainer Owner
+        public IDBFieldContainer Owner
         {
             get { return _owner; }
         }
@@ -50,7 +50,10 @@ namespace ZenPlatform.QueryBuilder
         {
             if (_owner is IDBTableDataSource)
                 return new DBSelectField(_owner as IDBTableDataSource, _name);
-            else throw new System.Exception("Field owner must be IDBTableDataSource."); // to do Сделать отдельный класс исключений. или ваще снести эту функцию.
+            else
+                throw
+                    new System.Exception(
+                        "Field owner must be IDBTableDataSource."); // to do пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
         }
 
         /*
@@ -100,8 +103,6 @@ namespace ZenPlatform.QueryBuilder
             }
 
             return this.Name == field.Name && this.Schema.Equals(field.Schema);
-
-
         }
 
         public DBField Clone(IDBAliasedFieldContainer owner)
@@ -111,6 +112,5 @@ namespace ZenPlatform.QueryBuilder
             owner.Fields.Add(result);
             return result;
         }
-
     }
 }

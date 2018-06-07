@@ -3,9 +3,9 @@ using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.
 
 namespace ZenPlatform.Core
 {
-    public class EntityDefinition
+    public class EntityMetadata
     {
-        public EntityDefinition(XCObjectTypeBase entityConfig, Type entityType, Type dtoType)
+        public EntityMetadata(XCObjectTypeBase entityConfig, Type entityType, Type dtoType)
         {
             EntityConfig = entityConfig;
             EntityType = entityType;

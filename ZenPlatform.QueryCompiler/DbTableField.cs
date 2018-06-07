@@ -4,11 +4,9 @@ namespace ZenPlatform.QueryBuilder
 {
     public class DBTableField : DBField
     {
-
         public DBTableField(DBTable owner, string name) : base(owner, name)
         {
             base.CompileExpression = "[{OwnerName}].[{Name}]";
-
         }
 
         public override string Compile(bool recompile = false)
@@ -17,7 +15,8 @@ namespace ZenPlatform.QueryBuilder
                 ? (Owner as DBTable).Name
                 : (Owner as DBTable).Alias;
 
-            return $"[{ownerName}].[{Name}]"; //StandartCompilers.SimpleCompiler(base.CompileExpression, new { OwnerName = ownerName, Name });
+            return
+                $"[{ownerName}].[{Name}]"; //StandartCompilers.SimpleCompiler(base.CompileExpression, new { OwnerName = ownerName, Name });
         }
     }
 
@@ -30,7 +29,7 @@ namespace ZenPlatform.QueryBuilder
 
         public override string Compile(bool recompile = false)
         {
-            return $"[{Owner.Alias}].[{Name}]";
+            return $"[{(Owner as IDBAliasedFieldContainer).Alias}].[{Name}]";
         }
     }
 }

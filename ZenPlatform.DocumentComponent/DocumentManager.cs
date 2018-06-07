@@ -6,6 +6,10 @@ using ZenPlatform.Data;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.DataComponent.QueryBuilders;
+using ZenPlatform.DocumentComponent.Configuration;
+using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Builders;
+using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.DocumentComponent
 {
@@ -31,7 +35,7 @@ namespace ZenPlatform.DocumentComponent
 
         public DocumentEntity Create(Session session, Type entityType)
         {
-            var def = session.Environment.GetDefinition(entityType);
+            var def = session.Environment.GetMetadata(entityType);
 
             if (!CheckType(def.EntityType)) throw new Exception($"Wrong manager for entity type: {def.EntityType}");
 
@@ -45,7 +49,7 @@ namespace ZenPlatform.DocumentComponent
 
         public void Save(Session session, DocumentEntity entity)
         {
-            var def = session.Environment.GetDefinition(entity.GetType());
+            var def = session.Environment.GetMetadata(entity.GetType());
         }
 
         private DocumentEntity CreateEntityFromDto(Session session, Type entityType, object dto)
@@ -56,7 +60,7 @@ namespace ZenPlatform.DocumentComponent
 
         public DocumentEntity Load(Session session, Type entityType, object key)
         {
-            var def = session.Environment.GetDefinition(entityType);
+            var def = session.Environment.GetMetadata(entityType);
 
             var dto = LoadDtoObject(session, def.DtoType, key);
 
@@ -72,14 +76,26 @@ namespace ZenPlatform.DocumentComponent
         /// <returns></returns>
         public object LoadDtoObject(Session session, Type type, object key)
         {
+            // Получить контекс данных 
             var context = session.DataContextManger.GetContext();
-            
-            var def = session.Environment.GetDefinition(type);
+
+            var def = session.Environment.GetMetadata(type);
+
+            var conf = def.EntityConfig as Document;
 
             var dto = def.EntityConfig.Parent.ComponentImpl.Caches[def.EntityConfig.Name].Get(key.ToString());
 
             if (dto != null)
                 return dto;
+
+
+            DBSelectQuery s = new DBSelectQuery();
+
+            s.From(conf.RelTableName)
+                .Select(new DBSelectStar(s))
+                .Where("Id", CompareType.Equals, "@p0");
+
+            var cmd = context.CreateCommand();
 
             //TODO: загрузить объект из базы данных
 
