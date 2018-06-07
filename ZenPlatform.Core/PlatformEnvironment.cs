@@ -39,7 +39,7 @@ namespace ZenPlatform.Core
             Globals = new Dictionary<string, object>();
 
             Managers = new Dictionary<Type, IEntityManager>();
-            Entityes = new Dictionary<Guid, EntityDefinition>();
+            Entityes = new Dictionary<Guid, EntityMetadata>();
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace ZenPlatform.Core
                 var csDtoType = Build.GetType(dtoClassName);
 
                 RegisterManager(csEntityType, manager);
-                RegisterEntity(new EntityDefinition(type, csEntityType, csDtoType));
+                RegisterEntity(new EntityMetadata(type, csEntityType, csDtoType));
             }
 
             //TODO: добавить проверку миграций
@@ -82,7 +82,7 @@ namespace ZenPlatform.Core
 
         public IList<Session> Sessions { get; }
 
-        public IDictionary<Guid, EntityDefinition> Entityes { get; }
+        public IDictionary<Guid, EntityMetadata> Entityes { get; }
 
         public IDictionary<Type, IEntityManager> Managers { get; }
 
@@ -152,12 +152,12 @@ namespace ZenPlatform.Core
             throw new Exception($"Manager for type {type.Name} not found");
         }
 
-        public void RegisterEntity(EntityDefinition definition)
+        public void RegisterEntity(EntityMetadata metadata)
         {
-            Entityes.Add(definition.Key, definition);
+            Entityes.Add(metadata.Key, metadata);
         }
 
-        public EntityDefinition GetDefinition(Guid key)
+        public EntityMetadata GetMetadata(Guid key)
         {
             if (Entityes.TryGetValue(key, out var entityDefinition))
             {
@@ -172,7 +172,7 @@ namespace ZenPlatform.Core
         /// </summary>
         /// <param name="type">Типом может быть объект DTO или объект Entity</param>
         /// <returns></returns>
-        public EntityDefinition GetDefinition(Type type)
+        public EntityMetadata GetMetadata(Type type)
         {
             var entityDefinition = Entityes.First(x => x.Value.EntityType == type || x.Value.DtoType == type).Value;
             return entityDefinition;

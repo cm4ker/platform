@@ -14,7 +14,8 @@ namespace ZenPlatform.QueryBuilder
         }
 
 
-        public DBSelectField(IDBDataSource owner, string name, DBFieldSchema schema, string alias = "") : this(owner, name, alias)
+        public DBSelectField(IDBDataSource owner, string name, DBFieldSchema schema, string alias = "") : this(owner,
+            name, alias)
         {
             Schema = schema;
         }
@@ -29,7 +30,10 @@ namespace ZenPlatform.QueryBuilder
             }
 
             if (Owner != null)
-                return StandartCompilers.CompileAliasedObject($"[{Owner.Alias}].[{Name}]", Alias);
+                if (Owner is IDBAliasedFieldContainer container)
+                    return StandartCompilers.CompileAliasedObject($"[{container.Alias}].[{Name}]", Alias);
+                else
+                    return StandartCompilers.CompileAliasedObject($"[{Name}]", Alias);
             else
                 return $"{Name} AS {Alias}";
         }
@@ -42,6 +46,19 @@ namespace ZenPlatform.QueryBuilder
         public string Alias
         {
             get { return _alias; }
+        }
+    }
+
+
+    public class DBSelectStar : DBField
+    {
+        public DBSelectStar(IDBFieldContainer owner) : base(owner, "")
+        {
+        }
+
+        public override string Compile(bool recompile = false)
+        {
+            return "*";
         }
     }
 
