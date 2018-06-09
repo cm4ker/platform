@@ -1,14 +1,13 @@
 namespace ZenPlatform.QueryBuilder
 {
-    public class DBFixedTokenClause : DBClause
+    public class DBRawTokenClause : DBClause
     {
         private readonly string _token;
 
-        public DBFixedTokenClause(string token)
+        public DBRawTokenClause(string token)
         {
             _token = token;
         }
-
 
         public override string Compile(bool recompile = false)
         {

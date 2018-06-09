@@ -6,7 +6,7 @@ namespace ZenPlatform.QueryBuilder
     /// This class is obsolete
     /// </summary>
     [Obsolete]
-    public class DbSumCompileTransformation : DBCompileTransformation
+    public class DBSumCompileTransformation : DBCompileTransformation
     {
         public override string Apply(string token)
         {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Resources;
 using System.Runtime.InteropServices;
+using SqlKata.QueryBuilder;
 using ZenPlatform.Core;
 using ZenPlatform.Data;
 using ZenPlatform.DataComponent;
@@ -88,14 +90,13 @@ namespace ZenPlatform.DocumentComponent
             if (dto != null)
                 return dto;
 
+            var q = new Query();
 
-            DBSelectQuery s = new DBSelectQuery();
-
-            s.From(conf.RelTableName)
-                .Select(new DBSelectStar(s))
-                .Where("Id", CompareType.Equals, "@p0");
+            q.From(conf.RelTableName);
+            q.Select("*");
 
             var cmd = context.CreateCommand();
+
 
             //TODO: загрузить объект из базы данных
 
@@ -108,7 +109,6 @@ namespace ZenPlatform.DocumentComponent
 
         public object GetKey(Session session, DocumentEntity entity)
         {
-            //Todo: Необходиом получить ключ, в не зависимости от отго, какого типа ключ, составной или не составной
             throw new NotImplementedException();
         }
     }
