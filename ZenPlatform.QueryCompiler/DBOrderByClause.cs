@@ -20,8 +20,8 @@ namespace ZenPlatform.QueryBuilder
         {
             if (_clauses.Count > 0)
             {
-                _clauses.Add(new DBFixedTokenClause(","));
-                _clauses.Add(new DBFixedTokenClause(" "));
+                _clauses.Add(new DBRawTokenClause(","));
+                _clauses.Add(new DBRawTokenClause(" "));
             }
 
             _clauses.Add(clause);
@@ -31,12 +31,12 @@ namespace ZenPlatform.QueryBuilder
         {
             if (_clauses.Count > 0)
             {
-                _clauses.Add(new DBFixedTokenClause(","));
-                _clauses.Add(new DBFixedTokenClause(" "));
+                _clauses.Add(new DBRawTokenClause(","));
+                _clauses.Add(new DBRawTokenClause(" "));
             }
             _clauses.Add(clause);
-            _clauses.Add(new DBFixedTokenClause(" "));
-            _clauses.Add(new DBFixedTokenClause(SQLTokens.DESC));
+            _clauses.Add(new DBRawTokenClause(" "));
+            _clauses.Add(new DBRawTokenClause(SQLTokens.DESC));
         }
 
         public object Clone()

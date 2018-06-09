@@ -14,16 +14,16 @@ namespace ZenPlatform.QueryBuilder
 
         public void AddIsNullClause(DBClause clause, bool negotiation = false)
         {
-            var openBracket = new DBFixedTokenClause("(");
-            var spaceToten = new DBFixedTokenClause(" ");
-            var isToken = new DBFixedTokenClause(SQLTokens.IS);
-            var nullToken = new DBFixedTokenClause(SQLTokens.NULL);
-            var closeBracket = new DBFixedTokenClause(")");
+            var openBracket = new DBRawTokenClause("(");
+            var spaceToten = new DBRawTokenClause(" ");
+            var isToken = new DBRawTokenClause(SQLTokens.IS);
+            var nullToken = new DBRawTokenClause(SQLTokens.NULL);
+            var closeBracket = new DBRawTokenClause(")");
 
             if (negotiation)
             {
-                var not = new DBFixedTokenClause(SQLTokens.NOT);
-                var space = new DBFixedTokenClause(" ");
+                var not = new DBRawTokenClause(SQLTokens.NOT);
+                var space = new DBRawTokenClause(" ");
                 _clauses.AddRange(new[] { not, space });
             }
 
@@ -33,13 +33,13 @@ namespace ZenPlatform.QueryBuilder
 
         public void AddClause(DBClause clause1, CompareType type, DBClause clause2, bool negotiation = false)
         {
-            var openBracket = new DBFixedTokenClause("(");
+            var openBracket = new DBRawTokenClause("(");
             var comparer = type.GetCompareToken();
-            var closeBracket = new DBFixedTokenClause(")");
-            var space = new DBFixedTokenClause(" ");
+            var closeBracket = new DBRawTokenClause(")");
+            var space = new DBRawTokenClause(" ");
             if (negotiation)
             {
-                var not = new DBFixedTokenClause(SQLTokens.NOT);
+                var not = new DBRawTokenClause(SQLTokens.NOT);
                 _clauses.AddRange(new[] { not, space });
             }
             _clauses.AddRange(new[] { openBracket, clause1, space, comparer, space, clause2, closeBracket });

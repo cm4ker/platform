@@ -11,7 +11,6 @@ namespace ZenPlatform.QueryBuilder
 
         public DBWhereClause()
         {
-
             _logicalClause = new DBLogicalClause();
         }
 
@@ -28,6 +27,16 @@ namespace ZenPlatform.QueryBuilder
         public DBLogicalOperation WhereNot(DBClause clause1, CompareType type, DBClause clause2)
         {
             return _logicalClause.Where(clause1, type, clause2, true);
+        }
+
+        public DBLogicalOperation WhereIsNull(DBClause clause)
+        {
+            return _logicalClause.WhereIsNull(clause);
+        }
+
+        public DBLogicalOperation WhereIsNotNull(DBClause clause)
+        {
+            return _logicalClause.WhereIsNotNull(clause);
         }
 
         public DBParameterCollection Parameters

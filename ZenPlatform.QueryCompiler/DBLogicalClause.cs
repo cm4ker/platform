@@ -21,7 +21,8 @@ namespace ZenPlatform.QueryBuilder
             _parameters = new DBParameterCollection();
         }
 
-        private void Ops_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Ops_CollectionChanged(object sender,
+            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
@@ -58,7 +59,6 @@ namespace ZenPlatform.QueryBuilder
                 {
                     _parameters.Remove(item);
                 }
-
             }
         }
 
@@ -76,16 +76,13 @@ namespace ZenPlatform.QueryBuilder
             {
                 result.Operations.Add(op);
             }
-            
+
             return result;
         }
 
         public DBParameterCollection Parameters
         {
-            get
-            {
-                return _parameters;
-            }
+            get { return _parameters; }
         }
 
         public override string Compile(bool recompile = false)
@@ -95,22 +92,30 @@ namespace ZenPlatform.QueryBuilder
             {
                 sb.Append(operation.Compile());
             }
+
             return sb.ToString();
         }
 
         public DBLogicalOperation Where(DBClause clause1, CompareType compareType, DBClause clause2, bool negotiation)
         {
-            var newOp = new DBLogicalOperation(this, DBLogicalChainType.And, clause1, compareType, clause2, negotiation);
+            var newOp = new DBLogicalOperation(this, DBLogicalChainType.And, clause1, compareType, clause2,
+                negotiation);
             Operations.Add(newOp);
             return newOp;
         }
 
-        //public DBLogicalOperation Where(DBClause clause1)
-        //{
-        //    var newOp = new DBLogicalOperation(this, DBLogicalChainType.And, clause1, false);
-        //    Operations.Add(newOp);
-        //    return newOp;
-        //}
+        public DBLogicalOperation WhereIsNull(DBClause clause)
+        {
+            var newOp = new DBLogicalOperation(this, DBLogicalChainType.And, clause, false);
+            Operations.Add(newOp);
+            return newOp;
+        }
 
+        public DBLogicalOperation WhereIsNotNull(DBClause clause)
+        {
+            var newOp = new DBLogicalOperation(this, DBLogicalChainType.And, clause, true);
+            Operations.Add(newOp);
+            return newOp;
+        }
     }
 }

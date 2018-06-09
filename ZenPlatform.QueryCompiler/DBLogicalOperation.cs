@@ -16,11 +16,10 @@ namespace ZenPlatform.QueryBuilder
             _parameters.OnChange += _parameters_OnChange;
             _owner = owner;
             _chainType = chainType;
-            
-
         }
 
-        private void _parameters_OnChange(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void _parameters_OnChange(object sender,
+            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (_owner != null)
             {
@@ -36,10 +35,10 @@ namespace ZenPlatform.QueryBuilder
                         _owner.Parameters.Remove(item as DBParameter);
                     }
             }
-
         }
 
-        public DBLogicalOperation(DBLogicalClause owner, DBLogicalChainType chainType, DBClause clause1, CompareType compareType, DBClause clause2, bool negotiation)
+        public DBLogicalOperation(DBLogicalClause owner, DBLogicalChainType chainType, DBClause clause1,
+            CompareType compareType, DBClause clause2, bool negotiation)
             : this(owner, chainType)
         {
             var compareOp = new DBCompareOperation();
@@ -54,11 +53,22 @@ namespace ZenPlatform.QueryBuilder
             _operation = compareOp;
         }
 
+        public DBLogicalOperation(DBLogicalClause owner, DBLogicalChainType chainType, DBClause clause1,
+            bool negotiation)
+            : this(owner, chainType)
+        {
+            var compareOp = new DBCompareOperation();
+            compareOp.AddIsNullClause(clause1, negotiation);
+
+            if (clause1 is DBParameter) _parameters.Add(clause1 as DBParameter, true);
+
+            _operation = compareOp;
+        }
+
         public DBLogicalOperation(DBLogicalClause owner, DBLogicalOperation op, DBLogicalChainType type,
             DBClause clause1, CompareType compareType, DBClause clause2, bool negotiation)
             : this(owner, type, clause1, compareType, clause2, negotiation)
         {
-
             var chainedOp = op;
             while (chainedOp._chainedToken != null)
             {
@@ -70,14 +80,6 @@ namespace ZenPlatform.QueryBuilder
             op._chainType = type;
         }
 
-        //public DBLogicalOperation(DBLogicalClause owner, DBLogicalOperation op, DBLogicalChainType type,
-        //    DBClause clause)
-        //    : this(owner, type, clause)
-        //{
-        //    op._chainedToken = this;
-        //    op._chainType = type;
-        //}
-
         public void CompareOperation(DBClause clause1, CompareType type, DBClause clause2)
         {
             var compareOp = new DBCompareOperation();
@@ -87,7 +89,7 @@ namespace ZenPlatform.QueryBuilder
 
         public DBLogicalClause Owner => _owner;
         public DBParameterCollection Parameters => _parameters;
-        
+
         public override string Compile(bool recompile = false)
         {
             var sb = new StringBuilder();

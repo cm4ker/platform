@@ -5,17 +5,17 @@ namespace ZenPlatform.QueryBuilder
 
     public static class DBExtensinons
     {
-        public static DBFixedTokenClause GetCompareToken(this CompareType compare)
+        public static DBRawTokenClause GetCompareToken(this CompareType compare)
         {
             switch (compare)
             {
                 case CompareType.Equals:
-                    return new DBFixedTokenClause("=");
+                    return new DBRawTokenClause("=");
                 case
                 CompareType.GreatThen:
-                    return new DBFixedTokenClause(">");
+                    return new DBRawTokenClause(">");
                 case CompareType.In:
-                    return new DBFixedTokenClause(SQLTokens.IN);
+                    return new DBRawTokenClause(SQLTokens.IN);
                 default:
                     throw new NotSupportedException();
             }

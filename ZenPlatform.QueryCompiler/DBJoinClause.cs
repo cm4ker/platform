@@ -43,9 +43,9 @@ namespace ZenPlatform.QueryBuilder
 
         public DBJoinClause On(DBClause clause1, CompareType compare, DBClause clause2)
         {
-            var openBracket = new DBFixedTokenClause("(");
+            var openBracket = new DBRawTokenClause("(");
             var comparer = compare.GetCompareToken();
-            var closeBracket = new DBFixedTokenClause(")");
+            var closeBracket = new DBRawTokenClause(")");
 
             _clauses.AddRange(new[] { openBracket, clause1, comparer, clause2, closeBracket });
 
@@ -55,7 +55,7 @@ namespace ZenPlatform.QueryBuilder
         public DBJoinClause AndOn(DBClause clause1, CompareType compare, DBClause clause2)
         {
             if (_clauses.Any())
-                _clauses.Add(new DBFixedTokenClause(SQLTokens.AND));
+                _clauses.Add(new DBRawTokenClause(SQLTokens.AND));
 
             return On(clause1, compare, clause2);
         }
