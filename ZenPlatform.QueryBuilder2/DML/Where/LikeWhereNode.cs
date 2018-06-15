@@ -1,4 +1,6 @@
-﻿namespace ZenPlatform.QueryBuilder2
+﻿using ZenPlatform.QueryBuilder2.Select;
+
+namespace ZenPlatform.QueryBuilder2
 {
     public class LikeWhereNode : WhereExpression
     {
@@ -9,6 +11,8 @@
         {
             Expression = expression;
             Pattern = pattern;
+
+            Childs.AddRange(new[] {expression, new RawSqlNode(" LIKE "), pattern});
         }
     }
 }
