@@ -15,7 +15,7 @@ namespace ZenPlatform.InformationRegisterComponent.Configuration
     {
         protected override IComponentType CreateNewComponentType(PComponent component, XmlConfInformationRegister conf)
         {
-            return new PInformationRegisterObjectType(conf.Name, conf.Id, component);
+            return new PInformationRegisterObjectType(conf.Name, conf.Guid, component);
         }
     }
 

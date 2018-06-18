@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
 
 namespace ZenPlatform.AcumulateRegisterComponent.Configuration.XmlConfiguration
 {
     [XmlRoot("AcсumulateRegister")]
-    public class XmlConfAcumulateRegister : XmlConfComponentBase
+    public class XmlConfAcumulateRegister : XCObjectTypeBase
     {
       
         [XmlElement]
@@ -20,7 +21,7 @@ namespace ZenPlatform.AcumulateRegisterComponent.Configuration.XmlConfiguration
 
     }
 
-    public class XmlConfAcumulateRegisterProperty : XmlConfComponentPropertyBase
+    public class XmlConfAcumulateRegisterProperty : XCObjectPropertyBase
     {
     }
 }

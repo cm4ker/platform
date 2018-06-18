@@ -14,7 +14,7 @@
       <Menu>
         <MenuItem Header="Меню">
           <MenuItem Header="Сохранить"></MenuItem>
-          <MenuItem Header="Выходы"></MenuItem>
+          <MenuItem Header="Выход"></MenuItem>
         </MenuItem>
       </Menu>
     </Grid>

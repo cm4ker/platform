@@ -11,14 +11,13 @@
         * 
         */
 
-
     public class StandartGetExpressionParameters
     {
         /// <summary>
         /// Имя компонента
         /// </summary>
-        public string ComponentName { get; set; }
-        
+        public string ComponentSpace { get; set; }
+
         /// <summary>
         /// Имя объекта
         /// </summary>
@@ -40,7 +39,7 @@
         /// <summary>
         /// Имя компонента
         /// </summary>
-        public string ComponentName { get; set; }
+        public string ComponentSpace { get; set; }
 
         /// <summary>
         /// Имя объекта
