@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using ZenPlatform.QueryBuilder2.DML.Delete;
+using ZenPlatform.QueryBuilder2.DML.Insert;
 using ZenPlatform.QueryBuilder2.From;
 using ZenPlatform.QueryBuilder2.ParenChildCollection;
 using ZenPlatform.QueryBuilder2.Select;
@@ -85,6 +86,12 @@ namespace ZenPlatform.QueryBuilder2
                 .CaseIs<DeleteNode>(i => VisitDeleteNode(i, sb))
                 .CaseIs<SelectNode>((i) => { VisitSelectNode(i, sb); })
                 .CaseIs<UpdateNode>(i => VisitUpdateNode(i, sb))
+                .CaseIs<InsertIntoNode>(i => VisitInsertIntoNode(i, sb))
+                .CaseIs<TableWithColumnsNode>(i => VisitTableWithColumnsNode(i, sb))
+                .CaseIs<OpenBraketNode>(i => VisitOpenBracketNode(i, sb))
+                .CaseIs<CloseBracketNode>(i => VisitCloseBracketNode(i, sb))
+                .CaseIs<InsertValuesNode>(i => VisitInsertValuesNode(i, sb))
+                .CaseIs<ColumnListNode>(i => VisitColumnListNode(i, sb))
                 .CaseIs<SetNode>(i => VisitSetNode(i, sb))
                 .CaseIs<FromNode>((i) => { VisitFromNode(i, sb); })
                 .CaseIs<WhereNode>(i => VisitWhereNode(i, sb))
@@ -107,6 +114,51 @@ namespace ZenPlatform.QueryBuilder2
                 .CaseIs<LikeWhereNode>(i => VisitLikeWhereNode(i, sb))
                 .CaseIs<StringLiteralNode>(i => VisitStringLiteralNode(i, sb))
                 .Case(i => true, () => throw new NotSupportedException(node.GetType().Name));
+        }
+
+        private void VisitColumnListNode(ColumnListNode columnListNode, StringBuilder sb)
+        {
+            VisitChilds(columnListNode, sb);
+        }
+
+        private void VisitCloseBracketNode(CloseBracketNode closeBracketNode, StringBuilder sb)
+        {
+            sb.Append(CloseBracket);
+        }
+
+        private void VisitOpenBracketNode(OpenBraketNode openBraketNode, StringBuilder sb)
+        {
+            sb.Append(OpenBracket);
+        }
+
+        private void VisitInsertValuesNode(InsertValuesNode insertValuesNode, StringBuilder sb)
+        {
+            sb.Append("VALUES").Append(OpenBracket);
+
+            var last = insertValuesNode.Childs.Last();
+
+            VisitChildsForeach(insertValuesNode, sb, (n, b) =>
+            {
+                VisitNode(n, sb);
+
+                if (n != last)
+                {
+                    sb.Append(Comma).Append(" ");
+                }
+            });
+            sb.Append(CloseBracket);
+        }
+
+        private void VisitTableWithColumnsNode(TableWithColumnsNode tableWithColumnsNode, StringBuilder sb)
+        {
+            VisitChilds(tableWithColumnsNode, sb);
+            sb.Append(" ");
+        }
+
+        private void VisitInsertIntoNode(InsertIntoNode insertIntoNode, StringBuilder sb)
+        {
+            sb.Append("INSERT INTO ");
+            VisitChilds(insertIntoNode, sb);
         }
 
         protected virtual void VisitStringLiteralNode(StringLiteralNode stringLiteralNode, StringBuilder sb)

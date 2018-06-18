@@ -89,10 +89,13 @@ namespace ZenPlatform.DocumentComponent.Configuration
         /// <summary>
         /// Имя связанной таблицы документа
         /// 
-        /// При миграции присваивается движком. В последствии хранится в конфигурации.
+        /// При миграции присваивается движком. В последствии хранится в структурых инициализации конкретной базы.
+        /// <para></para>
         /// </summary>
+        //TODO: Продумать структуру, в которой будут храниться сопоставление Тип -> Дополнительные настройки компонента 
         [XmlElement]
         public string RelTableName { get; set; }
+
 
         public override void LoadDependencies()
         {
