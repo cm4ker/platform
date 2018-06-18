@@ -1,7 +1,8 @@
 ﻿using System;
-using ZenPlatform.QueryBuilder2.From;
-using ZenPlatform.QueryBuilder2.Select;
-using ZenPlatform.QueryBuilder2.Where;
+using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.DML.From;
+using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.QueryBuilder2.DML.Where;
 
 namespace ZenPlatform.QueryBuilder2.DML.Delete
 {
@@ -26,16 +27,16 @@ namespace ZenPlatform.QueryBuilder2.DML.Delete
             return this;
         }
 
-        public DeleteQueryNode Delete(Func<NodeFactory, TableNode> exp)
+        public DeleteQueryNode Delete(Func<NodeFactory, AliasedTableNode> exp)
         {
             var factory = new NodeFactory();
             _delete.Add(exp(factory));
             return this;
         }
 
-        public DeleteQueryNode From(string tableName, Action<TableNode> tableOptions)
+        public DeleteQueryNode From(string tableName, Action<AliasedTableNode> tableOptions)
         {
-            var table = new TableNode(tableName);
+            var table = new AliasedTableNode(tableName);
 
             tableOptions(table);
 
@@ -96,9 +97,5 @@ namespace ZenPlatform.QueryBuilder2.DML.Delete
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));
             return this;
         }
-    }
-
-    public class DeleteNode : SqlNode
-    {
     }
 }

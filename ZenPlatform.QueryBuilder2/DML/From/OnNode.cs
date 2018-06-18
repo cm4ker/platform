@@ -1,4 +1,7 @@
-﻿namespace ZenPlatform.QueryBuilder2.From
+﻿using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.DML.Select;
+
+namespace ZenPlatform.QueryBuilder2.DML.From
 {
     public class OnNode : SqlNode
     {

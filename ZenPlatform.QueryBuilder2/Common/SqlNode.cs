@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ZenPlatform.QueryBuilder2.ParenChildCollection;
 
-namespace ZenPlatform.QueryBuilder2
+namespace ZenPlatform.QueryBuilder2.Common
 {
     public class SqlNode : IChildItem<SqlNode>
     {

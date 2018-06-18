@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Data;
-using System.Reflection.Metadata.Ecma335;
-using ZenPlatform.QueryBuilder2.From;
-using ZenPlatform.QueryBuilder2.Where;
+using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.DML.From;
+using ZenPlatform.QueryBuilder2.DML.GroupBy;
+using ZenPlatform.QueryBuilder2.DML.Having;
+using ZenPlatform.QueryBuilder2.DML.Where;
 
-namespace ZenPlatform.QueryBuilder2.Select
+namespace ZenPlatform.QueryBuilder2.DML.Select
 {
     public partial class SelectQueryNode : SqlNode
     {
@@ -25,40 +26,41 @@ namespace ZenPlatform.QueryBuilder2.Select
             Childs.AddRange(new SqlNode[] {_select, _from, _where, _groupBy, _having});
         }
 
+
+        public SelectQueryNode WithTop(int count)
+        {
+            _select.WithTop(count);
+            return this;
+        }
+
         public SelectQueryNode Select(string fieldName)
         {
-            _select.Add(new SelectFieldNode(fieldName));
+            _select.Select(fieldName);
             return this;
         }
 
         public SelectQueryNode Select(string fieldName, string alias)
         {
-            _select.Add(new SelectFieldNode(fieldName, alias));
+            _select.Select(fieldName, alias);
             return this;
         }
 
 
         public SelectQueryNode SelectRaw(string raw)
         {
-            _select.Add(new RawSqlNode(raw));
+            _select.SelectRaw(raw);
             return this;
         }
 
         public SelectQueryNode Select(string tableName, string fieldName, string alias)
         {
-            _select.Add(new SelectFieldNode(tableName, fieldName, alias));
+            _select.Select(tableName, fieldName, alias);
             return this;
         }
 
-        public SelectQueryNode Select(string fieldName, string tableSchema, string tableName, string alias)
+        public SelectQueryNode From(string tableName, Action<AliasedTableNode> tableOptions)
         {
-            _select.Add(new SelectFieldNode(fieldName, alias));
-            return this;
-        }
-
-        public SelectQueryNode From(string tableName, Action<TableNode> tableOptions)
-        {
-            var table = new TableNode(tableName);
+            var table = new AliasedTableNode(tableName);
 
             tableOptions(table);
 
@@ -119,51 +121,6 @@ namespace ZenPlatform.QueryBuilder2.Select
             var factory = new NodeFactory();
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));
             return this;
-        }
-    }
-
-    public class FieldNode : SqlNode
-    {
-        public FieldNode(string fieldName)
-        {
-            Childs.Add(new IdentifierNode(fieldName));
-        }
-
-        public FieldNode WithParent(string parentName)
-        {
-            Childs.Insert(0, new IdentifierNode(parentName));
-            Childs.Insert(1, new SchemaSeparatorNode());
-
-            return this;
-        }
-    }
-
-    public class RawSqlNode : SqlNode
-    {
-        public RawSqlNode(string raw)
-        {
-            Raw = raw;
-        }
-
-        public string Raw { get; set; }
-    }
-
-    public class StringLiteralNode : SqlNode
-    {
-        public string RawString { get; }
-
-        public StringLiteralNode(string rawString)
-        {
-            RawString = rawString;
-        }
-    }
-
-
-    public class IsNullWhereNode : WhereNode
-    {
-        public IsNullWhereNode(SqlNode exp)
-        {
-            Childs.Add(exp);
         }
     }
 }

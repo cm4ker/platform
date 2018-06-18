@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.QueryBuilder2
+﻿namespace ZenPlatform.QueryBuilder2.Common
 {
     public interface IAliasedNode
     {

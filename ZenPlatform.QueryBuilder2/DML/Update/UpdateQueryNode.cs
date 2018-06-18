@@ -1,9 +1,10 @@
 ﻿using System;
-using ZenPlatform.QueryBuilder2.From;
-using ZenPlatform.QueryBuilder2.Select;
-using ZenPlatform.QueryBuilder2.Where;
+using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.DML.From;
+using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.QueryBuilder2.DML.Where;
 
-namespace ZenPlatform.QueryBuilder2.Update
+namespace ZenPlatform.QueryBuilder2.DML.Update
 {
     public class UpdateQueryNode : SqlNode
     {
@@ -27,7 +28,7 @@ namespace ZenPlatform.QueryBuilder2.Update
             return this;
         }
 
-        public UpdateQueryNode Update(Func<NodeFactory, TableNode> exp)
+        public UpdateQueryNode Update(Func<NodeFactory, AliasedTableNode> exp)
         {
             var factory = new NodeFactory();
             _update.Add(exp(factory));
@@ -56,9 +57,9 @@ namespace ZenPlatform.QueryBuilder2.Update
             return this;
         }
 
-        public UpdateQueryNode From(string tableName, Action<TableNode> tableOptions)
+        public UpdateQueryNode From(string tableName, Action<AliasedTableNode> tableOptions)
         {
-            var table = new TableNode(tableName);
+            var table = new AliasedTableNode(tableName);
 
             tableOptions(table);
 
@@ -118,23 +119,6 @@ namespace ZenPlatform.QueryBuilder2.Update
             var factory = new NodeFactory();
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));
             return this;
-        }
-    }
-
-    public class SetNode : SqlNode
-    {
-    }
-
-    public class UpdateNode : SqlNode
-    {
-    }
-
-
-    public class SetFieldNode : SqlNode
-    {
-        public SetFieldNode(FieldNode fieldExpression, SqlNode value)
-        {
-            Childs.AddRange(new[] {fieldExpression, new CompareOperatorNode("="), value});
         }
     }
 }

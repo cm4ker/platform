@@ -1,6 +1,6 @@
-﻿using ZenPlatform.QueryBuilder2.Where;
+﻿using ZenPlatform.QueryBuilder2.Common;
 
-namespace ZenPlatform.QueryBuilder2
+namespace ZenPlatform.QueryBuilder2.DML.Where
 {
     public class InWhereNode : SqlNode
     {
