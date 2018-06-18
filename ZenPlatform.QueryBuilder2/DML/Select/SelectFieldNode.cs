@@ -1,4 +1,7 @@
-﻿namespace ZenPlatform.QueryBuilder2
+﻿using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.DDL.CreateTable;
+
+namespace ZenPlatform.QueryBuilder2.DML.Select
 {
     public class SelectFieldNode : SqlNode
     {
@@ -9,42 +12,28 @@
 
         public SelectFieldNode(string fieldName, string alias) : this(fieldName)
         {
-            if (!string.IsNullOrEmpty(alias))
-                Childs.Add(new AliasNode(alias));
+            this.As(alias);
         }
 
         public SelectFieldNode(string tableName, string fieldName, string alias) : this(fieldName, alias)
         {
+            this.WithTableName(tableName);
+        }
+
+        public SelectFieldNode As(string alias)
+        {
+            if (!string.IsNullOrEmpty(alias))
+                Childs.Add(new AliasNode(alias));
+
+            return this;
+        }
+
+        public SelectFieldNode WithTableName(string tableName)
+        {
             Childs.Insert(0, new IdentifierNode(tableName));
-            Childs.Insert(1, new SchemaSeparatorNode());
-        }
-    }
+            Childs.Insert(1, Tokens.SchemaSeparator);
 
-    public class AliasNode : SqlNode
-    {
-//        public string Alias { get; }
-
-        public AliasNode(string alias)
-        {
-            Childs.Add(new IdentifierNode(alias));
-            //Alias = alias;
-        }
-    }
-
-    public class IdentifierNode : SqlNode
-    {
-        public string Name { get; }
-
-        public IdentifierNode(string name)
-        {
-            Name = name;
-        }
-    }
-
-    public class SchemaSeparatorNode : SqlNode
-    {
-        public SchemaSeparatorNode()
-        {
+            return this;
         }
     }
 }

@@ -1,14 +1,14 @@
 using System;
-using ZenPlatform.QueryBuilder2.From;
+using ZenPlatform.QueryBuilder2.DML.From;
 
-namespace ZenPlatform.QueryBuilder2.Select
+namespace ZenPlatform.QueryBuilder2.DML.Select
 {
     public partial class SelectQueryNode
     {
         public SelectQueryNode Join(JoinType joinType, string tableName,
-            Action<TableNode> tableOptions, Action<JoinNode> joinOptions)
+            Action<AliasedTableNode> tableOptions, Action<JoinNode> joinOptions)
         {
-            var tableNode = new TableNode(tableName);
+            var tableNode = new AliasedTableNode(tableName);
 
             tableOptions(tableNode);
 

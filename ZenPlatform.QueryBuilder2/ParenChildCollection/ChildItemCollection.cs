@@ -6,15 +6,6 @@ using System.Linq;
 namespace ZenPlatform.QueryBuilder2.ParenChildCollection
 {
     /// <summary>
-    /// Defines the contract for an object that has a parent object
-    /// </summary>
-    /// <typeparam name="TParent">Type of the parent object</typeparam>
-    public interface IChildItem<TParent> where TParent : class
-    {
-        TParent Parent { get; set; }
-    }
-
-    /// <summary>
     /// Collection of child items. This collection automatically set the
     /// Parent property of the child items when they are added or removed
     /// </summary>

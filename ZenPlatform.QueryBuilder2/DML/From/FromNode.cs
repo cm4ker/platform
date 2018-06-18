@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+﻿using ZenPlatform.QueryBuilder2.Common;
 
-namespace ZenPlatform.QueryBuilder2.From
+namespace ZenPlatform.QueryBuilder2.DML.From
 {
     public class FromNode : SqlNode
     {

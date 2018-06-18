@@ -1,6 +1,7 @@
 ﻿using System;
-using ZenPlatform.QueryBuilder2.From;
-using ZenPlatform.QueryBuilder2.Select;
+using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.DML.From;
+using ZenPlatform.QueryBuilder2.DML.Select;
 
 namespace ZenPlatform.QueryBuilder2.DML.Insert
 {
@@ -63,13 +64,5 @@ namespace ZenPlatform.QueryBuilder2.DML.Insert
          * INSERT INTO Table(a,b,c,e) VALUES() 
          * 
          */
-    }
-
-    public class InsertIntoNode : SqlNode
-    {
-    }
-
-    public class InsertValuesNode : SqlNode
-    {
     }
 }

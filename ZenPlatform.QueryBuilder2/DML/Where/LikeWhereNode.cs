@@ -1,6 +1,7 @@
-﻿using ZenPlatform.QueryBuilder2.Select;
+﻿using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.DML.Select;
 
-namespace ZenPlatform.QueryBuilder2
+namespace ZenPlatform.QueryBuilder2.DML.Where
 {
     public class LikeWhereNode : WhereExpression
     {

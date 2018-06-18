@@ -5,56 +5,20 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.DDL.CreateTable;
 using ZenPlatform.QueryBuilder2.DML.Delete;
+using ZenPlatform.QueryBuilder2.DML.From;
+using ZenPlatform.QueryBuilder2.DML.GroupBy;
+using ZenPlatform.QueryBuilder2.DML.Having;
 using ZenPlatform.QueryBuilder2.DML.Insert;
-using ZenPlatform.QueryBuilder2.From;
+using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.QueryBuilder2.DML.Update;
+using ZenPlatform.QueryBuilder2.DML.Where;
 using ZenPlatform.QueryBuilder2.ParenChildCollection;
-using ZenPlatform.QueryBuilder2.Select;
-using ZenPlatform.QueryBuilder2.Update;
-using ZenPlatform.QueryBuilder2.Where;
 
 namespace ZenPlatform.QueryBuilder2
 {
-    public class ItemSwitch<T>
-    {
-        private T _item;
-
-        private bool _executed;
-
-        private ItemSwitch(T item)
-        {
-            _item = item;
-        }
-
-        public static ItemSwitch<T> Switch(T item)
-        {
-            return new ItemSwitch<T>(item);
-        }
-
-        public ItemSwitch<T> CaseIs<TIsType>(Action<TIsType> action)
-            where TIsType : T
-        {
-            if (_item is TIsType type)
-            {
-                _executed = true;
-                action(type);
-            }
-
-            return this;
-        }
-
-        public ItemSwitch<T> Case(Func<T, bool> c, Action action)
-        {
-            if (c(_item) && !_executed)
-            {
-                _executed = true;
-                action();
-            }
-
-            return this;
-        }
-    }
-
     public abstract class SqlCompillerBase
     {
         public virtual string StartNameLiteral { get; } = "[";
@@ -101,7 +65,7 @@ namespace ZenPlatform.QueryBuilder2
                 .CaseIs<SetFieldNode>(i => VisitSetFieldNode(i, sb))
                 .CaseIs<FieldNode>((i) => { VisitFieldNode(i, sb); })
                 .CaseIs<JoinNode>((i) => { VisitJoinNode(i, sb); })
-                .CaseIs<TableNode>((i) => { VisitTableNode(i, sb); })
+                .CaseIs<AliasedTableNode>((i) => { VisitAliasedTableNode(i, sb); })
                 .CaseIs<AliasNode>((i) => { VisitAliasNode(i, sb); })
                 .CaseIs<IdentifierNode>((i) => { VisitIdentifierNode(i, sb); })
                 .CaseIs<RawSqlNode>((i) => { VisitRawSqlNode(i, sb); })
@@ -113,7 +77,22 @@ namespace ZenPlatform.QueryBuilder2
                 .CaseIs<ParameterNode>(i => VisitParameterNode(i, sb))
                 .CaseIs<LikeWhereNode>(i => VisitLikeWhereNode(i, sb))
                 .CaseIs<StringLiteralNode>(i => VisitStringLiteralNode(i, sb))
+                .CaseIs<TableNode>(i => VisitTableNode(i, sb))
+                .CaseIs<Token>(i => VisitTokens(i, sb))
                 .Case(i => true, () => throw new NotSupportedException(node.GetType().Name));
+        }
+
+        private void VisitTableNode(TableNode tableNode, StringBuilder sb)
+        {
+            VisitChilds(tableNode, sb);
+        }
+
+        private void VisitTokens(Token token, StringBuilder sb)
+        {
+            VisitChilds(token, sb);
+//            ItemSwitch<Token>
+//                .Switch(token)
+//                .CaseIs<RightBracketToken>(i=> sb.Append());
         }
 
         private void VisitColumnListNode(ColumnListNode columnListNode, StringBuilder sb)
@@ -265,9 +244,9 @@ namespace ZenPlatform.QueryBuilder2
             VisitChilds(aliasNode, sb);
         }
 
-        protected virtual void VisitTableNode(TableNode tableNode, StringBuilder sb)
+        protected virtual void VisitAliasedTableNode(AliasedTableNode aliasedTableNode, StringBuilder sb)
         {
-            VisitChilds(tableNode, sb);
+            VisitChilds(aliasedTableNode, sb);
         }
 
         protected virtual void VisitJoinNode(JoinNode joinNode, StringBuilder sb)
@@ -331,20 +310,19 @@ namespace ZenPlatform.QueryBuilder2
 
         protected virtual void VisitSelectNode(SelectNode selectNode, StringBuilder sb)
         {
-            if (!selectNode.Childs.Any())
+            if (!selectNode.HasFields)
                 return;
-            sb.Append("SELECT ");
-
-            var lastChild = selectNode.Childs.Last();
-
-            foreach (var selectNodeChild in selectNode.Childs)
-            {
-                sb.Append("\n    ");
-
-                VisitNode(selectNodeChild, sb);
-                if (selectNodeChild != lastChild)
-                    sb.AppendFormat("{0}", Comma);
-            }
+            
+            VisitChilds(selectNode, sb);
+            
+//            foreach (var selectNodeChild in selectNode.Childs)
+//            {
+//                sb.Append("\n    ");
+//
+//                VisitNode(selectNodeChild, sb);
+//                if (selectNodeChild != lastChild)
+//                    sb.AppendFormat("{0}", Comma);
+//            }
         }
 
         protected virtual void VisitSelectFieldNode(SelectFieldNode selectFieldNode, StringBuilder sb)

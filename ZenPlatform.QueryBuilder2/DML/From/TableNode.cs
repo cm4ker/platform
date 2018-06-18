@@ -1,18 +1,13 @@
-﻿namespace ZenPlatform.QueryBuilder2.From
+﻿using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.DML.Select;
+
+namespace ZenPlatform.QueryBuilder2.DML.From
 {
     public class TableNode : SqlNode
     {
         public TableNode(string tableName)
         {
             Childs.Add(new IdentifierNode(tableName));
-        }
-
-        public TableNode As(string alias)
-        {
-            if (!string.IsNullOrEmpty(alias))
-                Add(new AliasNode(alias));
-
-            return this;
         }
 
         public TableNode WithSchema(string schemaName)

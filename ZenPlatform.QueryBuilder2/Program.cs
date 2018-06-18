@@ -7,10 +7,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using ZenPlatform.QueryBuilder2.DML.Delete;
+using ZenPlatform.QueryBuilder2.DML.From;
 using ZenPlatform.QueryBuilder2.DML.Insert;
-using ZenPlatform.QueryBuilder2.From;
-using ZenPlatform.QueryBuilder2.Select;
-using ZenPlatform.QueryBuilder2.Update;
+using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.QueryBuilder2.DML.Update;
 
 namespace ZenPlatform.QueryBuilder2
 {
@@ -19,6 +19,7 @@ namespace ZenPlatform.QueryBuilder2
         static void Main(string[] args)
         {
             var q = new SelectQueryNode()
+                .WithTop(10)
                 .From("Table1", (t) => t.As("t1"))
                 .Join(JoinType.Inner, "test", t => t.As("t2"),
                     o => o.On("t1", "FiledT1", "=", "t2", "FieldT2"))
@@ -63,54 +64,6 @@ namespace ZenPlatform.QueryBuilder2
 
 
             Console.WriteLine(sb);
-        }
-    }
-
-    public class SqlServerCompiller : SqlCompillerBase
-    {
-    }
-
-    public class PostgresCompiller : SqlCompillerBase
-    {
-        public override string StartNameLiteral { get; } = "\"";
-        public override string EndNameLiteral { get; } = "\"";
-    }
-
-    public class NodeFactory
-    {
-        public FieldNode Field(string name)
-        {
-            return new FieldNode(name);
-        }
-
-        public FieldNode Field(string tableName, string name)
-        {
-            return (new FieldNode(name)).WithParent(tableName);
-        }
-
-        public TableNode Table(string tableName)
-        {
-            return new TableNode(tableName);
-        }
-
-        public TableWithColumnsNode InsertTable(string tableName)
-        {
-            return new TableWithColumnsNode(tableName);
-        }
-
-        public TableNode Table(string schemaName, string tableName)
-        {
-            return new TableNode(tableName).WithSchema(schemaName);
-        }
-
-        public ParameterNode Parameter(string name)
-        {
-            return new ParameterNode(name);
-        }
-
-        public StringLiteralNode String(string str)
-        {
-            return new StringLiteralNode(str);
         }
     }
 }
