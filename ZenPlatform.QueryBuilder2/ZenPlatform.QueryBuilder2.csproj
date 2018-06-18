@@ -5,6 +5,5 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="DDL" />
-    <Folder Include="DML\Insert" />
   </ItemGroup>
 </Project>

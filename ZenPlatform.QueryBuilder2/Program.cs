@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using ZenPlatform.QueryBuilder2.DML.Delete;
+using ZenPlatform.QueryBuilder2.DML.Insert;
 using ZenPlatform.QueryBuilder2.From;
 using ZenPlatform.QueryBuilder2.Select;
 using ZenPlatform.QueryBuilder2.Update;
@@ -47,12 +48,19 @@ namespace ZenPlatform.QueryBuilder2
                 .From("TestTable", t => t.As("t").WithSchema("dbo"))
                 .WhereLike(f => f.Field("t", "Field1"), "a%");
 
+            var i = new InsertQueryNode()
+                .InsertInto("dbo", "Test")
+                .WithFieldAndValue(x => x.Field("One"), v => v.Parameter("p0"));
+
             var sb = new StringBuilder();
             c.Compile(q, sb);
             sb.Append("\n=============================\n");
             c.Compile(u, sb);
             sb.Append("\n=============================\n");
             c.Compile(d, sb);
+            sb.Append("\n=============================\n");
+            c.Compile(i, sb);
+
 
             Console.WriteLine(sb);
         }
@@ -83,6 +91,11 @@ namespace ZenPlatform.QueryBuilder2
         public TableNode Table(string tableName)
         {
             return new TableNode(tableName);
+        }
+
+        public TableWithColumnsNode InsertTable(string tableName)
+        {
+            return new TableWithColumnsNode(tableName);
         }
 
         public TableNode Table(string schemaName, string tableName)
