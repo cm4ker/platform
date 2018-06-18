@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.Data;
-using ZenPlatform.Configuration.Data.Types.Complex;
-using ZenPlatform.Core.Entity;
-using ZenPlatform.CSharpCodeBuilder.Syntax;
+﻿using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.DataComponent;
-using ZenPlatform.DocumentComponent.Configuration;
 
 
 namespace ZenPlatform.DocumentComponent
 {
     public class DocumnetComponent : DataComponentBase<DocumentEntityGenerator, DocumentManager>
     {
-        public DocumnetComponent(PComponent component) : base(component)
+        public DocumnetComponent(XCComponent component) : base(component)
         {
-
         }
 
         public override void OnInitializing()
@@ -32,7 +23,7 @@ namespace ZenPlatform.DocumentComponent
         private void RegisterSupportedTypes()
         {
             //Выпилено 
-           // SupportedTypesManager.RegisterType(typeof(PDocumentObjectType));
+            // SupportedTypesManager.RegisterType(typeof(PDocumentObjectType));
         }
 
         private void RegisterCodeRules()

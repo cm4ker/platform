@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ZenPlatform.Configuration.Data;
 
 namespace ZenPlatform.DocumentComponent
 {
@@ -12,6 +11,5 @@ namespace ZenPlatform.DocumentComponent
         /// </summary>
         /// <param name="pobject"></param>
         /// <returns></returns>
-       
     }
 }

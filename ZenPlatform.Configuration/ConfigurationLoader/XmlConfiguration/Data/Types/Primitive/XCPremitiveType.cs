@@ -1,11 +1,10 @@
 using System;
-using System.Data;
 using Newtonsoft.Json;
 using DbType = ZenPlatform.QueryBuilder.Schema.DBType;
 
-namespace ZenPlatform.Configuration.Data
+namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive
 {
-    public abstract class PPrimetiveType : PTypeBase
+    public abstract class XCPremitiveType : XCTypeBase
     {
         public abstract int ColumnSize { get; set; }
 
@@ -15,10 +14,8 @@ namespace ZenPlatform.Configuration.Data
 
         public abstract bool IsNullable { get; set; }
 
-        [JsonIgnore]
-        public abstract DbType DBType { get; }
+        [JsonIgnore] public abstract DbType DBType { get; }
 
-        [JsonIgnore]
-        public abstract Type CLRType { get; }
+        [JsonIgnore] public abstract Type CLRType { get; }
     }
 }

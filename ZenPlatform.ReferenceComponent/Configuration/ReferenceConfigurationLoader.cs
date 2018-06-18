@@ -17,7 +17,7 @@ namespace ZenPlatform.ReferenceComponent.Configuration
 
         protected override IComponentType CreateNewComponentType(PComponent component, XmlConfReference conf)
         {
-            return new PReferenceObjectType(conf.Name, conf.Id, component);
+            return new PReferenceObjectType(conf.Name, conf.Guid, component);
         }
 
         protected override void RelsolveDependencies(PReferenceObjectType obj, XmlConfReference conf, List<IComponentType> anotherDeps)
