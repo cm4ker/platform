@@ -259,3 +259,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+.DS_Store
+ZenPlatform.DataComponent.dll
+ZenPlatform.DocumentComponent.dll
+ZenPlatform.ThinClient/Program.exe
+ZenPlatform.ThinClient/Program.netmodule
