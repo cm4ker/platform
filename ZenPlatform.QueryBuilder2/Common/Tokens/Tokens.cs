@@ -6,6 +6,8 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
     {
         public static Token SpaceToken = new SpaceToken();
         public static Token CreateToken = new CreateToken();
+        public static Token DropToken = new DropToken();
+        public static Token AlterToken = new AlterToken();
         public static Token SelectToken = new SelectToken();
         public static Token TableToken = new TableToken();
 
@@ -19,5 +21,20 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
         public static Token TabToken = new TabToken();
 
         public static Token SchemaSeparator = new SchemaSeparatorToken();
+    }
+
+
+    public class DropToken : Token
+    {
+        public DropToken() : base("DROP")
+        {
+        }
+    }
+
+    public class AlterToken : Token
+    {
+        public AlterToken() : base("ALTER")
+        {
+        }
     }
 }
