@@ -46,7 +46,7 @@ namespace ZenPlatform.QueryBuilder2
             ItemSwitch<SqlNode>
                 .Switch(node)
                 .CaseIs<SelectQueryNode>((i) => { VisitSelectQueryNode(i, sb); })
-//                .CaseIs<UpdateQueryNode>(i => VisitUpdateQueryNode(i, sb))
+                //.CaseIs<UpdateQueryNode>(i => VisitUpdateQueryNode(i, sb))
                 .CaseIs<DeleteNode>(i => VisitDeleteNode(i, sb))
                 .CaseIs<SelectNode>((i) => { VisitSelectNode(i, sb); })
                 .CaseIs<UpdateNode>(i => VisitUpdateNode(i, sb))
@@ -55,6 +55,8 @@ namespace ZenPlatform.QueryBuilder2
                 .CaseIs<OpenBraketNode>(i => VisitOpenBracketNode(i, sb))
                 .CaseIs<CloseBracketNode>(i => VisitCloseBracketNode(i, sb))
                 .CaseIs<InsertValuesNode>(i => VisitInsertValuesNode(i, sb))
+                .CaseIs<TableDefinitionNode>(i => VisitTableDefinitionNode(i, sb))
+                .CaseIs<ColumnDefinitionNode>(i => VisitColumnDefinitionNode(i, sb))
                 .CaseIs<ColumnListNode>(i => VisitColumnListNode(i, sb))
                 .CaseIs<SetNode>(i => VisitSetNode(i, sb))
                 .CaseIs<FromNode>((i) => { VisitFromNode(i, sb); })
@@ -79,7 +81,28 @@ namespace ZenPlatform.QueryBuilder2
                 .CaseIs<StringLiteralNode>(i => VisitStringLiteralNode(i, sb))
                 .CaseIs<TableNode>(i => VisitTableNode(i, sb))
                 .CaseIs<Token>(i => VisitTokens(i, sb))
-                .Case(i => true, () => throw new NotSupportedException(node.GetType().Name));
+                .CaseIs<TypeDefinitionNode>(i => VisitTypeDefinitionNode(i, sb))
+                .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        private void SimpleVisitor(SqlNode node, StringBuilder sb)
+        {
+            VisitChilds(node, sb);
+        }
+
+        private void VisitColumnDefinitionNode(ColumnDefinitionNode columnDefinitionNode, StringBuilder sb)
+        {
+            VisitChilds(columnDefinitionNode, sb);
+        }
+
+        private void VisitTableDefinitionNode(TableDefinitionNode tableDefinitionNode, StringBuilder sb)
+        {
+            VisitChilds(tableDefinitionNode, sb);
+        }
+
+        private void VisitTypeDefinitionNode(TypeDefinitionNode typeDefinitionNode, StringBuilder sb)
+        {
+            VisitChilds(typeDefinitionNode, sb);
         }
 
         private void VisitTableNode(TableNode tableNode, StringBuilder sb)
@@ -90,9 +113,9 @@ namespace ZenPlatform.QueryBuilder2
         private void VisitTokens(Token token, StringBuilder sb)
         {
             VisitChilds(token, sb);
-//            ItemSwitch<Token>
-//                .Switch(token)
-//                .CaseIs<RightBracketToken>(i=> sb.Append());
+            //            ItemSwitch<Token>
+            //                .Switch(token)
+            //                .CaseIs<RightBracketToken>(i=> sb.Append());
         }
 
         private void VisitColumnListNode(ColumnListNode columnListNode, StringBuilder sb)
@@ -268,7 +291,7 @@ namespace ZenPlatform.QueryBuilder2
                 case JoinType.Cross:
                     sb.Append("CROSS");
                     break;
-                //TODO: Добавить все
+                    //TODO: Добавить все
             }
 
             sb.Append(" JOIN ");
@@ -312,17 +335,17 @@ namespace ZenPlatform.QueryBuilder2
         {
             if (!selectNode.HasFields)
                 return;
-            
+
             VisitChilds(selectNode, sb);
-            
-//            foreach (var selectNodeChild in selectNode.Childs)
-//            {
-//                sb.Append("\n    ");
-//
-//                VisitNode(selectNodeChild, sb);
-//                if (selectNodeChild != lastChild)
-//                    sb.AppendFormat("{0}", Comma);
-//            }
+
+            //            foreach (var selectNodeChild in selectNode.Childs)
+            //            {
+            //                sb.Append("\n    ");
+            //
+            //                VisitNode(selectNodeChild, sb);
+            //                if (selectNodeChild != lastChild)
+            //                    sb.AppendFormat("{0}", Comma);
+            //            }
         }
 
         protected virtual void VisitSelectFieldNode(SelectFieldNode selectFieldNode, StringBuilder sb)
