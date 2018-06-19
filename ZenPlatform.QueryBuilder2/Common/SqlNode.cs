@@ -26,7 +26,7 @@ namespace ZenPlatform.QueryBuilder2.Common
 
         internal virtual void Add(SqlNode node)
         {
-            if (node == this) throw new Exception("Recursial dependency");
+            if (node == this) throw new Exception("Recursial dependency not allowed");
             Childs.Add(node);
         }
 
