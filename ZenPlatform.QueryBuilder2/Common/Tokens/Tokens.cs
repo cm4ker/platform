@@ -20,32 +20,4 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
 
         public static Token SchemaSeparator = new SchemaSeparatorToken();
     }
-
-    public class TopToken : Token
-    {
-        public TopToken() : base("TOP")
-        {
-        }
-    }
-
-    public class NewLineToken : Token
-    {
-        public NewLineToken() : base("\n")
-        {
-        }
-    }
-
-    public class TabToken : Token
-    {
-        public TabToken() : base("    ")
-        {
-        }
-    }
-
-    public class SchemaSeparatorToken : Token
-    {
-        public SchemaSeparatorToken() : base(".")
-        {
-        }
-    }
 }

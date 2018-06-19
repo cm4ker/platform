@@ -1,4 +1,5 @@
-﻿using ZenPlatform.QueryBuilder2.Common;
+﻿using System.Linq;
+using ZenPlatform.QueryBuilder2.Common;
 using ZenPlatform.QueryBuilder2.DDL.CreateTable;
 using ZenPlatform.QueryBuilder2.DML.Select;
 
@@ -33,7 +34,14 @@ namespace ZenPlatform.QueryBuilder2.DML.From
 
         public TableWithColumnsNode WithField(FieldNode node)
         {
+            if (_columnList.Childs.Any())
+            {
+                _columnList.Add(Tokens.CommaToken);
+                _columnList.Add(Tokens.SpaceToken);
+            }
+
             _columnList.Add(node);
+
             return this;
         }
     }

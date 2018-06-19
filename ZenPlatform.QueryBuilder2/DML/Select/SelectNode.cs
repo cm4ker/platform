@@ -9,6 +9,7 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
     public class SelectNode : SqlNode
     {
         public bool HasFields = false;
+        public TopNode _top;
 
         public SelectNode()
         {
@@ -18,9 +19,9 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
 
         public SelectNode WithTop(int count)
         {
-            Childs.Insert(2, Tokens.TopToken);
-            Childs.Insert(3, new RawSqlNode(count.ToString()));
-            Childs.Insert(4, Tokens.SpaceToken);
+            _top = new TopNode(count);
+            Childs.Insert(2, _top);
+
             return this;
         }
 

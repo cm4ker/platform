@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using ZenPlatform.QueryBuilder2.DDL.CreateTable;
 using ZenPlatform.QueryBuilder2.DML.Delete;
 using ZenPlatform.QueryBuilder2.DML.From;
 using ZenPlatform.QueryBuilder2.DML.Insert;
@@ -51,7 +52,12 @@ namespace ZenPlatform.QueryBuilder2
 
             var i = new InsertQueryNode()
                 .InsertInto("dbo", "Test")
-                .WithFieldAndValue(x => x.Field("One"), v => v.Parameter("p0"));
+                .WithFieldAndValue(x => x.Field("One"), v => v.Parameter("p0"))
+                .WithFieldAndValue(x => x.Field("Two"), f => f.Parameter("p1"));
+
+            var cr = new CreateTableQueryNode("dbo", "TestTable")
+                .WithColumn("Id", f => f.Int())
+                .WithColumn("Name", f => f.Varchar().WithSize(30));
 
             var sb = new StringBuilder();
             c.Compile(q, sb);
@@ -61,9 +67,11 @@ namespace ZenPlatform.QueryBuilder2
             c.Compile(d, sb);
             sb.Append("\n=============================\n");
             c.Compile(i, sb);
-
+            sb.Append("\n=============================\n");
+            c.Compile(cr, sb);
 
             Console.WriteLine(sb);
+            Console.ReadLine();
         }
     }
 }
