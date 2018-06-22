@@ -2,6 +2,8 @@
 
 # Вступление
 
+# <center><span style="align:center; color:red">ВНИМАНИЕ!!! Поток сознания. </span></center>
+
 В современном мире очень важно время и минимизация издержек на разрабтку. Существует достаточно много различных технологий, благодаря которым строятся современные высокопроизводительные системы. 
 
 Я два года посвятил себя разработке на 1С и глубокому изучению этой платформы. Я был удивлён, насколько просто и быстро можно накидать примитивный прототип. При этом я не концентрировался на вещах, типа: "А как же мне передать данные клиенту", или: "Нужно забиндить объект на форму". Большинство таких вещей делается автоматически. Эту идею я и выделил для себя: инструмен для разработки должен быть с максимально низким порогом вхождения. Не нужно понимать какие-то низкоуровневые вещи, нужно лишь разбираться в бизнесе и уметь перенести реальный процесс в предприятии на бумагу. Это и стало основным критерием для платформы: инструмент должен быть лёгкий и в тоже время не ограничивать потенциал опытных разработчиков.
@@ -106,17 +108,138 @@
 
 9. Сервер обновлений : отвечает за предоставление обновлений для клиента
 
-## Компонент данных
+## Компонент построителя запросов
 
+### Вступление
 
+Компонент, работающий с данными обязан предоставлять к ним какой-то удобный интерфейс, но в свою очередь платформа позволяет работать с различными СУБД. Для того, чтобы не переписывать запросы под каждую СУБД был разработан компонент генерации запросов. Он имеет унифицированное API, позволяющее собирать запросы. Имеются некоторые ограничения по его использованию. Например, не для всех СУБД есть возможность использовать те или иные инструкции. В случае, если вы воспользовались инструкцией, не поддерживаемой в провайдере СУБД, будет выдана ошибка: ```NotImplementedException```
+
+## Описание и примеры
+На начальной стадии есть следующая поддержка: (MSSQL, PostgreSQL(не полная поддержка)) 
+
+![](img2.png)
+
+Пример генерации запроса на языке ```C#```:
+
+SELECT : 
+```csharp
+var q = new SelectQueryNode()
+                .WithTop(10)
+                .From("Table1", (t) => t.As("t1"))
+                .Join(JoinType.Inner, "test", t => t.As("t2"),
+                    o => o.On("t1", "FiledT1", "=", "t2", "FieldT2"))
+                .Join(JoinType.Full,
+                    (nastedQuery) =>
+                    {
+                        nastedQuery.Select("SomeField").From("TableNasted", t => t.As("tn"))
+                            .Join(JoinType.Left, "NastedJoinTable", t => { t.As("njt"); },
+                                j => j.On("tn", "fn", "<=", "njt", "fn"))
+                            .Where(f => f.Field("f1"), "=", f => f.Parameter("Param"));
+                    },
+                    (n) => { n.As("Nasted"); }, (o) => o.On("t1", "FieldT1", "<>", "Nasted", "NastedField"))
+                .Select(tableName: "someTable", fieldName: "field1", alias: "HeyYouAreNewField")
+                .SelectRaw("CASE WHEN 1 = 1 THEN '1' ELSE '2' END")
+                .Where((f) => f.Field("field1"), "=", (f) => f.Field("field2"));
+```
+
+Результат :
+
+```sql 
+SELECT TOP 10 [someTable].[field1] AS [HeyYouAreNewField], CASE WHEN 1 = 1 THEN '1' ELSE '2' END
+FROM 
+    [Table1] AS [t1]
+    INNER JOIN [test] AS [t2] ON [t1].[FiledT1]=[t2].[FieldT2]
+    FULL JOIN (SELECT [SomeField]
+FROM 
+    [TableNasted] AS [tn]
+    LEFT JOIN [NastedJoinTable] AS [njt] ON [tn].[fn]<=[njt].[fn]
+WHERE 
+    [f1]=@Param) AS [Nasted]
+WHERE 
+    [field1]=[field2]
+
+```
+
+UPDATE : 
+```csharp
+ var u = new UpdateQueryNode()
+        .Update("t")
+        .Set(f => f.Field("t", "Field1"), v => v.Parameter("p0"))
+        .From("TestTable", "t")
+        .WhereLike(f => f.Field("t", "Field1"), "a%");
+```
+
+Результат :
+
+```sql 
+UPDATE
+    [t]
+SET
+    [t].[Field1]=@p0
+FROM 
+    [TestTable] AS [t]
+WHERE 
+    [t].[Field1] LIKE 'a%'
+```
+
+DELETE : 
+```csharp
+var d = new DeleteQueryNode()
+        .Delete("t")
+        .From("TestTable", t => t.As("t").WithSchema("dbo"))
+        .WhereLike(f => f.Field("t", "Field1"), "a%");
+```
+
+Результат :
+
+```sql 
+DELETE
+    [t]
+FROM 
+    [dbo].[TestTable] AS [t]
+WHERE 
+    [t].[Field1] LIKE 'a%'
+```
+
+INSERT : 
+```csharp
+var i = new InsertQueryNode()
+        .InsertInto("dbo", "Test")
+        .WithFieldAndValue(x => x.Field("One"), v => v.Parameter("p0"))
+        .WithFieldAndValue(x => x.Field("Two"), f => f.Parameter("p1"));
+```
+
+Результат :
+
+```sql 
+INSERT INTO [dbo].[Test]([One], [Two]) VALUES(@p0, @p1)
+```
+
+CREATE TABLE : 
+```csharp
+var cr = new CreateTableQueryNode("dbo", "someAlterTable")
+        .WithColumn("Id", f => f.Int())
+        .WithColumn("Name", f => f.Varchar(30).NotNull());
+```
+
+Результат :
+
+```sql 
+CREATE TABLE [dbo].[someAlterTable]([Id] [int],[Name] [varchar](30) NOT NULL)
+```
+
+ALTER TABLE : 
+
+```csharp
+var a = new AlterTableQueryNode("someAlterTable", t => t.WithSchema("dbo"));
+        a.AddColumn("ТристаОтсосиУТракториста", f => f.Guid().NotNull());
+```
+
+Результат :
+
+```sql 
+ALTER TABLE [dbo].[someAlterTable] ADD [ТристаОтсосиУТракториста] [uniqueidentifier] NOT NULL
+```
 
 # IDE 
 
-Платформа предназначена для быстрой разработки бизнес приложений с аналитикой для десктоп систем. 
-Компоненты системы:
-1) Компилятор запросов: обеспечивает транлитерацию встроенных команд в язык T-SQL.
-3) Язык описания конфигурации
-2) Менеджер объектов
-3) Менеджер сессий
-4) Подсистема репликации
-5) Подсистема взаимодействия участников обмена
