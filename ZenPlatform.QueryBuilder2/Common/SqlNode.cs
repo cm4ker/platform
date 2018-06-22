@@ -37,5 +37,31 @@ namespace ZenPlatform.QueryBuilder2.Common
                 Add(node);
             }
         }
+
+        internal virtual SqlNode GetChild<T>()
+        {
+            foreach (var child in Childs)
+            {
+                if (child is T) return child;
+            }
+
+            return null;
+        }
+
+        internal virtual SqlNode FirstParent<T>()
+        {
+            return _parent is T ? _parent : _parent?.FirstParent<T>();
+        }
+
+        internal virtual void Detach()
+        {
+            _parent?.Childs.Remove(this);
+        }
+
+        internal virtual void Attach(SqlNode sqlNode)
+        {
+            Detach();
+            sqlNode.Childs.Add(this);
+        }
     }
 }

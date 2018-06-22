@@ -49,6 +49,15 @@ namespace ZenPlatform.QueryBuilder2.ParenChildCollection
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
+        public void InsertRange(int startIndex, IEnumerable<TChildren> items)
+        {
+            foreach (var item in items)
+            {
+                Insert(startIndex, item);
+                startIndex++;
+            }
+        }
+
         public void RemoveAt(int index)
         {
             TChildren oldItem = _collection[index];
@@ -95,6 +104,14 @@ namespace ZenPlatform.QueryBuilder2.ParenChildCollection
         }
 
         public void AddRange(IEnumerable<TChildren> items)
+        {
+            foreach (var item in items)
+            {
+                Add(item);
+            }
+        }
+
+        public void AddRange(params TChildren[] items)
         {
             foreach (var item in items)
             {

@@ -1,4 +1,6 @@
-﻿using ZenPlatform.QueryBuilder2.Common;
+﻿using System.Data;
+using System.Runtime.InteropServices.WindowsRuntime;
+using ZenPlatform.QueryBuilder2.Common;
 
 namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
 {
@@ -11,6 +13,8 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
         public static Token SelectToken = new SelectToken();
         public static Token TableToken = new TableToken();
 
+        public static Token ColumnToken = new ColumnToken();
+
         public static Token LeftBracketToken = new LeftBracketToken();
         public static Token RightBracketToken = new RightBracketToken();
 
@@ -20,9 +24,24 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
         public static Token NewLineToken = new NewLineToken();
         public static Token TabToken = new TabToken();
 
+        public static Token AddToken = new AddToken();
+
+        public static Token NullToken = new NullToken();
+
+        public static Token NotToken = new NotToken();
+
         public static Token SchemaSeparator = new SchemaSeparatorToken();
+
+        public static Token UniqueToken = new UniqueToken();
     }
 
+
+    public class UniqueToken : Token
+    {
+        public UniqueToken() : base("UNIQUE")
+        {
+        }
+    }
 
     public class DropToken : Token
     {
@@ -34,6 +53,34 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
     public class AlterToken : Token
     {
         public AlterToken() : base("ALTER")
+        {
+        }
+    }
+
+    public class ColumnToken : Token
+    {
+        public ColumnToken() : base("COLUMN")
+        {
+        }
+    }
+
+    public class AddToken : Token
+    {
+        public AddToken() : base("ADD")
+        {
+        }
+    }
+
+    public class NullToken : Token
+    {
+        public NullToken() : base("NULL")
+        {
+        }
+    }
+
+    public class NotToken : Token
+    {
+        public NotToken() : base("NOT")
         {
         }
     }
