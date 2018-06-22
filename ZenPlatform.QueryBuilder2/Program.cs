@@ -55,10 +55,13 @@ namespace ZenPlatform.QueryBuilder2
                 .WithFieldAndValue(x => x.Field("One"), v => v.Parameter("p0"))
                 .WithFieldAndValue(x => x.Field("Two"), f => f.Parameter("p1"));
 
-            var cr = new CreateTableQueryNode("dbo", "TestTable")
+            var cr = new CreateTableQueryNode("dbo", "someAlterTable")
                 .WithColumn("Id", f => f.Int())
-                .WithColumn("Name", f => f.Varchar().WithSize(30));
+                .WithColumn("Name", f => f.Varchar(30).NotNull());
 
+            var a = new AlterTableQueryNode("someAlterTable", t => t.WithSchema("dbo"));
+            a.AddColumn("ТристаОтсосиУТракториста", f => f.Guid().NotNull());
+            a.DropColumn();
             var sb = new StringBuilder();
             c.Compile(q, sb);
             sb.Append("\n=============================\n");
@@ -69,6 +72,8 @@ namespace ZenPlatform.QueryBuilder2
             c.Compile(i, sb);
             sb.Append("\n=============================\n");
             c.Compile(cr, sb);
+            sb.Append("\n=============================\n");
+            c.Compile(a, sb);
 
             Console.WriteLine(sb);
             Console.ReadLine();

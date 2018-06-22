@@ -3,9 +3,9 @@ using ZenPlatform.QueryBuilder2.DML.Select;
 
 namespace ZenPlatform.QueryBuilder2.DML.From
 {
-    public class VarcharTypeDefinitionNode : TypeDefinitionNode
+    public class VarbinaryTypeDefinitionNode : TypeDefinitionNode
     {
-        public VarcharTypeDefinitionNode(int size) : base("varchar")
+        public VarbinaryTypeDefinitionNode(int size) : base("varbinary")
         {
             Childs.Add(Tokens.LeftBracketToken);
 

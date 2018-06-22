@@ -11,20 +11,15 @@ namespace ZenPlatform.QueryBuilder2.DML.From
             Childs.Add(new IdentifierNode(typeName));
         }
 
-        public TypeDefinitionNode WithSize(int size)
+        public TypeDefinitionNode NotNull()
         {
-            Childs.Add(Tokens.LeftBracketToken);
-            Childs.Add(new RawSqlNode(size.ToString()));
-            Childs.Add(Tokens.RightBracketToken);
+            Childs.AddRange(Tokens.SpaceToken, Tokens.NotToken, Tokens.SpaceToken, Tokens.NullToken);
             return this;
         }
-        public TypeDefinitionNode WithScaleAndPresision(int scale, int precision)
+
+        public TypeDefinitionNode Unique()
         {
-            Childs.Add(Tokens.LeftBracketToken);
-            Childs.Add(new RawSqlNode(scale.ToString()));
-            Childs.Add(Tokens.CommaToken);
-            Childs.Add(new RawSqlNode(precision.ToString()));
-            Childs.Add(Tokens.RightBracketToken);
+            Childs.AddRange(Tokens.SpaceToken, Tokens.UniqueToken);
             return this;
         }
     }

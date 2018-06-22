@@ -6,4 +6,11 @@
         {
         }
     }
+
+    public class GuidTypeDefinitionNode : TypeDefinitionNode
+    {
+        public GuidTypeDefinitionNode() : base("uniqueidentifier")
+        {
+        }
+    }
 }
