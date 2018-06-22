@@ -61,7 +61,7 @@ namespace ZenPlatform.QueryBuilder2
 
             var a = new AlterTableQueryNode("someAlterTable", t => t.WithSchema("dbo"));
             a.AddColumn("ТристаОтсосиУТракториста", f => f.Guid().NotNull());
-            a.DropColumn();
+           
             var sb = new StringBuilder();
             c.Compile(q, sb);
             sb.Append("\n=============================\n");
