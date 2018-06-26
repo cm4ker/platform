@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.PlatformCodeGen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.DataComponent", "ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj", "{595EFE31-5BF9-4C4D-B93E-55AA3831E216}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.DocumentComponent", "ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj", "{1416F06A-2DD0-4573-8BEB-75547AADAF10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.EntityComponent", "ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj", "{1416F06A-2DD0-4573-8BEB-75547AADAF10}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core", "ZenPlatform.Core\ZenPlatform.Core.csproj", "{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}"
 EndProject
