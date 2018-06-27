@@ -33,6 +33,8 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
         public static Token SchemaSeparator = new SchemaSeparatorToken();
 
         public static Token UniqueToken = new UniqueToken();
+
+        public static Token DatabaseToken = new DatabaseToken();
     }
 
 
@@ -81,6 +83,13 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
     public class NotToken : Token
     {
         public NotToken() : base("NOT")
+        {
+        }
+    }
+
+    public class DatabaseToken : Token
+    {
+        public DatabaseToken() : base("DATABASE")
         {
         }
     }
