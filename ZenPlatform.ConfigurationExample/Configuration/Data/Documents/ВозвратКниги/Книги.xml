@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Table>
     <Id>Some Id</Id>
     <Name>ВыдаваемыеКниги</Name>
     <Properties>
-        <Property Id="SOMEGUID" TypeId="SOME_GUID" Alias="Книга"/>
+        <Property Id="SOMEGUID" TypeId="SOME_GUID" Alias="Книга" />
     </Properties>
 </Table>

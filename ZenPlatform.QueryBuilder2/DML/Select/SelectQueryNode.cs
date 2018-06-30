@@ -4,16 +4,23 @@ using ZenPlatform.QueryBuilder2.DML.From;
 using ZenPlatform.QueryBuilder2.DML.GroupBy;
 using ZenPlatform.QueryBuilder2.DML.Having;
 using ZenPlatform.QueryBuilder2.DML.Where;
+using ZenPlatform.QueryBuilder2.ParenChildCollection;
 
 namespace ZenPlatform.QueryBuilder2.DML.Select
 {
-    public partial class SelectQueryNode : SqlNode
+    public partial class SelectQueryNode : SqlNode, ISelectQuery
     {
         private SelectNode _select;
         private WhereNode _where;
         private HavingNode _having;
         private GroupByNode _groupBy;
         private FromNode _from;
+        private SqlNode _whereNode;
+        private SqlNode _fromNode;
+        private SqlNode _groupByNode;
+        private SqlNode _havingNode;
+        private SqlNode _selectNode;
+
 
         public SelectQueryNode()
         {
@@ -26,12 +33,13 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             Childs.AddRange(new SqlNode[] {_select, _from, _where, _groupBy, _having});
         }
 
-
         public SelectQueryNode WithTop(int count)
         {
             _select.WithTop(count);
             return this;
         }
+
+        #region Select
 
         public SelectQueryNode Select(string fieldName)
         {
@@ -45,7 +53,6 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             return this;
         }
 
-
         public SelectQueryNode SelectRaw(string raw)
         {
             _select.SelectRaw(raw);
@@ -57,6 +64,10 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             _select.Select(tableName, fieldName, alias);
             return this;
         }
+
+        #endregion
+
+        #region From
 
         public SelectQueryNode From(string tableName, Action<AliasedTableNode> tableOptions)
         {
@@ -88,6 +99,9 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             return From(queryNode, (o) => o.As(alias));
         }
 
+        #endregion
+
+        #region Where
 
         public SelectQueryNode Where(string rawLeft, string operation, string rawRight)
         {
@@ -122,5 +136,31 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));
             return this;
         }
+
+        #endregion
+
+        #region ISelectQuery
+
+        SqlNode ISelectQuery.WhereNode => _whereNode;
+
+        SqlNode ISelectQuery.FromNode => _fromNode;
+
+        SqlNode ISelectQuery.GroupByNode => _groupByNode;
+
+        SqlNode ISelectQuery.HavingNode => _havingNode;
+
+        SqlNode ISelectQuery.SelectNode => _selectNode;
+
+        #endregion
+    }
+
+
+    public interface ISelectQuery : IChildItem<SqlNode>, IParentItem<SqlNode, SqlNode>
+    {
+        SqlNode WhereNode { get; }
+        SqlNode FromNode { get; }
+        SqlNode GroupByNode { get; }
+        SqlNode HavingNode { get; }
+        SqlNode SelectNode { get; }
     }
 }
