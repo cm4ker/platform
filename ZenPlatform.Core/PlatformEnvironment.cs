@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
 using ZenPlatform.Contracts.Entity;
+using ZenPlatform.QueryBuilder2;
 
 
 namespace ZenPlatform.Core
@@ -85,6 +86,8 @@ namespace ZenPlatform.Core
         public IDictionary<Guid, EntityMetadata> Entityes { get; }
 
         public IDictionary<Type, IEntityManager> Managers { get; }
+
+        public SqlCompillerBase SqlCompiler { get; }
 
         public Session CreateSession()
         {

@@ -1,27 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Document>
-  <Id>1cacb030-db55-48b6-99be-4884dfe189b7</Id>
-  <Name>ВозвратКниги</Name>
-  <UseNumeration>true</UseNumeration>
-  <NumerationPattern>Воз-0#######</NumerationPattern>
-  <IsAbstract>false</IsAbstract>
-  <CanBePosted>true</CanBePosted>
+    <Id>1cacb030-db55-48b6-99be-4884dfe189b7</Id>
+    <Name>ВозвратКниги</Name>
+    <UseNumeration>true</UseNumeration>
+    <NumerationPattern>Воз-0#######</NumerationPattern>
+    <IsAbstract>false</IsAbstract>
+    <CanBePosted>true</CanBePosted>
 
-  <Properties>
-    <Property Id="6ca193ae-8ce1-4fa6-b0fc-0af495d8280b" TypeId="84da1cce-b638-4df9-89d4-cba96b6b3b6e" DateCase="DateTime" Alias="ДатаДокумента"/>
-    <Property Id="d8385d59-aa7b-4665-b27b-172157b44742" TypeId="84da1cce-b638-4df9-89d4-cba96b6b3b6e" Length="30" Alias="НомерДокумента"/>
-    <Property Id="84da1cce-b638-4df9-89d4-cba96b6b3b6e" TypeId="84da1cce-b638-4df9-89d4-cba96b6b3b6e" Alias="Читатель"/>
-    <Property Id="84da1cce-b638-4df9-89d4-cba96b6b3b6e" TypeId="84da1cce-b638-4df9-89d4-cba96b6b3b6e" Alias="Книги"/>
-  </Properties>
+    <Properties>
+        <Property Id="6ca193ae-8ce1-4fa6-b0fc-0af495d8280b" TypeId="84da1cce-b638-4df9-89d4-cba96b6b3b6e"
+                  DateCase="DateTime" Alias="ДатаДокумента" />
+        <Property Id="d8385d59-aa7b-4665-b27b-172157b44742" TypeId="84da1cce-b638-4df9-89d4-cba96b6b3b6e" Length="30"
+                  Alias="НомерДокумента" />
+        <Property Id="84da1cce-b638-4df9-89d4-cba96b6b3b6e" TypeId="84da1cce-b638-4df9-89d4-cba96b6b3b6e"
+                  Alias="Читатель" />
+        <Property Id="84da1cce-b638-4df9-89d4-cba96b6b3b6e" TypeId="84da1cce-b638-4df9-89d4-cba96b6b3b6e" Alias="Книги" />
+    </Properties>
 
-  <IncludedFiles>
-    <File Path="./ВозвратКниги/Tables/Книги.xml" ComponentId="3e93d572-5a56-11e8-9c2d-fa7ae01bbebc"/>
-  </IncludedFiles>
+    <IncludedFiles>
+        <File Path="./ВозвратКниги/Tables/Книги.xml" ComponentId="3e93d572-5a56-11e8-9c2d-fa7ae01bbebc" />
+    </IncludedFiles>
 
-  <DocumentModule>
-    public override void Post()
-    {
-    //Business logic here
-    }
-  </DocumentModule>
+    <DocumentModule>
+        public override void Post()
+        {
+        //Business logic here
+        }
+    </DocumentModule>
 </Document>
