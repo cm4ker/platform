@@ -41,6 +41,15 @@ namespace ZenPlatform.QueryBuilder2
             }
         }
 
+
+        public virtual string Compile(SqlNode node)
+        {
+            var sb = new StringBuilder();
+            Compile(node, sb);
+
+            return sb.ToString();
+        }
+
         protected virtual void VisitNode(SqlNode node, StringBuilder sb)
         {
             ItemSwitch<SqlNode>
@@ -291,7 +300,7 @@ namespace ZenPlatform.QueryBuilder2
                 case JoinType.Cross:
                     sb.Append("CROSS");
                     break;
-                    //TODO: Добавить все
+                //TODO: Добавить все
             }
 
             sb.Append(" JOIN ");

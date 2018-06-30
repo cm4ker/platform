@@ -3,10 +3,11 @@ using System.Runtime.Serialization;
 using System.Security;
 using ZenPlatform.QueryBuilder2.Common;
 using ZenPlatform.QueryBuilder2.DDL.CreateTable;
+using ZenPlatform.QueryBuilder2.ParenChildCollection;
 
 namespace ZenPlatform.QueryBuilder2.DML.Select
 {
-    public class SelectNode : SqlNode
+    public class SelectNode : SqlNode, ISelect
     {
         public bool HasFields = false;
         public TopNode _top;
@@ -71,5 +72,13 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             else
                 HasFields = true;
         }
+
+        SqlNode ISelect.TopNode => _top;
+    }
+
+
+    public interface ISelect : IChildItem<SqlNode>, IParentItem<SqlNode, SqlNode>
+    {
+        SqlNode TopNode { get; }
     }
 }

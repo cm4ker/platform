@@ -1,9 +1,19 @@
 ﻿using System.Collections.Generic;
+using ZenPlatform.Core.Authentication;
 using ZenPlatform.Data;
 
 namespace ZenPlatform.Core
 {
-    public class Session
+    public interface ISession
+    {
+        int Id { get; }
+        DataContextManger DataContextManger { get; }
+        PlatformEnvironment Environment { get; }
+        void SetGlobalParameter(string key, object value);
+        object GetGlobalParameter(string key, object value);
+    }
+
+    public abstract class Session : ISession
     {
         public Session(PlatformEnvironment env, int id)
         {
@@ -18,6 +28,11 @@ namespace ZenPlatform.Core
         public DataContextManger DataContextManger { get; }
         public PlatformEnvironment Environment { get; }
 
+        public UserManager GetUserManager()
+        {
+            return new UserManager(this);
+        }
+
         //TODO: Все компоненты инициализируются для сессии, так что необходимо, чтобы компоненты были доступны из сессии, либо на уровне ниже
 
 
@@ -30,7 +45,6 @@ namespace ZenPlatform.Core
         {
             return Environment.Globals[key];
         }
-
     }
 
     /// <summary>
@@ -39,10 +53,14 @@ namespace ZenPlatform.Core
     /// </summary>
     public class UserSesion : Session
     {
-        public UserSesion(PlatformEnvironment env, int id) : base(env, id)
-        {
+        private readonly User _user;
 
+        public UserSesion(PlatformEnvironment env, User user, int id) : base(env, id)
+        {
+            _user = user;
         }
+
+        public User User => _user;
     }
 
     /// <summary>
@@ -53,7 +71,6 @@ namespace ZenPlatform.Core
     {
         public SystemSession(PlatformEnvironment env, int id) : base(env, id)
         {
-
         }
     }
 }

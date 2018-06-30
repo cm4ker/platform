@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Document>
     <Guid>351badbe-7887-4c1e-900c-4907dc0c2905</Guid>
     <Id>10</Id>
@@ -26,7 +27,7 @@
     </Properties>
 
     <IncludedFiles>
-        <File Path="./ВыдачаКниги/Tables/Книги.xml" ComponentId="3e93d572-5a56-11e8-9c2d-fa7ae01bbebc"/>
+        <File Path="./ВыдачаКниги/Tables/Книги.xml" ComponentId="3e93d572-5a56-11e8-9c2d-fa7ae01bbebc" />
     </IncludedFiles>
 
     <DocumentModule>
