@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <AcсumulateRegister>
     <Id>ce9d527f-87c1-457b-bec1-8c536db20d48</Id>
     <Name>ОстатокНаСкладе</Name>
@@ -26,21 +27,23 @@
                 <PropertyType>Dimension</PropertyType>
             </AccumulateRegisterPropertyTypes>
         </Property>
-        
+
         <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Автор">
             <AccumulateRegisterPropertyTypes>
                 <PropertyType>Dimension</PropertyType>
             </AccumulateRegisterPropertyTypes>
         </Property>
-        
-        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Количество"> 
-         <AccumulateRegisterPropertyTypes>
+
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48"
+                  Alias="Количество">
+            <AccumulateRegisterPropertyTypes>
                 <PropertyType>Aggregate</PropertyType>
             </AccumulateRegisterPropertyTypes>
         </Property>
-        
-        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Комментарий"> 
-         <AccumulateRegisterPropertyTypes>
+
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48"
+                  Alias="Комментарий">
+            <AccumulateRegisterPropertyTypes>
                 <PropertyType>Simple</PropertyType>
             </AccumulateRegisterPropertyTypes>
         </Property>
