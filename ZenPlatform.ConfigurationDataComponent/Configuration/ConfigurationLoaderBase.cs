@@ -5,8 +5,9 @@ using System.Security.Claims;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Contracts.Data;
 

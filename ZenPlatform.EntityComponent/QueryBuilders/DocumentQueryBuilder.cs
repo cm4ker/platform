@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Queries;

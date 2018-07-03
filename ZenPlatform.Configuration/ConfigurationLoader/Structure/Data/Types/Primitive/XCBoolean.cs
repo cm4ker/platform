@@ -1,7 +1,7 @@
 using System;
 using DBType = ZenPlatform.QueryBuilder.Schema.DBType;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Primitive
 {
     public class XCBoolean : XCPremitiveType
     {

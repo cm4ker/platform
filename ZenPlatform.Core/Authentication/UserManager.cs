@@ -24,7 +24,7 @@ namespace ZenPlatform.Core.Authentication
             {
                 _session = sys;
             }
-            else if (session is UserSesion uses)
+            else if (session is UserSession uses)
             {
                 if (!uses.User.Roles.Any(x => x.Rights.Any(r =>
                 {
@@ -111,6 +111,17 @@ namespace ZenPlatform.Core.Authentication
             }
 
             throw new UserNotFoundException();
+        }
+
+        /// <summary>
+        /// Аутентификация по пользователю и паролю
+        /// </summary>
+        /// <param name="userName">Имя пользователя</param>
+        /// <param name="password">Пароль(plaintext)</param>
+        /// <returns></returns>
+        public bool Authenticate(string userName, string password)
+        {
+            throw new NotAuthorizedException();
         }
     }
 }

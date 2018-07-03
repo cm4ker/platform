@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Helper
+﻿namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Helper
 {
     public static class XCHelper
     {

@@ -6,8 +6,9 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure;
 using ZenPlatform.Contracts.Entity;
+using ZenPlatform.Core.Authentication;
 using ZenPlatform.QueryBuilder2;
 
 
@@ -17,7 +18,7 @@ namespace ZenPlatform.Core
     {
         private object _locking;
         private SystemSession _systemSession;
-
+        private UserManager _userManager;
 
         /*
          *  Среда должна обеспечиватьдоступ к конфигурации. Так как именно в среду будет загружаться конфигурация 
@@ -52,8 +53,12 @@ namespace ZenPlatform.Core
         {
             _systemSession = new SystemSession(this, 1);
 
+            _userManager = new UserManager(_systemSession);
+
             Sessions.Add(_systemSession);
 
+
+            //Зарегистрируем все даные
             foreach (var type in Root.Data.ComponentTypes)
             {
                 var componentImpl = type.Parent.ComponentImpl;
@@ -72,29 +77,46 @@ namespace ZenPlatform.Core
 
         public XCRoot Root { get; set; }
 
-
         /// <summary>
         /// Сборка конфигурации.
         /// В сборке хранятся все типы и бизнес логика
         /// </summary>
         public Assembly Build { get; set; }
 
+        /// <summary>
+        /// Глобальные объекты
+        /// </summary>
         public Dictionary<string, object> Globals { get; set; }
 
+
+        /// <summary>
+        /// Сессии
+        /// </summary>
         public IList<Session> Sessions { get; }
 
+
+        /// <summary>
+        /// Сущности
+        /// </summary>
         public IDictionary<Guid, EntityMetadata> Entityes { get; }
 
+        /// <summary>
+        /// Менеджеры
+        /// </summary>
         public IDictionary<Type, IEntityManager> Managers { get; }
 
+
+        /// <summary>
+        /// Компилятор запросов
+        /// </summary>
         public SqlCompillerBase SqlCompiler { get; }
 
-        public Session CreateSession()
+        public Session CreateSession(User user)
         {
             lock (_locking)
             {
                 var id = (Sessions.Count == 0) ? 1 : Sessions.Max(x => x.Id) + 1;
-                var session = new Session(this, id);
+                var session = new UserSession(this, user, id);
 
                 Sessions.Add(session);
 

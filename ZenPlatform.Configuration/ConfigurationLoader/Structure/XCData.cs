@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
-using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Primitive;
+using ZenPlatform.Shared.ParenChildCollection;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
 {
     [Serializable]
     public class XCData : IChildItem<XCRoot>

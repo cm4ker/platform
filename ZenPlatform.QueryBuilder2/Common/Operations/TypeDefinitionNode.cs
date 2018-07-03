@@ -1,8 +1,7 @@
-﻿using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DDL.CreateTable;
-using ZenPlatform.QueryBuilder2.DML.Select;
+﻿using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.From
+namespace ZenPlatform.QueryBuilder2.Common.Operations
 {
     public class TypeDefinitionNode : SqlNode
     {
@@ -13,13 +12,13 @@ namespace ZenPlatform.QueryBuilder2.DML.From
 
         public TypeDefinitionNode NotNull()
         {
-            Childs.AddRange(Tokens.SpaceToken, Tokens.NotToken, Tokens.SpaceToken, Tokens.NullToken);
+            Childs.AddRange(Tokens.Tokens.SpaceToken, Tokens.Tokens.NotToken, Tokens.Tokens.SpaceToken, Tokens.Tokens.NullToken);
             return this;
         }
 
         public TypeDefinitionNode Unique()
         {
-            Childs.AddRange(Tokens.SpaceToken, Tokens.UniqueToken);
+            Childs.AddRange(Tokens.Tokens.SpaceToken, Tokens.Tokens.UniqueToken);
             return this;
         }
     }

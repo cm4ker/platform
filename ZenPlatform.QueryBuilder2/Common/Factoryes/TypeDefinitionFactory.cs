@@ -1,4 +1,7 @@
-﻿namespace ZenPlatform.QueryBuilder2.DML.From
+﻿using ZenPlatform.QueryBuilder2.Common.Operations;
+using ZenPlatform.QueryBuilder2.DML.From;
+
+namespace ZenPlatform.QueryBuilder2.Common.Factoryes
 {
     public class TypeDefinitionFactory
     {

@@ -6,6 +6,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.Common.Columns;
+using ZenPlatform.QueryBuilder2.Common.Operations;
+using ZenPlatform.QueryBuilder2.Common.Table;
+using ZenPlatform.QueryBuilder2.Common.Tokens;
 using ZenPlatform.QueryBuilder2.DDL.CreateTable;
 using ZenPlatform.QueryBuilder2.DML.Delete;
 using ZenPlatform.QueryBuilder2.DML.From;
@@ -15,7 +19,8 @@ using ZenPlatform.QueryBuilder2.DML.Insert;
 using ZenPlatform.QueryBuilder2.DML.Select;
 using ZenPlatform.QueryBuilder2.DML.Update;
 using ZenPlatform.QueryBuilder2.DML.Where;
-using ZenPlatform.QueryBuilder2.ParenChildCollection;
+using ZenPlatform.Shared.Tree;
+
 
 namespace ZenPlatform.QueryBuilder2
 {

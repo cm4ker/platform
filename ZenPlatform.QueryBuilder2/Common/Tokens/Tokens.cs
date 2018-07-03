@@ -1,8 +1,4 @@
-﻿using System.Data;
-using System.Runtime.InteropServices.WindowsRuntime;
-using ZenPlatform.QueryBuilder2.Common;
-
-namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
+﻿namespace ZenPlatform.QueryBuilder2.Common.Tokens
 {
     public static class Tokens
     {

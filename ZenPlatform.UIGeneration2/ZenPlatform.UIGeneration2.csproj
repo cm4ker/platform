@@ -1,11 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netstandard2.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.6.2-build5603-beta" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.6.2-build5603-beta" />
+    <PackageReference Include="Avalonia.MonoMac" Version="0.6.2-build5603-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.6.2-build5603-beta" />
+    <PackageReference Include="Avalonia.Skia" Version="0.6.2-build5603-beta" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Avalonia.Controls, Version=0.6.2.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\.nuget\packages\avalonia\0.6.2-build5555-beta\lib\netcoreapp2.0\Avalonia.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Avalonia.Markup.Xaml, Version=0.6.2.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\.nuget\packages\avalonia\0.6.2-build5555-beta\lib\netcoreapp2.0\Avalonia.Markup.Xaml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="App.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
   </ItemGroup>
 </Project>

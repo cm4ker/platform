@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using ZenPlatform.Builder;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure;
 using ZenPlatform.DocumentComponent.Configuration;
 
 namespace ZenPlatform.Tests.Conf

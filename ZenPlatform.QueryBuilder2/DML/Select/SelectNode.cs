@@ -2,8 +2,11 @@
 using System.Runtime.Serialization;
 using System.Security;
 using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.Common.Tokens;
 using ZenPlatform.QueryBuilder2.DDL.CreateTable;
-using ZenPlatform.QueryBuilder2.ParenChildCollection;
+using ZenPlatform.Shared.ParenChildCollection;
+using ZenPlatform.Shared.Tree;
+
 
 namespace ZenPlatform.QueryBuilder2.DML.Select
 {
