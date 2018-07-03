@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
 {
     public class XCInterface
     {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex
 {
     /// <summary>
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент

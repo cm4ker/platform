@@ -1,7 +1,6 @@
 ﻿using System.Xml.Serialization;
-using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
 {
     /// <summary>
     /// Правла для роли на уровне платформы

@@ -1,8 +1,8 @@
 using System;
 using System.Xml.Serialization;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Primitive;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types
 {
     public abstract class XCTypeBase
     {

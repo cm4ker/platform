@@ -7,15 +7,16 @@ namespace ZenPlatform.Core
     public interface ISession
     {
         int Id { get; }
+
         DataContextManger DataContextManger { get; }
-        PlatformEnvironment Environment { get; }
+
         void SetGlobalParameter(string key, object value);
         object GetGlobalParameter(string key, object value);
     }
 
     public abstract class Session : ISession
     {
-        public Session(PlatformEnvironment env, int id)
+        protected Session(PlatformEnvironment env, int id)
         {
             Environment = env;
             Id = id;
@@ -51,11 +52,11 @@ namespace ZenPlatform.Core
     /// Пользовательская сессия - по виду этой сессии мы можем запрещать незакконные операции - например мигрирование базы данных
     /// Пользователь не может выполнять инструкции связанные с изменением схемы, он лишь манипулирует данными
     /// </summary>
-    public class UserSesion : Session
+    public class UserSession : Session
     {
         private readonly User _user;
 
-        public UserSesion(PlatformEnvironment env, User user, int id) : base(env, id)
+        public UserSession(PlatformEnvironment env, User user, int id) : base(env, id)
         {
             _user = user;
         }

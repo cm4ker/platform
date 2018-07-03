@@ -2,7 +2,7 @@ using System;
 using System.Xml.Serialization;
 using DbType = ZenPlatform.QueryBuilder.Schema.DBType;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Primitive
 {
     public abstract class XCPremitiveType : XCTypeBase
     {

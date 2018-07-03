@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.Common.Tokens;
 using ZenPlatform.QueryBuilder2.DML.From;
+using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
 {

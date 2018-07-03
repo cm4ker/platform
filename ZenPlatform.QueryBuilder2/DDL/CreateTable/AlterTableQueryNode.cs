@@ -2,8 +2,13 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.Common.Columns;
+using ZenPlatform.QueryBuilder2.Common.Factoryes;
+using ZenPlatform.QueryBuilder2.Common.Operations;
+using ZenPlatform.QueryBuilder2.Common.Tokens;
 using ZenPlatform.QueryBuilder2.DML.From;
 using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
 {

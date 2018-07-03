@@ -1,5 +1,5 @@
 ﻿using System;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Core
 {

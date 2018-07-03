@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.QueryBuilder2.DML.From
+﻿namespace ZenPlatform.QueryBuilder2.Common.Operations
 {
     public class DateTimeTypeDefinitionNode : TypeDefinitionNode
     {

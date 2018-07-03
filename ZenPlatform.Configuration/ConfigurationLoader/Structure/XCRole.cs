@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
-using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
 {
     [XmlRoot("Role")]
     public class XCRole : IChildItem<XCRoles>

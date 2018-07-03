@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex
 {
     public enum XCDateCaseType
     {

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
-using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex
 {
     /// <summary>
     /// Описание типа компонента

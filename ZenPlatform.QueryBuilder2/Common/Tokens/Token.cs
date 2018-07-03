@@ -1,7 +1,6 @@
-﻿using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.Select;
+﻿using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
+namespace ZenPlatform.QueryBuilder2.Common.Tokens
 {
     public class Token : SqlNode
     {

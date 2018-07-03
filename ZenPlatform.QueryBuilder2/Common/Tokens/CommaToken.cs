@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
+﻿namespace ZenPlatform.QueryBuilder2.Common.Tokens
 {
     public class CommaToken : Token
     {

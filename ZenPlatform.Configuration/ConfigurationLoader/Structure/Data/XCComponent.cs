@@ -6,12 +6,11 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
+using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts;
 using ZenPlatform.Contracts.Data;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration
+namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data
 {
     /// <summary>
     /// Описание компонента

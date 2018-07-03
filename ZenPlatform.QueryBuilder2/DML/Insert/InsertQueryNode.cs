@@ -1,7 +1,10 @@
 ﻿using System;
 using ZenPlatform.QueryBuilder2.Common;
+using ZenPlatform.QueryBuilder2.Common.Factoryes;
+using ZenPlatform.QueryBuilder2.Common.Table;
 using ZenPlatform.QueryBuilder2.DML.From;
 using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder2.DML.Insert
 {
