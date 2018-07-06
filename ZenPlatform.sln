@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryBuilder", "ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj", "{A60AF134-9E5A-4802-A20A-D770F9EEADA9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Tests", "ZenPlatform.Tests\ZenPlatform.Tests.csproj", "{D52C49C5-0F1F-467F-A730-BAAF1D0E6D22}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration", "ZenPlatform.Configuration\ZenPlatform.Configuration.csproj", "{83A2D27E-C01A-4338-997A-8F407573DA0C}"
@@ -31,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConnectionServe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.UIGeneration2", "ZenPlatform.UIGeneration2\ZenPlatform.UIGeneration2.csproj", "{6298E023-E6CF-422D-B12D-49A64B33D601}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ApplicationServer", "ZenPlatform.ApplicationServer\ZenPlatform.ApplicationServer.csproj", "{4276280D-D771-4572-A690-AF8188163F4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.WorkProcess", "ZenPlatform.ApplicationServer\ZenPlatform.WorkProcess.csproj", "{4276280D-D771-4572-A690-AF8188163F4F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Interface", "ZenPlatform.Interface\ZenPlatform.Interface.csproj", "{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}"
 EndProject
@@ -51,19 +49,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IDE", "IDE", "{9BC66EAE-D56
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{3EE6451A-06AB-4635-BC3E-2CD05075D9A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.IDE", "ZenPlatform.IDE\ZenPlatform.IDE.csproj", "{F9576AA1-E4DA-44D3-9131-C083D5B3599E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IDE", "ZenPlatform.IDE\ZenPlatform.IDE.csproj", "{F9576AA1-E4DA-44D3-9131-C083D5B3599E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Contracts", "ZenPlatform.Contracts\ZenPlatform.Contracts.csproj", "{5FB28342-3A4F-4134-A127-ED3CBEFB1C4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Contracts", "ZenPlatform.Contracts\ZenPlatform.Contracts.csproj", "{5FB28342-3A4F-4134-A127-ED3CBEFB1C4D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{60F9DF35-0F24-4B1B-AE89-43D43BAF8160}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.QueryBuilder2", "ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder2.csproj", "{87A98FDD-B41C-4828-BDCC-C0014DB0CB26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryBuilder", "ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj", "{87A98FDD-B41C-4828-BDCC-C0014DB0CB26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ServerManagementTool", "ZenPlatform.ServerManagementTool\ZenPlatform.ServerManagementTool.csproj", "{B3D50BBE-68B5-46EF-A308-129E8862241E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ServerManagementTool", "ZenPlatform.ServerManagementTool\ZenPlatform.ServerManagementTool.csproj", "{B3D50BBE-68B5-46EF-A308-129E8862241E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Settings", "ZenPlatform.Settings\ZenPlatform.Settings.csproj", "{337434DB-58FA-474F-8A9F-EE5C9FD80EF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Settings", "ZenPlatform.Settings\ZenPlatform.Settings.csproj", "{337434DB-58FA-474F-8A9F-EE5C9FD80EF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Shared", "ZenPlatform.Shared\ZenPlatform.Shared.csproj", "{D95C261A-8C0F-4DC0-91C6-90C46C31B80F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Shared", "ZenPlatform.Shared\ZenPlatform.Shared.csproj", "{D95C261A-8C0F-4DC0-91C6-90C46C31B80F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,14 +71,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A60AF134-9E5A-4802-A20A-D770F9EEADA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A60AF134-9E5A-4802-A20A-D770F9EEADA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A60AF134-9E5A-4802-A20A-D770F9EEADA9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A60AF134-9E5A-4802-A20A-D770F9EEADA9}.Debug|x86.Build.0 = Debug|Any CPU
-		{A60AF134-9E5A-4802-A20A-D770F9EEADA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A60AF134-9E5A-4802-A20A-D770F9EEADA9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A60AF134-9E5A-4802-A20A-D770F9EEADA9}.Release|x86.ActiveCfg = Release|Any CPU
-		{A60AF134-9E5A-4802-A20A-D770F9EEADA9}.Release|x86.Build.0 = Release|Any CPU
 		{D52C49C5-0F1F-467F-A730-BAAF1D0E6D22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D52C49C5-0F1F-467F-A730-BAAF1D0E6D22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D52C49C5-0F1F-467F-A730-BAAF1D0E6D22}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -294,6 +284,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{D52C49C5-0F1F-467F-A730-BAAF1D0E6D22} = {60F9DF35-0F24-4B1B-AE89-43D43BAF8160}
 		{595EFE31-5BF9-4C4D-B93E-55AA3831E216} = {DCBBB387-C25A-4571-8267-BEAA839EB1E8}
 		{1416F06A-2DD0-4573-8BEB-75547AADAF10} = {DCBBB387-C25A-4571-8267-BEAA839EB1E8}
 		{045440C6-4D2C-495A-93C9-20B4F7D65BD1} = {3EE6451A-06AB-4635-BC3E-2CD05075D9A4}
@@ -304,7 +295,6 @@ Global
 		{D7B14B63-5805-4D83-9602-1647E1D45421} = {DCBBB387-C25A-4571-8267-BEAA839EB1E8}
 		{619F2E8F-1843-410B-AEF6-DF1AE66DF170} = {DCBBB387-C25A-4571-8267-BEAA839EB1E8}
 		{F9576AA1-E4DA-44D3-9131-C083D5B3599E} = {9BC66EAE-D56B-4FCF-8C91-5332F97180D2}
-		{D52C49C5-0F1F-467F-A730-BAAF1D0E6D22} = {60F9DF35-0F24-4B1B-AE89-43D43BAF8160}
 		{B3D50BBE-68B5-46EF-A308-129E8862241E} = {9BC66EAE-D56B-4FCF-8C91-5332F97180D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

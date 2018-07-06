@@ -1,5 +1,5 @@
 using System;
-using DbType = ZenPlatform.QueryBuilder.Schema.DBType;
+using System.Data;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Primitive
 {

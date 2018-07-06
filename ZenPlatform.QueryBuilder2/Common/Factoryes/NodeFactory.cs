@@ -1,9 +1,9 @@
-﻿using ZenPlatform.QueryBuilder2.Common.Table;
-using ZenPlatform.QueryBuilder2.DML.From;
-using ZenPlatform.QueryBuilder2.DML.Select;
-using ZenPlatform.QueryBuilder2.DML.Where;
+﻿using ZenPlatform.QueryBuilder.Common.Table;
+using ZenPlatform.QueryBuilder.DML.From;
+using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.QueryBuilder.DML.Where;
 
-namespace ZenPlatform.QueryBuilder2.Common.Factoryes
+namespace ZenPlatform.QueryBuilder.Common.Factoryes
 {
     public class NodeFactory
     {

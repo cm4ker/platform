@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
 using ZenPlatform.Core;
 using ZenPlatform.DataComponent.Entity;
-using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.DataComponent.QueryBuilders
 {
@@ -53,19 +52,19 @@ namespace ZenPlatform.DataComponent.QueryBuilders
             throw new NotImplementedException();
         }
 
-        public virtual DBInsertQuery InsertMultiplyObject(XCObjectTypeBase obj, object[] models)
-        {
-            throw new NotImplementedException();
-        }
+        //public virtual DBInsertQuery InsertMultiplyObject(XCObjectTypeBase obj, object[] models)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public virtual DBDeleteQuery DeleteSingleObject(XCObjectTypeBase obj, object key)
-        {
-            throw new NotImplementedException();
-        }
+        //public virtual DBDeleteQuery DeleteSingleObject(XCObjectTypeBase obj, object key)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public virtual DBDeleteQuery DeleteMultiplyObjects(XCObjectTypeBase obj, object[] keys)
-        {
-            throw new NotImplementedException();
-        }
+        //public virtual DBDeleteQuery DeleteMultiplyObjects(XCObjectTypeBase obj, object[] keys)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

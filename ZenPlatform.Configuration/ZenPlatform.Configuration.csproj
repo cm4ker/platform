@@ -11,12 +11,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Contracts\ZenPlatform.Contracts.csproj" />
-    <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\..\..\..\.nuget\packages\microsoft.codeanalysis.workspaces.common\2.4.0\lib\netstandard1.3\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    <Reference Include="ZenPlatform.QueryBuilder">
+      <HintPath>..\ZenPlatform.ConfigurationDataComponent\bin\Debug\netcoreapp2.1\ZenPlatform.QueryBuilder.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

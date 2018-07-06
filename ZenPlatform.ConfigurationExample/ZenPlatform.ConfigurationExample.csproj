@@ -9,9 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Builder.csproj" />
-    <ProjectReference Include="..\ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj">
-      <Private>true</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Update="Configuration\Data\AccumulateRegister\ОстатокНаСкладе.xml">

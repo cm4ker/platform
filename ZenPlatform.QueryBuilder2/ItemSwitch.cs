@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZenPlatform.QueryBuilder2
+namespace ZenPlatform.QueryBuilder
 {
     public class ItemSwitch<T>
     {

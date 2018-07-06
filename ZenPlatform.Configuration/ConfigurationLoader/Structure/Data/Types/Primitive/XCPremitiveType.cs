@@ -1,6 +1,6 @@
 using System;
+using System.Data;
 using System.Xml.Serialization;
-using DbType = ZenPlatform.QueryBuilder.Schema.DBType;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Primitive
 {

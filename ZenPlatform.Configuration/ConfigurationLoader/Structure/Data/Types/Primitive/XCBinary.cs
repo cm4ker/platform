@@ -1,5 +1,5 @@
 using System;
-using ZenPlatform.QueryBuilder.Schema;
+using System.Data;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Primitive
 {
@@ -21,9 +21,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Pri
         public override int Precision { get; set; }
         public override int Scale { get; set; }
 
-        public override DBType DBType
+        public override DbType DBType
         {
-            get { return DBType.Binary; }
+            get { return DbType.Binary; }
         }
 
         public override Type CLRType => (IsNullable) ? typeof(byte?[]) : typeof(byte[]);

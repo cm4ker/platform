@@ -9,7 +9,7 @@ using ZenPlatform.Builder;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure;
-using ZenPlatform.DocumentComponent.Configuration;
+
 
 namespace ZenPlatform.Tests.Conf
 {
@@ -36,7 +36,7 @@ namespace ZenPlatform.Tests.Conf
 
             Assert.IsNotNull(conf.Data);
 
-            Assert.IsNotNull(conf.Data.Components);
+
 
             XCCompiller c = new XCCompiller(conf, "./");
 

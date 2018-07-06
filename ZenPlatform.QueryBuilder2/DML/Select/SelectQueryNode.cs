@@ -1,15 +1,13 @@
 ﻿using System;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.Common.Factoryes;
-using ZenPlatform.QueryBuilder2.DML.From;
-using ZenPlatform.QueryBuilder2.DML.GroupBy;
-using ZenPlatform.QueryBuilder2.DML.Having;
-using ZenPlatform.QueryBuilder2.DML.Where;
-
+using ZenPlatform.QueryBuilder.Common.Factoryes;
+using ZenPlatform.QueryBuilder.DML.From;
+using ZenPlatform.QueryBuilder.DML.GroupBy;
+using ZenPlatform.QueryBuilder.DML.Having;
+using ZenPlatform.QueryBuilder.DML.Where;
 using ZenPlatform.Shared.ParenChildCollection;
 using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.Select
+namespace ZenPlatform.QueryBuilder.DML.Select
 {
     public partial class SelectQueryNode : SqlNode, ISelectQuery
     {

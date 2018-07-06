@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.QueryBuilder2.Common.Operations
+﻿namespace ZenPlatform.QueryBuilder.Common.Operations
 {
     public class BigintTypeDefinitionNode : TypeDefinitionNode
     {

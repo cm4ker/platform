@@ -1,6 +1,6 @@
 ﻿using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.Common
+namespace ZenPlatform.QueryBuilder.Common
 {
     public class LogicalNode : SqlNode
     {

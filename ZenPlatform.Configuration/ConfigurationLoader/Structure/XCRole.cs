@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
+using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
 {
