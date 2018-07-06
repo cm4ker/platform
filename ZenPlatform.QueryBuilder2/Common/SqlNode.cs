@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ZenPlatform.Shared.ParenChildCollection;
-
-namespace ZenPlatform.QueryBuilder2.Common
+﻿namespace ZenPlatform.QueryBuilder.Common
 {
 //    public class SqlNode : IChildItem<SqlNode>
 //    {

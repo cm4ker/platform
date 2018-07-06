@@ -1,4 +1,5 @@
 ﻿using System.Xml.Serialization;
+using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
 {

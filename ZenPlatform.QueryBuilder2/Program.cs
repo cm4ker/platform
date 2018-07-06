@@ -1,19 +1,13 @@
 ﻿using System;
-using System.ComponentModel.Design;
-using System.Data;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml.Serialization;
-using ZenPlatform.QueryBuilder2.DDL.CreateTable;
-using ZenPlatform.QueryBuilder2.DML.Delete;
-using ZenPlatform.QueryBuilder2.DML.From;
-using ZenPlatform.QueryBuilder2.DML.Insert;
-using ZenPlatform.QueryBuilder2.DML.Select;
-using ZenPlatform.QueryBuilder2.DML.Update;
+using ZenPlatform.QueryBuilder.DDL.CreateTable;
+using ZenPlatform.QueryBuilder.DML.Delete;
+using ZenPlatform.QueryBuilder.DML.From;
+using ZenPlatform.QueryBuilder.DML.Insert;
+using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.QueryBuilder.DML.Update;
 
-namespace ZenPlatform.QueryBuilder2
+namespace ZenPlatform.QueryBuilder
 {
     class Program
     {

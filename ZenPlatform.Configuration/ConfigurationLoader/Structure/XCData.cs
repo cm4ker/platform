@@ -22,7 +22,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
             Components = new ChildItemCollection<XCData, XCComponent>(this);
             PlatformTypes = new List<XCTypeBase>();
 
-            //Инициализируем типы, они нужны для правильного построения зависимостей
+            //Инициализируем примитивные типы платформы, они нужны для правильного построения зависимостей
             PlatformTypes.Add(new XCBinary());
             PlatformTypes.Add(new XCString());
             PlatformTypes.Add(new XCDateTime());
@@ -38,7 +38,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
         [XmlArrayItem(ElementName = "Component", Type = typeof(XCComponent))]
         public ChildItemCollection<XCData, XCComponent> Components { get; }
 
-
+        /// <summary>
+        /// Загрузить дерективу и все зависимости
+        /// </summary>
         public void Load()
         {
             LoadComponents();
@@ -55,6 +57,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
             }
         }
 
+        /// <summary>
+        /// Загрузить файлы, относящиеся к разделу Data в дерективе IncludedFiles
+        /// </summary>
         private void LoadFiles()
         {
             foreach (var includedFile in IncludedFiles)
@@ -66,7 +71,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Structure
 
                 var componentType =
                     component.Loader.LoadObject(Path.Combine(XCHelper.BaseDirectory, includedFile.Path));
-                ((IChildItem<XCComponent>) componentType).Parent = component;
+                ((IChildItem<XCComponent>)componentType).Parent = component;
 
                 PlatformTypes.Add(componentType);
 

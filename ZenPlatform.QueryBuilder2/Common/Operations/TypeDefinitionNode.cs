@@ -1,7 +1,7 @@
-﻿using ZenPlatform.QueryBuilder2.DML.Select;
+﻿using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.Common.Operations
+namespace ZenPlatform.QueryBuilder.Common.Operations
 {
     public class TypeDefinitionNode : SqlNode
     {

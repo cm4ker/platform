@@ -9,6 +9,7 @@ using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts;
 using ZenPlatform.Contracts.Data;
+using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data
 {

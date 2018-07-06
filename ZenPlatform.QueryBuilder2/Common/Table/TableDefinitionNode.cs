@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
-using ZenPlatform.QueryBuilder2.Common.Columns;
-using ZenPlatform.QueryBuilder2.Common.Factoryes;
-using ZenPlatform.QueryBuilder2.Common.Operations;
+using ZenPlatform.QueryBuilder.Common.Columns;
+using ZenPlatform.QueryBuilder.Common.Factoryes;
+using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.Common.Table
+namespace ZenPlatform.QueryBuilder.Common.Table
 {
     public class TableDefinitionNode : SqlNode
     {

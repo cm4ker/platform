@@ -1,8 +1,7 @@
-﻿using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.Select;
+﻿using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.Where
+namespace ZenPlatform.QueryBuilder.DML.Where
 {
     public class ParameterNode : SqlNode
     {

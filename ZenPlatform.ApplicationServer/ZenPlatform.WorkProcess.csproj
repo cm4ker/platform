@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+    <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
   </ItemGroup>
 </Project>

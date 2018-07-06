@@ -9,7 +9,7 @@ using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure;
 using ZenPlatform.Contracts.Entity;
 using ZenPlatform.Core.Authentication;
-using ZenPlatform.QueryBuilder2;
+using ZenPlatform.QueryBuilder;
 
 
 namespace ZenPlatform.Core

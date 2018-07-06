@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.Common.Columns
+namespace ZenPlatform.QueryBuilder.Common.Columns
 {
     public class ColumnListNode : SqlNode
     {

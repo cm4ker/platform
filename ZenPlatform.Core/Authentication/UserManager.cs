@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization.Formatters;
 using ZenPlatform.Core.Helpers;
-using ZenPlatform.QueryBuilder2.DML.Delete;
-using ZenPlatform.QueryBuilder2.DML.Select;
-using ZenPlatform.QueryBuilder2.DML.Update;
+using ZenPlatform.QueryBuilder.DML.Delete;
+using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.QueryBuilder.DML.Update;
 
 namespace ZenPlatform.Core.Authentication
 {

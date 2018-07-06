@@ -1,10 +1,8 @@
-﻿using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.Common.Operations;
-using ZenPlatform.QueryBuilder2.Common.Tokens;
-using ZenPlatform.QueryBuilder2.DDL.CreateTable;
-using ZenPlatform.QueryBuilder2.DML.Select;
+﻿using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.QueryBuilder.Common.Tokens;
 
-namespace ZenPlatform.QueryBuilder2.DML.From
+namespace ZenPlatform.QueryBuilder.DML.From
 {
     public class VarcharTypeDefinitionNode : TypeDefinitionNode
     {

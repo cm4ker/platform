@@ -1,5 +1,5 @@
 using System;
-using DBType = ZenPlatform.QueryBuilder.Schema.DBType;
+using System.Data;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Primitive
 {
@@ -18,9 +18,9 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Pri
         public override bool IsNullable { get; set; }
         public override int ColumnSize { get; set; }
 
-        public override DBType DBType
+        public override DbType DBType
         {
-            get { return DBType.Decimal; }
+            get { return DbType.Decimal; }
         }
 
         public override Type CLRType

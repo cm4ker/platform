@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using ZenPlatform.QueryBuilder2.Common.Columns;
-using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.QueryBuilder.Common.Columns;
+using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.Common.Table
+namespace ZenPlatform.QueryBuilder.Common.Table
 {
     public class TableWithColumnsNode : SqlNode
     {
