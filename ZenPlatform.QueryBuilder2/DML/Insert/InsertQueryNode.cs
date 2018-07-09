@@ -6,7 +6,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Insert
 {
-    public class InsertQueryNode : SqlNode
+    public class InsertQueryNode : Node
     {
         private InsertIntoNode _insertInto;
         private TableWithColumnsNode _table;
@@ -16,7 +16,7 @@ namespace ZenPlatform.QueryBuilder.DML.Insert
         {
             _insertInto = new InsertIntoNode();
             _values = new InsertValuesNode();
-            Childs.AddRange(new SqlNode[] {_insertInto, _values});
+            Childs.AddRange(new Node[] {_insertInto, _values});
         }
 
         public InsertQueryNode InsertInto(string tableName)
@@ -46,7 +46,7 @@ namespace ZenPlatform.QueryBuilder.DML.Insert
             return this;
         }
 
-        public InsertQueryNode WithValue(Func<NodeFactory, SqlNode> valExp)
+        public InsertQueryNode WithValue(Func<NodeFactory, Node> valExp)
         {
             var fac = new NodeFactory();
             _values.Add(valExp(fac));
@@ -54,7 +54,7 @@ namespace ZenPlatform.QueryBuilder.DML.Insert
         }
 
         public InsertQueryNode WithFieldAndValue(Func<NodeFactory, FieldNode> fieldExp,
-            Func<NodeFactory, SqlNode> valExp)
+            Func<NodeFactory, Node> valExp)
         {
             WithField(fieldExp);
             return WithValue(valExp);

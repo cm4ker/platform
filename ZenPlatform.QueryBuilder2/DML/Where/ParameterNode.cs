@@ -3,7 +3,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Where
 {
-    public class ParameterNode : SqlNode
+    public class ParameterNode : Node
     {
         public ParameterNode(string parameterName)
         {

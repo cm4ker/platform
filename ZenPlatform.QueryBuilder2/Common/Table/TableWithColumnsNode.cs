@@ -5,7 +5,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.Common.Table
 {
-    public class TableWithColumnsNode : SqlNode
+    public class TableWithColumnsNode : Node
     {
         private ColumnListNode _columnList;
         private TableNode _table;

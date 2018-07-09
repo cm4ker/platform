@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.From
 {
-    public class CloseBracketNode : SqlNode
+    public class CloseBracketNode : Node
     {
     }
 }

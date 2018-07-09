@@ -3,7 +3,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.From
 {
-    public class CompareOperatorNode : SqlNode
+    public class CompareOperatorNode : Node
     {
         public CompareOperatorNode(string op)
         {

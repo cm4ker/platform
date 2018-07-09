@@ -9,18 +9,18 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public partial class SelectQueryNode : SqlNode, ISelectQuery
+    public partial class SelectQueryNode : Node, ISelectQuery
     {
         private SelectNode _select;
         private WhereNode _where;
         private HavingNode _having;
         private GroupByNode _groupBy;
         private FromNode _from;
-        private SqlNode _whereNode;
-        private SqlNode _fromNode;
-        private SqlNode _groupByNode;
-        private SqlNode _havingNode;
-        private SqlNode _selectNode;
+        private Node _whereNode;
+        private Node _fromNode;
+        private Node _groupByNode;
+        private Node _havingNode;
+        private Node _selectNode;
 
 
         public SelectQueryNode()
@@ -31,7 +31,7 @@ namespace ZenPlatform.QueryBuilder.DML.Select
             _groupBy = new GroupByNode();
             _from = new FromNode();
 
-            Childs.AddRange(new SqlNode[] {_select, _from, _where, _groupBy, _having});
+            Childs.AddRange(new Node[] {_select, _from, _where, _groupBy, _having});
         }
 
         public SelectQueryNode WithTop(int count)
@@ -110,28 +110,28 @@ namespace ZenPlatform.QueryBuilder.DML.Select
             return this;
         }
 
-        public SelectQueryNode Where(Func<NodeFactory, SqlNode> f1, string operation, Func<NodeFactory, SqlNode> f2)
+        public SelectQueryNode Where(Func<NodeFactory, Node> f1, string operation, Func<NodeFactory, Node> f2)
         {
             var factory = new NodeFactory();
             _where.Add(new BinaryWhereNode(f1(factory), operation, f2(factory)));
             return this;
         }
 
-        public SelectQueryNode WhereIsNull(Func<NodeFactory, SqlNode> fieldExp)
+        public SelectQueryNode WhereIsNull(Func<NodeFactory, Node> fieldExp)
         {
             var factory = new NodeFactory();
             _where.Add(new IsNullWhereNode(fieldExp(factory)));
             return this;
         }
 
-        public SelectQueryNode WhereLike(Func<NodeFactory, SqlNode> fieldExp, string pattern)
+        public SelectQueryNode WhereLike(Func<NodeFactory, Node> fieldExp, string pattern)
         {
             var factory = new NodeFactory();
             _where.Add(new LikeWhereNode(fieldExp(factory), new StringLiteralNode(pattern)));
             return this;
         }
 
-        public SelectQueryNode WhereIn(Func<NodeFactory, SqlNode> fieldExp, Func<NodeFactory, SqlNode> fieldExp2)
+        public SelectQueryNode WhereIn(Func<NodeFactory, Node> fieldExp, Func<NodeFactory, Node> fieldExp2)
         {
             var factory = new NodeFactory();
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));
@@ -142,26 +142,26 @@ namespace ZenPlatform.QueryBuilder.DML.Select
 
         #region ISelectQuery
 
-        SqlNode ISelectQuery.WhereNode => _whereNode;
+        Node ISelectQuery.WhereNode => _whereNode;
 
-        SqlNode ISelectQuery.FromNode => _fromNode;
+        Node ISelectQuery.FromNode => _fromNode;
 
-        SqlNode ISelectQuery.GroupByNode => _groupByNode;
+        Node ISelectQuery.GroupByNode => _groupByNode;
 
-        SqlNode ISelectQuery.HavingNode => _havingNode;
+        Node ISelectQuery.HavingNode => _havingNode;
 
-        SqlNode ISelectQuery.SelectNode => _selectNode;
+        Node ISelectQuery.SelectNode => _selectNode;
 
         #endregion
     }
 
 
-    public interface ISelectQuery : IChildItem<SqlNode>, IParentItem<SqlNode, SqlNode>
+    public interface ISelectQuery : IChildItem<Node>, IParentItem<Node, Node>
     {
-        SqlNode WhereNode { get; }
-        SqlNode FromNode { get; }
-        SqlNode GroupByNode { get; }
-        SqlNode HavingNode { get; }
-        SqlNode SelectNode { get; }
+        Node WhereNode { get; }
+        Node FromNode { get; }
+        Node GroupByNode { get; }
+        Node HavingNode { get; }
+        Node SelectNode { get; }
     }
 }

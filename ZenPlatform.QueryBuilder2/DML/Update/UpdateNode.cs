@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Update
 {
-    public class UpdateNode : SqlNode
+    public class UpdateNode : Node
     {
     }
 }
