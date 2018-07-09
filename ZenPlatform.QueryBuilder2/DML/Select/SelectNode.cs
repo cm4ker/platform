@@ -6,7 +6,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class SelectNode : SqlNode, ISelect
+    public class SelectNode : Node, ISelect
     {
         public bool HasFields = false;
         public TopNode _top;
@@ -72,12 +72,12 @@ namespace ZenPlatform.QueryBuilder.DML.Select
                 HasFields = true;
         }
 
-        SqlNode ISelect.TopNode => _top;
+        Node ISelect.TopNode => _top;
     }
 
 
-    public interface ISelect : IChildItem<SqlNode>, IParentItem<SqlNode, SqlNode>
+    public interface ISelect : IChildItem<Node>, IParentItem<Node, Node>
     {
-        SqlNode TopNode { get; }
+        Node TopNode { get; }
     }
 }

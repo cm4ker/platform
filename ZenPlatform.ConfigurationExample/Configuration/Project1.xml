@@ -1,86 +1,86 @@
 ﻿<Root>
-    <ProjectId>d483d0a1-1764-4e8c-8cbb-ddb5646cf34f</ProjectId>
-    <ProjectName>Управление библиотекой</ProjectName>
-    <!-- RC, RTM, Alpha, Beta, Gamma  -->
-    <ProjectVersion>0.0.0.1 Alpha</ProjectVersion>
-    <!-- Секция данных -->
-    <Data>
-        <!-- Секция компонентов -->
-        <Components>
-            <!-- Каждый компонент объявляется отдельно -->
-            <!-- Где Id - уникальный идентификатор компонента, если компонент реализует аттрибут
+  <ProjectId>d483d0a1-1764-4e8c-8cbb-ddb5646cf34f</ProjectId>
+  <ProjectName>Управление библиотекой</ProjectName>
+  <!-- RC, RTM, Alpha, Beta, Gamma  -->
+  <ProjectVersion>0.0.0.1 Alpha</ProjectVersion>
+  <!-- Секция данных -->
+  <Data>
+    <!-- Секция компонентов -->
+    <Components>
+      <!-- Каждый компонент объявляется отдельно -->
+      <!-- Где Id - уникальный идентификатор компонента, если компонент реализует аттрибут
                   [assembly: Guid(SomeGuid)]
                   Тогда идентификатор будет взят оттуда, чтобы можно было легко догадаться по разным конфигурациям, какой компонент подключен
                   Если нет аттрибута, берём просто - Guid.NewGuid();
                    -->
-            <Component>
-                <File Path="./Components/DocumentComponent.dll" />
-                <!-- Включенные файлы. Дериктива указывает на файлы, которые прекреплены к проекту -->
-                <IncludedFiles>
-                    <!-- Файл проекта, гед ComponentId - это уникальный идентификатор компонента, который указан выше, с помощью
+      <Component>
+        <File Path="./Components/EntityComponent.dll" />
+        <!-- Включенные файлы. Дериктива указывает на файлы, которые прекреплены к проекту -->
+        <IncludedFiles>
+          <!-- Файл проекта, где ComponentId - это уникальный идентификатор компонента, который указан выше, с помощью
                           него будет осуществляться загрузка данного файла, если по какой-то из причин компонента 
                           сверху нет - бует выдано исключение InvalidPlatformComponent 
                           
                           Внимание!!! Описание выше ^ устарело...
                           -->
-                    <File Path="./Data/Documents/ВыдачаКниги.xml" />
-                    <!--<File Path="./Data/Documents/ВозвратКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-                    <!--<File Path="./Data/Documents/УтеряКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-                    <!--<File Path="./Data/Documents/ПоступлениеКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-                    <!--<File Path="./Data/References/Книга.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-                    <!--<File Path="./Data/References/Автор.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-                    <!--<File Path="./Data/References/Читатель.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-                    <!--<File Path="./Data/AccumulateRegister/ОстатокНаСкладе.xml" ComponentId="3e93d04a-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-                    <!--<File Path="./Data/InfoRegister/ИсторияВыдачиКниг.xml" ComponentId="3e93d180-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-                </IncludedFiles>
-            </Component>
-            <!--<Component Name="Table" Id="3e93d572-5a56-11e8-9c2d-fa7ae01bbebc">-->
-            <!--<File Path="./Components/TableComponent.dll"/>-->
-            <!--&lt;!&ndash;Присоединить компонент к другим компонентам-->
-            <!--Это означает, что в дереве конфигурации этот компонент не будет показываться в корне-->
-            <!--Пример:-->
-            <!--ROOT-->
-            <!--****Documents-->
-            <!--********НашКомпонент < **** Здесь он будет только в том случае, если значение Mode="ToComponent"-->
-            <!--(Предположим, что у компонент можно расширить другим компонентом, допустим, добавив-->
-            <!--к компоненту поддержку последовательностей и так далеее...)-->
-            <!--********ПриходнаяНакладная-->
-            <!--************Свойства-->
-            <!--************НашКомпонентКомпоннет < **** Здесь он будет только в том случае, если значение Mode="ToObject"&ndash;&gt;-->
-            <!--<Attaches>-->
-            <!--&lt;!&ndash; Ссылка компонент, где Mode -Тип присоединения(см выше), а Id - идентификатор компонента &ndash;&gt;-->
-            <!--<Attach Mode="ToObject" DestenationId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-            <!--<Attach Mode="ToObject" DestenationId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-            <!--</Attaches>-->
-            <!--</Component>-->
-            <!--<Component Name="Reference" Id="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc">-->
-            <!--<File Path="./Components/ReferenceComponent.dll"/>-->
-            <!--</Component>-->
-            <!--<Component Name="AccumulateRegister" Id="3e93d04a-5a56-11e8-9c2d-fa7ae01bbebc">-->
-            <!--<File Path="./Components/AccumulateRegisterComponent.dll"/>-->
-            <!--</Component>-->
-            <!--<Component Name="InformationRegister" Id="3e93d180-5a56-11e8-9c2d-fa7ae01bbebc">-->
-            <!--<File Path="./Components/InformationRegisterComponent.dll"/>-->
-            <!--</Component>-->
-        </Components>
-
-    </Data>
-
-    <!-- Секция описания интерфейса -->
-    <Interface>
-        <IncludedFiles>
-            <File Path="./Interface/РабочийСтол.xml" />
+          <File Path="./Data/Entites/TestEntity.xml" />
+          <!--<File Path="./Data/Documents/ВозвратКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
+          <!--<File Path="./Data/Documents/УтеряКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
+          <!--<File Path="./Data/Documents/ПоступлениеКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
+          <!--<File Path="./Data/References/Книга.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
+          <!--<File Path="./Data/References/Автор.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
+          <!--<File Path="./Data/References/Читатель.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
+          <!--<File Path="./Data/AccumulateRegister/ОстатокНаСкладе.xml" ComponentId="3e93d04a-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
+          <!--<File Path="./Data/InfoRegister/ИсторияВыдачиКниг.xml" ComponentId="3e93d180-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
         </IncludedFiles>
-    </Interface>
+      </Component>
+      <!--<Component Name="Table" Id="3e93d572-5a56-11e8-9c2d-fa7ae01bbebc">-->
+      <!--<File Path="./Components/TableComponent.dll"/>-->
+      <!--&lt;!&ndash;Присоединить компонент к другим компонентам-->
+      <!--Это означает, что в дереве конфигурации этот компонент не будет показываться в корне-->
+      <!--Пример:-->
+      <!--ROOT-->
+      <!--****Documents-->
+      <!--********НашКомпонент < **** Здесь он будет только в том случае, если значение Mode="ToComponent"-->
+      <!--(Предположим, что у компонент можно расширить другим компонентом, допустим, добавив-->
+      <!--к компоненту поддержку последовательностей и так далеее...)-->
+      <!--********ПриходнаяНакладная-->
+      <!--************Свойства-->
+      <!--************НашКомпонентКомпоннет < **** Здесь он будет только в том случае, если значение Mode="ToObject"&ndash;&gt;-->
+      <!--<Attaches>-->
+      <!--&lt;!&ndash; Ссылка компонент, где Mode -Тип присоединения(см выше), а Id - идентификатор компонента &ndash;&gt;-->
+      <!--<Attach Mode="ToObject" DestenationId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
+      <!--<Attach Mode="ToObject" DestenationId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
+      <!--</Attaches>-->
+      <!--</Component>-->
+      <!--<Component Name="Reference" Id="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc">-->
+      <!--<File Path="./Components/ReferenceComponent.dll"/>-->
+      <!--</Component>-->
+      <!--<Component Name="AccumulateRegister" Id="3e93d04a-5a56-11e8-9c2d-fa7ae01bbebc">-->
+      <!--<File Path="./Components/AccumulateRegisterComponent.dll"/>-->
+      <!--</Component>-->
+      <!--<Component Name="InformationRegister" Id="3e93d180-5a56-11e8-9c2d-fa7ae01bbebc">-->
+      <!--<File Path="./Components/InformationRegisterComponent.dll"/>-->
+      <!--</Component>-->
+    </Components>
 
-    <!-- Секция описания ролей -->
-    <Roles>
-        <IncludedFiles>
-            <File Path="./Roles/Директор.xml" />
-        </IncludedFiles>
-    </Roles>
+  </Data>
 
-    <!-- Секция модулей
+  <!-- Секция описания интерфейса -->
+  <Interface>
+    <IncludedFiles>
+      <File Path="./Interface/РабочийСтол.xml" />
+    </IncludedFiles>
+  </Interface>
+
+  <!-- Секция описания ролей -->
+  <Roles>
+    <IncludedFiles>
+      <File Path="./Roles/Директор.xml" />
+    </IncludedFiles>
+  </Roles>
+
+  <!-- Секция модулей
       Ремарка все подключаемые модули и весь код распространяется контейнезированно, т.е.
       код упакован в структурированный xml файл. Это сделано для того, чтобы абстрагироваться от ЯП
       Наверно, в будующем C# будет заменён на какой-то диалект, который будет крутиться на CLR и обеспечивать
@@ -89,19 +89,19 @@
       Модуль точно будет на собсвенном языке. Это нечто между c# и sql с богатыми возможностями
       извлечения, трансформации изменения сохранения данных. Пока что мобудь будет на C#
       -->
-    <Modules>
-        <IncludedFiles>
-            <File Path="./Modules/Модуль1.cs" />
-        </IncludedFiles>
-    </Modules>
+  <Modules>
+    <IncludedFiles>
+      <File Path="./Modules/Модуль1.cs" />
+    </IncludedFiles>
+  </Modules>
 
-    <!-- Секиция расписания -->
-    <Schedules>
-    </Schedules>
+  <!-- Секиция расписания -->
+  <Schedules>
+  </Schedules>
 
-    <!-- Секция языковой поддержки -->
-    <Languages>
-        <Language Name="Русский" Alias="ru" />
-        <Language Name="English" Alias="en" />
-    </Languages>
+  <!-- Секция языковой поддержки -->
+  <Languages>
+    <Language Name="Русский" Alias="ru" />
+    <Language Name="English" Alias="en" />
+  </Languages>
 </Root>

@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Having
 {
-    public class HavingNode : SqlNode
+    public class HavingNode : Node
     {
     }
 }

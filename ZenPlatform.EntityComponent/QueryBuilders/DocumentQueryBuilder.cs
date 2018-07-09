@@ -3,7 +3,6 @@ using System.Linq;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.Queries;
 
 namespace ZenPlatform.EntityComponent.QueryBuilders
 {
@@ -16,25 +15,25 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         {
         }
 
-        public DBSelectQuery SelectSingleObject(XCObjectTypeBase obj, object key)
-        {
-            if (!(obj is Configuration.SingleEntity doc)) throw new Exception();
+        //public DBSelectQuery SelectSingleObject(XCObjectTypeBase obj, object key)
+        //{
+        //    if (!(obj is Configuration.XCSingleEntity doc)) throw new Exception();
 
-            var result = new DBSelectQuery();
-            DBTable table = new DBTable(doc.RelTableName);
+        //    var result = new DBSelectQuery();
+        //    DBTable table = new DBTable(doc.RelTableName);
 
-            result.From(table);
+        //    result.From(table);
 
-            foreach (var property in doc.Properties)
-            {
-                result.Select(property.DatabaseColumnName);
-            }
+        //    foreach (var property in doc.Properties)
+        //    {
+        //        result.Select(property.DatabaseColumnName);
+        //    }
 
-            var id = doc.Properties.Single(x => x.Unique);
+        //    var id = doc.Properties.Single(x => x.Unique);
 
-            result.Where(table.DeclareField(id.DatabaseColumnName), CompareType.Equals, DBClause.CreateParameter("Id"));
+        //    result.Where(table.DeclareField(id.DatabaseColumnName), CompareType.Equals, DBClause.CreateParameter("Id"));
 
-            return result;
-        }
+        //    return result;
+        //}
     }
 }

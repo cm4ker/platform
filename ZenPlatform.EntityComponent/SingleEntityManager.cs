@@ -73,14 +73,14 @@ namespace ZenPlatform.EntityComponent
 
             var def = session.Environment.GetMetadata(type);
 
-            var conf = def.EntityConfig as Configuration.SingleEntity;
+            var conf = def.EntityConfig as Configuration.XCSingleEntity;
 
             var dto = def.EntityConfig.Parent.ComponentImpl.Caches[def.EntityConfig.Name].Get(key.ToString());
 
             if (dto != null)
                 return dto;
 
-            var q = new Query();
+            var q = new QueryBuilder.DML.Select.SelectQueryNode();
 
             q.From(conf.RelTableName);
             q.Select("*");
