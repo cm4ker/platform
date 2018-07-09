@@ -33,7 +33,7 @@ namespace ZenPlatform.Core
          *      
          */
 
-        public PlatformEnvironment()
+        public PlatformEnvironment(XCRoot config)
         {
             _locking = new object();
 
@@ -42,6 +42,8 @@ namespace ZenPlatform.Core
 
             Managers = new Dictionary<Type, IEntityManager>();
             Entityes = new Dictionary<Guid, EntityMetadata>();
+
+            Configuration = config;
         }
 
         /// <summary>
@@ -59,7 +61,7 @@ namespace ZenPlatform.Core
 
 
             //Зарегистрируем все даные
-            foreach (var type in Root.Data.ComponentTypes)
+            foreach (var type in Configuration.Data.ComponentTypes)
             {
                 var componentImpl = type.Parent.ComponentImpl;
                 var manager = componentImpl.Manager;
@@ -71,11 +73,9 @@ namespace ZenPlatform.Core
                 RegisterManager(csEntityType, manager);
                 RegisterEntity(new EntityMetadata(type, csEntityType, csDtoType));
             }
-
-            //TODO: добавить проверку миграций
         }
 
-        public XCRoot Root { get; set; }
+        public XCRoot Configuration { get; set; }
 
         /// <summary>
         /// Сборка конфигурации.
