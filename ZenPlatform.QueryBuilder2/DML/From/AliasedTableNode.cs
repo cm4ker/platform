@@ -4,7 +4,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.From
 {
-    public class AliasedTableNode : SqlNode
+    public class AliasedTableNode : Node
     {
         private TableNode _table;
 

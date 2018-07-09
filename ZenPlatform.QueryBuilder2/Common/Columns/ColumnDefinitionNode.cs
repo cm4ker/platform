@@ -6,7 +6,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.Common.Columns
 {
-    public class ColumnDefinitionNode : SqlNode
+    public class ColumnDefinitionNode : Node
     {
         public ColumnDefinitionNode(string columnName)
         {

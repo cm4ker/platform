@@ -5,10 +5,10 @@ namespace ZenPlatform.QueryBuilder.DML.Where
 {
     public class LikeWhereNode : WhereExpression
     {
-        public SqlNode Expression { get; }
-        public SqlNode Pattern { get; }
+        public Node Expression { get; }
+        public Node Pattern { get; }
 
-        public LikeWhereNode(SqlNode expression, SqlNode pattern)
+        public LikeWhereNode(Node expression, Node pattern)
         {
             Expression = expression;
             Pattern = pattern;

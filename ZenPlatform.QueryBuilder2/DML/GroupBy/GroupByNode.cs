@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.GroupBy
 {
-    public class GroupByNode : SqlNode
+    public class GroupByNode : Node
     {
     }
 }

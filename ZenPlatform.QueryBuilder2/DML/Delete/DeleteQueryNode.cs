@@ -7,7 +7,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Delete
 {
-    public class DeleteQueryNode : SqlNode
+    public class DeleteQueryNode : Node
     {
         private DeleteNode _delete;
         private WhereNode _where;
@@ -19,7 +19,7 @@ namespace ZenPlatform.QueryBuilder.DML.Delete
             _where = new WhereNode();
             _from = new FromNode();
 
-            Childs.AddRange(new SqlNode[] {_delete, _from, _where});
+            Childs.AddRange(new Node[] {_delete, _from, _where});
         }
 
         public DeleteQueryNode Delete(string tableName)
@@ -71,28 +71,28 @@ namespace ZenPlatform.QueryBuilder.DML.Delete
             return this;
         }
 
-        public DeleteQueryNode Where(Func<NodeFactory, SqlNode> f1, string operation, Func<NodeFactory, SqlNode> f2)
+        public DeleteQueryNode Where(Func<NodeFactory, Node> f1, string operation, Func<NodeFactory, Node> f2)
         {
             var factory = new NodeFactory();
             _where.Add(new BinaryWhereNode(f1(factory), operation, f2(factory)));
             return this;
         }
 
-        public DeleteQueryNode WhereIsNull(Func<NodeFactory, SqlNode> fieldExp)
+        public DeleteQueryNode WhereIsNull(Func<NodeFactory, Node> fieldExp)
         {
             var factory = new NodeFactory();
             _where.Add(new IsNullWhereNode(fieldExp(factory)));
             return this;
         }
 
-        public DeleteQueryNode WhereLike(Func<NodeFactory, SqlNode> fieldExp, string pattern)
+        public DeleteQueryNode WhereLike(Func<NodeFactory, Node> fieldExp, string pattern)
         {
             var factory = new NodeFactory();
             _where.Add(new LikeWhereNode(fieldExp(factory), new StringLiteralNode(pattern)));
             return this;
         }
 
-        public DeleteQueryNode WhereIn(Func<NodeFactory, SqlNode> fieldExp, Func<NodeFactory, SqlNode> fieldExp2)
+        public DeleteQueryNode WhereIn(Func<NodeFactory, Node> fieldExp, Func<NodeFactory, Node> fieldExp2)
         {
             var factory = new NodeFactory();
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));

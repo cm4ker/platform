@@ -7,7 +7,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.Common.Table
 {
-    public class TableDefinitionNode : SqlNode
+    public class TableDefinitionNode : Node
     {
         public TableDefinitionNode()
         {

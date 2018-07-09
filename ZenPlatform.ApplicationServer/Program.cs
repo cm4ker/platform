@@ -44,7 +44,7 @@ namespace ZenPlatform.ApplicationServer
         /// </summary>
         public void RegisterConnection()
         {
-            var session = _env.CreateSession();
+            //  var session = _env.CreateSession();
         }
     }
 
@@ -55,6 +55,6 @@ namespace ZenPlatform.ApplicationServer
     public class SystemProcess
     {
     }
-    
-    
+
+
 }
