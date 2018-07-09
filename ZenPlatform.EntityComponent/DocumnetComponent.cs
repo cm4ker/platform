@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Runtime.Caching;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
+using ZenPlatform.Core;
 using ZenPlatform.DataComponent;
 using ZenPlatform.EntityComponent.Entity;
 
@@ -17,8 +20,7 @@ namespace ZenPlatform.EntityComponent
             Generator = new SingleEntityGenerator(Component);
             Manager = new SingleEntityManager();
 
-            
-            
+
             Caches = new Dictionary<string, ObjectCache>();
 
             RegisterSupportedTypes();
@@ -59,4 +61,6 @@ namespace ZenPlatform.EntityComponent
          *
          */
     }
+
+    public delegate int SomeDelegate();
 }

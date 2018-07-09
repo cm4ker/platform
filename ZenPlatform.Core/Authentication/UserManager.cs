@@ -61,7 +61,7 @@ namespace ZenPlatform.Core.Authentication
             cmd.AddParameterWithValue("p0", user.Id);
             cmd.AddParameterWithValue("p1", user.Name);
 
-            cmd.CommandText = _session.Environment.SqlCompiler.Compile(query);
+           // cmd.CommandText = _session.Environment.SqlCompiler.Compile(query);
             cmd.ExecuteNonQuery();
         }
 
@@ -79,7 +79,7 @@ namespace ZenPlatform.Core.Authentication
 
             cmd.AddParameterWithValue("p0", user.Id);
 
-            cmd.CommandText = _session.Environment.SqlCompiler.Compile(query);
+            //cmd.CommandText = _session.Environment.SqlCompiler.Compile(query);
             cmd.ExecuteNonQuery();
         }
 
@@ -98,7 +98,7 @@ namespace ZenPlatform.Core.Authentication
 
             cmd.AddParameterWithValue("p0", id);
 
-            cmd.CommandText = _session.Environment.SqlCompiler.Compile(query);
+            //cmd.CommandText = _session.Environment.SqlCompiler.Compile(query);
             var reader = cmd.ExecuteReader();
 
             if (reader.Read())

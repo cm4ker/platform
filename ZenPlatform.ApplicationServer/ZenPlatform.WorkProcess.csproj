@@ -6,4 +6,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="1.7.3.4" />
+  </ItemGroup>
 </Project>
