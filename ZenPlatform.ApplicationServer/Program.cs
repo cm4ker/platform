@@ -4,7 +4,6 @@ using System.Runtime.Serialization.Formatters;
 using MessagePack;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure;
 using ZenPlatform.Core;
-using ZenPlatform.Core.Authentication;
 
 namespace ZenPlatform.WorkProcess
 {
@@ -12,13 +11,6 @@ namespace ZenPlatform.WorkProcess
     {
         public static void Main(params string[] args)
         {
-//            var configPath = args[1];
-//
-//            switch (args[0])
-//            {
-//                case "system": break;
-//                case "work": break;
-//            }
         }
     }
 

@@ -61,7 +61,8 @@ namespace ZenPlatform.Core.Authentication
             cmd.AddParameterWithValue("p0", user.Id);
             cmd.AddParameterWithValue("p1", user.Name);
 
-           // cmd.CommandText = _session.Environment.SqlCompiler.Compile(query);
+            //TODO: разобраться  с видимостью Evironment в сессии
+            //cmd.CommandText = _session.Environment.SqlCompiler.Compile(query);
             cmd.ExecuteNonQuery();
         }
 

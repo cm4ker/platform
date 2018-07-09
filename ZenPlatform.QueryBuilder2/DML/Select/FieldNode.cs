@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class FieldNode : SqlNode
+    public class FieldNode : Node
     {
         public FieldNode(string fieldName)
         {

@@ -4,7 +4,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.Common.Columns
 {
-    public class ColumnListNode : SqlNode
+    public class ColumnListNode : Node
     {
         public ColumnListNode WithField(string fieldName)
         {

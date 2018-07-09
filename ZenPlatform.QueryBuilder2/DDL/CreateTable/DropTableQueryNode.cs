@@ -5,7 +5,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DDL.CreateTable
 {
-    public class DropTableQueryNode : SqlNode
+    public class DropTableQueryNode : Node
     {
         private TableNode _table;
 
@@ -18,7 +18,7 @@ namespace ZenPlatform.QueryBuilder.DDL.CreateTable
             _table = new TableNode(tableName);
             options(_table);
 
-            Childs.AddRange(new SqlNode[]
+            Childs.AddRange(new Node[]
                 {Tokens.DropToken, Tokens.SpaceToken, Tokens.TableToken, Tokens.SpaceToken, _table});
         }
     }

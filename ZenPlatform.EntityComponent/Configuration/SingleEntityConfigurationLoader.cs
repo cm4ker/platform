@@ -5,27 +5,27 @@ using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure;
 using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
 using ZenPlatform.Contracts.Data;
-using ZenPlatform.Contracts.ParenChildCollection;
 using ZenPlatform.DataComponent.Configuration;
+using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
     /// <summary>
     /// Этот клас автоматически будет использован в качестве загрузчика
     /// </summary>
-    public class SingleEntityConfigurationLoader : ConfigurationLoaderBase<SingleEntity>
+    public class SingleEntityConfigurationLoader : ConfigurationLoaderBase<XCSingleEntity>
     {
         public override IDataComponent GetComponentImpl(XCComponent component)
         {
-            return new DocumnetComponent(component);
+            return new EntityComponent(component);
         }
 
-        protected override SingleEntity LoadObjectAction(string path)
+        protected override XCSingleEntity LoadObjectAction(string path)
         {
             using (var sr = new StreamReader(path))
             {
-                var ser = new XmlSerializer(typeof(SingleEntity));
-                return ser.Deserialize(sr) as SingleEntity ?? throw new Exception();
+                var ser = new XmlSerializer(typeof(XCSingleEntity));
+                return ser.Deserialize(sr) as XCSingleEntity ?? throw new Exception();
             }
         }
 
@@ -33,10 +33,10 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             using (var sr = new StringReader(content.RealContent))
             {
-                var ser = new XmlSerializer(typeof(SingleEntityRule));
-                var rule = ser.Deserialize(sr) as SingleEntityRule ?? throw new Exception();
+                var ser = new XmlSerializer(typeof(XCSingleEntityRule));
+                var rule = ser.Deserialize(sr) as XCSingleEntityRule ?? throw new Exception();
 
-                ((IChildItem<XCDataRuleContent>) rule).Parent = content;
+                ((IChildItem<XCDataRuleContent>)rule).Parent = content;
 
                 return rule;
             }

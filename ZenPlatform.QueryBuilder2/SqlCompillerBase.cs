@@ -14,6 +14,7 @@ using ZenPlatform.QueryBuilder.DML.Insert;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.QueryBuilder.DML.Update;
 using ZenPlatform.QueryBuilder.DML.Where;
+using ZenPlatform.Shared;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder
@@ -32,7 +33,7 @@ namespace ZenPlatform.QueryBuilder
         public virtual string OpenBracket { get; } = "(";
         public virtual string CloseBracket { get; } = ")";
 
-        public virtual void Compile(SqlNode node, StringBuilder sb)
+        public virtual void Compile(Node node, StringBuilder sb)
         {
             foreach (var nodeChild in node.Childs)
             {
@@ -41,7 +42,7 @@ namespace ZenPlatform.QueryBuilder
         }
 
 
-        public virtual string Compile(SqlNode node)
+        public virtual string Compile(Node node)
         {
             var sb = new StringBuilder();
             Compile(node, sb);
@@ -49,9 +50,9 @@ namespace ZenPlatform.QueryBuilder
             return sb.ToString();
         }
 
-        protected virtual void VisitNode(SqlNode node, StringBuilder sb)
+        protected virtual void VisitNode(Node node, StringBuilder sb)
         {
-            ItemSwitch<SqlNode>
+            ItemSwitch<Node>
                 .Switch(node)
                 .CaseIs<SelectQueryNode>((i) => { VisitSelectQueryNode(i, sb); })
                 //.CaseIs<UpdateQueryNode>(i => VisitUpdateQueryNode(i, sb))
@@ -93,7 +94,7 @@ namespace ZenPlatform.QueryBuilder
                 .Case(i => true, () => SimpleVisitor(node, sb));
         }
 
-        private void SimpleVisitor(SqlNode node, StringBuilder sb)
+        private void SimpleVisitor(Node node, StringBuilder sb)
         {
             VisitChilds(node, sb);
         }
@@ -322,7 +323,7 @@ namespace ZenPlatform.QueryBuilder
             sb.Append(SchemaSeparator);
         }
 
-        protected virtual void VisitChilds(SqlNode node, StringBuilder sb)
+        protected virtual void VisitChilds(Node node, StringBuilder sb)
         {
             foreach (var nodeChild in node.Childs)
             {
@@ -330,8 +331,8 @@ namespace ZenPlatform.QueryBuilder
             }
         }
 
-        protected virtual void VisitChildsForeach(SqlNode node, StringBuilder sb,
-            Action<SqlNode, StringBuilder> visitChild)
+        protected virtual void VisitChildsForeach(Node node, StringBuilder sb,
+            Action<Node, StringBuilder> visitChild)
         {
             foreach (var nodeChild in node.Childs)
             {

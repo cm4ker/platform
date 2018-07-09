@@ -3,7 +3,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.Common.Operations
 {
-    public class TypeDefinitionNode : SqlNode
+    public class TypeDefinitionNode : Node
     {
         public TypeDefinitionNode(string typeName)
         {

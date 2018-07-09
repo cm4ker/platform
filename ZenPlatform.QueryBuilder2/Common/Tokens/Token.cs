@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.Common.Tokens
 {
-    public class Token : SqlNode
+    public class Token : Node
     {
         public Token(string name)
         {

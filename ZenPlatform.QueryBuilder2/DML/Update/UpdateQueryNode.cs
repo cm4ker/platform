@@ -7,7 +7,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Update
 {
-    public class UpdateQueryNode : SqlNode
+    public class UpdateQueryNode : Node
     {
         private WhereNode _where;
         private FromNode _from;
@@ -20,7 +20,7 @@ namespace ZenPlatform.QueryBuilder.DML.Update
             _from = new FromNode();
             _update = new UpdateNode();
             _set = new SetNode();
-            Childs.AddRange(new SqlNode[] {_update, _set, _from, _where});
+            Childs.AddRange(new Node[] {_update, _set, _from, _where});
         }
 
         public UpdateQueryNode Update(string tableName)
@@ -48,7 +48,7 @@ namespace ZenPlatform.QueryBuilder.DML.Update
             return this;
         }
 
-        public UpdateQueryNode Set(Func<NodeFactory, FieldNode> exp, Func<NodeFactory, SqlNode> valueExp)
+        public UpdateQueryNode Set(Func<NodeFactory, FieldNode> exp, Func<NodeFactory, Node> valueExp)
         {
             var fact = new NodeFactory();
 
@@ -94,28 +94,28 @@ namespace ZenPlatform.QueryBuilder.DML.Update
             return this;
         }
 
-        public UpdateQueryNode Where(Func<NodeFactory, SqlNode> f1, string operation, Func<NodeFactory, SqlNode> f2)
+        public UpdateQueryNode Where(Func<NodeFactory, Node> f1, string operation, Func<NodeFactory, Node> f2)
         {
             var factory = new NodeFactory();
             _where.Add(new BinaryWhereNode(f1(factory), operation, f2(factory)));
             return this;
         }
 
-        public UpdateQueryNode WhereIsNull(Func<NodeFactory, SqlNode> fieldExp)
+        public UpdateQueryNode WhereIsNull(Func<NodeFactory, Node> fieldExp)
         {
             var factory = new NodeFactory();
             _where.Add(new IsNullWhereNode(fieldExp(factory)));
             return this;
         }
 
-        public UpdateQueryNode WhereLike(Func<NodeFactory, SqlNode> fieldExp, string pattern)
+        public UpdateQueryNode WhereLike(Func<NodeFactory, Node> fieldExp, string pattern)
         {
             var factory = new NodeFactory();
             _where.Add(new LikeWhereNode(fieldExp(factory), new StringLiteralNode(pattern)));
             return this;
         }
 
-        public UpdateQueryNode WhereIn(Func<NodeFactory, SqlNode> fieldExp, Func<NodeFactory, SqlNode> fieldExp2)
+        public UpdateQueryNode WhereIn(Func<NodeFactory, Node> fieldExp, Func<NodeFactory, Node> fieldExp2)
         {
             var factory = new NodeFactory();
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));

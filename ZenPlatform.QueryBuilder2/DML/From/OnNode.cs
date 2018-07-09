@@ -3,11 +3,11 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.From
 {
-    public class OnNode : SqlNode
+    public class OnNode : Node
     {
         public OnNode(string tableName, string fieldName, string condition, string tableName2, string fieldName2)
         {
-            Childs.AddRange(new SqlNode[]
+            Childs.AddRange(new Node[]
             {
                 new IdentifierNode(tableName),
                 new SchemaSeparatorNode(),
