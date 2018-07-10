@@ -31,7 +31,7 @@ namespace ZenPlatform.Configuration.Structure.Data
         public XCComponent()
         {
             _codeGenRules = new ConcurrentDictionary<CodeGenRuleType, CodeGenRule>();
-            IncludedFiles = new List<XCFile>();
+            Include = new List<XCBlob>();
         }
 
         /// <summary>
@@ -49,29 +49,31 @@ namespace ZenPlatform.Configuration.Structure.Data
             get => _isLoaded;
         }
 
-        [XmlElement] public XCFile File { get; set; }
+        /// <summary>
+        /// Хранилище компонента
+        /// </summary>
+        [XmlElement]
+        public XCBlob Blob { get; set; }
 
         /// <summary>
         /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
         /// </summary>
-        [XmlArray("IncludedFiles")]
-        [XmlArrayItem(ElementName = "File", Type = typeof(XCFile))]
-        public List<XCFile> IncludedFiles { get; set; }
+        [XmlArray("Include")]
+        [XmlArrayItem(ElementName = "Blob", Type = typeof(XCBlob))]
+        public List<XCBlob> Include { get; set; }
 
         [XmlIgnore] public Assembly ComponentAssembly { get; set; }
 
         public void LoadComponent()
         {
-            FileInfo fi = new FileInfo(Path.Combine(XCHelper.BaseDirectory, this.File.Path));
+            var blob = Root.Storage.GetBlob(Blob.Name, nameof(XCComponent));
 
-            if (!fi.Exists) throw new FileNotFoundException(fi.FullName);
-
-            ComponentAssembly = Assembly.LoadFile(fi.FullName);
+            ComponentAssembly = Assembly.Load(blob);
 
             var typeInfo = ComponentAssembly.GetTypes().FirstOrDefault(x => x.BaseType == typeof(ComponentInformation));
 
             if (typeInfo != null)
-                _info = (ComponentInformation)Activator.CreateInstance(typeInfo);
+                _info = (ComponentInformation) Activator.CreateInstance(typeInfo);
             else
                 _info = new ComponentInformation();
 
@@ -82,20 +84,19 @@ namespace ZenPlatform.Configuration.Structure.Data
                              throw new InvalidComponentException();
 
 
-            _loader = (IXCLoader)Activator.CreateInstance(loaderType);
+            _loader = (IXCLoader) Activator.CreateInstance(loaderType);
 
             _componentImpl = _loader.GetComponentImpl(this);
             _componentImpl.OnInitializing();
 
-            foreach (var includedFile in IncludedFiles)
+
+            //Подгружаем все дочерние объекты
+            foreach (var includeBlob in Include)
             {
-                var componentType = Loader.LoadObject(Path.Combine(XCHelper.BaseDirectory, includedFile.Path));
-                ((IChildItem<XCComponent>)componentType).Parent = this;
-
-                Parent.PlatformTypes.Add(componentType);
-
-                componentType.Initialize();
+                Loader.LoadObject(this, includeBlob);
             }
+
+            _isLoaded = true;
         }
 
         [XmlIgnore] public XCRoot Root => _parent.Parent;

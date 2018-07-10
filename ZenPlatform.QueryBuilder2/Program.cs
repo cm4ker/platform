@@ -55,7 +55,7 @@ namespace ZenPlatform.QueryBuilder
 
             var a = new AlterTableQueryNode("someAlterTable", t => t.WithSchema("dbo"));
             a.AddColumn("ТристаОтсосиУТракториста", f => f.Guid().NotNull());
-           
+
             var sb = new StringBuilder();
             c.Compile(q, sb);
             sb.Append("\n=============================\n");
@@ -72,5 +72,13 @@ namespace ZenPlatform.QueryBuilder
             Console.WriteLine(sb);
             Console.ReadLine();
         }
+    }
+
+    public enum SqlCompilerType
+    {
+        SqlServer,
+        Postgres,
+        MySql,
+        Oracle
     }
 }

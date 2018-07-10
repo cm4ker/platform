@@ -16,12 +16,14 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         /// </summary>
         IDataComponent GetComponentImpl(XCComponent component);
 
+
         /// <summary>
         /// Загрузить тип компонента
         /// </summary>
-        /// <param name="path">Путь до файла компонента</param>
+        /// <param name="com">Компонент</param>
+        /// <param name="blob">Хранилище сериализованного объекта</param>
         /// <returns></returns>
-        XCObjectTypeBase LoadObject(string path);
+        XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob);
 
         /// <summary>
         /// Загрузить правила компонента, необходимо для RLS

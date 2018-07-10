@@ -20,15 +20,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             return new EntityComponent(component);
         }
 
-        protected override XCSingleEntity LoadObjectAction(string path)
-        {
-            using (var sr = new StreamReader(path))
-            {
-                var ser = new XmlSerializer(typeof(XCSingleEntity));
-                return ser.Deserialize(sr) as XCSingleEntity ?? throw new Exception();
-            }
-        }
-
         protected override XCDataRuleBase LoadRuleAction(XCDataRuleContent content)
         {
             using (var sr = new StringReader(content.RealContent))
@@ -36,7 +27,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 var ser = new XmlSerializer(typeof(XCSingleEntityRule));
                 var rule = ser.Deserialize(sr) as XCSingleEntityRule ?? throw new Exception();
 
-                ((IChildItem<XCDataRuleContent>)rule).Parent = content;
+                ((IChildItem<XCDataRuleContent>) rule).Parent = content;
 
                 return rule;
             }

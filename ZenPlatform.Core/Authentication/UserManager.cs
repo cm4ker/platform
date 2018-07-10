@@ -47,7 +47,7 @@ namespace ZenPlatform.Core.Authentication
 
         public void Update(User user)
         {
-            var context = _session.DataContextManger.GetContext();
+            var context = _session.GetDataContext();
 
             var cmd = context.CreateCommand();
 

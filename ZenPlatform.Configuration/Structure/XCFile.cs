@@ -5,7 +5,6 @@ namespace ZenPlatform.Configuration.Structure
 {
     public class XCFile
     {
-        [XmlAttribute("Path")]
-        public string Path { get; set; }
+        [XmlAttribute("Path")] public string Path { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace ZenPlatform.Core.Configuration
         private readonly DataContext _context;
         private readonly SqlCompillerBase _compiler;
 
-        protected XCDatabaseStorage(string tableName, DataContext context, SqlCompillerBase compiler)
+        public XCDatabaseStorage(string tableName, DataContext context, SqlCompillerBase compiler)
         {
             _tableName = tableName;
             _context = context;
@@ -34,11 +34,10 @@ namespace ZenPlatform.Core.Configuration
             var cmdText = _compiler.Compile(query);
             using (var cmd = _context.CreateCommand())
             {
-
                 cmd.CommandText = cmdText;
                 cmd.AddParameterWithValue("BlobName", name);
 
-                return (byte[])cmd.ExecuteScalar();
+                return (byte[]) cmd.ExecuteScalar();
             }
         }
 
@@ -57,7 +56,6 @@ namespace ZenPlatform.Core.Configuration
             var cmdText = _compiler.Compile(searchQuery);
             using (var cmd = _context.CreateCommand())
             {
-
                 cmd.CommandText = cmdText;
                 cmd.AddParameterWithValue("BlobName", name);
 
@@ -67,7 +65,6 @@ namespace ZenPlatform.Core.Configuration
                 {
                     query = new InsertQueryNode()
                         .InsertInto(_tableName)
-
                         .WithFieldAndValue(x => x.Field("BlobName"), x => x.Parameter("BlobName"))
                         .WithFieldAndValue(x => x.Field("Data"), x => x.Parameter("Data"));
                 }
@@ -89,6 +86,16 @@ namespace ZenPlatform.Core.Configuration
         public void SaveBlob(string name, string route, string data)
         {
             SaveBlob(name, route, Encoding.UTF8.GetBytes(data));
+        }
+
+        public byte[] GetRootBlob()
+        {
+            return GetBlob("root", "");
+        }
+
+        public string GetStringRootBlob()
+        {
+            return GetStringBlob("root", "");
         }
     }
 }
