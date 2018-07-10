@@ -6,8 +6,8 @@ using System.Linq;
 using System.Runtime.Caching;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
@@ -65,9 +65,11 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// При миграции присваивается движком. В последствии хранится в структурых инициализации конкретной базы.
         /// </summary>
         //TODO: Продумать структуру, в которой будут храниться сопоставление Тип -> Дополнительные настройки компонента 
-        [XmlElement]
+        /*
+         * Результаты раздумий: Все мапинги должны быть в БД. 
+         */
+        [XmlIgnore]
         public string RelTableName { get; set; }
-
 
         public override void LoadDependencies()
         {

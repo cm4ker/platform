@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Contracts.Entity;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.QueryBuilder;
@@ -107,7 +107,7 @@ namespace ZenPlatform.Core
 
 
         /// <summary>
-        /// Компилятор запросов
+        /// Компилятор запросов, определяется на этапе инициализации приложения
         /// </summary>
         public SqlCompillerBase SqlCompiler { get; }
 

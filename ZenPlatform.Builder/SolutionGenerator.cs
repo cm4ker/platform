@@ -3,7 +3,7 @@ using System.IO;
 using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data;
 
 namespace ZenPlatform.Builder
 {

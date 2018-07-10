@@ -4,11 +4,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Primitive;
+using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Contracts;
 using ZenPlatform.Core;
+using ZenPlatform.Core.Annotations;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.EntityComponent.Configuration;
@@ -235,8 +236,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
             #endregion
 
-//            var preffix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
-//            var postfix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
+            //            var preffix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
+            //            var postfix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
 
             var classDefinition = Generator.ClassDeclaration(
                 GetEntityClassName(xcSingleEntity),
@@ -500,9 +501,9 @@ namespace ZenPlatform.EntityComponent.Entity
 
         /*
         TODO: Необходимо сгенерировать следующее API для работы с сущностями:
-              Session.Document.Invoice.Save();
-              Session.Register.Incommings.GetRange();
-              Session.Reference.Nomenclature.Create();
+              Session.Document().Invoice.Save();
+              Session.Register().Incommings.GetRange();
+              Session.Reference().Nomenclature.Create();
          */
 
         public SyntaxNode GenerateHelpersForEntity()
@@ -529,8 +530,6 @@ namespace ZenPlatform.EntityComponent.Entity
             return SyntaxFactory.CompilationUnit()
                 .AddUsings(GetStandartNamespaces().ToArray())
                 .AddMembers(managerClass).NormalizeWhitespace();
-
-            return generator.CompilationUnit(managerClass).NormalizeWhitespace();
         }
 
         /*
@@ -545,9 +544,9 @@ namespace ZenPlatform.EntityComponent.Entity
         private IEnumerable<UsingDirectiveSyntax> GetStandartNamespaces()
         {
             yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System"));
-            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core"));
-            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Annotations"));
-            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.DocumentComponent"));
+            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(typeof(ISession).Namespace));
+            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(typeof(CanBeNullAttribute).Namespace));
+            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(typeof(EntityComponent).Namespace));
         }
 
         private AccessorListSyntax GetEmptyAccessor()
