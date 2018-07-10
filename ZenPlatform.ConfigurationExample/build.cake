@@ -31,18 +31,18 @@ Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
 {
-    if(IsRunningOnWindows())
-    {
+    //if(IsRunningOnWindows())
+    //{
       // Use MSBuild
       MSBuild("./ZenPlatform.ConfigurationExample.csproj", settings =>
         settings.SetConfiguration(configuration));
-    }
-    else
-    {
+    //}
+    //else
+    //{
       // Use XBuild
-      XBuild("./ZenPlatform.ConfigurationExample.csproj", settings =>
-        settings.SetConfiguration(configuration));
-    }
+    //  XBuild("./ZenPlatform.ConfigurationExample.csproj", settings =>
+    //    settings.SetConfiguration(configuration));
+    //}
 });
 
 Task("Default").IsDependentOn("Build")
