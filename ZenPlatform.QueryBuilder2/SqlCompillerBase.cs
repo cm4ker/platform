@@ -21,6 +21,17 @@ namespace ZenPlatform.QueryBuilder
 {
     public abstract class SqlCompillerBase
     {
+        public static SqlCompillerBase FormEnum(SqlCompilerType compilerType)
+        {
+            switch (compilerType)
+            {
+                case SqlCompilerType.SqlServer: return new SqlServerCompiller();
+                case SqlCompilerType.Postgres: return new PostgresCompiller();
+            }
+
+            throw new NotSupportedException();
+        }
+
         public virtual string StartNameLiteral { get; } = "[";
         public virtual string EndNameLiteral { get; } = "]";
 

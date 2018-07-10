@@ -11,10 +11,16 @@ namespace ZenPlatform.Data
     /// </summary>
     public class DataContextManger
     {
-        private Dictionary<int, DataContext> _contexts;
+        private readonly string _connectionString;
+        private readonly Dictionary<int, DataContext> _contexts;
 
-        public DataContextManger()
+        /// <summary>
+        /// Создать новый менеджер контекстов
+        /// </summary>
+        /// <param name="connectionString"></param>
+        public DataContextManger(string connectionString)
         {
+            _connectionString = connectionString;
             _contexts = new Dictionary<int, DataContext>();
         }
 
@@ -28,9 +34,7 @@ namespace ZenPlatform.Data
         {
             if (!_contexts.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var context))
             {
-                //TODO: Брать connection string и файла конфигурации
-                context = new DataContext("Data source=(local);Initial catalog=TestDatabase; Integrated security=true;");
-
+                context = new DataContext(_connectionString);
                 _contexts.Add(Thread.CurrentThread.ManagedThreadId, context);
             }
 

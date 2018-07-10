@@ -10,6 +10,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts.Data;
+using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.DataComponent.Configuration
 {
@@ -17,24 +18,29 @@ namespace ZenPlatform.DataComponent.Configuration
         where TObjectType : XCObjectTypeBase
     {
         /// <summary>
-        /// Загрузить компонент возвращает загруженный компонент
+        /// Вызывается после загрузки объекта
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="conf">Конфигурация объекта</param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        protected virtual TObjectType LoadObjectAction(string path)
+        protected virtual void AfterObjectLoad(TObjectType conf)
         {
-            using (var sr = new StreamReader(path))
-            {
-                var s = new XmlSerializer(typeof(TObjectType));
+        }
 
-                var conf = s.Deserialize(sr) as TObjectType ?? throw new InvalidLoadConfigurationException(path);
+        /// <summary>
+        /// Вызывается перед инициализацией
+        /// </summary>
+        /// <param name="conf">Конфигурация объекта</param>
+        protected virtual void BeforeInitialize(TObjectType conf)
+        {
+        }
 
-                if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
-                if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
-
-                return conf;
-            }
+        /// <summary>
+        /// Вызывается после инициализации
+        /// </summary>
+        /// <param name="conf">Конфигурация объекта</param>
+        protected virtual void AfterInitialize(TObjectType conf)
+        {
         }
 
         protected virtual XCDataRuleBase LoadRuleAction(XCDataRuleContent content)
@@ -47,9 +53,33 @@ namespace ZenPlatform.DataComponent.Configuration
             throw new NotImplementedException();
         }
 
-        public XCObjectTypeBase LoadObject(string path)
+        public XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob)
         {
-            return LoadObjectAction(path);
+            var xml = com.Root.Storage.GetStringBlob(blob.Name, com.ComponentImpl.Name);
+
+            using (var r = new StringReader(xml))
+            {
+                var s = new XmlSerializer(typeof(TObjectType));
+
+                var conf = s.Deserialize(r) as TObjectType ?? throw new InvalidLoadConfigurationException(blob.Name);
+
+                if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
+                if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
+
+
+                AfterObjectLoad(conf);
+
+                //Сразу же указываем родителя
+                ((IChildItem<XCComponent>) conf).Parent = com;
+
+                com.Parent.PlatformTypes.Add(conf);
+
+                BeforeInitialize(conf);
+                conf.Initialize();
+                AfterInitialize(conf);
+
+                return conf;
+            }
         }
 
         public XCDataRuleBase LoadRule(XCDataRuleContent content)

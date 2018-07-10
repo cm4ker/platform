@@ -5,6 +5,7 @@ using MessagePack;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.WorkProcess
 {
@@ -25,9 +26,8 @@ namespace ZenPlatform.WorkProcess
     {
         private PlatformEnvironment _env;
 
-        public WorkProcess(string pathToConfiguration)
+        public WorkProcess(StartupConfig config)
         {
-            var config = XCRoot.Load(pathToConfiguration);
             _env = new PlatformEnvironment(config);
         }
 
@@ -84,10 +84,9 @@ namespace ZenPlatform.WorkProcess
          *     1) Получить объект (Ид, Маршрут)
          *     2) Получить список объектов (Маршрут)
          */
-        
+
         public void ExecuteCommand()
         {
-            
         }
 
         public void AuthorizeUser()

@@ -9,6 +9,7 @@ using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Contracts.Entity;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Configuration;
 using ZenPlatform.QueryBuilder;
 
 
@@ -18,7 +19,6 @@ namespace ZenPlatform.Core
     {
         private object _locking;
         private SystemSession _systemSession;
-        private UserManager _userManager;
 
         /*
          *  Среда должна обеспечиватьдоступ к конфигурации. Так как именно в среду будет загружаться конфигурация 
@@ -30,10 +30,9 @@ namespace ZenPlatform.Core
          *      Env.ConfigurationManager.LoadDb()               -- Загружает конфигурацию базы данных
          *      Env.ConfigurationManager.UnLoad(string path)    -- Выгружает конфигурацию конфигурацию
          *      Env.ConfigurationManager.Apply()                -- Применяет текущую загруженную конфигурацию, в этот момент применяются все изменения
-         *      
          */
 
-        public PlatformEnvironment(XCRoot config)
+        public PlatformEnvironment(StartupConfig config)
         {
             _locking = new object();
 
@@ -43,7 +42,9 @@ namespace ZenPlatform.Core
             Managers = new Dictionary<Type, IEntityManager>();
             Entityes = new Dictionary<Guid, EntityMetadata>();
 
-            Configuration = config;
+            SqlCompiler = SqlCompillerBase.FormEnum(config.DatabaseType);
+
+            StartupConfig = config;
         }
 
         /// <summary>
@@ -55,16 +56,23 @@ namespace ZenPlatform.Core
         {
             _systemSession = new SystemSession(this, 1);
 
-            _userManager = new UserManager(_systemSession);
+            //TODO: Дать возможность выбрать, какую конфигурацию загружать, с базы данных или из файловой системы
+            //заглушка
+            var storage = new XCDatabaseStorage("conf", _systemSession.GetDataContext(), SqlCompiler);
+
+            Configuration = XCRoot.Load(storage);
 
             Sessions.Add(_systemSession);
 
+            //TODO: получить библиотеку с сгенерированными сущностями dto и так далее
+            Build = Assembly.LoadFile("");
 
             //Зарегистрируем все даные
             foreach (var type in Configuration.Data.ComponentTypes)
             {
                 var componentImpl = type.Parent.ComponentImpl;
                 var manager = componentImpl.Manager;
+
                 var className = componentImpl.Generator.GetEntityClassName(type);
                 var dtoClassName = componentImpl.Generator.GetDtoClassName(type);
                 var csEntityType = Build.GetType(className);
@@ -75,7 +83,12 @@ namespace ZenPlatform.Core
             }
         }
 
-        public XCRoot Configuration { get; set; }
+        /// <summary>
+        /// Конфигурация
+        /// </summary>
+        public XCRoot Configuration { get; private set; }
+
+        public StartupConfig StartupConfig { get; }
 
         /// <summary>
         /// Сборка конфигурации.
@@ -111,11 +124,20 @@ namespace ZenPlatform.Core
         /// </summary>
         public SqlCompillerBase SqlCompiler { get; }
 
+        /// <summary>
+        /// Создаёт сессию для пользователя
+        /// </summary>
+        /// <param name="user">Пользователь</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Если платформа не инициализирована</exception>
         public Session CreateSession(User user)
         {
             lock (_locking)
             {
-                var id = (Sessions.Count == 0) ? 1 : Sessions.Max(x => x.Id) + 1;
+                if (!Sessions.Any()) throw new Exception("The environment not initialized!");
+
+                var id = Sessions.Max(x => x.Id) + 1;
+
                 var session = new UserSession(this, user, id);
 
                 Sessions.Add(session);
@@ -124,6 +146,11 @@ namespace ZenPlatform.Core
             }
         }
 
+        /// <summary>
+        /// Получить системную сессию
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public SystemSession GetSystemSession()
         {
             if (_systemSession is null)
@@ -132,7 +159,11 @@ namespace ZenPlatform.Core
             return _systemSession;
         }
 
-        public void RemoveSession(Session session)
+        /// <summary>
+        /// Убить сессию
+        /// </summary>
+        /// <param name="session"></param>
+        public void KillSession(Session session)
         {
             lock (_locking)
             {
@@ -140,7 +171,11 @@ namespace ZenPlatform.Core
             }
         }
 
-        public void RemoveSession(int id)
+        /// <summary>
+        /// Убить сессию
+        /// </summary>
+        /// <param name="id"></param>
+        public void KillSession(int id)
         {
             lock (_locking)
             {
@@ -149,11 +184,20 @@ namespace ZenPlatform.Core
             }
         }
 
+        /// <summary>
+        /// Зарегистрировать менеджер, который обслуживает определенный тип объекта
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="manager"></param>
         public void RegisterManager(Type type, IEntityManager manager)
         {
             Managers.Add(type, manager);
         }
 
+        /// <summary>
+        /// Отменить регистрацию менеджера, котоырй обслуживает определённый тип объекта
+        /// </summary>
+        /// <param name="type"></param>
         public void UnregisterManager(Type type)
         {
             if (Managers.ContainsKey(type))
@@ -177,11 +221,22 @@ namespace ZenPlatform.Core
             throw new Exception($"Manager for type {type.Name} not found");
         }
 
+        /// <summary>
+        /// Зарегистрировать метаданные сущности
+        /// </summary>
+        /// <param name="metadata"></param>
         public void RegisterEntity(EntityMetadata metadata)
         {
             Entityes.Add(metadata.Key, metadata);
         }
 
+
+        /// <summary>
+        /// Получить метаданные сущности по её ключу
+        /// </summary>
+        /// <param name="key">Ключ типа сущности</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public EntityMetadata GetMetadata(Guid key)
         {
             if (Entityes.TryGetValue(key, out var entityDefinition))

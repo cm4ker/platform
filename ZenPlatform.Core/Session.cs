@@ -8,30 +8,41 @@ namespace ZenPlatform.Core
     {
         int Id { get; }
 
-        DataContextManger DataContextManger { get; }
-
         void SetGlobalParameter(string key, object value);
         object GetGlobalParameter(string key, object value);
+
+        DataContext GetDataContext();
+        UserManager GetUserManager();
     }
 
+    /// <summary>
+    /// Абстракция сессии
+    /// </summary>
     public abstract class Session : ISession
     {
         protected Session(PlatformEnvironment env, int id)
         {
             Environment = env;
             Id = id;
-
-            DataContextManger = new DataContextManger();
+            UserManager = new UserManager(this);
+            DataContextManger = new DataContextManger(env.StartupConfig.ConnectionString);
         }
 
         public int Id { get; }
 
-        public DataContextManger DataContextManger { get; }
-        public PlatformEnvironment Environment { get; }
+        protected DataContextManger DataContextManger { get; }
+        protected PlatformEnvironment Environment { get; }
+
+        protected UserManager UserManager { get; }
 
         public UserManager GetUserManager()
         {
-            return new UserManager(this);
+            return UserManager;
+        }
+
+        public DataContext GetDataContext()
+        {
+            return DataContextManger.GetContext();
         }
 
         // Задача ниже V - не пойму для чего она. У сессии есть доступ к среде, не понятно, зачем для каждой сессии генерировать свой набор компонент.
