@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure;
+using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Builder
 {

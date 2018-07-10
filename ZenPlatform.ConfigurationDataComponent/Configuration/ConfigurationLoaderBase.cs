@@ -5,10 +5,10 @@ using System.Security.Claims;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Exceptions;
+using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts.Data;
 
 namespace ZenPlatform.DataComponent.Configuration
