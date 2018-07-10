@@ -2,8 +2,9 @@
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization.Formatters;
 using MessagePack;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core;
+using ZenPlatform.Core.Authentication;
 
 namespace ZenPlatform.WorkProcess
 {

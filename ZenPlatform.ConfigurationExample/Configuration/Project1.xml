@@ -14,25 +14,12 @@
                   Если нет аттрибута, берём просто - Guid.NewGuid();
                    -->
       <Component>
-        <File Path="./Components/EntityComponent.dll" />
+        <Blob Name="ZenPlatform.EntityComponent.dll" />
+
         <!-- Включенные файлы. Дериктива указывает на файлы, которые прекреплены к проекту -->
-        <IncludedFiles>
-          <!-- Файл проекта, где ComponentId - это уникальный идентификатор компонента, который указан выше, с помощью
-                          него будет осуществляться загрузка данного файла, если по какой-то из причин компонента 
-                          сверху нет - бует выдано исключение InvalidPlatformComponent 
-                          
-                          Внимание!!! Описание выше ^ устарело...
-                          -->
-          <File Path="./Data/Entites/TestEntity.xml" />
-          <!--<File Path="./Data/Documents/ВозвратКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-          <!--<File Path="./Data/Documents/УтеряКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-          <!--<File Path="./Data/Documents/ПоступлениеКниги.xml" ComponentId="3e93cc4e-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-          <!--<File Path="./Data/References/Книга.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-          <!--<File Path="./Data/References/Автор.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-          <!--<File Path="./Data/References/Читатель.xml" ComponentId="3e93cf00-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-          <!--<File Path="./Data/AccumulateRegister/ОстатокНаСкладе.xml" ComponentId="3e93d04a-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-          <!--<File Path="./Data/InfoRegister/ИсторияВыдачиКниг.xml" ComponentId="3e93d180-5a56-11e8-9c2d-fa7ae01bbebc"/>-->
-        </IncludedFiles>
+        <Include>
+          <Blob Path="TestEntity.xml" />
+        </Include>
       </Component>
       <!--<Component Name="Table" Id="3e93d572-5a56-11e8-9c2d-fa7ae01bbebc">-->
       <!--<File Path="./Components/TableComponent.dll"/>-->
@@ -74,11 +61,11 @@
   </Interface>
 
   <!-- Секция описания ролей -->
-  <Roles>
+  <!--<Roles>
     <IncludedFiles>
       <File Path="./Roles/Директор.xml" />
     </IncludedFiles>
-  </Roles>
+  </Roles>-->
 
   <!-- Секция модулей
       Ремарка все подключаемые модули и весь код распространяется контейнезированно, т.е.

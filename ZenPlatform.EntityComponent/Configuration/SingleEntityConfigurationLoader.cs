@@ -2,8 +2,8 @@
 using System.IO;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
+using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Contracts.Data;
 using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.Shared.ParenChildCollection;

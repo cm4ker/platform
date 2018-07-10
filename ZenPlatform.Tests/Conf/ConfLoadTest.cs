@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using ZenPlatform.Builder;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure;
+using ZenPlatform.Configuration.Structure;
 
 
 namespace ZenPlatform.Tests.Conf
@@ -16,7 +16,7 @@ namespace ZenPlatform.Tests.Conf
     [TestClass]
     public class ConfLoadTest
     {
-        private const string ConfigurationPath = "./Configuration";
+        private const string ConfigurationPath = "../../../../Build/Debug/ExampleConfiguration/Configuration";
 
         [TestMethod]
         public void RootLoad()
@@ -35,9 +35,7 @@ namespace ZenPlatform.Tests.Conf
             Assert.AreEqual("0.0.0.1 Alpha", conf.ProjectVersion);
 
             Assert.IsNotNull(conf.Data);
-
-
-
+            
             XCCompiller c = new XCCompiller(conf, "./");
 
             c.Build();

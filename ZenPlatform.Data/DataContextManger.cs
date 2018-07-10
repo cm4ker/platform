@@ -29,8 +29,7 @@ namespace ZenPlatform.Data
             if (!_contexts.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var context))
             {
                 //TODO: Брать connection string и файла конфигурации
-                context =
-                    new DataContext("Data source=(local);Initial catalog=TestDatabase; Integrated security=true;");
+                context = new DataContext("Data source=(local);Initial catalog=TestDatabase; Integrated security=true;");
 
                 _contexts.Add(Thread.CurrentThread.ManagedThreadId, context);
             }

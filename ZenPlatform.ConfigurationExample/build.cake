@@ -8,9 +8,9 @@ var configuration = Argument("configuration", "Debug");
 //////////////////////////////////////////////////////////////////////
 
 // Define directories.
-var buildDir = Directory("./bin") + Directory(configuration);
-var targetDir = Directory("netcoreapp2.1");
-var confDir = buildDir + targetDir + Directory("Configuration");
+var buildDir = Directory("../Build/") + Directory(configuration) + Directory("ExampleConfiguration");
+//var targetDir = Directory("netcoreapp2.1");
+var confDir = buildDir + Directory("Configuration");
 
 Task("Clean")
     .Does(() =>
@@ -49,8 +49,15 @@ Task("Default").IsDependentOn("Build")
   .Does(() =>
 {
   CreateDirectory(confDir + Directory("Components"));
-  CopyFile(buildDir + targetDir +File("ZenPlatform.DataComponent.dll"), confDir + Directory("Components") + File("ZenPlatform.DataComponent.dll"));
-  CopyFile(buildDir + targetDir +File("ZenPlatform.EntityComponent.dll"), confDir + Directory("Components") + File("ZenPlatform.EntityComponent.dll"));
+  CopyFile(buildDir + File("ZenPlatform.DataComponent.dll"), confDir + Directory("Components") + File("ZenPlatform.DataComponent.dll"));
+  CopyFile(buildDir + File("ZenPlatform.EntityComponent.dll"), confDir + Directory("Components") + File("ZenPlatform.EntityComponent.dll"));
+  CopyFile(buildDir + File("ZenPlatform.Configuration.dll"), confDir + Directory("Components") + File("ZenPlatform.Configuration.dll"));
+
+  //Copy pdb files for debug
+  CopyFile(buildDir + File("ZenPlatform.DataComponent.pdb"), confDir + Directory("Components") + File("ZenPlatform.DataComponent.pdb"));
+  CopyFile(buildDir + File("ZenPlatform.EntityComponent.pdb"), confDir + Directory("Components") + File("ZenPlatform.EntityComponent.pdb"));
+  CopyFile(buildDir + File("ZenPlatform.Configuration.pdb"), confDir + Directory("Components") + File("ZenPlatform.Configuration.pdb"));
+
   
   Information("Build done");
 });

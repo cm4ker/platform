@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Contracts.Data;
 using ZenPlatform.Contracts.Entity;
 using ZenPlatform.DataComponent.Entity;

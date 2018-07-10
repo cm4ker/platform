@@ -3,11 +3,11 @@
 <SingleEntity>
   <Guid>351badbe-7887-4c1e-900c-4907dc0c2905</Guid>
   <Id>10</Id>
-  <Name>Тестовая сущность</Name>
+  <Name>ТестоваяСущность</Name>
   <Description>Обычная сущность</Description>
   <IsAbstract>false</IsAbstract>
   <Properties>
-    <Property Id="9ce60d5a-37c4-4787-97f4-be534ef90eed" DateCase="DateTime" Alias="ДатаДокумента" DatabaseColumnName="Fld001">
+    <Property Id="9ce60d5a-37c4-4787-97f4-be534ef90eed" DateCase="DateTime" Alias="ДатаДокумента">
       <Types>
         <Type>
           <Guid>00000001-0002-0004-3848-eaea177b0c03</Guid>
@@ -20,4 +20,11 @@
   <DocumentModule>
     // Здесь могла бы быть ваша бизнес - логика!
   </DocumentModule>
+  <DocumentInterface>
+    <IncludedFiles>
+      <File Path="TestEntity.Form.xml"/>
+      <File Path="TestEntity.ListForm.xml"/>
+      <File Path="TestEntity.PickForm.xml"/>
+    </IncludedFiles>
+  </DocumentInterface>
 </SingleEntity>
