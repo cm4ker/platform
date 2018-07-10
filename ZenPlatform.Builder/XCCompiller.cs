@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure;
+using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Builder
 {
@@ -47,6 +47,11 @@ namespace ZenPlatform.Builder
                 foreach (var file in files)
                 {
                     sources.Add(SyntaxFactory.ParseSyntaxTree(file.Value, new CSharpParseOptions()));
+                    using (var sw = new StreamWriter(file.Key))
+                    {
+                        sw.WriteLine(file.Value);
+                    }
+
                 }
 
                 references.Add(MetadataReference.CreateFromFile(c.ComponentAssembly.Location));

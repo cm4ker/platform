@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts;
 using ZenPlatform.Contracts.Entity;
 

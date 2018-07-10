@@ -1,5 +1,5 @@
 ﻿using System.Xml.Serialization;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure;
+using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {

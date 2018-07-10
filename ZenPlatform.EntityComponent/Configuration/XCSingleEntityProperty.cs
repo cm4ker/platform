@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
@@ -47,6 +47,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             {
                 Alias = "Id",
                 Id = Guid.Parse("905208c8-e892-414f-bd48-acd70b2a901b"),
+                DatabaseColumnName = "Id",
                 Types = { PlatformTypes.Guid },
                 IsSystemProperty = true,
                 Unique = true

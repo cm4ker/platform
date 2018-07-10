@@ -1,6 +1,6 @@
-﻿using ZenPlatform.Configuration.ConfigurationLoader.Structure;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data;
-using ZenPlatform.Configuration.ConfigurationLoader.Structure.Data.Types.Complex;
+﻿using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts.Data;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
