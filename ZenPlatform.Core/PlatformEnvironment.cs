@@ -18,6 +18,7 @@ namespace ZenPlatform.Core
     public class PlatformEnvironment
     {
         private object _locking;
+
         private SystemSession _systemSession;
 
         /*
@@ -30,6 +31,16 @@ namespace ZenPlatform.Core
          *      Env.ConfigurationManager.LoadDb()               -- Загружает конфигурацию базы данных
          *      Env.ConfigurationManager.UnLoad(string path)    -- Выгружает конфигурацию конфигурацию
          *      Env.ConfigurationManager.Apply()                -- Применяет текущую загруженную конфигурацию, в этот момент применяются все изменения
+         *
+         *
+         *
+         * System session. Не должна быть инкапсулирована в PlatformEnvironment
+         * по той причине, что у нас будет несколько ProcessWorker'ов (PS)
+         * и их нужно всех синхронизировать между собой, чтобы изменять конфигурацию
+         *
+         * Простое решение - инкапсулировать SystemSession внутри SystemProcessWorker это позволит
+         * запускать новые PS после изменения базы данных 
+         * 
          */
 
         public PlatformEnvironment(StartupConfig config)
@@ -54,7 +65,7 @@ namespace ZenPlatform.Core
         /// </summary>
         public void Initialize()
         {
-            _systemSession = new SystemSession(this, 1);
+            //_systemSession = new SystemSession(this, 1);
 
             //TODO: Дать возможность выбрать, какую конфигурацию загружать, с базы данных или из файловой системы
             //заглушка

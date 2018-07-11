@@ -65,6 +65,11 @@ namespace ZenPlatform.WorkProcess
     public class SystemProcess
     {
         //TODO: добавить мигрирование
+
+        public SystemProcess(StartupConfig config)
+        {
+            SystemSession ss = new SystemSession();
+        }
     }
 
     /*
