@@ -5,16 +5,16 @@ using System.Security.Claims;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
+using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Contracts.Data;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.DataComponent.Configuration
 {
-    public abstract class ConfigurationLoaderBase<TObjectType> : IXCLoader
+    public abstract class ConfigurationLoaderBase<TObjectType> : IXComponentLoader
         where TObjectType : XCObjectTypeBase
     {
         /// <summary>

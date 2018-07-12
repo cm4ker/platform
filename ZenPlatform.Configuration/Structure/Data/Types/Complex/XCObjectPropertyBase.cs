@@ -12,14 +12,20 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         protected XCObjectPropertyBase()
         {
             Types = new List<XCTypeBase>();
-            Id = Guid.NewGuid();
+            Guid = Guid.NewGuid();
         }
 
         /// <summary>
         /// Уникальный идентификатор свойства
         /// </summary>
         [XmlAttribute]
-        public Guid Id { get; set; }
+        public Guid Guid { get; set; }
+
+        /// <summary>
+        /// Уникальный идентификатор объекта в разрезе базы данных
+        /// </summary>
+        [XmlIgnore]
+        public uint Id { get; set; }
 
         /// <summary>
         /// Указывает на то, является ли поле системным.

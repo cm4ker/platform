@@ -94,8 +94,6 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public override void Initialize()
         {
-            Parent.ComponentImpl.Caches.Add(this.Name, new MemoryCache(this.Name));
-
             if (Properties.FirstOrDefault(x => x.Unique) == null)
                 Properties.Add(StandartDocumentPropertyHelper.CreateUniqueProperty());
         }

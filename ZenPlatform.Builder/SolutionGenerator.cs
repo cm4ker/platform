@@ -35,7 +35,7 @@ namespace ZenPlatform.Builder
                 File.Delete(file);
             }
 
-            var files = generator.GenerateFilesFromComponent();
+            var files = generator.GenerateSourceFiles();
 
             foreach (var file in files)
             {

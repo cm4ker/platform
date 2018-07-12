@@ -7,23 +7,23 @@ using System.Reflection;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
+using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts;
-using ZenPlatform.Contracts.Data;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
     /// <summary>
-    /// Описание компонента
+    /// Компонент конфигурации
     /// </summary>
     public class XCComponent : IChildItem<XCData>
     {
         private XCData _parent;
         private bool _isLoaded;
-        private ComponentInformation _info;
-        private IXCLoader _loader;
+        private XCComponentInformation _info;
+        private IXComponentLoader _loader;
         private IDataComponent _componentImpl;
 
         private readonly IDictionary<CodeGenRuleType, CodeGenRule> _codeGenRules;
@@ -32,13 +32,15 @@ namespace ZenPlatform.Configuration.Structure.Data
         {
             _codeGenRules = new ConcurrentDictionary<CodeGenRuleType, CodeGenRule>();
             Include = new List<XCBlob>();
+            AttachedComponentIds = new List<Guid>();
+            AttachedComponents = new List<XCComponent>();
         }
 
         /// <summary>
         /// Информация о компоненте
         /// </summary>
         [XmlIgnore]
-        public ComponentInformation Info
+        public XCComponentInformation Info
         {
             get => _info;
         }
@@ -56,6 +58,19 @@ namespace ZenPlatform.Configuration.Structure.Data
         public XCBlob Blob { get; set; }
 
         /// <summary>
+        /// Список идентификаторов присоединённых компонентов
+        /// </summary>
+        [XmlArray("Attaches")]
+        [XmlArrayItem(ElementName = "ComponentId", Type = typeof(Guid))]
+        internal List<Guid> AttachedComponentIds { get; set; }
+
+        /// <summary>
+        /// Присоединённые компоненты. Это свойство инициализируется после загрузки всех компонентов
+        /// </summary>
+        [XmlIgnore]
+        public List<XCComponent> AttachedComponents { get; private set; }
+
+        /// <summary>
         /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
         /// </summary>
         [XmlArray("Include")]
@@ -70,25 +85,25 @@ namespace ZenPlatform.Configuration.Structure.Data
 
             ComponentAssembly = Assembly.Load(blob);
 
-            var typeInfo = ComponentAssembly.GetTypes().FirstOrDefault(x => x.BaseType == typeof(ComponentInformation));
+            var typeInfo = ComponentAssembly.GetTypes().FirstOrDefault(x => x.BaseType == typeof(XCComponentInformation));
 
             if (typeInfo != null)
-                _info = (ComponentInformation) Activator.CreateInstance(typeInfo);
+                _info = (XCComponentInformation)Activator.CreateInstance(typeInfo);
             else
-                _info = new ComponentInformation();
+                _info = new XCComponentInformation();
 
             var loaderType = ComponentAssembly.GetTypes()
                                  .FirstOrDefault(x =>
                                      x.IsPublic && !x.IsAbstract &&
-                                     x.GetInterfaces().Contains(typeof(IXCLoader))) ??
+                                     x.GetInterfaces().Contains(typeof(IXComponentLoader))) ??
                              throw new InvalidComponentException();
 
-
-            _loader = (IXCLoader) Activator.CreateInstance(loaderType);
+            _loader = (IXComponentLoader)Activator.CreateInstance(loaderType);
 
             _componentImpl = _loader.GetComponentImpl(this);
-            _componentImpl.OnInitializing();
 
+            //Инициализируем компонент
+            _componentImpl.OnInitializing();
 
             //Подгружаем все дочерние объекты
             foreach (var includeBlob in Include)
@@ -99,11 +114,13 @@ namespace ZenPlatform.Configuration.Structure.Data
             _isLoaded = true;
         }
 
+
+
         [XmlIgnore] public XCRoot Root => _parent.Parent;
 
         [XmlIgnore] public XCData Parent => _parent;
 
-        [XmlIgnore] public IXCLoader Loader => _loader;
+        [XmlIgnore] public IXComponentLoader Loader => _loader;
 
         [XmlIgnore] public IDataComponent ComponentImpl => _componentImpl;
 

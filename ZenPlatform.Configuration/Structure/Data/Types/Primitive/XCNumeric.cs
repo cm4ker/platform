@@ -5,7 +5,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
     public class XCNumeric : XCPremitiveType
     {
-        public override int Id => 5;
+        public override uint Id => 5;
 
         public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 5);
 

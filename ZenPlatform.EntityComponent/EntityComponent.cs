@@ -19,7 +19,8 @@ namespace ZenPlatform.EntityComponent
         {
             Generator = new SingleEntityGenerator(Component);
             Manager = new SingleEntityManager();
-            Caches = new Dictionary<string, ObjectCache>();
+           
+
 
             //TODO: Вынести интерфейс генерации UI в DataComponentBase. Если мы взаимодействуем с данными, то мы должны их как-то показывать
             InterfaceGenerator = new InterfaceGenerator();

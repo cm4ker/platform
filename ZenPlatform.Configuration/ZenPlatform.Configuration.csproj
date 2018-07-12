@@ -5,12 +5,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Class\" />
-    <Folder Include="Data" />
     <Folder Include="Role\" />
     <Folder Include="Scheduler\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.Contracts\ZenPlatform.Contracts.csproj" />
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>

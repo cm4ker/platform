@@ -7,4 +7,9 @@
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.TestPlatform.CoreUtilities">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\microsoft.testplatform.objectmodel\15.7.0\lib\netstandard1.5\Microsoft.TestPlatform.CoreUtilities.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

@@ -58,6 +58,16 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         private void LoadDependencies()
         {
+            //Загружаем присоединённые компоненты, чтобы можно было корректно генерировать зависимости
+            foreach (var component in Components)
+            {
+                foreach (var attachedComponentId in component.AttachedComponentIds)
+                {
+                    component.AttachedComponents.Add(Components.First(x => x.Info.ComponentId == attachedComponentId && x.Info.AttachedComponent));
+                }
+            }
+
+            //Загружаем зависимости типов
             foreach (var xct in ComponentTypes)
             {
                 xct.LoadDependencies();

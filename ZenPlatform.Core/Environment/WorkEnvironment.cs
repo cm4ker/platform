@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Contracts.Entity;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Authentication;
-using ZenPlatform.Core.Configuration;
-using ZenPlatform.QueryBuilder;
+using ZenPlatform.Core.Sessions;
 
-
-namespace ZenPlatform.Core
+namespace ZenPlatform.Core.Environment
 {
-    public class PlatformEnvironment
+    /// <summary>
+    /// Рабочая среда. Здесь же реализованы все плюшки  манипуляций с данными и так далее
+    /// </summary>
+    public class WorkEnvironment : PlatformEnvironment
     {
         private object _locking;
-
-        private SystemSession _systemSession;
 
         /*
          *  Среда должна обеспечиватьдоступ к конфигурации. Так как именно в среду будет загружаться конфигурация 
@@ -34,28 +28,29 @@ namespace ZenPlatform.Core
          *
          *
          *
-         * System session. Не должна быть инкапсулирована в PlatformEnvironment
+         * System session. Не должна быть инкапсулирована в WorkEnvironment
          * по той причине, что у нас будет несколько ProcessWorker'ов (PS)
          * и их нужно всех синхронизировать между собой, чтобы изменять конфигурацию
          *
          * Простое решение - инкапсулировать SystemSession внутри SystemProcessWorker это позволит
          * запускать новые PS после изменения базы данных 
-         * 
+         *
+         *
+         * Утверждение выше ^ ошибочно! Системная сессия не является ничем плохим. Она лишь предоставляет доступ к базе данных непосредственно для среды.
+         * Среда должна уметь как минимум загружать конфигурацию. Проверять пользователей и так далее. Для всего этого необходимо подключение к БД.
+         *
          */
 
-        public PlatformEnvironment(StartupConfig config)
+        public WorkEnvironment(StartupConfig config) : base(config)
         {
             _locking = new object();
 
-            Sessions = new List<Session>();
             Globals = new Dictionary<string, object>();
 
             Managers = new Dictionary<Type, IEntityManager>();
             Entityes = new Dictionary<Guid, EntityMetadata>();
 
-            SqlCompiler = SqlCompillerBase.FormEnum(config.DatabaseType);
 
-            StartupConfig = config;
         }
 
         /// <summary>
@@ -63,17 +58,11 @@ namespace ZenPlatform.Core
         /// На этом этапе происходит создание подключения к базе
         /// Загрузка конфигурации и так далее
         /// </summary>
-        public void Initialize()
+        public override void Initialize()
         {
-            //_systemSession = new SystemSession(this, 1);
+            //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
+            base.Initialize();
 
-            //TODO: Дать возможность выбрать, какую конфигурацию загружать, с базы данных или из файловой системы
-            //заглушка
-            var storage = new XCDatabaseStorage("conf", _systemSession.GetDataContext(), SqlCompiler);
-
-            Configuration = XCRoot.Load(storage);
-
-            Sessions.Add(_systemSession);
 
             //TODO: получить библиотеку с сгенерированными сущностями dto и так далее
             Build = Assembly.LoadFile("");
@@ -82,6 +71,7 @@ namespace ZenPlatform.Core
             foreach (var type in Configuration.Data.ComponentTypes)
             {
                 var componentImpl = type.Parent.ComponentImpl;
+
                 var manager = componentImpl.Manager;
 
                 var className = componentImpl.Generator.GetEntityClassName(type);
@@ -94,12 +84,9 @@ namespace ZenPlatform.Core
             }
         }
 
-        /// <summary>
-        /// Конфигурация
-        /// </summary>
-        public XCRoot Configuration { get; private set; }
 
-        public StartupConfig StartupConfig { get; }
+
+
 
         /// <summary>
         /// Сборка конфигурации.
@@ -112,13 +99,6 @@ namespace ZenPlatform.Core
         /// </summary>
         public Dictionary<string, object> Globals { get; set; }
 
-
-        /// <summary>
-        /// Сессии
-        /// </summary>
-        public IList<Session> Sessions { get; }
-
-
         /// <summary>
         /// Сущности
         /// </summary>
@@ -129,19 +109,13 @@ namespace ZenPlatform.Core
         /// </summary>
         public IDictionary<Type, IEntityManager> Managers { get; }
 
-
-        /// <summary>
-        /// Компилятор запросов, определяется на этапе инициализации приложения
-        /// </summary>
-        public SqlCompillerBase SqlCompiler { get; }
-
         /// <summary>
         /// Создаёт сессию для пользователя
         /// </summary>
         /// <param name="user">Пользователь</param>
         /// <returns></returns>
         /// <exception cref="Exception">Если платформа не инициализирована</exception>
-        public Session CreateSession(User user)
+        public ISession CreateSession(User user)
         {
             lock (_locking)
             {
@@ -158,23 +132,10 @@ namespace ZenPlatform.Core
         }
 
         /// <summary>
-        /// Получить системную сессию
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        public SystemSession GetSystemSession()
-        {
-            if (_systemSession is null)
-                throw new InvalidOperationException("System session is not created. The system go down.");
-
-            return _systemSession;
-        }
-
-        /// <summary>
         /// Убить сессию
         /// </summary>
         /// <param name="session"></param>
-        public void KillSession(Session session)
+        public void KillSession(ISession session)
         {
             lock (_locking)
             {

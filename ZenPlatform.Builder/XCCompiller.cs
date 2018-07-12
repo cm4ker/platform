@@ -42,7 +42,7 @@ namespace ZenPlatform.Builder
 
             foreach (var c in _root.Data.Components)
             {
-                var files = c.ComponentImpl.Generator.GenerateFilesFromComponent();
+                var files = c.ComponentImpl.Generator.GenerateSourceFiles();
 
                 foreach (var file in files)
                 {
