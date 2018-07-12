@@ -11,7 +11,7 @@ namespace ZenPlatform.Configuration.Structure
     {
         private XCData _data;
         private XCRoles _roles;
-        private IXCStorage _storage;
+        private IXCConfigurationStorage _storage;
 
         public XCRoot()
         {
@@ -25,7 +25,7 @@ namespace ZenPlatform.Configuration.Structure
             Languages = new List<XCLanguage>();
         }
 
-        public IXCStorage Storage => _storage;
+        public IXCConfigurationStorage Storage => _storage;
 
         [XmlElement("ProjectId")] public Guid ProjectId { get; set; }
 
@@ -41,7 +41,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _data = value;
-                ((IChildItem<XCRoot>) _data).Parent = this;
+                ((IChildItem<XCRoot>)_data).Parent = this;
             }
         }
 
@@ -54,7 +54,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _roles = value;
-                ((IChildItem<XCRoot>) _roles).Parent = this;
+                ((IChildItem<XCRoot>)_roles).Parent = this;
             }
         }
 
@@ -66,31 +66,31 @@ namespace ZenPlatform.Configuration.Structure
         [XmlArrayItem(ElementName = "Language", Type = typeof(XCLanguage))]
         public List<XCLanguage> Languages { get; set; }
 
-//        /// <summary>
-//        /// Загрузить концигурацию
-//        /// </summary>
-//        /// <param name="path"></param>
-//        /// <returns></returns>
-//        public static XCRoot Load(string path)
-//        {
-//            //Начальная загрузка 
-//            XCRoot conf = XCHelper.DeserializeFromFile<XCRoot>(path);
-//
-//            //Инициализация компонентов данных
-//            conf.Data.Load();
-//
-//            //Инициализация ролевой системы
-//            conf.Roles.Load();
-//
-//            return conf;
-//        }
+        //        /// <summary>
+        //        /// Загрузить концигурацию
+        //        /// </summary>
+        //        /// <param name="path"></param>
+        //        /// <returns></returns>
+        //        public static XCRoot Load(string path)
+        //        {
+        //            //Начальная загрузка 
+        //            XCRoot conf = XCHelper.DeserializeFromFile<XCRoot>(path);
+        //
+        //            //Инициализация компонентов данных
+        //            conf.Data.Load();
+        //
+        //            //Инициализация ролевой системы
+        //            conf.Roles.Load();
+        //
+        //            return conf;
+        //        }
 
         /// <summary>
         /// Загрузить концигурацию
         /// </summary>
         /// <param name="storage"></param>
         /// <returns></returns>
-        public static XCRoot Load(IXCStorage storage)
+        public static XCRoot Load(IXCConfigurationStorage storage)
         {
             //Начальная загрузка 
             XCRoot conf = XCHelper.DeserializeFromFile<XCRoot>(storage.GetStringRootBlob());
@@ -107,30 +107,33 @@ namespace ZenPlatform.Configuration.Structure
             return conf;
         }
 
-//        /// <summary>
-//        /// Создать новую концигурацию
-//        /// </summary>
-//        /// <param name="path"></param>
-//        /// <returns></returns>
-//        public static XCRoot Create(string path)
-//        {
-//            return new XCRoot()
-//            {
-//                ProjectId = Guid.NewGuid(),
-//                ProjectName = "Новый проект"
-//            };
-//        }
+        //        /// <summary>
+        //        /// Создать новую концигурацию
+        //        /// </summary>
+        //        /// <param name="path"></param>
+        //        /// <returns></returns>
+        //        public static XCRoot Create(string path)
+        //        {
+        //            return new XCRoot()
+        //            {
+        //                ProjectId = Guid.NewGuid(),
+        //                ProjectName = "Новый проект"
+        //            };
+        //        }
 
-//        /// <summary>
-//        /// Сохранить конфигурацию
-//        /// </summary>
-//        public void Save(string path)
-//        {
-//            using (var tr = new StreamWriter(path))
-//            {
-//                XmlSerializer serializer = new XmlSerializer(typeof(XCRoot));
-//                serializer.Serialize(tr, this);
-//            }
-//        }
+        //        /// <summary>
+        //        /// Сохранить конфигурацию
+        //        /// </summary>
+        //        public void Save(string path)
+        //        {
+        //            using (var tr = new StreamWriter(path))
+        //            {
+        //                XmlSerializer serializer = new XmlSerializer(typeof(XCRoot));
+        //                serializer.Serialize(tr, this);
+        //            }
+        //        }
+
+
+        //TODO: Сделать механизм сравнения двух конфигураций
     }
 }

@@ -1,21 +1,23 @@
-﻿using ZenPlatform.Configuration.Structure;
+﻿using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Contracts.Data;
 
 namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
 {
     /// <summary>
-    /// Загрузчик конфигурации.
+    /// Загрузчик компонента
+    /// Является мостиком между компонентом и платформой
     /// </summary>
-    public interface IXCLoader
+    public interface IXComponentLoader
     {
         /// <summary>
         /// Инициализировать компомент
-        /// При вызове этого метода будет инициализирована сущность <see cref="DataComponentBase"/>
+        /// При вызове этого метода будет инициализирована сущность <see>
+        ///         <cref>DataComponentBase</cref>
+        ///     </see>
         /// </summary>
         IDataComponent GetComponentImpl(XCComponent component);
-
 
         /// <summary>
         /// Загрузить тип компонента
@@ -28,7 +30,7 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         /// <summary>
         /// Загрузить правила компонента, необходимо для RLS
         /// </summary>
-        /// <param name="xml"></param>
+        /// <param name="content"></param>
         /// <returns></returns>
         XCDataRuleBase LoadRule(XCDataRuleContent content);
     }

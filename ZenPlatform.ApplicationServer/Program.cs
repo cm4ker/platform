@@ -5,6 +5,8 @@ using MessagePack;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Sessions;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.WorkProcess
@@ -24,11 +26,11 @@ namespace ZenPlatform.WorkProcess
     /// </summary>
     public class WorkProcess
     {
-        private PlatformEnvironment _env;
+        private WorkEnvironment _env;
 
         public WorkProcess(StartupConfig config)
         {
-            _env = new PlatformEnvironment(config);
+            _env = new WorkEnvironment(config);
         }
 
         public void Start()
@@ -66,9 +68,16 @@ namespace ZenPlatform.WorkProcess
     {
         //TODO: добавить мигрирование
 
+        private SystemEnvironment _env;
+
         public SystemProcess(StartupConfig config)
         {
-            SystemSession ss = new SystemSession();
+            _env = new SystemEnvironment(config);
+        }
+
+        public void Migrate()
+        {
+            _env.Configuration
         }
     }
 

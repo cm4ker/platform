@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ZenPlatform.Contracts.Entity;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core;
+using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Sessions;
 
 namespace ZenPlatform.DataComponent.Entity
 {
@@ -10,7 +12,7 @@ namespace ZenPlatform.DataComponent.Entity
     /// </summary>
     public abstract class EntityBase : IEntity, INotifyPropertyChanged
     {
-        public EntityBase(Session session)
+        protected EntityBase(UserSession session)
         {
             Session = session;
         }
@@ -18,13 +20,7 @@ namespace ZenPlatform.DataComponent.Entity
         /// <summary>
         /// Текущая сессия
         /// </summary>
-        protected Session Session { get; }
-
-        /// <summary>
-        /// Окружение
-        /// </summary>
-        protected PlatformEnvironment Environment => Session.Environment;
-
+        protected UserSession Session { get; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
+using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Contracts.Data;
-using ZenPlatform.Contracts.Entity;
 using ZenPlatform.DataComponent.Entity;
 
 namespace ZenPlatform.DataComponent
@@ -49,14 +49,18 @@ namespace ZenPlatform.DataComponent
         /// </summary>
         public virtual void OnInitializing()
         {
-        }
 
-        public virtual string Name => "Unknown";
-        public virtual string Version => this.GetType().Assembly.GetName().Version.ToString();
+        }
 
         public IEntityManager Manager { get; protected set; }
         public IEntityGenerator Generator { get; protected set; }
-        public Dictionary<string, ObjectCache> Caches { get; protected set; }
+        public IDatabaseObjectsGenerator DatabaseObjectsGenerator { get; protected set; }
+        public IEntityMigrator Migrator { get; protected set; }
+
+        /*
+         * Кэширование выведено в отдельное приложение, которое связывается по протоколу общения
+         */
+        //public Dictionary<string, ObjectCache> Caches { get; protected set; }
 
         //Пометка: выпилено, компонент не хранит в себе эту инфомрацию для доступа извне,
         //но если нужно, тогда это будет скорее всего в  другом формате

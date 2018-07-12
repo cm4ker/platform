@@ -17,10 +17,11 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
         public virtual Guid Guid { get; set; }
 
         /// <summary>
-        /// Локальный уникальный идентификатор типа
+        /// Локальный уникальный идентификатор типа хранится в базе данных и присваивается инициализатороом во время загрузки конфигурации
+        /// Если уникальность этого поля будет нарушена , то в таком случае это будет провал
         /// </summary>
-        [XmlElement]
-        public virtual int Id { get; set; }
+        [XmlIgnore]
+        public virtual uint Id { get; set; }
 
         /// <summary>
         /// Наименование типа

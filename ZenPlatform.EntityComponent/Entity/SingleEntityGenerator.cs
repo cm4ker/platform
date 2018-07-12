@@ -10,6 +10,7 @@ using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Contracts;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Annotations;
+using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.EntityComponent.Configuration;
@@ -183,7 +184,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             //Объявляем конструктор
             var parameterList =
-                SyntaxFactory.ParseParameterList($"[NotNull] {nameof(Session)} session, {dtoClassName} dto");
+                SyntaxFactory.ParseParameterList($"[NotNull] {nameof(ISession)} session, {dtoClassName} dto");
             var statementsParams = parameterList.Parameters.ToArray<SyntaxNode>();
             var baseConstructorArguments = SyntaxFactory.ArgumentList();
             baseConstructorArguments =
@@ -390,7 +391,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
 
             var constructorBody = SyntaxFactory.Block(SyntaxFactory.ParseStatement("Session = session;"));
-            var parameters = SyntaxFactory.ParseParameterList($"{nameof(Session)} session");
+            var parameters = SyntaxFactory.ParseParameterList($"{nameof(ISession)} session");
 
             var constructor = generator.ConstructorDeclaration("DocumentInterface",
                 parameters.Parameters,
@@ -398,7 +399,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 accessibility: Accessibility.Public);
 
             var sessionProperty =
-                SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(nameof(Session)), "Session")
+                SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(nameof(ISession)), "Session")
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                     .WithAccessorList(
                         SyntaxFactory.AccessorList().AddAccessors(
@@ -480,7 +481,7 @@ namespace ZenPlatform.EntityComponent.Entity
             return newNode;
         }
 
-        public override Dictionary<string, string> GenerateFilesFromComponent()
+        public override Dictionary<string, string> GenerateSourceFiles()
         {
             var result = new Dictionary<string, string>();
 

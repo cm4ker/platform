@@ -14,7 +14,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Core.Configuration
 {
-    public class XCDatabaseStorage : IXCStorage
+    public class XCDatabaseStorage : IXCConfigurationStorage
     {
         private readonly string _tableName;
         private readonly DataContext _context;

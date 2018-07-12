@@ -10,11 +10,11 @@ using ZenPlatform.QueryBuilder.DML.Select;
 namespace ZenPlatform.Configuration
 {
 
-    public class XCFileSystemStorage : IXCStorage
+    public class XCFileSystemStorage : IXCConfigurationStorage
     {
         private readonly string _directory;
 
-        protected XCFileSystemStorage(string directory)
+        protected XCFileSystemStorage(string directory, string fileName)
         {
             _directory = directory;
         }
@@ -37,6 +37,16 @@ namespace ZenPlatform.Configuration
         public void SaveBlob(string name, string route, string data)
         {
             SaveBlob(name, route, Encoding.UTF8.GetBytes(data));
+        }
+
+        public byte[] GetRootBlob()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetStringRootBlob()
+        {
+            throw new NotImplementedException();
         }
 
         public void SaveBlob(string name, string route, byte[] bytes)

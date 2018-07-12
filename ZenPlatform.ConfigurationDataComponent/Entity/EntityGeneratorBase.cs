@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts;
-using ZenPlatform.Contracts.Entity;
 
 namespace ZenPlatform.DataComponent.Entity
 {
@@ -108,7 +108,7 @@ namespace ZenPlatform.DataComponent.Entity
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
-        public virtual Dictionary<string, string> GenerateFilesFromComponent()
+        public virtual Dictionary<string, string> GenerateSourceFiles()
         {
             throw new NotImplementedException();
         }
