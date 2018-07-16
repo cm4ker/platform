@@ -2,9 +2,9 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Where
 {
-    public class InWhereNode : Node
+    public class InWhereNode : SqlNode
     {
-        public InWhereNode(Node node1, Node node2)
+        public InWhereNode(SqlNode node1, SqlNode node2)
         {
             Childs.AddRange(new[] {node1, node2});
         }

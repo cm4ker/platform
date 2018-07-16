@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class AliasNode : Node
+    public class AliasNode : SqlNode
     {
 //        public string Alias { get; }
 

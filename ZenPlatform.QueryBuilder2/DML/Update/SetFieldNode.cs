@@ -4,9 +4,9 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Update
 {
-    public class SetFieldNode : Node
+    public class SetFieldNode : SqlNode
     {
-        public SetFieldNode(FieldNode fieldExpression, Node value)
+        public SetFieldNode(FieldNode fieldExpression, SqlNode value)
         {
             Childs.AddRange(new[] {fieldExpression, new CompareOperatorNode("="), value});
         }

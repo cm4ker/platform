@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.From
 {
-    public class FromNode : Node
+    public class FromNode : SqlNode
     {
     }
 }

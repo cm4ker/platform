@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class SelectNastedQueryNode : Node
+    public class SelectNastedQueryNode : SqlNode
     {
         public SelectNastedQueryNode(SelectQueryNode node)
         {

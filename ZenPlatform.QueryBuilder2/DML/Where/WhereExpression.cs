@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Where
 {
-    public class WhereExpression : Node
+    public class WhereExpression : SqlNode
     {
         public bool IsNot { get; set; }
     }

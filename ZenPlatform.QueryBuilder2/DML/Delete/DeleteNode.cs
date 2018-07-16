@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Delete
 {
-    public class DeleteNode : Node
+    public class DeleteNode : SqlNode
     {
     }
 }

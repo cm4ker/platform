@@ -6,7 +6,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Insert
 {
-    public class InsertQueryNode : Node
+    public class InsertQueryNode : SqlNode
     {
         private InsertIntoNode _insertInto;
         private TableWithColumnsNode _table;
@@ -29,32 +29,32 @@ namespace ZenPlatform.QueryBuilder.DML.Insert
             return InsertInto(f => f.InsertTable(tableName).WithSchema(schemaName));
         }
 
-        public InsertQueryNode InsertInto(Func<NodeFactory, TableWithColumnsNode> exp)
+        public InsertQueryNode InsertInto(Func<SqlNodeFactory, TableWithColumnsNode> exp)
         {
-            var fac = new NodeFactory();
+            var fac = new SqlNodeFactory();
             //_insertInto.Add(exp(fac));
             _table = exp(fac);
             Childs.Insert(1, _table);
             return this;
         }
 
-        public InsertQueryNode WithField(Func<NodeFactory, FieldNode> fieldExp)
+        public InsertQueryNode WithField(Func<SqlNodeFactory, FieldNode> fieldExp)
         {
-            var fac = new NodeFactory();
+            var fac = new SqlNodeFactory();
             _table.WithField(fieldExp(fac));
             //_insertInto.Add(exp(fac));
             return this;
         }
 
-        public InsertQueryNode WithValue(Func<NodeFactory, Node> valExp)
+        public InsertQueryNode WithValue(Func<SqlNodeFactory, SqlNode> valExp)
         {
-            var fac = new NodeFactory();
+            var fac = new SqlNodeFactory();
             _values.Add(valExp(fac));
             return this;
         }
 
-        public InsertQueryNode WithFieldAndValue(Func<NodeFactory, FieldNode> fieldExp,
-            Func<NodeFactory, Node> valExp)
+        public InsertQueryNode WithFieldAndValue(Func<SqlNodeFactory, FieldNode> fieldExp,
+            Func<SqlNodeFactory, SqlNode> valExp)
         {
             WithField(fieldExp);
             return WithValue(valExp);

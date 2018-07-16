@@ -3,7 +3,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.From
 {
-    public class OnNode : Node
+    public class OnNode : SqlNode
     {
         public OnNode(string tableName, string fieldName, string condition, string tableName2, string fieldName2)
         {

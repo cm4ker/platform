@@ -8,7 +8,7 @@ namespace ZenPlatform.QueryBuilder.DML.Where
         public Node Expression { get; }
         public Node Pattern { get; }
 
-        public LikeWhereNode(Node expression, Node pattern)
+        public LikeWhereNode(SqlNode expression, SqlNode pattern)
         {
             Expression = expression;
             Pattern = pattern;

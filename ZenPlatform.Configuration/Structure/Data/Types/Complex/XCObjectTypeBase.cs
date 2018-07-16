@@ -16,11 +16,23 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         private XCComponent _parent;
 
-        [XmlElement] public bool IsAbstract { get; set; }
+        /// <summary>
+        /// Это абстрактный тип
+        /// </summary>
+        [XmlElement]
+        public bool IsAbstract { get; set; }
 
-        [XmlElement] public bool IsSealed { get; set; }
+        /// <summary>
+        /// Этот тип нельзя наследовать
+        /// </summary>
+        [XmlElement]
+        public bool IsSealed { get; set; }
 
-        [XmlAttribute] public Guid BaseTypeId { get; set; }
+        /// <summary>
+        /// Ссылка на базовый тип
+        /// </summary>
+        [XmlAttribute]
+        public Guid BaseTypeId { get; set; }
 
         [XmlIgnore] public XCComponent Parent => _parent;
 

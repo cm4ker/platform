@@ -2,11 +2,11 @@
 
 namespace ZenPlatform.QueryBuilder.DML.From
 {
-    public class JoinNode : Node
+    public class JoinNode : SqlNode
     {
         public JoinType JoinType { get; }
 
-        public JoinNode(Node joinObject, JoinType joinType)
+        public JoinNode(SqlNode joinObject, JoinType joinType)
         {
             Childs.Add(joinObject);
             JoinType = joinType;

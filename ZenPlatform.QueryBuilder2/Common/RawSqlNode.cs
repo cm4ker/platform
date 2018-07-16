@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.Common
 {
-    public class RawSqlNode : Node
+    public class RawSqlNode : SqlNode
     {
         public RawSqlNode(string raw)
         {

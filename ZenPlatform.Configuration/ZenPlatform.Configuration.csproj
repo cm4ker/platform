@@ -16,4 +16,7 @@
       <HintPath>..\ZenPlatform.ConfigurationDataComponent\bin\Debug\netcoreapp2.1\ZenPlatform.QueryBuilder.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="morelinq" Version="3.0.0" />
+  </ItemGroup>
 </Project>

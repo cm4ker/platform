@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Where
 {
-    public class WhereNode : Node
+    public class WhereNode : SqlNode
     {
     }
 }

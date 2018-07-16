@@ -4,7 +4,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DDL.CreateTable
 {
-    public class CreateDatabaseQueryNode : Node
+    public class CreateDatabaseQueryNode : SqlNode
     {
         public CreateDatabaseQueryNode(string databaseName)
         {
