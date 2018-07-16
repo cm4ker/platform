@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class StringLiteralNode : Node
+    public class StringLiteralNode : SqlNode
     {
         public string RawString { get; }
 

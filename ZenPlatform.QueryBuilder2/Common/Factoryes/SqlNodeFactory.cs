@@ -5,7 +5,7 @@ using ZenPlatform.QueryBuilder.DML.Where;
 
 namespace ZenPlatform.QueryBuilder.Common.Factoryes
 {
-    public class NodeFactory
+    public class SqlNodeFactory
     {
         public FieldNode Field(string name)
         {
@@ -40,6 +40,11 @@ namespace ZenPlatform.QueryBuilder.Common.Factoryes
         public StringLiteralNode String(string str)
         {
             return new StringLiteralNode(str);
+        }
+
+        public RawSqlNode Raw(string raw)
+        {
+            return new RawSqlNode(raw);
         }
     }
 }

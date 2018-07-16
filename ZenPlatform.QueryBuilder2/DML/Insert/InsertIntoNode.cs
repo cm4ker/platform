@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Insert
 {
-    public class InsertIntoNode : Node
+    public class InsertIntoNode : SqlNode
     {
     }
 }

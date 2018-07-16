@@ -33,7 +33,7 @@ namespace ZenPlatform.Core.Environment
         }
 
         /// <summary>
-        /// Конфигурация
+        /// Конфигурация базы данных
         /// </summary>
         public XCRoot Configuration { get; private set; }
 

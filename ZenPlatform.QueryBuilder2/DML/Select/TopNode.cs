@@ -4,7 +4,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class TopNode : Node
+    public class TopNode : SqlNode
     {
         public TopNode(int count)
         {

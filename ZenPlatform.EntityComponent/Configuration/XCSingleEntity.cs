@@ -17,7 +17,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         public XCSingleEntity()
         {
-            Properties = new ChildItemCollection<XCSingleEntity, XCSingleEntityProperty>(this);
+            Properties = new XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty>(this);
             Properties.CollectionChanged += Properties_CollectionChanged;
         }
 
@@ -57,7 +57,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// </summary>
         [XmlArray]
         [XmlArrayItem(ElementName = "Property", Type = typeof(XCSingleEntityProperty))]
-        public ChildItemCollection<XCSingleEntity, XCSingleEntityProperty> Properties { get; }
+        public XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty> Properties { get; }
 
         /// <summary>
         /// Имя связанной таблицы документа

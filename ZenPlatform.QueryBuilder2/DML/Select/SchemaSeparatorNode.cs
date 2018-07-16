@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class SchemaSeparatorNode : Node
+    public class SchemaSeparatorNode : SqlNode
     {
         public SchemaSeparatorNode()
         {

@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.Common
 {
-    public class LogicalNode : Node
+    public class LogicalNode : SqlNode
     {
         public enum LogicalNodeType
         {

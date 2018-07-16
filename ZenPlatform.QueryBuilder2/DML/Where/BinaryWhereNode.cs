@@ -5,9 +5,9 @@ namespace ZenPlatform.QueryBuilder.DML.Where
 {
     public class BinaryWhereNode : WhereExpression
     {
-        public Node Left { get; }
-        public Node Operation { get; }
-        public Node Right { get; }
+        public SqlNode Left { get; }
+        public SqlNode Operation { get; }
+        public SqlNode Right { get; }
 
         public BinaryWhereNode(string rawLeft, string operation, string rawRight)
         {
@@ -18,7 +18,7 @@ namespace ZenPlatform.QueryBuilder.DML.Where
             Childs.AddRange(new[] {Left, Operation, Right});
         }
 
-        public BinaryWhereNode(Node node1, string operation, Node node2)
+        public BinaryWhereNode(SqlNode node1, string operation, SqlNode node2)
         {
             Left = node1;
             Right = node2;

@@ -22,24 +22,31 @@ namespace ZenPlatform.QueryBuilder.DDL.CreateTable
                 Tokens.SpaceToken);
         }
 
-        public void AlterColumn(string columnName, Func<TypeDefinitionFactory, TypeDefinitionNode> typeOption)
+        public AlterTableQueryNode AlterColumn(string columnName,
+            Func<TypeDefinitionFactory, TypeDefinitionNode> typeOption)
         {
             ColumnDefinitionNode col = new ColumnDefinitionNode(columnName);
             col.WithType(typeOption);
             Childs.AddRange(Tokens.AlterToken, Tokens.SpaceToken, Tokens.ColumnToken, Tokens.SpaceToken, col);
+            return this;
+            return this;
         }
 
-        public void AddColumn(string columnName, Func<TypeDefinitionFactory, TypeDefinitionNode> typeOption)
+        public AlterTableQueryNode AddColumn(string columnName,
+            Func<TypeDefinitionFactory, TypeDefinitionNode> typeOption)
         {
             ColumnDefinitionNode col = new ColumnDefinitionNode(columnName);
             col.WithType(typeOption);
             Childs.AddRange(Tokens.AddToken, Tokens.SpaceToken, col);
+            return this;
         }
 
-        public void DropColumn(string columnName)
+        public AlterTableQueryNode DropColumn(string columnName)
         {
             Childs.AddRange(Tokens.DropToken, Tokens.SpaceToken, Tokens.ColumnToken, Tokens.SpaceToken,
                 new IdentifierNode(columnName));
+
+            return this;
         }
     }
 }

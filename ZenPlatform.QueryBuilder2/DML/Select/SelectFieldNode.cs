@@ -3,7 +3,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class SelectFieldNode : Node
+    public class SelectFieldNode : SqlNode
     {
         public SelectFieldNode(string fieldName)
         {
