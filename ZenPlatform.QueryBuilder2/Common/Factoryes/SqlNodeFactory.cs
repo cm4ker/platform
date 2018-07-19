@@ -1,10 +1,15 @@
-﻿using ZenPlatform.QueryBuilder.Common.Table;
+﻿using System;
+using ZenPlatform.QueryBuilder.Common.Table;
 using ZenPlatform.QueryBuilder.DML.From;
+using ZenPlatform.QueryBuilder.DML.Functions;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.QueryBuilder.DML.Where;
 
 namespace ZenPlatform.QueryBuilder.Common.Factoryes
 {
+    /// <summary>
+    /// Фабрика общих типов, таких как поля, таблицы, литералы, параметры
+    /// </summary>
     public class SqlNodeFactory
     {
         public FieldNode Field(string name)
@@ -45,6 +50,22 @@ namespace ZenPlatform.QueryBuilder.Common.Factoryes
         public RawSqlNode Raw(string raw)
         {
             return new RawSqlNode(raw);
+        }
+    }
+
+    /// <summary>
+    /// Фабрика функций SQL
+    /// </summary>
+    public class SqlFunctionsFactory
+    {
+        public SumFunctionNode Sum(Func<SqlNodeFactory, SqlNode> expression)
+        {
+            return new SumFunctionNode(expression(new SqlNodeFactory()));
+        }
+
+        public SumFunctionNode Sum(string fieldName)
+        {
+            return Sum(x => x.Field(fieldName));
         }
     }
 }

@@ -31,6 +31,8 @@
         public static Token UniqueToken = new UniqueToken();
 
         public static Token DatabaseToken = new DatabaseToken();
+
+        public static Token SumToken = new SumToken();
     }
 
 
@@ -86,6 +88,14 @@
     public class DatabaseToken : Token
     {
         public DatabaseToken() : base("DATABASE")
+        {
+        }
+    }
+
+
+    public class SumToken : Token
+    {
+        public SumToken() : base("SUM")
         {
         }
     }

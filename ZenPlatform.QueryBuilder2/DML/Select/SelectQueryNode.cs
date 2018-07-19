@@ -9,13 +9,14 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public partial class SelectQueryNode : Node, ISelectQuery
+    public partial class SelectQueryNode : SqlNode, ISelectQuery
     {
         private SelectNode _select;
         private WhereNode _where;
         private HavingNode _having;
         private GroupByNode _groupBy;
         private FromNode _from;
+        private TopNode _top;
 
         public SelectQueryNode()
         {
@@ -24,13 +25,12 @@ namespace ZenPlatform.QueryBuilder.DML.Select
             _having = new HavingNode();
             _groupBy = new GroupByNode();
             _from = new FromNode();
-
-            Childs.AddRange(new Node[] {_select, _from, _where, _groupBy, _having});
         }
 
         public SelectQueryNode WithTop(int count)
         {
-            _select.WithTop(count);
+            _top = new TopNode(count);
+
             return this;
         }
 
@@ -147,6 +147,8 @@ namespace ZenPlatform.QueryBuilder.DML.Select
 
         SqlNode ISelectQuery.SelectNode => _select;
 
+        SqlNode ISelectQuery.TopNode => _top;
+
         #endregion
     }
 
@@ -161,6 +163,6 @@ namespace ZenPlatform.QueryBuilder.DML.Select
         SqlNode GroupByNode { get; }
         SqlNode HavingNode { get; }
         SqlNode SelectNode { get; }
-        
+        SqlNode TopNode { get; }
     }
 }

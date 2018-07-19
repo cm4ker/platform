@@ -66,7 +66,7 @@ namespace ZenPlatform.WorkProcess
     /// </summary>
     public class SystemProcess
     {
-        //TODO: добавить мигрирование
+        //TODO: добавить мигрирование. Миграция конфигурации должно быть атомарным
 
         private SystemEnvironment _env;
 
@@ -77,7 +77,13 @@ namespace ZenPlatform.WorkProcess
 
         public void Migrate()
         {
-            _env.Configuration
+            /*
+             * План мигрирования:
+             *
+             * 1) Удостовериться что у нас вторая конфигурация полностью рабочая (скомпилированна, с обновлённым блобом)
+             * 2) Провести манипуляции с данными
+             * 3) Подменить код сборки
+             */
         }
     }
 
