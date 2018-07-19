@@ -260,7 +260,10 @@ paket-files/
 __pycache__/
 *.pyc
 .DS_Store
+
+#MySettings
 ZenPlatform.DataComponent.dll
 ZenPlatform.DocumentComponent.dll
 ZenPlatform.ThinClient/Program.exe
 ZenPlatform.ThinClient/Program.netmodule
+ZenPlatform.ConfigurationExample/tools/*
