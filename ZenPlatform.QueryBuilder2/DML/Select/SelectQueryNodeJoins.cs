@@ -42,4 +42,6 @@ namespace ZenPlatform.QueryBuilder.DML.Select
             return Join(joinType, queryNode, nastedQueryOptions, joinOptions);
         }
     }
+    
+    
 }
