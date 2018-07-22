@@ -15,6 +15,6 @@ namespace ZenPlatform.Core
         /// <summary>
         /// Тип базы данных, которую будет обслуживать рабочий процесс
         /// </summary>
-        public SqlCompilerType DatabaseType { get; set; }
+        public SqlDatabaseType DatabaseType { get; set; }
     }
 }

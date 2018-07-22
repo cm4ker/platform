@@ -74,7 +74,7 @@ namespace ZenPlatform.QueryBuilder
         }
     }
 
-    public enum SqlCompilerType
+    public enum SqlDatabaseType
     {
         SqlServer,
         Postgres,

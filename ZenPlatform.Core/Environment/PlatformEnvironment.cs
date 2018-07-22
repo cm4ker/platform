@@ -26,7 +26,7 @@ namespace ZenPlatform.Core.Environment
             SystemSession = new SystemSession(this, 1);
 
             //TODO: Дать возможность выбрать, какую конфигурацию загружать, с базы данных или из файловой системы
-            //заглушка
+
             var storage = new XCDatabaseStorage("conf", SystemSession.GetDataContext(), SqlCompiler);
 
             Configuration = XCRoot.Load(storage);
@@ -52,6 +52,5 @@ namespace ZenPlatform.Core.Environment
         /// Компилятор запросов, определяется на этапе инициализации приложения
         /// </summary>
         public SqlCompillerBase SqlCompiler { get; }
-
     }
 }
