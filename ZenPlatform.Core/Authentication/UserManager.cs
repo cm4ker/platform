@@ -69,7 +69,7 @@ namespace ZenPlatform.Core.Authentication
 
         public void Delete(User user)
         {
-            var context = _session.DataContextManger.GetContext();
+            var context = _session.GetDataContext();
 
             var cmd = context.CreateCommand();
 
@@ -87,7 +87,7 @@ namespace ZenPlatform.Core.Authentication
 
         public User Get(Guid id)
         {
-            var context = _session.DataContextManger.GetContext();
+            var context = _session.GetDataContext();
 
             var cmd = context.CreateCommand();
 

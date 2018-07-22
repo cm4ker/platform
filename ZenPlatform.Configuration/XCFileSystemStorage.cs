@@ -14,7 +14,7 @@ namespace ZenPlatform.Configuration
     {
         private readonly string _directory;
 
-        protected XCFileSystemStorage(string directory, string fileName)
+        public XCFileSystemStorage(string directory, string fileName)
         {
             _directory = directory;
         }

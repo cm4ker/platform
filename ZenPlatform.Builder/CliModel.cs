@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Builder
@@ -48,7 +49,10 @@ namespace ZenPlatform.Builder
                     if (!File.Exists(projectFilePath))
                         throw new FileNotFoundException($"File not found: {projectFilePath}");
 
-                    var root = XCRoot.Load(projectFilePath);
+                    XCFileSystemStorage ss = new XCFileSystemStorage(Path.GetDirectoryName(projectFilePath),
+                        Path.GetFileName(projectFilePath));
+
+                    var root = XCRoot.Load(ss);
 
                     Console.WriteLine($"Success load project {projectFilePath}");
                     Console.WriteLine($"Start building");

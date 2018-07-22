@@ -9,14 +9,15 @@ namespace ZenPlatform.Core.Sessions
     /// Абстракция сессии
     /// </summary>
     public abstract class Session<TPlatformEnv> : ISession
-    where TPlatformEnv : PlatformEnvironment
+        where TPlatformEnv : PlatformEnvironment
     {
         protected Session(TPlatformEnv env, int id)
         {
             Environment = env;
             Id = id;
             UserManager = new UserManager(this);
-            DataContextManger = new DataContextManger(env.StartupConfig.ConnectionString);
+            DataContextManger =
+                new DataContextManger(env.StartupConfig.DatabaseType, env.StartupConfig.ConnectionString);
         }
 
         public int Id { get; }

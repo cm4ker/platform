@@ -24,6 +24,7 @@ namespace ZenPlatform.Core.Configuration
         {
             _tableName = tableName;
             _context = context;
+            _compiler = compiler;
         }
 
         public byte[] GetBlob(string name, string route)

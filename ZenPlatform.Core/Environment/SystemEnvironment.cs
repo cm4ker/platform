@@ -2,7 +2,9 @@
 using MoreLinq;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Core.Annotations;
 using ZenPlatform.Core.Configuration;
+using ZenPlatform.Core.Sessions;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -31,9 +33,20 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         public XCRoot SavedConfiguration { get; private set; }
 
+
         // Совершить миграцию базы данных
         public void Migrate()
         {
+            /*
+             * План мигрирования:
+             *
+             * 1) Удостовериться что у нас вторая конфигурация полностью рабочая (скомпилированна, с обновлённым блобом)
+             * 2) Провести манипуляции с данными
+             * 3) Подменить код сборки
+             */
+
+            var context = SystemSession.GetDataContext();
+
             var savedTypes = SavedConfiguration.Data.ComponentTypes;
             var dbTypes = Configuration.Data.ComponentTypes;
 
@@ -46,8 +59,11 @@ namespace ZenPlatform.Core.Environment
             {
                 var migrateScript = type.component.ComponentImpl.Migrator.GetScript(type.old, type.actual);
 
-                //TODO: Выполнить скрипт
+                var cmd = context.CreateCommand();
+                cmd.ExecuteNonQuery();
             }
+
+            //TODO: подменить код сборки и инвалидировать её, чтобы все участники обновили сборку.
         }
     }
 }
