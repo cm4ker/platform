@@ -6,23 +6,12 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class SelectNode : SqlNode, ISelect
+    public class SelectNode : SqlNode
     {
         public bool HasFields = false;
-        public TopNode _top;
 
         public SelectNode()
         {
-            Childs.Add(Tokens.SelectToken);
-            Childs.Add(Tokens.SpaceToken);
-        }
-
-        public SelectNode WithTop(int count)
-        {
-            _top = new TopNode(count);
-            Childs.Insert(2, _top);
-
-            return this;
         }
 
         public SelectNode Select(string fieldName)
@@ -71,13 +60,5 @@ namespace ZenPlatform.QueryBuilder.DML.Select
             else
                 HasFields = true;
         }
-
-        SqlNode ISelect.TopNode => _top;
-    }
-
-
-    public interface ISelect
-    {
-        SqlNode TopNode { get; }
     }
 }

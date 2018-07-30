@@ -33,6 +33,8 @@
         public static Token DatabaseToken = new DatabaseToken();
 
         public static Token SumToken = new SumToken();
+
+        public static Token LimitToken = new LimitToken();
     }
 
 
@@ -96,6 +98,13 @@
     public class SumToken : Token
     {
         public SumToken() : base("SUM")
+        {
+        }
+    }
+
+    public class LimitToken : Token
+    {
+        public LimitToken() : base("LIMIT")
         {
         }
     }
