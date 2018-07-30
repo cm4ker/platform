@@ -55,7 +55,7 @@ namespace ZenPlatform.DataComponent.Configuration
 
         public XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob)
         {
-            var xml = com.Root.Storage.GetStringBlob(blob.Name, com.ComponentImpl.Name);
+            var xml = com.Root.Storage.GetStringBlob(blob.Name, com.Info.ComponentName);
 
             using (var r = new StringReader(xml))
             {

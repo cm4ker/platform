@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
-using ZenPlatform.QueryBuilder.DML.Select;
 
 namespace ZenPlatform.Configuration
 {
