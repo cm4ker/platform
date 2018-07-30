@@ -1,4 +1,5 @@
-﻿using ZenPlatform.QueryBuilder.Common;
+﻿using System;
+using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.Tokens;
 using ZenPlatform.Shared.Tree;
 
@@ -8,10 +9,14 @@ namespace ZenPlatform.QueryBuilder.DML.Select
     {
         public TopNode(int count)
         {
-            Childs.Add(Tokens.TopToken);
-            Childs.Add(Tokens.SpaceToken);
-            Childs.Add(new RawSqlNode(count.ToString()));
-            Childs.Add(Tokens.SpaceToken);
+            Count = count;
+//            Childs.Add(Tokens.TopToken);
+//            Childs.Add(Tokens.SpaceToken);
+//            Childs.Add(new RawSqlNode(count.ToString()));
+//            Childs.Add(Tokens.SpaceToken);
         }
+
+
+        public int Count { get; set; }
     }
 }

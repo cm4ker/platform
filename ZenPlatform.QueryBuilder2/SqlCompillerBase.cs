@@ -46,6 +46,8 @@ namespace ZenPlatform.QueryBuilder
 
         public virtual void Compile(Node node, StringBuilder sb)
         {
+            VisitNode(node, sb);
+
             foreach (var nodeChild in node.Childs)
             {
                 VisitNode(nodeChild, sb);
@@ -66,7 +68,7 @@ namespace ZenPlatform.QueryBuilder
             ItemSwitch<Node>
                 .Switch(node)
                 .CaseIs<SelectQueryNode>((i) => { VisitSelectQueryNode(i, sb); })
-                //.CaseIs<UpdateQueryNode>(i => VisitUpdateQueryNode(i, sb))
+                .CaseIs<UpdateQueryNode>(i => VisitUpdateQueryNode(i, sb))
                 .CaseIs<DeleteNode>(i => VisitDeleteNode(i, sb))
                 .CaseIs<SelectNode>((i) => { VisitSelectNode(i, sb); })
                 .CaseIs<UpdateNode>(i => VisitUpdateNode(i, sb))
@@ -102,35 +104,44 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<TableNode>(i => VisitTableNode(i, sb))
                 .CaseIs<Token>(i => VisitTokens(i, sb))
                 .CaseIs<TypeDefinitionNode>(i => VisitTypeDefinitionNode(i, sb))
+                .CaseIs<TopNode>(i => VisitTopNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
         }
 
-        private void SimpleVisitor(Node node, StringBuilder sb)
+        protected virtual void VisitTopNode(TopNode topNode, StringBuilder sb)
+        {
+        }
+
+        protected virtual void VisitUpdateQueryNode(UpdateQueryNode updateQueryNode, StringBuilder sb)
+        {
+        }
+
+        protected virtual void SimpleVisitor(Node node, StringBuilder sb)
         {
             VisitChilds(node, sb);
         }
 
-        private void VisitColumnDefinitionNode(ColumnDefinitionNode columnDefinitionNode, StringBuilder sb)
+        protected virtual void VisitColumnDefinitionNode(ColumnDefinitionNode columnDefinitionNode, StringBuilder sb)
         {
             VisitChilds(columnDefinitionNode, sb);
         }
 
-        private void VisitTableDefinitionNode(TableDefinitionNode tableDefinitionNode, StringBuilder sb)
+        protected virtual void VisitTableDefinitionNode(TableDefinitionNode tableDefinitionNode, StringBuilder sb)
         {
             VisitChilds(tableDefinitionNode, sb);
         }
 
-        private void VisitTypeDefinitionNode(TypeDefinitionNode typeDefinitionNode, StringBuilder sb)
+        protected virtual void VisitTypeDefinitionNode(TypeDefinitionNode typeDefinitionNode, StringBuilder sb)
         {
             VisitChilds(typeDefinitionNode, sb);
         }
 
-        private void VisitTableNode(TableNode tableNode, StringBuilder sb)
+        protected virtual void VisitTableNode(TableNode tableNode, StringBuilder sb)
         {
             VisitChilds(tableNode, sb);
         }
 
-        private void VisitTokens(Token token, StringBuilder sb)
+        protected virtual void VisitTokens(Token token, StringBuilder sb)
         {
             VisitChilds(token, sb);
             //            ItemSwitch<Token>
@@ -138,22 +149,22 @@ namespace ZenPlatform.QueryBuilder
             //                .CaseIs<RightBracketToken>(i=> sb.Append());
         }
 
-        private void VisitColumnListNode(ColumnListNode columnListNode, StringBuilder sb)
+        protected virtual void VisitColumnListNode(ColumnListNode columnListNode, StringBuilder sb)
         {
             VisitChilds(columnListNode, sb);
         }
 
-        private void VisitCloseBracketNode(CloseBracketNode closeBracketNode, StringBuilder sb)
+        protected virtual void VisitCloseBracketNode(CloseBracketNode closeBracketNode, StringBuilder sb)
         {
             sb.Append(CloseBracket);
         }
 
-        private void VisitOpenBracketNode(OpenBraketNode openBraketNode, StringBuilder sb)
+        protected virtual void VisitOpenBracketNode(OpenBraketNode openBraketNode, StringBuilder sb)
         {
             sb.Append(OpenBracket);
         }
 
-        private void VisitInsertValuesNode(InsertValuesNode insertValuesNode, StringBuilder sb)
+        protected virtual void VisitInsertValuesNode(InsertValuesNode insertValuesNode, StringBuilder sb)
         {
             sb.Append("VALUES").Append(OpenBracket);
 
@@ -171,13 +182,13 @@ namespace ZenPlatform.QueryBuilder
             sb.Append(CloseBracket);
         }
 
-        private void VisitTableWithColumnsNode(TableWithColumnsNode tableWithColumnsNode, StringBuilder sb)
+        protected virtual void VisitTableWithColumnsNode(TableWithColumnsNode tableWithColumnsNode, StringBuilder sb)
         {
             VisitChilds(tableWithColumnsNode, sb);
             sb.Append(" ");
         }
 
-        private void VisitInsertIntoNode(InsertIntoNode insertIntoNode, StringBuilder sb)
+        protected virtual void VisitInsertIntoNode(InsertIntoNode insertIntoNode, StringBuilder sb)
         {
             sb.Append("INSERT INTO ");
             VisitChilds(insertIntoNode, sb);
@@ -267,13 +278,6 @@ namespace ZenPlatform.QueryBuilder
 
         protected virtual void VisitSelectQueryNode(SelectQueryNode selectQueryNode, StringBuilder sb)
         {
-            if (selectQueryNode.Parent != null)
-                sb.Append(OpenBracket);
-
-            VisitChilds(selectQueryNode, sb);
-
-            if (selectQueryNode.Parent != null)
-                sb.Append(CloseBracket);
         }
 
         protected virtual void VisitSelectNastedQueryNode(SelectNastedQueryNode selectNastedQueryNode, StringBuilder sb)
@@ -317,7 +321,6 @@ namespace ZenPlatform.QueryBuilder
             sb.Append(" JOIN ");
             VisitChilds(joinNode, sb);
         }
-
 
         protected virtual void VisitIdentifierNode(IdentifierNode node, StringBuilder sb)
         {

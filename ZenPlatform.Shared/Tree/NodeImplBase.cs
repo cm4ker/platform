@@ -59,10 +59,16 @@ namespace ZenPlatform.Shared.Tree
             _parent?.Childs.Remove(this);
         }
 
-        public virtual void Attach(Node sqlNode)
+        public virtual void Attach(Node node)
         {
             Detach();
-            sqlNode.Childs.Add(this);
+            node.Childs.Add(this);
+        }
+
+        public virtual void Attach(int index, Node node)
+        {
+            Detach();
+            node.Childs.Insert(index, this);
         }
     }
 }
