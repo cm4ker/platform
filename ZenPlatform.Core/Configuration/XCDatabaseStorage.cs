@@ -6,6 +6,7 @@ using System.Text;
 using ZenPlatform.Configuration;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Data;
+using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.DML.Insert;
 using ZenPlatform.QueryBuilder.DML.Select;
@@ -30,16 +31,17 @@ namespace ZenPlatform.Core.Configuration
 
         public byte[] GetBlob(string name, string route)
         {
-            var query = new SelectQueryNode().From(_tableName).Select("Data")
-                .Where(x => x.Field("BlobName"), "=", x => x.Parameter("BlobName"));
+            var query = new SelectQueryNode().From(_tableName).Select(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
+                .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
+                    x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
 
             var cmdText = _compiler.Compile(query);
             using (var cmd = _context.CreateCommand())
             {
                 cmd.CommandText = cmdText;
-                cmd.AddParameterWithValue("BlobName", name);
+                cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD, name);
 
-                return (byte[])cmd.ExecuteScalar();
+                return (byte[]) cmd.ExecuteScalar();
             }
         }
 
@@ -53,7 +55,8 @@ namespace ZenPlatform.Core.Configuration
             var searchQuery = new SelectQueryNode()
                 .From(_tableName)
                 .SelectRaw("1")
-                .Where(x => x.Field("BlobName"), "=", x => x.Parameter("BlobName"));
+                .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
+                    x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
 
             var cmdText = _compiler.Compile(searchQuery);
             using (var cmd = _context.CreateCommand())
@@ -67,19 +70,22 @@ namespace ZenPlatform.Core.Configuration
                 {
                     query = new InsertQueryNode()
                         .InsertInto(_tableName)
-                        .WithFieldAndValue(x => x.Field("BlobName"), x => x.Parameter("BlobName"))
-                        .WithFieldAndValue(x => x.Field("Data"), x => x.Parameter("Data"));
+                        .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD),
+                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD))
+                        .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
+                            x => x.Parameter("Data"));
                 }
                 else
                 {
                     query = new UpdateQueryNode()
                         .Update(_tableName)
-                        .Set(x => x.Field("Data"), x => x.Parameter("Data"))
-                        .Where(x => x.Field("BlobName"), "=", x => x.Parameter("BlobName"));
+                        .Set(x => x.Field("Data"), x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD))
+                        .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
+                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
                 }
 
                 cmd.CommandText = _compiler.Compile(query);
-                cmd.AddParameterWithValue("Data", bytes);
+                cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD, bytes);
 
                 cmd.ExecuteNonQuery();
             }
@@ -98,6 +104,11 @@ namespace ZenPlatform.Core.Configuration
         public string GetStringRootBlob()
         {
             return GetStringBlob("root", "");
+        }
+
+        public void SaveRootBlob(string content)
+        {
+            SaveBlob("root", "", content);
         }
     }
 }

@@ -52,6 +52,11 @@ namespace ZenPlatform.Configuration
         /// </summary>
         /// <returns></returns>
         string GetStringRootBlob();
+
+        /// <summary>
+        /// Сохранить корневой объект
+        /// </summary>
+        void SaveRootBlob(string content);
     }
 
 

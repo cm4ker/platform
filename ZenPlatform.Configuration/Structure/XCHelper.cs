@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.Structure
@@ -9,7 +10,16 @@ namespace ZenPlatform.Configuration.Structure
             where T : class
         {
             XmlSerializer ser = new XmlSerializer(typeof(T));
-            using (var sr = new StringReader(content.Trim('"')))
+            string _byteOrderMarkUtf8 = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble());
+
+            var xml = content.Trim('"');
+
+            if (xml.StartsWith(_byteOrderMarkUtf8))
+            {
+                xml = xml.Remove(0, _byteOrderMarkUtf8.Length);
+            }
+
+            using (var sr = new StringReader(xml))
             {
                 return (T) ser.Deserialize(sr);
             }

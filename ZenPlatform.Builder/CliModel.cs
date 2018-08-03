@@ -5,7 +5,10 @@ using FluentMigrator.Runner.Initialization;
 using McMaster.Extensions.CommandLineUtils;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Configuration;
+using ZenPlatform.Data;
 using ZenPlatform.Data.Tools;
+using ZenPlatform.Initializer;
 using ZenPlatform.Initializer.InternalDatabaseStructureMigrations;
 using ZenPlatform.QueryBuilder;
 
@@ -59,7 +62,6 @@ namespace ZenPlatform.Cli
                     Console.WriteLine($"Success load project {projectFilePath}");
                     Console.WriteLine($"Start building");
                 });
-
             });
 
             //Команда создания проекта
@@ -77,7 +79,8 @@ namespace ZenPlatform.Cli
 
                 createCmd.Command("db", (dbCmd) =>
                 {
-                    var databaseTypeOpt = dbCmd.Option<SqlDatabaseType>("-t|--type", "Type of database within will be create solution", CommandOptionType.SingleValue)
+                    var databaseTypeOpt = dbCmd.Option<SqlDatabaseType>("-t|--type",
+                            "Type of database within will be create solution", CommandOptionType.SingleValue)
                         .Accepts(v => v.Enum<SqlDatabaseType>(true));
 
                     var serverOpt = dbCmd.Option("-s|--server", "database server", CommandOptionType.SingleValue);
@@ -90,9 +93,15 @@ namespace ZenPlatform.Cli
 
                     var portOpt = dbCmd.Option<int>("--port ", "Database server port", CommandOptionType.SingleValue);
 
-                    var createOpt = dbCmd.Option("-c|--create", "Create database if not exists", CommandOptionType.NoValue);
+                    var createOpt = dbCmd.Option("-c|--create", "Create database if not exists",
+                        CommandOptionType.NoValue);
 
-                    dbCmd.OnExecute(() => { OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue, serverOpt.Value(), portOpt.ParsedValue, databaseOpt.Value(), userNameOpt.Value(), passwordOpt.Value(), createOpt.HasValue()); });
+                    dbCmd.OnExecute(() =>
+                    {
+                        OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue, serverOpt.Value(),
+                            portOpt.ParsedValue, databaseOpt.Value(), userNameOpt.Value(), passwordOpt.Value(),
+                            createOpt.HasValue());
+                    });
                 });
             });
 
@@ -119,12 +128,21 @@ namespace ZenPlatform.Cli
             return app.Execute(args);
         }
 
-        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port, string database, string userName, string password, bool createIfNotExists)
+        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port,
+            string database, string userName, string password, bool createIfNotExists)
         {
             Console.WriteLine($"Start creating new project {projectName}");
-            Console.WriteLine($"DatabaseType: {databaseType}\nServer: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
+            Console.WriteLine(
+                $"DatabaseType: {databaseType}\nServer: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
             var cb = new UniversalConnectionStringBuilder(databaseType);
 
+            // Если базы данных нет - её необходимо создать
+            if (createIfNotExists)
+            {
+            }
+
+            // После успешного созадания базы пробуем к ней подключиться, провести миграции и 
+            //создать новую конфигурацию
             cb.Database = database;
             cb.Server = server;
             cb.Password = password;
@@ -133,7 +151,26 @@ namespace ZenPlatform.Cli
 
             Console.WriteLine(cb.GetConnectionString());
 
+            //Мигрируем...
             MigrationRunner.Migrate(cb.GetConnectionString(), databaseType);
+
+            //Создаём пустой проект с именем Project Name
+
+            var newProject = XCRoot.Create(projectName);
+
+            // Необходимо создать контекст данных
+
+            var dataContext = new DataContext(databaseType, cb.GetConnectionString());
+
+            var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext,
+                SqlCompillerBase.FormEnum(databaseType));
+
+            var configSaveStorage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext,
+                SqlCompillerBase.FormEnum(databaseType));
+
+            //Сохраняем новоиспечённый проект в сохранённую и конфигураци базы данных
+            newProject.Save(configStorage);
+            newProject.Save(configSaveStorage);
 
             Console.WriteLine($"Done!");
         }

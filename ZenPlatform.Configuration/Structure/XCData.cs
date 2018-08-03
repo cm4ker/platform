@@ -63,7 +63,8 @@ namespace ZenPlatform.Configuration.Structure
             {
                 foreach (var attachedComponentId in component.AttachedComponentIds)
                 {
-                    component.AttachedComponents.Add(Components.First(x => x.Info.ComponentId == attachedComponentId && x.Info.AttachedComponent));
+                    component.AttachedComponents.Add(Components.First(x =>
+                        x.Info.ComponentId == attachedComponentId && x.Info.AttachedComponent));
                 }
             }
 
@@ -71,6 +72,21 @@ namespace ZenPlatform.Configuration.Structure
             foreach (var xct in ComponentTypes)
             {
                 xct.LoadDependencies();
+            }
+        }
+
+        #endregion
+
+        #region Saving
+
+        /// <summary>
+        /// Созрание всех данных из раздела Data
+        /// </summary>
+        public void Save()
+        {
+            foreach (var component in Components)
+            {
+                component.SaveComponent();
             }
         }
 
