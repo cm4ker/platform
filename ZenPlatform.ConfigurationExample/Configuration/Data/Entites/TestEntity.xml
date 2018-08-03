@@ -21,10 +21,10 @@
     // Здесь могла бы быть ваша бизнес - логика!
   </DocumentModule>
   <DocumentInterface>
-    <IncludedFiles>
-      <File Path="TestEntity.Form.xml"/>
-      <File Path="TestEntity.ListForm.xml"/>
-      <File Path="TestEntity.PickForm.xml"/>
-    </IncludedFiles>
+    <Include>
+      <Blob Name="TestEntity.Form.xml"/>
+      <Blob Name="TestEntity.ListForm.xml"/>
+      <Blob Name="TestEntity.PickForm.xml"/>
+    </Include>
   </DocumentInterface>
 </SingleEntity>

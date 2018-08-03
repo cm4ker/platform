@@ -35,10 +35,6 @@ namespace ZenPlatform.Tests.Conf
             Assert.AreEqual("0.0.0.1 Alpha", conf.ProjectVersion);
 
             Assert.IsNotNull(conf.Data);
-
-            XCCompiller c = new XCCompiller(conf, "./");
-
-            c.Build();
         }
 
         [TestMethod]

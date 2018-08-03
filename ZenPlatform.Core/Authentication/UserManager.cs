@@ -5,6 +5,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization.Formatters;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder.DML.Delete;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.QueryBuilder.DML.Update;
@@ -55,9 +56,9 @@ namespace ZenPlatform.Core.Authentication
             var query = new UpdateQueryNode();
 
             query
-                .From("Users")
-                .Where(x => x.Field("id"), "=", x => x.Parameter("p0"))
-                .Set(x => x.Field("Name"), x => x.Parameter("p1"));
+                .From(DatabaseConstantNames.USER_TABLE_NAME)
+                .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_ID_FIELD), "=", x => x.Parameter("p0"))
+                .Set(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), x => x.Parameter("p1"));
 
             cmd.AddParameterWithValue("p0", user.Id);
             cmd.AddParameterWithValue("p1", user.Name);
@@ -76,8 +77,8 @@ namespace ZenPlatform.Core.Authentication
             var query = new DeleteQueryNode();
 
             query
-                .From("Users")
-                .Where(x => x.Field("id"), "=", x => x.Parameter("p0"));
+                .From(DatabaseConstantNames.USER_TABLE_NAME)
+                .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_ID_FIELD), "=", x => x.Parameter("p0"));
 
             cmd.AddParameterWithValue("p0", user.Id);
 
@@ -94,9 +95,9 @@ namespace ZenPlatform.Core.Authentication
             var query = new SelectQueryNode();
 
             query
-                .From("Users")
-                .Where(x => x.Field("id"), "=", x => x.Parameter("p0"))
-                .Select("Name");
+                .From(DatabaseConstantNames.USER_TABLE_NAME)
+                .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_ID_FIELD), "=", x => x.Parameter("p0"))
+                .Select(DatabaseConstantNames.USER_TABLE_NAME_FIELD);
 
             cmd.AddParameterWithValue("p0", id);
 
@@ -105,9 +106,11 @@ namespace ZenPlatform.Core.Authentication
 
             if (reader.Read())
             {
-                var user = new User();
-                user.Id = id;
-                user.Name = reader.GetString(0);
+                var user = new User
+                {
+                    Id = id,
+                    Name = reader.GetString(0)
+                };
 
                 return user;
             }

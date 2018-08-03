@@ -41,7 +41,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _data = value;
-                ((IChildItem<XCRoot>)_data).Parent = this;
+                ((IChildItem<XCRoot>) _data).Parent = this;
             }
         }
 
@@ -54,7 +54,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _roles = value;
-                ((IChildItem<XCRoot>)_roles).Parent = this;
+                ((IChildItem<XCRoot>) _roles).Parent = this;
             }
         }
 
@@ -66,25 +66,6 @@ namespace ZenPlatform.Configuration.Structure
         [XmlArrayItem(ElementName = "Language", Type = typeof(XCLanguage))]
         public List<XCLanguage> Languages { get; set; }
 
-        //        /// <summary>
-        //        /// Загрузить концигурацию
-        //        /// </summary>
-        //        /// <param name="path"></param>
-        //        /// <returns></returns>
-        //        public static XCRoot Load(string path)
-        //        {
-        //            //Начальная загрузка 
-        //            XCRoot conf = XCHelper.DeserializeFromFile<XCRoot>(path);
-        //
-        //            //Инициализация компонентов данных
-        //            conf.Data.Load();
-        //
-        //            //Инициализация ролевой системы
-        //            conf.Roles.Load();
-        //
-        //            return conf;
-        //        }
-
         /// <summary>
         /// Загрузить концигурацию
         /// </summary>
@@ -93,7 +74,7 @@ namespace ZenPlatform.Configuration.Structure
         public static XCRoot Load(IXCConfigurationStorage storage)
         {
             //Начальная загрузка 
-            XCRoot conf = XCHelper.DeserializeFromFile<XCRoot>(storage.GetStringRootBlob());
+            XCRoot conf = XCHelper.Deserialize<XCRoot>(storage.GetStringRootBlob());
 
             //Сохраняем хранилище
             conf._storage = storage;
@@ -107,31 +88,63 @@ namespace ZenPlatform.Configuration.Structure
             return conf;
         }
 
-        //        /// <summary>
-        //        /// Создать новую концигурацию
-        //        /// </summary>
-        //        /// <param name="path"></param>
-        //        /// <returns></returns>
-        //        public static XCRoot Create(string path)
-        //        {
-        //            return new XCRoot()
-        //            {
-        //                ProjectId = Guid.NewGuid(),
-        //                ProjectName = "Новый проект"
-        //            };
-        //        }
+        /// <summary>
+        /// Создать новую концигурацию
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static XCRoot Create(string projectName)
+        {
+            if (string.IsNullOrEmpty(projectName))
+                throw new InvalidOperationException();
 
-        //        /// <summary>
-        //        /// Сохранить конфигурацию
-        //        /// </summary>
-        //        public void Save(string path)
-        //        {
-        //            using (var tr = new StreamWriter(path))
-        //            {
-        //                XmlSerializer serializer = new XmlSerializer(typeof(XCRoot));
-        //                serializer.Serialize(tr, this);
-        //            }
-        //        }
+            return new XCRoot()
+            {
+                ProjectId = Guid.NewGuid(),
+                ProjectName = projectName
+            };
+        }
+
+        /// <summary>
+        /// Сохранить конфигурацию
+        /// </summary>
+        public void Save()
+        {
+            using (StringWriter sw = new StringWriter())
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(XCRoot));
+                serializer.Serialize(sw, this);
+
+                //Сохранение раздела данных
+                Data.Save();
+
+                //Сохранение раздела ролей
+                Roles.Save();
+
+                //Сохранение раздела интерфейсов
+
+                //Сохранение раздела ...
+                _storage.SaveRootBlob(sw.ToString());
+                //TODO: Необходимо инициировать сохранение для всех компонентов
+            }
+        }
+
+        /// <summary>
+        /// Созранить объект в контексте другого хранилища
+        /// </summary>
+        /// <param name="storage"></param>
+        public void Save(IXCConfigurationStorage storage)
+        {
+            //Всё просто, подменяем хранилище, сохраняем, заменяем обратно
+
+            var actualStorage = _storage;
+
+            _storage = storage;
+
+            Save();
+
+            _storage = actualStorage;
+        }
 
 
         //TODO: Сделать механизм сравнения двух конфигураций

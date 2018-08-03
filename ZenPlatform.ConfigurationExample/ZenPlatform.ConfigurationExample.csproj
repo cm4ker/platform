@@ -63,7 +63,7 @@
     <None Update="Configuration\Data\References\Книга.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\Project1.xml">
+    <None Update="Configuration\Project.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\Roles\Директор.xml">

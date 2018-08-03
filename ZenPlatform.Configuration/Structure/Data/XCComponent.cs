@@ -79,16 +79,20 @@ namespace ZenPlatform.Configuration.Structure.Data
 
         [XmlIgnore] public Assembly ComponentAssembly { get; set; }
 
+        /// <summary>
+        /// Загрузить все данные компонента из хранилища
+        /// </summary>
         public void LoadComponent()
         {
             var blob = Root.Storage.GetBlob(Blob.Name, nameof(XCComponent));
 
             ComponentAssembly = Assembly.Load(blob);
 
-            var typeInfo = ComponentAssembly.GetTypes().FirstOrDefault(x => x.BaseType == typeof(XCComponentInformation));
+            var typeInfo = ComponentAssembly.GetTypes()
+                .FirstOrDefault(x => x.BaseType == typeof(XCComponentInformation));
 
             if (typeInfo != null)
-                _info = (XCComponentInformation)Activator.CreateInstance(typeInfo);
+                _info = (XCComponentInformation) Activator.CreateInstance(typeInfo);
             else
                 _info = new XCComponentInformation();
 
@@ -98,7 +102,7 @@ namespace ZenPlatform.Configuration.Structure.Data
                                      x.GetInterfaces().Contains(typeof(IXComponentLoader))) ??
                              throw new InvalidComponentException();
 
-            _loader = (IXComponentLoader)Activator.CreateInstance(loaderType);
+            _loader = (IXComponentLoader) Activator.CreateInstance(loaderType);
 
             _componentImpl = _loader.GetComponentImpl(this);
 
@@ -114,7 +118,15 @@ namespace ZenPlatform.Configuration.Structure.Data
             _isLoaded = true;
         }
 
-
+        /// <summary>
+        /// Сохрнить все данные компонента в хранилище
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        public void SaveComponent()
+        {
+            //TODO: Реализовать механизм сохранения конфигурации в хранилище
+            throw new NotImplementedException();
+        }
 
         [XmlIgnore] public XCRoot Root => _parent.Parent;
 

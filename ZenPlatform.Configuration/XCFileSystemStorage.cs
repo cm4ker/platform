@@ -8,14 +8,15 @@ using System.Xml.Linq;
 
 namespace ZenPlatform.Configuration
 {
-
     public class XCFileSystemStorage : IXCConfigurationStorage
     {
         private readonly string _directory;
+        private readonly string _projectFileName;
 
-        public XCFileSystemStorage(string directory, string fileName)
+        public XCFileSystemStorage(string directory, string projectFileName)
         {
             _directory = directory;
+            _projectFileName = projectFileName;
         }
 
         public byte[] GetBlob(string name, string route)
@@ -40,12 +41,22 @@ namespace ZenPlatform.Configuration
 
         public byte[] GetRootBlob()
         {
-            throw new NotImplementedException();
+            using (var reader = File.OpenRead(Path.Combine(_directory, _projectFileName)))
+            {
+                var data = new byte[reader.Length];
+                reader.Read(data, 0, data.Length);
+                return data;
+            }
         }
 
         public string GetStringRootBlob()
         {
-            throw new NotImplementedException();
+            return Encoding.UTF8.GetString(GetRootBlob());
+        }
+
+        public void SaveRootBlob(string content)
+        {
+            SaveBlob(_projectFileName, "", content);
         }
 
         public void SaveBlob(string name, string route, byte[] bytes)

@@ -7,6 +7,8 @@ namespace ZenPlatform.Configuration.Structure
 {
     public class XCRoles : IChildItem<XCRoot>
     {
+        private const string StandardRoleFolder = "Roles";
+
         private XCRoot _parent;
 
         public XCRoles()
@@ -14,9 +16,9 @@ namespace ZenPlatform.Configuration.Structure
             Items = new ChildItemCollection<XCRoles, XCRole>(this);
         }
 
-        [XmlArray("IncludedFiles")]
-        [XmlArrayItem(ElementName = "File", Type = typeof(XCFile))]
-        public List<XCFile> IncludedFiles { get; set; }
+        [XmlArray("Include")]
+        [XmlArrayItem(ElementName = "Blob", Type = typeof(XCBlob))]
+        public List<XCBlob> Blobs { get; set; }
 
         public ChildItemCollection<XCRoles, XCRole> Items { get; }
 
@@ -25,11 +27,13 @@ namespace ZenPlatform.Configuration.Structure
 
         public void Load()
         {
-            if (IncludedFiles != null)
-                foreach (var includedFile in IncludedFiles)
+            if (Blobs != null)
+                foreach (var blob in Blobs)
                 {
-                    var role = XCHelper.DeserializeFromFile<XCRole>(Path.Combine(XCHelper.BaseDirectory,
-                        includedFile.Path));
+                    var xml = Parent.Storage.GetStringBlob(blob.Name, StandardRoleFolder);
+
+                    var role = XCHelper.Deserialize<XCRole>(xml);
+
                     Items.Add(role);
 
                     role.Load();
@@ -40,6 +44,15 @@ namespace ZenPlatform.Configuration.Structure
         {
             get => _parent;
             set => _parent = value;
+        }
+
+        /// <summary>
+        /// Сохранить роли
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        public void Save()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
