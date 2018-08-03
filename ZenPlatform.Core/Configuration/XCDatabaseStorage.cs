@@ -20,6 +20,7 @@ namespace ZenPlatform.Core.Configuration
         private readonly DataContext _context;
         private readonly SqlCompillerBase _compiler;
 
+        //TODO: Посмотерть использование класса InternalDbContext в качестве аргумента конструктора
         public XCDatabaseStorage(string tableName, DataContext context, SqlCompillerBase compiler)
         {
             _tableName = tableName;
@@ -38,7 +39,7 @@ namespace ZenPlatform.Core.Configuration
                 cmd.CommandText = cmdText;
                 cmd.AddParameterWithValue("BlobName", name);
 
-                return (byte[]) cmd.ExecuteScalar();
+                return (byte[])cmd.ExecuteScalar();
             }
         }
 

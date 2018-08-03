@@ -5,7 +5,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using ZenPlatform.Configuration.Structure.Data;
 
-namespace ZenPlatform.Builder
+namespace ZenPlatform.Cli
 {
     public class CodeBuilder
     {

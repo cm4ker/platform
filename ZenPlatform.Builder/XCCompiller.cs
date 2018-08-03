@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using ZenPlatform.Configuration.Structure;
 
-namespace ZenPlatform.Builder
+namespace ZenPlatform.Cli
 {
     public class XCCompiller
     {
