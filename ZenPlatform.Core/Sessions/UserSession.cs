@@ -1,4 +1,6 @@
-﻿using ZenPlatform.Core.Authentication;
+﻿using System;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
+using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
 
 namespace ZenPlatform.Core.Sessions
@@ -31,6 +33,36 @@ namespace ZenPlatform.Core.Sessions
         public object GetGlobalParameter(string key, object value)
         {
             return Environment.Globals[key];
+        }
+
+        /// <summary>
+        /// Получить метаданные
+        /// </summary>
+        /// <param name="type">Тип DTO</param>
+        /// <returns></returns>
+        public EntityMetadata GetMetadata(Type type)
+        {
+            return Environment.GetMetadata(type);
+        }
+
+        /// <summary>
+        /// Получить метаданные
+        /// </summary>
+        /// <param name="typeId">Идентификатор типа</param>
+        /// <returns></returns>
+        public EntityMetadata GetMetadata(Guid typeId)
+        {
+            return Environment.GetMetadata(typeId);
+        }
+
+        /// <summary>
+        /// Получить менеджер сущности
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public IEntityManager GetManager(Type type)
+        {
+            return Environment.GetManager(type);
         }
     }
 }

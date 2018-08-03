@@ -12,13 +12,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.6.2-build5555-beta" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.6.2-build5555-beta" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.6.2-build5555-beta" />
+    <PackageReference Include="Avalonia" Version="0.6.2-build5814-beta" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.6.2-build5814-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.6.2-build5814-beta" />
     <PackageReference Include="DryIoc.dll" Version="3.0.0" />
     <PackageReference Include="NSubsys" Version="0.7.0-build20180604-0047" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views" />
   </ItemGroup>
 </Project>
