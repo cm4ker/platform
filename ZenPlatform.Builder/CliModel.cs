@@ -1,9 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using FluentMigrator.Runner.Initialization;
 using McMaster.Extensions.CommandLineUtils;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Data.Tools;
+using ZenPlatform.Initializer.InternalDatabaseStructureMigrations;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Cli
 {
@@ -73,13 +77,22 @@ namespace ZenPlatform.Cli
 
                 createCmd.Command("db", (dbCmd) =>
                 {
+                    var databaseTypeOpt = dbCmd.Option<SqlDatabaseType>("-t|--type", "Type of database within will be create solution", CommandOptionType.SingleValue)
+                        .Accepts(v => v.Enum<SqlDatabaseType>(true));
+
                     var serverOpt = dbCmd.Option("-s|--server", "database server", CommandOptionType.SingleValue);
+
                     var databaseOpt = dbCmd.Option("-d|--database", "database", CommandOptionType.SingleValue);
+
                     var userNameOpt = dbCmd.Option("-u|--username", "user name", CommandOptionType.SingleValue);
+
                     var passwordOpt = dbCmd.Option("-p|--password", "password", CommandOptionType.SingleValue);
+
+                    var portOpt = dbCmd.Option<int>("--port ", "Database server port", CommandOptionType.SingleValue);
+
                     var createOpt = dbCmd.Option("-c|--create", "Create database if not exists", CommandOptionType.NoValue);
 
-                    dbCmd.OnExecute(() => { OnCreateDbCommand(projectNameArg.Value, serverOpt.Value(), databaseOpt.Value(), userNameOpt.Value(), passwordOpt.Value(), createOpt.HasValue()); });
+                    dbCmd.OnExecute(() => { OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue, serverOpt.Value(), portOpt.ParsedValue, databaseOpt.Value(), userNameOpt.Value(), passwordOpt.Value(), createOpt.HasValue()); });
                 });
             });
 
@@ -106,11 +119,21 @@ namespace ZenPlatform.Cli
             return app.Execute(args);
         }
 
-        private static void OnCreateDbCommand(string projectName, string server, string database, string userName, string password, bool createIfNotExists)
+        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port, string database, string userName, string password, bool createIfNotExists)
         {
             Console.WriteLine($"Start creating new project {projectName}");
-            Console.WriteLine($"Server: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
+            Console.WriteLine($"DatabaseType: {databaseType}\nServer: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
+            var cb = new UniversalConnectionStringBuilder(databaseType);
 
+            cb.Database = database;
+            cb.Server = server;
+            cb.Password = password;
+            cb.Username = userName;
+            cb.Port = port;
+
+            Console.WriteLine(cb.GetConnectionString());
+
+            MigrationRunner.Migrate(cb.GetConnectionString(), databaseType);
 
             Console.WriteLine($"Done!");
         }
