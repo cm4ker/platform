@@ -14,7 +14,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Builder.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Cli.csproj" />
     <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,4 @@
-﻿using System;
-using McMaster.Extensions.CommandLineUtils;
-
-namespace ZenPlatform.Builder
+﻿namespace ZenPlatform.Cli
 {
     public class Program
     {

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
-using ZenPlatform.Builder;
+using ZenPlatform.Cli;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader;
 using ZenPlatform.Configuration.Structure;
@@ -35,7 +35,7 @@ namespace ZenPlatform.Tests.Conf
             Assert.AreEqual("0.0.0.1 Alpha", conf.ProjectVersion);
 
             Assert.IsNotNull(conf.Data);
-            
+
             XCCompiller c = new XCCompiller(conf, "./");
 
             c.Build();

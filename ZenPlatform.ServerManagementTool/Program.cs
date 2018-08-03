@@ -28,8 +28,6 @@ namespace ZenPlatform.ServerManagementTool
         public static void Init()
         {
             IoC.Container.Register<IMainWindow, MainWindowViewModel>();
-            
-            IoC.Container.Register();
         }
     }
 }
