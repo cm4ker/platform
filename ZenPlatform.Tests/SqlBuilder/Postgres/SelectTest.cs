@@ -15,7 +15,8 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
             var query = new SelectQueryNode().From("conf").Select("Data")
                 .Where(x => x.Field("BlobName"), "=", x => x.Parameter("BlobName"));
 
-            Assert.AreEqual("SELECT \"Data\" FROM \"conf\" WHERE \"BlobName\" = \"@BlobName\"", c.Compile(query));
+            Assert.AreEqual("SELECT \"Data\"\nFROM \n    \"conf\"\nWHERE \n    \"BlobName\"=@BlobName",
+                c.Compile(query));
         }
     }
 }

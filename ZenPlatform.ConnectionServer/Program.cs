@@ -11,7 +11,7 @@ namespace ZenPlatform.ConnectionServer
         {
             var wp = new SystemProcess(new StartupConfig()
             {
-                ConnectionString = "host=localhost; database=db1; user id=usr;  password=pwd;",
+                ConnectionString = "host=localhost; database=db1; user id=postgres;  password=123456;",
                 DatabaseType = SqlDatabaseType.Postgres
             });
 

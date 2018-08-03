@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using ZenPlatform.Core;
+using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
 
 namespace ZenPlatform.EntityComponent
 {
     public abstract class SingleEntity : EntityBase
     {
-        protected SingleEntity(Session session) : base(session)
+        protected SingleEntity(UserSession session) : base(session)
         {
         }
 

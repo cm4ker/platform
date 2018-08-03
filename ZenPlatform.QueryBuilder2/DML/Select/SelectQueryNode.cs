@@ -137,17 +137,17 @@ namespace ZenPlatform.QueryBuilder.DML.Select
 
         #region ISelectQuery
 
-        SqlNode ISelectQuery.WhereNode => _where;
+        WhereNode ISelectQuery.WhereNode => _where;
 
-        SqlNode ISelectQuery.FromNode => _from;
+        FromNode ISelectQuery.FromNode => _from;
 
-        SqlNode ISelectQuery.GroupByNode => _groupBy;
+        GroupByNode ISelectQuery.GroupByNode => _groupBy;
 
-        SqlNode ISelectQuery.HavingNode => _having;
+        HavingNode ISelectQuery.HavingNode => _having;
 
-        SqlNode ISelectQuery.SelectNode => _select;
+        SelectNode ISelectQuery.SelectNode => _select;
 
-        SqlNode ISelectQuery.TopNode => _top;
+        TopNode ISelectQuery.TopNode => _top;
 
         #endregion
     }
@@ -158,11 +158,11 @@ namespace ZenPlatform.QueryBuilder.DML.Select
     /// </summary>
     public interface ISelectQuery : IChildItem<Node>, IParentItem<Node, Node>
     {
-        SqlNode WhereNode { get; }
-        SqlNode FromNode { get; }
-        SqlNode GroupByNode { get; }
-        SqlNode HavingNode { get; }
-        SqlNode SelectNode { get; }
-        SqlNode TopNode { get; }
+        WhereNode WhereNode { get; }
+        FromNode FromNode { get; }
+        GroupByNode GroupByNode { get; }
+        HavingNode HavingNode { get; }
+        SelectNode SelectNode { get; }
+        TopNode TopNode { get; }
     }
 }

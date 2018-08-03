@@ -21,7 +21,7 @@ namespace ZenPlatform.Tests.Conf
         [TestMethod]
         public void RootLoad()
         {
-            var conf = XCRoot.Load(Path.Combine(ConfigurationPath, "Project1.xml"));
+            var conf = XCRoot.Load(new XCFileSystemStorage(ConfigurationPath, "Project.xml"));
 
             //using (var tr = new StreamReader(Path.Combine(ConfigurationPath, "Project1.xml")))
             //{
