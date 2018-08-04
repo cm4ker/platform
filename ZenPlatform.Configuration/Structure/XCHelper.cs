@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    internal static class XCHelper
+    public static class XCHelper
     {
         public static T Deserialize<T>(this string content)
             where T : class

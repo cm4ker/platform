@@ -58,11 +58,14 @@ namespace ZenPlatform.Core.Configuration
                 .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
                     x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
 
+            route = route + ":";
+
             var cmdText = _compiler.Compile(searchQuery);
             using (var cmd = _context.CreateCommand())
             {
                 cmd.CommandText = cmdText;
-                cmd.AddParameterWithValue("BlobName", name);
+                //Первый параметр мы здесь добавляем
+                cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD, $"{route}{name}");
 
                 Node query;
                 //Если такой ключ удалось найти, значит всё ок, обновляем его, иначе вставляем
@@ -73,13 +76,14 @@ namespace ZenPlatform.Core.Configuration
                         .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD),
                             x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD))
                         .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
-                            x => x.Parameter("Data"));
+                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD));
                 }
                 else
                 {
                     query = new UpdateQueryNode()
                         .Update(_tableName)
-                        .Set(x => x.Field("Data"), x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD))
+                        .Set(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
+                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD))
                         .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
                             x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
                 }

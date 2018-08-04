@@ -49,10 +49,12 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Сохранить роли
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
         public void Save()
         {
-            throw new System.NotImplementedException();
+            foreach (var role in Items)
+            {
+                Parent.Storage.SaveBlob(role.Name, StandardRoleFolder, role.Serialize());
+            }
         }
     }
 }

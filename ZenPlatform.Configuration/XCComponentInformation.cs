@@ -7,7 +7,7 @@ namespace ZenPlatform.Configuration
     public class XCComponentInformation
     {
         /// <summary>
-        /// Словарь названий компонента на разных языках
+        /// Имя компонента, обязано быть одним словом и латинскими буквами
         /// </summary>
         public virtual string ComponentName => "Unknown component";
 

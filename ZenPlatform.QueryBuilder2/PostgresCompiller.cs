@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.DML.Insert;
 using ZenPlatform.QueryBuilder.DML.Select;
 
 namespace ZenPlatform.QueryBuilder
@@ -17,10 +18,7 @@ namespace ZenPlatform.QueryBuilder
             if (selectQueryNode.Parent != null)
                 sb.Append(OpenBracket);
 
-            VisitNode(Tokens.SelectToken, sb);
-            VisitNode(Tokens.SpaceToken, sb);
-
-            VisitChilds(select.SelectNode, sb);
+            VisitNode(select.SelectNode, sb);
 
             VisitNode(select.FromNode, sb);
 
@@ -30,7 +28,6 @@ namespace ZenPlatform.QueryBuilder
 
             VisitNode(select.HavingNode, sb);
 
-
             //Обрабатываем LIMIT
             if (select.TopNode != null)
                 VisitNode(select.TopNode, sb);
@@ -39,12 +36,35 @@ namespace ZenPlatform.QueryBuilder
                 sb.Append(CloseBracket);
         }
 
+        protected override void VisitSelectNode(SelectNode selectNode, StringBuilder sb)
+        {
+            VisitNode(Tokens.SelectToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+
+            VisitChilds(selectNode, sb);
+        }
+
         protected override void VisitTopNode(TopNode topNode, StringBuilder sb)
         {
             VisitNode(Tokens.LimitToken, sb);
             VisitNode(Tokens.SpaceToken, sb);
             sb.Append(topNode.Count);
             VisitNode(Tokens.SpaceToken, sb);
+        }
+
+        protected override void VisitInsertQueryNode(InsertQueryNode insertQueryNode, StringBuilder sb)
+        {
+            IInsertQuery insert = insertQueryNode;
+
+            VisitNode(Tokens.InsertToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.IntoToken, sb);
+
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(insert.TableWithColumnsNode, sb);
+            
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(insert.InsertValuesNode, sb);
         }
     }
 }

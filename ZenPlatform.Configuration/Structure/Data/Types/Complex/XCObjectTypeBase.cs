@@ -40,6 +40,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         [XmlIgnore] protected XCData Data => Root.Data;
 
+        [XmlIgnore] public XCBlob AttachedBlob { get; set; }
+
         XCComponent IChildItem<XCComponent>.Parent
         {
             get => _parent;

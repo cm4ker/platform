@@ -6,17 +6,15 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Insert
 {
-    public class InsertQueryNode : SqlNode
+    public class InsertQueryNode : SqlNode, IInsertQuery
     {
-        private InsertIntoNode _insertInto;
         private TableWithColumnsNode _table;
         private InsertValuesNode _values;
 
+
         public InsertQueryNode()
         {
-            _insertInto = new InsertIntoNode();
             _values = new InsertValuesNode();
-            Childs.AddRange(new Node[] {_insertInto, _values});
         }
 
         public InsertQueryNode InsertInto(string tableName)
@@ -32,9 +30,7 @@ namespace ZenPlatform.QueryBuilder.DML.Insert
         public InsertQueryNode InsertInto(Func<SqlNodeFactory, TableWithColumnsNode> exp)
         {
             var fac = new SqlNodeFactory();
-            //_insertInto.Add(exp(fac));
             _table = exp(fac);
-            Childs.Insert(1, _table);
             return this;
         }
 
@@ -60,10 +56,13 @@ namespace ZenPlatform.QueryBuilder.DML.Insert
             return WithValue(valExp);
         }
 
-        /*
-         *
-         * INSERT INTO Table(a,b,c,e) VALUES() 
-         * 
-         */
+        TableWithColumnsNode IInsertQuery.TableWithColumnsNode => _table;
+        InsertValuesNode IInsertQuery.InsertValuesNode => _values;
+    }
+
+    public interface IInsertQuery
+    {
+        TableWithColumnsNode TableWithColumnsNode { get; }
+        InsertValuesNode InsertValuesNode { get; }
     }
 }

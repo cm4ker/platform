@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Threading;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
@@ -124,8 +126,17 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// <exception cref="NotImplementedException"></exception>
         public void SaveComponent()
         {
-            //TODO: Реализовать механизм сохранения конфигурации в хранилище
-            throw new NotImplementedException();
+            foreach (var type in Types)
+            {
+                Loader.SaveObject(type);
+            }
+
+            if (Blob is null)
+                Blob = new XCBlob(Path.GetFileName(this.ComponentAssembly.FullName));
+
+            byte[] bytes = File.ReadAllBytes(ComponentAssembly.FullName);
+
+            Root.Storage.SaveBlob(Blob.Name, nameof(XCComponent), bytes);
         }
 
         [XmlIgnore] public XCRoot Root => _parent.Parent;

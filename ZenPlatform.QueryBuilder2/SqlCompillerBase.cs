@@ -105,7 +105,12 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<Token>(i => VisitTokens(i, sb))
                 .CaseIs<TypeDefinitionNode>(i => VisitTypeDefinitionNode(i, sb))
                 .CaseIs<TopNode>(i => VisitTopNode(i, sb))
+                .CaseIs<InsertQueryNode>(i => VisitInsertQueryNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        protected virtual void VisitInsertQueryNode(InsertQueryNode insertQueryNode, StringBuilder sb)
+        {
         }
 
         protected virtual void VisitTopNode(TopNode topNode, StringBuilder sb)

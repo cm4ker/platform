@@ -7,6 +7,15 @@ namespace ZenPlatform.Configuration.Structure
     /// </summary>
     public class XCBlob
     {
+        public XCBlob()
+        {
+        }
+
+        public XCBlob(string name)
+        {
+            Name = name;
+        }
+
         [XmlAttribute("Name")] public string Name { get; set; }
     }
 }
