@@ -35,6 +35,11 @@
         public static Token SumToken = new SumToken();
 
         public static Token LimitToken = new LimitToken();
+        
+        public static Token InsertToken = new InsertToken();
+        
+        public static Token IntoToken = new IntoToken();
+        
     }
 
 
@@ -102,6 +107,20 @@
         }
     }
 
+    public class InsertToken : Token
+    {
+        public InsertToken() : base("INSERT")
+        {
+        }
+    }
+    
+    public class IntoToken : Token
+    {
+        public IntoToken() : base("INTO")
+        {
+        }
+    }
+    
     public class LimitToken : Token
     {
         public LimitToken() : base("LIMIT")

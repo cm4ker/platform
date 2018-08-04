@@ -27,11 +27,24 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         /// <returns></returns>
         XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob);
 
+
+        /// <summary>
+        /// Сохранить обхект
+        /// </summary>
+        /// <param name="conf"></param>
+        void SaveObject(XCObjectTypeBase conf);
+
         /// <summary>
         /// Загрузить правила компонента, необходимо для RLS
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
         XCDataRuleBase LoadRule(XCDataRuleContent content);
+
+        /// <summary>
+        /// Сохранить правило 
+        /// </summary>
+        /// <param name="rule"></param>
+        void SaveRule(XCDataRuleBase rule);
     }
 }

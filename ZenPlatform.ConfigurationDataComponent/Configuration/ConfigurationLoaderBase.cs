@@ -10,7 +10,9 @@ using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Helper;
 using ZenPlatform.Shared.ParenChildCollection;
+using XCHelper = ZenPlatform.Configuration.Structure.XCHelper;
 
 namespace ZenPlatform.DataComponent.Configuration
 {
@@ -53,7 +55,14 @@ namespace ZenPlatform.DataComponent.Configuration
             throw new NotImplementedException();
         }
 
-        public XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob)
+        /// <summary>
+        /// Загрузить объект компонента
+        /// </summary>
+        /// <param name="com"></param>
+        /// <param name="blob"></param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public virtual XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob)
         {
             var xml = com.Root.Storage.GetStringBlob(blob.Name, com.Info.ComponentName);
 
@@ -82,9 +91,35 @@ namespace ZenPlatform.DataComponent.Configuration
             }
         }
 
+        /// <summary>
+        /// Сохранить объект. Эта функция входит в обязательный набор API для реализации компонента
+        /// </summary>
+        /// <param name="conf"></param>
+        public virtual void SaveObject(XCObjectTypeBase conf)
+        {
+            var storage = conf.Parent.Root.Storage;
+
+            XCBlob blob;
+            if (conf.AttachedBlob is null)
+            {
+                blob = new XCBlob(conf.Name);
+                conf.Parent.Include.Add(blob);
+            }
+            else
+            {
+                blob = conf.AttachedBlob;
+            }
+
+            storage.SaveBlob(blob.Name, conf.Parent.Info.ComponentName, conf.Serialize());
+        }
+
         public XCDataRuleBase LoadRule(XCDataRuleContent content)
         {
             return LoadRuleAction(content);
+        }
+
+        public void SaveRule(XCDataRuleBase rule)
+        {
         }
     }
 }
