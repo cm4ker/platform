@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE simplemind-mindmaps>
+
+<simplemind-mindmaps doc-version="3" generator="SimpleMindOSXN" gen-version="1.20.2">
+    <mindmap>
+        <meta>
+            <guid guid="71BE199E71C63F6F682FB320"></guid>
+            <title text="Платформа"></title>
+            <style key="system.pastel-palette"></style>
+            <auto-numbering style="disabled"></auto-numbering>
+            <scrollstate zoom="100" x="-131.99" y="-145.68"></scrollstate>
+            <selection guid="dNx9PkrSTm9cdfG4eWaZWQ" type="node" id="2"></selection>
+            <main-centraltheme id="0"></main-centraltheme>
+        </meta>
+        <topics>
+            <topic id="0" parent="-1" guid="ZC-4XmCpZpkDABe0BhpGqA" x="400.00" y="400.00" palette="1" colorinfo="1" text=" Платформа">
+                <style borderstyle="sbsHalfRound"></style>
+            </topic>
+            <topic id="1" parent="0" guid="WhXNwV46JPhg3TOGMKRgxg" x="523.05" y="229.86" palette="2" colorinfo="2" text="Рабочий\Nпроцесс">
+                <style borderstyle="sbsHalfRound"></style>
+            </topic>
+            <topic id="2" parent="1" guid="dNx9PkrSTm9cdfG4eWaZWQ" x="778.33" y="220.44" text="Доступ к данным\N(изменение,\Nудаление,\Nдобавление)">
+                <style borderstyle="sbsHalfRound"></style>
+            </topic>
+            <topic id="3" parent="1" guid="GIFXwyFhPkxRXN-6WK4SDg" x="714.33" y="93.01" text="Доступ к\Nконфигурации\N(чтение)">
+                <style borderstyle="sbsHalfRound"></style>
+            </topic>
+            <topic id="4" parent="1" guid="YKYZHXqj-K1FuEpNOY6LrA" x="521.10" y="53.15" text="Доступ к\Nбиблиотекам и\Nисполняемым\Nмодулям">
+                <style borderstyle="sbsHalfRound"></style>
+            </topic>
+            <topic id="5" parent="0" guid="bc7jByydMRFBkVcmKtVhzA" x="264.52" y="230.72" palette="3" colorinfo="3" text="Системный\Nпроцесс">
+                <style borderstyle="sbsHalfRound"></style>
+            </topic>
+            <topic id="6" parent="5" guid="JsoUTi3MGZ0Y7fZTdtIFZA" x="2.06" y="224.27" text="Изменение\Nструктуры\Nданных">
+                <style borderstyle="sbsHalfRound"></style>
+            </topic>
+            <topic id="7" parent="5" guid="H4ozOwq0NcJfAbiEA7nrmQ" x="68.34" y="86.28" text="Изменение\Nконфигурации\N(чтение/запись)">
+                <style borderstyle="sbsHalfRound"></style>
+            </topic>
+            <topic id="8" parent="5" guid="a12cW2IB0DgJ1DJBRXNqHQ" x="264.88" y="49.98" text="Обновление\Nбиблиотек и\Nисполняемых\Nмодулей">
+                <style borderstyle="sbsHalfRound"></style>
+            </topic>
+        </topics>
+        <relations></relations>
+    </mindmap>
+</simplemind-mindmaps>

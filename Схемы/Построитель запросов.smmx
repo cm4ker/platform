@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE simplemind-mindmaps>
+
+<simplemind-mindmaps doc-version="3" generator="SimpleMindOSXN" gen-version="1.20.2">
+    <mindmap>
+        <meta>
+            <guid guid="2ED6F2D56D77C0C611D66F5F"></guid>
+            <title text="Построитель запросов"></title>
+            <style key="system.pastel-palette"></style>
+            <auto-numbering style="disabled"></auto-numbering>
+            <scrollstate zoom="65" x="-251.50" y="-117.00"></scrollstate>
+            <main-centraltheme id="0"></main-centraltheme>
+        </meta>
+        <topics>
+            <topic id="0" parent="-1" guid="F4OgAzTSGqEp6NA2Min8dg" x="317.72" y="264.28" palette="1" colorinfo="1" text="Построитель запросов"></topic>
+            <topic id="1" parent="0" guid="EI5tXwUIP0xvm0LDBelpdA" x="168.15" y="145.37" palette="2" colorinfo="2" text="DDL"></topic>
+            <topic id="2" parent="1" x="47.03" y="188.84" text="TABLE"></topic>
+            <topic id="3" parent="2" guid="CGyN9wc_5WIsnVA1Lq9oZQ" x="-40.08" y="220.11" text="CREATE"></topic>
+            <topic id="4" parent="2" guid="FiV5YQNkTqoXpKKfJrPmwA" x="-47.87" y="144.07" text="DROP"></topic>
+            <topic id="5" parent="2" guid="TfcGJWFTXsBZe350ZXqmKQ" x="-9.80" y="286.27" text="ALTER"></topic>
+            <topic id="6" parent="1" guid="d23CNkbRDGQnMgi5CtDjFg" x="55.72" y="40.66" text="INDEX"></topic>
+            <topic id="7" parent="6" guid="Pn59rT2_Q44Oer3mILoSYw" x="46.10" y="-37.34" text="DROP"></topic>
+            <topic id="8" parent="6" guid="EeVjPGaP0BBLRrk-EKir7Q" x="-44.90" y="21.46" text="CREATE"></topic>
+            <topic id="9" parent="0" guid="JkLabnAt3NQaM7wveIKgVA" x="467.60" y="121.15" palette="3" colorinfo="3" text="DML"></topic>
+            <topic id="10" parent="9" guid="E2Mg4HetcUkWjTrUA6na0A" x="574.84" y="1.26" text="SELECT"></topic>
+            <topic id="11" parent="9" guid="YjuUtVQmH65YFRIpKoym2w" x="620.67" y="59.72" text="UPDATE"></topic>
+            <topic id="12" parent="9" guid="fsNIsA_d5TpyFDWDHH-Oww" x="637.68" y="120.02" text="DELETE"></topic>
+            <topic id="13" parent="9" guid="ZNYEHh8gE1Bz2536R6UPFQ" x="649.42" y="187.37" text="INSERT"></topic>
+        </topics>
+        <relations></relations>
+    </mindmap>
+</simplemind-mindmaps>
