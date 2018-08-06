@@ -5,6 +5,7 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Annotations;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Initializer;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -21,7 +22,8 @@ namespace ZenPlatform.Core.Environment
         {
             base.Initialize();
 
-            var storage = new XCDatabaseStorage("saved_conf", SystemSession.GetDataContext(), SqlCompiler);
+            var storage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
+                SystemSession.GetDataContext(), SqlCompiler);
 
             SavedConfiguration = XCRoot.Load(storage);
         }
@@ -60,7 +62,12 @@ namespace ZenPlatform.Core.Environment
                 var migrateScript = type.component.ComponentImpl.Migrator.GetScript(type.old, type.actual);
 
                 var cmd = context.CreateCommand();
-                cmd.ExecuteNonQuery();
+
+                foreach (var node in migrateScript)
+                {
+                    cmd.CommandText = SqlCompiler.Compile(node);
+                    cmd.ExecuteNonQuery();
+                }
             }
 
             //TODO: подменить код сборки и инвалидировать её, чтобы все участники обновили сборку.

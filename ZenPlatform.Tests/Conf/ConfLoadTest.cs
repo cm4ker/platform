@@ -43,5 +43,22 @@ namespace ZenPlatform.Tests.Conf
             //            ConfigurationLoader cl = new ConfigurationLoader(Path.Combine(ConfigurationPath, "Project1.xml"));
             //            var root = cl.Load();
         }
+
+        [TestMethod]
+        public void RootSaveLoadTest()
+        {
+            var conf = XCRoot.Create("TestProject");
+
+            var xml = conf.Serialize();
+
+            using (var sw = new StreamWriter("xml.xml"))
+            {
+                sw.Write(xml);
+            }
+
+            var restoredConf = XCHelper.Deserialize<XCRoot>(xml);
+
+            Assert.AreEqual("TestProject", restoredConf.ProjectName);
+        }
     }
 }

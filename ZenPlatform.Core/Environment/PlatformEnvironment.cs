@@ -2,6 +2,7 @@
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Environment
@@ -27,7 +28,8 @@ namespace ZenPlatform.Core.Environment
 
             //TODO: Дать возможность выбрать, какую конфигурацию загружать, с базы данных или из файловой системы
 
-            var storage = new XCDatabaseStorage("conf", SystemSession.GetDataContext(), SqlCompiler);
+            var storage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, SystemSession.GetDataContext(),
+                SqlCompiler);
 
             Configuration = XCRoot.Load(storage);
         }
