@@ -10,14 +10,14 @@ namespace ZenPlatform.Configuration.Structure
             where T : class
         {
             XmlSerializer ser = new XmlSerializer(typeof(T));
-            string _byteOrderMarkUtf8 = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble());
+          //  string _byteOrderMarkUtf8 = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble());
 
             var xml = content.Trim('"');
 
-            if (xml.StartsWith(_byteOrderMarkUtf8))
-            {
-                xml = xml.Remove(0, _byteOrderMarkUtf8.Length);
-            }
+//            if (xml.StartsWith(_byteOrderMarkUtf8))
+//            {
+//                xml = xml.Remove(0, _byteOrderMarkUtf8.Length);
+//            }
 
             using (var sr = new StringReader(xml))
             {

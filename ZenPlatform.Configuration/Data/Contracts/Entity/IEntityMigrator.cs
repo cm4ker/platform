@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
@@ -15,6 +16,6 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// <param name="old">Старый объект</param>
         /// <param name="actual">Текущий объект</param>
         /// <returns></returns>
-        IList<Node> GetScript(XCObjectTypeBase old, XCObjectTypeBase actual);
+        IList<SqlNode> GetScript(XCObjectTypeBase old, XCObjectTypeBase actual);
     }
 }

@@ -9,7 +9,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DDL.CreateTable
 {
-    public class AlterTableQueryNode : Node
+    public class AlterTableQueryNode : SqlNode
     {
         private TableNode _table;
 

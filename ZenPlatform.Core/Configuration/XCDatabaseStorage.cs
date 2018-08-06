@@ -35,11 +35,13 @@ namespace ZenPlatform.Core.Configuration
                 .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
                     x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
 
+            route = route + ":";
+            
             var cmdText = _compiler.Compile(query);
             using (var cmd = _context.CreateCommand())
             {
                 cmd.CommandText = cmdText;
-                cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD, name);
+                cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD, $"{route}{name}");
 
                 return (byte[]) cmd.ExecuteScalar();
             }
@@ -67,7 +69,7 @@ namespace ZenPlatform.Core.Configuration
                 //Первый параметр мы здесь добавляем
                 cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD, $"{route}{name}");
 
-                Node query;
+                SqlNode query;
                 //Если такой ключ удалось найти, значит всё ок, обновляем его, иначе вставляем
                 if (cmd.ExecuteScalar() is null)
                 {

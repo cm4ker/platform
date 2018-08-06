@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE simplemind-mindmaps>
+<simplemind-mindmaps generator="SimpleMindWin32" gen-version="1.20.2" doc-version="3">
+<mindmap>
+<meta>
+<guid guid="33EAAB7DE140466F9A10CCF88BE05369"/>
+<title text="Сервер\Nконфигурации"/>
+<style key="Моя схема"/>
+<auto-numbering style="disabled"/>
+<scrollstate zoom="70" x="-101" y="88"/>
+<main-centraltheme id="0"/>
+</meta>
+<topics>
+<topic id="0" parent="-1" guid="s4h_3fvaGkCRZhmzf9pNZw" x="727.43" y="713.43" palette="1" colorinfo="1" text="Сервер\Nконфигурации"/>
+<topic id="1" parent="0" guid="6QadHr2K9E-pFCxp5-urSw" x="504.57" y="610.76" palette="2" colorinfo="2" text="Редактирование"/>
+<topic id="2" parent="1" guid="K7FK9LOiUkG-YtBHREGjoQ" x="298.69" y="459.59" text="Добавление\Nобъектов"/>
+<topic id="3" parent="1" guid="DNllUcjG7EC1lsQhkGKowQ" x="278.69" y="568.02" text="Удаление\Nобъектов"/>
+<topic id="4" parent="1" guid="HRVE4Wzxi0-Rmddj3lVQkw" x="348.69" y="361.58" text="Редактирование\Nобъектов"/>
+<topic id="5" parent="0" guid="1n9sPdjDxE6plqHwrNbLzg" x="844.67" y="580.41" palette="3" colorinfo="3" text="Отладка"/>
+<topic id="6" parent="5" guid="gHJpApESmE2xWmwx30FXRQ" x="964.91" y="434.17" text="Доступ\Nк\Nсимволам"/>
+<topic id="7" parent="0" guid="CsCcouecMECj-yEbmcomow" x="660.29" y="499.34" palette="4" colorinfo="4" text="Ссылочная\Nцелостность"/>
+<topic id="8" parent="0" guid="isNqAQ5400SQcbo7UOUCiQ" x="1068.86" y="556.29" palette="6" colorinfo="6" text="Автокомплит"/>
+</topics>
+<relations/>
+<stylesheet>
+<general description="Моя схема" timestamp="2018-08-06+10:08:44" levelbased="False" borderstyle="sbsHalfRound" penstyle="penDouble">
+<bkgnd-color r="255" g="248" b="220"/>
+<font-color r="0" g="0" b="0"/>
+<shadow-color r="128" g="128" b="128"/>
+</general>
+<style>
+<mindmap connection-style="centered" natural-paths="False"/>
+<topics align="center" borderstyle="sbsHalfRound"/>
+<relations>
+<cross-links line-style="penDashedDouble" path-style="bezier" source-arrow="none" target-arrow="openArrow"/>
+<hierarchical-relations line-style="penDouble" path-style="bezier" source-arrow="none" target-arrow="none"/>
+</relations>
+</style>
+<palette>
+<item>
+<fill-color r="221" g="200" b="181"/>
+<stroke-color r="138" g="99" b="63"/>
+</item>
+<item>
+<fill-color r="243" g="177" b="191"/>
+<stroke-color r="183" g="28" b="60"/>
+</item>
+<item>
+<fill-color r="235" g="188" b="74"/>
+<stroke-color r="139" g="102" b="15"/>
+</item>
+<item>
+<fill-color r="223" g="208" b="79"/>
+<stroke-color r="129" g="118" b="23"/>
+</item>
+<item>
+<fill-color r="158" g="198" b="174"/>
+<stroke-color r="66" g="113" b="86"/>
+</item>
+<item>
+<fill-color r="130" g="176" b="199"/>
+<stroke-color r="50" g="94" b="114"/>
+</item>
+<item>
+<fill-color r="146" g="129" b="173"/>
+<stroke-color r="73" g="59" b="93"/>
+</item>
+<item>
+<fill-color r="212" g="136" b="185"/>
+<stroke-color r="129" g="46" b="100"/>
+</item>
+<item>
+<fill-color r="197" g="188" b="212"/>
+<stroke-color r="95" g="78" b="123"/>
+</item>
+</palette>
+</stylesheet>
+</mindmap>
+</simplemind-mindmaps>
