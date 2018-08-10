@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Text;
 using MessagePack;
+using MessagePack.Formatters;
 using NetMQ;
 using NetMQ.Sockets;
+using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.ConfigurationServer
 {
@@ -13,15 +16,33 @@ namespace ZenPlatform.ConfigurationServer
             using (var server = new ResponseSocket("@tcp://localhost:5556")) // bind
             using (var client = new RequestSocket(">tcp://localhost:5556"))  // connect
             {
+                byte[] data;
 
-                var data = MessagePack.MessagePackSerializer.Serialize(new TestMessage() { MsgType = typeof(TestMessage), Hello = "OK", SomeContet = new TestMessage() { Hello = "NASTED" } });
+                var test = new Random(DateTime.Now.Second).Next(10);
+
+                if (1 % 2 == 0)
+                    data = MessagePackSerializer.Typeless.Serialize(
+                    new TestMessage()
+                    {
+                        MsgType = "TestMessage",
+                        Hello = "OK",
+                        SomeContet = new TestMessage() { Hello = "NASTED" }
+                    });
+                else
+                    data = MessagePackSerializer.Typeless.Serialize(
+                        new TestMessage2()
+                        {
+                            MsgType = "TestMessage2",
+                            Hello = "OK",
+                            SomeContet = new XCRootViewModel()
+                        });
 
                 client.SendFrame(data);
 
                 // Receive the message from the server socket
                 byte[] m1 = server.ReceiveFrameBytes();
 
-                Message message = MessagePack.MessagePackSerializer.Deserialize<TestMessage>(m1);
+                Message message = (Message)MessagePack.MessagePackSerializer.Typeless.Deserialize(m1);
 
                 Console.WriteLine("From Client: {0}", message.MsgType);
 
@@ -34,7 +55,9 @@ namespace ZenPlatform.ConfigurationServer
     public class Message
     {
         [Key(0)]
-        public Type MsgType { get; set; }
+        public string MsgType { get; set; }
+
+
     }
 
     [MessagePackObject]
@@ -45,5 +68,29 @@ namespace ZenPlatform.ConfigurationServer
 
         [Key(2)]
         public TestMessage SomeContet { get; set; }
+    }
+
+    [MessagePackObject]
+    public class TestMessage2 : Message
+    {
+        [Key(1)]
+        public string Hello { get; set; }
+
+        [Key(2)]
+        public XCRootViewModel SomeContet { get; set; }
+    }
+
+
+    public class LocalFormater : IMessagePackFormatter<Node>
+    {
+        public int Serialize(ref byte[] bytes, int offset, Node value, IFormatterResolver formatterResolver)
+        {
+            
+        }
+
+        public Node Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

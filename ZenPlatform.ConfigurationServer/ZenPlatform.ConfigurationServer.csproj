@@ -10,4 +10,8 @@
     <PackageReference Include="NetMQ" Version="4.0.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.ConfigurationServerShared.csproj" />
+  </ItemGroup>
+
 </Project>

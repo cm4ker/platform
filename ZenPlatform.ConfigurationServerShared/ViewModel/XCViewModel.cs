@@ -7,7 +7,7 @@ namespace ZenPlatform.Configuration.Structure
     /// <summary>
     /// Модель представления корня конфигурации конфигурации
     /// </summary>
-    public class XCRootViewModel : Node
+    public class XCRootViewModel : ConfigurationViewModelNode
     {
         public XCRootViewModel()
         {
@@ -16,10 +16,10 @@ namespace ZenPlatform.Configuration.Structure
             Childs.AddRange(Data);
         }
 
-        private XCDataViewModel Data { get; }
+        public XCDataViewModel Data { get; }
     }
 
-    public class XCDataViewModel : Node, IChildItem<XCRootViewModel>
+    public class XCDataViewModel : ConfigurationViewModelNode, IChildItem<XCRootViewModel>
     {
         private XCRootViewModel _parent;
 

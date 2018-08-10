@@ -45,7 +45,7 @@ namespace ZenPlatform.Shared.ParenChildCollection
                 item.Parent = _parent;
             _collection.Insert(index, item);
             CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] {item}));
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
@@ -66,7 +66,7 @@ namespace ZenPlatform.Shared.ParenChildCollection
                 oldItem.Parent = null;
 
             CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] {oldItem}));
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { oldItem }));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
@@ -83,8 +83,8 @@ namespace ZenPlatform.Shared.ParenChildCollection
                     oldItem.Parent = null;
 
                 CollectionChanged?.Invoke(this,
-                    new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new[] {value},
-                        new[] {oldItem}));
+                    new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new[] { value },
+                        new[] { oldItem }));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
             }
         }
@@ -99,7 +99,7 @@ namespace ZenPlatform.Shared.ParenChildCollection
                 item.Parent = _parent;
             _collection.Add(item);
             CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] {item}));
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
@@ -163,7 +163,7 @@ namespace ZenPlatform.Shared.ParenChildCollection
             if (item != null)
                 item.Parent = null;
             CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] {item}));
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { item }));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
             return b;
         }
