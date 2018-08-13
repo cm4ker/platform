@@ -11,6 +11,7 @@ using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using ZenPlatform.QueryBuilder.DML.Update;
 using ZenPlatform.Shared;
@@ -35,9 +36,9 @@ namespace ZenPlatform.EntityComponent.Migrations
             _store = store;
         }
 
-        private IList<Node> GetScript(XCSingleEntity old, XCSingleEntity actual)
+        private IList<SqlNode> GetScript(XCSingleEntity old, XCSingleEntity actual)
         {
-            var result = new List<Node>();
+            var result = new List<SqlNode>();
 
             if (old == null)
             {
@@ -140,11 +141,11 @@ namespace ZenPlatform.EntityComponent.Migrations
         }
 
 
-        public IList<Node> GetPropertyScript(XCSingleEntityProperty old, XCSingleEntityProperty actual)
+        public IList<SqlNode> GetPropertyScript(XCSingleEntityProperty old, XCSingleEntityProperty actual)
         {
             if (old == null && actual == null) throw new ArgumentNullException($"{nameof(old)} && {nameof(actual)}");
 
-            var result = new List<Node>();
+            var result = new List<SqlNode>();
             /*
              * Трансформации данных бывают разными:
              *
@@ -354,7 +355,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             return result;
         }
 
-        public IList<Node> GetScript(XCObjectTypeBase old, XCObjectTypeBase actual)
+        public IList<SqlNode> GetScript(XCObjectTypeBase old, XCObjectTypeBase actual)
         {
             return GetScript((XCSingleEntity) old, (XCSingleEntity) actual);
         }

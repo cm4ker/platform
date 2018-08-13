@@ -2,6 +2,9 @@
 
 namespace ZenPlatform.QueryUIBuilder
 {
+    /*
+     * Построитель запросов 
+     */
     class Program
     {
         static void Main(string[] args)

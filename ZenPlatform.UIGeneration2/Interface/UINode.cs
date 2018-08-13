@@ -1,9 +1,8 @@
 ﻿using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.UIGeneration2
+namespace ZenPlatform.UIBuilder.Interface
 {
     public class UINode : Node
     {
-
     }
 }

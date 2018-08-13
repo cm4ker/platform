@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZenPlatform.UIGeneration2
+namespace ZenPlatform.UIBuilder.Interface
 {
     public class UIGroup : UINode
     {
