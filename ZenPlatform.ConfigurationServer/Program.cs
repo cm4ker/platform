@@ -85,7 +85,7 @@ namespace ZenPlatform.ConfigurationServer
     {
         public int Serialize(ref byte[] bytes, int offset, Node value, IFormatterResolver formatterResolver)
         {
-            
+
         }
 
         public Node Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
