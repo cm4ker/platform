@@ -4,11 +4,9 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.6.2-build5603-beta" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.6.2-build5603-beta" />
-    <PackageReference Include="Avalonia.MonoMac" Version="0.6.2-build5603-beta" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.6.2-build5603-beta" />
-    <PackageReference Include="Avalonia.Skia" Version="0.6.2-build5603-beta" />
+    <PackageReference Include="Avalonia" Version="0.6.2-build5881-beta" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.6.2-build5881-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.6.2-build5881-beta" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
   </ItemGroup>
   <ItemGroup>
@@ -16,5 +14,13 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="App.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

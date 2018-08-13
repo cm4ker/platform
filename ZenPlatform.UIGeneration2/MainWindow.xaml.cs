@@ -2,7 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace ZenPlatform.ServerManagementTool.Views
+namespace ZenPlatform.UIBuilder
 {
     public class MainWindow : Window
     {

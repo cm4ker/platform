@@ -1,32 +1,58 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Logging.Serilog;
-using ZenPlatform.Shared.ParenChildCollection;
+using Avalonia.Markup.Xaml;
+using ZenPlatform.UIBuilder.Compilers;
+using ZenPlatform.UIBuilder.Interface;
 
-
-namespace ZenPlatform.UIGeneration2
+namespace ZenPlatform.UIBuilder
 {
     public class Program
     {
         public static void Main()
         {
-            var window = new UIWindow().With(x => x.Group(UIGroupOrientation.Horizontal).With(g => g.TextBox()));
+            var appBuilder = BuildAvaloniaApp().SetupWithoutStarting();
+
+
+            var window = new UIWindow().With(x =>
+                x.Group(UIGroupOrientation.Horizontal)
+                    .With(g => g.Group(UIGroupOrientation.Horizontal)
+                        .With(gi => gi.TextBox())
+                        .With(gi => gi.TextBox()))
+                    .With(g => g.Group(UIGroupOrientation.Vertical).With(gi => gi.TextBox())));
+
+            //window.With(x => x.Group(UIGroupOrientation.Vertical).With(g => g.TextBox()));
+
             window.Height = 100;
-            window.Width = 2000;
+            window.Width = 100;
 
-            XamlUICompiler c = new XamlUICompiler();
+            AvaloniaXamlUICompiler c = new AvaloniaXamlUICompiler();
 
-            var sw = new StringWriter();
+            var sb = new StringBuilder();
+            var sw = new StringWriter(sb);
             var text = c.Compile(window, sw);
 
+
             Console.WriteLine(text);
-            Console.Read();
+
+            Window w = AvaloniaXamlLoader.Parse<Window>(text);
+
+            appBuilder.Instance.Run(w);
+
+
+            w.ShowDialog();
+
+            //Console.Read();
         }
+
+
+        public static AppBuilder BuildAvaloniaApp()
+            => AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .UseReactiveUI()
+                .LogToDebug();
     }
 }

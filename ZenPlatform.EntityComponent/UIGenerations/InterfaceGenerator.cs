@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Diagnostics;
 using ZenPlatform.EntityComponent.Configuration;
-using ZenPlatform.UIGeneration2;
+using ZenPlatform.UIBuilder.Interface;
 
 namespace ZenPlatform.EntityComponent.UIGenerations
 {

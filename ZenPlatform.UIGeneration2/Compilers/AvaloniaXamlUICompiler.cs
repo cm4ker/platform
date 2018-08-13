@@ -1,27 +1,39 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
+using System.Xml;
 using Avalonia.Controls;
 using Portable.Xaml;
 using ZenPlatform.Shared;
 using ZenPlatform.Shared.Tree;
+using ZenPlatform.UIBuilder.Interface;
 
-namespace ZenPlatform.UIGeneration2
+namespace ZenPlatform.UIBuilder.Compilers
 {
-    public class XamlUICompiler
+    public class AvaloniaXamlUICompiler
     {
         private XamlSchemaContext _context;
         private XamlXmlWriter _xamlWriter;
 
-        public XamlUICompiler()
+        public AvaloniaXamlUICompiler()
         {
+            var x = new XamlSchemaContextSettings();
             _context = new XamlSchemaContext(null, null);
         }
 
 
-
         public string Compile(UINode node, StringWriter sw)
         {
-            using (_xamlWriter = new XamlXmlWriter(sw, _context, null))
-                VisitNode(node, sw);
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.OmitXmlDeclaration = true;
+
+            using (XmlWriter xw = XmlWriter.Create(sw, settings))
+            {
+                using (_xamlWriter = new XamlXmlWriter(xw, _context, new XamlXmlWriterSettings()))
+                {
+                    VisitNode(node, sw);
+                }
+            }
+
             return sw.ToString();
         }
 
@@ -56,8 +68,9 @@ namespace ZenPlatform.UIGeneration2
 
             foreach (var node in uiGroup.Childs)
             {
-                VisitNode((UINode)node, sw);
+                VisitNode((UINode) node, sw);
             }
+
             _xamlWriter.WriteEndMember();
             //EndContent
 
@@ -67,7 +80,22 @@ namespace ZenPlatform.UIGeneration2
         private void VisitTextBoxNode(UITextBox uiTextBox, StringWriter sw)
         {
             XamlType textBoxType = new XamlType(typeof(TextBox), _context);
+
+            var heightProperty = new XamlMember(typeof(TextBox).GetProperty("Height"), _context);
+            var widthProperty = new XamlMember(typeof(TextBox).GetProperty("Width"), _context);
+
             _xamlWriter.WriteStartObject(textBoxType);
+
+            //Height
+            _xamlWriter.WriteStartMember(heightProperty);
+            _xamlWriter.WriteValue(uiTextBox.Height.ToString(CultureInfo.InvariantCulture));
+            _xamlWriter.WriteEndMember();
+
+            //Width
+            _xamlWriter.WriteStartMember(widthProperty);
+            _xamlWriter.WriteValue(uiTextBox.Width.ToString(CultureInfo.InvariantCulture));
+            _xamlWriter.WriteEndMember();
+
             _xamlWriter.WriteEndObject();
         }
 
@@ -84,12 +112,12 @@ namespace ZenPlatform.UIGeneration2
 
             //Height
             _xamlWriter.WriteStartMember(heightProperty);
-            _xamlWriter.WriteValue(uiWindow.Height.ToString());
+            _xamlWriter.WriteValue(uiWindow.Height.ToString(CultureInfo.InvariantCulture));
             _xamlWriter.WriteEndMember();
 
             //Width
             _xamlWriter.WriteStartMember(widthProperty);
-            _xamlWriter.WriteValue(uiWindow.Width.ToString());
+            _xamlWriter.WriteValue(uiWindow.Width.ToString(CultureInfo.InvariantCulture));
             _xamlWriter.WriteEndMember();
 
             //Content
@@ -97,7 +125,7 @@ namespace ZenPlatform.UIGeneration2
 
             foreach (var node in uiWindow.Childs)
             {
-                VisitNode((UINode)node, sw);
+                VisitNode((UINode) node, sw);
             }
 
             _xamlWriter.WriteEndMember();
