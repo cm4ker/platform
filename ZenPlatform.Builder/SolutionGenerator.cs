@@ -3,9 +3,9 @@ using System.IO;
 using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.Structure.Data;
 
-namespace ZenPlatform.Builder
+namespace ZenPlatform.Cli
 {
     public class CodeBuilder
     {
@@ -35,7 +35,7 @@ namespace ZenPlatform.Builder
                 File.Delete(file);
             }
 
-            var files = generator.GenerateFilesFromComponent();
+            var files = generator.GenerateSourceFiles();
 
             foreach (var file in files)
             {

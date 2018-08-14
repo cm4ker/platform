@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Logging.Serilog;
 using DryIoc;
 using ZenPlatform.ServerManagementTool.ViewModels;
+using ZenPlatform.ServerManagementTool.Views;
 
 namespace ZenPlatform.ServerManagementTool
 {

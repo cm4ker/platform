@@ -1,10 +1,11 @@
 ﻿using System;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.From;
-using ZenPlatform.QueryBuilder2.DML.Select;
-using ZenPlatform.QueryBuilder2.DML.Where;
+using ZenPlatform.QueryBuilder.Common.Factoryes;
+using ZenPlatform.QueryBuilder.DML.From;
+using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.QueryBuilder.DML.Where;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.Update
+namespace ZenPlatform.QueryBuilder.DML.Update
 {
     public class UpdateQueryNode : SqlNode
     {
@@ -19,7 +20,7 @@ namespace ZenPlatform.QueryBuilder2.DML.Update
             _from = new FromNode();
             _update = new UpdateNode();
             _set = new SetNode();
-            Childs.AddRange(new SqlNode[] {_update, _set, _from, _where});
+            Childs.AddRange(new Node[] {_update, _set, _from, _where});
         }
 
         public UpdateQueryNode Update(string tableName)
@@ -28,9 +29,9 @@ namespace ZenPlatform.QueryBuilder2.DML.Update
             return this;
         }
 
-        public UpdateQueryNode Update(Func<NodeFactory, AliasedTableNode> exp)
+        public UpdateQueryNode Update(Func<SqlNodeFactory, AliasedTableNode> exp)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _update.Add(exp(factory));
             return this;
         }
@@ -47,9 +48,9 @@ namespace ZenPlatform.QueryBuilder2.DML.Update
             return this;
         }
 
-        public UpdateQueryNode Set(Func<NodeFactory, FieldNode> exp, Func<NodeFactory, SqlNode> valueExp)
+        public UpdateQueryNode Set(Func<SqlNodeFactory, FieldNode> exp, Func<SqlNodeFactory, SqlNode> valueExp)
         {
-            var fact = new NodeFactory();
+            var fact = new SqlNodeFactory();
 
             var set = new SetFieldNode(exp(fact), valueExp(fact));
             _set.Add(set);
@@ -93,30 +94,30 @@ namespace ZenPlatform.QueryBuilder2.DML.Update
             return this;
         }
 
-        public UpdateQueryNode Where(Func<NodeFactory, SqlNode> f1, string operation, Func<NodeFactory, SqlNode> f2)
+        public UpdateQueryNode Where(Func<SqlNodeFactory, SqlNode> f1, string operation, Func<SqlNodeFactory, SqlNode> f2)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new BinaryWhereNode(f1(factory), operation, f2(factory)));
             return this;
         }
 
-        public UpdateQueryNode WhereIsNull(Func<NodeFactory, SqlNode> fieldExp)
+        public UpdateQueryNode WhereIsNull(Func<SqlNodeFactory, SqlNode> fieldExp)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new IsNullWhereNode(fieldExp(factory)));
             return this;
         }
 
-        public UpdateQueryNode WhereLike(Func<NodeFactory, SqlNode> fieldExp, string pattern)
+        public UpdateQueryNode WhereLike(Func<SqlNodeFactory, SqlNode> fieldExp, string pattern)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new LikeWhereNode(fieldExp(factory), new StringLiteralNode(pattern)));
             return this;
         }
 
-        public UpdateQueryNode WhereIn(Func<NodeFactory, SqlNode> fieldExp, Func<NodeFactory, SqlNode> fieldExp2)
+        public UpdateQueryNode WhereIn(Func<SqlNodeFactory, SqlNode> fieldExp, Func<SqlNodeFactory, SqlNode> fieldExp2)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));
             return this;
         }

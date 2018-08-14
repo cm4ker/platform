@@ -1,8 +1,4 @@
-﻿using System.Data;
-using System.Runtime.InteropServices.WindowsRuntime;
-using ZenPlatform.QueryBuilder2.Common;
-
-namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
+﻿namespace ZenPlatform.QueryBuilder.Common.Tokens
 {
     public static class Tokens
     {
@@ -35,6 +31,15 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
         public static Token UniqueToken = new UniqueToken();
 
         public static Token DatabaseToken = new DatabaseToken();
+
+        public static Token SumToken = new SumToken();
+
+        public static Token LimitToken = new LimitToken();
+        
+        public static Token InsertToken = new InsertToken();
+        
+        public static Token IntoToken = new IntoToken();
+        
     }
 
 
@@ -90,6 +95,35 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
     public class DatabaseToken : Token
     {
         public DatabaseToken() : base("DATABASE")
+        {
+        }
+    }
+
+
+    public class SumToken : Token
+    {
+        public SumToken() : base("SUM")
+        {
+        }
+    }
+
+    public class InsertToken : Token
+    {
+        public InsertToken() : base("INSERT")
+        {
+        }
+    }
+    
+    public class IntoToken : Token
+    {
+        public IntoToken() : base("INTO")
+        {
+        }
+    }
+    
+    public class LimitToken : Token
+    {
+        public LimitToken() : base("LIMIT")
         {
         }
     }

@@ -1,11 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using FluentMigrator.Runner.Initialization;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Configuration;
+using ZenPlatform.Data;
+using ZenPlatform.Data.Tools;
+using ZenPlatform.Initializer;
+using ZenPlatform.Initializer.InternalDatabaseStructureMigrations;
+using ZenPlatform.QueryBuilder;
 
-namespace ZenPlatform.Builder
+namespace ZenPlatform.Cli
 {
     public class CliBuilder
     {
@@ -31,9 +38,80 @@ namespace ZenPlatform.Builder
             var optionVersion = app.Option("-v|--version", "Version of the program",
                 CommandOptionType.NoValue);
 
-            var optionBuild = app.Option("-b|--build", "Build project xml file", CommandOptionType.SingleValue);
+            //Команда построения проекта
+            app.Command("build", buildCmd =>
+            {
+                buildCmd.HelpOption(inherited: true);
 
-            Func<int> handler = () =>
+                var path = buildCmd.Argument("path", "path to the project file").IsRequired();
+
+                buildCmd.OnExecute(() =>
+                {
+                    Console.WriteLine(path.Value);
+
+                    var projectFilePath = path.Value;
+
+                    if (!File.Exists(projectFilePath))
+                        throw new FileNotFoundException($"File not found: {projectFilePath}");
+
+                    XCFileSystemStorage ss = new XCFileSystemStorage(Path.GetDirectoryName(projectFilePath),
+                        Path.GetFileName(projectFilePath));
+
+                    var root = XCRoot.Load(ss);
+
+                    Console.WriteLine($"Success load project {projectFilePath}");
+                    Console.WriteLine($"Start building");
+                });
+            });
+
+            //Команда создания проекта
+            app.Command("create", createCmd =>
+            {
+                createCmd.HelpOption(inherited: true);
+
+                var projectNameArg = createCmd.Argument("project_name", "Name of new project").IsRequired();
+
+                createCmd.Command("fs", (fsCmd) =>
+                {
+                    //Если мы создаём проект для файловой системы, то мы обязаны  считать папку, в которой будет эта вся штука
+                    fsCmd.Option("--path", "Path to the project location", CommandOptionType.SingleValue);
+                });
+
+                createCmd.Command("db", (dbCmd) =>
+                {
+                    var databaseTypeOpt = dbCmd.Option<SqlDatabaseType>("-t|--type",
+                            "Type of database within will be create solution", CommandOptionType.SingleValue)
+                        .Accepts(v => v.Enum<SqlDatabaseType>(true));
+
+                    var serverOpt = dbCmd.Option("-s|--server", "database server", CommandOptionType.SingleValue);
+
+                    var databaseOpt = dbCmd.Option("-d|--database", "database", CommandOptionType.SingleValue);
+
+                    var userNameOpt = dbCmd.Option("-u|--username", "user name", CommandOptionType.SingleValue);
+
+                    var passwordOpt = dbCmd.Option("-p|--password", "password", CommandOptionType.SingleValue);
+
+                    var portOpt = dbCmd.Option<int>("--port ", "Database server port", CommandOptionType.SingleValue);
+
+                    var createOpt = dbCmd.Option("-c|--create", "Create database if not exists",
+                        CommandOptionType.NoValue);
+
+                    dbCmd.OnExecute(() =>
+                    {
+                        OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue, serverOpt.Value(),
+                            portOpt.ParsedValue, databaseOpt.Value(), userNameOpt.Value(), passwordOpt.Value(),
+                            createOpt.HasValue());
+                    });
+                });
+            });
+
+            //Команда загрузки скомпиллированого проекта
+            app.Command("deploy", deployCmd => { });
+
+            //Команда публикации проекта, по своей сути она равна build + deploy
+            app.Command("publish", publishCmd => { });
+
+            Func<int> optionsHandler = () =>
             {
                 if (optionVersion.HasValue())
                 {
@@ -41,26 +119,60 @@ namespace ZenPlatform.Builder
                         $"{Assembly.GetExecutingAssembly().GetName().Name} version {Assembly.GetExecutingAssembly().GetName().Version}");
                 }
 
-                if (optionBuild.HasValue())
-                {
-                    var projectFilePath = optionBuild.Value();
-
-                    if (!File.Exists(projectFilePath))
-                        throw new FileNotFoundException($"File not found: {projectFilePath}");
-
-                    var root = XCRoot.Load(projectFilePath);
-
-                    Console.WriteLine($"Success load project {projectFilePath}");
-                    Console.WriteLine($"Start building");
-                }
-
                 return 0;
             };
 
-            app.OnExecute(handler);
+            app.OnExecute(optionsHandler);
 
 
             return app.Execute(args);
+        }
+
+        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port,
+            string database, string userName, string password, bool createIfNotExists)
+        {
+            Console.WriteLine($"Start creating new project {projectName}");
+            Console.WriteLine(
+                $"DatabaseType: {databaseType}\nServer: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
+            var cb = new UniversalConnectionStringBuilder(databaseType);
+
+            // Если базы данных нет - её необходимо создать
+            if (createIfNotExists)
+            {
+            }
+
+            // После успешного созадания базы пробуем к ней подключиться, провести миграции и 
+            //создать новую конфигурацию
+            cb.Database = database;
+            cb.Server = server;
+            cb.Password = password;
+            cb.Username = userName;
+            cb.Port = port;
+
+            Console.WriteLine(cb.GetConnectionString());
+
+            //Мигрируем...
+            MigrationRunner.Migrate(cb.GetConnectionString(), databaseType);
+
+            //Создаём пустой проект с именем Project Name
+
+            var newProject = XCRoot.Create(projectName);
+
+            // Необходимо создать контекст данных
+
+            var dataContext = new DataContext(databaseType, cb.GetConnectionString());
+
+            var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext,
+                SqlCompillerBase.FormEnum(databaseType));
+
+            var configSaveStorage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext,
+                SqlCompillerBase.FormEnum(databaseType));
+
+            //Сохраняем новоиспечённый проект в сохранённую и конфигураци базы данных
+            newProject.Save(configStorage);
+            newProject.Save(configSaveStorage);
+
+            Console.WriteLine($"Done!");
         }
     }
 }

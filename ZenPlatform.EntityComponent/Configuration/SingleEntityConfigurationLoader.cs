@@ -2,37 +2,30 @@
 using System.IO;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
-using ZenPlatform.Contracts.Data;
+using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.DataComponent.Configuration;
+using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
     /// <summary>
     /// Этот клас автоматически будет использован в качестве загрузчика
     /// </summary>
-    public class SingleEntityConfigurationLoader : ConfigurationLoaderBase<SingleEntity>
+    public class SingleEntityConfigurationLoader : ConfigurationLoaderBase<XCSingleEntity>
     {
         public override IDataComponent GetComponentImpl(XCComponent component)
         {
-            return new DocumnetComponent(component);
-        }
-
-        protected override SingleEntity LoadObjectAction(string path)
-        {
-            using (var sr = new StreamReader(path))
-            {
-                var ser = new XmlSerializer(typeof(SingleEntity));
-                return ser.Deserialize(sr) as SingleEntity ?? throw new Exception();
-            }
+            return new EntityComponent(component);
         }
 
         protected override XCDataRuleBase LoadRuleAction(XCDataRuleContent content)
         {
             using (var sr = new StringReader(content.RealContent))
             {
-                var ser = new XmlSerializer(typeof(SingleEntityRule));
-                var rule = ser.Deserialize(sr) as SingleEntityRule ?? throw new Exception();
+                var ser = new XmlSerializer(typeof(XCSingleEntityRule));
+                var rule = ser.Deserialize(sr) as XCSingleEntityRule ?? throw new Exception();
 
                 ((IChildItem<XCDataRuleContent>) rule).Parent = content;
 

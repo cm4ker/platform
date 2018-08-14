@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DDL.CreateTable;
-using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.QueryBuilder.Common.Columns;
+using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.From
+namespace ZenPlatform.QueryBuilder.Common.Table
 {
     public class TableWithColumnsNode : SqlNode
     {
@@ -16,9 +16,9 @@ namespace ZenPlatform.QueryBuilder2.DML.From
             _table = new TableNode(tableName);
 
             Childs.Add(_table);
-            Childs.Add(Tokens.LeftBracketToken);
+            Childs.Add(Tokens.Tokens.LeftBracketToken);
             Childs.Add(_columnList);
-            Childs.Add(Tokens.RightBracketToken);
+            Childs.Add(Tokens.Tokens.RightBracketToken);
         }
 
         public TableWithColumnsNode WithSchema(string schemaName)
@@ -36,8 +36,8 @@ namespace ZenPlatform.QueryBuilder2.DML.From
         {
             if (_columnList.Childs.Any())
             {
-                _columnList.Add(Tokens.CommaToken);
-                _columnList.Add(Tokens.SpaceToken);
+                _columnList.Add(Tokens.Tokens.CommaToken);
+                _columnList.Add(Tokens.Tokens.SpaceToken);
             }
 
             _columnList.Add(node);

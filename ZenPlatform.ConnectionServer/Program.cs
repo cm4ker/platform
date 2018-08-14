@@ -1,4 +1,7 @@
-﻿using System.Xml.Schema;
+﻿using System;
+using ZenPlatform.Core;
+using ZenPlatform.QueryBuilder;
+using ZenPlatform.WorkProcess;
 
 namespace ZenPlatform.ConnectionServer
 {
@@ -6,6 +9,17 @@ namespace ZenPlatform.ConnectionServer
     {
         public static void Main()
         {
+            var wp = new SystemProcess(new StartupConfig()
+            {
+                ConnectionString = "host=localhost; database=db1; user id=postgres;  password=123456;",
+                DatabaseType = SqlDatabaseType.Postgres
+            });
+
+            Console.WriteLine("Starting migration...");
+
+            wp.Migrate();
+
+            Console.WriteLine("Migration done!");
         }
     }
 }

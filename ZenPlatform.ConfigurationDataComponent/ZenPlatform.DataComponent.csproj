@@ -10,7 +10,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
-    <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />
     <ProjectReference Include="..\ZenPlatform.System\ZenPlatform.System.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DDL.CreateTable;
+using ZenPlatform.QueryBuilder.Common.Columns;
+using ZenPlatform.QueryBuilder.Common.Factoryes;
+using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.From
+namespace ZenPlatform.QueryBuilder.Common.Table
 {
     public class TableDefinitionNode : SqlNode
     {
@@ -15,7 +17,7 @@ namespace ZenPlatform.QueryBuilder2.DML.From
         public ColumnDefinitionNode WithColumn(string columnName)
         {
             if (Childs.Any())
-                Add(Tokens.CommaToken);
+                Add(Tokens.Tokens.CommaToken);
 
             var col = new ColumnDefinitionNode(columnName);
             Add(col);

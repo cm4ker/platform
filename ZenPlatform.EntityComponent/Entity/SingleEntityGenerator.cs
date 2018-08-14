@@ -4,11 +4,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Complex;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration.Data.Types.Primitive;
+using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Contracts;
 using ZenPlatform.Core;
+using ZenPlatform.Core.Annotations;
+using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.EntityComponent.Configuration;
@@ -53,9 +55,9 @@ namespace ZenPlatform.EntityComponent.Entity
             return new CodeGenRule(CodeGenRuleType.EntityClassPostfixRule, "Entity");
         }
 
-        public virtual SyntaxNode GenerateDtoClass(Configuration.SingleEntity singleEntity)
+        public virtual SyntaxNode GenerateDtoClass(Configuration.XCSingleEntity xcSingleEntity)
         {
-            var component = singleEntity.Parent;
+            var component = xcSingleEntity.Parent;
             var nsRule = component.GetCodeRule(CodeGenRuleType.NamespaceRule);
 
             var workspace = new AdhocWorkspace();
@@ -67,11 +69,11 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
-            if (singleEntity.IsAbstract) return null;
+            if (xcSingleEntity.IsAbstract) return null;
 
             var members = new List<SyntaxNode>();
 
-            foreach (var prop in singleEntity.Properties)
+            foreach (var prop in xcSingleEntity.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
@@ -108,7 +110,7 @@ namespace ZenPlatform.EntityComponent.Entity
             }
 
             var classDefinition = generator.ClassDeclaration(
-                GetDtoClassName(singleEntity),
+                GetDtoClassName(xcSingleEntity),
                 typeParameters: null,
                 accessibility: Accessibility.Public,
                 modifiers: DeclarationModifiers.None,
@@ -128,18 +130,18 @@ namespace ZenPlatform.EntityComponent.Entity
         /// <summary>
         /// Генерация сущности - класс который является промежуточным между DTO и пользователем
         /// </summary>
-        /// <param name="singleEntity"></param>
+        /// <param name="xcSingleEntity"></param>
         /// <returns></returns>
-        public virtual SyntaxNode GenerateEntityClass(Configuration.SingleEntity singleEntity)
+        public virtual SyntaxNode GenerateEntityClass(Configuration.XCSingleEntity xcSingleEntity)
         {
-            var dtoClassName = GetDtoClassName(singleEntity);
+            var dtoClassName = GetDtoClassName(xcSingleEntity);
 
 
-            var nsRule = singleEntity.Parent.GetCodeRule(CodeGenRuleType.NamespaceRule);
+            var nsRule = xcSingleEntity.Parent.GetCodeRule(CodeGenRuleType.NamespaceRule);
             var usings = Generator.NamespaceImportDeclaration("System");
             var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(nsRule.GetExpression()));
 
-            if (singleEntity.IsAbstract) return null;
+            if (xcSingleEntity.IsAbstract) return null;
 
             var members = new List<SyntaxNode>();
 
@@ -155,7 +157,7 @@ namespace ZenPlatform.EntityComponent.Entity
             */
 
             //Генерируем свойства
-            foreach (var prop in singleEntity.Properties)
+            foreach (var prop in xcSingleEntity.Properties)
             {
                 if (prop.Types.Count == 1)
                 {
@@ -182,7 +184,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             //Объявляем конструктор
             var parameterList =
-                SyntaxFactory.ParseParameterList($"[NotNull] {nameof(Session)} session, {dtoClassName} dto");
+                SyntaxFactory.ParseParameterList($"[NotNull] {nameof(ISession)} session, {dtoClassName} dto");
             var statementsParams = parameterList.Parameters.ToArray<SyntaxNode>();
             var baseConstructorArguments = SyntaxFactory.ArgumentList();
             baseConstructorArguments =
@@ -205,7 +207,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var saveBody = new SyntaxNode[]
             {
                 SyntaxFactory.ParseStatement(
-                    $"Session.{singleEntity.Parent.Info.ComponentSpaceName}().{singleEntity.Name}.Save(this);")
+                    $"Session.{xcSingleEntity.Parent.Info.ComponentSpaceName}().{xcSingleEntity.Name}.Save(this);")
             };
             var saveMethod =
                 Generator.MethodDeclaration("Save", statements: saveBody, accessibility: Accessibility.Public);
@@ -213,9 +215,9 @@ namespace ZenPlatform.EntityComponent.Entity
             var loadBody = new SyntaxNode[]
             {
                 SyntaxFactory.ParseStatement(
-                    $"var key = Session.{singleEntity.Parent.Info.ComponentSpaceName}().{singleEntity.Name}.GetKey(this);"),
+                    $"var key = Session.{xcSingleEntity.Parent.Info.ComponentSpaceName}().{xcSingleEntity.Name}.GetKey(this);"),
                 SyntaxFactory.ParseStatement(
-                    $"var entity = Session.{singleEntity.Parent.Info.ComponentSpaceName}().{singleEntity.Name}.Load(key);"),
+                    $"var entity = Session.{xcSingleEntity.Parent.Info.ComponentSpaceName}().{xcSingleEntity.Name}.Load(key);"),
                 SyntaxFactory.ParseStatement($"_dto = entity._dto;"),
             };
             var loadMethod =
@@ -224,7 +226,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var deleteBody = new SyntaxNode[]
             {
                 SyntaxFactory.ParseStatement(
-                    $"Session.{singleEntity.Parent.Info.ComponentSpaceName}().{singleEntity.Name}.Delete(this);")
+                    $"Session.{xcSingleEntity.Parent.Info.ComponentSpaceName}().{xcSingleEntity.Name}.Delete(this);")
             };
             var deleteMethod =
                 Generator.MethodDeclaration("Delete", statements: deleteBody, accessibility: Accessibility.Public);
@@ -235,11 +237,11 @@ namespace ZenPlatform.EntityComponent.Entity
 
             #endregion
 
-//            var preffix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
-//            var postfix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
+            //            var preffix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
+            //            var postfix = conf.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
 
             var classDefinition = Generator.ClassDeclaration(
-                GetEntityClassName(singleEntity),
+                GetEntityClassName(xcSingleEntity),
                 typeParameters: null,
                 accessibility: Accessibility.Public,
                 modifiers: DeclarationModifiers.Partial,
@@ -257,7 +259,7 @@ namespace ZenPlatform.EntityComponent.Entity
             return newNode;
         }
 
-        private SyntaxNode GenerateEntityClassPropertyOneType(SingleEntityProperty prop)
+        private SyntaxNode GenerateEntityClassPropertyOneType(XCSingleEntityProperty prop)
         {
             var propertyTypeName = string.Empty;
 
@@ -389,7 +391,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
 
             var constructorBody = SyntaxFactory.Block(SyntaxFactory.ParseStatement("Session = session;"));
-            var parameters = SyntaxFactory.ParseParameterList($"{nameof(Session)} session");
+            var parameters = SyntaxFactory.ParseParameterList($"{nameof(ISession)} session");
 
             var constructor = generator.ConstructorDeclaration("DocumentInterface",
                 parameters.Parameters,
@@ -397,7 +399,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 accessibility: Accessibility.Public);
 
             var sessionProperty =
-                SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(nameof(Session)), "Session")
+                SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(nameof(ISession)), "Session")
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                     .WithAccessorList(
                         SyntaxFactory.AccessorList().AddAccessors(
@@ -479,7 +481,7 @@ namespace ZenPlatform.EntityComponent.Entity
             return newNode;
         }
 
-        public override Dictionary<string, string> GenerateFilesFromComponent()
+        public override Dictionary<string, string> GenerateSourceFiles()
         {
             var result = new Dictionary<string, string>();
 
@@ -489,9 +491,9 @@ namespace ZenPlatform.EntityComponent.Entity
             foreach (var obj in Component.Types)
             {
                 result.Add($"ComponentObject{obj.Name}Dto.cs",
-                    GenerateDtoClass(obj as Configuration.SingleEntity).ToString());
+                    GenerateDtoClass(obj as Configuration.XCSingleEntity).ToString());
                 result.Add($"ComponentObject{obj.Name}Entity.cs",
-                    GenerateEntityClass(obj as Configuration.SingleEntity).ToString());
+                    GenerateEntityClass(obj as Configuration.XCSingleEntity).ToString());
             }
 
             return result;
@@ -500,9 +502,9 @@ namespace ZenPlatform.EntityComponent.Entity
 
         /*
         TODO: Необходимо сгенерировать следующее API для работы с сущностями:
-              Session.Document.Invoice.Save();
-              Session.Register.Incommings.GetRange();
-              Session.Reference.Nomenclature.Create();
+              Session.Document().Invoice.Save();
+              Session.Register().Incommings.GetRange();
+              Session.Reference().Nomenclature.Create();
          */
 
         public SyntaxNode GenerateHelpersForEntity()
@@ -529,8 +531,6 @@ namespace ZenPlatform.EntityComponent.Entity
             return SyntaxFactory.CompilationUnit()
                 .AddUsings(GetStandartNamespaces().ToArray())
                 .AddMembers(managerClass).NormalizeWhitespace();
-
-            return generator.CompilationUnit(managerClass).NormalizeWhitespace();
         }
 
         /*
@@ -545,9 +545,9 @@ namespace ZenPlatform.EntityComponent.Entity
         private IEnumerable<UsingDirectiveSyntax> GetStandartNamespaces()
         {
             yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System"));
-            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core"));
-            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Annotations"));
-            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.DocumentComponent"));
+            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(typeof(ISession).Namespace));
+            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(typeof(CanBeNullAttribute).Namespace));
+            yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(typeof(EntityComponent).Namespace));
         }
 
         private AccessorListSyntax GetEmptyAccessor()

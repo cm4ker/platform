@@ -10,12 +10,9 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.ConfigurationExample\ZenPlatform.ConfigurationExample.csproj">
-      <Private>true</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Cli.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
-    <ProjectReference Include="..\ZenPlatform.QueryCompiler\ZenPlatform.QueryBuilder.csproj" />
-    <ProjectReference Include="..\ZenPlatform.UIGeneration2\ZenPlatform.UIGeneration2.csproj" />
+    <ProjectReference Include="..\ZenPlatform.UIGeneration2\ZenPlatform.UIBuilder.csproj" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-ildasm" Version="0.7.8-beta-build-0070" />

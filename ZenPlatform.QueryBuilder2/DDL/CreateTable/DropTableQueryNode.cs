@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.From;
+using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
+namespace ZenPlatform.QueryBuilder.DDL.CreateTable
 {
     public class DropTableQueryNode : SqlNode
     {
@@ -20,7 +18,7 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
             _table = new TableNode(tableName);
             options(_table);
 
-            Childs.AddRange(new SqlNode[]
+            Childs.AddRange(new Node[]
                 {Tokens.DropToken, Tokens.SpaceToken, Tokens.TableToken, Tokens.SpaceToken, _table});
         }
     }

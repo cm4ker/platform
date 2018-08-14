@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.QueryBuilder2.DML.From
+﻿namespace ZenPlatform.QueryBuilder.Common.Operations
 {
     public class BooleanTypeDefinitionNode : TypeDefinitionNode
     {
