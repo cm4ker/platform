@@ -1,8 +1,8 @@
 ﻿namespace ZenPlatform.UIBuilder.Interface
 {
-    public class UILabel : UINode
+    public class UIButton : UINode
     {
-        public UILabel(string text = "")
+        public UIButton(string text = "")
         {
             Text = text;
         }

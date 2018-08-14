@@ -6,6 +6,7 @@
     public class UIFactory
     {
         private static UIFactory _instance = new UIFactory();
+
         /// <summary>
         ///  Получить фабрику
         /// </summary>
@@ -51,6 +52,11 @@
         public UICheckBox CheckBox(string text = "")
         {
             return new UICheckBox(text);
+        }
+
+        public UIButton Button(string text = "")
+        {
+            return new UIButton(text);
         }
     }
 }
