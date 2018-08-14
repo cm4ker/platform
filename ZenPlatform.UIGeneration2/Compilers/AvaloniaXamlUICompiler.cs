@@ -6,6 +6,7 @@ using Portable.Xaml;
 using ZenPlatform.Shared;
 using ZenPlatform.Shared.Tree;
 using ZenPlatform.UIBuilder.Interface;
+using ZenPlatform.UIBuilder.Interface.DataGrid;
 
 namespace ZenPlatform.UIBuilder.Compilers
 {
@@ -48,8 +49,61 @@ namespace ZenPlatform.UIBuilder.Compilers
                 .CaseIs<UIGroup>(i => VisitGroupNode(i, sw))
                 .CaseIs<UITabControl>(i => VisitTabControlNode(i, sw))
                 .CaseIs<UITab>(i => VisitTabNode(i, sw))
-                .CaseIs<UICheckBox>(i => VisitCheckBoxNode(i, sw));
+                .CaseIs<UICheckBox>(i => VisitCheckBoxNode(i, sw))
+                .CaseIs<UIButton>(i => VisitButtonNode(i, sw))
+                .CaseIs<UIDataGrid>(i => VisitDataGridNode(i, sw))
+                .CaseIs<UIDataGridColumn>(i => VisitDataGridColumnNode(i, sw));
+        }
 
+        private void VisitDataGridColumnNode(UIDataGridColumn uiDataGridColumn, StringWriter sw)
+        {
+            XamlType dataGridColumnType = new XamlType(typeof(DataGridTextColumn), _context);
+
+            var headerProperty = new XamlMember(typeof(DataGridTextColumn).GetProperty("Header"), _context);
+
+            _xamlWriter.WriteStartObject(dataGridColumnType);
+            
+            //Header 
+            _xamlWriter.WriteStartMember(headerProperty);
+            _xamlWriter.WriteValue("Test");
+            _xamlWriter.WriteEndMember();
+            
+            _xamlWriter.WriteEndObject();
+        }
+
+        private void VisitDataGridNode(UIDataGrid uiDataGrid, StringWriter sw)
+        {
+            XamlType dataGridType = new XamlType(typeof(DataGrid), _context);
+
+            var columnsProperty = new XamlMember(typeof(DataGrid).GetProperty("Columns"), _context);
+            _xamlWriter.WriteStartObject(dataGridType);
+
+            //Items
+            _xamlWriter.WriteStartMember(columnsProperty);
+            foreach (var node in uiDataGrid.Childs)
+            {
+                VisitNode((UINode) node, sw);
+            }
+
+            _xamlWriter.WriteEndMember();
+
+            _xamlWriter.WriteEndObject();
+        }
+
+        private void VisitButtonNode(UIButton uiButton, StringWriter sw)
+        {
+            XamlType buttonType = new XamlType(typeof(Button), _context);
+
+            var contentProperty = new XamlMember(typeof(Button).GetProperty("Content"), _context);
+
+            _xamlWriter.WriteStartObject(buttonType);
+
+            //Content 
+            _xamlWriter.WriteStartMember(contentProperty);
+            _xamlWriter.WriteValue(uiButton.Text.ToString(CultureInfo.InvariantCulture));
+            _xamlWriter.WriteEndMember();
+
+            _xamlWriter.WriteEndObject();
         }
 
         private void VisitCheckBoxNode(UICheckBox uiCheckBox, StringWriter sw)
@@ -87,8 +141,9 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteStartMember(contentProperty);
             foreach (var node in uiTab.Childs)
             {
-                VisitNode((UINode)node, sw);
+                VisitNode((UINode) node, sw);
             }
+
             _xamlWriter.WriteEndMember();
 
             _xamlWriter.WriteEndObject();
@@ -106,8 +161,9 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteStartMember(itemsProperty);
             foreach (var node in uiTabControl.Childs)
             {
-                VisitNode((UINode)node, sw);
+                VisitNode((UINode) node, sw);
             }
+
             _xamlWriter.WriteEndMember();
 
             _xamlWriter.WriteEndObject();
@@ -150,7 +206,7 @@ namespace ZenPlatform.UIBuilder.Compilers
 
             foreach (var node in uiGroup.Childs)
             {
-                VisitNode((UINode)node, sw);
+                VisitNode((UINode) node, sw);
             }
 
             _xamlWriter.WriteEndMember();
@@ -207,7 +263,7 @@ namespace ZenPlatform.UIBuilder.Compilers
 
             foreach (var node in uiWindow.Childs)
             {
-                VisitNode((UINode)node, sw);
+                VisitNode((UINode) node, sw);
             }
 
             _xamlWriter.WriteEndMember();

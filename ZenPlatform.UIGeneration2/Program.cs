@@ -7,6 +7,7 @@ using Avalonia.Logging.Serilog;
 using Avalonia.Markup.Xaml;
 using ZenPlatform.UIBuilder.Compilers;
 using ZenPlatform.UIBuilder.Interface;
+using ZenPlatform.UIBuilder.Interface.DataGrid;
 
 namespace ZenPlatform.UIBuilder
 {
@@ -24,17 +25,20 @@ namespace ZenPlatform.UIBuilder
                         .With(gi => gi.TextBox())
                         .With(l => l.Label("Привет!"))
                         .With(f => f.CheckBox("Is nullable"))
+                        .With(f => f.Button("Нажми меня"))
+                        .With(new UIDataGrid().WithColumn(f=>f.Column())
+                            .WithColumn(f=>f.Column())
+                            .WithColumn(f=>f.Column()))
                         .With(tc => tc.TabControl().WithTab(t =>
                             {
                                 t.Header = "First";
                                 t.With(f => f.Label("This is tab 1"));
                             })
-                                                   .WithTab(t =>
+                            .WithTab(t =>
                             {
                                 t.Header = "Second";
                                 t.With(f => f.Label("This is tab 2"));
                             })))
-
                     .With(g => g.Group(UIGroupOrientation.Vertical).With(gi => gi.TextBox())));
 
             //window.With(x => x.Group(UIGroupOrientation.Vertical).With(g => g.TextBox()));

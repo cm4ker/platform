@@ -9,13 +9,4 @@
 
         public string Text { get; set; }
     }
-
-
-    public class UIButton : UINode
-    {
-        public UIButton()
-        {
-
-        }
-    }
 }
