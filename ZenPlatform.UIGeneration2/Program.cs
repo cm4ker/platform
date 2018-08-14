@@ -21,7 +21,20 @@ namespace ZenPlatform.UIBuilder
                 x.Group(UIGroupOrientation.Horizontal)
                     .With(g => g.Group(UIGroupOrientation.Horizontal)
                         .With(gi => gi.TextBox())
-                        .With(gi => gi.TextBox()))
+                        .With(gi => gi.TextBox())
+                        .With(l => l.Label("Привет!"))
+                        .With(f => f.CheckBox("Is nullable"))
+                        .With(tc => tc.TabControl().WithTab(t =>
+                            {
+                                t.Header = "First";
+                                t.With(f => f.Label("This is tab 1"));
+                            })
+                                                   .WithTab(t =>
+                            {
+                                t.Header = "Second";
+                                t.With(f => f.Label("This is tab 2"));
+                            })))
+
                     .With(g => g.Group(UIGroupOrientation.Vertical).With(gi => gi.TextBox())));
 
             //window.With(x => x.Group(UIGroupOrientation.Vertical).With(g => g.TextBox()));
