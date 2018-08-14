@@ -1,4 +1,5 @@
 ﻿using Avalonia.Input;
+using ReactiveUI;
 
 namespace ZenPlatform.ServerManagementTool.ViewModels
 {
@@ -7,7 +8,6 @@ namespace ZenPlatform.ServerManagementTool.ViewModels
         public MainWindowViewModel()
         {
         }
-
 
         public string Text => "Hello ";
     }

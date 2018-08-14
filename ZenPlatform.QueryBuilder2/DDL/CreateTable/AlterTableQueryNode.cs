@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.From;
-using ZenPlatform.QueryBuilder2.DML.Select;
+using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Common.Columns;
+using ZenPlatform.QueryBuilder.Common.Factoryes;
+using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
+namespace ZenPlatform.QueryBuilder.DDL.CreateTable
 {
     public class AlterTableQueryNode : SqlNode
     {
@@ -20,24 +22,31 @@ namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
                 Tokens.SpaceToken);
         }
 
-        public void AlterColumn(string columnName, Func<TypeDefinitionFactory, TypeDefinitionNode> typeOption)
+        public AlterTableQueryNode AlterColumn(string columnName,
+            Func<TypeDefinitionFactory, TypeDefinitionNode> typeOption)
         {
             ColumnDefinitionNode col = new ColumnDefinitionNode(columnName);
             col.WithType(typeOption);
             Childs.AddRange(Tokens.AlterToken, Tokens.SpaceToken, Tokens.ColumnToken, Tokens.SpaceToken, col);
+            return this;
+            return this;
         }
 
-        public void AddColumn(string columnName, Func<TypeDefinitionFactory, TypeDefinitionNode> typeOption)
+        public AlterTableQueryNode AddColumn(string columnName,
+            Func<TypeDefinitionFactory, TypeDefinitionNode> typeOption)
         {
             ColumnDefinitionNode col = new ColumnDefinitionNode(columnName);
             col.WithType(typeOption);
             Childs.AddRange(Tokens.AddToken, Tokens.SpaceToken, col);
+            return this;
         }
 
-        public void DropColumn(string columnName)
+        public AlterTableQueryNode DropColumn(string columnName)
         {
             Childs.AddRange(Tokens.DropToken, Tokens.SpaceToken, Tokens.ColumnToken, Tokens.SpaceToken,
                 new IdentifierNode(columnName));
+
+            return this;
         }
     }
 }

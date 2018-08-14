@@ -13,8 +13,10 @@ namespace ZenPlatform.Contracts.Data
 
         string Name { get; }
         string Version { get; }
+
         IEntityManager Manager { get; }
         IEntityGenerator Generator { get; }
-        Dictionary<string, ObjectCache> Caches { get; }
+
+
     }
 }

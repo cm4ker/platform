@@ -1,10 +1,11 @@
 ﻿using System;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.From;
-using ZenPlatform.QueryBuilder2.DML.Select;
-using ZenPlatform.QueryBuilder2.DML.Where;
+using ZenPlatform.QueryBuilder.Common.Factoryes;
+using ZenPlatform.QueryBuilder.DML.From;
+using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.QueryBuilder.DML.Where;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.Delete
+namespace ZenPlatform.QueryBuilder.DML.Delete
 {
     public class DeleteQueryNode : SqlNode
     {
@@ -18,7 +19,7 @@ namespace ZenPlatform.QueryBuilder2.DML.Delete
             _where = new WhereNode();
             _from = new FromNode();
 
-            Childs.AddRange(new SqlNode[] {_delete, _from, _where});
+            Childs.AddRange(new Node[] {_delete, _from, _where});
         }
 
         public DeleteQueryNode Delete(string tableName)
@@ -27,9 +28,9 @@ namespace ZenPlatform.QueryBuilder2.DML.Delete
             return this;
         }
 
-        public DeleteQueryNode Delete(Func<NodeFactory, AliasedTableNode> exp)
+        public DeleteQueryNode Delete(Func<SqlNodeFactory, AliasedTableNode> exp)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _delete.Add(exp(factory));
             return this;
         }
@@ -70,30 +71,30 @@ namespace ZenPlatform.QueryBuilder2.DML.Delete
             return this;
         }
 
-        public DeleteQueryNode Where(Func<NodeFactory, SqlNode> f1, string operation, Func<NodeFactory, SqlNode> f2)
+        public DeleteQueryNode Where(Func<SqlNodeFactory, SqlNode> f1, string operation, Func<SqlNodeFactory, SqlNode> f2)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new BinaryWhereNode(f1(factory), operation, f2(factory)));
             return this;
         }
 
-        public DeleteQueryNode WhereIsNull(Func<NodeFactory, SqlNode> fieldExp)
+        public DeleteQueryNode WhereIsNull(Func<SqlNodeFactory, Node> fieldExp)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new IsNullWhereNode(fieldExp(factory)));
             return this;
         }
 
-        public DeleteQueryNode WhereLike(Func<NodeFactory, SqlNode> fieldExp, string pattern)
+        public DeleteQueryNode WhereLike(Func<SqlNodeFactory, SqlNode> fieldExp, string pattern)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new LikeWhereNode(fieldExp(factory), new StringLiteralNode(pattern)));
             return this;
         }
 
-        public DeleteQueryNode WhereIn(Func<NodeFactory, SqlNode> fieldExp, Func<NodeFactory, SqlNode> fieldExp2)
+        public DeleteQueryNode WhereIn(Func<SqlNodeFactory, SqlNode> fieldExp, Func<SqlNodeFactory, SqlNode> fieldExp2)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));
             return this;
         }

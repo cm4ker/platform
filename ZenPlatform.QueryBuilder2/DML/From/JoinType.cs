@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.QueryBuilder2.DML.From
+﻿namespace ZenPlatform.QueryBuilder.DML.From
 {
     public enum JoinType
     {

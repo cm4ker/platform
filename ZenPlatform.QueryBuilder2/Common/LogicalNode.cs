@@ -1,4 +1,6 @@
-﻿namespace ZenPlatform.QueryBuilder2.Common
+﻿using ZenPlatform.Shared.Tree;
+
+namespace ZenPlatform.QueryBuilder.Common
 {
     public class LogicalNode : SqlNode
     {

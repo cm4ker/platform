@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Data
 {
@@ -11,14 +12,14 @@ namespace ZenPlatform.Data
     /// </summary>
     public class DataContext : IDisposable
     {
-        private readonly SqlConnection _connection;
-        private SqlTransaction _activeTransaction;
+        private readonly DbConnection _connection;
+        private DbTransaction _activeTransaction;
         private readonly IsolationLevel _isolationLevel;
         private int _tranCount;
 
-        public DataContext(string connectionString)
+        public DataContext(SqlDatabaseType compilerType, string connectionString)
         {
-            _connection = new SqlConnection(connectionString);
+            _connection = DatabaseFactory.Get(compilerType, connectionString);
             _connection.Open();
             _isolationLevel = IsolationLevel.Snapshot;
         }
@@ -59,7 +60,7 @@ namespace ZenPlatform.Data
 
             return cmd;
         }
-        
+
         public void Dispose()
         {
             _connection.Close();

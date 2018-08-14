@@ -1,7 +1,7 @@
 using System;
-using ZenPlatform.QueryBuilder2.DML.From;
+using ZenPlatform.QueryBuilder.DML.From;
 
-namespace ZenPlatform.QueryBuilder2.DML.Select
+namespace ZenPlatform.QueryBuilder.DML.Select
 {
     public partial class SelectQueryNode
     {
@@ -42,4 +42,6 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             return Join(joinType, queryNode, nastedQueryOptions, joinOptions);
         }
     }
+    
+    
 }

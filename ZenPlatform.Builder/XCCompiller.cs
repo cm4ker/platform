@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
+using ZenPlatform.Configuration.Structure;
 
-namespace ZenPlatform.Builder
+namespace ZenPlatform.Cli
 {
     public class XCCompiller
     {
@@ -42,11 +41,16 @@ namespace ZenPlatform.Builder
 
             foreach (var c in _root.Data.Components)
             {
-                var files = c.ComponentImpl.Generator.GenerateFilesFromComponent();
+                var files = c.ComponentImpl.Generator.GenerateSourceFiles();
 
                 foreach (var file in files)
                 {
                     sources.Add(SyntaxFactory.ParseSyntaxTree(file.Value, new CSharpParseOptions()));
+                    using (var sw = new StreamWriter(file.Key))
+                    {
+                        sw.WriteLine(file.Value);
+                    }
+
                 }
 
                 references.Add(MetadataReference.CreateFromFile(c.ComponentAssembly.Location));

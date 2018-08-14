@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
+using Npgsql;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Data
 {
@@ -92,6 +95,30 @@ namespace ZenPlatform.Data
             }
 
             return RetVal;
+        }
+    }
+
+
+    /// <summary>
+    /// фабрика базы данных 
+    /// </summary>
+    public static class DatabaseFactory
+    {
+        /// <summary>
+        /// Получить базу данных по её типу
+        /// </summary>
+        /// <param name="dbType">Тип базы данных</param>
+        /// <param name="connectionString">Строка подключения</param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException">В случае если тип базы данных не поддерживается, значит выбрасывается этот тип исключения</exception>
+        public static DbConnection Get(SqlDatabaseType dbType, string connectionString)
+        {
+            switch (dbType)
+            {
+                case SqlDatabaseType.Postgres: return new NpgsqlConnection(connectionString);
+                case SqlDatabaseType.SqlServer: return new SqlConnection(connectionString);
+                default: throw new NotSupportedException();
+            }
         }
     }
 }

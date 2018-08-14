@@ -1,12 +1,13 @@
 ﻿using System;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.From;
-using ZenPlatform.QueryBuilder2.DML.GroupBy;
-using ZenPlatform.QueryBuilder2.DML.Having;
-using ZenPlatform.QueryBuilder2.DML.Where;
-using ZenPlatform.QueryBuilder2.ParenChildCollection;
+using ZenPlatform.QueryBuilder.Common.Factoryes;
+using ZenPlatform.QueryBuilder.DML.From;
+using ZenPlatform.QueryBuilder.DML.GroupBy;
+using ZenPlatform.QueryBuilder.DML.Having;
+using ZenPlatform.QueryBuilder.DML.Where;
+using ZenPlatform.Shared.ParenChildCollection;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.Select
+namespace ZenPlatform.QueryBuilder.DML.Select
 {
     public partial class SelectQueryNode : SqlNode, ISelectQuery
     {
@@ -15,12 +16,7 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
         private HavingNode _having;
         private GroupByNode _groupBy;
         private FromNode _from;
-        private SqlNode _whereNode;
-        private SqlNode _fromNode;
-        private SqlNode _groupByNode;
-        private SqlNode _havingNode;
-        private SqlNode _selectNode;
-
+        private TopNode _top;
 
         public SelectQueryNode()
         {
@@ -29,13 +25,12 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             _having = new HavingNode();
             _groupBy = new GroupByNode();
             _from = new FromNode();
-
-            Childs.AddRange(new SqlNode[] {_select, _from, _where, _groupBy, _having});
         }
 
         public SelectQueryNode WithTop(int count)
         {
-            _select.WithTop(count);
+            _top = new TopNode(count);
+
             return this;
         }
 
@@ -109,30 +104,31 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             return this;
         }
 
-        public SelectQueryNode Where(Func<NodeFactory, SqlNode> f1, string operation, Func<NodeFactory, SqlNode> f2)
+        public SelectQueryNode Where(Func<SqlNodeFactory, SqlNode> f1, string operation,
+            Func<SqlNodeFactory, SqlNode> f2)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new BinaryWhereNode(f1(factory), operation, f2(factory)));
             return this;
         }
 
-        public SelectQueryNode WhereIsNull(Func<NodeFactory, SqlNode> fieldExp)
+        public SelectQueryNode WhereIsNull(Func<SqlNodeFactory, SqlNode> fieldExp)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new IsNullWhereNode(fieldExp(factory)));
             return this;
         }
 
-        public SelectQueryNode WhereLike(Func<NodeFactory, SqlNode> fieldExp, string pattern)
+        public SelectQueryNode WhereLike(Func<SqlNodeFactory, SqlNode> fieldExp, string pattern)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new LikeWhereNode(fieldExp(factory), new StringLiteralNode(pattern)));
             return this;
         }
 
-        public SelectQueryNode WhereIn(Func<NodeFactory, SqlNode> fieldExp, Func<NodeFactory, SqlNode> fieldExp2)
+        public SelectQueryNode WhereIn(Func<SqlNodeFactory, SqlNode> fieldExp, Func<SqlNodeFactory, SqlNode> fieldExp2)
         {
-            var factory = new NodeFactory();
+            var factory = new SqlNodeFactory();
             _where.Add(new InWhereNode(fieldExp(factory), fieldExp2(factory)));
             return this;
         }
@@ -141,26 +137,32 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
 
         #region ISelectQuery
 
-        SqlNode ISelectQuery.WhereNode => _whereNode;
+        WhereNode ISelectQuery.WhereNode => _where;
 
-        SqlNode ISelectQuery.FromNode => _fromNode;
+        FromNode ISelectQuery.FromNode => _from;
 
-        SqlNode ISelectQuery.GroupByNode => _groupByNode;
+        GroupByNode ISelectQuery.GroupByNode => _groupBy;
 
-        SqlNode ISelectQuery.HavingNode => _havingNode;
+        HavingNode ISelectQuery.HavingNode => _having;
 
-        SqlNode ISelectQuery.SelectNode => _selectNode;
+        SelectNode ISelectQuery.SelectNode => _select;
+
+        TopNode ISelectQuery.TopNode => _top;
 
         #endregion
     }
 
 
-    public interface ISelectQuery : IChildItem<SqlNode>, IParentItem<SqlNode, SqlNode>
+    /// <summary>
+    /// Интерфейс для доступа к частям инструкции SELECT
+    /// </summary>
+    public interface ISelectQuery : IChildItem<Node>, IParentItem<Node, Node>
     {
-        SqlNode WhereNode { get; }
-        SqlNode FromNode { get; }
-        SqlNode GroupByNode { get; }
-        SqlNode HavingNode { get; }
-        SqlNode SelectNode { get; }
+        WhereNode WhereNode { get; }
+        FromNode FromNode { get; }
+        GroupByNode GroupByNode { get; }
+        HavingNode HavingNode { get; }
+        SelectNode SelectNode { get; }
+        TopNode TopNode { get; }
     }
 }

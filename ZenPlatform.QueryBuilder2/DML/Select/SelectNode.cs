@@ -1,29 +1,17 @@
 ﻿using System;
-using System.Runtime.Serialization;
-using System.Security;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DDL.CreateTable;
-using ZenPlatform.QueryBuilder2.ParenChildCollection;
+using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.Shared.ParenChildCollection;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.Select
+namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class SelectNode : SqlNode, ISelect
+    public class SelectNode : SqlNode
     {
         public bool HasFields = false;
-        public TopNode _top;
 
         public SelectNode()
         {
-            Childs.Add(Tokens.SelectToken);
-            Childs.Add(Tokens.SpaceToken);
-        }
-
-        public SelectNode WithTop(int count)
-        {
-            _top = new TopNode(count);
-            Childs.Insert(2, _top);
-
-            return this;
         }
 
         public SelectNode Select(string fieldName)
@@ -72,13 +60,5 @@ namespace ZenPlatform.QueryBuilder2.DML.Select
             else
                 HasFields = true;
         }
-
-        SqlNode ISelect.TopNode => _top;
-    }
-
-
-    public interface ISelect : IChildItem<SqlNode>, IParentItem<SqlNode, SqlNode>
-    {
-        SqlNode TopNode { get; }
     }
 }

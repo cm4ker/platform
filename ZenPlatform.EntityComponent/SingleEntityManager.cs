@@ -1,5 +1,6 @@
 ﻿using System;
 using ZenPlatform.Core;
+using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.EntityComponent.Configuration;
 
@@ -25,9 +26,9 @@ namespace ZenPlatform.EntityComponent
             return type.BaseType == typeof(SingleEntity);
         }
 
-        public SingleEntity Create(Session session, Type entityType)
+        public SingleEntity Create(UserSession session, Type entityType)
         {
-            var def = session.Environment.GetMetadata(entityType);
+            var def = session.GetMetadata(entityType);
 
             if (!CheckType(def.EntityType)) throw new Exception($"Wrong manager for entity type: {def.EntityType}");
 
@@ -39,20 +40,20 @@ namespace ZenPlatform.EntityComponent
         }
 
 
-        public void Save(Session session, SingleEntity entity)
+        public void Save(UserSession session, SingleEntity entity)
         {
-            var def = session.Environment.GetMetadata(entity.GetType());
+            var def = session.GetMetadata(entity.GetType());
         }
 
-        private SingleEntity CreateEntityFromDto(Session session, Type entityType, object dto)
+        private SingleEntity CreateEntityFromDto(UserSession session, Type entityType, object dto)
         {
             var document = Activator.CreateInstance(entityType, session, dto) as SingleEntity;
             return document;
         }
 
-        public SingleEntity Load(Session session, Type entityType, object key)
+        public SingleEntity Load(UserSession session, Type entityType, object key)
         {
-            var def = session.Environment.GetMetadata(entityType);
+            var def = session.GetMetadata(entityType);
 
             var dto = LoadDtoObject(session, def.DtoType, key);
 
@@ -66,21 +67,21 @@ namespace ZenPlatform.EntityComponent
         /// <param name="type">Тип Entity от DTO, которого хотим загрузить</param>
         /// <param name="key">Ключ</param>
         /// <returns></returns>
-        public object LoadDtoObject(Session session, Type type, object key)
+        public object LoadDtoObject(UserSession session, Type type, object key)
         {
             // Получить контекс данных 
-            var context = session.DataContextManger.GetContext();
+            var context = session.GetDataContext();
 
-            var def = session.Environment.GetMetadata(type);
+            var def = session.GetMetadata(type);
 
-            var conf = def.EntityConfig as Configuration.SingleEntity;
+            var conf = def.EntityConfig as Configuration.XCSingleEntity;
 
-            var dto = def.EntityConfig.Parent.ComponentImpl.Caches[def.EntityConfig.Name].Get(key.ToString());
+            //var dto = def.EntityConfig.Parent.ComponentImpl.Caches[def.EntityConfig.Name].Get(key.ToString());
 
-            if (dto != null)
-                return dto;
+            // if (dto != null)
+            //    return dto;
 
-            var q = new Query();
+            var q = new QueryBuilder.DML.Select.SelectQueryNode();
 
             q.From(conf.RelTableName);
             q.Select("*");
@@ -93,11 +94,11 @@ namespace ZenPlatform.EntityComponent
             return null;
         }
 
-        public void Delete(Session session, SingleEntity entity)
+        public void Delete(UserSession session, SingleEntity entity)
         {
         }
 
-        public object GetKey(Session session, SingleEntity entity)
+        public object GetKey(UserSession session, SingleEntity entity)
         {
             throw new NotImplementedException();
         }
@@ -107,11 +108,11 @@ namespace ZenPlatform.EntityComponent
     public class DocumentEntityManager<T> where T : SingleEntity
     {
         private SingleEntityManager _singleEntityManager;
-        private Session _session;
+        private UserSession _session;
 
-        public DocumentEntityManager(Session session)
+        public DocumentEntityManager(UserSession session)
         {
-            _singleEntityManager = session.Environment.GetManager(typeof(T)) as SingleEntityManager;
+            _singleEntityManager = session.GetManager(typeof(T)) as SingleEntityManager;
             _session = session;
         }
 

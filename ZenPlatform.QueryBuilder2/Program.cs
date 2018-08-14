@@ -1,19 +1,13 @@
 ﻿using System;
-using System.ComponentModel.Design;
-using System.Data;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml.Serialization;
-using ZenPlatform.QueryBuilder2.DDL.CreateTable;
-using ZenPlatform.QueryBuilder2.DML.Delete;
-using ZenPlatform.QueryBuilder2.DML.From;
-using ZenPlatform.QueryBuilder2.DML.Insert;
-using ZenPlatform.QueryBuilder2.DML.Select;
-using ZenPlatform.QueryBuilder2.DML.Update;
+using ZenPlatform.QueryBuilder.DDL.CreateTable;
+using ZenPlatform.QueryBuilder.DML.Delete;
+using ZenPlatform.QueryBuilder.DML.From;
+using ZenPlatform.QueryBuilder.DML.Insert;
+using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.QueryBuilder.DML.Update;
 
-namespace ZenPlatform.QueryBuilder2
+namespace ZenPlatform.QueryBuilder
 {
     class Program
     {
@@ -61,7 +55,7 @@ namespace ZenPlatform.QueryBuilder2
 
             var a = new AlterTableQueryNode("someAlterTable", t => t.WithSchema("dbo"));
             a.AddColumn("ТристаОтсосиУТракториста", f => f.Guid().NotNull());
-           
+
             var sb = new StringBuilder();
             c.Compile(q, sb);
             sb.Append("\n=============================\n");
@@ -78,5 +72,13 @@ namespace ZenPlatform.QueryBuilder2
             Console.WriteLine(sb);
             Console.ReadLine();
         }
+    }
+
+    public enum SqlDatabaseType
+    {
+        SqlServer,
+        Postgres,
+        MySql,
+        Oracle
     }
 }

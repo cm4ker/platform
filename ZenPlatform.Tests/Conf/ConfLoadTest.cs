@@ -5,23 +5,23 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
-using ZenPlatform.Builder;
+using ZenPlatform.Cli;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.ConfigurationLoader;
-using ZenPlatform.Configuration.ConfigurationLoader.XmlConfiguration;
-using ZenPlatform.DocumentComponent.Configuration;
+using ZenPlatform.Configuration.Structure;
+
 
 namespace ZenPlatform.Tests.Conf
 {
     [TestClass]
     public class ConfLoadTest
     {
-        private const string ConfigurationPath = "./Configuration";
+        private const string ConfigurationPath = "../../../../Build/Debug/ExampleConfiguration/Configuration";
 
         [TestMethod]
         public void RootLoad()
         {
-            var conf = XCRoot.Load(Path.Combine(ConfigurationPath, "Project1.xml"));
+            var conf = XCRoot.Load(new XCFileSystemStorage(ConfigurationPath, "Project.xml"));
 
             //using (var tr = new StreamReader(Path.Combine(ConfigurationPath, "Project1.xml")))
             //{
@@ -35,12 +35,6 @@ namespace ZenPlatform.Tests.Conf
             Assert.AreEqual("0.0.0.1 Alpha", conf.ProjectVersion);
 
             Assert.IsNotNull(conf.Data);
-
-            Assert.IsNotNull(conf.Data.Components);
-
-            XCCompiller c = new XCCompiller(conf, "./");
-
-            c.Build();
         }
 
         [TestMethod]
@@ -48,6 +42,23 @@ namespace ZenPlatform.Tests.Conf
         {
             //            ConfigurationLoader cl = new ConfigurationLoader(Path.Combine(ConfigurationPath, "Project1.xml"));
             //            var root = cl.Load();
+        }
+
+        [TestMethod]
+        public void RootSaveLoadTest()
+        {
+            var conf = XCRoot.Create("TestProject");
+
+            var xml = conf.Serialize();
+
+            using (var sw = new StreamWriter("xml.xml"))
+            {
+                sw.Write(xml);
+            }
+
+            var restoredConf = XCHelper.Deserialize<XCRoot>(xml);
+
+            Assert.AreEqual("TestProject", restoredConf.ProjectName);
         }
     }
 }

@@ -1,8 +1,12 @@
 ﻿using System;
-using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.From;
+using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Common.Factoryes;
+using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.QueryBuilder.Common.Table;
+using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DDL.CreateTable
+namespace ZenPlatform.QueryBuilder.DDL.CreateTable
 {
     public class CreateTableQueryNode : SqlNode
     {

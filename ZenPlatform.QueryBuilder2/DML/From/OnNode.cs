@@ -1,13 +1,13 @@
-﻿using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.Select;
+﻿using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.From
+namespace ZenPlatform.QueryBuilder.DML.From
 {
     public class OnNode : SqlNode
     {
         public OnNode(string tableName, string fieldName, string condition, string tableName2, string fieldName2)
         {
-            Childs.AddRange(new SqlNode[]
+            Childs.AddRange(new Node[]
             {
                 new IdentifierNode(tableName),
                 new SchemaSeparatorNode(),

@@ -1,12 +1,12 @@
-﻿using ZenPlatform.QueryBuilder2.Common;
-using ZenPlatform.QueryBuilder2.DML.Select;
+﻿using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder2.DML.Where
+namespace ZenPlatform.QueryBuilder.DML.Where
 {
     public class LikeWhereNode : WhereExpression
     {
-        public SqlNode Expression { get; }
-        public SqlNode Pattern { get; }
+        public Node Expression { get; }
+        public Node Pattern { get; }
 
         public LikeWhereNode(SqlNode expression, SqlNode pattern)
         {

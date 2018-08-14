@@ -2,16 +2,20 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>../Build/Debug/ExampleConfiguration\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Folder Include="Configuration\Components\" />
     <Folder Include="Configuration\Interface" />
     <Folder Include="Configuration\Roles" />
   </ItemGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Builder.csproj" />
-    <ProjectReference Include="..\ZenPlatform.DocumentComponent\ZenPlatform.DocumentComponent.csproj">
-      <Private>true</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Cli.csproj" />
+    <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Configuration\Data\AccumulateRegister\ОстатокНаСкладе.xml">
@@ -35,6 +39,18 @@
     <None Update="Configuration\Data\Documents\УтеряКниги.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Configuration\Data\Entites\TestEntity.PickForm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Entites\TestEntity.ListForm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Entites\TestEntity.From.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Entites\TestEntity.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Configuration\Data\InfoRegister\ИсторияВыдачиКниг.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -47,7 +63,7 @@
     <None Update="Configuration\Data\References\Книга.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\Project1.xml">
+    <None Update="Configuration\Project.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\Roles\Директор.xml">
