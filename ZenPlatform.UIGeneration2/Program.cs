@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Xml.Serialization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Logging.Serilog;
@@ -52,8 +53,7 @@ namespace ZenPlatform.UIBuilder
             Window w = AvaloniaXamlLoader.Parse<Window>(text);
 
             appBuilder.Instance.Run(w);
-
-
+            
             w.ShowDialog();
         }
 
