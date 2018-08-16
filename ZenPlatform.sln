@@ -85,6 +85,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Controls.Avalon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Controls.WPF", "ZenPlatform.Controls.WPF\ZenPlatform.Controls.WPF.csproj", "{DF5CF55E-EC34-48EF-8E45-333C706880D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Pidl", "ZenPlatform.Pidl\ZenPlatform.Pidl.csproj", "{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -365,6 +367,14 @@ Global
 		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|x86.ActiveCfg = Release|Any CPU
 		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|x86.Build.0 = Release|Any CPU
+		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Debug|x86.Build.0 = Debug|Any CPU
+		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Release|x86.ActiveCfg = Release|Any CPU
+		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -392,6 +402,7 @@ Global
 		{380785DF-4024-4BDC-B411-5027E156A878} = {C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}
 		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24} = {3EE6451A-06AB-4635-BC3E-2CD05075D9A4}
 		{DF5CF55E-EC34-48EF-8E45-333C706880D6} = {3EE6451A-06AB-4635-BC3E-2CD05075D9A4}
+		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB} = {3EE6451A-06AB-4635-BC3E-2CD05075D9A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {638ACC20-65D6-41D3-8C17-1F9A1DF8B659}
