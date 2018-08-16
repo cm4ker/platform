@@ -17,41 +17,35 @@ namespace ZenPlatform.UIBuilder
         {
             var appBuilder = BuildAvaloniaApp().SetupWithoutStarting();
 
-
             var window = new UIWindow().With(x =>
-                x.Group(UIGroupOrientation.Horizontal)
-                    .With(g => g.Group(UIGroupOrientation.Horizontal)
-                        .With(gi => gi.TextBox())
-                        .With(gi => gi.TextBox())
-                        .With(l => l.Label("Привет!"))
-                        .With(f => f.CheckBox("Is nullable"))
-                        .With(f => f.Button("Нажми меня"))
-                        .With(new UIDataGrid().WithColumn(f=>f.Column())
-                            .WithColumn(f=>f.Column())
-                            .WithColumn(f=>f.Column()))
+                x.Group()
+                    .With(gi => gi.TextBox())
+                    .With(l => l.Label("Label component"))
+                        .With(f => f.CheckBox("Checkbox component"))
+                        .With(f => f.Button("Button component"))
+                        .With(new UIObjectPicker())
+                        .With(new UIDataGrid().WithColumn(f => f.Column())
+                                              .WithColumn(f => f.Column())
+                                              .WithColumn(f => f.Column()))
                         .With(tc => tc.TabControl().WithTab(t =>
                             {
-                                t.Header = "First";
-                                t.With(f => f.Label("This is tab 1"));
+                                t.Header = "Page 1";
+                                t.With(f => f.Label("This is content on page 1"));
                             })
                             .WithTab(t =>
                             {
-                                t.Header = "Second";
-                                t.With(f => f.Label("This is tab 2"));
-                            })))
-                    .With(g => g.Group(UIGroupOrientation.Vertical).With(gi => gi.TextBox())));
+                                t.Header = "Page 2";
+                                t.With(f => f.Label("This is content on page 2"));
+                            })));
 
-            //window.With(x => x.Group(UIGroupOrientation.Vertical).With(g => g.TextBox()));
-
-            window.Height = 100;
-            window.Width = 100;
+            window.Height = 400;
+            window.Width = 300;
 
             AvaloniaXamlUICompiler c = new AvaloniaXamlUICompiler();
 
             var sb = new StringBuilder();
             var sw = new StringWriter(sb);
             var text = c.Compile(window, sw);
-
 
             Console.WriteLine(text);
 
@@ -61,8 +55,6 @@ namespace ZenPlatform.UIBuilder
 
 
             w.ShowDialog();
-
-            //Console.Read();
         }
 
 

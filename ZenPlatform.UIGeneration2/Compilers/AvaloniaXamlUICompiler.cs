@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml;
 using Avalonia.Controls;
 using Portable.Xaml;
+using ZenPlatform.Controls.Avalonia;
 using ZenPlatform.Shared;
 using ZenPlatform.Shared.Tree;
 using ZenPlatform.UIBuilder.Interface;
@@ -52,7 +53,15 @@ namespace ZenPlatform.UIBuilder.Compilers
                 .CaseIs<UICheckBox>(i => VisitCheckBoxNode(i, sw))
                 .CaseIs<UIButton>(i => VisitButtonNode(i, sw))
                 .CaseIs<UIDataGrid>(i => VisitDataGridNode(i, sw))
-                .CaseIs<UIDataGridColumn>(i => VisitDataGridColumnNode(i, sw));
+                .CaseIs<UIDataGridColumn>(i => VisitDataGridColumnNode(i, sw))
+                .CaseIs<UIObjectPicker>(i => VisitObjectPicker(i, sw));
+        }
+
+        private void VisitObjectPicker(UIObjectPicker uiObjectPicker, StringWriter sw)
+        {
+            XamlType objectPickerType = new XamlType(typeof(ObjectPicker), _context);
+            _xamlWriter.WriteStartObject(objectPickerType);
+            _xamlWriter.WriteEndObject();
         }
 
         private void VisitDataGridColumnNode(UIDataGridColumn uiDataGridColumn, StringWriter sw)
@@ -62,12 +71,12 @@ namespace ZenPlatform.UIBuilder.Compilers
             var headerProperty = new XamlMember(typeof(DataGridTextColumn).GetProperty("Header"), _context);
 
             _xamlWriter.WriteStartObject(dataGridColumnType);
-            
+
             //Header 
             _xamlWriter.WriteStartMember(headerProperty);
             _xamlWriter.WriteValue("Test");
             _xamlWriter.WriteEndMember();
-            
+
             _xamlWriter.WriteEndObject();
         }
 
@@ -82,7 +91,7 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteStartMember(columnsProperty);
             foreach (var node in uiDataGrid.Childs)
             {
-                VisitNode((UINode) node, sw);
+                VisitNode((UINode)node, sw);
             }
 
             _xamlWriter.WriteEndMember();
@@ -141,7 +150,7 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteStartMember(contentProperty);
             foreach (var node in uiTab.Childs)
             {
-                VisitNode((UINode) node, sw);
+                VisitNode((UINode)node, sw);
             }
 
             _xamlWriter.WriteEndMember();
@@ -161,7 +170,7 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteStartMember(itemsProperty);
             foreach (var node in uiTabControl.Childs)
             {
-                VisitNode((UINode) node, sw);
+                VisitNode((UINode)node, sw);
             }
 
             _xamlWriter.WriteEndMember();
@@ -206,7 +215,7 @@ namespace ZenPlatform.UIBuilder.Compilers
 
             foreach (var node in uiGroup.Childs)
             {
-                VisitNode((UINode) node, sw);
+                VisitNode((UINode)node, sw);
             }
 
             _xamlWriter.WriteEndMember();
@@ -263,7 +272,7 @@ namespace ZenPlatform.UIBuilder.Compilers
 
             foreach (var node in uiWindow.Childs)
             {
-                VisitNode((UINode) node, sw);
+                VisitNode((UINode)node, sw);
             }
 
             _xamlWriter.WriteEndMember();

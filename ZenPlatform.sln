@@ -69,17 +69,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Initializer", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryUIBuilder", "ZenPlatform.QueryUIBuilder\ZenPlatform.QueryUIBuilder.csproj", "{D1D8377F-6FA1-4B09-BC43-D30758AF7103}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ConfigurationServer", "ZenPlatform.ConfigurationServer\ZenPlatform.ConfigurationServer.csproj", "{E38829E8-E501-4222-BB70-DA023F9BADD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConfigurationServer", "ZenPlatform.ConfigurationServer\ZenPlatform.ConfigurationServer.csproj", "{E38829E8-E501-4222-BB70-DA023F9BADD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ConfigurationServerClient", "ZenPlatform.ConfigurationServerClient\ZenPlatform.ConfigurationServerClient.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConfigurationServerClient", "ZenPlatform.ConfigurationServerClient\ZenPlatform.ConfigurationServerClient.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ConfigurationServerShared", "ZenPlatform.ConfigurationServerShared\ZenPlatform.ConfigurationServerShared.csproj", "{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConfigurationServerShared", "ZenPlatform.ConfigurationServerShared\ZenPlatform.ConfigurationServerShared.csproj", "{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.DataGrid", "DataGrid\src\Avalonia.DataGrid\Avalonia.DataGrid.csproj", "{9AFE8A3F-9432-4D2B-8C1B-B713A3AFCD81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avalonia.DataGrid", "DataGrid\src\Avalonia.DataGrid\Avalonia.DataGrid.csproj", "{9AFE8A3F-9432-4D2B-8C1B-B713A3AFCD81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.DataGrid.Themes.Default", "DataGrid\src\Avalonia.DataGrid.Themes.Default\Avalonia.DataGrid.Themes.Default.csproj", "{380785DF-4024-4BDC-B411-5027E156A878}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avalonia.DataGrid.Themes.Default", "DataGrid\src\Avalonia.DataGrid.Themes.Default\Avalonia.DataGrid.Themes.Default.csproj", "{380785DF-4024-4BDC-B411-5027E156A878}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Controls.Avalonia", "ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj", "{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Controls.WPF", "ZenPlatform.Controls.WPF\ZenPlatform.Controls.WPF.csproj", "{DF5CF55E-EC34-48EF-8E45-333C706880D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -345,6 +349,22 @@ Global
 		{380785DF-4024-4BDC-B411-5027E156A878}.Release|Any CPU.Build.0 = Release|Any CPU
 		{380785DF-4024-4BDC-B411-5027E156A878}.Release|x86.ActiveCfg = Release|Any CPU
 		{380785DF-4024-4BDC-B411-5027E156A878}.Release|x86.Build.0 = Release|Any CPU
+		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Debug|x86.Build.0 = Debug|Any CPU
+		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Release|x86.ActiveCfg = Release|Any CPU
+		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Release|x86.Build.0 = Release|Any CPU
+		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|x86.Build.0 = Debug|Any CPU
+		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|x86.ActiveCfg = Release|Any CPU
+		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -370,6 +390,8 @@ Global
 		{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1} = {9BC66EAE-D56B-4FCF-8C91-5332F97180D2}
 		{9AFE8A3F-9432-4D2B-8C1B-B713A3AFCD81} = {C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}
 		{380785DF-4024-4BDC-B411-5027E156A878} = {C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}
+		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24} = {3EE6451A-06AB-4635-BC3E-2CD05075D9A4}
+		{DF5CF55E-EC34-48EF-8E45-333C706880D6} = {3EE6451A-06AB-4635-BC3E-2CD05075D9A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {638ACC20-65D6-41D3-8C17-1F9A1DF8B659}
