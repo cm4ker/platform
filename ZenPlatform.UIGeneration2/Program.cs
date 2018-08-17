@@ -53,7 +53,7 @@ namespace ZenPlatform.UIBuilder
             Window w = AvaloniaXamlLoader.Parse<Window>(text);
 
             appBuilder.Instance.Run(w);
-            
+
             w.ShowDialog();
         }
 
