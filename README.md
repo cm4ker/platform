@@ -269,22 +269,23 @@ ALTER TABLE [dbo].[someAlterTable] ADD [SomeField] [uniqueidentifier] NOT NULL
 
 Для этого необходимо описать структуру и возможности. 
 
-Platform Interface Definition Language (PIDL)
+Platform Interface Definition Language (PIDL) 
+PIDL - это подмножество языка XAML. и обрабатывается он точно также
+
 Пример описания формы одного объекта:
 
 ```xml
 <!-- Поле "ТипДанных"(data_type) Представлены тут схематично. Это, конечно же, будет перечисление -->
-<form xmlns:table="TableExtension"
-        DataType="Document.ПриходнаяНакладная">
+<Form>
     
     <!-- Для фрагмента важно указать тип -->
-    <fragment Id="1" DataType="Document.ПриходнаяНакладная">
+    <Fragment Id="AB1A3649-53A6-4259-B746-6E7CEB79E7A3" DataType="AB1A3649-53A6-4259-B746-6E7CEB79E7A3">
         Здесь описание компонента
-    </fragment>
+    </Fragment>
 
     <!-- Помимо локальных фрагментов есть ещё глобальные фрагменты -->
 
-    <group>
+    <Group>
         <!--Где Height - это количество строк, которые умещаются в поле в высоту Width - количество символов-->
         <field Source="Комментарий" Height="1" Width="200" />
 
@@ -312,11 +313,11 @@ Platform Interface Definition Language (PIDL)
 
         <!--Автоматически будет сгенерировано поле даты и времени -->
         <field Source="ДатаДокумента" Enable="true" />
-    </group>
+    </Group>
 
-    <fragment_ref Id="1" /> <!-- А вот тут мы подключаем компоненет-->
+    <fragment_ref Id="AB1A3649-53A6-4259-B746-6E7CEB79E7A3" /> <!-- А вот тут мы подключаем компоненет-->
 
-    <fragment_ref Id="1" /> <!-- Мы можем ссылаться на 1 и тот же фрагмент сколько угодно раз-->
+    <fragment_ref Id="AB1A3649-53A6-4259-B746-6E7CEB79E7A3" /> <!-- Мы можем ссылаться на 1 и тот же фрагмент сколько угодно раз-->
 </form>
 ```
 
