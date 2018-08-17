@@ -2,4 +2,9 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Avalonia.Markup.Xaml">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\avalonia\0.6.2-build5192-beta\lib\netcoreapp2.0\Avalonia.Markup.Xaml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
