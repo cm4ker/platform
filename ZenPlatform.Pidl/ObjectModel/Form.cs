@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Serialization;
+﻿using System.Collections.Generic;
 using Portable.Xaml.Markup;
-using ZenPlatform.Pidl.ObjectModel;
 
 namespace ZenPlatform.Pidl.ObjectModel
 {
