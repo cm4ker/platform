@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Logging.Serilog;
 using Avalonia.Markup.Xaml;
+using Avalonia.Metadata;
 using ZenPlatform.UIBuilder.Compilers;
 using ZenPlatform.UIBuilder.Interface;
 using ZenPlatform.UIBuilder.Interface.DataGrid;
@@ -20,7 +21,12 @@ namespace ZenPlatform.UIBuilder
 
             var window = new UIWindow().With(x =>
                 x.Group()
-                    .With(gi => gi.TextBox())
+                    .With(gi =>
+                    {
+                        var tb = gi.TextBox();
+                        tb.DataSource = "Person";
+                        return tb;
+                    })
                     .With(l => l.Label("Label component"))
                         .With(f => f.CheckBox("Checkbox component"))
                         .With(f => f.Button("Button component"))
@@ -50,7 +56,9 @@ namespace ZenPlatform.UIBuilder
 
             Console.WriteLine(text);
 
+        
             Window w = AvaloniaXamlLoader.Parse<Window>(text);
+            w.DataContext = new { Person = "ФИО Человека" };
 
             appBuilder.Instance.Run(w);
 
