@@ -1,148 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Xml;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Context;
-using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Markup.Xaml.PortableXaml;
-using Avalonia.Markup.Xaml.Styling;
-using MonoMac.AppKit;
 using Portable.Xaml;
 using Portable.Xaml.Schema;
 using ZenPlatform.Controls.Avalonia;
 using ZenPlatform.Shared;
 using ZenPlatform.Shared.Tree;
+using ZenPlatform.UIBuilder.Compilers.Avalonia;
 using ZenPlatform.UIBuilder.Interface;
 using ZenPlatform.UIBuilder.Interface.DataGrid;
 
 namespace ZenPlatform.UIBuilder.Compilers
 {
-    public class AvaloniaCustomXamlSchemaContext : XamlSchemaContext
-    {
-        private readonly IRuntimeTypeProvider _provider;
-
-        public AvaloniaCustomXamlSchemaContext(IRuntimeTypeProvider provider)
-        {
-            _provider = provider;
-
-        }
-
-        private IRuntimeTypeProvider _avaloniaTypeProvider;
-
-        protected override XamlType GetXamlType(string xamlNamespace, string name, params XamlType[] typeArguments)
-        {
-            XamlType type = null;
-            try
-            {
-                type = ResolveXamlTypeName(xamlNamespace, name, typeArguments, false);
-
-                if (type == null)
-                {
-                    type = base.GetXamlType(xamlNamespace, name, typeArguments);
-                }
-            }
-            catch (Exception e)
-            {
-                //TODO: log or wrap exception
-                throw e;
-            }
-            return type;
-        }
-
-        private XamlType ResolveXamlTypeName(string xmlNamespace, string xmlLocalName, XamlType[] typeArguments, bool required)
-        {
-            Type[] genArgs = null;
-            if (typeArguments != null && typeArguments.Any())
-            {
-                genArgs = typeArguments.Select(t => t?.UnderlyingType).ToArray();
-
-                if (genArgs.Any(t => t == null))
-                {
-                    return null;
-                }
-            }
-
-            // MarkupExtension type could omit "Extension" part in XML name.
-            Type type = _avaloniaTypeProvider.FindType(xmlNamespace,
-                                                        xmlLocalName,
-                                                        genArgs) ??
-                        _avaloniaTypeProvider.FindType(xmlNamespace,
-                                                        xmlLocalName + "Extension",
-                                                        genArgs);
-
-            if (type != null)
-            {
-                Type extType;
-                if (_wellKnownExtensionTypes.TryGetValue(type, out extType))
-                {
-                    type = extType;
-                }
-            }
-
-            if (type == null)
-            {
-                //let's try the simple types
-                //in Portable xaml like xmlns:sys='clr-namespace:System;assembly=mscorlib'
-                //and sys:Double is not resolved properly
-
-                return base.GetXamlType(xmlNamespace, xmlLocalName);
-            }
-
-            return GetXamlType(type);
-        }
-
-        public override XamlType GetXamlType(Type type)
-        {
-            return GetAvaloniaXamlType(type) ?? base.GetXamlType(type);
-        }
-
-        private static readonly Dictionary<Type, Type> _wellKnownExtensionTypes = new Dictionary<Type, Type>()
-        {
-            { typeof(Binding), typeof(BindingExtension) },
-            { typeof(StyleInclude), typeof(StyleIncludeExtension) },
-        };
-
-        /*
-         * Если у типа уже есть аттрибут XmlnsDefinition на сборке, в таком случае необходимо использовать пространство имён из него
-         */
-
-        private XamlType GetAvaloniaXamlType(Type type)
-        {
-
-            //if type is extension get the original type to check
-            var origType = _wellKnownExtensionTypes.FirstOrDefault(v => v.Value == type).Key;
-
-            if (typeof(IBinding).GetTypeInfo().IsAssignableFrom((origType ?? type).GetTypeInfo()))
-            {
-                return new BindingXamlType(type, this);
-            }
-
-            if (origType != null ||
-                typeof(AvaloniaObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
-            {
-                return new AvaloniaXamlType(type, this);
-            }
-
-            return null;
-        }
-
-        public override IEnumerable<string> GetAllXamlNamespaces()
-        {
-            return base.GetAllXamlNamespaces();
-        }
-
-        public override bool TryGetCompatibleXamlNamespace(string xamlNamespace, out string compatibleNamespace)
-        {
-            return base.TryGetCompatibleXamlNamespace(xamlNamespace, out compatibleNamespace);
-        }
-    }
 
     public class AvaloniaXamlUICompiler
     {
@@ -358,8 +231,8 @@ namespace ZenPlatform.UIBuilder.Compilers
 
         private void VisitTextBoxNode(UITextBox uiTextBox, StringWriter sw)
         {
-            XamlType textBoxType = _context.GetXamlType(new XamlTypeName("https://github.com/avaloniaui", "TextBox"));
-            textBoxType.GetAllMembers();
+            XamlType textBoxType = _context.GetXamlType(typeof(TextBox));
+
             var heightProperty = textBoxType.GetMember("Height");//new XamlMember(typeof(TextBox).GetProperty("Height"), _context);
             var widthProperty = new XamlMember(typeof(TextBox).GetProperty("Width"), _context);
             var textProperty = new XamlMember(typeof(TextBox).GetProperty("Text"), _context);
@@ -379,21 +252,21 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteValue(uiTextBox.Width.ToString(CultureInfo.InvariantCulture));
             _xamlWriter.WriteEndMember();
 
-            //Text
-            if (!string.IsNullOrEmpty(uiTextBox.DataSource))
-            {
-                _xamlWriter.WriteStartMember(textProperty);
-                //{{Binding {uiTextBox.DataSource}}}
+            ////Text
+            //if (!string.IsNullOrEmpty(uiTextBox.DataSource))
+            //{
+            //    _xamlWriter.WriteStartMember(textProperty);
+            //    //{{Binding {uiTextBox.DataSource}}}
 
-                XamlType bindingXaml = _context.GetXamlType(typeof(Binding));
-                XamlMember pathProp = bindingXaml.GetMember("Path");//new XamlMember(typeof(Binding).GetProperty("Path"), _context);
-                _xamlWriter.WriteStartObject(bindingXaml);
-                _xamlWriter.WriteStartMember(pathProp);
-                _xamlWriter.WriteValue(uiTextBox.DataSource);
-                _xamlWriter.WriteEndMember();
-                _xamlWriter.WriteEndObject();
-                _xamlWriter.WriteEndMember();
-            }
+            //    XamlType bindingXaml = _context.GetXamlType(typeof(Binding));
+            //    XamlMember pathProp = bindingXaml.GetMember("Path");//new XamlMember(typeof(Binding).GetProperty("Path"), _context);
+            //    _xamlWriter.WriteStartObject(bindingXaml);
+            //    _xamlWriter.WriteStartMember(pathProp);
+            //    _xamlWriter.WriteValue(uiTextBox.DataSource);
+            //    _xamlWriter.WriteEndMember();
+            //    _xamlWriter.WriteEndObject();
+            //    _xamlWriter.WriteEndMember();
+            //}
 
             _xamlWriter.WriteEndObject();
         }
