@@ -7,11 +7,6 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Avalonia\src\Avalonia.Diagnostics\Avalonia.Diagnostics.csproj" />
-    <ProjectReference Include="..\Avalonia\src\Avalonia.DotNetCoreRuntime\Avalonia.DotNetCoreRuntime.csproj" />
-    <ProjectReference Include="..\Avalonia\src\Avalonia.Logging.Serilog\Avalonia.Logging.Serilog.csproj" />
-    <ProjectReference Include="..\Avalonia\src\Avalonia.ReactiveUI\Avalonia.ReactiveUI.csproj" />
-    <ProjectReference Include="..\Avalonia\src\Markup\Avalonia.Markup.Xaml\Avalonia.Markup.Xaml.csproj" />
     <ProjectReference Include="..\DataGrid\src\Avalonia.DataGrid.Themes.Default\Avalonia.DataGrid.Themes.Default.csproj" />
     <ProjectReference Include="..\DataGrid\src\Avalonia.DataGrid\Avalonia.DataGrid.csproj" />
     <ProjectReference Include="..\ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj" />
@@ -24,5 +19,10 @@
     <EmbeddedResource Include="MainWindow.xaml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.6.2-build6001-beta" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.6.2-build6001-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.6.2-build6001-beta" />
   </ItemGroup>
 </Project>
