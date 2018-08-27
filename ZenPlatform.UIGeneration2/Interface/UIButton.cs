@@ -9,4 +9,12 @@
 
         public string Text { get; set; }
     }
+
+    public class UIObjectPicker : UINode
+    {
+        public UIObjectPicker()
+        {
+
+        }
+    }
 }

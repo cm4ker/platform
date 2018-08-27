@@ -79,18 +79,4 @@ namespace ZenPlatform.ConfigurationServer
         [Key(2)]
         public XCRootViewModel SomeContet { get; set; }
     }
-
-
-    public class LocalFormater : IMessagePackFormatter<Node>
-    {
-        public int Serialize(ref byte[] bytes, int offset, Node value, IFormatterResolver formatterResolver)
-        {
-
-        }
-
-        public Node Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
-        {
-            throw new NotImplementedException();
-        }
-    }
 }
