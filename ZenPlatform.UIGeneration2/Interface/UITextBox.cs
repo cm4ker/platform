@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualBasic;
-using MonoMac.AVFoundation;
 
 namespace ZenPlatform.UIBuilder.Interface
 {
@@ -11,7 +10,7 @@ namespace ZenPlatform.UIBuilder.Interface
             Width = 100;
         }
 
-        public string BindingExpression { get; set; }
+        public string DataSource { get; set; }
 
         public double Height { get; set; }
 
