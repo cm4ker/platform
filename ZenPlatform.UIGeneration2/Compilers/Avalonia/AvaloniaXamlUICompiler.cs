@@ -257,11 +257,25 @@ namespace ZenPlatform.UIBuilder.Compilers
                 //{{Binding {uiTextBox.DataSource}}}
 
                 XamlType bindingXaml = _context.GetXamlType(typeof(Binding));
+
+                XamlNodeList list = new XamlNodeList(_context);
+                
+                
+                
                 XamlMember pathProp = bindingXaml.GetMember("Path");//new XamlMember(typeof(Binding).GetProperty("Path"), _context);
+                XamlMember modeProp = bindingXaml.GetMember("Mode");
                 _xamlWriter.WriteStartObject(bindingXaml);
+
+                //Path
                 _xamlWriter.WriteStartMember(pathProp);
                 _xamlWriter.WriteValue(uiTextBox.DataSource);
                 _xamlWriter.WriteEndMember();
+                
+                //Mode 
+                _xamlWriter.WriteStartMember(modeProp);
+                _xamlWriter.WriteValue("TwoWay");
+                _xamlWriter.WriteEndMember();
+
                 _xamlWriter.WriteEndObject();
                 _xamlWriter.WriteEndMember();
             }
