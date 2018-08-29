@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml.Context;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Markup.Xaml.PortableXaml;
 using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Metadata;
 using Portable.Xaml;
 
 namespace ZenPlatform.UIBuilder.Compilers.Avalonia
@@ -135,25 +136,28 @@ namespace ZenPlatform.UIBuilder.Compilers.Avalonia
             if (origType != null ||
                 typeof(AvaloniaObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
             {
-                return new AvaloniaXamlType(type, this);
+                return new MyXamlType(type, this);
             }
 
             return null;
         }
-
-        protected override Assembly OnAssemblyResolve(string assemblyName)
+        
+        public override ICollection<XamlType> GetAllXamlTypes(string xamlNamespace)
         {
-            return base.OnAssemblyResolve(assemblyName);
-        }
+            var asms = AppDomain.CurrentDomain.GetAssemblies();
+            var list = new List<XamlType>();
 
-        public override IEnumerable<string> GetAllXamlNamespaces()
-        {
-            return base.GetAllXamlNamespaces();
-        }
+            foreach (var asm in asms)
+            {
+                foreach (var attr in asm.GetCustomAttributes<XmlnsDefinitionAttribute>())
+                {
+                    foreach (var t in asm.GetExportedTypes())
+                        if (t.Namespace == attr.ClrNamespace && !t.GetTypeInfo().IsNested)
+                            list.Add(GetXamlType(t));
+                }
+            }
 
-        public override bool TryGetCompatibleXamlNamespace(string xamlNamespace, out string compatibleNamespace)
-        {
-            return base.TryGetCompatibleXamlNamespace(xamlNamespace, out compatibleNamespace);
+            return list;
         }
     }
 }

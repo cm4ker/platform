@@ -1,27 +1,9 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:ZenPlatform.ServerManagementTool.Views"
-        Title="Server management tool">
-  <StackPanel Orientation="Vertical">
-    <StackPanel.Children>
-      <TextBox Height="28" Width="100" Text="{Binding Path=Person}" />
-      <TextBlock Text="Label component" />
-      <CheckBox Content="Checkbox component" />
-      <Button Content="Button component" />
-      <TabControl>
-        <TabControl.Items>
-          <TabItem Header="Page 1">
-            <TabItem.Content>
-              <TextBlock Text="This is content on page 1" />
-            </TabItem.Content>
-          </TabItem>
-          <TabItem Header="Page 2">
-            <TabItem.Content>
-              <TextBlock Text="This is content on page 2" />
-            </TabItem.Content>
-          </TabItem>
-        </TabControl.Items>
-      </TabControl>
-    </StackPanel.Children>
-  </StackPanel>
+﻿<Window Height="400" Width="300" xmlns="https://github.com/avaloniaui">
+  <Window.Content>
+   <DataGrid xmlns="clr-namespace:Avalonia.Controls;assembly=Avalonia.DataGrid">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Test" />
+            </DataGrid.Columns>
+        </DataGrid>
+   </Window.Content>
 </Window>
