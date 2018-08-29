@@ -9,8 +9,9 @@ using Avalonia.Markup.Xaml.Context;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Markup.Xaml.PortableXaml;
 using Avalonia.Markup.Xaml.Styling;
-using Avalonia.Metadata;
 using Portable.Xaml;
+using Portable.Xaml.Markup;
+using XmlnsDefinitionAttribute = Avalonia.Metadata.XmlnsDefinitionAttribute;
 
 namespace ZenPlatform.UIBuilder.Compilers.Avalonia
 {
@@ -132,7 +133,7 @@ namespace ZenPlatform.UIBuilder.Compilers.Avalonia
             {
                 return new BindingXamlType(type, this);
             }
-
+            
             if (origType != null ||
                 typeof(AvaloniaObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
             {
