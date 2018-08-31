@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Xml.Serialization;
-using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Shared.ParenChildCollection;

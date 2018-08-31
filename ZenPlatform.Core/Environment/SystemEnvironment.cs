@@ -53,9 +53,9 @@ namespace ZenPlatform.Core.Environment
             var dbTypes = Configuration.Data.ComponentTypes;
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
-                x => new {component = x.Parent, old = x, actual = default(XCObjectTypeBase)},
-                x => new {component = x.Parent, old = default(XCObjectTypeBase), actual = x},
-                (x, y) => new {component = x.Parent, old = x, actual = y});
+                x => new { component = x.Parent, old = x, actual = default(XCObjectTypeBase) },
+                x => new { component = x.Parent, old = default(XCObjectTypeBase), actual = x },
+                (x, y) => new { component = x.Parent, old = x, actual = y });
 
             foreach (var type in types)
             {
