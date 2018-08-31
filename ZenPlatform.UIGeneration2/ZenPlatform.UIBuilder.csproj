@@ -21,7 +21,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.6.2-build6001-beta" />
+    <PackageReference Include="Avalonia" Version="0.6.2-build6028-beta" />
     <PackageReference Include="Avalonia.Desktop" Version="0.6.2-build6001-beta" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.6.2-build6001-beta" />
   </ItemGroup>
