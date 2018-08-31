@@ -18,7 +18,7 @@ namespace ZenPlatform.Cli
     {
         /*
          * Для тулзы будут доступны следующие режимы
-         *
+         * 
          * zenbuilder build "project filename"
          *
          * zenbuilder deploy "project filename" server "address" port "port" user "userName" password "password"
@@ -32,7 +32,7 @@ namespace ZenPlatform.Cli
         public static int Build(params string[] args)
         {
             var app = new CommandLineApplication();
-
+            
             app.HelpOption("-h|--help");
 
             var optionVersion = app.Option("-v|--version", "Version of the program",
