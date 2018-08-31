@@ -39,7 +39,12 @@ namespace ZenPlatform.UIBuilder
                     })
                     .With(l => l.Label("Label component"))
                         .With(f => f.CheckBox("Checkbox component"))
-                        .With(f => f.Button("Button component"))
+                        .With(f =>
+                        {
+                            var b = f.Button("Button component");
+                            b.OnClick = "Click";
+                            return b;
+                        })
                         .With(new UIObjectPicker())
                         .With(tc => tc.TabControl().WithTab(t =>
                             {
@@ -97,7 +102,7 @@ namespace ZenPlatform.UIBuilder
 
 
 
-            Window w = AvaloniaXamlLoader.Parse<Window>(test);
+            Window w = AvaloniaXamlLoader.Parse<Window>(text);
             TestObject obj = new TestObject();
             obj.Person = "123";
             w.DataContext = obj;
@@ -114,6 +119,11 @@ namespace ZenPlatform.UIBuilder
         public class TestObject
         {
             public string Person { get; set; }
+
+            public void Click()
+            {
+                Console.WriteLine("Clicked");
+            }
         }
 
 
@@ -128,15 +138,13 @@ namespace ZenPlatform.UIBuilder
             TextBox tb = new TextBox();
             tb.Text = "Hello";
 
-            BindingExtension
-
             var context = new AvaloniaCustomXamlSchemaContext(new AvaloniaRuntimeTypeProvider());
 
             var sb = new StringBuilder();
             var sw = new StringWriter(sb);
 
             XamlWriter xw = new XamlXmlWriter(sw, context);
-            
+
             xw.Close();
 
             Console.WriteLine(sb.ToString());

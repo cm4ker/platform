@@ -109,6 +109,7 @@ namespace ZenPlatform.UIBuilder.Compilers
             XamlType buttonType = _context.GetXamlType(typeof(Button));
 
             var contentProperty = buttonType.GetMember("Content");
+            var commandProperty = buttonType.GetMember("Command");
 
             _xamlWriter.WriteStartObject(buttonType);
 
@@ -116,6 +117,29 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteStartMember(contentProperty);
             _xamlWriter.WriteValue(uiButton.Text.ToString(CultureInfo.InvariantCulture));
             _xamlWriter.WriteEndMember();
+
+            //Command
+            if (!string.IsNullOrEmpty(uiButton.OnClick))
+            {
+                _xamlWriter.WriteStartMember(commandProperty);
+                //{{Binding {uiTextBox.DataSource}}}
+
+                XamlType bindingXaml = _context.GetXamlType(typeof(Binding));
+
+                XamlNodeList list = new XamlNodeList(_context);
+
+                XamlMember pathProp = bindingXaml.GetMember("Path");
+
+                _xamlWriter.WriteStartObject(bindingXaml);
+
+                //Path
+                _xamlWriter.WriteStartMember(pathProp);
+                _xamlWriter.WriteValue(uiButton.OnClick);
+                _xamlWriter.WriteEndMember();
+
+                _xamlWriter.WriteEndObject();
+                _xamlWriter.WriteEndMember();
+            }
 
             _xamlWriter.WriteEndObject();
         }
@@ -259,9 +283,9 @@ namespace ZenPlatform.UIBuilder.Compilers
                 XamlType bindingXaml = _context.GetXamlType(typeof(Binding));
 
                 XamlNodeList list = new XamlNodeList(_context);
-                
-                
-                
+
+
+
                 XamlMember pathProp = bindingXaml.GetMember("Path");//new XamlMember(typeof(Binding).GetProperty("Path"), _context);
                 XamlMember modeProp = bindingXaml.GetMember("Mode");
                 _xamlWriter.WriteStartObject(bindingXaml);
@@ -270,11 +294,11 @@ namespace ZenPlatform.UIBuilder.Compilers
                 _xamlWriter.WriteStartMember(pathProp);
                 _xamlWriter.WriteValue(uiTextBox.DataSource);
                 _xamlWriter.WriteEndMember();
-                
-                //Mode 
-                _xamlWriter.WriteStartMember(modeProp);
-                _xamlWriter.WriteValue("TwoWay");
-                _xamlWriter.WriteEndMember();
+
+                ////Mode 
+                //_xamlWriter.WriteStartMember(modeProp);
+                //_xamlWriter.WriteValue("TwoWay");
+                //_xamlWriter.WriteEndMember();
 
                 _xamlWriter.WriteEndObject();
                 _xamlWriter.WriteEndMember();
