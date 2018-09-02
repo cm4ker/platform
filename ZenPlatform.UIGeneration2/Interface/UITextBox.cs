@@ -2,6 +2,9 @@
 
 namespace ZenPlatform.UIBuilder.Interface
 {
+    /// <summary>
+    /// Текстовое поле
+    /// </summary>
     public class UITextBox : UINode
     {
         public UITextBox()
@@ -10,10 +13,19 @@ namespace ZenPlatform.UIBuilder.Interface
             Width = 100;
         }
 
-        public string BindingExpression { get; set; }
+        /// <summary>
+        /// Поле для данных
+        /// </summary>
+        public string DataSource { get; set; }
 
+        /// <summary>
+        /// Высота
+        /// </summary>
         public double Height { get; set; }
 
+        /// <summary>
+        /// Ширина
+        /// </summary>
         public double Width { get; set; }
     }
 }

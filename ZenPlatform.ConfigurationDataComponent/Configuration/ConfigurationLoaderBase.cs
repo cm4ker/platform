@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Claims;
 using System.Xml.Serialization;
-using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Configuration.Structure.Helper;
 using ZenPlatform.Shared.ParenChildCollection;
-using XCHelper = ZenPlatform.Configuration.Structure.XCHelper;
 
 namespace ZenPlatform.DataComponent.Configuration
 {
     public abstract class ConfigurationLoaderBase<TObjectType> : IXComponentLoader
         where TObjectType : XCObjectTypeBase
     {
+
+        #region Events
         /// <summary>
         /// Вызывается после загрузки объекта
         /// </summary>
@@ -44,6 +41,8 @@ namespace ZenPlatform.DataComponent.Configuration
         protected virtual void AfterInitialize(TObjectType conf)
         {
         }
+
+        #endregion
 
         protected virtual XCDataRuleBase LoadRuleAction(XCDataRuleContent content)
         {
@@ -79,7 +78,7 @@ namespace ZenPlatform.DataComponent.Configuration
                 AfterObjectLoad(conf);
 
                 //Сразу же указываем родителя
-                ((IChildItem<XCComponent>) conf).Parent = com;
+                ((IChildItem<XCComponent>)conf).Parent = com;
 
                 com.Parent.PlatformTypes.Add(conf);
 

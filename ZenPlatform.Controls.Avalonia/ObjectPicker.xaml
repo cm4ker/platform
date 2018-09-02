@@ -1,0 +1,19 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition />
+      <ColumnDefinition x:Name="TypeBtnCol" Width="24" />
+      <ColumnDefinition x:Name="LookupBtnCol" Width="24" />
+      <ColumnDefinition x:Name="SelectBtnCol" Width="24" />
+      <ColumnDefinition x:Name="ClearBtnCol" Width="24" />
+    </Grid.ColumnDefinitions>
+
+    <TextBox Grid.Column="0" IsReadOnly="True" />
+
+    <Button Grid.Column="1" Content="T" />
+    <Button Grid.Column="2" Content="L" />
+    <Button Grid.Column="3" Content="..." />
+    <Button Grid.Column="4" Content="X" />
+  </Grid>
+</UserControl>

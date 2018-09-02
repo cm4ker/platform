@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Cli.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Pidl\ZenPlatform.Pidl.csproj" />
     <ProjectReference Include="..\ZenPlatform.UIGeneration2\ZenPlatform.UIBuilder.csproj" />
   </ItemGroup>
   <ItemGroup>

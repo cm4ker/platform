@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.ConfigurationServerShared.csproj" />
+    <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.ConfigurationServerMessages.csproj" />
   </ItemGroup>
 
 </Project>
