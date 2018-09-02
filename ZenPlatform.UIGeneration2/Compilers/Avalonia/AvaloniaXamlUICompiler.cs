@@ -73,7 +73,7 @@ namespace ZenPlatform.UIBuilder.Compilers
         {
             XamlType dataGridColumnType = _context.GetXamlType(typeof(DataGridTextColumn));
 
-            var headerProperty = new XamlMember("Header", dataGridColumnType, false);
+            var headerProperty = dataGridColumnType.GetMember("Header");
 
             _xamlWriter.WriteStartObject(dataGridColumnType);
 
@@ -87,9 +87,9 @@ namespace ZenPlatform.UIBuilder.Compilers
 
         private void VisitDataGridNode(UIDataGrid uiDataGrid, StringWriter sw)
         {
-            XamlType dataGridType = new XamlType(typeof(DataGrid), _context);
+            XamlType dataGridType = _context.GetXamlType(typeof(DataGrid));
 
-            var columnsProperty = new XamlMember(typeof(DataGrid).GetProperty("Columns"), _context);
+            var columnsProperty = dataGridType.GetMember("Columns");
             _xamlWriter.WriteStartObject(dataGridType);
 
             //Items
@@ -106,9 +106,10 @@ namespace ZenPlatform.UIBuilder.Compilers
 
         private void VisitButtonNode(UIButton uiButton, StringWriter sw)
         {
-            XamlType buttonType = new XamlType(typeof(Button), _context);
+            XamlType buttonType = _context.GetXamlType(typeof(Button));
 
-            var contentProperty = new XamlMember(typeof(Button).GetProperty("Content"), _context);
+            var contentProperty = buttonType.GetMember("Content");
+            var commandProperty = buttonType.GetMember("Command");
 
             _xamlWriter.WriteStartObject(buttonType);
 
@@ -117,16 +118,39 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteValue(uiButton.Text.ToString(CultureInfo.InvariantCulture));
             _xamlWriter.WriteEndMember();
 
+            //Command
+            if (!string.IsNullOrEmpty(uiButton.OnClick))
+            {
+                _xamlWriter.WriteStartMember(commandProperty);
+                //{{Binding {uiTextBox.DataSource}}}
+
+                XamlType bindingXaml = _context.GetXamlType(typeof(Binding));
+
+                XamlNodeList list = new XamlNodeList(_context);
+
+                XamlMember pathProp = bindingXaml.GetMember("Path");
+
+                _xamlWriter.WriteStartObject(bindingXaml);
+
+                //Path
+                _xamlWriter.WriteStartMember(pathProp);
+                _xamlWriter.WriteValue(uiButton.OnClick);
+                _xamlWriter.WriteEndMember();
+
+                _xamlWriter.WriteEndObject();
+                _xamlWriter.WriteEndMember();
+            }
+
             _xamlWriter.WriteEndObject();
         }
 
         private void VisitCheckBoxNode(UICheckBox uiCheckBox, StringWriter sw)
         {
-            XamlType tabType = new XamlType(typeof(CheckBox), _context);
+            XamlType checkBoxType = _context.GetXamlType(typeof(CheckBox));
 
-            var contentProperty = new XamlMember(typeof(CheckBox).GetProperty("Content"), _context);
+            var contentProperty = checkBoxType.GetMember("Content");
 
-            _xamlWriter.WriteStartObject(tabType);
+            _xamlWriter.WriteStartObject(checkBoxType);
 
             //Content 
             _xamlWriter.WriteStartMember(contentProperty);
@@ -138,10 +162,10 @@ namespace ZenPlatform.UIBuilder.Compilers
 
         private void VisitTabNode(UITab uiTab, StringWriter sw)
         {
-            XamlType tabType = new XamlType(typeof(TabItem), _context);
+            XamlType tabType = _context.GetXamlType(typeof(TabItem));
 
-            var textProperty = new XamlMember(typeof(TabItem).GetProperty("Header"), _context);
-            var contentProperty = new XamlMember(typeof(TabItem).GetProperty("Content"), _context);
+            var textProperty = tabType.GetMember("Header");
+            var contentProperty = tabType.GetMember("Content");
 
 
             _xamlWriter.WriteStartObject(tabType);
@@ -165,9 +189,9 @@ namespace ZenPlatform.UIBuilder.Compilers
 
         private void VisitTabControlNode(UITabControl uiTabControl, StringWriter sw)
         {
-            XamlType textBoxType = new XamlType(typeof(TabControl), _context);
+            XamlType textBoxType = _context.GetXamlType(typeof(TabControl));
 
-            var itemsProperty = new XamlMember(typeof(TabControl).GetProperty("Items"), _context);
+            var itemsProperty = textBoxType.GetMember("Items");
 
 
             _xamlWriter.WriteStartObject(textBoxType);
@@ -185,9 +209,9 @@ namespace ZenPlatform.UIBuilder.Compilers
 
         private void VisitLabelNode(UILabel uiLabel, StringWriter sw)
         {
-            XamlType textBoxType = new XamlType(typeof(TextBlock), _context);
+            XamlType textBoxType = _context.GetXamlType(typeof(TextBlock));
 
-            var textProperty = new XamlMember(typeof(TextBlock).GetProperty("Text"), _context);
+            var textProperty = textBoxType.GetMember("Text");
 
             _xamlWriter.WriteStartObject(textBoxType);
 
@@ -201,11 +225,11 @@ namespace ZenPlatform.UIBuilder.Compilers
 
         private void VisitGroupNode(UIGroup uiGroup, StringWriter sw)
         {
-            XamlType stackPanelType = new XamlType(typeof(StackPanel), _context);
+            XamlType stackPanelType = _context.GetXamlType(typeof(StackPanel));
 
             //Props 
-            var orientationProperty = new XamlMember(typeof(StackPanel).GetProperty("Orientation"), _context);
-            var contentProperty = new XamlMember(typeof(StackPanel).GetProperty("Children"), _context);
+            var orientationProperty = stackPanelType.GetMember("Orientation");
+            var contentProperty = stackPanelType.GetMember("Children");
 
 
             _xamlWriter.WriteStartObject(stackPanelType);
@@ -232,13 +256,11 @@ namespace ZenPlatform.UIBuilder.Compilers
         private void VisitTextBoxNode(UITextBox uiTextBox, StringWriter sw)
         {
             XamlType textBoxType = _context.GetXamlType(typeof(TextBox));
+            var ns = textBoxType.PreferredXamlNamespace;
 
             var heightProperty = textBoxType.GetMember("Height");//new XamlMember(typeof(TextBox).GetProperty("Height"), _context);
-            var widthProperty = new XamlMember(typeof(TextBox).GetProperty("Width"), _context);
-            var textProperty = new XamlMember(typeof(TextBox).GetProperty("Text"), _context);
-
-
-
+            var widthProperty = textBoxType.GetMember("Width");
+            var textProperty = textBoxType.GetMember("Text");
 
             _xamlWriter.WriteStartObject(textBoxType);
 
@@ -252,21 +274,35 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteValue(uiTextBox.Width.ToString(CultureInfo.InvariantCulture));
             _xamlWriter.WriteEndMember();
 
-            ////Text
-            //if (!string.IsNullOrEmpty(uiTextBox.DataSource))
-            //{
-            //    _xamlWriter.WriteStartMember(textProperty);
-            //    //{{Binding {uiTextBox.DataSource}}}
+            //Text
+            if (!string.IsNullOrEmpty(uiTextBox.DataSource))
+            {
+                _xamlWriter.WriteStartMember(textProperty);
+                //{{Binding {uiTextBox.DataSource}}}
 
-            //    XamlType bindingXaml = _context.GetXamlType(typeof(Binding));
-            //    XamlMember pathProp = bindingXaml.GetMember("Path");//new XamlMember(typeof(Binding).GetProperty("Path"), _context);
-            //    _xamlWriter.WriteStartObject(bindingXaml);
-            //    _xamlWriter.WriteStartMember(pathProp);
-            //    _xamlWriter.WriteValue(uiTextBox.DataSource);
-            //    _xamlWriter.WriteEndMember();
-            //    _xamlWriter.WriteEndObject();
-            //    _xamlWriter.WriteEndMember();
-            //}
+                XamlType bindingXaml = _context.GetXamlType(typeof(Binding));
+
+                XamlNodeList list = new XamlNodeList(_context);
+
+
+
+                XamlMember pathProp = bindingXaml.GetMember("Path");//new XamlMember(typeof(Binding).GetProperty("Path"), _context);
+                XamlMember modeProp = bindingXaml.GetMember("Mode");
+                _xamlWriter.WriteStartObject(bindingXaml);
+
+                //Path
+                _xamlWriter.WriteStartMember(pathProp);
+                _xamlWriter.WriteValue(uiTextBox.DataSource);
+                _xamlWriter.WriteEndMember();
+
+                ////Mode 
+                //_xamlWriter.WriteStartMember(modeProp);
+                //_xamlWriter.WriteValue("TwoWay");
+                //_xamlWriter.WriteEndMember();
+
+                _xamlWriter.WriteEndObject();
+                _xamlWriter.WriteEndMember();
+            }
 
             _xamlWriter.WriteEndObject();
         }
@@ -275,10 +311,10 @@ namespace ZenPlatform.UIBuilder.Compilers
         {
             XamlType windowType = _context.GetXamlType(typeof(Window));
 
-            var heightProperty = new XamlMember(typeof(Window).GetProperty("Height"), _context);
-            var widthProperty = new XamlMember(typeof(Window).GetProperty("Width"), _context);
+            var heightProperty = windowType.GetMember("Height");
+            var widthProperty = windowType.GetMember("Width");
 
-            var contentProperty = new XamlMember(typeof(Window).GetProperty("Content"), _context);
+            var contentProperty = windowType.GetMember("Content");
 
             _xamlWriter.WriteStartObject(windowType);
 

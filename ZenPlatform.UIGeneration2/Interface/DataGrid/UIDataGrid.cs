@@ -18,8 +18,33 @@ namespace ZenPlatform.UIBuilder.Interface.DataGrid
 
     public class UIDataGridColumn : UINode
     {
+        public string DataSource { get; set; }
     }
 
+    public class UIDataGridTemplatedColumn : UINode
+    {
+        public UIDataGridTemplatedColumn With(Func<UIFactory, UINode> columnExpr)
+        {
+            Add(columnExpr(UIFactory.Get()));
+
+            return this;
+        }
+    }
+
+    public class UIDataGridTextColumn : UIDataGridColumn
+    {
+
+    }
+
+    public class UIDataGridObjectColumn : UIDataGridColumn
+    {
+
+    }
+
+    public class UIDataGridDateColumn : UIDataGridColumn
+    {
+
+    }
 
     public class UIColumnFactory
     {
@@ -35,9 +60,20 @@ namespace ZenPlatform.UIBuilder.Interface.DataGrid
         }
 
 
-        public UIDataGridColumn Column()
+        public UIDataGridTextColumn TextColumn()
+        {
+            return new UIDataGridTextColumn();
+        }
+
+        public UIDataGridColumn UIDataGridAnyTypeColumn()
         {
             return new UIDataGridColumn();
+        }
+
+
+        public UIDataGridObjectColumn ObjectColumn()
+        {
+            return new UIDataGridObjectColumn();
         }
     }
 }

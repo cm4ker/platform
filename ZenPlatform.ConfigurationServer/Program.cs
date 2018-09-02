@@ -56,8 +56,6 @@ namespace ZenPlatform.ConfigurationServer
     {
         [Key(0)]
         public string MsgType { get; set; }
-
-
     }
 
     [MessagePackObject]
