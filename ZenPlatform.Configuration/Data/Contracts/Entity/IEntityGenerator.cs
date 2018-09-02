@@ -3,6 +3,9 @@ using ZenPlatform.Contracts;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
 {
+    /// <summary>
+    /// Отвечает за генерацию кода сущности
+    /// </summary>
     public interface IEntityGenerator
     {
         /// <summary>
