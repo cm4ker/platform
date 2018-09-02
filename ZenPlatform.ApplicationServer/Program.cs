@@ -78,9 +78,8 @@ namespace ZenPlatform.WorkProcess
 
         public void Migrate()
         {
+            //Передаём управление системной среде
             _env.Migrate();
-
-            //Выполняем SQL скрипт
         }
 
         /*

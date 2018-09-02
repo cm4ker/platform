@@ -1,13 +1,9 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:ZenPlatform.ServerManagementTool.Views"
-        Title="Server management tool">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-
-        <Button Grid.Column="0" Content="{Binding Text}" />
-    </Grid>
+﻿<Window Height="400" Width="300" xmlns="https://github.com/avaloniaui">
+  <Window.Content>
+   <DataGrid xmlns="clr-namespace:Avalonia.Controls;assembly=Avalonia.DataGrid">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Test" />
+            </DataGrid.Columns>
+        </DataGrid>
+   </Window.Content>
 </Window>

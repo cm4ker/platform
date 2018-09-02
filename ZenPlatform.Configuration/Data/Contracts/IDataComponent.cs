@@ -1,4 +1,5 @@
 ﻿using ZenPlatform.Configuration.Data.Contracts.Entity;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Data.Contracts
 {
@@ -30,5 +31,12 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// </summary>
         IEntityMigrator Migrator { get; }
 
+
+        /// <summary>
+        /// Создать новый объект компонента
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        XCObjectTypeBase Create(XCObjectTypeBase parent = null);
     }
 }

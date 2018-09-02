@@ -6,7 +6,6 @@ namespace ZenPlatform.UIBuilder.Interface
     {
         public UIGroupOrientation Orientation { get; set; }
 
-
         public UIGroup With(UINode node)
         {
             Childs.Add(node);

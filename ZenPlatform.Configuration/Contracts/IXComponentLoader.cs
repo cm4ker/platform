@@ -3,7 +3,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
-namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
+namespace ZenPlatform.Configuration.Contracts
 {
     /// <summary>
     /// Загрузчик компонента
@@ -27,7 +27,6 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         /// <returns></returns>
         XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob);
 
-
         /// <summary>
         /// Сохранить обхект
         /// </summary>
@@ -46,5 +45,25 @@ namespace ZenPlatform.Configuration.ConfigurationLoader.Contracts
         /// </summary>
         /// <param name="rule"></param>
         void SaveRule(XCDataRuleBase rule);
+    }
+
+
+    /// <summary>
+    /// Менеджер конфигурации компонента. Отвечает за создание и удаление сущности
+    /// </summary>
+    public interface IXComponentManager
+    {
+        /// <summary>
+        /// Создать новую сущност
+        /// </summary>
+        /// <param name="parent">Родитель этой сущности</param>
+        /// <returns>Новый объект конфигурации</returns>
+        XCObjectTypeBase Create(XCObjectTypeBase parentType = null);
+
+        /// <summary>
+        /// Удалить объект конфигурации. Причём конфигурация остаётся в целостном состоянии до и после удаления
+        /// </summary>
+        /// <param name="type"></param>
+        void Delete(XCObjectTypeBase type);
     }
 }

@@ -8,7 +8,7 @@ using System.Reflection.Metadata;
 using System.Threading;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.ConfigurationLoader;
-using ZenPlatform.Configuration.ConfigurationLoader.Contracts;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
