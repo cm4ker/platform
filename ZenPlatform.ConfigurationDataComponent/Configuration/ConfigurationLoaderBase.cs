@@ -74,13 +74,12 @@ namespace ZenPlatform.DataComponent.Configuration
                 if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
                 if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
 
-
                 AfterObjectLoad(conf);
 
                 //Сразу же указываем родителя
                 ((IChildItem<XCComponent>)conf).Parent = com;
 
-                com.Parent.PlatformTypes.Add(conf);
+                com.Parent.RegisterType(conf);
 
                 BeforeInitialize(conf);
                 conf.Initialize();

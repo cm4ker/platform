@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Serialization;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -28,36 +27,39 @@ namespace ZenPlatform.EntityComponent.Configuration
                 var ser = new XmlSerializer(typeof(XCSingleEntityRule));
                 var rule = ser.Deserialize(sr) as XCSingleEntityRule ?? throw new Exception();
 
-                ((IChildItem<XCDataRuleContent>) rule).Parent = content;
+                ((IChildItem<XCDataRuleContent>)rule).Parent = content;
 
                 return rule;
             }
         }
     }
 
-    public class SingleENtityConfigurationManager : ConfigurationManagerBase
+    public class SingleEntityConfigurationManager : ConfigurationManagerBase
     {
-        private readonly XCComponent _component;
-
-        public SingleENtityConfigurationManager(XCComponent component)
+        public SingleEntityConfigurationManager(XCComponent component) : base(component)
         {
-            _component = component;
         }
 
-        public override XCObjectTypeBase Create(XCObjectTypeBase baseType = null)
+        public override XCObjectTypeBase Create(XCObjectTypeBase parentType = null)
         {
-            var newObj = new XCSingleEntity();
-            ((IChildItem<XCComponent>) newObj).Parent = _component;
-            newObj.BaseTypeId = baseType.Guid;
+            var newItem = new XCSingleEntity();
 
-            _component.Parent.PlatformTypes.Add(newObj);
-
-            return newObj;
+            ((IChildItem<XCComponent>)newItem).Parent = Component;
+            Component.Parent.RegisterType(newItem);
+            
+            //TODO: Обработать базовый тип
+            
+            return newItem;
         }
 
+        /// <inheritdoc />
         public override void Delete(XCObjectTypeBase type)
         {
-            _component.Parent.PlatformTypes.Remove(type);
+           //TODO: Сделать удаление компонента. Для этого необходимо сделать следующие задачи
+           // 1) Проверка ссылочной целостности по объектам, т.е. узнать, нет ли ссылки на этот объект в других объектах
+           // 2) Проверка целостности кода платформы, т.е. узнать, не используется ли этот компонент где-то в коде
+           // Если одно  из  вышеперечисленных условий не выполнено, в таком случае нельзя давать удалять объект, а вывести список объектов, блокирующих удаление
+
         }
     }
 }

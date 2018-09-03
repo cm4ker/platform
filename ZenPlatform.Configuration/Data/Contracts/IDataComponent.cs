@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Configuration.Data.Contracts.Entity;
+﻿using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Data.Contracts
@@ -16,6 +17,11 @@ namespace ZenPlatform.Configuration.Data.Contracts
         IEntityManager Manager { get; }
 
         /// <summary>
+        /// Менеджер компонента. Обеспечивает корректное добавление, удаление объектов и другие операции с конфигурацией, касаемо данного комопнента
+        /// </summary>
+        IXComponentManager ComponentManager { get; }
+
+        /// <summary>
         /// Генератор сущностей необходимо на стадии сборки проекта
         /// </summary>
         IEntityGenerator Generator { get; }
@@ -31,12 +37,5 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// </summary>
         IEntityMigrator Migrator { get; }
 
-
-        /// <summary>
-        /// Создать новый объект компонента
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        XCObjectTypeBase Create(XCObjectTypeBase parent = null);
     }
 }
