@@ -58,7 +58,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         /// <param name="parent">Родитель этой сущности</param>
         /// <returns>Новый объект конфигурации</returns>
-        XCObjectTypeBase Create(XCObjectTypeBase parentType = null);
+        XCObjectTypeBase Create(XCObjectTypeBase baseType = null);
 
         /// <summary>
         /// Удалить объект конфигурации. Причём конфигурация остаётся в целостном состоянии до и после удаления

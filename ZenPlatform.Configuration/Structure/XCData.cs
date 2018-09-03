@@ -92,8 +92,14 @@ namespace ZenPlatform.Configuration.Structure
 
         #endregion
 
+        /// <summary>
+        /// Все типы платформы
+        /// </summary>
         [XmlIgnore] public List<XCTypeBase> PlatformTypes { get; }
 
+        /// <summary>
+        /// Все типы, которые относятся к компонентам
+        /// </summary>
         [XmlIgnore]
         public IEnumerable<XCObjectTypeBase> ComponentTypes =>
             PlatformTypes.Where(x => x is XCObjectTypeBase).Cast<XCObjectTypeBase>();
