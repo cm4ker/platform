@@ -8,12 +8,12 @@ namespace ZenPlatform.DataComponent.Configuration
 {
     public class ConfigurationManagerBase : IXComponentManager
     {
-        public XCObjectTypeBase Create(XCObjectTypeBase parentType = null)
+        public virtual XCObjectTypeBase Create(XCObjectTypeBase baseType = null)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(XCObjectTypeBase type)
+        public virtual void Delete(XCObjectTypeBase type)
         {
             throw new NotImplementedException();
         }
