@@ -2,18 +2,33 @@
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.DataComponent.Configuration
 {
-    public class ConfigurationManagerBase : IXComponentManager
+
+    /// <summary>
+    /// Менеджер конфигурации. Обязательный элемент для имплементации к дочернему компоненту.
+    /// </summary>
+    public abstract class ConfigurationManagerBase : IXComponentManager
     {
-        public XCObjectTypeBase Create(XCObjectTypeBase parentType = null)
+        private readonly XCComponent _component;
+
+        protected ConfigurationManagerBase(XCComponent component)
+        {
+            _component = component;
+        }
+
+        protected XCComponent Component { get; set; }
+
+        public virtual XCObjectTypeBase Create(XCObjectTypeBase parentType = null)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(XCObjectTypeBase type)
+        /// <inheritdoc />
+        public virtual void Delete(XCObjectTypeBase type)
         {
             throw new NotImplementedException();
         }

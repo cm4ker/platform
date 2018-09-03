@@ -2,6 +2,8 @@
 using System.Runtime.Caching;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.DataComponent;
+using ZenPlatform.DataComponent.Configuration;
+using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.EntityComponent.UIGenerations;
 
@@ -9,8 +11,6 @@ namespace ZenPlatform.EntityComponent
 {
     public class EntityComponent : DataComponentBase
     {
-
-
         public EntityComponent(XCComponent component) : base(component)
         {
         }
@@ -19,8 +19,7 @@ namespace ZenPlatform.EntityComponent
         {
             Generator = new SingleEntityGenerator(Component);
             Manager = new SingleEntityManager();
-           
-
+            ComponentManager = new SingleEntityConfigurationManager(Component);
 
             //TODO: Вынести интерфейс генерации UI в DataComponentBase. Если мы взаимодействуем с данными, то мы должны их как-то показывать
             InterfaceGenerator = new InterfaceGenerator();

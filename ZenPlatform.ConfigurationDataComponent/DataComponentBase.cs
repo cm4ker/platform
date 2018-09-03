@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.DataComponent.Entity;
 
 namespace ZenPlatform.DataComponent
@@ -53,9 +55,11 @@ namespace ZenPlatform.DataComponent
         }
 
         public IEntityManager Manager { get; protected set; }
+        public IXComponentManager ComponentManager { get; protected set; }
         public IEntityGenerator Generator { get; protected set; }
         public IDatabaseObjectsGenerator DatabaseObjectsGenerator { get; protected set; }
         public IEntityMigrator Migrator { get; protected set; }
+
 
         /*
          * Кэширование выведено в отдельное приложение, которое связывается по протоколу общения
