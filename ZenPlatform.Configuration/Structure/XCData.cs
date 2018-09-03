@@ -15,19 +15,19 @@ namespace ZenPlatform.Configuration.Structure
     public class XCData : IChildItem<XCRoot>
     {
         private XCRoot _parent;
-
+        private List<XCTypeBase> _platformTypes;
         public XCData()
         {
             Components = new ChildItemCollection<XCData, XCComponent>(this);
-            PlatformTypes = new List<XCTypeBase>();
+            _platformTypes = new List<XCTypeBase>();
 
             //Инициализируем примитивные типы платформы, они нужны для правильного построения зависимостей
-            PlatformTypes.Add(new XCBinary());
-            PlatformTypes.Add(new XCString());
-            PlatformTypes.Add(new XCDateTime());
-            PlatformTypes.Add(new XCBoolean());
-            PlatformTypes.Add(new XCNumeric());
-            PlatformTypes.Add(new XCGuid());
+            _platformTypes.Add(new XCBinary());
+            _platformTypes.Add(new XCString());
+            _platformTypes.Add(new XCDateTime());
+            _platformTypes.Add(new XCBoolean());
+            _platformTypes.Add(new XCNumeric());
+            _platformTypes.Add(new XCGuid());
         }
 
         [XmlArray("Components")]
@@ -95,7 +95,7 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Все типы платформы
         /// </summary>
-        [XmlIgnore] public List<XCTypeBase> PlatformTypes { get; }
+        [XmlIgnore] public IEnumerable<XCTypeBase> PlatformTypes => _platformTypes;
 
         /// <summary>
         /// Все типы, которые относятся к компонентам
@@ -111,6 +111,12 @@ namespace ZenPlatform.Configuration.Structure
         {
             get => _parent;
             set => _parent = value;
+        }
+
+
+        public void RegisterType(XCObjectTypeBase type)
+        {
+            _platformTypes.Add(type);
         }
     }
 
