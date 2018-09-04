@@ -27,13 +27,14 @@ namespace ZenPlatform.EntityComponent.Configuration
                 var ser = new XmlSerializer(typeof(XCSingleEntityRule));
                 var rule = ser.Deserialize(sr) as XCSingleEntityRule ?? throw new Exception();
 
-                ((IChildItem<XCDataRuleContent>)rule).Parent = content;
+                ((IChildItem<XCDataRuleContent>) rule).Parent = content;
 
                 return rule;
             }
         }
     }
 
+    /// <inheritdoc />
     public class SingleEntityConfigurationManager : ConfigurationManagerBase
     {
         public SingleEntityConfigurationManager(XCComponent component) : base(component)
@@ -44,7 +45,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             var newItem = new XCSingleEntity();
 
-            ((IChildItem<XCComponent>)newItem).Parent = Component;
+            ((IChildItem<XCComponent>) newItem).Parent = Component;
             Component.Parent.RegisterType(newItem);
 
             return newItem;
@@ -53,11 +54,10 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <inheritdoc />
         public override void Delete(XCObjectTypeBase type)
         {
-           //TODO: Сделать удаление компонента. Для этого необходимо сделать следующие задачи
-           // 1) Проверка ссылочной целостности по объектам, т.е. узнать, нет ли ссылки на этот объект в других объектах
-           // 2) Проверка целостности кода платформы, т.е. узнать, не используется ли этот компонент где-то в коде
-           // Если одно  из  вышеперечисленных условий не выполнено, в таком случае нельзя давать удалять объект, а вывести список объектов, блокирующих удаление
-
+            //TODO: Сделать удаление сущности. Для этого необходимо сделать следующие задачи
+            // 1) Проверка ссылочной целостности по объектам, т.е. узнать, нет ли ссылки на этот объект в других объектах
+            // 2) Проверка целостности кода платформы, т.е. узнать, не используется ли этот компонент где-то в коде
+            // Если одно  из  вышеперечисленных условий не выполнено, в таком случае нельзя давать удалять объект, а вывести список объектов, блокирующих удаление
         }
     }
 }

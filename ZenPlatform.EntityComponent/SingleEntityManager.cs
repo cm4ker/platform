@@ -3,6 +3,7 @@ using ZenPlatform.Core;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.QueryBuilder.DML.Select;
 
 namespace ZenPlatform.EntityComponent
 {
@@ -74,24 +75,49 @@ namespace ZenPlatform.EntityComponent
 
             var def = session.GetMetadata(type);
 
-            var conf = def.EntityConfig as Configuration.XCSingleEntity;
+            var conf = def.EntityConfig as XCSingleEntity;
 
             //var dto = def.EntityConfig.Parent.ComponentImpl.Caches[def.EntityConfig.Name].Get(key.ToString());
 
             // if (dto != null)
             //    return dto;
 
-            var q = new QueryBuilder.DML.Select.SelectQueryNode();
+            var q = new SelectQueryNode();
 
             q.From(conf.RelTableName);
-            q.Select("*");
 
-            var cmd = context.CreateCommand();
+            foreach (var property in conf.Properties)
+            {
+                if(property.Types.Count == 1)
+                q.Select(property.DatabaseColumnName);   
+            }
+            
+            q.Where(f => f.Field("Id"), "=", f => f.Parameter("Id"));
 
+            //TODO: На основании пользовательского контекста необходимо получить ограничение
+            
+            //есть несколько путей решения этой задачи
+            
+            var cmd = context.CreateCommand(q);
 
-            //TODO: загрузить объект из базы данных
+            var reader = cmd.ExecuteReader();
 
-            return null;
+            if (reader.Read())
+            {
+                var dto = Activator.CreateInstance(def.DtoType);
+
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    var propInfo = def.DtoType.GetProperty(reader.GetName(i));
+                    propInfo.SetValue(dto, reader.GetValue(i));
+                }
+
+                return dto;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public void Delete(UserSession session, SingleEntity entity)

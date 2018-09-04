@@ -1,6 +1,6 @@
 ﻿using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder
+namespace ZenPlatform.QueryBuilder.Common
 {
     /// <summary>
     /// Базовый элемент для всех элементов
