@@ -108,7 +108,19 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<TopNode>(i => VisitTopNode(i, sb))
                 .CaseIs<InsertQueryNode>(i => VisitInsertQueryNode(i, sb))
                 .CaseIs<CreateDatabaseQueryNode>(i => VisitCreateDatabaseQueryNode(i, sb))
+                .CaseIs<DropDatabaseQueryNode>(i => VisitDropDatabaseQueryNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        private void VisitDropDatabaseQueryNode(DropDatabaseQueryNode dropDatabaseQueryNode, StringBuilder sb)
+        {
+            IDropDatabaseQuery q = dropDatabaseQueryNode;
+            
+            VisitNode(Tokens.DropToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.DatabaseToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(q.Name , sb);
         }
 
         private void VisitCreateDatabaseQueryNode(CreateDatabaseQueryNode createDatabaseQueryNode, StringBuilder sb)

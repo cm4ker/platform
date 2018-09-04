@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography.X509Certificates;
+using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.Factoryes;
 
 namespace ZenPlatform.QueryBuilder.DML.Select
