@@ -6,6 +6,7 @@ using ZenPlatform.QueryBuilder.Common.Columns;
 using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.QueryBuilder.Common.Table;
 using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 using ZenPlatform.QueryBuilder.DML.Delete;
 using ZenPlatform.QueryBuilder.DML.From;
 using ZenPlatform.QueryBuilder.DML.GroupBy;
@@ -106,7 +107,19 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<TypeDefinitionNode>(i => VisitTypeDefinitionNode(i, sb))
                 .CaseIs<TopNode>(i => VisitTopNode(i, sb))
                 .CaseIs<InsertQueryNode>(i => VisitInsertQueryNode(i, sb))
+                .CaseIs<CreateDatabaseQueryNode>(i => VisitCreateDatabaseQueryNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        private void VisitCreateDatabaseQueryNode(CreateDatabaseQueryNode createDatabaseQueryNode, StringBuilder sb)
+        {
+            ICreateDatabaseQuery dbQuery = createDatabaseQueryNode;
+
+            VisitNode(Tokens.CreateToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.DatabaseToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(dbQuery.Name, sb);
         }
 
         protected virtual void VisitInsertQueryNode(InsertQueryNode insertQueryNode, StringBuilder sb)
@@ -149,9 +162,6 @@ namespace ZenPlatform.QueryBuilder
         protected virtual void VisitTokens(Token token, StringBuilder sb)
         {
             VisitChilds(token, sb);
-            //            ItemSwitch<Token>
-            //                .Switch(token)
-            //                .CaseIs<RightBracketToken>(i=> sb.Append());
         }
 
         protected virtual void VisitColumnListNode(ColumnListNode columnListNode, StringBuilder sb)
@@ -320,7 +330,7 @@ namespace ZenPlatform.QueryBuilder
                 case JoinType.Cross:
                     sb.Append("CROSS");
                     break;
-                //TODO: Добавить все
+                    //TODO: Добавить все
             }
 
             sb.Append(" JOIN ");
@@ -384,7 +394,9 @@ namespace ZenPlatform.QueryBuilder
         protected virtual void VisitFromNode(FromNode fromNode, StringBuilder sb)
         {
             if (!fromNode.Childs.Any()) return;
-            sb.Append("\nFROM ");
+            sb.Append($"\n");
+            VisitNode(Tokens.FromToken, sb);
+            sb.Append(" ");
 
             foreach (SqlNode fromNodeChild in fromNode.Childs)
             {
