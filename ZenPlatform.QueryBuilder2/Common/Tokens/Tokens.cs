@@ -39,7 +39,9 @@
         public static Token InsertToken = new InsertToken();
         
         public static Token IntoToken = new IntoToken();
-        
+
+        public static Token FromToken = new FromToken();
+
     }
 
 
@@ -124,6 +126,13 @@
     public class LimitToken : Token
     {
         public LimitToken() : base("LIMIT")
+        {
+        }
+    }
+
+    public class FromToken : Token
+    {
+        public FromToken() : base("FROM")
         {
         }
     }
