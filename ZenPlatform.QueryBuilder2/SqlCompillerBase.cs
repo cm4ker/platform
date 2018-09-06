@@ -6,6 +6,8 @@ using ZenPlatform.QueryBuilder.Common.Columns;
 using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.QueryBuilder.Common.Table;
 using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
+using ZenPlatform.QueryBuilder.DDL.Index;
 using ZenPlatform.QueryBuilder.DML.Delete;
 using ZenPlatform.QueryBuilder.DML.From;
 using ZenPlatform.QueryBuilder.DML.GroupBy;
@@ -106,7 +108,60 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<TypeDefinitionNode>(i => VisitTypeDefinitionNode(i, sb))
                 .CaseIs<TopNode>(i => VisitTopNode(i, sb))
                 .CaseIs<InsertQueryNode>(i => VisitInsertQueryNode(i, sb))
+                .CaseIs<CreateDatabaseQueryNode>(i => VisitCreateDatabaseQueryNode(i, sb))
+                .CaseIs<DropDatabaseQueryNode>(i => VisitDropDatabaseQueryNode(i, sb))
+                .CaseIs<CreateIndexQueryNode>(i => VisitCreateIndexQueryNode(i, sb))
+                .CaseIs<IndexTableNode>(i => VisitIndexTableNode(i, sb))
+                .CaseIs<IndexTableColumnNode>(i => VisitIndexTableColumnNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        private void VisitIndexTableColumnNode(IndexTableColumnNode indexTableColumnNode, StringBuilder sb)
+        {
+            VisitChilds(indexTableColumnNode, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(indexTableColumnNode.Direction, sb);
+        }
+
+        private void VisitIndexTableNode(IndexTableNode indexTableNode, StringBuilder sb)
+        {
+            VisitChilds(indexTableNode, sb);
+        }
+
+        private void VisitCreateIndexQueryNode(CreateIndexQueryNode createIndexQueryNode, StringBuilder sb)
+        {
+            ICreateIndexQuery q = createIndexQueryNode;
+            VisitNode(Tokens.CreateToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.IndexToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(q.IndexName, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.OnToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(q.TargetTable, sb);
+        }
+
+        private void VisitDropDatabaseQueryNode(DropDatabaseQueryNode dropDatabaseQueryNode, StringBuilder sb)
+        {
+            IDropDatabaseQuery q = dropDatabaseQueryNode;
+
+            VisitNode(Tokens.DropToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.DatabaseToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(q.Name, sb);
+        }
+
+        private void VisitCreateDatabaseQueryNode(CreateDatabaseQueryNode createDatabaseQueryNode, StringBuilder sb)
+        {
+            ICreateDatabaseQuery dbQuery = createDatabaseQueryNode;
+
+            VisitNode(Tokens.CreateToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.DatabaseToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(dbQuery.Name, sb);
         }
 
         protected virtual void VisitInsertQueryNode(InsertQueryNode insertQueryNode, StringBuilder sb)
@@ -149,14 +204,22 @@ namespace ZenPlatform.QueryBuilder
         protected virtual void VisitTokens(Token token, StringBuilder sb)
         {
             VisitChilds(token, sb);
-            //            ItemSwitch<Token>
-            //                .Switch(token)
-            //                .CaseIs<RightBracketToken>(i=> sb.Append());
         }
 
         protected virtual void VisitColumnListNode(ColumnListNode columnListNode, StringBuilder sb)
         {
-            VisitChilds(columnListNode, sb);
+            VisitNode(Tokens.LeftBracketToken, sb);
+            VisitChildsForeach(columnListNode, sb, (node, isb, index) =>
+            {
+                if (index > 0)
+                {
+                    VisitNode(Tokens.CommaToken, sb);
+                    VisitNode(Tokens.SpaceToken, sb);
+                }
+
+                VisitNode(node, sb);
+            });
+            VisitNode(Tokens.RightBracketToken, sb);
         }
 
         protected virtual void VisitCloseBracketNode(CloseBracketNode closeBracketNode, StringBuilder sb)
@@ -175,7 +238,7 @@ namespace ZenPlatform.QueryBuilder
 
             var last = insertValuesNode.Childs.Last();
 
-            VisitChildsForeach(insertValuesNode, sb, (n, b) =>
+            VisitChildsForeach(insertValuesNode, sb, (n, b, index) =>
             {
                 VisitNode(n, sb);
 
@@ -238,7 +301,7 @@ namespace ZenPlatform.QueryBuilder
         {
             sb.Append("SET");
 
-            VisitChildsForeach(setNode, sb, (n, s) =>
+            VisitChildsForeach(setNode, sb, (n, s, index) =>
             {
                 s.Append("\n    ");
                 VisitNode(n, s);
@@ -320,7 +383,7 @@ namespace ZenPlatform.QueryBuilder
                 case JoinType.Cross:
                     sb.Append("CROSS");
                     break;
-                //TODO: Добавить все
+                    //TODO: Добавить все
             }
 
             sb.Append(" JOIN ");
@@ -351,11 +414,13 @@ namespace ZenPlatform.QueryBuilder
         }
 
         protected virtual void VisitChildsForeach(SqlNode node, StringBuilder sb,
-            Action<SqlNode, StringBuilder> visitChild)
+            Action<SqlNode, StringBuilder, int> visitChild)
         {
+            var index = 0;
             foreach (SqlNode nodeChild in node.Childs)
             {
-                visitChild(nodeChild, sb);
+                visitChild(nodeChild, sb, index);
+                index++;
             }
         }
 
@@ -384,7 +449,9 @@ namespace ZenPlatform.QueryBuilder
         protected virtual void VisitFromNode(FromNode fromNode, StringBuilder sb)
         {
             if (!fromNode.Childs.Any()) return;
-            sb.Append("\nFROM ");
+            sb.Append($"\n");
+            VisitNode(Tokens.FromToken, sb);
+            sb.Append(" ");
 
             foreach (SqlNode fromNodeChild in fromNode.Childs)
             {

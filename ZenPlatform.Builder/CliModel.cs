@@ -32,7 +32,7 @@ namespace ZenPlatform.Cli
         public static int Build(params string[] args)
         {
             var app = new CommandLineApplication();
-            
+
             app.HelpOption("-h|--help");
 
             var optionVersion = app.Option("-v|--version", "Version of the program",
@@ -43,16 +43,24 @@ namespace ZenPlatform.Cli
             {
                 buildCmd.HelpOption(inherited: true);
 
-                var path = buildCmd.Argument("path", "path to the project file").IsRequired();
+                var pathArgument = buildCmd.Argument("path", "path to the project file").IsRequired();
+                var buildPathArgument = buildCmd.Argument("buildPath", "path where will be copy compiled dlls");
 
                 buildCmd.OnExecute(() =>
                 {
-                    Console.WriteLine(path.Value);
+                    Console.WriteLine(pathArgument.Value);
 
-                    var projectFilePath = path.Value;
+                    var projectFilePath = pathArgument.Value;
 
                     if (!File.Exists(projectFilePath))
                         throw new FileNotFoundException($"File not found: {projectFilePath}");
+
+                    //Проверим каталог на существование
+                    if (!Directory.Exists(buildPathArgument.Value))
+                    {
+                        Console.WriteLine("Build directory not found");
+                        return;
+                    }
 
                     XCFileSystemStorage ss = new XCFileSystemStorage(Path.GetDirectoryName(projectFilePath),
                         Path.GetFileName(projectFilePath));
@@ -61,6 +69,10 @@ namespace ZenPlatform.Cli
 
                     Console.WriteLine($"Success load project {projectFilePath}");
                     Console.WriteLine($"Start building");
+
+                    XCCompiller compiller = new XCCompiller(root, buildPathArgument.Value);
+                    compiller.Build();
+
                 });
             });
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.QueryBuilder;
-using ZenPlatform.Shared.Tree;
+using ZenPlatform.QueryBuilder.Common;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
 {
