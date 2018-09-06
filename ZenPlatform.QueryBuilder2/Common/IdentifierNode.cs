@@ -1,6 +1,4 @@
-﻿using ZenPlatform.Shared.Tree;
-
-namespace ZenPlatform.QueryBuilder.DML.Select
+﻿namespace ZenPlatform.QueryBuilder.Common
 {
     public class IdentifierNode : SqlNode
     {

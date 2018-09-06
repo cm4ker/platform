@@ -94,7 +94,7 @@ namespace ZenPlatform.Configuration.Structure.Data
                 .FirstOrDefault(x => x.BaseType == typeof(XCComponentInformation));
 
             if (typeInfo != null)
-                _info = (XCComponentInformation) Activator.CreateInstance(typeInfo);
+                _info = (XCComponentInformation)Activator.CreateInstance(typeInfo);
             else
                 _info = new XCComponentInformation();
 
@@ -104,7 +104,7 @@ namespace ZenPlatform.Configuration.Structure.Data
                                      x.GetInterfaces().Contains(typeof(IXComponentLoader))) ??
                              throw new InvalidComponentException();
 
-            _loader = (IXComponentLoader) Activator.CreateInstance(loaderType);
+            _loader = (IXComponentLoader)Activator.CreateInstance(loaderType);
 
             _componentImpl = _loader.GetComponentImpl(this);
 

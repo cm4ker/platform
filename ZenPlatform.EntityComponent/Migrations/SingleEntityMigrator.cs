@@ -12,6 +12,7 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using ZenPlatform.QueryBuilder.DML.Update;
 using ZenPlatform.Shared;
