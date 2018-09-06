@@ -8,8 +8,8 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
     public class DatabaseTest
     {
         private PostgresCompiller _compiller = new PostgresCompiller();
-        
-        
+
+
         [TestMethod]
         public void CreateDatabaseTest()
         {
@@ -30,6 +30,6 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
             Assert.AreEqual("DROP DATABASE \"TestDatabase\"", query);
         }
     }
-    
-    
+
+
 }
