@@ -5,7 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Common\Types\" />
-    <Folder Include="DDL\CreateIndex\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
