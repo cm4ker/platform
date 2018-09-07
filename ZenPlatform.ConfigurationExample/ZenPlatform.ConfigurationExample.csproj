@@ -6,7 +6,7 @@
     <OutputPath>../Build/Debug/ExampleConfiguration\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Configuration\Components\" />
+    <Folder Include="Configuration\XCComponent\" />
     <Folder Include="Configuration\Interface" />
     <Folder Include="Configuration\Roles" />
   </ItemGroup>
@@ -39,16 +39,16 @@
     <None Update="Configuration\Data\Documents\УтеряКниги.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\Data\Entites\TestEntity.PickForm.xml">
+    <None Update="Configuration\Data\Entity\TestEntity.PickForm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\Data\Entites\TestEntity.ListForm.xml">
+    <None Update="Configuration\Data\Entity\TestEntity.ListForm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\Data\Entites\TestEntity.From.xml">
+    <None Update="Configuration\Data\Entity\TestEntity.From.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Configuration\Data\Entites\TestEntity.xml">
+    <None Update="Configuration\Data\Entity\TestEntity.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\Data\InfoRegister\ИсторияВыдачиКниг.xml">
@@ -61,6 +61,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\Data\References\Книга.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\ProjectStructureExplaining.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\Project.xml">

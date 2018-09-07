@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ZenPlatform.Configuration
 {
@@ -15,15 +16,7 @@ namespace ZenPlatform.Configuration
         /// <param name="name">Имя объекта</param>
         /// <param name="route">Параметр маршрутизации</param>
         /// <returns></returns>
-        byte[] GetBlob(string name, string route);
-
-        /// <summary>
-        /// Получить строковый объект
-        /// </summary>
-        /// <param name="name">Имя объекта</param>
-        /// <param name="route">Параметр маршрутизации</param>
-        /// <returns></returns>
-        string GetStringBlob(string name, string route);
+        Stream GetBlob(string name, string route);
 
         /// <summary>
         /// Сохранить двоичный объект
@@ -31,32 +24,27 @@ namespace ZenPlatform.Configuration
         /// <param name="name">Имя объекта</param>
         /// <param name="route">Параметр маршрутизации</param>
         /// <param name="bytes">Данные</param>
-        void SaveBlob(string name, string route, byte[] bytes);
-
-        /// <summary>
-        /// Сохранить строковый объект
-        /// </summary>
-        /// <param name="name">Имя объекта</param>
-        /// <param name="route">Параметр маршрутизации</param>
-        /// <param name="data">Строковые данные</param>
-        void SaveBlob(string name, string route, string data);
+        void SaveBlob(string name, string route, Stream stream);
 
         /// <summary>
         /// Получить корневой объект
         /// </summary>
         /// <returns></returns>
-        byte[] GetRootBlob();
-
-        /// <summary>
-        /// Получить корневой объект в виде строки
-        /// </summary>
-        /// <returns></returns>
-        string GetStringRootBlob();
+        Stream GetRootBlob();
 
         /// <summary>
         /// Сохранить корневой объект
         /// </summary>
-        void SaveRootBlob(string content);
+        void SaveRootBlob(Stream stream);
+
+
+        /// <summary>
+        /// Получить идентификатор. Для файлового хранилища всё просто, он не привязан к данным, поэтому здесь будет просто
+        /// Возвращаться инкремент, но для базы данных, необходимо вытаскивать из таблицы сопоставлений guid - тип объекта
+        /// </summary>
+        /// <param name="confId">Идентификатор конфигурации</param>
+        /// <param name="oldId">Старый идентификатор, елси 0, в таком случае присваивается новый, елси не 0, тогда присваивается новый идентификатор</param>
+        void GetId(Guid confId, ref uint oldId);
     }
 
 

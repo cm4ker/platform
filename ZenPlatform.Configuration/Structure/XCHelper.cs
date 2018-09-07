@@ -10,18 +10,12 @@ namespace ZenPlatform.Configuration.Structure
             where T : class
         {
             XmlSerializer ser = new XmlSerializer(typeof(T));
-          //  string _byteOrderMarkUtf8 = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble());
 
             var xml = content.Trim('"');
 
-//            if (xml.StartsWith(_byteOrderMarkUtf8))
-//            {
-//                xml = xml.Remove(0, _byteOrderMarkUtf8.Length);
-//            }
-
             using (var sr = new StringReader(xml))
             {
-                return (T) ser.Deserialize(sr);
+                return (T)ser.Deserialize(sr);
             }
         }
 
@@ -29,12 +23,16 @@ namespace ZenPlatform.Configuration.Structure
             where T : class
         {
             BaseDirectory = Path.GetDirectoryName(fileName);
-
-            XmlSerializer ser = new XmlSerializer(typeof(T));
-            using (var sr = new StreamReader(fileName))
+            using (var sr = File.Open(fileName, FileMode.Open))
             {
-                return (T) ser.Deserialize(sr);
+                return DeserializeFromStream<T>(sr);
             }
+        }
+
+        public static T DeserializeFromStream<T>(Stream stream)
+        {
+            XmlSerializer ser = new XmlSerializer(typeof(T));
+            return (T)ser.Deserialize(stream);
         }
 
         public static string BaseDirectory { get; private set; }
@@ -47,6 +45,16 @@ namespace ZenPlatform.Configuration.Structure
                 xs.Serialize(sw, obj);
 
                 return sw.ToString();
+            }
+        }
+        public static Stream SerializeToStream(this object obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+                XmlSerializer xs = new XmlSerializer(obj.GetType());
+                xs.Serialize(ms, obj);
+
+                return ms;
             }
         }
     }

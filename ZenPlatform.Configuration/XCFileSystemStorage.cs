@@ -12,6 +12,7 @@ namespace ZenPlatform.Configuration
     {
         private readonly string _directory;
         private readonly string _projectFileName;
+        private uint _maxId = 100;
 
         public XCFileSystemStorage(string directory, string projectFileName)
         {
@@ -19,51 +20,34 @@ namespace ZenPlatform.Configuration
             _projectFileName = projectFileName;
         }
 
-        public byte[] GetBlob(string name, string route)
+        public Stream GetBlob(string name, string route)
         {
-            using (var reader = File.OpenRead(Path.Combine(_directory, route, name)))
-            {
-                var data = new byte[reader.Length];
-                reader.Read(data, 0, data.Length);
-                return data;
-            }
+            return File.OpenRead(Path.Combine(_directory, route, name));
         }
 
-        public string GetStringBlob(string name, string route)
+        public Stream GetRootBlob()
         {
-            return Encoding.UTF8.GetString(GetBlob(name, route));
+            return File.OpenRead(Path.Combine(_directory, _projectFileName));
         }
 
-        public void SaveBlob(string name, string route, string data)
+        public void SaveRootBlob(Stream stream)
         {
-            SaveBlob(name, route, Encoding.UTF8.GetBytes(data));
+            SaveBlob(_projectFileName, "", stream);
         }
 
-        public byte[] GetRootBlob()
+        public void GetId(Guid confId, ref uint uid)
         {
-            using (var reader = File.OpenRead(Path.Combine(_directory, _projectFileName)))
-            {
-                var data = new byte[reader.Length];
-                reader.Read(data, 0, data.Length);
-                return data;
-            }
+            if (uid != 0)
+                return;
+
+            uid = _maxId++;
         }
 
-        public string GetStringRootBlob()
-        {
-            return Encoding.UTF8.GetString(GetRootBlob());
-        }
-
-        public void SaveRootBlob(string content)
-        {
-            SaveBlob(_projectFileName, "", content);
-        }
-
-        public void SaveBlob(string name, string route, byte[] bytes)
+        public void SaveBlob(string name, string route, Stream stream)
         {
             using (var sw = File.OpenWrite(Path.Combine(_directory, route, name)))
             {
-                sw.Write(bytes, 0, bytes.Length);
+                stream.CopyTo(sw);
             }
         }
     }

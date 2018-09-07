@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using MessagePack;
-using ZenPlatform.ConfigurationServerMessages.Models;
 
 namespace ZenPlatform.ConfigurationServerMessages.Messages
 {
     /// <summary>
-    /// Сообщение - ответ связанное с деревом конфигурации. Когда мы пытаемся открыть плюсиком список, срабатывает именно оно
+    /// Новый элемент. Относится либо к корню компонента либо к одному из его дочерних элементов
     /// </summary>
     [MessagePackObject]
-    public class XCTreeResponceMessage : XCMessage
+    public class XCNewItemMessage : XCMessage
     {
         /// <summary>
         /// Идентификатор запроса, необходим для ассинхронной модели, чтобы знать на что мы отвечаем
@@ -23,11 +21,5 @@ namespace ZenPlatform.ConfigurationServerMessages.Messages
         /// </summary>
         [Key(1)]
         public Guid ParentId { get; set; }
-
-        /// <summary>
-        /// Элементы
-        /// </summary>
-        [Key(2)]
-        public List<XCItem> Items { get; set; }
     }
 }

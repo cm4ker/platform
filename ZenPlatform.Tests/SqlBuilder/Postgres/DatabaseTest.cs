@@ -1,33 +1,33 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 
 namespace ZenPlatform.Tests.SqlBuilder.Postgres
 {
-    [TestClass]
+
     public class DatabaseTest
     {
         private PostgresCompiller _compiller = new PostgresCompiller();
 
 
-        [TestMethod]
+        [Fact]
         public void CreateDatabaseTest()
         {
             var q = new CreateDatabaseQueryNode("TestDatabase");
 
             var query = _compiller.Compile(q);
 
-            Assert.AreEqual("CREATE DATABASE \"TestDatabase\"", query);
+            Assert.Equal("CREATE DATABASE \"TestDatabase\"", query);
         }
 
-        [TestMethod]
+        [Fact]
         public void DropDatabaseTest()
         {
             var q = new DropDatabaseQueryNode("TestDatabase");
 
             var query = _compiller.Compile(q);
 
-            Assert.AreEqual("DROP DATABASE \"TestDatabase\"", query);
+            Assert.Equal("DROP DATABASE \"TestDatabase\"", query);
         }
     }
 

@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.DDL.Index;
 
 namespace ZenPlatform.Tests.SqlBuilder.Postgres
 {
-    [TestClass]
+ 
     public class IndexTest
     {
         private PostgresCompiller _compiller = new PostgresCompiller();
 
-        [TestMethod]
+        [Fact]
         public void CreateIndexTest()
         {
             var q = new CreateIndexQueryNode("NewIndex")
@@ -24,7 +24,7 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
 
             var actual = _compiller.Compile(q);
 
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
     }
 }

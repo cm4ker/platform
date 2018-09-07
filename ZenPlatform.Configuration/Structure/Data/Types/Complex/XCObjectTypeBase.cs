@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -66,6 +67,15 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         public virtual void LoadDependencies()
         {
+        }
+
+        /// <summary>
+        /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<XCObjectPropertyBase> GetProperties()
+        {
+            throw new NotSupportedException();
         }
     }
 }
