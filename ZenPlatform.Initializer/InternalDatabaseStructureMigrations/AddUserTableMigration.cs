@@ -21,4 +21,3 @@ namespace ZenPlatform.Initializer.InternalDatabaseStructureMigrations
         }
     }
 }
-

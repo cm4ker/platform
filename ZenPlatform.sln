@@ -68,17 +68,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Initializer", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryUIBuilder", "ZenPlatform.QueryUIBuilder\ZenPlatform.QueryUIBuilder.csproj", "{D1D8377F-6FA1-4B09-BC43-D30758AF7103}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConfigurationServer", "ZenPlatform.ConfigurationServer\ZenPlatform.ConfigurationServer.csproj", "{E38829E8-E501-4222-BB70-DA023F9BADD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Server", "ZenPlatform.ConfigurationServer\ZenPlatform.IdeIntegration.Server.csproj", "{E38829E8-E501-4222-BB70-DA023F9BADD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConfigurationServerClient", "ZenPlatform.ConfigurationServerClient\ZenPlatform.ConfigurationServerClient.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Client", "ZenPlatform.ConfigurationServerClient\ZenPlatform.IdeIntegration.Client.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConfigurationServerMessages", "ZenPlatform.ConfigurationServerShared\ZenPlatform.ConfigurationServerMessages.csproj", "{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Messages", "ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Messages.csproj", "{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Controls.Avalonia", "ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj", "{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Controls.WPF", "ZenPlatform.Controls.WPF\ZenPlatform.Controls.WPF.csproj", "{DF5CF55E-EC34-48EF-8E45-333C706880D6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Pidl", "ZenPlatform.Pidl\ZenPlatform.Pidl.csproj", "{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}"
 EndProject
@@ -1052,38 +1050,6 @@ Global
 		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Release|x86.ActiveCfg = Release|Any CPU
 		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}.Release|x86.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Ad-Hoc|iPhoneSimulator.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Ad-Hoc|x86.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Ad-Hoc|x86.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.AppStore|iPhone.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.AppStore|iPhone.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.AppStore|iPhoneSimulator.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.AppStore|x86.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.AppStore|x86.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Debug|x86.Build.0 = Debug|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|iPhone.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|x86.ActiveCfg = Release|Any CPU
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6}.Release|x86.Build.0 = Release|Any CPU
 		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
 		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
 		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
@@ -1204,7 +1170,6 @@ Global
 		{255ACB94-338C-47DA-818A-3E0ABE5455B6} = {9BC66EAE-D56B-4FCF-8C91-5332F97180D2}
 		{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1} = {9BC66EAE-D56B-4FCF-8C91-5332F97180D2}
 		{937BA658-AA0F-43B4-BB1E-7D3197DD9E24} = {3EE6451A-06AB-4635-BC3E-2CD05075D9A4}
-		{DF5CF55E-EC34-48EF-8E45-333C706880D6} = {3EE6451A-06AB-4635-BC3E-2CD05075D9A4}
 		{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB} = {3EE6451A-06AB-4635-BC3E-2CD05075D9A4}
 		{C01A92C8-B0C2-47B2-85A8-516CC9D06A77} = {C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}
 		{1884AFA2-86D1-42EC-87E4-8B2EC85C24B4} = {C01A92C8-B0C2-47B2-85A8-516CC9D06A77}

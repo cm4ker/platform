@@ -41,7 +41,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _data = value;
-                ((IChildItem<XCRoot>) _data).Parent = this;
+                ((IChildItem<XCRoot>)_data).Parent = this;
             }
         }
 
@@ -54,7 +54,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _roles = value;
-                ((IChildItem<XCRoot>) _roles).Parent = this;
+                ((IChildItem<XCRoot>)_roles).Parent = this;
             }
         }
 
@@ -73,8 +73,10 @@ namespace ZenPlatform.Configuration.Structure
         /// <returns></returns>
         public static XCRoot Load(IXCConfigurationStorage storage)
         {
-            //Начальная загрузка 
-            XCRoot conf = XCHelper.Deserialize<XCRoot>(storage.GetStringRootBlob());
+            XCRoot conf;
+            using (var stream = storage.GetRootBlob())
+                //Начальная загрузка 
+                conf = XCHelper.DeserializeFromStream<XCRoot>(stream);
 
             //Сохраняем хранилище
             conf._storage = storage;
@@ -110,7 +112,7 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Save()
         {
-            using (StringWriter sw = new StringWriter())
+            using (MemoryStream sw = new MemoryStream())
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(XCRoot));
                 serializer.Serialize(sw, this);
@@ -124,7 +126,7 @@ namespace ZenPlatform.Configuration.Structure
                 //Сохранение раздела интерфейсов
 
                 //Сохранение раздела ...
-                _storage.SaveRootBlob(sw.ToString());
+                _storage.SaveRootBlob(sw);
                 //TODO: Необходимо инициировать сохранение для всех компонентов
             }
         }

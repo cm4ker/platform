@@ -16,9 +16,7 @@ namespace ZenPlatform.QueryBuilder.Common.Table
             _table = new TableNode(tableName);
 
             Childs.Add(_table);
-            Childs.Add(Tokens.Tokens.LeftBracketToken);
             Childs.Add(_columnList);
-            Childs.Add(Tokens.Tokens.RightBracketToken);
         }
 
         public TableWithColumnsNode WithSchema(string schemaName)
@@ -34,14 +32,7 @@ namespace ZenPlatform.QueryBuilder.Common.Table
 
         public TableWithColumnsNode WithField(FieldNode node)
         {
-            if (_columnList.Childs.Any())
-            {
-                _columnList.Add(Tokens.Tokens.CommaToken);
-                _columnList.Add(Tokens.Tokens.SpaceToken);
-            }
-
             _columnList.Add(node);
-
             return this;
         }
     }
