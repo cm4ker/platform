@@ -253,7 +253,6 @@ namespace ZenPlatform.QueryBuilder
         protected virtual void VisitTableWithColumnsNode(TableWithColumnsNode tableWithColumnsNode, StringBuilder sb)
         {
             VisitChilds(tableWithColumnsNode, sb);
-            sb.Append(" ");
         }
 
         protected virtual void VisitInsertIntoNode(InsertIntoNode insertIntoNode, StringBuilder sb)

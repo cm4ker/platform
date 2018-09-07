@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using System.Text;
 using ZenPlatform.Configuration;
 using ZenPlatform.Core.Helpers;
@@ -30,30 +31,27 @@ namespace ZenPlatform.Core.Configuration
             _compiler = compiler;
         }
 
-        public byte[] GetBlob(string name, string route)
+        public Stream GetBlob(string name, string route)
         {
             var query = new SelectQueryNode().From(_tableName).Select(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
                 .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
                     x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
 
             route = route + ":";
-            
+
             var cmdText = _compiler.Compile(query);
             using (var cmd = _context.CreateCommand())
             {
                 cmd.CommandText = cmdText;
                 cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD, $"{route}{name}");
 
-                return (byte[]) cmd.ExecuteScalar();
+                MemoryStream ms = new MemoryStream((byte[])cmd.ExecuteScalar());
+
+                return ms;
             }
         }
 
-        public string GetStringBlob(string name, string route)
-        {
-            return Encoding.UTF8.GetString(GetBlob(name, route));
-        }
-
-        public void SaveBlob(string name, string route, byte[] bytes)
+        public void SaveBlob(string name, string route, Stream stream)
         {
             var searchQuery = new SelectQueryNode()
                 .From(_tableName)
@@ -92,30 +90,24 @@ namespace ZenPlatform.Core.Configuration
                 }
 
                 cmd.CommandText = _compiler.Compile(query);
-                cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD, bytes);
+
+                byte[] buffer = new byte[stream.Length];
+                stream.Read(buffer, 0, (int)stream.Length);
+
+                cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD, buffer);
 
                 cmd.ExecuteNonQuery();
             }
         }
 
-        public void SaveBlob(string name, string route, string data)
-        {
-            SaveBlob(name, route, Encoding.UTF8.GetBytes(data));
-        }
-
-        public byte[] GetRootBlob()
+        public Stream GetRootBlob()
         {
             return GetBlob("root", "");
         }
 
-        public string GetStringRootBlob()
+        public void SaveRootBlob(Stream stream)
         {
-            return GetStringBlob("root", "");
-        }
-
-        public void SaveRootBlob(string content)
-        {
-            SaveBlob("root", "", content);
+            SaveBlob("root", "", stream);
         }
     }
 }

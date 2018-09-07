@@ -7,8 +7,8 @@ using System.Text;
 using System.Xml.Serialization;
 using ZenPlatform.Cli;
 using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.ConfigurationLoader;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Tests.Common;
 
 
 namespace ZenPlatform.Tests.Conf
@@ -16,12 +16,12 @@ namespace ZenPlatform.Tests.Conf
     [TestClass]
     public class ConfLoadTest
     {
-        private const string ConfigurationPath = "../../../../Build/Debug/ExampleConfiguration/Configuration";
+
 
         [TestMethod]
         public void RootLoad()
         {
-            var conf = XCRoot.Load(new XCFileSystemStorage(ConfigurationPath, "Project.xml"));
+            var conf = ExampleConfiguration.GetExample();
 
             //using (var tr = new StreamReader(Path.Combine(ConfigurationPath, "Project1.xml")))
             //{
