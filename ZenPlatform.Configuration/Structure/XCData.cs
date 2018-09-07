@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -15,19 +17,30 @@ namespace ZenPlatform.Configuration.Structure
     public class XCData : IChildItem<XCRoot>
     {
         private XCRoot _parent;
-        private List<XCTypeBase> _platformTypes;
+        private ObservableCollection<XCTypeBase> _platformTypes;
+
         public XCData()
         {
             Components = new ChildItemCollection<XCData, XCComponent>(this);
-            _platformTypes = new List<XCTypeBase>();
+            _platformTypes = new ObservableCollection<XCTypeBase>();
 
-            //Инициализируем примитивные типы платформы, они нужны для правильного построения зависимостей
-            _platformTypes.Add(new XCBinary());
-            _platformTypes.Add(new XCString());
-            _platformTypes.Add(new XCDateTime());
-            _platformTypes.Add(new XCBoolean());
-            _platformTypes.Add(new XCNumeric());
-            _platformTypes.Add(new XCGuid());
+            //Инициализируем каждый тип, присваеваем ему идентификатор базы данных
+            _platformTypes.CollectionChanged += (o, e) =>
+            {
+                if (e.Action == NotifyCollectionChangedAction.Add)
+                {
+                    var item = (e.NewItems[0] as XCTypeBase);
+                    if (item != null)
+                    {
+                        uint id = item.Id;
+
+                        _parent.Storage.GetId(item.Guid, ref id);
+
+                        item.Id = id;
+                    }
+                }
+            };
+
         }
 
         [XmlArray("Components")]
@@ -39,6 +52,14 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Load()
         {
+            //Инициализируем примитивные типы платформы, они нужны для правильного построения зависимостей
+            _platformTypes.Add(new XCBinary());
+            _platformTypes.Add(new XCString());
+            _platformTypes.Add(new XCDateTime());
+            _platformTypes.Add(new XCBoolean());
+            _platformTypes.Add(new XCNumeric());
+            _platformTypes.Add(new XCGuid());
+            
             LoadComponents();
             LoadDependencies();
         }
@@ -95,7 +116,8 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Все типы платформы
         /// </summary>
-        [XmlIgnore] public IEnumerable<XCTypeBase> PlatformTypes => _platformTypes;
+        [XmlIgnore]
+        public IEnumerable<XCTypeBase> PlatformTypes => _platformTypes;
 
         /// <summary>
         /// Все типы, которые относятся к компонентам

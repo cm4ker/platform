@@ -3,8 +3,12 @@ using MessagePack;
 
 namespace ZenPlatform.ConfigurationServerMessages.Messages
 {
+    
+    /// <summary>
+    /// Запрос на доступные команды у элемента конфигурации
+    /// </summary>
     [MessagePackObject]
-    public class XCItemCommandsRequestMessage
+    public class XCItemCommandsRequestMessage : XCMessage
     {
         /// <summary>
         /// Идентификатор запрашиваемого элемента

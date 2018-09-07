@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -12,12 +12,12 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Tests.Component.EntityComponent
 {
-    [TestClass]
     public class EntityComponentTest
     {
-        private const string filePath = "../../../../Build/Debug/ExampleConfiguration/Configuration/Data/Entity/TestEntity.xml";
+        private const string filePath =
+            "../../../../Build/Debug/ExampleConfiguration/Configuration/Data/Entity/TestEntity.xml";
 
-        [TestMethod]
+        [Fact]
         public void TestEntityLoad()
         {
             XCSingleEntity conf;
@@ -29,8 +29,8 @@ namespace ZenPlatform.Tests.Component.EntityComponent
             if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
             if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
 
-            Assert.AreEqual("ТестоваяСущность", conf.Name);
-            Assert.AreEqual(true, conf.Properties.Any());
+            Assert.Equal("ТестоваяСущность", conf.Name);
+            Assert.True(conf.Properties.Any());
         }
     }
 }

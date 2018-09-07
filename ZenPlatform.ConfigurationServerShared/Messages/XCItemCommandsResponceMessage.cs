@@ -4,8 +4,11 @@ using MessagePack;
 
 namespace ZenPlatform.ConfigurationServerMessages.Messages
 {
+    /// <summary>
+    /// Ответ на доступные команды конфигурации
+    /// </summary>
     [MessagePackObject]
-    public class XCItemCommandsResponceMessage
+    public class XCItemCommandsResponceMessage : XCMessage
     {
         /// <summary>
         /// Идентификатор запроса, необходим для ассинхронной модели, чтобы знать на что мы отвечаем

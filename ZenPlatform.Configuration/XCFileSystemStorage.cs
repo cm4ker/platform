@@ -12,6 +12,7 @@ namespace ZenPlatform.Configuration
     {
         private readonly string _directory;
         private readonly string _projectFileName;
+        private uint _maxId = 100;
 
         public XCFileSystemStorage(string directory, string projectFileName)
         {
@@ -32,6 +33,14 @@ namespace ZenPlatform.Configuration
         public void SaveRootBlob(Stream stream)
         {
             SaveBlob(_projectFileName, "", stream);
+        }
+
+        public void GetId(Guid confId, ref uint uid)
+        {
+            if (uid != 0)
+                return;
+
+            uid = _maxId++;
         }
 
         public void SaveBlob(string name, string route, Stream stream)

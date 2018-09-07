@@ -5,37 +5,37 @@ using System.Xml.Serialization;
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
     /// <summary>
-    /// Примитивный тип данных
+    /// РџСЂРёРјРёС‚РёРІРЅС‹Р№ С‚РёРї РґР°РЅРЅС‹С…
     /// </summary>
     public abstract class XCPremitiveType : XCTypeBase
     {
         /// <summary>
-        /// Размер колонки
+        /// Р Р°Р·РјРµСЂ РєРѕР»РѕРЅРєРё
         /// </summary>
         public abstract int ColumnSize { get; set; }
 
         /// <summary>
-        /// Точность
+        /// РўРѕС‡РЅРѕСЃС‚СЊ
         /// </summary>
         public abstract int Precision { get; set; }
 
         /// <summary>
-        /// Значимость
+        /// Р—РЅР°С‡РёРјРѕСЃС‚СЊ
         /// </summary>
         public abstract int Scale { get; set; }
 
         /// <summary>
-        /// Может быть равна NULL
+        /// РњРѕР¶РµС‚ Р±С‹С‚СЊ СЂР°РІРЅР° NULL
         /// </summary>
         public abstract bool IsNullable { get; set; }
 
         /// <summary>
-        /// Тип базы данных
+        /// РўРёРї Р±Р°Р·С‹ РґР°РЅРЅС‹С…
         /// </summary>
         [XmlIgnore] public abstract DbType DBType { get; }
 
         /// <summary>
-        /// Соответствующий тип CLR
+        /// РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ С‚РёРї CLR
         /// </summary>
         [XmlIgnore] public abstract Type CLRType { get; }
     }
