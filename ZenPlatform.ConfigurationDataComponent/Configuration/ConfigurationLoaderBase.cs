@@ -63,30 +63,28 @@ namespace ZenPlatform.DataComponent.Configuration
         /// <exception cref="NullReferenceException"></exception>
         public virtual XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob)
         {
-            var xml = com.Root.Storage.GetStringBlob(blob.Name, com.Info.ComponentName);
-
-            using (var r = new StringReader(xml))
+            TObjectType conf;
+            using (var stream = com.Root.Storage.GetBlob(blob.Name, $"Data/{com.Info.ComponentName}"))
             {
-                var s = new XmlSerializer(typeof(TObjectType));
-
-                var conf = s.Deserialize(r) as TObjectType ?? throw new InvalidLoadConfigurationException(blob.Name);
-
-                if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
-                if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
-
-                AfterObjectLoad(conf);
-
-                //Сразу же указываем родителя
-                ((IChildItem<XCComponent>)conf).Parent = com;
-
-                com.Parent.RegisterType(conf);
-
-                BeforeInitialize(conf);
-                conf.Initialize();
-                AfterInitialize(conf);
-
-                return conf;
+                conf = XCHelper.DeserializeFromStream<TObjectType>(stream) ?? throw new InvalidLoadConfigurationException(blob.Name);
             }
+
+            if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
+            if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
+
+            AfterObjectLoad(conf);
+
+            //Сразу же указываем родителя
+            ((IChildItem<XCComponent>)conf).Parent = com;
+
+            com.Parent.RegisterType(conf);
+
+            BeforeInitialize(conf);
+            conf.Initialize();
+            AfterInitialize(conf);
+
+            return conf;
+
         }
 
         /// <summary>
@@ -108,7 +106,8 @@ namespace ZenPlatform.DataComponent.Configuration
                 blob = conf.AttachedBlob;
             }
 
-            storage.SaveBlob(blob.Name, conf.Parent.Info.ComponentName, conf.Serialize());
+            using (var stream = conf.SerializeToStream())
+                storage.SaveBlob(blob.Name, conf.Parent.Info.ComponentName, stream);
         }
 
         public XCDataRuleBase LoadRule(XCDataRuleContent content)

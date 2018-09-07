@@ -68,11 +68,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Initializer", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryUIBuilder", "ZenPlatform.QueryUIBuilder\ZenPlatform.QueryUIBuilder.csproj", "{D1D8377F-6FA1-4B09-BC43-D30758AF7103}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConfigurationServer", "ZenPlatform.ConfigurationServer\ZenPlatform.ConfigurationServer.csproj", "{E38829E8-E501-4222-BB70-DA023F9BADD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Server", "ZenPlatform.ConfigurationServer\ZenPlatform.IdeIntegration.Server.csproj", "{E38829E8-E501-4222-BB70-DA023F9BADD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConfigurationServerClient", "ZenPlatform.ConfigurationServerClient\ZenPlatform.ConfigurationServerClient.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Client", "ZenPlatform.ConfigurationServerClient\ZenPlatform.IdeIntegration.Client.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConfigurationServerMessages", "ZenPlatform.ConfigurationServerShared\ZenPlatform.ConfigurationServerMessages.csproj", "{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Messages", "ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Messages.csproj", "{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}"
 EndProject

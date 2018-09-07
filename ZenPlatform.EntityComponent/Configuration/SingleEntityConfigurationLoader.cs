@@ -47,7 +47,9 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             ((IChildItem<XCComponent>) newItem).Parent = Component;
             Component.Parent.RegisterType(newItem);
-
+            
+            //TODO: Обработать базовый тип
+            
             return newItem;
         }
 

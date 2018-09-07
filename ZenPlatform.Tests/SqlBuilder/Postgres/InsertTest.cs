@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Common.Operations;
@@ -6,12 +6,11 @@ using ZenPlatform.QueryBuilder.DML.Insert;
 
 namespace ZenPlatform.Tests.SqlBuilder.Postgres
 {
-    [TestClass]
     public class InsertTest
     {
         private PostgresCompiller _compiller = new PostgresCompiller();
 
-        [TestMethod]
+        [Fact]
         public void SimpleInsert()
         {
             var query = new InsertQueryNode()
@@ -24,8 +23,8 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
             var cmd = _compiller.Compile(query);
 
             var expectedCmd = "INSERT INTO \"config\"(\"Field1\", \"Field2\") VALUES(@value1, @value2)";
-            
-            Assert.AreEqual(expectedCmd, cmd);
+
+            Assert.Equal(expectedCmd, cmd);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using MessagePack;
 
-namespace ZenPlatform.ConfigurationServerMessages.Messages
+namespace ZenPlatform.ConfigurationServerMessages.Models
 {
     /// <summary>
     /// Данные элемента конфигурации
