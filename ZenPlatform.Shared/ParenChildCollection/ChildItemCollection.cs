@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace ZenPlatform.Shared.ParenChildCollection
     /// </summary>
     /// <typeparam name="TParent">Type of the parent object</typeparam>
     /// <typeparam name="TChildren">Type of the child items</typeparam>
-    public class ChildItemCollection<TParent, TChildren> : IList<TChildren>, INotifyCollectionChanged,
+    public class ChildItemCollection<TParent, TChildren> : IList<TChildren>, IList, INotifyCollectionChanged,
         INotifyPropertyChanged
         where TParent : class
         where TChildren : class, IChildItem<TParent>
@@ -45,7 +47,7 @@ namespace ZenPlatform.Shared.ParenChildCollection
                 item.Parent = _parent;
             _collection.Insert(index, item);
             CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }));
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] {item}));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
@@ -58,6 +60,11 @@ namespace ZenPlatform.Shared.ParenChildCollection
             }
         }
 
+        public void Remove(object value)
+        {
+            throw new NotImplementedException();
+        }
+
         public void RemoveAt(int index)
         {
             TChildren oldItem = _collection[index];
@@ -66,9 +73,11 @@ namespace ZenPlatform.Shared.ParenChildCollection
                 oldItem.Parent = null;
 
             CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { oldItem }));
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] {oldItem}));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
+
+        public bool IsFixedSize { get; }
 
         public TChildren this[int index]
         {
@@ -83,8 +92,8 @@ namespace ZenPlatform.Shared.ParenChildCollection
                     oldItem.Parent = null;
 
                 CollectionChanged?.Invoke(this,
-                    new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new[] { value },
-                        new[] { oldItem }));
+                    new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new[] {value},
+                        new[] {oldItem}));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
             }
         }
@@ -99,7 +108,7 @@ namespace ZenPlatform.Shared.ParenChildCollection
                 item.Parent = _parent;
             _collection.Add(item);
             CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }));
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] {item}));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
@@ -119,6 +128,11 @@ namespace ZenPlatform.Shared.ParenChildCollection
             }
         }
 
+        public int Add(object value)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Clear()
         {
             foreach (TChildren item in _collection)
@@ -134,6 +148,21 @@ namespace ZenPlatform.Shared.ParenChildCollection
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
+        public bool Contains(object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int IndexOf(object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(int index, object value)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Contains(TChildren item)
         {
             return _collection.Contains(item);
@@ -147,14 +176,28 @@ namespace ZenPlatform.Shared.ParenChildCollection
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
         }
 
+        public void CopyTo(Array array, int index)
+        {
+            ((IList) _collection).CopyTo(array, index);
+        }
+
         public int Count
         {
             get { return _collection.Count; }
         }
 
+        public bool IsSynchronized => ((IList) _collection).IsSynchronized;
+        public object SyncRoot => ((IList) _collection).SyncRoot;
+
         public bool IsReadOnly
         {
             get { return _collection.IsReadOnly; }
+        }
+
+        object IList.this[int index]
+        {
+            get => this[index];
+            set => this[index] = value as TChildren;
         }
 
         public bool Remove(TChildren item)
@@ -163,7 +206,7 @@ namespace ZenPlatform.Shared.ParenChildCollection
             if (item != null)
                 item.Parent = null;
             CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { item }));
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] {item}));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Items"));
             return b;
         }
@@ -187,7 +230,6 @@ namespace ZenPlatform.Shared.ParenChildCollection
         }
 
         #endregion
-
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;

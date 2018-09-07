@@ -4,20 +4,20 @@ using System.IO;
 using System.Reflection;
 using Avalonia.Markup.Xaml.Context;
 using Avalonia.Markup.Xaml.PortableXaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MonoMac.Foundation;
 using Portable.Xaml;
 using Portable.Xaml.Markup;
+using Xunit;
 using ZenPlatform.Pidl;
 using ZenPlatform.Pidl.ObjectModel;
 using ZenPlatform.Pidl.Xaml;
 
 namespace ZenPlatform.Tests.UI
 {
-    [TestClass]
+  
     public class PidlTest
     {
-        [TestMethod]
+        [Fact]
         public void TestPidlReader()
         {
             Console.WriteLine("Start");

@@ -78,7 +78,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
                 foreach (var propertyType in property.Types)
                 {
-                    var type = Data.PlatformTypes.First(x => x.Guid == propertyType.Guid && x.Id == propertyType.Id);
+                    var type = Data.PlatformTypes.FirstOrDefault(x => x.Guid == propertyType.Guid);
                     //Если по какой то причине тип поля не найден, в таком случае считаем, что конфигурация битая и выкидываем исключение
                     if (type == null) throw new Exception("Invalid configuration");
 
@@ -88,6 +88,10 @@ namespace ZenPlatform.EntityComponent.Configuration
                 //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные 
                 property.Types.Clear();
                 property.Types.AddRange(configurationTypes);
+
+                var id = property.Id;
+                property.Parent.Root.Storage.GetId(property.Guid, ref id);
+                property.Id = id;
             }
         }
 
@@ -95,6 +99,11 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             if (Properties.FirstOrDefault(x => x.Unique) == null)
                 Properties.Add(StandartDocumentPropertyHelper.CreateUniqueProperty());
+        }
+
+        public override IEnumerable<XCObjectPropertyBase> GetProperties()
+        {
+            return Properties;
         }
     }
 }

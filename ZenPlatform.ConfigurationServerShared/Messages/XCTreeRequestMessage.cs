@@ -3,8 +3,11 @@ using MessagePack;
 
 namespace ZenPlatform.ConfigurationServerMessages.Messages
 {
+    /// <summary>
+    /// Запрос на дочерние элементы элемента конфигурации
+    /// </summary>
     [MessagePackObject]
-    public class XCTreeRequestMessage
+    public class XCTreeRequestMessage : XCMessage
     {
         /// <summary>
         /// Идентификатор элемента, для которого запрашиваем поддерево

@@ -2,31 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.DataComponent.Helpers;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.Shared.ParenChildCollection;
 using ZenPlatform.Tests.Common;
 
 namespace ZenPlatform.Tests.Component.BaseComponent
 {
-    [TestClass]
     public class BaseComponentTests
     {
-        [TestMethod]
+        [Fact]
         public void TestXCPropertyHelper()
         {
             var conf = ExampleConfiguration.GetExample();
-            
+
             var componentType = conf.Data.ComponentTypes.First();
 
-            var componentProperty = (componentType as XCSingleEntity).Properties.First();
+            var componentProperty = componentType.GetProperties().First();
 
-            var actual = ColumnsHelper.GetColumnsFromProperty(componentProperty).Select(x => x.DatabaseColumnName).ToList();
-            var expected = new List<string> { "Ref1", "Ref2", "Ref3" };
+            var actual = ColumnsHelper.GetColumnsFromProperty(componentProperty).Select(x => x.DatabaseColumnName)
+                .ToList();
+            var expected = new List<string> {"fld101_DateTime", "fld101_Binary", "fld101_Boolean", "fld101_Guid"};
 
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿using ZenPlatform.Shared.Tree;
-using System.Collections.Generic;
-using ZenPlatform.Shared.ParenChildCollection;
+﻿using ZenPlatform.Shared.ParenChildCollection;
+using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.Configuration.Structure
+namespace ZenPlatform.ConfigurationServerMessages.ViewModel
 {
     /// <summary>
     /// Модель представления корня конфигурации конфигурации

@@ -14,7 +14,7 @@ using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Cli
 {
-    public class CliBuilder
+    public static class CliBuilder
     {
         /*
          * Для тулзы будут доступны следующие режимы

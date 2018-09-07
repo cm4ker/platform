@@ -109,5 +109,10 @@ namespace ZenPlatform.Core.Configuration
         {
             SaveBlob("root", "", stream);
         }
+
+        public void GetId(Guid confId, ref uint oldId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
