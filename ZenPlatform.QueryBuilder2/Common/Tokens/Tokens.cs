@@ -35,11 +35,48 @@
         public static Token SumToken = new SumToken();
 
         public static Token LimitToken = new LimitToken();
-        
+
         public static Token InsertToken = new InsertToken();
-        
+
         public static Token IntoToken = new IntoToken();
-        
+
+        public static Token FromToken = new FromToken();
+
+        public static Token AscToken = new AscToken();
+
+        public static Token DescToken = new DescToken();
+
+        public static Token IndexToken = new IndexToken();
+
+        public static Token OnToken = new OnToken();
+    }
+
+    public class OnToken : Token
+    {
+        public OnToken() : base("ON")
+        {
+        }
+    }
+
+    public class IndexToken : Token
+    {
+        public IndexToken() : base("INDEX")
+        {
+        }
+    }
+
+    public class AscToken : Token
+    {
+        public AscToken() : base("ASC")
+        {
+        }
+    }
+
+    public class DescToken : Token
+    {
+        public DescToken() : base("DESC")
+        {
+        }
     }
 
 
@@ -113,17 +150,24 @@
         {
         }
     }
-    
+
     public class IntoToken : Token
     {
         public IntoToken() : base("INTO")
         {
         }
     }
-    
+
     public class LimitToken : Token
     {
         public LimitToken() : base("LIMIT")
+        {
+        }
+    }
+
+    public class FromToken : Token
+    {
+        public FromToken() : base("FROM")
         {
         }
     }

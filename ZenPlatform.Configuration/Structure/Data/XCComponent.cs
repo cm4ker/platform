@@ -7,9 +7,9 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Threading;
 using System.Xml.Serialization;
-using ZenPlatform.Configuration.ConfigurationLoader;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts;
@@ -86,9 +86,14 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// </summary>
         public void LoadComponent()
         {
-            var blob = Root.Storage.GetBlob(Blob.Name, nameof(XCComponent));
 
-            ComponentAssembly = Assembly.Load(blob);
+            var stream = Root.Storage.GetBlob(Blob.Name, nameof(XCComponent));
+
+            using (var ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                ComponentAssembly = Assembly.Load(ms.ToArray());
+            }
 
             var typeInfo = ComponentAssembly.GetTypes()
                 .FirstOrDefault(x => x.BaseType == typeof(XCComponentInformation));
@@ -134,9 +139,8 @@ namespace ZenPlatform.Configuration.Structure.Data
             if (Blob is null)
                 Blob = new XCBlob(Path.GetFileName(this.ComponentAssembly.FullName));
 
-            byte[] bytes = File.ReadAllBytes(ComponentAssembly.FullName);
-
-            Root.Storage.SaveBlob(Blob.Name, nameof(XCComponent), bytes);
+            using (Stream stream = File.Open(ComponentAssembly.FullName, FileMode.Open))
+                Root.Storage.SaveBlob(Blob.Name, nameof(XCComponent), stream);
         }
 
         [XmlIgnore] public XCRoot Root => _parent.Parent;

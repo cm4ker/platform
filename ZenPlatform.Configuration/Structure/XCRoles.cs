@@ -30,9 +30,10 @@ namespace ZenPlatform.Configuration.Structure
             if (Blobs != null)
                 foreach (var blob in Blobs)
                 {
-                    var xml = Parent.Storage.GetStringBlob(blob.Name, StandardRoleFolder);
+                    var stream = Parent.Storage.GetBlob(blob.Name, StandardRoleFolder);
+                    var role = XCHelper.DeserializeFromStream<XCRole>(stream);
 
-                    var role = XCHelper.Deserialize<XCRole>(xml);
+                    stream.Dispose();
 
                     Items.Add(role);
 
@@ -53,7 +54,8 @@ namespace ZenPlatform.Configuration.Structure
         {
             foreach (var role in Items)
             {
-                Parent.Storage.SaveBlob(role.Name, StandardRoleFolder, role.Serialize());
+                using (Stream stream = role.SerializeToStream())
+                    Parent.Storage.SaveBlob(role.Name, StandardRoleFolder, stream);
             }
         }
     }

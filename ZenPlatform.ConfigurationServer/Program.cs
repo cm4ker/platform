@@ -13,6 +13,11 @@ namespace ZenPlatform.ConfigurationServer
     {
         static void Main(string[] args)
         {
+         
+        }
+
+        static void Start()
+        {
             using (var server = new ResponseSocket("@tcp://localhost:5556")) // bind
             using (var client = new RequestSocket(">tcp://localhost:5556"))  // connect
             {
@@ -22,12 +27,12 @@ namespace ZenPlatform.ConfigurationServer
 
                 if (1 % 2 == 0)
                     data = MessagePackSerializer.Typeless.Serialize(
-                    new TestMessage()
-                    {
-                        MsgType = "TestMessage",
-                        Hello = "OK",
-                        SomeContet = new TestMessage() { Hello = "NASTED" }
-                    });
+                        new TestMessage()
+                        {
+                            MsgType = "TestMessage",
+                            Hello = "OK",
+                            SomeContet = new TestMessage() { Hello = "NASTED" }
+                        });
                 else
                     data = MessagePackSerializer.Typeless.Serialize(
                         new TestMessage2()
@@ -49,6 +54,7 @@ namespace ZenPlatform.ConfigurationServer
                 Console.ReadKey();
             }
         }
+
     }
 
     [MessagePackObject]

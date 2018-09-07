@@ -3,6 +3,9 @@ using System.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
+    /// <summary>
+    /// Тип обычной строки
+    /// </summary>
     public class XCString : XCPremitiveType
     {
         public override uint Id => 6;

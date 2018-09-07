@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using ZenPlatform.QueryBuilder.DML.Delete;
 using ZenPlatform.QueryBuilder.DML.From;
@@ -56,6 +57,8 @@ namespace ZenPlatform.QueryBuilder
             var a = new AlterTableQueryNode("someAlterTable", t => t.WithSchema("dbo"));
             a.AddColumn("ТристаОтсосиУТракториста", f => f.Guid().NotNull());
 
+            var createDb = new CreateDatabaseQueryNode("test Database");
+
             var sb = new StringBuilder();
             c.Compile(q, sb);
             sb.Append("\n=============================\n");
@@ -68,6 +71,8 @@ namespace ZenPlatform.QueryBuilder
             c.Compile(cr, sb);
             sb.Append("\n=============================\n");
             c.Compile(a, sb);
+            sb.Append("\n=============================\n");
+            c.Compile(createDb, sb);
 
             Console.WriteLine(sb);
             Console.ReadLine();
