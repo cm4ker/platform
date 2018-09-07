@@ -48,15 +48,15 @@ Task("Build")
 Task("Default").IsDependentOn("Build")
   .Does(() =>
 {
-  CreateDirectory(confDir + Directory("Components"));
-  CopyFile(buildDir + File("ZenPlatform.DataComponent.dll"), confDir + Directory("Components") + File("ZenPlatform.DataComponent.dll"));
-  CopyFile(buildDir + File("ZenPlatform.EntityComponent.dll"), confDir + Directory("Components") + File("ZenPlatform.EntityComponent.dll"));
-  CopyFile(buildDir + File("ZenPlatform.Configuration.dll"), confDir + Directory("Components") + File("ZenPlatform.Configuration.dll"));
+  CreateDirectory(confDir + Directory("XCComponent"));
+  CopyFile(buildDir + File("ZenPlatform.DataComponent.dll"), confDir + Directory("XCComponent") + File("ZenPlatform.DataComponent.dll"));
+  CopyFile(buildDir + File("ZenPlatform.EntityComponent.dll"), confDir + Directory("XCComponent") + File("ZenPlatform.EntityComponent.dll"));
+  CopyFile(buildDir + File("ZenPlatform.Configuration.dll"), confDir + Directory("XCComponent") + File("ZenPlatform.Configuration.dll"));
 
   //Copy pdb files for debug
-  CopyFile(buildDir + File("ZenPlatform.DataComponent.pdb"), confDir + Directory("Components") + File("ZenPlatform.DataComponent.pdb"));
-  CopyFile(buildDir + File("ZenPlatform.EntityComponent.pdb"), confDir + Directory("Components") + File("ZenPlatform.EntityComponent.pdb"));
-  CopyFile(buildDir + File("ZenPlatform.Configuration.pdb"), confDir + Directory("Components") + File("ZenPlatform.Configuration.pdb"));
+  CopyFile(buildDir + File("ZenPlatform.DataComponent.pdb"), confDir + Directory("XCComponent") + File("ZenPlatform.DataComponent.pdb"));
+  CopyFile(buildDir + File("ZenPlatform.EntityComponent.pdb"), confDir + Directory("XCComponent") + File("ZenPlatform.EntityComponent.pdb"));
+  CopyFile(buildDir + File("ZenPlatform.Configuration.pdb"), confDir + Directory("XCComponent") + File("ZenPlatform.Configuration.pdb"));
 
   
   Information("Build done");

@@ -94,6 +94,8 @@ namespace ZenPlatform.EntityComponent
             
             q.Where(f => f.Field("Id"), "=", f => f.Parameter("Id"));
 
+
+            //TODO: Сделать RLS в предложении WHERE
             //TODO: На основании пользовательского контекста необходимо получить ограничение
             
             //есть несколько путей решения этой задачи
