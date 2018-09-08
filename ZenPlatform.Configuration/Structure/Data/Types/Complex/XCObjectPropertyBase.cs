@@ -47,7 +47,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// Псевдоним в системе
         /// </summary>
         [XmlAttribute]
-        public string Alias { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Длина только для Двоичных\Числовых\Строковых данных
@@ -68,7 +68,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public bool Unique { get; set; }
 
         [XmlArray]
-        [XmlArrayItem(ElementName = "Type", Type = typeof( XCFakeType))]
+        [XmlArrayItem(ElementName = "Type", Type = typeof(XCFakeType))]
         public List<XCTypeBase> Types { get; }
 
         /// <summary>

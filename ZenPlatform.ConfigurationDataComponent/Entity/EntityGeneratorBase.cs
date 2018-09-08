@@ -49,6 +49,15 @@ namespace ZenPlatform.DataComponent.Entity
             return $"{preffix}{obj.Name}{postfix}";
         }
 
+        public virtual string GetMultiDataStorageClassName(XCObjectPropertyBase property)
+        {
+            return $"MultiDataStorage_{property.DatabaseColumnName}";
+        }
+
+        public virtual string GetMultiDataStoragePrivateFieldName(XCObjectPropertyBase property)
+        {
+            return $"_mds{property.DatabaseColumnName}";
+        }
         //TODO: Необходимо реализовать все типы правил в базовом классе и выдавать Exception
         //в случае, если свойство не реализовано, а оно где-то вызвалось. 
         //Это явно укажет на то, что объект не может быть использован для такого сценария
