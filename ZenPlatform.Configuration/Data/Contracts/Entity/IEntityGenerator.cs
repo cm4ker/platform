@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
@@ -40,6 +41,16 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// <param name="obj"></param>
         /// <returns></returns>
         string GetEntityClassName(object obj);
+
+        /// <summary>
+        /// Поулчить имя класса, который оперирует мультитипом для определённого свойства
+        /// </summary>
+        /// <param name="property">Свойство для которого нужно сгенерировать мультикласс</param>
+        /// <returns>Название класса</returns>
+        string GetMultiDataStorageClassName(XCObjectPropertyBase property);
+
+
+        string GetMultiDataStoragePrivateFieldName(XCObjectPropertyBase property);
 
         /// <summary>
         /// Получить код для setter'a в свойстве чужого объекта

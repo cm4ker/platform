@@ -33,7 +33,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
                         try
                         {
-                            if (mailElement.Alias == compareElement.Alias
+                            if (mailElement.Name == compareElement.Name
                                 || (!string.IsNullOrEmpty(mailElement.DatabaseColumnName)
                                     && !string.IsNullOrEmpty(compareElement.DatabaseColumnName)
                                     && mailElement.DatabaseColumnName == compareElement.DatabaseColumnName))

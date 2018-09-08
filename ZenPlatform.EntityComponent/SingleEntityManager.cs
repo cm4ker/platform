@@ -2,6 +2,7 @@
 using ZenPlatform.Core;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
+using ZenPlatform.DataComponent.Helpers;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.QueryBuilder.DML.Select;
 
@@ -77,29 +78,26 @@ namespace ZenPlatform.EntityComponent
 
             var conf = def.EntityConfig as XCSingleEntity;
 
-            //var dto = def.EntityConfig.Parent.ComponentImpl.Caches[def.EntityConfig.Name].Get(key.ToString());
-
-            // if (dto != null)
-            //    return dto;
-
             var q = new SelectQueryNode();
 
             q.From(conf.RelTableName);
 
             foreach (var property in conf.Properties)
             {
-                if(property.Types.Count == 1)
-                q.Select(property.DatabaseColumnName);   
+                var cols = ColumnsHelper.GetColumnsFromProperty(property);
+                foreach (var col in cols)
+                {
+                    q.Select(col.DatabaseColumnName);
+                }
             }
-            
+
             q.Where(f => f.Field("Id"), "=", f => f.Parameter("Id"));
-
-
+            
             //TODO: Сделать RLS в предложении WHERE
             //TODO: На основании пользовательского контекста необходимо получить ограничение
-            
+
             //есть несколько путей решения этой задачи
-            
+
             var cmd = context.CreateCommand(q);
 
             var reader = cmd.ExecuteReader();

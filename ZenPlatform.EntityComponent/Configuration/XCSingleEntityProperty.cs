@@ -32,7 +32,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return new XCSingleEntityProperty()
             {
-                Alias = "Posted",
+                Name = "Posted",
                 Guid = Guid.Parse("27495aa2-4a50-4c3a-854c-564940aee515"),
                 Types = { PlatformTypes.Boolean },
                 IsSystemProperty = true,
@@ -44,7 +44,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return new XCSingleEntityProperty()
             {
-                Alias = "Id",
+                Name = "Id",
                 Guid = Guid.Parse("905208c8-e892-414f-bd48-acd70b2a901b"),
                 DatabaseColumnName = "Id",
                 Types = { PlatformTypes.Guid },
