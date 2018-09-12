@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  zenplatform.tests:
+    image: ${DOCKER_REGISTRY}zenplatformtests
+    build:
+      context: .
+      dockerfile: ZenPlatform.Tests/Dockerfile
