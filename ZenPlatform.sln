@@ -86,6 +86,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avalonia.DataGrid", "DataGr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avalonia.DataGrid.Themes.Default", "DataGrid\src\Avalonia.DataGrid.Themes.Default\Avalonia.DataGrid.Themes.Default.csproj", "{85E73050-A858-4178-A34C-9ABC68E8FE48}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0F50FE96-6008-4DE8-9331-F7EA052B27FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -1146,6 +1148,38 @@ Global
 		{85E73050-A858-4178-A34C-9ABC68E8FE48}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{85E73050-A858-4178-A34C-9ABC68E8FE48}.Release|x86.ActiveCfg = Release|Any CPU
 		{85E73050-A858-4178-A34C-9ABC68E8FE48}.Release|x86.Build.0 = Release|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.AppStore|x86.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.AppStore|x86.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Debug|x86.Build.0 = Debug|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|iPhone.Build.0 = Release|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|x86.ActiveCfg = Release|Any CPU
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1174,6 +1208,7 @@ Global
 		{C01A92C8-B0C2-47B2-85A8-516CC9D06A77} = {C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}
 		{1884AFA2-86D1-42EC-87E4-8B2EC85C24B4} = {C01A92C8-B0C2-47B2-85A8-516CC9D06A77}
 		{85E73050-A858-4178-A34C-9ABC68E8FE48} = {C01A92C8-B0C2-47B2-85A8-516CC9D06A77}
+		{0F50FE96-6008-4DE8-9331-F7EA052B27FF} = {60F9DF35-0F24-4B1B-AE89-43D43BAF8160}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87366D66-1391-4D90-8999-95A620AD786A}
