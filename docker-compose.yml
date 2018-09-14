@@ -6,3 +6,17 @@ services:
     build:
       context: .
       dockerfile: ZenPlatform.Tests/Dockerfile
+  db:
+    image: postgres:9.6.5-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: db1
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+# Volumes
+volumes:
+  db_data:

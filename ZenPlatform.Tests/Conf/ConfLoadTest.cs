@@ -12,7 +12,7 @@ namespace ZenPlatform.Tests.Conf
         [Fact]
         public void RootLoad()
         {
-            var conf = ExampleConfiguration.GetExample();
+            var conf = Factory.GetExampleConfigutaion();
 
             //using (var tr = new StreamReader(Path.Combine(ConfigurationPath, "Project1.xml")))
             //{
