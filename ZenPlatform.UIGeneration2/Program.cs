@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Dynamic;
 using System.IO;
 using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Logging.Serilog;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Context;
-using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Metadata;
 using Portable.Xaml;
-using Portable.Xaml.Markup;
 using ZenPlatform.UIBuilder.Compilers;
 using ZenPlatform.UIBuilder.Compilers.Avalonia;
 using ZenPlatform.UIBuilder.Interface;
-using ZenPlatform.UIBuilder.Interface.DataGrid;
 
 namespace ZenPlatform.UIBuilder
 {
@@ -99,7 +91,6 @@ namespace ZenPlatform.UIBuilder
                 </Window.Content>
             </Window>
             ";
-
 
 
             Window w = AvaloniaXamlLoader.Parse<Window>(text);

@@ -11,6 +11,7 @@ using ZenPlatform.Data.Tools;
 using ZenPlatform.Initializer;
 using ZenPlatform.Initializer.InternalDatabaseStructureMigrations;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 
 namespace ZenPlatform.Cli
 {
@@ -105,14 +106,20 @@ namespace ZenPlatform.Cli
 
                     var portOpt = dbCmd.Option<int>("--port ", "Database server port", CommandOptionType.SingleValue);
 
+                    var connectionString =
+                        dbCmd.Option("--connString", "Connection string", CommandOptionType.SingleValue);
+
                     var createOpt = dbCmd.Option("-c|--create", "Create database if not exists",
                         CommandOptionType.NoValue);
 
                     dbCmd.OnExecute(() =>
                     {
-                        OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue, serverOpt.Value(),
-                            portOpt.ParsedValue, databaseOpt.Value(), userNameOpt.Value(), passwordOpt.Value(),
-                            createOpt.HasValue());
+                        if (string.IsNullOrEmpty(connectionString.Value()))
+                            OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue, serverOpt.Value(),
+                                portOpt.ParsedValue, databaseOpt.Value(), userNameOpt.Value(), passwordOpt.Value(),
+                                createOpt.HasValue());
+                        else
+                            OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue, connectionString.Value(), createOpt.HasValue());
                     });
                 });
             });
@@ -140,31 +147,24 @@ namespace ZenPlatform.Cli
             return app.Execute(args);
         }
 
-        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port,
-            string database, string userName, string password, bool createIfNotExists)
+        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType,
+            UniversalConnectionStringBuilder stringBuilder, bool createIfNotExists)
         {
-            Console.WriteLine($"Start creating new project {projectName}");
-            Console.WriteLine(
-                $"DatabaseType: {databaseType}\nServer: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
-            var cb = new UniversalConnectionStringBuilder(databaseType);
+            var connectionString = stringBuilder.GetConnectionString();
 
             // Если базы данных нет - её необходимо создать
             if (createIfNotExists)
             {
+                var sqlCompiller = SqlCompillerBase.FormEnum(databaseType);
+
+                DataContext dc = new DataContext(databaseType, connectionString);
+
+                CreateDatabaseQueryNode cDatabase = new CreateDatabaseQueryNode();
             }
 
-            // После успешного созадания базы пробуем к ней подключиться, провести миграции и 
-            //создать новую конфигурацию
-            cb.Database = database;
-            cb.Server = server;
-            cb.Password = password;
-            cb.Username = userName;
-            cb.Port = port;
-
-            Console.WriteLine(cb.GetConnectionString());
 
             //Мигрируем...
-            MigrationRunner.Migrate(cb.GetConnectionString(), databaseType);
+            MigrationRunner.Migrate(connectionString, databaseType);
 
             //Создаём пустой проект с именем Project Name
 
@@ -172,7 +172,7 @@ namespace ZenPlatform.Cli
 
             // Необходимо создать контекст данных
 
-            var dataContext = new DataContext(databaseType, cb.GetConnectionString());
+            var dataContext = new DataContext(databaseType, connectionString);
 
             var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext,
                 SqlCompillerBase.FormEnum(databaseType));
@@ -185,6 +185,32 @@ namespace ZenPlatform.Cli
             newProject.Save(configSaveStorage);
 
             Console.WriteLine($"Done!");
+        }
+
+        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string connectionString, bool createIfNotExists)
+        {
+            OnCreateDbCommand(projectName, databaseType, UniversalConnectionStringBuilder.FromConnectionString(databaseType, connectionString), createIfNotExists);
+        }
+
+        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port,
+            string database, string userName, string password, bool createIfNotExists)
+        {
+            Console.WriteLine($"Start creating new project {projectName}");
+            Console.WriteLine(
+                $"DatabaseType: {databaseType}\nServer: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
+            var cb = new UniversalConnectionStringBuilder(databaseType);
+
+            // После успешного созадания базы пробуем к ней подключиться, провести миграции и 
+            //создать новую конфигурацию
+            cb.Database = database;
+            cb.Server = server;
+            cb.Password = password;
+            cb.Username = userName;
+            cb.Port = port;
+
+            Console.WriteLine(cb.GetConnectionString());
+
+            OnCreateDbCommand(projectName, databaseType, cb, createIfNotExists);
         }
     }
 }

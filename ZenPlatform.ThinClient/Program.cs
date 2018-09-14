@@ -1,4 +1,12 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using Avalonia;
+using Avalonia.Logging.Serilog;
+using Dock.Model;
+using Dock.Serializer;
+using ZenPlatform.ThinClient.Infrastructure;
+using ZenPlatform.ThinClient.ViewModels;
+using ZenPlatform.ThinClient.Views;
 
 namespace ZenPlatform.ThinClient
 {
@@ -39,19 +47,26 @@ namespace ZenPlatform.ThinClient
      * делает биндинги на свойства и показывает форму пользователю
      * 
      * Для этого необходимо 
-     * 1) Разработать проток, на основании которого будет передаваться форма
+     * 1) Разработать протокол, на основании которого будет передаваться форма
      * 2) Сделать изменениия в КОМПОНЕНТЕ для генерации формы по умолчанию (никаких изменений в конфигурации делать не нужно)
      * 
      * 
      */
 
-
-
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Bootstrapper.Init();
+
+            BuildAvaloniaApp().Start<MainWindow>(IoC.Resolve<IMainWindow>);
         }
+
+        public static AppBuilder BuildAvaloniaApp()
+            => AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .UseReactiveUI()
+                .LogToDebug();
     }
 }
