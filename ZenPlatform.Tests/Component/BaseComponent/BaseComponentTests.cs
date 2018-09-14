@@ -17,7 +17,7 @@ namespace ZenPlatform.Tests.Component.BaseComponent
         [Fact]
         public void TestXCPropertyHelper()
         {
-            var conf = ExampleConfiguration.GetExample();
+            var conf = Factory.GetExampleConfigutaion();
 
             var componentType = conf.Data.ComponentTypes.First();
 

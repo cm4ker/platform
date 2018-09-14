@@ -41,7 +41,7 @@ namespace ZenPlatform.Tests.Component.EntityComponent
         [Fact]
         public void TestEntityDtoLoad()
         {
-            var conf = ExampleConfiguration.GetExample();
+            var conf = Factory.GetExampleConfigutaion();
 
             var entity = conf.Data.PlatformTypes.FirstOrDefault(x => x.Name == "ТестоваяСущность") as XCObjectTypeBase;
             var prop = entity.GetProperties().First();
@@ -57,7 +57,7 @@ namespace ZenPlatform.Tests.Component.EntityComponent
             var helpers = gen.GenerateHelpersForEntity();
 
             var multidataStorage = gen.GenerateMultiDataStorage(entity, prop);
-            
+
             var expected = "";
 
             //Assert.Equal(expected, result.ToString());
