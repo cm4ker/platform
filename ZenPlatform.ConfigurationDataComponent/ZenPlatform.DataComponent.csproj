@@ -11,6 +11,7 @@
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
     <ProjectReference Include="..\ZenPlatform.System\ZenPlatform.System.csproj" />
+    <ProjectReference Include="..\ZenPlatform.UIGeneration2\ZenPlatform.UIBuilder.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="git" />

@@ -4,6 +4,7 @@ namespace ZenPlatform.WorkProcess
 {
     public class WorkProcessCommand
     {
+
     }
 
     public class RouteCommand : WorkProcessCommand

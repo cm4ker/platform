@@ -47,6 +47,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IDE", "IDE", "{9BC66EAE-D56B-4FCF-8C91-5332F97180D2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{3EE6451A-06AB-4635-BC3E-2CD05075D9A4}"
+	ProjectSection(SolutionItems) = preProject
+		ZenPlatform.UIGeneration2\App.xaml.cs = ZenPlatform.UIGeneration2\App.xaml.cs
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IDE", "ZenPlatform.IDE\ZenPlatform.IDE.csproj", "{F9576AA1-E4DA-44D3-9131-C083D5B3599E}"
 EndProject
