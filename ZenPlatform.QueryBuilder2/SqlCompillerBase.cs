@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.Columns;
+using ZenPlatform.QueryBuilder.Common.Conditions;
 using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.QueryBuilder.Common.Table;
 using ZenPlatform.QueryBuilder.Common.Tokens;
@@ -99,9 +100,9 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<SelectNastedQueryNode>((i) => { VisitSelectNastedQueryNode(i, sb); })
                 .CaseIs<OnNode>(i => { VisitOnNode(i, sb); })
                 .CaseIs<CompareOperatorNode>(i => { VisitCompareOperatorNode(i, sb); })
-                .CaseIs<BinaryWhereNode>(i => { VisitBinaryWhereNode(i, sb); })
+                .CaseIs<BinaryConditionNode>(i => { VisitBinaryWhereNode(i, sb); })
                 .CaseIs<ParameterNode>(i => VisitParameterNode(i, sb))
-                .CaseIs<LikeWhereNode>(i => VisitLikeWhereNode(i, sb))
+                .CaseIs<LikeConditionNode>(i => VisitLikeWhereNode(i, sb))
                 .CaseIs<StringLiteralNode>(i => VisitStringLiteralNode(i, sb))
                 .CaseIs<TableNode>(i => VisitTableNode(i, sb))
                 .CaseIs<Token>(i => VisitTokens(i, sb))
@@ -286,9 +287,9 @@ namespace ZenPlatform.QueryBuilder
             VisitChilds(havingNode, sb);
         }
 
-        protected virtual void VisitLikeWhereNode(LikeWhereNode likeWhereNode, StringBuilder sb)
+        protected virtual void VisitLikeWhereNode(LikeConditionNode likeConditionNode, StringBuilder sb)
         {
-            VisitChilds(likeWhereNode, sb);
+            VisitChilds(likeConditionNode, sb);
         }
 
         protected virtual void VisitSetFieldNode(SetFieldNode setFieldNode, StringBuilder sb)
@@ -320,9 +321,9 @@ namespace ZenPlatform.QueryBuilder
             VisitChilds(parameterNode, sb);
         }
 
-        protected virtual void VisitBinaryWhereNode(BinaryWhereNode binaryWhereNode, StringBuilder sb)
+        protected virtual void VisitBinaryWhereNode(BinaryConditionNode binaryConditionNode, StringBuilder sb)
         {
-            VisitChilds(binaryWhereNode, sb);
+            VisitChilds(binaryConditionNode, sb);
         }
 
         protected virtual void VisitFieldNode(ColumnNode columnNode, StringBuilder sb)

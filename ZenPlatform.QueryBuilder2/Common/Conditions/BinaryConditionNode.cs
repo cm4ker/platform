@@ -1,15 +1,12 @@
-﻿using ZenPlatform.QueryBuilder.Common;
-using ZenPlatform.Shared.Tree;
-
-namespace ZenPlatform.QueryBuilder.DML.Where
+﻿namespace ZenPlatform.QueryBuilder.Common.Conditions
 {
-    public class BinaryWhereNode : WhereExpression
+    public class BinaryConditionNode : ConditionExpression
     {
         public SqlNode Left { get; }
         public SqlNode Operation { get; }
         public SqlNode Right { get; }
 
-        public BinaryWhereNode(string rawLeft, string operation, string rawRight)
+        public BinaryConditionNode(string rawLeft, string operation, string rawRight)
         {
             Left = new RawSqlNode(rawLeft);
             Operation = new RawSqlNode(operation);
@@ -18,7 +15,7 @@ namespace ZenPlatform.QueryBuilder.DML.Where
             Childs.AddRange(Left, Operation, Right);
         }
 
-        public BinaryWhereNode(SqlNode node1, string operation, SqlNode node2)
+        public BinaryConditionNode(SqlNode node1, string operation, SqlNode node2)
         {
             Left = node1;
             Right = node2;

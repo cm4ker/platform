@@ -35,7 +35,6 @@ COPY ZenPlatform.Builder/ZenPlatform.Cli.csproj ZenPlatform.Builder/
 COPY ZenPlatform.Pidl/ZenPlatform.Pidl.csproj ZenPlatform.Pidl/
 COPY ZenPlatform.ConfigurationExample/ZenPlatform.ConfigurationExample.csproj ZenPlatform.ConfigurationExample/ 
 COPY NuGet.Config ./
-RUN ls  
 
 #RUN dotnet restore ZenPlatform.Tests/ZenPlatform.Tests.csproj
 COPY . .

@@ -12,6 +12,10 @@ namespace ZenPlatform.QueryBuilder.Common.Factoryes
     /// </summary>
     public class SqlNodeFactory
     {
+        private static SqlNodeFactory _instance = new SqlNodeFactory();
+
+        public static SqlNodeFactory Get() => _instance;
+
         public ColumnNode Field(string name)
         {
             return new ColumnNode(name);
