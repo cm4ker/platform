@@ -7,9 +7,9 @@ namespace ZenPlatform.QueryBuilder.DML.Update
 {
     public class SetFieldNode : SqlNode
     {
-        public SetFieldNode(FieldNode fieldExpression, SqlNode value)
+        public SetFieldNode(ColumnNode columnExpression, SqlNode value)
         {
-            Childs.AddRange(new[] {fieldExpression, new CompareOperatorNode("="), value});
+            Childs.AddRange(new[] {columnExpression, new CompareOperatorNode("="), value});
         }
     }
 }

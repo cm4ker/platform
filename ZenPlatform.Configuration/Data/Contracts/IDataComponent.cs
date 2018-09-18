@@ -37,5 +37,10 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// </summary>
         IEntityMigrator Migrator { get; }
 
+
+        /// <summary>
+        /// Инъектор запросов
+        /// </summary>
+        IQueryInjector QueryInjector { get; }
     }
 }

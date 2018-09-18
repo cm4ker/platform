@@ -59,6 +59,7 @@ namespace ZenPlatform.DataComponent
         public IEntityGenerator Generator { get; protected set; }
         public IDatabaseObjectsGenerator DatabaseObjectsGenerator { get; protected set; }
         public IEntityMigrator Migrator { get; protected set; }
+        public IQueryInjector QueryInjector { get; protected set; }
 
 
         /*

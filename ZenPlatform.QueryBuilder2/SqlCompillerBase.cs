@@ -87,9 +87,9 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<WhereNode>(i => VisitWhereNode(i, sb))
                 .CaseIs<HavingNode>(i => VisitHavingNode(i, sb))
                 .CaseIs<GroupByNode>(i => VisitGroupByNode(i, sb))
-                .CaseIs<SelectFieldNode>(i => VisitSelectFieldNode(i, sb))
+                .CaseIs<SelectColumnNode>(i => VisitSelectFieldNode(i, sb))
                 .CaseIs<SetFieldNode>(i => VisitSetFieldNode(i, sb))
-                .CaseIs<FieldNode>((i) => { VisitFieldNode(i, sb); })
+                .CaseIs<ColumnNode>((i) => { VisitFieldNode(i, sb); })
                 .CaseIs<JoinNode>((i) => { VisitJoinNode(i, sb); })
                 .CaseIs<AliasedTableNode>((i) => { VisitAliasedTableNode(i, sb); })
                 .CaseIs<AliasNode>((i) => { VisitAliasNode(i, sb); })
@@ -325,9 +325,9 @@ namespace ZenPlatform.QueryBuilder
             VisitChilds(binaryWhereNode, sb);
         }
 
-        protected virtual void VisitFieldNode(FieldNode fieldNode, StringBuilder sb)
+        protected virtual void VisitFieldNode(ColumnNode columnNode, StringBuilder sb)
         {
-            VisitChilds(fieldNode, sb);
+            VisitChilds(columnNode, sb);
         }
 
         protected virtual void VisitCompareOperatorNode(CompareOperatorNode compareOperatorNode, StringBuilder sb)
@@ -440,9 +440,9 @@ namespace ZenPlatform.QueryBuilder
             //            }
         }
 
-        protected virtual void VisitSelectFieldNode(SelectFieldNode selectFieldNode, StringBuilder sb)
+        protected virtual void VisitSelectFieldNode(SelectColumnNode selectColumnNode, StringBuilder sb)
         {
-            VisitChilds(selectFieldNode, sb);
+            VisitChilds(selectColumnNode, sb);
         }
 
         protected virtual void VisitFromNode(FromNode fromNode, StringBuilder sb)

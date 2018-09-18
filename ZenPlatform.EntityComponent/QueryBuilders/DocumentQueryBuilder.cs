@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using ZenPlatform.EntityComponent.Configuration;
-using ZenPlatform.QueryBuilder;
+﻿using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.EntityComponent.QueryBuilders
 {

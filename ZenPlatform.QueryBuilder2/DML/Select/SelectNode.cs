@@ -19,9 +19,9 @@ namespace ZenPlatform.QueryBuilder.DML.Select
             return Select(fieldName, (f) => { });
         }
 
-        public SelectNode Select(string fieldName, Action<SelectFieldNode> options)
+        public SelectNode Select(string fieldName, Action<SelectColumnNode> options)
         {
-            var f = new SelectFieldNode(fieldName);
+            var f = new SelectColumnNode(fieldName);
             options(f);
 
             OnAddField();

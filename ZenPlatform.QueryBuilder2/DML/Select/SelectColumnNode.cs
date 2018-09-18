@@ -4,24 +4,24 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class SelectFieldNode : SqlNode
+    public class SelectColumnNode : SqlNode
     {
-        public SelectFieldNode(string fieldName)
+        public SelectColumnNode(string fieldName)
         {
             Childs.Add(new IdentifierNode(fieldName));
         }
 
-        public SelectFieldNode(string fieldName, string alias) : this(fieldName)
+        public SelectColumnNode(string fieldName, string alias) : this(fieldName)
         {
             this.As(alias);
         }
 
-        public SelectFieldNode(string tableName, string fieldName, string alias) : this(fieldName, alias)
+        public SelectColumnNode(string tableName, string fieldName, string alias) : this(fieldName, alias)
         {
             this.WithTableName(tableName);
         }
 
-        public SelectFieldNode As(string alias)
+        public SelectColumnNode As(string alias)
         {
             if (!string.IsNullOrEmpty(alias))
                 Childs.Add(new AliasNode(alias));
@@ -29,7 +29,7 @@ namespace ZenPlatform.QueryBuilder.DML.Select
             return this;
         }
 
-        public SelectFieldNode WithTableName(string tableName)
+        public SelectColumnNode WithTableName(string tableName)
         {
             Childs.Insert(0, new IdentifierNode(tableName));
             Childs.Insert(1, Tokens.SchemaSeparator);

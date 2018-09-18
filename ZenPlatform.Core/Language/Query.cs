@@ -31,6 +31,7 @@ namespace ZenPlatform.Core.Language
         public Query(UserSession session, string text) : this(session)
         {
             Text = text;
+
         }
 
         /// <summary>
@@ -46,7 +47,21 @@ namespace ZenPlatform.Core.Language
             //Чтобы корректно обработать запрос нам нужно следующее:
             // 1) Парсер
             // 2) Конфигурация
-            // 
+
+            /*
+             * FROM Document.Invoice I
+             * WHERE i.Number LIKE '%test%'
+             * GROUP BY i.Ref
+             * HAVING COUNT()
+             * GIVE i.Ref, COUNT() 
+             */
+        }
+
+        /// <summary>
+        /// Обсчитать текст запроса. Здесь происходит превращение запроса из текста в объектную модель
+        /// </summary>
+        private void Evaluate()
+        {
 
         }
     }
