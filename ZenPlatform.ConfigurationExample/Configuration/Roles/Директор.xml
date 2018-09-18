@@ -29,7 +29,7 @@
         <CanUseExternalConnection>true</CanUseExternalConnection>
 
         <!-- Пользователю можно пользоваться внешними обработками -->
-        <CanOpenExternalModules>true</CanOpenExternalModules>
+        <CanWhenOpenExternalModules>true</CanWhenOpenExternalModules>
 
         <!-- Пользователю разрешено открывать консоль данных-->
         <ConsoleAccess>true</ConsoleAccess>

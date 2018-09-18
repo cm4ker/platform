@@ -7712,7 +7712,7 @@
             Set progress and current operation for current task.
             </summary>
             <param name="progress">Current progress as percentage.</param>
-            <param name="currentOperation">The current operation.</param>
+            <param name="currentWhenOperation">The current operation.</param>
         </member>
         <member name="M:Cake.Common.Build.TFBuild.ITFBuildCommands.CompleteCurrentTask">
             <summary>
@@ -7933,7 +7933,7 @@
             Set progress and current operation for current task.
             </summary>
             <param name="progress">Current progress as percentage.</param>
-            <param name="currentOperation">The current operation.</param>
+            <param name="currentWhenOperation">The current operation.</param>
         </member>
         <member name="M:Cake.Common.Build.TFBuild.TFBuildCommands.CompleteCurrentTask">
             <summary>
@@ -9819,7 +9819,7 @@
         </member>
         <member name="M:Cake.Common.IO.Paths.ConvertableDirectoryPath.op_Addition(Cake.Common.IO.Paths.ConvertableDirectoryPath,Cake.Common.IO.Paths.ConvertableDirectoryPath)">
             <summary>
-            Operator that combines A <see cref="T:Cake.Common.IO.Paths.ConvertableDirectoryPath"/> instance
+            WhenOperator that combines A <see cref="T:Cake.Common.IO.Paths.ConvertableDirectoryPath"/> instance
             with another <see cref="T:Cake.Common.IO.Paths.ConvertableDirectoryPath"/> instance.
             </summary>
             <param name="left">The left directory path operand.</param>
@@ -9828,7 +9828,7 @@
         </member>
         <member name="M:Cake.Common.IO.Paths.ConvertableDirectoryPath.op_Addition(Cake.Common.IO.Paths.ConvertableDirectoryPath,Cake.Core.IO.DirectoryPath)">
             <summary>
-            Operator that combines A <see cref="T:Cake.Common.IO.Paths.ConvertableDirectoryPath"/> instance
+            WhenOperator that combines A <see cref="T:Cake.Common.IO.Paths.ConvertableDirectoryPath"/> instance
             with a <see cref="T:Cake.Core.IO.DirectoryPath"/> instance.
             </summary>
             <param name="left">The left directory path operand.</param>
@@ -9837,7 +9837,7 @@
         </member>
         <member name="M:Cake.Common.IO.Paths.ConvertableDirectoryPath.op_Addition(Cake.Common.IO.Paths.ConvertableDirectoryPath,Cake.Common.IO.Paths.ConvertableFilePath)">
             <summary>
-            Operator that combines A <see cref="T:Cake.Common.IO.Paths.ConvertableDirectoryPath"/> instance
+            WhenOperator that combines A <see cref="T:Cake.Common.IO.Paths.ConvertableDirectoryPath"/> instance
             with a <see cref="T:Cake.Common.IO.Paths.ConvertableFilePath"/> instance.
             </summary>
             <param name="directory">The left directory path operand.</param>
@@ -9846,7 +9846,7 @@
         </member>
         <member name="M:Cake.Common.IO.Paths.ConvertableDirectoryPath.op_Addition(Cake.Common.IO.Paths.ConvertableDirectoryPath,Cake.Core.IO.FilePath)">
             <summary>
-            Operator that combines A <see cref="T:Cake.Common.IO.Paths.ConvertableDirectoryPath"/> instance
+            WhenOperator that combines A <see cref="T:Cake.Common.IO.Paths.ConvertableDirectoryPath"/> instance
             with a <see cref="T:Cake.Core.IO.FilePath"/> instance.
             </summary>
             <param name="directory">The left directory path operand.</param>
@@ -13623,13 +13623,13 @@
             <summary>
             Gets or sets the (optional) user name.
             </summary>
-            <value>Optional user name to be used when connecting to an authenticated source.</value>
+            <value>WhenOptional user name to be used when connecting to an authenticated source.</value>
         </member>
         <member name="P:Cake.Common.Tools.NuGet.Sources.NuGetSourcesSettings.Password">
             <summary>
             Gets or sets the (optional) password.
             </summary>
-            <value>Optional password to be used when connecting to an authenticated source.</value>
+            <value>WhenOptional password to be used when connecting to an authenticated source.</value>
         </member>
         <member name="P:Cake.Common.Tools.NuGet.Sources.NuGetSourcesSettings.Verbosity">
             <summary>
@@ -14901,22 +14901,22 @@
             Outputs labels at the end of every test.
             </summary>
         </member>
-        <member name="T:Cake.Common.Tools.NUnit.NUnit3ProcessOption">
+        <member name="T:Cake.Common.Tools.NUnit.NUnit3ProcessWhenOption">
             <summary>
             Represents the various ways NUnit loads tests in processes.
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.NUnit.NUnit3ProcessOption.Multiple">
+        <member name="F:Cake.Common.Tools.NUnit.NUnit3ProcessWhenOption.Multiple">
             <summary>
             A separate process is created for each test assembly. This is the default.
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.NUnit.NUnit3ProcessOption.Separate">
+        <member name="F:Cake.Common.Tools.NUnit.NUnit3ProcessWhenOption.Separate">
             <summary>
             One separate process is created to run all of the test assemblies.
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.NUnit.NUnit3ProcessOption.InProcess">
+        <member name="F:Cake.Common.Tools.NUnit.NUnit3ProcessWhenOption.InProcess">
             <summary>
             All the tests are run in the nunit-console process.
             </summary>
@@ -15207,7 +15207,7 @@
         <member name="P:Cake.Common.Tools.NUnit.NUnit3Settings.Process">
             <summary>
             Gets or sets a value indicating how NUnit should load tests in processes.
-            The Default value is <see cref="F:Cake.Common.Tools.NUnit.NUnit3ProcessOption.Multiple"/>.
+            The Default value is <see cref="F:Cake.Common.Tools.NUnit.NUnit3ProcessWhenOption.Multiple"/>.
             </summary>
         </member>
         <member name="P:Cake.Common.Tools.NUnit.NUnit3Settings.AppDomainUsage">
@@ -15422,22 +15422,22 @@
             <param name="level">The <see cref="T:Cake.Common.Tools.NUnit.NUnitInternalTraceLevel"/> value for which to get the <see cref="T:System.String"/> representation</param>
             <returns>Returns the appropriate <see cref="T:System.String"/> representation for the given <see cref="T:Cake.Common.Tools.NUnit.NUnitInternalTraceLevel"/> value</returns>
         </member>
-        <member name="T:Cake.Common.Tools.NUnit.NUnitProcessOption">
+        <member name="T:Cake.Common.Tools.NUnit.NUnitProcessWhenOption">
             <summary>
                 Represents the various ways NUnit loads tests in processes.
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.NUnit.NUnitProcessOption.Single">
+        <member name="F:Cake.Common.Tools.NUnit.NUnitProcessWhenOption.Single">
             <summary>
                 All the tests are run in the nunit-console process. This is the default.
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.NUnit.NUnitProcessOption.Separate">
+        <member name="F:Cake.Common.Tools.NUnit.NUnitProcessWhenOption.Separate">
             <summary>
                 A separate process is created to run the tests.
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.NUnit.NUnitProcessOption.Multiple">
+        <member name="F:Cake.Common.Tools.NUnit.NUnitProcessWhenOption.Multiple">
             <summary>
                 A separate process is created for each test assembly.
             </summary>
@@ -15593,7 +15593,7 @@
         <member name="P:Cake.Common.Tools.NUnit.NUnitSettings.Process">
             <summary>
                 Gets or sets a value indicating how NUnit should load tests in processes.
-                The Default value is <see cref="F:Cake.Common.Tools.NUnit.NUnitProcessOption.Single"/>
+                The Default value is <see cref="F:Cake.Common.Tools.NUnit.NUnitProcessWhenOption.Single"/>
             </summary>
         </member>
         <member name="P:Cake.Common.Tools.NUnit.NUnitSettings.UseSingleThreadedApartment">
@@ -15840,7 +15840,7 @@
                      ConfigurationFile = @"C:\OctopusDeploy.config"
                  });
             
-                 // Additional Options
+                 // Additional WhenOptions
                  OctoCreateRelease(projectNameOnServer, new CreateReleaseSettings {
                      ToolPath = "./tools/OctopusTools/Octo.exe"
                      EnableDebugLogging = true,
@@ -18271,27 +18271,27 @@
             This namespace contain types used to interact with XUnit.
             </summary>
         </member>
-        <member name="T:Cake.Common.Tools.XUnit.ParallelismOption">
+        <member name="T:Cake.Common.Tools.XUnit.ParallelismWhenOption">
             <summary>
             Represents XUnit2's options for parallel test execution
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.XUnit.ParallelismOption.None">
+        <member name="F:Cake.Common.Tools.XUnit.ParallelismWhenOption.None">
             <summary>
             Turn off all parallelization
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.XUnit.ParallelismOption.Collections">
+        <member name="F:Cake.Common.Tools.XUnit.ParallelismWhenOption.Collections">
             <summary>
             Only parallelize collections
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.XUnit.ParallelismOption.Assemblies">
+        <member name="F:Cake.Common.Tools.XUnit.ParallelismWhenOption.Assemblies">
             <summary>
             Only parallelize assemblies
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.XUnit.ParallelismOption.All">
+        <member name="F:Cake.Common.Tools.XUnit.ParallelismWhenOption.All">
             <summary>
             Parallelize assemblies and collections.
             </summary>
@@ -18331,7 +18331,7 @@
             <code>
             XUnit2("./src/**/bin/Release/*.Tests.dll",
                  new XUnit2Settings {
-                    Parallelism = ParallelismOption.All,
+                    Parallelism = ParallelismWhenOption.All,
                     HtmlReport = true,
                     NoAppDomain = true,
                     OutputDirectory = "./build"
@@ -18385,7 +18385,7 @@
                 "./src/Cake.Tests/bin/Release/Cake.Tests.dll"
                  },
                  new XUnit2Settings {
-                    Parallelism = ParallelismOption.All,
+                    Parallelism = ParallelismWhenOption.All,
                     HtmlReport = true,
                     NoAppDomain = true,
                     OutputDirectory = "./build"
@@ -18405,7 +18405,7 @@
             var testAssemblies = GetFiles("./src/**/bin/Release/*.Tests.dll");
             XUnit2(testAssemblies,
                  new XUnit2Settings {
-                    Parallelism = ParallelismOption.All,
+                    Parallelism = ParallelismWhenOption.All,
                     HtmlReport = true,
                     NoAppDomain = true,
                     OutputDirectory = "./build"
@@ -20888,19 +20888,19 @@
             <summary>
             Gets or sets the (optional) user name.
             </summary>
-            <value>Optional user name to be used when connecting to an authenticated source.</value>
+            <value>WhenOptional user name to be used when connecting to an authenticated source.</value>
         </member>
         <member name="P:Cake.Common.Tools.Chocolatey.Sources.ChocolateySourcesSettings.Password">
             <summary>
             Gets or sets the (optional) password.
             </summary>
-            <value>Optional password to be used when connecting to an authenticated source.</value>
+            <value>WhenOptional password to be used when connecting to an authenticated source.</value>
         </member>
         <member name="P:Cake.Common.Tools.Chocolatey.Sources.ChocolateySourcesSettings.Priority">
             <summary>
             Gets or sets the (optional) priority.
             </summary>
-            <value>Optional priority to be used when creating source.</value>
+            <value>WhenOptional priority to be used when creating source.</value>
         </member>
         <member name="T:Cake.Common.Tools.Chocolatey.Uninstall.ChocolateyUninstaller">
             <summary>
@@ -23040,7 +23040,7 @@
             <param name="builder">Argument builder.</param>
             <param name="settings">MSBuild settings to add.</param>
             <param name="environment">The environment.</param>
-            <exception cref="T:System.InvalidOperationException">Throws if 10 or more file loggers specified.</exception>
+            <exception cref="T:System.InvalidWhenOperationException">Throws if 10 or more file loggers specified.</exception>
         </member>
         <member name="T:Cake.Common.Tools.DotNetCore.MSBuild.MSBuildConsoleColorType">
             <summary>
@@ -24296,9 +24296,9 @@
             The value of TeamCity-formatted output. Either "on" or "off".
             </value>
         </member>
-        <member name="P:Cake.Common.Tools.Fixie.FixieSettings.Options">
+        <member name="P:Cake.Common.Tools.Fixie.FixieSettings.WhenOptions">
             <summary>
-            Gets the collection of Options as KeyValuePairs.
+            Gets the collection of WhenOptions as KeyValuePairs.
             </summary>
             <value>
             The collection of keys and values.
@@ -24309,7 +24309,7 @@
             Contains functionality related to Fixie settings.
             </summary>
         </member>
-        <member name="M:Cake.Common.Tools.Fixie.FixieSettingsExtensions.WithOption(Cake.Common.Tools.Fixie.FixieSettings,System.String,System.String[])">
+        <member name="M:Cake.Common.Tools.Fixie.FixieSettingsExtensions.WithWhenOption(Cake.Common.Tools.Fixie.FixieSettings,System.String,System.String[])">
             <summary>
             Adds an option to the settings.
             </summary>
@@ -26230,7 +26230,7 @@
             <code>
             MSpec("./src/**/bin/Release/*.Tests.dll",
                  new MSpecSettings {
-                    Parallelism = ParallelismOption.All,
+                    Parallelism = ParallelismWhenOption.All,
                     HtmlReport = true,
                     NoAppDomain = true,
                     OutputDirectory = "./build"
@@ -26284,7 +26284,7 @@
                 "./src/Cake.Tests/bin/Release/Cake.Tests.dll"
                  },
                  new MSpecSettings {
-                    Parallelism = ParallelismOption.All,
+                    Parallelism = ParallelismWhenOption.All,
                     HtmlReport = true,
                     NoAppDomain = true,
                     OutputDirectory = "./build"
@@ -26304,7 +26304,7 @@
             var testAssemblies = GetFiles("./src/**/bin/Release/*.Tests.dll");
             MSpec(testAssemblies,
                  new MSpecSettings {
-                    Parallelism = ParallelismOption.All,
+                    Parallelism = ParallelismWhenOption.All,
                     HtmlReport = true,
                     NoAppDomain = true,
                     OutputDirectory = "./build"
@@ -26539,246 +26539,246 @@
             </code>
             </example>
         </member>
-        <member name="T:Cake.Common.Tools.OpenCover.OpenCoverAliases">
+        <member name="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverAliases">
             <summary>
-            <para>Contains functionality related to <see href="https://github.com/opencover/opencover">OpenCover</see>.</para>
+            <para>Contains functionality related to <see href="https://github.com/opencover/opencover">WhenOpenCover</see>.</para>
             <para>
             In order to use the commands for this alias, include the following in your build.cake file to download and
-            install from NuGet.org, or specify the ToolPath within the <see cref="T:Cake.Common.Tools.OpenCover.OpenCoverSettings" /> class:
+            install from NuGet.org, or specify the ToolPath within the <see cref="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings" /> class:
             <code>
-            #tool "nuget:?package=OpenCover"
+            #tool "nuget:?package=WhenOpenCover"
             </code>
             </para>
             </summary>
         </member>
-        <member name="M:Cake.Common.Tools.OpenCover.OpenCoverAliases.OpenCover(Cake.Core.ICakeContext,System.Action{Cake.Core.ICakeContext},Cake.Core.IO.FilePath,Cake.Common.Tools.OpenCover.OpenCoverSettings)">
+        <member name="M:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverAliases.WhenOpenCover(Cake.Core.ICakeContext,System.Action{Cake.Core.ICakeContext},Cake.Core.IO.FilePath,Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings)">
             <summary>
-            Runs <see href="https://github.com/OpenCover/opencover">OpenCover</see>
+            Runs <see href="https://github.com/WhenOpenCover/opencover">WhenOpenCover</see>
             for the specified action and settings.
             </summary>
             <param name="context">The context.</param>
-            <param name="action">The action to run OpenCover for.</param>
-            <param name="outputFile">The OpenCover output file.</param>
+            <param name="action">The action to run WhenOpenCover for.</param>
+            <param name="outputFile">The WhenOpenCover output file.</param>
             <param name="settings">The settings.</param>
             <example>
             <code>
-            OpenCover(tool => {
+            WhenOpenCover(tool => {
               tool.XUnit2("./**/App.Tests.dll",
                 new XUnit2Settings {
                   ShadowCopy = false
                 });
               },
               new FilePath("./result.xml"),
-              new OpenCoverSettings()
+              new WhenOpenCoverSettings()
                 .WithFilter("+[App]*")
                 .WithFilter("-[App.Tests]*"));
             </code>
             </example>
         </member>
-        <member name="T:Cake.Common.Tools.OpenCover.OpenCoverLogLevel">
+        <member name="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverLogLevel">
             <summary>
-            Represents the logging output level for OpenCover.
+            Represents the logging output level for WhenOpenCover.
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.OpenCover.OpenCoverLogLevel.Info">
+        <member name="F:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverLogLevel.Info">
             <summary>
             Logs info messages and above (default)
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.OpenCover.OpenCoverLogLevel.Off">
+        <member name="F:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverLogLevel.Off">
             <summary>
             This log level disables logging
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.OpenCover.OpenCoverLogLevel.Fatal">
+        <member name="F:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverLogLevel.Fatal">
             <summary>
             Logs fatal messages
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.OpenCover.OpenCoverLogLevel.Error">
+        <member name="F:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverLogLevel.Error">
             <summary>
             Logs error messages and above
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.OpenCover.OpenCoverLogLevel.Warn">
+        <member name="F:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverLogLevel.Warn">
             <summary>
             Logs warn messages and above
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.OpenCover.OpenCoverLogLevel.Debug">
+        <member name="F:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverLogLevel.Debug">
             <summary>
             Logs debug messages and above
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.OpenCover.OpenCoverLogLevel.Verbose">
+        <member name="F:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverLogLevel.Verbose">
             <summary>
             Logs verbose messages and above
             </summary>
         </member>
-        <member name="F:Cake.Common.Tools.OpenCover.OpenCoverLogLevel.All">
+        <member name="F:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverLogLevel.All">
             <summary>
             Logs all messages
             </summary>
         </member>
-        <member name="T:Cake.Common.Tools.OpenCover.OpenCoverRunner">
+        <member name="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverRunner">
             <summary>
-            The OpenCover runner.
+            The WhenOpenCover runner.
             </summary>
         </member>
-        <member name="M:Cake.Common.Tools.OpenCover.OpenCoverRunner.#ctor(Cake.Core.IO.IFileSystem,Cake.Core.ICakeEnvironment,Cake.Core.IO.IProcessRunner,Cake.Core.Tooling.IToolLocator)">
+        <member name="M:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverRunner.#ctor(Cake.Core.IO.IFileSystem,Cake.Core.ICakeEnvironment,Cake.Core.IO.IProcessRunner,Cake.Core.Tooling.IToolLocator)">
             <summary>
-            Initializes a new instance of the <see cref="T:Cake.Common.Tools.OpenCover.OpenCoverRunner"/> class.
+            Initializes a new instance of the <see cref="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverRunner"/> class.
             </summary>
             <param name="fileSystem">The file system.</param>
             <param name="environment">The environment.</param>
             <param name="processRunner">The process runner.</param>
             <param name="tools">The tool locator.</param>
         </member>
-        <member name="M:Cake.Common.Tools.OpenCover.OpenCoverRunner.Run(Cake.Core.ICakeContext,System.Action{Cake.Core.ICakeContext},Cake.Core.IO.FilePath,Cake.Common.Tools.OpenCover.OpenCoverSettings)">
+        <member name="M:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverRunner.Run(Cake.Core.ICakeContext,System.Action{Cake.Core.ICakeContext},Cake.Core.IO.FilePath,Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings)">
             <summary>
-            Runs OpenCover with the specified settings.
+            Runs WhenOpenCover with the specified settings.
             </summary>
             <param name="context">The context.</param>
             <param name="action">The action.</param>
             <param name="outputPath">The output file path.</param>
             <param name="settings">The settings.</param>
         </member>
-        <member name="M:Cake.Common.Tools.OpenCover.OpenCoverRunner.GetToolName">
+        <member name="M:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverRunner.GetToolName">
             <summary>
             Gets the name of the tool.
             </summary>
             <returns>The name of the tool.</returns>
         </member>
-        <member name="M:Cake.Common.Tools.OpenCover.OpenCoverRunner.GetToolExecutableNames">
+        <member name="M:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverRunner.GetToolExecutableNames">
             <summary>
             Gets the possible names of the tool executable.
             </summary>
             <returns>The tool executable name.</returns>
         </member>
-        <member name="T:Cake.Common.Tools.OpenCover.OpenCoverSettings">
+        <member name="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings">
             <summary>
-            Contains settings used by <see cref="T:Cake.Common.Tools.OpenCover.OpenCoverRunner"/>.
+            Contains settings used by <see cref="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverRunner"/>.
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.Filters">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.Filters">
             <summary>
             Gets the filters.
             This represents the <c>-filter</c> option.
             </summary>
             <value>The filters.</value>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.ExcludedAttributeFilters">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.ExcludedAttributeFilters">
             <summary>
             Gets attribute filters used to exclude classes or methods.
             This represents the <c>-excludebyattribute</c> option.
             </summary>
             <value>The excluded attributes.</value>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.ExcludedFileFilters">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.ExcludedFileFilters">
             <summary>
             Gets file filters used to excluded classes or methods.
             This represents the <c>-excludebyfile</c> option.
             </summary>
             <value>The excluded file filters.</value>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.SkipAutoProps">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.SkipAutoProps">
             <summary>
             Gets or sets a value indicating whether or not auto-implemented properties should be skipped.
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.Register">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.Register">
             <summary>
             Gets or sets the register option
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.ReturnTargetCodeOffset">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.ReturnTargetCodeOffset">
             <summary>
             Gets or sets the Return target code offset to be used
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.OldStyle">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.OldStyle">
             <summary>
-            Gets or sets a value indicating whether the OldStyle option for OpenCover should be used
+            Gets or sets a value indicating whether the OldStyle option for WhenOpenCover should be used
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.MergeOutput">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.MergeOutput">
             <summary>
             Gets or sets a value indicating whether to merge the results with an existing file
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.ExcludeDirectories">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.ExcludeDirectories">
             <summary>
             Gets a list of directories where assemblies being loaded from will be ignored.
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.LogLevel">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.LogLevel">
             <summary>
-            Gets or sets the log level of OpenCover.
+            Gets or sets the log level of WhenOpenCover.
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.MergeByHash">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.MergeByHash">
             <summary>
             Gets or sets a value indicating whether to merge the coverage results for an assembly
             regardless of where it was loaded assuming it has the same file-hash in each location.
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.NoDefaultFilters">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.NoDefaultFilters">
             <summary>
             Gets or sets a value indicating whether the default filters should be applied or not.
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.SearchDirectories">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.SearchDirectories">
             <summary>
             Gets a list of directories with alternative locations to look for PDBs.
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.IsService">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.IsService">
             <summary>
             Gets or sets a value indicating whether if the value provided in the target parameter
             is the name of a service rather than a name of a process.
             </summary>
         </member>
-        <member name="P:Cake.Common.Tools.OpenCover.OpenCoverSettings.TargetDirectory">
+        <member name="P:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.TargetDirectory">
             <summary>
             Gets or sets a value indicating the path to the target directory.
             If the target already contains a path, this parameter can be used
             as additional path where PDBs may be found.
             </summary>
         </member>
-        <member name="M:Cake.Common.Tools.OpenCover.OpenCoverSettings.#ctor">
+        <member name="M:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Cake.Common.Tools.OpenCover.OpenCoverSettings"/> class.
+            Initializes a new instance of the <see cref="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings"/> class.
             </summary>
         </member>
-        <member name="T:Cake.Common.Tools.OpenCover.OpenCoverSettingsExtensions">
+        <member name="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettingsExtensions">
             <summary>
-            Contains extensions for <see cref="T:Cake.Common.Tools.OpenCover.OpenCoverSettings"/>.
+            Contains extensions for <see cref="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings"/>.
             </summary>
         </member>
-        <member name="M:Cake.Common.Tools.OpenCover.OpenCoverSettingsExtensions.WithFilter(Cake.Common.Tools.OpenCover.OpenCoverSettings,System.String)">
+        <member name="M:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettingsExtensions.WithFilter(Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings,System.String)">
             <summary>
             Adds the filter.
             </summary>
             <param name="settings">The settings.</param>
             <param name="filter">The filter.</param>
-            <returns>The same <see cref="T:Cake.Common.Tools.OpenCover.OpenCoverSettings"/> instance so that multiple calls can be chained.</returns>
+            <returns>The same <see cref="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings"/> instance so that multiple calls can be chained.</returns>
         </member>
-        <member name="M:Cake.Common.Tools.OpenCover.OpenCoverSettingsExtensions.ExcludeByAttribute(Cake.Common.Tools.OpenCover.OpenCoverSettings,System.String)">
+        <member name="M:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettingsExtensions.ExcludeByAttribute(Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings,System.String)">
             <summary>
             Exclude a class or method by filter
             that match attributes that have been applied.
             </summary>
             <param name="settings">The settings.</param>
             <param name="filter">The filter.</param>
-            <returns>The same <see cref="T:Cake.Common.Tools.OpenCover.OpenCoverSettings"/> instance so that multiple calls can be chained.</returns>
+            <returns>The same <see cref="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings"/> instance so that multiple calls can be chained.</returns>
         </member>
-        <member name="M:Cake.Common.Tools.OpenCover.OpenCoverSettingsExtensions.ExcludeByFile(Cake.Common.Tools.OpenCover.OpenCoverSettings,System.String)">
+        <member name="M:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettingsExtensions.ExcludeByFile(Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings,System.String)">
             <summary>
             Exclude a class (or methods) by filter that match the filenames.
             </summary>
             <param name="settings">The settings.</param>
             <param name="filter">The filter.</param>
-            <returns>The same <see cref="T:Cake.Common.Tools.OpenCover.OpenCoverSettings"/> instance so that multiple calls can be chained.</returns>
+            <returns>The same <see cref="T:Cake.Common.Tools.WhenOpenCover.WhenOpenCoverSettings"/> instance so that multiple calls can be chained.</returns>
         </member>
         <member name="T:Cake.Common.Tools.ReportGenerator.ReportGeneratorAliases">
             <summary>
@@ -27217,13 +27217,13 @@
         </member>
         <member name="P:Cake.Common.Tools.SpecFlow.SpecFlowSettings.Out">
             <summary>
-            Gets or sets the generated Output File. Optional.
+            Gets or sets the generated Output File. WhenOptional.
             Default: TestResult.html
             </summary>
         </member>
         <member name="P:Cake.Common.Tools.SpecFlow.SpecFlowSettings.XsltFile">
             <summary>
-            Gets or sets the custom XSLT file to use, defaults to built-in stylesheet if not provided. Optional.
+            Gets or sets the custom XSLT file to use, defaults to built-in stylesheet if not provided. WhenOptional.
             Default: not specified
             </summary>
         </member>
@@ -27289,7 +27289,7 @@
         </member>
         <member name="P:Cake.Common.Tools.SpecFlow.StepDefinitionReport.SpecFlowStepDefinitionReportSettings.BinFolder">
             <summary>
-            Gets or sets the path for the compiled SpecFlow project. Optional.
+            Gets or sets the path for the compiled SpecFlow project. WhenOptional.
             Default: bin\Debug
             </summary>
         </member>
@@ -27643,8 +27643,8 @@
         </member>
         <member name="P:Cake.Common.Tools.VSTest.VSTestSettings.TestCaseFilter">
             <summary>
-            Gets or sets an expression to run only tests that match, of the format &lt;property&gt;Operator&lt;value&gt;[|&amp;&lt;Expression&gt;]
-                where Operator is one of =, != or ~  (Operator ~ has 'contains'
+            Gets or sets an expression to run only tests that match, of the format &lt;property&gt;WhenOperator&lt;value&gt;[|&amp;&lt;Expression&gt;]
+                where WhenOperator is one of =, != or ~  (WhenOperator ~ has 'contains'
                 semantics and is applicable for string properties like DisplayName).
                 Parenthesis () can be used to group sub-expressions.
             Examples: Priority=1
@@ -28830,7 +28830,7 @@
             <param name="xsl">XML style sheet.</param>
             <param name="xml">XML data.</param>
             <param name="result">Transformation result.</param>
-            <param name="settings">Optional settings for result file xml writer</param>
+            <param name="settings">WhenOptional settings for result file xml writer</param>
         </member>
         <member name="M:Cake.Common.Xml.XmlTransformation.Transform(System.Xml.XmlReader,System.Xml.XmlReader,System.Xml.XmlWriter)">
             <summary>
@@ -28887,7 +28887,7 @@
              <param name="context">The context.</param>
              <param name="xsl">XML style sheet.</param>
              <param name="xml">XML data.</param>
-             <param name="settings">Optional settings for result file xml writer</param>
+             <param name="settings">WhenOptional settings for result file xml writer</param>
              <returns>Transformed XML string.</returns>
              <example>
              <code>
@@ -28973,7 +28973,7 @@
             <param name="xslPath">Path to xml style sheet.</param>
             <param name="xmlPath">Path xml data.</param>
             <param name="resultPath">Transformation result path.</param>
-            <param name="settings">Optional settings for result file xml writer</param>
+            <param name="settings">WhenOptional settings for result file xml writer</param>
             <example>
             <code>
             <para>This example code will convert the Cake nuspec into html using the XmlTransform alias,

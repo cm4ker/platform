@@ -3,14 +3,14 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DML.Select
 {
-    public class FieldNode : SqlNode
+    public class ColumnNode : SqlNode
     {
-        public FieldNode(string fieldName)
+        public ColumnNode(string fieldName)
         {
             Childs.Add(new IdentifierNode(fieldName));
         }
 
-        public FieldNode WithParent(string parentName)
+        public ColumnNode WithParent(string parentName)
         {
             Childs.Insert(0, new IdentifierNode(parentName));
             Childs.Insert(1, new SchemaSeparatorNode());

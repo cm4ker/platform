@@ -49,7 +49,7 @@ namespace ZenPlatform.QueryBuilder.DML.Update
             return this;
         }
 
-        public UpdateQueryNode Set(Func<SqlNodeFactory, FieldNode> exp, Func<SqlNodeFactory, SqlNode> valueExp)
+        public UpdateQueryNode Set(Func<SqlNodeFactory, ColumnNode> exp, Func<SqlNodeFactory, SqlNode> valueExp)
         {
             var fact = new SqlNodeFactory();
 

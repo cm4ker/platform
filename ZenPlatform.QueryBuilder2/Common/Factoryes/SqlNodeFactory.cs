@@ -12,14 +12,14 @@ namespace ZenPlatform.QueryBuilder.Common.Factoryes
     /// </summary>
     public class SqlNodeFactory
     {
-        public FieldNode Field(string name)
+        public ColumnNode Field(string name)
         {
-            return new FieldNode(name);
+            return new ColumnNode(name);
         }
 
-        public FieldNode Field(string tableName, string name)
+        public ColumnNode Field(string tableName, string name)
         {
-            return (new FieldNode(name)).WithParent(tableName);
+            return (new ColumnNode(name)).WithParent(tableName);
         }
 
         public AliasedTableNode Table(string tableName)
