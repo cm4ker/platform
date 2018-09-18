@@ -5,5 +5,9 @@ namespace ZenPlatform.QueryBuilder.DML.Where
 {
     public class WhereNode : SqlNode
     {
+        public WhereNode WithAnd()
     }
+    
+    
+    
 }
