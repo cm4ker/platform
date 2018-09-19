@@ -3,6 +3,7 @@ using System.Linq;
 using ZenPlatform.QueryBuilder.Common.Columns;
 using ZenPlatform.QueryBuilder.Common.Factoryes;
 using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.Common.Table
@@ -17,7 +18,7 @@ namespace ZenPlatform.QueryBuilder.Common.Table
         public ColumnDefinitionNode WithColumn(string columnName)
         {
             if (Childs.Any())
-                Add(Tokens.Tokens.CommaToken);
+                Add(Tokens.CommaToken);
 
             var col = new ColumnDefinitionNode(columnName);
             Add(col);

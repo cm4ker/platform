@@ -1,6 +1,6 @@
 ﻿using System;
 using ZenPlatform.QueryBuilder.Common;
-using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.Shared.ParenChildCollection;
 using ZenPlatform.Shared.Tree;
 

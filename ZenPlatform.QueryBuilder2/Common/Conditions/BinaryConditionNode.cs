@@ -1,6 +1,8 @@
-﻿namespace ZenPlatform.QueryBuilder.Common.Conditions
+﻿using ZenPlatform.QueryBuilder.Common.SqlTokens;
+
+namespace ZenPlatform.QueryBuilder.Common.Conditions
 {
-    public class BinaryConditionNode : ConditionExpression
+    public class BinaryConditionNode : ConditionNode
     {
         public SqlNode Left { get; }
         public SqlNode Operation { get; }
@@ -20,6 +22,15 @@
             Left = node1;
             Right = node2;
             Operation = new RawSqlNode(operation);
+
+            Childs.AddRange(Left, Operation, Right);
+        }
+
+        public BinaryConditionNode(SqlNode node1, ComparerToken comparer, SqlNode node2)
+        {
+            Left = node1;
+            Right = node2;
+            Operation = comparer;
 
             Childs.AddRange(Left, Operation, Right);
         }

@@ -1,6 +1,6 @@
 ﻿namespace ZenPlatform.QueryBuilder.Common.Conditions
 {
-    public class ConditionExpression : SqlNode
+    public class ConditionNode : SqlNode
     {
         public bool IsNot { get; set; }
     }

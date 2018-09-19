@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.DML.Insert;
 using ZenPlatform.QueryBuilder.DML.Select;
 
@@ -10,6 +10,16 @@ namespace ZenPlatform.QueryBuilder
         public override string StartNameLiteral { get; } = "\"";
         public override string EndNameLiteral { get; } = "\"";
 
+        protected override void VisitTokens(Token token, StringBuilder sb)
+        {
+            if (token is LikeToken)
+            {
+                sb.Append("ILIKE");
+                return;
+            }
+
+            base.VisitTokens(token, sb);
+        }
 
         protected override void VisitSelectQueryNode(SelectQueryNode selectQueryNode, StringBuilder sb)
         {
@@ -62,7 +72,7 @@ namespace ZenPlatform.QueryBuilder
 
             VisitNode(Tokens.SpaceToken, sb);
             VisitNode(insert.TableWithColumnsNode, sb);
-            
+
             VisitNode(Tokens.SpaceToken, sb);
             VisitNode(insert.InsertValuesNode, sb);
         }

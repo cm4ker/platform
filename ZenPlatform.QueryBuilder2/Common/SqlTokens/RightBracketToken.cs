@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.QueryBuilder.Common.Tokens
+﻿namespace ZenPlatform.QueryBuilder.Common.SqlTokens
 {
     public class RightBracketToken : Token
     {

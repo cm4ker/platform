@@ -1,6 +1,4 @@
-﻿using ZenPlatform.Shared.Tree;
-
-namespace ZenPlatform.QueryBuilder.Common.Tokens
+﻿namespace ZenPlatform.QueryBuilder.Common.SqlTokens
 {
     public class Token : SqlNode
     {

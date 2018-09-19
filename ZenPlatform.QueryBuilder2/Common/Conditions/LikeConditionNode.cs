@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.Common.Conditions
 {
-    public class LikeConditionNode : ConditionExpression
+    public class LikeConditionNode : ConditionNode
     {
         public SqlNode Expression { get; }
         public SqlNode Pattern { get; }

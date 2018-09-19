@@ -1,4 +1,5 @@
-﻿using ZenPlatform.QueryBuilder.DML.Select;
+﻿using ZenPlatform.QueryBuilder.Common.SqlTokens;
+using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.Common.Operations
@@ -12,13 +13,13 @@ namespace ZenPlatform.QueryBuilder.Common.Operations
 
         public TypeDefinitionNode NotNull()
         {
-            Childs.AddRange(Tokens.Tokens.SpaceToken, Tokens.Tokens.NotToken, Tokens.Tokens.SpaceToken, Tokens.Tokens.NullToken);
+            Childs.AddRange(Tokens.SpaceToken, Tokens.NotToken, Tokens.SpaceToken, Tokens.NullToken);
             return this;
         }
 
         public TypeDefinitionNode Unique()
         {
-            Childs.AddRange(Tokens.Tokens.SpaceToken, Tokens.Tokens.UniqueToken);
+            Childs.AddRange(Tokens.SpaceToken, Tokens.UniqueToken);
             return this;
         }
     }
