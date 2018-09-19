@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.DML.Select;
 
@@ -12,13 +14,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage
     public class ZSqlGrammarVisitor : ZSqlGrammarBaseVisitor<SqlNode>
     {
         private SqlNode _result;
-
-        private SqlNode _context;
-
+        private DataQueryConstructorContext _context;
         private Dictionary<string, string> _aliases;
+        
 
-
-        public ZSqlGrammarVisitor()
+        public ZSqlGrammarVisitor(XCRoot configuration)
         {
             _result = new SelectQueryNode();
             _aliases = new Dictionary<string, string>();
