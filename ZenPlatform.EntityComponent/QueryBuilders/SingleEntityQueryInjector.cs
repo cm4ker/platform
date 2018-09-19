@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
@@ -19,20 +20,20 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         }
 
         /// <inheritdoc />
-        public SqlNode GetDataSourceFragment(string objectName)
+        public SqlFragment GetDataSourceFragment(DataQueryConstructorContext context)
         {
-            if (_component.Types.FirstOrDefault(x => x.Name.ToLower() == objectName.ToLower()) is XCSingleEntity objType)
-                return new TableNode(objType.RelTableName);
+            if (_component.Types.FirstOrDefault(x => x.Name.ToLower() == context.ObjectName.ToLower()) is XCSingleEntity objType)
+                return new SqlFragment(new TableNode(objType.RelTableName), null);
 
             throw new Exception("object not found");
         }
 
         /// <inheritdoc />
-        public SqlNode GetColumnFragment(string objectName, string fieldName)
+        public SqlFragment GetColumnFragment(DataQueryConstructorContext context)
         {
-            if (_component.Types.FirstOrDefault(x => x.Name.ToLower() == objectName.ToLower()) is XCSingleEntity objType)
+            if (_component.Types.FirstOrDefault(x => x.Name.ToLower() == context.ObjectName.ToLower()) is XCSingleEntity objType)
             {
-                var field = objType.Properties.FirstOrDefault(x => x.Name.ToLower() == fieldName.ToLower());
+                var field = objType.Properties.FirstOrDefault(x => x.Name.ToLower() == context.FieldName.ToLower());
 
                 //TODO: Если у нас сложное свойство, то нужно будет получить все колонки
 
@@ -41,7 +42,7 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
                     throw new Exception("");
                 }
 
-                return new ColumnNode(field.DatabaseColumnName);
+                return new SqlFragment(new ColumnNode(field.DatabaseColumnName), null);
             }
 
             throw new Exception("object not found");
