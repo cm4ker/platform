@@ -3,7 +3,7 @@
     /// <summary>
     /// Выражение условия Is null
     /// </summary>
-    public class IsNullConditionNode : ConditionExpression
+    public class IsNullConditionNode : ConditionNode
     {
         public IsNullConditionNode(SqlNode node)
         {

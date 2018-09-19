@@ -3,7 +3,7 @@ using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.Columns;
 using ZenPlatform.QueryBuilder.Common.Factoryes;
 using ZenPlatform.QueryBuilder.Common.Operations;
-using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.Shared.Tree;
 

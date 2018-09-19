@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.QueryBuilder.Common.Conditions
 {
-    public class UnaryConditionNode : ConditionExpression
+    public class UnaryConditionNode : ConditionNode
     {
         public UnaryConditionNode(SqlNode node)
         {

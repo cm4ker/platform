@@ -5,8 +5,8 @@ using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.Columns;
 using ZenPlatform.QueryBuilder.Common.Conditions;
 using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.Common.Table;
-using ZenPlatform.QueryBuilder.Common.Tokens;
 using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 using ZenPlatform.QueryBuilder.DDL.Index;
 using ZenPlatform.QueryBuilder.DML.Delete;
@@ -114,7 +114,37 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<CreateIndexQueryNode>(i => VisitCreateIndexQueryNode(i, sb))
                 .CaseIs<IndexTableNode>(i => VisitIndexTableNode(i, sb))
                 .CaseIs<IndexTableColumnNode>(i => VisitIndexTableColumnNode(i, sb))
+                .CaseIs<AndConditionNode>(i => VisitAndConditionNode(i, sb))
+                .CaseIs<IsNullConditionNode>(i => VisitIsNullConditionNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        private void VisitIsNullConditionNode(IsNullConditionNode isNullConditionNode, StringBuilder sb)
+        {
+            VisitChilds(isNullConditionNode, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.IsToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.NullToken, sb);
+        }
+
+        private void VisitAndConditionNode(AndConditionNode andConditionNode, StringBuilder sb)
+        {
+            VisitNode(Tokens.LeftBracketToken, sb);
+
+            VisitChildsForeach(andConditionNode, sb, (node, builder, arg3) =>
+            {
+                if (arg3 > 0)
+                {
+                    VisitNode(Tokens.SpaceToken, sb);
+                    VisitNode(Tokens.AndToken, sb);
+                    VisitNode(Tokens.SpaceToken, sb);
+                }
+
+                VisitNode(node, sb);
+            });
+
+            VisitNode(Tokens.RightBracketToken, sb);
         }
 
         private void VisitIndexTableColumnNode(IndexTableColumnNode indexTableColumnNode, StringBuilder sb)
@@ -289,7 +319,11 @@ namespace ZenPlatform.QueryBuilder
 
         protected virtual void VisitLikeWhereNode(LikeConditionNode likeConditionNode, StringBuilder sb)
         {
-            VisitChilds(likeConditionNode, sb);
+            VisitNode(likeConditionNode.Expression, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.LikeToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(likeConditionNode.Pattern, sb);
         }
 
         protected virtual void VisitSetFieldNode(SetFieldNode setFieldNode, StringBuilder sb)

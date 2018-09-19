@@ -1,7 +1,41 @@
-﻿namespace ZenPlatform.QueryBuilder.Common.Tokens
+﻿namespace ZenPlatform.QueryBuilder.Common.SqlTokens
 {
     public static class Tokens
     {
+        public static class Comparators
+        {
+            /// <summary>
+            /// Больше
+            /// </summary>
+            public static ComparerToken Gt = new GreatThenToken();
+
+            /// <summary>
+            /// Меньше
+            /// </summary>
+            public static ComparerToken Lt = new LessThenToken();
+
+            /// <summary>
+            /// Больше или равно
+            /// </summary>
+            public static ComparerToken GoE = new GreatOrEqualsThenToken();
+
+            /// <summary>
+            /// Меньше или равно
+            /// </summary>
+            public static ComparerToken LoE = new LessOrEqualsThenToken();
+
+            /// <summary>
+            /// Равно
+            /// </summary>
+            public static ComparerToken E = new EqualsToken();
+
+            /// <summary>
+            /// Не равно
+            /// </summary>
+            public static ComparerToken Ne = new NotEqualsToken();
+
+        }
+
         public static Token SpaceToken = new SpaceToken();
         public static Token CreateToken = new CreateToken();
         public static Token DropToken = new DropToken();
@@ -49,11 +83,85 @@
         public static Token IndexToken = new IndexToken();
 
         public static Token OnToken = new OnToken();
+
+
+        public static Token AndToken = new AndToken();
+        public static Token IsToken = new IsToken();
+        public static Token LikeToken = new LikeToken();
+    }
+
+    public class LikeToken : Token
+    {
+        public LikeToken() : base("LIKE")
+        {
+        }
+    }
+
+    public class IsToken : Token
+    {
+        public IsToken() : base("IS")
+        {
+        }
+    }
+    public class AndToken : Token
+    {
+        public AndToken() : base("AND")
+        {
+        }
+    }
+
+    public abstract class ComparerToken : Token
+    {
+        protected ComparerToken(string name) : base(name)
+        {
+        }
+    }
+
+    public class GreatThenToken : ComparerToken
+    {
+        internal GreatThenToken() : base(">")
+        {
+        }
+    }
+
+    public class LessThenToken : ComparerToken
+    {
+        internal LessThenToken() : base("<")
+        {
+        }
+    }
+
+    public class GreatOrEqualsThenToken : ComparerToken
+    {
+        internal GreatOrEqualsThenToken() : base("<=")
+        {
+        }
+    }
+
+    public class LessOrEqualsThenToken : ComparerToken
+    {
+        internal LessOrEqualsThenToken() : base(">=")
+        {
+        }
+    }
+
+    public class NotEqualsToken : ComparerToken
+    {
+        internal NotEqualsToken() : base("<>")
+        {
+        }
+    }
+
+    public class EqualsToken : ComparerToken
+    {
+        internal EqualsToken() : base("=")
+        {
+        }
     }
 
     public class OnToken : Token
     {
-        public OnToken() : base("ON")
+        internal OnToken() : base("ON")
         {
         }
     }

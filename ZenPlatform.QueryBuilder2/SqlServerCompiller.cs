@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.DML.Select;
 
 namespace ZenPlatform.QueryBuilder
