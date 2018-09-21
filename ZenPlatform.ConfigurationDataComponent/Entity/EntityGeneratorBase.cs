@@ -121,6 +121,7 @@ namespace ZenPlatform.DataComponent.Entity
         {
             throw new NotImplementedException();
         }
+
     }
 
     /*
@@ -164,5 +165,13 @@ namespace ZenPlatform.DataComponent.Entity
 
     public class PublicMethodDefinition
     {
+    }
+
+    /// <summary>
+    /// Интерфейс для контейнеров, которые хранят в себе мультитип
+    /// </summary>
+    public interface IMultiDataStorage
+    {
+        object Get();
     }
 }

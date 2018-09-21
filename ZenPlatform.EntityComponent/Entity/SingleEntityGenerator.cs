@@ -463,6 +463,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             //Start Get() method
             var getMethodBody = SyntaxFactory.Block();
+            var getMethodWithType = SyntaxFactory.Block();
             var clearAllMethodBody = SyntaxFactory.Block();
             var setsMethods = new List<MethodDeclarationSyntax>();
 
@@ -470,7 +471,7 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 getMethodBody = getMethodBody.AddStatements(SyntaxFactory.ParseStatement(
                     $"if ({DtoPrivateFieldName}.{columnDefinitionItem.DatabaseColumnName} != default({columnDefinitionItem.Type.CLRType.ToTypeString()})) return {DtoPrivateFieldName}.{columnDefinitionItem.DatabaseColumnName};"));
-
+                
                 clearAllMethodBody = clearAllMethodBody.AddStatements(SyntaxFactory.ParseStatement(
                     $"{DtoPrivateFieldName}.{columnDefinitionItem.DatabaseColumnName} = default({columnDefinitionItem.Type.CLRType.ToTypeString()});"));
 
@@ -500,7 +501,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 returnType: SyntaxFactory.ParseTypeName("object"),
                 statements: getMethodBody.Statements,
                 accessibility: Accessibility.Public);
-
+            
             var clearAllMethod = Generator.MethodDeclaration(
                 "ClearAll",
                 statements: clearAllMethodBody.Statements,

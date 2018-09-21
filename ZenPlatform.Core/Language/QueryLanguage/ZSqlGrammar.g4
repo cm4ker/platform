@@ -5,11 +5,7 @@ parse
  ;
 
 sql_stmt_list
- : ';'* sql_stmt ( ';'+ sql_stmt )* ';'*
- ;
-
-sql_stmt
- : ( EXPLAIN ( QUERY PLAN )? )? ( select_stmt )
+ : ';'* select_stmt ( ';'+ select_stmt )* ';'*
  ;
 select_stmt
  : ( FROM ( table_or_subquery ( ',' table_or_subquery )* | join_clause ) )?
@@ -38,7 +34,6 @@ expr
  | function_name '(' ( DISTINCT? expr ( ',' expr )* | '*' )? ')'
  | '(' expr ')'
  | CAST '(' expr AS type_name ')'
- | expr COLLATE collation_name
  | expr NOT? ( LIKE | GLOB | REGEXP | MATCH ) expr ( ESCAPE expr )?
  | expr ( ISNULL | NOTNULL | NOT NULL )
  | expr IS NOT? expr
@@ -61,12 +56,10 @@ result_column
  
 table_or_subquery
  : ( component_name '.' object_name ( AS? table_alias )?
-   ( INDEXED BY index_name
-   | NOT INDEXED )?
  | '(' ( table_or_subquery ( ',' table_or_subquery )*
        | join_clause )
    ')' ( AS? table_alias )?
- | '(' select_stmt ')' ( AS? table_alias )?);
+ | '(' select_stmt ')' AS? table_alias);
 
 join_clause
  : table_or_subquery ( join_operator table_or_subquery join_constraint )*
@@ -483,8 +476,7 @@ NUMERIC_LITERAL
  ;
 
 BIND_PARAMETER
- : '?' DIGIT*
- | [:@$] IDENTIFIER
+ : [:@$] IDENTIFIER
  ;
 
 STRING_LITERAL
