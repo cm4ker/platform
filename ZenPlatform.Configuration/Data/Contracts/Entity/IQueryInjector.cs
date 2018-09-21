@@ -76,6 +76,13 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         public Stack<SqlNode> NodeStack { get; }
 
         /// <summary>
+        /// Текущий контекст параметров запроса
+        /// </summary>
+        public Dictionary<string, object> Parameters { get; set; }
+
+        
+
+        /// <summary>
         /// Получить имя следующего параметра
         /// </summary>
         /// <returns></returns>
