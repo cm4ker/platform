@@ -49,7 +49,6 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         public Dictionary<string, object> Parameters { get; }
     }
 
-
     /// <summary>
     /// Контекст конструктора базы данных
     /// </summary>
@@ -57,7 +56,7 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
     {
         public DataQueryConstructorContext()
         {
-            NodeStack = new Stack<SqlNode>();
+
         }
 
         /// <summary>
@@ -70,17 +69,16 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// </summary>
         public string FieldName { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public Stack<SqlNode> NodeStack { get; }
+        public bool InCase { get; set; }
+        public bool InNastedQuery { get; set; }
+        public bool InCast { get; set; }
+
+        public List<object> CurrentStateParameters { get; set; }
 
         /// <summary>
         /// Текущий контекст параметров запроса
         /// </summary>
         public Dictionary<string, object> Parameters { get; set; }
-
-        
 
         /// <summary>
         /// Получить имя следующего параметра

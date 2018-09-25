@@ -41,10 +41,15 @@ namespace ZenPlatform.EntityComponent
             return document;
         }
 
-
+        /// <summary>
+        /// Сохранить объект
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="entity"></param>
         public void Save(UserSession session, SingleEntity entity)
         {
             var def = session.GetMetadata(entity.GetType());
+            //TODO: неоходимо вытащить dto из объекта, затем сохранить его
         }
 
         private SingleEntity CreateEntityFromDto(UserSession session, Type entityType, object dto)
@@ -92,7 +97,7 @@ namespace ZenPlatform.EntityComponent
             }
 
             q.Where(f => f.Field("Id"), "=", f => f.Parameter("Id"));
-            
+
             //TODO: Сделать RLS в предложении WHERE
             //TODO: На основании пользовательского контекста необходимо получить ограничение
 

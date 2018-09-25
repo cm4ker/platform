@@ -24,23 +24,6 @@ namespace ZenPlatform.Configuration.Structure
 
         [XmlIgnore] public XCRoot Parent => _parent;
 
-
-        public void Load()
-        {
-            if (Blobs != null)
-                foreach (var blob in Blobs)
-                {
-                    var stream = Parent.Storage.GetBlob(blob.Name, StandardRoleFolder);
-                    var role = XCHelper.DeserializeFromStream<XCRole>(stream);
-
-                    stream.Dispose();
-
-                    Items.Add(role);
-
-                    role.Load();
-                }
-        }
-
         XCRoot IChildItem<XCRoot>.Parent
         {
             get => _parent;
@@ -58,5 +41,25 @@ namespace ZenPlatform.Configuration.Structure
                     Parent.Storage.SaveBlob(role.Name, StandardRoleFolder, stream);
             }
         }
+        
+        /// <summary>
+        /// Загрузить роли
+        /// </summary>
+        public void Load()
+        {
+            if (Blobs != null)
+                foreach (var blob in Blobs)
+                {
+                    var stream = Parent.Storage.GetBlob(blob.Name, StandardRoleFolder);
+                    var role = XCHelper.DeserializeFromStream<XCRole>(stream);
+
+                    stream.Dispose();
+
+                    Items.Add(role);
+
+                    role.Load();
+                }
+        }
+
     }
 }

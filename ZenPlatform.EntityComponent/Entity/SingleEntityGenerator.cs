@@ -256,79 +256,6 @@ namespace ZenPlatform.EntityComponent.Entity
             return newNode;
         }
 
-        private SyntaxNode GenerateEntityClassPropertyOneType(XCSingleEntityProperty prop)
-        {
-            var propertyTypeName = string.Empty;
-
-            SyntaxNode[] getAcessorStatement = default(SyntaxNode[]),
-                setAcessorStatement = default(SyntaxNode[]);
-
-            SyntaxNode csProperty = null;
-            var propType = prop.Types.First();
-
-            if (propType is XCObjectTypeBase objectProprty)
-            {
-                var propertyComponent = objectProprty.Parent;
-
-                var propEnittyPreffix = propertyComponent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule)
-                    .GetExpression();
-                var propEntityPostfix = propertyComponent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule)
-                    .GetExpression();
-
-                var getRule = propertyComponent.GetCodeRule(CodeGenRuleType.InForeignPropertyGetActionRule);
-                var setRule = propertyComponent.GetCodeRule(CodeGenRuleType.InForeignPropertySetActionRule);
-
-                var getExp = getRule.GetExpression().NamedFormat(new StandartGetExpressionParameters()
-                {
-                    ComponentSpace = propertyComponent.Info.ComponentSpaceName,
-                    ObjectName = propType.Name,
-                    Params = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref"
-                });
-
-                var setExp = setRule.GetExpression().NamedFormat(new StandartSetExpressionParameters()
-                {
-                    ComponentSpace = propertyComponent.Info.ComponentSpaceName,
-                    SetVariable = $"{DtoPrivateFieldName}.{prop.DatabaseColumnName}_Ref",
-                    ObjectName = propType.Name,
-                    Params = "value"
-                });
-
-
-                getAcessorStatement = new SyntaxNode[]
-                {
-                    SyntaxFactory.ParseStatement($"return {getExp};")
-                };
-
-                setAcessorStatement = new SyntaxNode[]
-                {
-                    SyntaxFactory.ParseStatement($"{setExp}"),
-                    SyntaxFactory.ParseStatement("OnPropertyChanged();")
-                };
-
-                propertyTypeName = $"{propEnittyPreffix}{propType.Name}{propEntityPostfix}";
-            }
-
-            if (propType is XCPremitiveType primitiveType)
-            {
-                getAcessorStatement = new SyntaxNode[]
-                {
-                    SyntaxFactory.ParseStatement($"return {DtoPrivateFieldName}.{prop.DatabaseColumnName};")
-                };
-                setAcessorStatement = new SyntaxNode[]
-                {
-                    SyntaxFactory.ParseStatement($"{DtoPrivateFieldName}.{prop.DatabaseColumnName} = value;"),
-                    SyntaxFactory.ParseStatement("OnPropertyChanged();")
-                };
-
-                propertyTypeName = primitiveType.CLRType.ToTypeString();
-            }
-
-            return Generator.PropertyDeclaration(
-                prop.Name,
-                SyntaxFactory.IdentifierName(propertyTypeName),
-                Accessibility.Public,
-                DeclarationModifiers.None, getAcessorStatement, setAcessorStatement);
-        }
         /*
          * Необходимо сгенерировать Extension methods для класса Session, чтобы
          * появился следующий функционал
@@ -471,7 +398,7 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 getMethodBody = getMethodBody.AddStatements(SyntaxFactory.ParseStatement(
                     $"if ({DtoPrivateFieldName}.{columnDefinitionItem.DatabaseColumnName} != default({columnDefinitionItem.Type.CLRType.ToTypeString()})) return {DtoPrivateFieldName}.{columnDefinitionItem.DatabaseColumnName};"));
-                
+
                 clearAllMethodBody = clearAllMethodBody.AddStatements(SyntaxFactory.ParseStatement(
                     $"{DtoPrivateFieldName}.{columnDefinitionItem.DatabaseColumnName} = default({columnDefinitionItem.Type.CLRType.ToTypeString()});"));
 
@@ -501,7 +428,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 returnType: SyntaxFactory.ParseTypeName("object"),
                 statements: getMethodBody.Statements,
                 accessibility: Accessibility.Public);
-            
+
             var clearAllMethod = Generator.MethodDeclaration(
                 "ClearAll",
                 statements: clearAllMethodBody.Statements,

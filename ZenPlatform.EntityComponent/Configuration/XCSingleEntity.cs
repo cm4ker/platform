@@ -71,6 +71,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         [XmlIgnore]
         public string RelTableName { get; set; }
 
+        /// <inheritdoc />
         public override void LoadDependencies()
         {
             foreach (var property in Properties)

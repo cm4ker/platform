@@ -49,8 +49,6 @@ namespace ZenPlatform.Core.Environment
 
             Managers = new Dictionary<Type, IEntityManager>();
             Entityes = new Dictionary<Guid, EntityMetadata>();
-
-
         }
 
         /// <summary>
@@ -62,7 +60,6 @@ namespace ZenPlatform.Core.Environment
         {
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
             base.Initialize();
-
 
             //TODO: получить библиотеку с сгенерированными сущностями dto и так далее
             Build = Assembly.LoadFile("");
@@ -83,10 +80,6 @@ namespace ZenPlatform.Core.Environment
                 RegisterEntity(new EntityMetadata(type, csEntityType, csDtoType));
             }
         }
-
-
-
-
 
         /// <summary>
         /// Сборка конфигурации.
