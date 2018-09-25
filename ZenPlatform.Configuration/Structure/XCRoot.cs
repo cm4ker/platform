@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
@@ -27,11 +29,27 @@ namespace ZenPlatform.Configuration.Structure
 
         public IXCConfigurationStorage Storage => _storage;
 
+        /// <summary>
+        /// Идентификатор конфигурации
+        /// </summary>
         [XmlElement("ProjectId")] public Guid ProjectId { get; set; }
 
+        /// <summary>
+        /// Имя конфигурации
+        /// </summary>
         [XmlElement("ProjectName")] public string ProjectName { get; set; }
 
+        /// <summary>
+        /// Версия конфигурации
+        /// </summary>
         [XmlElement("ProjectVersion")] public string ProjectVersion { get; set; }
+
+        /// <summary>
+        /// Настройки сессии
+        /// </summary>
+        [XmlArray("SessionSettings")]
+        [XmlArrayItem(ElementName = "SessionSetting", Type = typeof(XCSessionSetting))]
+        public ChildItemCollection<XCRoot, XCSessionSetting> SessionSettings { get; set; }
 
         [XmlElement(Type = typeof(XCData), ElementName = "Data")]
         public XCData Data
@@ -87,7 +105,31 @@ namespace ZenPlatform.Configuration.Structure
             //Инициализация ролевой системы
             conf.Roles.Load();
 
+            //Инициализация параметров сессии
+            conf.LoadSessionSettings();
+
             return conf;
+        }
+
+        private void LoadSessionSettings()
+        {
+            foreach (var setting in SessionSettings)
+            {
+                var configurationTypes = new List<XCTypeBase>();
+
+                foreach (var propertyType in setting.Types)
+                {
+                    var type = Data.PlatformTypes.FirstOrDefault(x => x.Guid == propertyType.Guid);
+                    //Если по какой то причине тип поля не найден, в таком случае считаем, что конфигурация битая и выкидываем исключение
+                    if (type == null) throw new Exception("Invalid configuration");
+
+                    configurationTypes.Add(type);
+                }
+
+                //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные 
+                setting.Types.Clear();
+                setting.Types.AddRange(configurationTypes);
+            }
         }
 
         /// <summary>

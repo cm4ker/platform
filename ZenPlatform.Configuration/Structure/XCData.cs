@@ -135,7 +135,10 @@ namespace ZenPlatform.Configuration.Structure
             set => _parent = value;
         }
 
-
+        /// <summary>
+        /// Зарегистрировать тип данных на уровне конфигурации платформы
+        /// </summary>
+        /// <param name="type"></param>
         public void RegisterType(XCObjectTypeBase type)
         {
             _platformTypes.Add(type);

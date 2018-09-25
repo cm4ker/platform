@@ -67,8 +67,11 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         [XmlAttribute]
         public bool Unique { get; set; }
 
+        /// <summary>
+        /// Типы, описывающие поле
+        /// </summary>
         [XmlArray]
-        [XmlArrayItem(ElementName = "Type", Type = typeof(XCFakeType))]
+        [XmlArrayItem(ElementName = "Type", Type = typeof(XCUnknownType))]
         public List<XCTypeBase> Types { get; }
 
         /// <summary>

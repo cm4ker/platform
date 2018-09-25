@@ -50,7 +50,7 @@ expr
 result_column
  : '*'
  | object_name '.' '*'
- | expr ( AS? column_alias )?
+ | ( column_alias '=')? expr 
  ;
 
  
