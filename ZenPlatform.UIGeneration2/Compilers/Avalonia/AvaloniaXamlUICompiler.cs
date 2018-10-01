@@ -295,10 +295,10 @@ namespace ZenPlatform.UIBuilder.Compilers
                 _xamlWriter.WriteValue(uiTextBox.DataSource);
                 _xamlWriter.WriteEndMember();
 
-                ////Mode 
-                //_xamlWriter.WriteStartMember(modeProp);
-                //_xamlWriter.WriteValue("TwoWay");
-                //_xamlWriter.WriteEndMember();
+                //Mode 
+                _xamlWriter.WriteStartMember(modeProp);
+                _xamlWriter.WriteValue("TwoWay");
+                _xamlWriter.WriteEndMember();
 
                 _xamlWriter.WriteEndObject();
                 _xamlWriter.WriteEndMember();

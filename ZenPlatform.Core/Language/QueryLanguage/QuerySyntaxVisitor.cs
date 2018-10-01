@@ -8,6 +8,7 @@ using MoreLinq.Extensions;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.Shared.ParenChildCollection;
@@ -23,19 +24,14 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         private SqlNode _result;
         private DataQueryConstructorContext _context;
         private XCRoot _conf;
-        
-
-        private int queryId;
-        private Stack<int> queryes;
+        private Stack<LogicalTreeQueryItem> _dependencyStack;
 
         public ZSqlGrammarVisitor(XCRoot configuration, DataQueryConstructorContext context)
         {
             _result = new SelectQueryNode();
             _conf = configuration;
             _context = context;
-        
         }
-
 
         public override SqlNode VisitResult_column(ZSqlGrammarParser.Result_columnContext context)
         {
@@ -44,12 +40,8 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         public override SqlNode VisitSelect_stmt(ZSqlGrammarParser.Select_stmtContext context)
         {
-            queryId++;
-
-            queryes.Push(queryId);
+            _dependencyStack.Push(new QueryLTree());
             var result = base.VisitSelect_stmt(context);
-            queryes.Pop();
-
             return result;
         }
 
@@ -73,6 +65,42 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         public override SqlNode VisitParse(ZSqlGrammarParser.ParseContext context)
         {
             return base.VisitParse(context);
+        }
+    }
+
+
+
+    public class ZqlLogicalTreeWriter
+    {
+        private enum StateToken
+        {
+            OpenQuery,
+            CloseQuery,
+            ObjectField,
+            ObjectSource,
+            ExpressionSource,
+            Expression,
+            Value
+        }
+
+        private class State
+        {
+            public StateToken StateToken { get; set; }
+            public object Bag { get; set; }
+        }
+
+        private Stack<State> _state;
+
+        private int _queryIdCounter;
+
+        public void WriteStartQuery()
+        {
+
+        }
+
+        public void WriteEndQuery()
+        {
+
         }
     }
 }
