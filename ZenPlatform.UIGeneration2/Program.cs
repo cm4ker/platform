@@ -10,6 +10,7 @@ using Portable.Xaml;
 using ZenPlatform.UIBuilder.Compilers;
 using ZenPlatform.UIBuilder.Compilers.Avalonia;
 using ZenPlatform.UIBuilder.Interface;
+using ZenPlatform.UIBuilder.Interface.DataGrid;
 
 namespace ZenPlatform.UIBuilder
 {
@@ -38,6 +39,7 @@ namespace ZenPlatform.UIBuilder
                             return b;
                         })
                         .With(new UIObjectPicker())
+                    .With(new UIDataGrid().WithColumn(g => g.TextColumn()))
                         .With(tc => tc.TabControl().WithTab(t =>
                             {
                                 t.Header = "Page 1";
@@ -61,36 +63,6 @@ namespace ZenPlatform.UIBuilder
             Console.WriteLine(text);
 
             XamlWriterTest();
-
-            var test = @"
-            <Window Height=""400"" Width=""300"" xmlns=""https://github.com/avaloniaui"">
-                <Window.Content>
-                    <StackPanel Orientation=""Vertical"">
-                        <StackPanel.Children>
-                            <TextBox Height=""28"" Width=""100"" Text=""{Binding Path=Person, Mode=TwoWay}"" />
-                            <TextBlock Text=""Label component"" />
-                            <CheckBox Content=""Checkbox component"" />
-                            <Button Content=""Button component"" />
-                            <ObjectPicker xmlns=""clr-namespace:ZenPlatform.Controls.Avalonia;assembly=ZenPlatform.Controls.Avalonia"" />
-                            <TabControl>
-                                <TabControl.Items>
-                                    <TabItem Header=""Page 1"">
-                                        <TabItem.Content>
-                                             <TextBlock Text=""This is content on page 1"" />
-                                        </TabItem.Content>
-                                    </TabItem>
-                                    <TabItem Header=""Page 2"">
-                                        <TabItem.Content>
-                                            <TextBlock Text=""This is content on page 2"" />
-                                        </TabItem.Content>
-                                    </TabItem>
-                                </TabControl.Items>
-                            </TabControl>
-                        </StackPanel.Children>
-                    </StackPanel>
-                </Window.Content>
-            </Window>
-            ";
 
 
             Window w = AvaloniaXamlLoader.Parse<Window>(text);
@@ -124,21 +96,22 @@ namespace ZenPlatform.UIBuilder
                 .UseReactiveUI()
                 .LogToDebug();
 
+
         public static void XamlWriterTest()
         {
-            TextBox tb = new TextBox();
-            tb.Text = "Hello";
+            //TextBox tb = new TextBox();
+            //tb.Text = "Hello";
 
-            var context = new AvaloniaCustomXamlSchemaContext(new AvaloniaRuntimeTypeProvider());
+            //var context = new AvaloniaCustomXamlSchemaContext(new AvaloniaRuntimeTypeProvider());
 
-            var sb = new StringBuilder();
-            var sw = new StringWriter(sb);
+            //var sb = new StringBuilder();
+            //var sw = new StringWriter(sb);
 
-            XamlWriter xw = new XamlXmlWriter(sw, context);
+            //XamlWriter xw = new XamlXmlWriter(sw, context);
 
-            xw.Close();
+            //xw.Close();
 
-            Console.WriteLine(sb.ToString());
+            //Console.WriteLine(sb.ToString());
         }
     }
 }

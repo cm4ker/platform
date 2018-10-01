@@ -5,22 +5,35 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
 {
-    public class Query
-    {
 
+    public abstract class LogicalTreeQueryItem
+    {
+        public string Token;
     }
 
-    public class NastedQuery
+    public class QueryLTree : LogicalTreeQueryItem
     {
-        public Query Nasted;
+        public List<Expression> Select { get; set; }
+        public List<IDataSource> From { get; set; }
+        public Expression Where { get; set; }
+        public Expression GroupBy { get; set; }
+        public Expression Having { get; set; }
+        public List<Expression> OrderBy { get; set; }
     }
 
-    public class ObjectTable
+    public interface IDataSource { }
+
+    public class NastedQuery : LogicalTreeQueryItem, IDataSource
+    {
+        public QueryLTree Nasted;
+    }
+
+    public class ObjectTable : LogicalTreeQueryItem, IDataSource
     {
         public XCObjectTypeBase ObjectType;
     }
 
-    public abstract class Field
+    public abstract class Field : Expression
     {
 
     }
@@ -45,8 +58,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
 
     }
 
-
-    public class Expression
+    public class Expression : LogicalTreeQueryItem
     {
 
     }
