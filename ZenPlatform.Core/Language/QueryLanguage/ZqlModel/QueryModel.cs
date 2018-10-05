@@ -5,80 +5,150 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
 {
-
-    public abstract class LogicalTreeQueryItem
+    /// <summary>
+    /// Элемент логических связей в запросе. LT - Logical tree
+    /// </summary>
+    public abstract class LTItem
     {
         public string Token;
     }
 
-    public class QueryLTree : LogicalTreeQueryItem
+    /// <summary>
+    /// Интерфейс поддержки источника данных
+    /// </summary>
+    public interface ILTDataSource
     {
-        public List<Expression> Select { get; set; }
-        public List<IDataSource> From { get; set; }
-        public Expression Where { get; set; }
-        public Expression GroupBy { get; set; }
-        public Expression Having { get; set; }
-        public List<Expression> OrderBy { get; set; }
     }
 
-    public interface IDataSource { }
-
-    public class NastedQuery : LogicalTreeQueryItem, IDataSource
+    /// <summary>
+    /// Заппрос
+    /// </summary>
+    public class LTQuery : LTItem
     {
-        public QueryLTree Nasted;
+        /// <summary>
+        /// Список выбранных полей
+        /// </summary>
+        public List<LTSelectExpression> Select { get; set; }
+
+        
+        /// <summary>
+        /// Список выбранных таблиц
+        /// </summary>
+        public List<ILTDataSource> From { get; set; }
+
+        /// <summary>
+        /// Список наложенной фильтрации
+        /// </summary>
+        public LTExpression Where { get; set; }
+
+        /// <summary>
+        /// Список сгруппировнных данных
+        /// </summary>
+        public LTExpression GroupBy { get; set; }
+
+        /// <summary>
+        /// Список наложенной фильтрации на группы
+        /// </summary>
+        public LTExpression Having { get; set; }
+
+        /// <summary>
+        /// Список отсортированных 
+        /// </summary>
+        public List<LTExpression> OrderBy { get; set; }
     }
 
-    public class ObjectTable : LogicalTreeQueryItem, IDataSource
+
+    /// <summary>
+    /// Вложенный запрос
+    /// </summary>
+    public class LTNastedQuery : LTItem, ILTDataSource
+    {
+        public LTQuery Nasted;
+    }
+
+    /// <summary>
+    /// Таблица объекта
+    /// </summary>
+    public class LTObjectTable : LTItem, ILTDataSource
     {
         public XCObjectTypeBase ObjectType;
     }
 
-    public abstract class Field : Expression
+    /// <summary>
+    /// Выражение в предложении  SELECT 
+    /// </summary>
+    public class LTSelectExpression : LTExpression
     {
+        /// <summary>
+        /// Источник данных.
+        /// </summary>
+        public LTExpression SourceParent { get; set; }
 
+        /// <summary>
+        /// Выражение
+        /// </summary>
+        public LTExpression Expression { get; set; }
+
+        /// <summary>
+        /// Алиас выражения
+        /// </summary>
+        public string Aliase { get; set; }
     }
 
-    public class ObjectField : Field
+    /// <summary>
+    /// Поле
+    /// </summary>
+    public abstract class LTField : LTExpression
     {
-        public XCObjectPropertyBase Property;
+        /// <summary>
+        /// Источник данных узла
+        /// </summary>
+        public LTExpression SourceParent { get; set; }
     }
 
-    public class ExpressionField : Field
-    {
 
+    /// <summary>
+    /// Поле объекта имеет конкретную привязку к конкретному объекту
+    /// </summary>
+    public class LTObjectField : LTField
+    {
+        public XCObjectPropertyBase Property { get; set; }
     }
 
-    public class ConstField : Field
+    public class ExpressionField : LTField
     {
-
     }
 
-    public class Aliase
+    public class ConstField : LTField
     {
-
     }
 
-    public class Expression : LogicalTreeQueryItem
+    public class LTAliase
     {
-
     }
 
-    public class LogicalExpression : Expression
+    public class LTExpression : LTItem
     {
-        public Expression FirstOperand;
-        public Expression SecondOperand;
+    }
+
+    public class LogicalExpression : LTExpression
+    {
+        public LTExpression FirstOperand;
+        public LTExpression SecondOperand;
     }
 
     public class And : LogicalExpression
-    { }
+    {
+    }
 
     public class Or : LogicalExpression
-    { }
-
-    public class CaseExpression : Expression
     {
-        public Expression When;
-        public Expression Then;
-        public Expression Else;
+    }
+
+    public class CaseExpression : LTExpression
+    {
+        public LTExpression When;
+        public LTExpression Then;
+        public LTExpression Else;
     }
 }

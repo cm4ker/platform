@@ -24,7 +24,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         private SqlNode _result;
         private DataQueryConstructorContext _context;
         private XCRoot _conf;
-        private Stack<LogicalTreeQueryItem> _dependencyStack;
+        private Stack<LTItem> _dependencyStack;
 
         public ZSqlGrammarVisitor(XCRoot configuration, DataQueryConstructorContext context)
         {
@@ -40,7 +40,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         public override SqlNode VisitSelect_stmt(ZSqlGrammarParser.Select_stmtContext context)
         {
-            _dependencyStack.Push(new QueryLTree());
+            _dependencyStack.Push(new LTQuery());
             var result = base.VisitSelect_stmt(context);
             return result;
         }
