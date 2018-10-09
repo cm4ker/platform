@@ -139,7 +139,7 @@ namespace ZenPlatform.Core.Language
 
             var result = visitor.Visit(speakParser.parse());
 
-            return result;
+            return null;
         }
     }
 
