@@ -86,7 +86,6 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// </summary>
         public void LoadComponent()
         {
-
             var stream = Root.Storage.GetBlob(Blob.Name, nameof(XCComponent));
 
             using (var ms = new MemoryStream())
@@ -99,7 +98,7 @@ namespace ZenPlatform.Configuration.Structure.Data
                 .FirstOrDefault(x => x.BaseType == typeof(XCComponentInformation));
 
             if (typeInfo != null)
-                _info = (XCComponentInformation)Activator.CreateInstance(typeInfo);
+                _info = (XCComponentInformation) Activator.CreateInstance(typeInfo);
             else
                 _info = new XCComponentInformation();
 
@@ -109,7 +108,7 @@ namespace ZenPlatform.Configuration.Structure.Data
                                      x.GetInterfaces().Contains(typeof(IXComponentLoader))) ??
                              throw new InvalidComponentException();
 
-            _loader = (IXComponentLoader)Activator.CreateInstance(loaderType);
+            _loader = (IXComponentLoader) Activator.CreateInstance(loaderType);
 
             _componentImpl = _loader.GetComponentImpl(this);
 
@@ -181,6 +180,12 @@ namespace ZenPlatform.Configuration.Structure.Data
         public CodeGenRule GetCodeRule(CodeGenRuleType type)
         {
             return _codeGenRules[type];
+        }
+
+
+        public XCObjectTypeBase GetTypeByName(string typeName)
+        {
+            return Types.First(x => x.Name == typeName);
         }
     }
 }

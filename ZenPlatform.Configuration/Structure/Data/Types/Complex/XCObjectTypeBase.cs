@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -76,6 +77,11 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public virtual IEnumerable<XCObjectPropertyBase> GetProperties()
         {
             throw new NotSupportedException();
+        }
+
+        public virtual XCObjectPropertyBase GetPropertyByName(string name)
+        {
+            return GetProperties().First(x => x.Name == name);
         }
     }
 }
