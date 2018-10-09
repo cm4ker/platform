@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
@@ -12,6 +13,7 @@ namespace ZenPlatform.Core.Sessions
     public class UserSession : Session<WorkEnvironment>
     {
         private readonly User _user;
+        private readonly ConcurrentDictionary<string, object> _sessionParameters;
 
         public UserSession(WorkEnvironment env, User user, int id) : base(env, id)
         {
@@ -25,14 +27,30 @@ namespace ZenPlatform.Core.Sessions
         // Легче держать все компоненты в одном месте, т.е. в среде и обращаться к ним из сессии. Я подумаю над этим...
         //TODO: Все компоненты инициализируются для сессии, так что необходимо, чтобы компоненты были доступны из сессии, либо на уровне ниже
 
-        public void SetGlobalParameter(string key, object value)
+
+        /// <summary>
+        /// Установить параметр сессии
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetSessionParameter(string key, object value)
         {
-            Environment.Globals[key] = value;
+            _sessionParameters[key] = value;
         }
 
-        public object GetGlobalParameter(string key, object value)
+
+        /// <summary>
+        /// Получить параметр сесси
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public object GetSessionParameter(string key, object value)
         {
-            return Environment.Globals[key];
+            if (_sessionParameters.TryGetValue(key, out var result))
+                return result;
+            else
+                return null;
         }
 
         /// <summary>

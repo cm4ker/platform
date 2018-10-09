@@ -30,7 +30,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
         /// </summary>
         public List<LTSelectExpression> Select { get; set; }
 
-        
+
         /// <summary>
         /// Список выбранных таблиц
         /// </summary>
@@ -71,7 +71,21 @@ namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
     /// </summary>
     public class LTObjectTable : LTItem, ILTDataSource
     {
-        public XCObjectTypeBase ObjectType;
+        public LTObjectTable(XCObjectTypeBase type, string alias)
+        {
+            ObjectType = type;
+            Alias = alias;
+        }
+
+        /// <summary>
+        /// Ссылка на тип объекта
+        /// </summary>
+        public XCObjectTypeBase ObjectType { get; }
+
+        /// <summary>
+        /// Алиас
+        /// </summary>
+        public string Alias { get; }
     }
 
     /// <summary>
@@ -106,22 +120,33 @@ namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
         public LTExpression SourceParent { get; set; }
     }
 
-
     /// <summary>
     /// Поле объекта имеет конкретную привязку к конкретному объекту
     /// </summary>
     public class LTObjectField : LTField
     {
+        public LTObjectField(XCObjectPropertyBase property)
+        {
+            Property = property;
+        }
+
         public XCObjectPropertyBase Property { get; set; }
     }
 
+    /// <summary>
+    /// поле - выражение
+    /// </summary>
     public class ExpressionField : LTField
     {
     }
 
-    public class ConstField : LTField
+    /// <summary>
+    /// Константа
+    /// </summary>
+    public class LTConstField : LTField
     {
     }
+
 
     public class LTAliase
     {

@@ -5,6 +5,7 @@ using Antlr4.Runtime;
 using Xunit;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Language.QueryLanguage;
+using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
 namespace ZenPlatform.Tests.Core
 {
@@ -30,5 +31,11 @@ namespace ZenPlatform.Tests.Core
             visitor.Visit(speakParser.parse());
         }
 
+
+        [Fact]
+        public void LogicalTreeTest()
+        {
+            
+        }
     }
 }
