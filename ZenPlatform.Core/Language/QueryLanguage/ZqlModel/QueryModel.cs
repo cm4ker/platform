@@ -26,6 +26,12 @@ namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
     /// </summary>
     public class LTQuery : LTItem
     {
+        public LTQuery()
+        {
+            Select = new List<LTSelectExpression>();
+            From = new List<ILTDataSource>();
+        }
+
         /// <summary>
         /// Список выбранных полей
         /// </summary>
@@ -182,8 +188,17 @@ namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
     public class LTCase : LTOperationExpression
     {
         protected override int ParamCount => 3;
-        public LTExpression When;
-        public LTExpression Then;
-        public LTExpression Else;
+
+        public LTExpression When => Arguments[0];
+        public LTExpression Then => Arguments[1];
+        public LTExpression Else => Arguments[2];
+    }
+
+    public class LTEquals : LTOperationExpression
+    {
+        protected override int ParamCount => 2;
+        
+        public LTExpression Left => Arguments[0];
+        public LTExpression Right => Arguments[1];
     }
 }
