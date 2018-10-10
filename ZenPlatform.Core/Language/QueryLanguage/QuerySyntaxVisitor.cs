@@ -80,13 +80,18 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         }
 
 
-        private struct State
+        private class State
         {
             public State(StateToken stateToken, LTItem item)
             {
                 StateToken = stateToken;
                 Item = item;
                 ClauseType = ClauseType.From;
+            }
+
+            public State(StateToken stateToken, LTItem item, ClauseType clauseType) : this(stateToken, item)
+            {
+                ClauseType = clauseType;
             }
 
             public StateToken StateToken { get; }
@@ -96,7 +101,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
             public LTItem Item { get; }
         }
 
-        private Stack<State> _state;
+        private Stack<State> _stack;
 
         private int _queryIdCounter;
 
@@ -104,30 +109,31 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         public ZqlLogicalTreeWriter(XCRoot conf)
         {
             _conf = conf;
+            _stack = new Stack<State>();
         }
 
         public void WriteQuery()
         {
             LTQuery newQuery = new LTQuery();
 
-            if (!_state.Any())
+            if (!_stack.Any())
             {
                 _result = newQuery;
             }
 
-            _state.Push(new State(StateToken.Query, newQuery));
+            _stack.Push(new State(StateToken.Query, newQuery));
         }
 
         public void WriteCloseQuery()
         {
-            while (_state.TryPop(out var state) && !(state.Item is LTQuery))
+            while (_stack.TryPop(out var state) && !(state.Item is LTQuery))
             {
             }
         }
 
         private void WriteClauseType(ClauseType type)
         {
-            var state = _state.Peek();
+            var state = _stack.Peek();
             if (!(state.Item is LTQuery))
                 throw new Exception(
                     $"The root state can't change on object type {state.Item.GetType()}");
@@ -169,7 +175,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         /// <exception cref="Exception"></exception>
         public void WriteObjectField(string name, string alias, string ownerAlias)
         {
-            var state = _state.Pop();
+            var state = _stack.Peek();
 
             if (state.Item is LTQuery query)
             {
@@ -191,10 +197,12 @@ namespace ZenPlatform.Core.Language.QueryLanguage
                         throw new Exception("In this state you can't add field to the query");
                 }
             }
-            else if (state.Item is LTExpression expr)
+            else if (state.Item is LTOperationExpression expr)
             {
-                query = (LTQuery) _state.First(x => x.Item is LTQuery).Item;
+                query = (LTQuery) _stack.First(x => x.Item is LTQuery).Item;
                 var prop = GetPropertyFromQuery(name, ownerAlias, query);
+
+                expr.PushArgument(new LTObjectField(prop));
 
                 /*
                  * Stack (Select):
@@ -208,7 +216,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         public void WriteSource(string componentName, string typeName, string alias = "")
         {
-            var state = _state.Pop();
+            var state = _stack.Peek();
             if (!(state.Item is LTQuery query)) throw new Exception("The source must belongs to the query");
 
             var component = _conf.Data.Components.First(x => x.Info.ComponentName == componentName);
@@ -217,10 +225,29 @@ namespace ZenPlatform.Core.Language.QueryLanguage
             query.From.Add(new LTObjectTable(type, alias));
         }
 
-        private void HandleFieldInExpression(LTField field, LTExpression expression)
+        public void WriteEqualsOperator(string alias = "")
         {
-        }
+            var state = _stack.Peek();
+            var eqExpr = new LTEquals();
 
+            _stack.Push(new State(StateToken.Expression, eqExpr, state.ClauseType));
+
+            if (state.Item is LTQuery query)
+            {
+                switch (state.ClauseType)
+                {
+                    case ClauseType.Where:
+                        query.Where = eqExpr;
+                        break;
+                    default:
+                        throw new Exception("In this state you can't add field to the query");
+                }
+            }
+            else if (state.Item is LTOperationExpression expr)
+            {
+                expr.PushArgument(eqExpr);
+            }
+        }
 
         private XCObjectPropertyBase GetPropertyFromQuery(string name, string ownerAlias, LTQuery query)
         {
@@ -249,7 +276,12 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         public void WriteEndQuery()
         {
-            _state.Pop();
+            _stack.Pop();
+        }
+
+        public void WriteEndExpression()
+        {
+            _stack.Pop();
         }
 
 

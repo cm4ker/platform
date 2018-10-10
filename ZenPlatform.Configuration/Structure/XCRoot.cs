@@ -25,6 +25,7 @@ namespace ZenPlatform.Configuration.Structure
             Modules = new XCModules();
             Schedules = new XCSchedules();
             Languages = new List<XCLanguage>();
+            SessionSettings = new ChildItemCollection<XCRoot, XCSessionSetting>(this);
         }
 
         public IXCConfigurationStorage Storage => _storage;
@@ -32,24 +33,27 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Идентификатор конфигурации
         /// </summary>
-        [XmlElement("ProjectId")] public Guid ProjectId { get; set; }
+        [XmlElement("ProjectId")]
+        public Guid ProjectId { get; set; }
 
         /// <summary>
         /// Имя конфигурации
         /// </summary>
-        [XmlElement("ProjectName")] public string ProjectName { get; set; }
+        [XmlElement("ProjectName")]
+        public string ProjectName { get; set; }
 
         /// <summary>
         /// Версия конфигурации
         /// </summary>
-        [XmlElement("ProjectVersion")] public string ProjectVersion { get; set; }
+        [XmlElement("ProjectVersion")]
+        public string ProjectVersion { get; set; }
 
         /// <summary>
         /// Настройки сессии
         /// </summary>
         [XmlArray("SessionSettings")]
         [XmlArrayItem(ElementName = "SessionSetting", Type = typeof(XCSessionSetting))]
-        public ChildItemCollection<XCRoot, XCSessionSetting> SessionSettings { get; set; }
+        public ChildItemCollection<XCRoot, XCSessionSetting> SessionSettings { get; }
 
         [XmlElement(Type = typeof(XCData), ElementName = "Data")]
         public XCData Data
@@ -59,7 +63,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _data = value;
-                ((IChildItem<XCRoot>)_data).Parent = this;
+                ((IChildItem<XCRoot>) _data).Parent = this;
             }
         }
 
@@ -72,7 +76,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _roles = value;
-                ((IChildItem<XCRoot>)_roles).Parent = this;
+                ((IChildItem<XCRoot>) _roles).Parent = this;
             }
         }
 

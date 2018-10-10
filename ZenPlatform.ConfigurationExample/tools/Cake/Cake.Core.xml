@@ -488,7 +488,7 @@
             </summary>
             <returns>The environment variables as IDictionary&lt;string, string&gt; </returns>
         </member>
-        <member name="M:Cake.Core.CakeEnvironment.Is64BitWhenOperativeSystem">
+        <member name="M:Cake.Core.CakeEnvironment.Is64BitOperativeSystem">
             <summary>
             Gets whether or not the current operative system is 64 bit.
             </summary>
@@ -2877,7 +2877,7 @@
             </summary>
             <value>The runtime Cake is running in.</value>
         </member>
-        <member name="M:Cake.Core.ICakeEnvironment.Is64BitWhenOperativeSystem">
+        <member name="M:Cake.Core.ICakeEnvironment.Is64BitOperativeSystem">
             <summary>
             Gets whether or not the current operative system is 64 bit.
             </summary>
@@ -3460,33 +3460,33 @@
             Contains extension methods for <see cref="T:Cake.Core.IO.IFile"/>.
             </summary>
         </member>
-        <member name="M:Cake.Core.IO.FileExtensions.WhenOpen(Cake.Core.IO.IFile,System.IO.FileMode)">
+        <member name="M:Cake.Core.IO.FileExtensions.Open(Cake.Core.IO.IFile,System.IO.FileMode)">
             <summary>
-            WhenOpens the file using the specified options.
+            Opens the file using the specified options.
             </summary>
             <param name="file">The file.</param>
             <param name="mode">The mode.</param>
             <returns>A <see cref="T:System.IO.Stream"/> to the file.</returns>
         </member>
-        <member name="M:Cake.Core.IO.FileExtensions.WhenOpen(Cake.Core.IO.IFile,System.IO.FileMode,System.IO.FileAccess)">
+        <member name="M:Cake.Core.IO.FileExtensions.Open(Cake.Core.IO.IFile,System.IO.FileMode,System.IO.FileAccess)">
             <summary>
-            WhenOpens the file using the specified options.
+            Opens the file using the specified options.
             </summary>
             <param name="file">The file.</param>
             <param name="mode">The mode.</param>
             <param name="access">The access.</param>
             <returns>A <see cref="T:System.IO.Stream"/> to the file.</returns>
         </member>
-        <member name="M:Cake.Core.IO.FileExtensions.WhenOpenRead(Cake.Core.IO.IFile)">
+        <member name="M:Cake.Core.IO.FileExtensions.OpenRead(Cake.Core.IO.IFile)">
             <summary>
-            WhenOpens the file for reading.
+            Opens the file for reading.
             </summary>
             <param name="file">The file.</param>
             <returns>A <see cref="T:System.IO.Stream"/> to the file.</returns>
         </member>
-        <member name="M:Cake.Core.IO.FileExtensions.WhenOpenWrite(Cake.Core.IO.IFile)">
+        <member name="M:Cake.Core.IO.FileExtensions.OpenWrite(Cake.Core.IO.IFile)">
             <summary>
-            WhenOpens the file for writing.
+            Opens the file for writing.
             If the file already exists, it will be overwritten.
             </summary>
             <param name="file">The file to be opened.</param>
@@ -3930,9 +3930,9 @@
             Deletes the file.
             </summary>
         </member>
-        <member name="M:Cake.Core.IO.IFile.WhenOpen(System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+        <member name="M:Cake.Core.IO.IFile.Open(System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
             <summary>
-            WhenOpens the file using the specified options.
+            Opens the file using the specified options.
             </summary>
             <param name="fileMode">The file mode.</param>
             <param name="fileAccess">The file access.</param>
@@ -4096,9 +4096,9 @@
             </summary>
             <returns>All sub keys.</returns>
         </member>
-        <member name="M:Cake.Core.IO.IRegistryKey.WhenOpenKey(System.String)">
+        <member name="M:Cake.Core.IO.IRegistryKey.OpenKey(System.String)">
             <summary>
-            WhenOpens the sub key with the specified name.
+            Opens the sub key with the specified name.
             </summary>
             <param name="name">The name of the key.</param>
             <returns>The sub key with the specified name</returns>
