@@ -45,5 +45,31 @@ namespace ZenPlatform.Tests.Core.LTWriter
 
             var res = writer.Result;
         }
+
+        [Fact]
+        public void CaseTest()
+        {
+            ZqlLogicalTreeWriter writer = new ZqlLogicalTreeWriter(conf);
+
+            writer.WriteQuery();
+            writer.WriteSource("Entity", "ТестоваяСущность", "a");
+            writer.WriteSelect();
+            writer.WriteCaseOperator("Aliase");
+            
+            writer.WriteEqualsOperator();
+            writer.WriteObjectField("СоставнойТип", "some_NotASimpleAlias", "a");
+            writer.WriteObjectField("СоставнойТип", "some_NotASimpleAlias", "a");
+            writer.WriteEndExpression();
+            
+            writer.WriteObjectField("СоставнойТип", "some_NotASimpleAlias", "a");
+            
+            writer.WriteObjectField("СоставнойТип", "some_NotASimpleAlias", "a");
+            
+            writer.WriteEndExpression();
+            
+            writer.WriteCloseQuery();
+
+            var res = writer.Result;
+        }
     }
 }
