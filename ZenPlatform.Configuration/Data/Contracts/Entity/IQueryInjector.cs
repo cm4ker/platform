@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using ZenPlatform.QueryBuilder.Common;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
@@ -12,15 +13,30 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// Получить фрагмент источника данных
         /// </summary>
         /// <param name="objectName"></param>
+        /// <param name="context"></param>
         /// <returns></returns>
-        SqlFragment GetDataSourceFragment(DataQueryConstructorContext context);
+        SqlFragment GetDataSourceFragment(IQueryModelContext context);
 
         /// <summary>
         /// Получить фрагмент поля
         /// </summary>
         /// <param name="fieldName"></param>
+        /// <param name="context"></param>
         /// <returns></returns>
-        SqlFragment GetColumnFragment(DataQueryConstructorContext context);
+        SqlFragment GetColumnFragment(IQueryModelContext context);
+    }
+
+
+    /// <summary>
+    /// Контракт контекста модели запроса
+    /// </summary>
+    public interface IQueryModelContext
+    {
+        /// <summary>
+        /// Параметры, которые идут с контекстом.
+        /// Компонент, которому будет передано управление, сможет также их анализировать
+        /// </summary>
+        Dictionary<string, object> Parameters { get; set; }
     }
 
     /// <summary>
@@ -50,28 +66,13 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
     }
 
     /// <summary>
-    /// Контекст конструктора базы данных
+    /// Контекст конструктора базы данных.
     /// </summary>
     public class DataQueryConstructorContext
     {
         public DataQueryConstructorContext()
         {
-
         }
-
-        /// <summary>
-        /// Имя объекта
-        /// </summary>
-        public string ObjectName { get; set; }
-
-        /// <summary>
-        /// Имя поля
-        /// </summary>
-        public string FieldName { get; set; }
-
-        public bool InCase { get; set; }
-        public bool InNastedQuery { get; set; }
-        public bool InCast { get; set; }
 
         public List<object> CurrentStateParameters { get; set; }
 
