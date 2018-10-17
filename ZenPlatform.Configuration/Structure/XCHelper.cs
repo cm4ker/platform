@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
+using ExtendedXmlSerializer.Configuration;
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -15,7 +17,7 @@ namespace ZenPlatform.Configuration.Structure
 
             using (var sr = new StringReader(xml))
             {
-                return (T)ser.Deserialize(sr);
+                return (T) ser.Deserialize(sr);
             }
         }
 
@@ -32,7 +34,7 @@ namespace ZenPlatform.Configuration.Structure
         public static T DeserializeFromStream<T>(Stream stream)
         {
             XmlSerializer ser = new XmlSerializer(typeof(T));
-            return (T)ser.Deserialize(stream);
+            return (T) ser.Deserialize(stream);
         }
 
         public static string BaseDirectory { get; private set; }
@@ -47,15 +49,21 @@ namespace ZenPlatform.Configuration.Structure
                 return sw.ToString();
             }
         }
+
         public static Stream SerializeToStream(this object obj)
         {
-            using (var ms = new MemoryStream())
-            {
-                XmlSerializer xs = new XmlSerializer(obj.GetType());
-                xs.Serialize(ms, obj);
+            var ms = new MemoryStream();
 
-                return ms;
-            }
+            var serializer = new ConfigurationContainer().Create();
+            serializer.Serialize(XmlWriter.Create(ms), obj);
+
+            return ms;
+        }
+
+        public static IConfigurationContainer UseXmlPlatformConfiguration(this IConfigurationContainer c)
+        {
+            
+            return c;
         }
     }
 }

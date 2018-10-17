@@ -45,6 +45,15 @@ namespace ZenPlatform.Configuration
 
         public void SaveBlob(string name, string route, Stream stream)
         {
+            if (stream.CanSeek)
+            {
+                stream.Position = 0;
+            }
+
+            var folder = Path.Combine(_directory, route);
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
             using (var sw = File.OpenWrite(Path.Combine(_directory, route, name)))
             {
                 stream.CopyTo(sw);

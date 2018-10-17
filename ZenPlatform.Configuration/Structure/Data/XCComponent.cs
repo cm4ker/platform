@@ -14,6 +14,8 @@ using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Contracts;
 using ZenPlatform.Shared.ParenChildCollection;
+using dnlib.DotNet;
+using dnlib.DotNet.Emit;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
@@ -136,10 +138,17 @@ namespace ZenPlatform.Configuration.Structure.Data
             }
 
             if (Blob is null)
-                Blob = new XCBlob(Path.GetFileName(this.ComponentAssembly.FullName));
+                Blob = new XCBlob(Path.GetFileName(ComponentAssembly.Location));
 
-            using (Stream stream = File.Open(ComponentAssembly.FullName, FileMode.Open))
-                Root.Storage.SaveBlob(Blob.Name, nameof(XCComponent), stream);
+            var refelectionModule = ComponentAssembly.Modules.FirstOrDefault();
+            ModuleDefMD module = ModuleDefMD.Load(refelectionModule);
+
+            using (var ms = new MemoryStream())
+            {
+                module.Write(ms);
+                
+                Root.Storage.SaveBlob(Blob.Name, nameof(XCComponent), ms);
+            }
         }
 
         [XmlIgnore] public XCRoot Root => _parent.Parent;

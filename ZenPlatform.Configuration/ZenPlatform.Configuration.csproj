@@ -13,6 +13,8 @@
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="dnlib" Version="1.6.1" />
+    <PackageReference Include="ExtendedXmlSerializer" Version="2.1.6" />
     <PackageReference Include="morelinq" Version="3.0.0" />
   </ItemGroup>
 </Project>

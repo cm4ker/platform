@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
@@ -9,7 +13,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// <summary>
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
-    public abstract class XCObjectPropertyBase
+    public abstract class XCObjectPropertyBase : IXmlSerializable
     {
         protected XCObjectPropertyBase()
         {
@@ -67,11 +71,13 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         [XmlAttribute]
         public bool Unique { get; set; }
 
+
         /// <summary>
         /// Типы, описывающие поле
         /// </summary>
         [XmlArray]
         [XmlArrayItem(ElementName = "Type", Type = typeof(XCUnknownType))]
+        [XmlArrayItem(ElementName = "Type", Type = typeof(XCDateTime))]
         public List<XCTypeBase> Types { get; }
 
         /// <summary>
@@ -97,6 +103,49 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
          *      В таком случае на каждый тип отводится своя колонка. Биндинг должен осуществляться таким
          *      не хитрым мапированием: Свойство, Тип -> Колонка
          */
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+//            reader.MoveToAttribute("Id");
+//            reader.ReadAttributeValue();
+//            var vId = reader.Value;
+            while (reader.Read())
+            {
+            }
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            // Системные поля никогда не пишутся в конфигурацию
+            if (IsSystemProperty)
+            {
+                return;
+            }
+
+            writer.WriteStartAttribute(nameof(Name));
+            writer.WriteValue(Name);
+            writer.WriteEndAttribute();
+
+            if (Guid != Guid.Empty)
+            {
+                writer.WriteStartAttribute(nameof(Guid));
+                writer.WriteValue(Guid.ToString());
+                writer.WriteEndAttribute();
+            }
+
+
+            //Пишем только тогда, когда есть тип даты-время
+            if (Types.Any(x => x is XCDateTime))
+            {
+                writer.WriteStartAttribute(nameof(DateCase));
+                writer.WriteValue(DateCase.ToString());
+                writer.WriteEndAttribute();
+            }
+        }
     }
 
 
