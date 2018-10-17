@@ -1,10 +1,11 @@
 using System;
 using System.Data;
+using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
     /// <summary>
-    /// Тип обычной строки
+    /// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     /// </summary>
     public class XCString : XCPremitiveType
     {
@@ -12,6 +13,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 
         public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 6);
 
+        
         public override string Name
         {
             get { return "String"; }
@@ -23,11 +25,13 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         public override int Precision { get; set; }
         public override int Scale { get; set; }
 
+       
         public override DbType DBType
         {
             get { return DbType.String; }
         }
 
+       
         public override Type CLRType
         {
             get { return typeof(string); }

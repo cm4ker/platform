@@ -1,13 +1,13 @@
 ﻿using System.IO;
 using Xunit;
+using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Tests.Common;
 
 
 namespace ZenPlatform.Tests.Conf
 {
- 
-    public class ConfLoadTest
+    public class ConfSaveLoadTest
     {
         [Fact]
         public void RootLoad()
@@ -50,6 +50,14 @@ namespace ZenPlatform.Tests.Conf
             var restoredConf = XCHelper.Deserialize<XCRoot>(xml);
 
             Assert.Equal("TestProject", restoredConf.ProjectName);
+        }
+
+        [Fact]
+        public void ConfSaveTest()
+        {
+            var conf = Common.Factory.GetExampleConfigutaion();
+            var storage = new XCFileSystemStorage("C:\\Test\\", "Proj1.xml");
+            conf.Save(storage);
         }
     }
 }

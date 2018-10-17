@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using System.Xml.Serialization;
+using ExtendedXmlSerializer.Configuration;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -158,23 +160,19 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Save()
         {
-            using (MemoryStream sw = new MemoryStream())
-            {
-                XmlSerializer serializer = new XmlSerializer(typeof(XCRoot));
-                serializer.Serialize(sw, this);
+            var ms = this.SerializeToStream();
 
-                //Сохранение раздела данных
-                Data.Save();
+            //Сохранение раздела данных
+            Data.Save();
 
-                //Сохранение раздела ролей
-                Roles.Save();
+            //Сохранение раздела ролей
+            Roles.Save();
 
-                //Сохранение раздела интерфейсов
+            //Сохранение раздела интерфейсов
 
-                //Сохранение раздела ...
-                _storage.SaveRootBlob(sw);
-                //TODO: Необходимо инициировать сохранение для всех компонентов
-            }
+            //Сохранение раздела ...
+            _storage.SaveRootBlob(ms);
+            //TODO: Необходимо инициировать сохранение для всех компонентов
         }
 
         /// <summary>
@@ -184,13 +182,9 @@ namespace ZenPlatform.Configuration.Structure
         public void Save(IXCConfigurationStorage storage)
         {
             //Всё просто, подменяем хранилище, сохраняем, заменяем обратно
-
             var actualStorage = _storage;
-
             _storage = storage;
-
             Save();
-
             _storage = actualStorage;
         }
 

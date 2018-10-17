@@ -10,7 +10,7 @@ using ZenPlatform.QueryBuilder.DML.Select;
 
 namespace ZenPlatform.EntityComponent.QueryBuilders
 {
-    public class SingleEntityQueryInjector : IQueryInjector
+    public class SingleEntityQueryInjector 
     {
         private readonly XCComponent _component;
 
@@ -22,8 +22,8 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         /// <inheritdoc />
         public SqlFragment GetDataSourceFragment(DataQueryConstructorContext context)
         {
-            if (_component.Types.FirstOrDefault(x => x.Name.ToLower() == context.ObjectName.ToLower()) is XCSingleEntity objType)
-                return new SqlFragment(new TableNode(objType.RelTableName), null);
+//            if (_component.Types.FirstOrDefault(x => x.Name.ToLower() == context.ObjectName.ToLower()) is XCSingleEntity objType)
+//                return new SqlFragment(new TableNode(objType.RelTableName), null);
 
             throw new Exception("object not found");
         }
@@ -31,19 +31,19 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         /// <inheritdoc />
         public SqlFragment GetColumnFragment(DataQueryConstructorContext context)
         {
-            if (_component.Types.FirstOrDefault(x => x.Name.ToLower() == context.ObjectName.ToLower()) is XCSingleEntity objType)
-            {
-                var field = objType.Properties.FirstOrDefault(x => x.Name.ToLower() == context.FieldName.ToLower());
-
-                //TODO: Если у нас сложное свойство, то нужно будет получить все колонки
-
-                if (field == null)
-                {
-                    throw new Exception("");
-                }
-
-                return new SqlFragment(new ColumnNode(field.DatabaseColumnName), null);
-            }
+//            if (_component.Types.FirstOrDefault(x => x.Name.ToLower() == context.ObjectName.ToLower()) is XCSingleEntity objType)
+//            {
+//                var field = objType.Properties.FirstOrDefault(x => x.Name.ToLower() == context.FieldName.ToLower());
+//
+//                //TODO: Если у нас сложное свойство, то нужно будет получить все колонки
+//
+//                if (field == null)
+//                {
+//                    throw new Exception("");
+//                }
+//
+//                return new SqlFragment(new ColumnNode(field.DatabaseColumnName), null);
+//            }
 
             throw new Exception("object not found");
         }
