@@ -4,6 +4,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.1" />
     <PackageReference Include="dotnet-ildasm" Version="0.7.8-beta-build-0070" />
     <PackageReference Include="xunit" Version="2.4.1-pre.build.4059" />
     <PackageReference Include="xunit.core" Version="2.4.1-pre.build.4059" />
