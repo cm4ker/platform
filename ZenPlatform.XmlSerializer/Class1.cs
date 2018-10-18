@@ -19,6 +19,7 @@ namespace ZenPlatform.XmlSerializer
         {
             IgnoreTypes = new List<Type>();
             IgnoreProperties = new List<PropertyInfo>();
+            Emitters = new Dictionary<Type, Action<object, XmlWriter>>();
         }
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace ZenPlatform.XmlSerializer
 
         internal List<PropertyInfo> IgnoreProperties { get; set; }
 
-        internal Dictionary<Type, Action<object, XmlWriter>> _handlers;
+        internal Dictionary<Type, Action<object, XmlWriter>> Emitters;
 
         public SerializerConfiguration Ignore<T>()
         {
@@ -79,9 +80,15 @@ namespace ZenPlatform.XmlSerializer
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public SerializerConfiguration OverrideWrite(Type type, Action<object, XmlWriter> handler)
+        public SerializerConfiguration Emit(Type type, Action<object, XmlWriter> handler)
         {
+            Emitters.Add(type, handler);
             return this;
+        }
+
+        public SerializerConfiguration Emit<T>(Action<object, XmlWriter> handler)
+        {
+            return Emit(typeof(T), handler);
         }
 
         /// <summary>
@@ -116,118 +123,68 @@ namespace ZenPlatform.XmlSerializer
         #endregion
     }
 
-    public class XmlSerializer : IXmlSerializer
+    public class Serializer : IXmlSerializer
     {
-        /// <summary>
-        /// Внутренний класс для обработки объекта в xml представление
-        /// </summary>
-        internal class ObjectXmlWriter
+        private class XmlObjectWriter
         {
-            private readonly object _instance;
-            private readonly XmlWriter _xmlWriter;
-            private readonly Type _type;
-
-            public ObjectXmlWriter(object instance, XmlWriter xmlWriter)
-            {
-                _instance = instance;
-                _xmlWriter = xmlWriter;
-                _type = instance.GetType();
-            }
-
-            public void Handle()
-            {
-                //Поведение по умолчанию: просто интерпретируем тип как имя элемента
-                _xmlWriter.WriteStartElement(_type.Name);
-                HandleFields();
-                HandleProperties();
-                _xmlWriter.WriteEndElement();
-            }
-
-            #region Field handling
-
-            private void HandleFields()
-            {
-                foreach (var field in _type.GetFields(BindingFlags.Public))
-                {
-                    var value = field.GetValue(_instance);
-                    HandleObjectField(field.Name, value);
-                }
-            }
-
-            #endregion
-
-            #region Property handling
-
-            private void HandleProperties()
-            {
-                foreach (var prop in _type.GetProperties())
-                {
-                    var value = prop.GetValue(_instance);
-                    HandleObjectField(prop.Name, value);
-                }
-            }
-
-            #endregion
-
-            private void HandleObjectField(string name, object value)
-            {
-                _xmlWriter.WriteStartElement(name);
-                HandleValue(value);
-                _xmlWriter.WriteEndElement();
-            }
-
-            private void HandleValue(object value)
-            {
-                if (value == null) return;
-                Type type = value.GetType();
-
-                switch (value)
-                {
-                    case bool _:
-                    case byte _:
-                    case byte[] _:
-                    case DateTime _:
-                    case DateTimeOffset _:
-                    case decimal _:
-                    case double _:
-                    case short _:
-                    case int _:
-                    case long _:
-                    case sbyte _:
-                    case float _:
-                    case string _:
-                    case TimeSpan _:
-                    case ushort _:
-                    case uint _:
-                    case ulong _:
-                        _xmlWriter.WriteValue(value);
-                        break;
-                    default:
-                        new ObjectXmlWriter(value, _xmlWriter).Handle();
-                        break;
-                }
-            }
         }
 
-
-        public void Serialize(object instance, TextWriter textWriter)
+        public void Serialize(object instance, TextWriter textWriter, SerializerConfiguration configuration = null)
         {
             using (var xw = XmlWriter.Create(textWriter))
                 //TODO: Добавить параметры для XmlWriter
-                Serialize(instance, xw);
+                Serialize(instance, xw, configuration);
         }
 
-        public void Serialize(object instance, XmlWriter xmlWriter)
+        public void Serialize(object instance, XmlWriter xmlWriter, SerializerConfiguration configuration = null)
         {
-            var writer = new ObjectXmlWriter(instance, xmlWriter);
+            var writer = new ObjectXmlWriter(instance, xmlWriter, configuration);
             writer.Handle();
+        }
+
+        public object Deserialize(string content, SerializerConfiguration configuration = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Deserialize(TextReader reader, SerializerConfiguration configuration = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Deserialize(XmlReader reader, SerializerConfiguration configuration = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Deserialize<T>(string content, SerializerConfiguration configuration = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Deserialize<T>(TextReader reader, SerializerConfiguration configuration = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Deserialize<T>(XmlReader reader, SerializerConfiguration configuration = null)
+        {
+            throw new NotImplementedException();
         }
     }
 
 
     public interface IXmlSerializer
     {
-        void Serialize(object instance, TextWriter textWriter);
-        void Serialize(object instance, XmlWriter textWriter);
+        void Serialize(object instance, TextWriter textWriter, SerializerConfiguration configuration = null);
+        void Serialize(object instance, XmlWriter textWriter, SerializerConfiguration configuration = null);
+
+        object Deserialize(string content, SerializerConfiguration configuration = null);
+        object Deserialize(TextReader reader, SerializerConfiguration configuration = null);
+        object Deserialize(XmlReader reader, SerializerConfiguration configuration = null);
+
+        T Deserialize<T>(string content, SerializerConfiguration configuration = null);
+        T Deserialize<T>(TextReader reader, SerializerConfiguration configuration = null);
+        T Deserialize<T>(XmlReader reader, SerializerConfiguration configuration = null);
     }
 }
