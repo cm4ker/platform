@@ -3,6 +3,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using ExtendedXmlSerializer.Configuration;
+using ZenPlatform.XmlSerializer;
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -11,7 +12,7 @@ namespace ZenPlatform.Configuration.Structure
         public static T Deserialize<T>(this string content)
             where T : class
         {
-            XmlSerializer ser = new XmlSerializer(typeof(T));
+            Serializer ser = new Serializer();
 
             var xml = content.Trim('"');
 
@@ -33,7 +34,7 @@ namespace ZenPlatform.Configuration.Structure
 
         public static T DeserializeFromStream<T>(Stream stream)
         {
-            XmlSerializer ser = new XmlSerializer(typeof(T));
+            Serializer ser = new Serializer();
             return (T) ser.Deserialize(stream);
         }
 
@@ -43,8 +44,8 @@ namespace ZenPlatform.Configuration.Structure
         {
             using (var sw = new StringWriter())
             {
-                XmlSerializer xs = new XmlSerializer(obj.GetType());
-                xs.Serialize(sw, obj);
+                Serializer xs = new Serializer();
+                xs.Serialize(obj, sw);
 
                 return sw.ToString();
             }
@@ -62,7 +63,6 @@ namespace ZenPlatform.Configuration.Structure
 
         public static IConfigurationContainer UseXmlPlatformConfiguration(this IConfigurationContainer c)
         {
-            
             return c;
         }
     }

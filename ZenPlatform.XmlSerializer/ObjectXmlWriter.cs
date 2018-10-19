@@ -1,10 +1,71 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 
 namespace ZenPlatform.XmlSerializer
 {
+    internal static class SerializerHelper
+    {
+        public static InstanceType GetInstanceType(object value)
+        {
+            return GetInstanceType(value.GetType());
+        }
+
+        public static InstanceType GetInstanceType(Type type)
+        {
+            switch (true)
+            {
+                case bool _ when type == typeof(bool):
+                case bool _ when type == typeof(byte):
+                case bool _ when type == typeof(byte[]):
+                case bool _ when type == typeof(DateTime):
+                case bool _ when type == typeof(DateTimeOffset):
+                case bool _ when type == typeof(decimal):
+                case bool _ when type == typeof(double):
+                case bool _ when type == typeof(short):
+                case bool _ when type == typeof(int):
+                case bool _ when type == typeof(long):
+                case bool _ when type == typeof(sbyte):
+                case bool _ when type == typeof(float):
+                case bool _ when type == typeof(string):
+                case bool _ when type == typeof(TimeSpan):
+                case bool _ when type == typeof(short):
+                case bool _ when type == typeof(uint):
+                case bool _ when type == typeof(ulong):
+                    return InstanceType.Primitive;
+                    break;
+                case bool _ when type.GetInterface(nameof(IEnumerable)) != null:
+                    return InstanceType.Collection;
+                    break;
+                default:
+                    return InstanceType.Object;
+                    break;
+            }
+        }
+
+        public static bool InstanceTypeIsCollection(MemberInfo memberInfo)
+        {
+            return (memberInfo is PropertyInfo pi && SerializerHelper.GetInstanceType(pi.PropertyType) ==
+                    InstanceType.Collection)
+                   || (memberInfo is FieldInfo fi && SerializerHelper.GetInstanceType(fi.FieldType) ==
+                       InstanceType.Collection);
+        }
+
+        public static Type GetUnderlaingType(this MemberInfo memberInfo)
+        {
+            if (memberInfo is PropertyInfo pi)
+                return pi.PropertyType;
+            if (memberInfo is FieldInfo fi)
+                return fi.FieldType;
+
+            return null;
+        }
+    }
+
     /// <summary>
     /// Внутренний класс для обработки объекта в xml представление
     /// </summary>
@@ -25,7 +86,7 @@ namespace ZenPlatform.XmlSerializer
             _type = instance.GetType();
             _conf = SerializerConfiguration.Create();
             _isCollection = (instance is ICollection);
-            _instanceType = GetInstanceType(instance);
+            _instanceType = SerializerHelper.GetInstanceType(instance);
             _typeName = GetNameWithoutGenericArity(_type);
         }
 
@@ -101,7 +162,7 @@ namespace ZenPlatform.XmlSerializer
         private void HandleValue(object value)
         {
             if (value == null) return;
-            var valueType = GetInstanceType(value);
+            var valueType = SerializerHelper.GetInstanceType(value);
             switch (valueType)
             {
                 case InstanceType.Primitive:
@@ -113,34 +174,6 @@ namespace ZenPlatform.XmlSerializer
             }
         }
 
-        private InstanceType GetInstanceType(object value)
-        {
-            switch (value)
-            {
-                case bool _:
-                case byte _:
-                case byte[] _:
-                case DateTime _:
-                case DateTimeOffset _:
-                case decimal _:
-                case double _:
-                case short _:
-                case int _:
-                case long _:
-                case sbyte _:
-                case float _:
-                case string _:
-                case TimeSpan _:
-                case ushort _:
-                case uint _:
-                case ulong _:
-                    return InstanceType.Primitive;
-                    break;
-                default:
-                    return InstanceType.Object;
-                    break;
-            }
-        }
 
         public static string GetNameWithoutGenericArity(Type t)
         {
@@ -155,22 +188,151 @@ namespace ZenPlatform.XmlSerializer
     /// </summary>
     internal class XmlObjectWriter
     {
+        private struct State
+        {
+            public bool IsCollection { get; set; }
+            public bool IsObject { get; set; }
+            public object Instance { get; set; }
+            public MemberInfo MemberInfo { get; set; }
+        }
+
         private readonly Type _targetType;
         private readonly XmlReader _reader;
         private readonly SerializerConfiguration _conf;
         private object _result;
-        
-        public XmlObjectWriter(Type targetType, XmlReader reader, SerializerConfiguration configuration)
+        private Stack<State> _stateStack;
+
+        public XmlObjectWriter(XmlReader reader, SerializerConfiguration configuration)
         {
-            _targetType = targetType;
             _reader = reader;
             _conf = configuration;
+            _stateStack = new Stack<State>();
         }
 
-        public void Handle()
+        public object Handle()
         {
+            object _result = null;
+
+            while (_reader.Read())
+            {
+                if (_reader.NodeType == XmlNodeType.Element)
+                {
+                    var isObject = !_stateStack.Any() || (_stateStack.Any() && !_stateStack.Peek().IsObject);
+                    var isCollection = _stateStack.Any() && _stateStack.Peek().IsCollection;
+                    if (!isObject)
+                    {
+                        var state = _stateStack.Peek();
+                        var type = state.Instance.GetType();
+
+
+                        MemberInfo prop = type.GetProperty(_reader.Name);
+                        if (prop == null)
+                            prop = type.GetField(_reader.Name);
+                        if (prop == null) throw new Exception("We can't write this");
+
+                        var instType = SerializerHelper.GetInstanceType(type);
+                        if (instType == InstanceType.Primitive)
+                        {
+                            var value = (new TypeConverter()).ConvertTo(_reader.Value, type);
+
+                            if (prop is PropertyInfo pi)
+                                pi.SetValue(state.Instance, value);
+                            if (prop is FieldInfo fi)
+                                fi.SetValue(state.Instance, value);
+
+                            _reader.ReadEndElement();
+                        }
+                        else
+                        {
+                            if (SerializerHelper.InstanceTypeIsCollection(prop))
+                            {
+                                var collectionInstance = Activator.CreateInstance(prop.GetUnderlaingType());
+
+                                SetValue(prop, state.Instance, collectionInstance);
+
+                                _stateStack.Push(new State()
+                                    {IsObject = false, IsCollection = true, Instance = collectionInstance});
+                            }
+                            else
+                                _stateStack.Push(new State()
+                                {
+                                    IsObject = false, IsCollection = false, Instance = state.Instance, MemberInfo = prop
+                                });
+                        }
+                    }
+                    else
+                    {
+                        var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
+                            .Where(x => x.Name == _reader.Name).ToArray();
+
+                        if (types.Count() != 1) throw new Exception("we can't determinate the type ");
+
+                        var instType = SerializerHelper.GetInstanceType(types[0]);
+
+                        object instance;
+                        if (isCollection && instType == InstanceType.Primitive)
+                        {
+                            _reader.Read();
+                            var value = (new TypeConverter()).ConvertTo(_reader.Value, types[0]);
+                            instance = value;
+                            _reader.Read();
+                        }
+                        else
+                        {
+                            instance = Activator.CreateInstance(types[0]);
+                        }
+
+
+                        if (_stateStack.Any())
+                        {
+                            var parent = _stateStack.Peek();
+
+                            if (isCollection)
+                            {
+                                ((IList) parent.Instance).Add(instance);
+                                continue;
+                            }
+                            else
+                            {
+                                if (parent.MemberInfo is PropertyInfo pi)
+                                    pi.SetValue(parent.Instance, instance);
+                                if (parent.MemberInfo is FieldInfo fi)
+                                    fi.SetValue(parent.Instance, instance);
+                            }
+                        }
+
+                        if (!_reader.IsEmptyElement)
+                        {
+                            _stateStack.Push(new State
+                            {
+                                IsCollection = instType == InstanceType.Collection, Instance = instance, IsObject = true
+                            });
+                        }
+                    }
+                }
+                else if (_reader.NodeType == XmlNodeType.EndElement)
+                {
+                    var state = _stateStack.Pop();
+                    if (_stateStack.Count == 0) _result = state.Instance;
+                }
+            }
+
+            return _result;
         }
 
-        public object Result => _result;
+        private void SetValue(MemberInfo member, object instance, object value)
+        {
+            if (member is PropertyInfo pi)
+                pi.SetValue(instance, value);
+            if (member is FieldInfo fi)
+                fi.SetValue(instance, value);
+        }
+
+        private void ReadWhile(XmlNodeType nodeType)
+        {
+            while (_reader.NodeType != nodeType && _reader.Read())
+            {
+            }
+        }
     }
 }
