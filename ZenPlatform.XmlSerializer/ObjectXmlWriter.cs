@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Schema;
 
 namespace ZenPlatform.XmlSerializer
 {
@@ -194,6 +195,7 @@ namespace ZenPlatform.XmlSerializer
             public bool IsObject { get; set; }
             public object Instance { get; set; }
             public MemberInfo MemberInfo { get; set; }
+            public Dictionary<string, string> Namespaces { get; set; }
         }
 
         private readonly Type _targetType;
@@ -262,6 +264,34 @@ namespace ZenPlatform.XmlSerializer
                     }
                     else
                     {
+                        var namespaces = new Dictionary<string, string>();
+
+                        //Проверяем наличие атрибутов
+                        if (_reader.HasAttributes)
+                        {
+                            _reader.MoveToFirstAttribute();
+                            do
+                            {
+                                //сканируем на наличие атрибутов-пространств имён
+                                if (_reader.Name.Contains("xmlns"))
+                                {
+                                    var name = (_reader.Name.Contains(":")
+                                        ? _reader.Name.Substring(6)
+                                        : _reader.Name.Substring(5));
+
+                                    namespaces.Add(name, _reader.Value);
+                                }
+                            } while (_reader.MoveToNextAttribute());
+                        }
+
+                        if (_stateStack.Any())
+                        {
+                            foreach (var parentNs in _stateStack.Peek().Namespaces)
+                            {
+                                namespaces.Add(parentNs.Key, parentNs.Value);
+                            }
+                        }
+
                         var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
                             .Where(x => x.Name == _reader.Name).ToArray();
 
@@ -272,9 +302,13 @@ namespace ZenPlatform.XmlSerializer
                         object instance;
                         if (isCollection && instType == InstanceType.Primitive)
                         {
+                            // читаем значение
                             _reader.Read();
+
                             var value = (new TypeConverter()).ConvertTo(_reader.Value, types[0]);
                             instance = value;
+
+                            //читаем конец элемента
                             _reader.Read();
                         }
                         else
@@ -315,6 +349,14 @@ namespace ZenPlatform.XmlSerializer
                     var state = _stateStack.Pop();
                     if (_stateStack.Count == 0) _result = state.Instance;
                 }
+                else if (_reader.NodeType == XmlNodeType.Attribute)
+                {
+                    var state = _stateStack.Peek();
+                    if (_reader.Name.StartsWith("xmlns"))
+                    {
+                        state.Namespaces.Add(_reader.Name.Replace("xmlns:", ""), _reader.Value);
+                    }
+                }
             }
 
             return _result;
@@ -333,6 +375,14 @@ namespace ZenPlatform.XmlSerializer
             while (_reader.NodeType != nodeType && _reader.Read())
             {
             }
+        }
+
+
+        private Type GetTypeUsingNamespace(string typeName, Dictionary<string, string> namespaces)
+        {
+            // 
+          
+            AppDomain.CurrentDomain.GetAssemblies().Where(x)
         }
     }
 }
