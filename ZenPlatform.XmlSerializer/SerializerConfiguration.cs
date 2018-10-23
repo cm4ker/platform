@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Xml;
 
 namespace ZenPlatform.XmlSerializer
@@ -19,6 +20,8 @@ namespace ZenPlatform.XmlSerializer
             IgnoreProperties = new List<PropertyInfo>();
             Emitters = new Dictionary<Type, Action<object, XmlWriter>>();
             Attributes = new List<MemberInfo>();
+            CustomRoots = new Dictionary<string, Type>();
+            TypesWithoutRoot = new List<Type>();
         }
 
         /// <summary>
@@ -40,6 +43,10 @@ namespace ZenPlatform.XmlSerializer
         internal Dictionary<Type, Action<object, XmlWriter>> Emitters;
 
         internal List<MemberInfo> Attributes;
+
+        internal Dictionary<string, Type> CustomRoots;
+
+        internal List<Type> TypesWithoutRoot;
 
         public SerializerConfiguration Ignore<T>()
         {
@@ -96,6 +103,29 @@ namespace ZenPlatform.XmlSerializer
         {
             return this;
         }
+
+        public SerializerConfiguration CustomRoot(Type type, string rootName)
+        {
+            CustomRoots.Add(rootName, type);
+            return this;
+        }
+
+        public SerializerConfiguration CustomRoot<T>(string rootName)
+        {
+            return CustomRoot(typeof(T), rootName);
+        }
+
+        public SerializerConfiguration IgnoreRootInProperties(Type type)
+        {
+            TypesWithoutRoot.Add(type);
+            return this;
+        }
+
+        public SerializerConfiguration IgnoreRootInProperties<T>()
+        {
+            return IgnoreRootInProperties(typeof(T));
+        }
+
 
         /// <summary>
         /// Проигнорировать какое-нибудь свойство
