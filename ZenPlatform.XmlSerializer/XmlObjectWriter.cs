@@ -47,7 +47,7 @@ namespace ZenPlatform.XmlSerializer
                 {
                     var isInsideTheObject = _stateStack.Any() && _stateStack.Peek().IsObject;
                     var isCollection = _stateStack.Any() && _stateStack.Peek().IsCollection;
-                    
+
                     if (isInsideTheObject)
                     {
                         var state = _stateStack.Peek();
@@ -102,11 +102,14 @@ namespace ZenPlatform.XmlSerializer
                                     instance = Activator.CreateInstance(prop.GetUnderlaingType());
                                 }
 
-                                _stateStack.Push(new State()
-                                {
-                                    IsObject = true, IsCollection = false, Instance = instance, MemberInfo = prop,
-                                    Namespaces = state.Namespaces
-                                });
+                                if (!_reader.IsEmptyElement)
+                                    _stateStack.Push(new State()
+                                    {
+                                        IsObject = true, IsCollection = false, Instance = instance, MemberInfo = prop,
+                                        Namespaces = state.Namespaces
+                                    });
+                                else
+                                    _stateStack.Pop();
                             }
                         }
                     }
@@ -131,6 +134,8 @@ namespace ZenPlatform.XmlSerializer
                                     namespaces.Add(name, _reader.Value);
                                 }
                             } while (_reader.MoveToNextAttribute());
+
+                            _reader.Read();
                         }
 
                         if (_stateStack.Any() && _stateStack.Peek().Namespaces != null)
