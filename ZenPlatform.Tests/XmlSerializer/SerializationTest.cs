@@ -61,5 +61,10 @@ namespace ZenPlatform.Tests.XmlSerializer
                 }
             }
         }
+
+        [Fact]
+        public void AttributeTest()
+        {
+        }
     }
 }

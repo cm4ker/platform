@@ -27,6 +27,21 @@ namespace ZenPlatform.Tests.XmlSerializer.TestedObjects
         public string ThisIsStringField = "Field string";
     }
 
+
+    public class DeserializeNestedObject
+    {
+        public DeserializeNestedObject()
+        {
+        }
+
+        public SimpleObject Nasted { get; set; }
+    }
+
+    public class DeserializeCollection
+    {
+        public List<string> Collection { get; set; }
+    }
+
     public class ObjectWithCollection
     {
         public ObjectWithCollection()
