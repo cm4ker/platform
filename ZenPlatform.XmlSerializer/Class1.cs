@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Xml;
 
@@ -39,6 +40,17 @@ namespace ZenPlatform.XmlSerializer
 
         public object Deserialize(Stream stream, SerializerConfiguration configuration = null)
         {
+            using (var test = XmlReader.Create(stream))
+            {
+                string output = "";
+                while (test.Read())
+                {
+                    output += $"Type={test.NodeType} Name={test.Name} Value={test.Value} \n";
+                }
+            }
+
+            stream.Position = 0;
+
             using (var xr = XmlReader.Create(stream))
                 return Deserialize(xr, configuration);
         }

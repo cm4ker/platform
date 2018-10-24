@@ -66,6 +66,7 @@ namespace ZenPlatform.Configuration.Structure
         {
             return SerializerConfiguration.Create().CustomRoot<XCRoot>("Root")
                                                    .CustomRoot<XCComponent>("Component")
+                                                   .CustomRoot<XCBlob>("Blob")
                                                    .IgnoreRootInProperties<XCData>()
                                                    .IgnoreRootInProperties<XCBlob>();
         }
