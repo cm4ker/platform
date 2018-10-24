@@ -4,5 +4,6 @@
     {
         Primitive,
         Object,
+        Collection
     }
 }

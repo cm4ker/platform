@@ -2,9 +2,68 @@
 using System.Collections;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Schema;
 
 namespace ZenPlatform.XmlSerializer
 {
+    internal static class SerializerHelper
+    {
+        public static InstanceType GetInstanceType(object value)
+        {
+            return GetInstanceType(value.GetType());
+        }
+
+        public static InstanceType GetInstanceType(Type type)
+        {
+            switch (true)
+            {
+                case bool _ when type == typeof(bool):
+                case bool _ when type == typeof(byte):
+                case bool _ when type == typeof(byte[]):
+                case bool _ when type == typeof(DateTime):
+                case bool _ when type == typeof(DateTimeOffset):
+                case bool _ when type == typeof(decimal):
+                case bool _ when type == typeof(double):
+                case bool _ when type == typeof(short):
+                case bool _ when type == typeof(int):
+                case bool _ when type == typeof(long):
+                case bool _ when type == typeof(sbyte):
+                case bool _ when type == typeof(float):
+                case bool _ when type == typeof(string):
+                case bool _ when type == typeof(TimeSpan):
+                case bool _ when type == typeof(short):
+                case bool _ when type == typeof(uint):
+                case bool _ when type == typeof(ulong):
+                    return InstanceType.Primitive;
+                    break;
+                case bool _ when type.GetInterface(nameof(IEnumerable)) != null:
+                    return InstanceType.Collection;
+                    break;
+                default:
+                    return InstanceType.Object;
+                    break;
+            }
+        }
+
+        public static bool InstanceTypeIsCollection(MemberInfo memberInfo)
+        {
+            return (memberInfo is PropertyInfo pi && SerializerHelper.GetInstanceType(pi.PropertyType) ==
+                    InstanceType.Collection)
+                   || (memberInfo is FieldInfo fi && SerializerHelper.GetInstanceType(fi.FieldType) ==
+                       InstanceType.Collection);
+        }
+
+        public static Type GetUnderlaingType(this MemberInfo memberInfo)
+        {
+            if (memberInfo is PropertyInfo pi)
+                return pi.PropertyType;
+            if (memberInfo is FieldInfo fi)
+                return fi.FieldType;
+
+            return null;
+        }
+    }
+
     /// <summary>
     /// Внутренний класс для обработки объекта в xml представление
     /// </summary>
@@ -25,7 +84,7 @@ namespace ZenPlatform.XmlSerializer
             _type = instance.GetType();
             _conf = SerializerConfiguration.Create();
             _isCollection = (instance is ICollection);
-            _instanceType = GetInstanceType(instance);
+            _instanceType = SerializerHelper.GetInstanceType(instance);
             _typeName = GetNameWithoutGenericArity(_type);
         }
 
@@ -101,7 +160,7 @@ namespace ZenPlatform.XmlSerializer
         private void HandleValue(object value)
         {
             if (value == null) return;
-            var valueType = GetInstanceType(value);
+            var valueType = SerializerHelper.GetInstanceType(value);
             switch (valueType)
             {
                 case InstanceType.Primitive:
@@ -113,34 +172,6 @@ namespace ZenPlatform.XmlSerializer
             }
         }
 
-        private InstanceType GetInstanceType(object value)
-        {
-            switch (value)
-            {
-                case bool _:
-                case byte _:
-                case byte[] _:
-                case DateTime _:
-                case DateTimeOffset _:
-                case decimal _:
-                case double _:
-                case short _:
-                case int _:
-                case long _:
-                case sbyte _:
-                case float _:
-                case string _:
-                case TimeSpan _:
-                case ushort _:
-                case uint _:
-                case ulong _:
-                    return InstanceType.Primitive;
-                    break;
-                default:
-                    return InstanceType.Object;
-                    break;
-            }
-        }
 
         public static string GetNameWithoutGenericArity(Type t)
         {
@@ -148,5 +179,11 @@ namespace ZenPlatform.XmlSerializer
             int index = name.IndexOf('`');
             return index == -1 ? name : name.Substring(0, index);
         }
+    }
+
+
+    public class XmlnsDefinitionAttribute : Attribute
+    {
+        public string Namespace { get; set; }
     }
 }
