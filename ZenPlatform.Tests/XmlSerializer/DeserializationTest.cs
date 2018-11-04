@@ -18,9 +18,9 @@ namespace ZenPlatform.Tests.XmlSerializer
 
             var o = _serializer.Deserialize<SimpleObjectWithNastedObject>(xml);
             Assert.NotNull(o);
-            Assert.Equal(o.ThisIsStringField, "Field string");
-            Assert.Equal(o.IntValue, 275);
-            Assert.Equal(o.ThisIsString, "This is simple string;");
+            Assert.Equal("Field string", o.ThisIsStringField);
+            Assert.Equal(275, o.IntValue);
+            Assert.Equal("This is simple string;", o.ThisIsString);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace ZenPlatform.Tests.XmlSerializer
             var o = _serializer.Deserialize<DeserializeCollection>(xml);
             Assert.NotNull(o);
             Assert.NotNull(o.Collection);
-            Assert.Equal(o.Collection.Count, 3);
+            Assert.Equal(3, o.Collection.Count);
         }
     }
 }

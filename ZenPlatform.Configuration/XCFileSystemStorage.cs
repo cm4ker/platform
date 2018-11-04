@@ -54,7 +54,7 @@ namespace ZenPlatform.Configuration
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
-            using (var sw = File.OpenWrite(Path.Combine(_directory, route, name)))
+            using (var sw = File.Open(Path.Combine(_directory, route, name), FileMode.Create))
             {
                 stream.CopyTo(sw);
             }

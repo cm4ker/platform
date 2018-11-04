@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using ExtendedXmlSerializer.Configuration;
 using ZenPlatform.Configuration.Structure.Data.Types;
@@ -16,6 +17,7 @@ namespace ZenPlatform.Configuration.Structure
         private XCData _data;
         private XCRoles _roles;
         private IXCConfigurationStorage _storage;
+        private IXCConfigurationUniqueCounter _counter;
 
         public XCRoot()
         {
@@ -26,12 +28,16 @@ namespace ZenPlatform.Configuration.Structure
             Roles = new XCRoles();
             Modules = new XCModules();
             Schedules = new XCSchedules();
-            Languages = new List<XCLanguage>();
+            Languages = new XCLanguageList();
             SessionSettings = new ChildItemCollection<XCRoot, XCSessionSetting>(this);
+
+            //Берем счетчик по умолчанию
+            _counter = new XCSimpleCounter();
         }
 
         public IXCConfigurationStorage Storage => _storage;
-
+        public IXCConfigurationUniqueCounter Counter => _counter;
+        
         /// <summary>
         /// Идентификатор конфигурации
         /// </summary>
@@ -88,7 +94,7 @@ namespace ZenPlatform.Configuration.Structure
 
         [XmlArray]
         [XmlArrayItem(ElementName = "Language", Type = typeof(XCLanguage))]
-        public List<XCLanguage> Languages { get; set; }
+        public XCLanguageList Languages { get; set; }
 
         /// <summary>
         /// Загрузить концигурацию
@@ -104,7 +110,8 @@ namespace ZenPlatform.Configuration.Structure
 
             //Сохраняем хранилище
             conf._storage = storage;
-
+            conf._counter = storage;
+            
             //Инициализация компонентов данных
             conf.Data.Load();
 
@@ -160,7 +167,7 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Save()
         {
-            var ms = this.SerializeToStream();
+           
 
             //Сохранение раздела данных
             Data.Save();
@@ -171,6 +178,8 @@ namespace ZenPlatform.Configuration.Structure
             //Сохранение раздела интерфейсов
 
             //Сохранение раздела ...
+            
+            var ms = this.SerializeToStream();
             _storage.SaveRootBlob(ms);
             //TODO: Необходимо инициировать сохранение для всех компонентов
         }
@@ -183,12 +192,20 @@ namespace ZenPlatform.Configuration.Structure
         {
             //Всё просто, подменяем хранилище, сохраняем, заменяем обратно
             var actualStorage = _storage;
+            var actualCounter = _counter;
             _storage = storage;
+            _counter = storage;
             Save();
             _storage = actualStorage;
+            _counter = actualCounter;
         }
 
 
         //TODO: Сделать механизм сравнения двух конфигураций
+    }
+
+
+    public class XCLanguageList : List<XCLanguage>
+    {
     }
 }

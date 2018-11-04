@@ -4,6 +4,9 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Data.Contracts
 {
+    /// <summary>
+    /// Интерфейс комопнента данных
+    /// </summary>
     public interface IDataComponent
     {
         /// <summary>

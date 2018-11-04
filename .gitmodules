@@ -6,4 +6,4 @@
 	url = https://github.com/AvaloniaUI/DataGrid.git
 [submodule "Portable.Xaml"]
 	path = Portable.Xaml
-	url = https://github.com/cwensley/Portable.Xaml.git
+	url = https://github.com/cm4ker/Portable.Xaml.git

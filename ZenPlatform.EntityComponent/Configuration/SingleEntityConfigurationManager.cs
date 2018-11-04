@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Configuration.Structure.Data;
+﻿using System;
+using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.Shared.ParenChildCollection;
@@ -15,7 +16,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override XCObjectTypeBase Create(XCObjectTypeBase parentType = null)
         {
             var newItem = new XCSingleEntity();
-
+            newItem.Guid = Guid.NewGuid();
+            
             ((IChildItem<XCComponent>)newItem).Parent = Component;
             Component.Parent.RegisterType(newItem);
 

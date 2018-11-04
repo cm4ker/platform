@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -31,11 +32,12 @@ namespace ZenPlatform.Configuration.Structure.Data
         private IDataComponent _componentImpl;
 
         private readonly IDictionary<CodeGenRuleType, CodeGenRule> _codeGenRules;
+        private Assembly _componentAssembly;
 
         public XCComponent()
         {
             _codeGenRules = new ConcurrentDictionary<CodeGenRuleType, CodeGenRule>();
-            Include = new List<XCBlob>();
+            Include = new XCBlobCollection();
             AttachedComponentIds = new List<Guid>();
             AttachedComponents = new List<XCComponent>();
         }
@@ -43,13 +45,11 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// <summary>
         /// Информация о компоненте
         /// </summary>
-        [XmlIgnore]
         public XCComponentInformation Info
         {
             get => _info;
         }
 
-        [XmlIgnore]
         public bool IsLoaded
         {
             get => _isLoaded;
@@ -58,44 +58,40 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// <summary>
         /// Хранилище компонента
         /// </summary>
-        [XmlElement]
         public XCBlob Blob { get; set; }
 
         /// <summary>
         /// Список идентификаторов присоединённых компонентов
         /// </summary>
-        [XmlArray("Attaches")]
-        [XmlArrayItem(ElementName = "ComponentId", Type = typeof(Guid))]
         internal List<Guid> AttachedComponentIds { get; set; }
 
         /// <summary>
         /// Присоединённые компоненты. Это свойство инициализируется после загрузки всех компонентов
         /// </summary>
-        [XmlIgnore]
         public List<XCComponent> AttachedComponents { get; private set; }
 
         /// <summary>
         /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
         /// </summary>
-        [XmlArray("Include")]
-        [XmlArrayItem(ElementName = "Blob", Type = typeof(XCBlob))]
-        public List<XCBlob> Include { get; set; }
+        public XCBlobCollection Include { get; set; }
 
-        [XmlIgnore] public Assembly ComponentAssembly { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Assembly ComponentAssembly
+        {
+            get => _componentAssembly;
+            set
+            {
+                _componentAssembly = value;
+                LoadComponentInformation();
+            }
+        }
+
 
         /// <summary>
-        /// Загрузить все данные компонента из хранилища
+        /// Загрузить инфомрацию о компоненте включая загрузчики, инфо, и так далее
         /// </summary>
-        public void LoadComponent()
+        private void LoadComponentInformation()
         {
-            var stream = Root.Storage.GetBlob(Blob.Name, nameof(XCComponent));
-
-            using (var ms = new MemoryStream())
-            {
-                stream.CopyTo(ms);
-                ComponentAssembly = Assembly.Load(ms.ToArray());
-            }
-
             var typeInfo = ComponentAssembly.GetTypes()
                 .FirstOrDefault(x => x.BaseType == typeof(XCComponentInformation));
 
@@ -116,6 +112,31 @@ namespace ZenPlatform.Configuration.Structure.Data
 
             //Инициализируем компонент
             _componentImpl.OnInitializing();
+        }
+
+
+        /// <summary>
+        /// Загрузить все данные компонента из хранилища
+        /// </summary>
+        public void LoadComponent()
+        {
+            var stream = Root.Storage.GetBlob(Blob.Name, nameof(XCComponent));
+
+            using (var ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                var bytes = ms.ToArray();
+                var module = ModuleDefMD.Load(bytes);
+
+                var alreadyLoaded = AppDomain.CurrentDomain.GetAssemblies()
+                    .FirstOrDefault(x => x.FullName == module.Assembly.FullName);
+
+                if (alreadyLoaded != null)
+                    ComponentAssembly = alreadyLoaded;
+                else
+                    ComponentAssembly = Assembly.Load(bytes);
+            }
+
 
             //Подгружаем все дочерние объекты
             foreach (var includeBlob in Include)
@@ -132,6 +153,8 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// <exception cref="NotImplementedException"></exception>
         public void SaveComponent()
         {
+            if (ComponentAssembly is null) return;
+
             foreach (var type in Types)
             {
                 Loader.SaveObject(type);
@@ -146,7 +169,7 @@ namespace ZenPlatform.Configuration.Structure.Data
             using (var ms = new MemoryStream())
             {
                 module.Write(ms);
-                
+
                 Root.Storage.SaveBlob(Blob.Name, nameof(XCComponent), ms);
             }
         }
@@ -196,5 +219,10 @@ namespace ZenPlatform.Configuration.Structure.Data
         {
             return Types.First(x => x.Name == typeName);
         }
+    }
+
+
+    public class XCBlobCollection : List<XCBlob>
+    {
     }
 }

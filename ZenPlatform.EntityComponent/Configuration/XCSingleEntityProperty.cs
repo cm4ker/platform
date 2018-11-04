@@ -18,29 +18,22 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
         }
 
-        [XmlIgnore] public XCSingleEntity Parent => _parent;
+        public XCSingleEntity Parent => _parent;
 
         XCSingleEntity IChildItem<XCSingleEntity>.Parent
         {
             get => _parent;
             set => _parent = value;
         }
+
+        public bool ShouldSerialize()
+        {
+            return !Unique;
+        }
     }
 
-    internal static class StandartDocumentPropertyHelper
+    internal static class StandardEntityPropertyHelper
     {
-        public static XCSingleEntityProperty CreatePostedProperty()
-        {
-            return new XCSingleEntityProperty()
-            {
-                Name = "Posted",
-                Guid = Guid.Parse("27495aa2-4a50-4c3a-854c-564940aee515"),
-                Types = {PlatformTypes.Boolean},
-                IsSystemProperty = true,
-                DatabaseColumnName = "IsPosted"
-            };
-        }
-
         public static XCSingleEntityProperty CreateUniqueProperty()
         {
             return new XCSingleEntityProperty()
