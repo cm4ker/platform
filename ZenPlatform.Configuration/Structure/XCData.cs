@@ -34,7 +34,7 @@ namespace ZenPlatform.Configuration.Structure
                     {
                         uint id = item.Id;
 
-                        _parent.Storage.GetId(item.Guid, ref id);
+                        _parent.Counter.GetId(item.Guid, ref id);
 
                         item.Id = id;
                     }

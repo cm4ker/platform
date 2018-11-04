@@ -100,7 +100,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override void Initialize()
         {
             if (Properties.FirstOrDefault(x => x.Unique) == null)
-                Properties.Add(StandartDocumentPropertyHelper.CreateUniqueProperty());
+                Properties.Add(StandardEntityPropertyHelper.CreateUniqueProperty());
         }
 
         public override IEnumerable<XCObjectPropertyBase> GetProperties()

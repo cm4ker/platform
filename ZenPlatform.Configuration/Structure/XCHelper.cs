@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using ExtendedXmlSerializer.Configuration;
+using ExtendedXmlSerializer.ExtensionModel.Content;
+using ExtendedXmlSerializer.ExtensionModel.Xml;
+using Portable.Xaml;
 using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.XmlSerializer;
+
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -13,14 +17,7 @@ namespace ZenPlatform.Configuration.Structure
         public static T Deserialize<T>(this string content)
             where T : class
         {
-            Serializer ser = new Serializer();
-
-            var xml = content.Trim('"');
-
-            using (var sr = new StringReader(xml))
-            {
-                return (T) ser.Deserialize(sr);
-            }
+            throw new Exception();
         }
 
         public static T DeserializeFromFile<T>(string fileName)
@@ -35,8 +32,13 @@ namespace ZenPlatform.Configuration.Structure
 
         public static T DeserializeFromStream<T>(Stream stream)
         {
-            Serializer ser = new Serializer();
-            return (T) ser.Deserialize(stream, BuildDefaultConfiguration());
+            XamlSchemaContext context = new XamlSchemaContext();
+
+            XamlObjectWriter writer = new XamlObjectWriter(context);
+            XamlXmlReader reader = new XamlXmlReader(stream, context);
+            XamlServices.Transform(reader, writer);
+
+            return (T) writer.Result;
         }
 
         public static string BaseDirectory { get; private set; }
@@ -45,8 +47,11 @@ namespace ZenPlatform.Configuration.Structure
         {
             using (var sw = new StringWriter())
             {
-                Serializer xs = new Serializer();
-                xs.Serialize(obj, sw, BuildDefaultConfiguration());
+                XamlSchemaContext context = new XamlSchemaContext();
+
+                XamlObjectReader reader = new XamlObjectReader(obj);
+                XamlXmlWriter writer = new XamlXmlWriter(sw, context);
+                XamlServices.Transform(reader, writer);
 
                 return sw.ToString();
             }
@@ -54,26 +59,14 @@ namespace ZenPlatform.Configuration.Structure
 
         public static Stream SerializeToStream(this object obj)
         {
-            var ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream();
+            XamlSchemaContext context = new XamlSchemaContext();
 
-            var serializer = new ConfigurationContainer().Create();
-            serializer.Serialize(XmlWriter.Create(ms), obj);
-
+            XamlObjectReader reader = new XamlObjectReader(obj);
+            XamlXmlWriter writer = new XamlXmlWriter(ms, context);
+            XamlServices.Transform(reader, writer);
+            
             return ms;
-        }
-
-        private static SerializerConfiguration BuildDefaultConfiguration()
-        {
-            return SerializerConfiguration.Create().CustomRoot<XCRoot>("Root")
-                                                   .CustomRoot<XCComponent>("Component")
-                                                   .CustomRoot<XCBlob>("Blob")
-                                                   .IgnoreRootInProperties<XCData>()
-                                                   .IgnoreRootInProperties<XCBlob>();
-        }
-
-        public static IConfigurationContainer UseXmlPlatformConfiguration(this IConfigurationContainer c)
-        {
-            return c;
         }
     }
 }

@@ -57,14 +57,14 @@ namespace ZenPlatform.DataComponent.Configuration
         /// <summary>
         /// Загрузить объект компонента
         /// </summary>
-        /// <param name="com"></param>
+        /// <param name="component"></param>
         /// <param name="blob"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public virtual XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob)
+        public virtual XCObjectTypeBase LoadObject(XCComponent component, XCBlob blob)
         {
             TObjectType conf;
-            using (var stream = com.Root.Storage.GetBlob(blob.Name, $"Data/{com.Info.ComponentName}"))
+            using (var stream = component.Root.Storage.GetBlob(blob.Name, $"Data/{component.Info.ComponentName}"))
             {
                 conf = XCHelper.DeserializeFromStream<TObjectType>(stream) ?? throw new InvalidLoadConfigurationException(blob.Name);
             }
@@ -75,9 +75,9 @@ namespace ZenPlatform.DataComponent.Configuration
             AfterObjectLoad(conf);
 
             //Сразу же указываем родителя
-            ((IChildItem<XCComponent>)conf).Parent = com;
+            ((IChildItem<XCComponent>)conf).Parent = component;
 
-            com.Parent.RegisterType(conf);
+            component.Parent.RegisterType(conf);
 
             BeforeInitialize(conf);
             conf.Initialize();
@@ -94,7 +94,7 @@ namespace ZenPlatform.DataComponent.Configuration
         public virtual void SaveObject(XCObjectTypeBase conf)
         {
             var storage = conf.Parent.Root.Storage;
-
+            var component = conf.Parent;
             XCBlob blob;
             if (conf.AttachedBlob is null)
             {
@@ -107,7 +107,7 @@ namespace ZenPlatform.DataComponent.Configuration
             }
 
             using (var stream = conf.SerializeToStream())
-                storage.SaveBlob(blob.Name, conf.Parent.Info.ComponentName, stream);
+                storage.SaveBlob(blob.Name, $"Data/{component.Info.ComponentName}", stream);
         }
 
         public XCDataRuleBase LoadRule(XCDataRuleContent content)

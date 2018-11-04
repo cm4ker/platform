@@ -8,7 +8,7 @@ namespace ZenPlatform.Configuration
     /// Стратегия загрузки/сохранения данных конфигурации.
     /// Есть возмо
     /// </summary>
-    public interface IXCConfigurationStorage
+    public interface IXCConfigurationStorage : IXCConfigurationUniqueCounter
     {
         /// <summary>
         /// Получить двоичный объект
@@ -36,15 +36,6 @@ namespace ZenPlatform.Configuration
         /// Сохранить корневой объект
         /// </summary>
         void SaveRootBlob(Stream stream);
-
-
-        /// <summary>
-        /// Получить идентификатор. Для файлового хранилища всё просто, он не привязан к данным, поэтому здесь будет просто
-        /// Возвращаться инкремент, но для базы данных, необходимо вытаскивать из таблицы сопоставлений guid - тип объекта
-        /// </summary>
-        /// <param name="confId">Идентификатор конфигурации</param>
-        /// <param name="oldId">Старый идентификатор, елси 0, в таком случае присваивается новый, елси не 0, тогда присваивается новый идентификатор</param>
-        void GetId(Guid confId, ref uint oldId);
     }
 
 
@@ -103,5 +94,20 @@ namespace ZenPlatform.Configuration
         /// Уникальный номер в базе данных
         /// </summary>
         public int Id { get; set; }
+    }
+
+
+    /// <summary>
+    /// Интерфейс уникального счётчика
+    /// </summary>
+    public interface IXCConfigurationUniqueCounter
+    {
+        /// <summary>
+        /// Получить идентификатор. Для файлового хранилища всё просто, он не привязан к данным, поэтому здесь будет просто
+        /// Возвращаться инкремент, но для базы данных, необходимо вытаскивать из таблицы сопоставлений guid - тип объекта
+        /// </summary>
+        /// <param name="confId">Идентификатор конфигурации</param>
+        /// <param name="oldId">Старый идентификатор, елси 0, в таком случае присваивается новый, елси не 0, тогда присваивается старый идентификатор</param>
+        void GetId(Guid confId, ref uint oldId);
     }
 }
