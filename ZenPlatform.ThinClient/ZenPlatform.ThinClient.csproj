@@ -21,16 +21,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.6.2-build6241-beta" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.6.2-build6241-beta" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.6.2-build6241-beta" />
-    <PackageReference Include="Dock.Avalonia" Version="0.0.1-build617" />
-    <PackageReference Include="Dock.Avalonia.Editor" Version="0.0.1-build617" />
-    <PackageReference Include="Dock.CodeGen" Version="0.0.1-build617" />
-    <PackageReference Include="Dock.Model" Version="0.0.1-build617" />
-    <PackageReference Include="Dock.Model.ReactiveUI" Version="0.0.1-build617" />
-    <PackageReference Include="Dock.Serializer" Version="0.0.1-build617" />
-    <PackageReference Include="DryIoc.dll" Version="3.0.2" />
+    <PackageReference Include="Avalonia" Version="0.7.1-build518-beta" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.7.1-build518-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.7.1-build518-beta" />
+    <PackageReference Include="Dock.Avalonia" Version="0.0.2-build654" />
+    <PackageReference Include="Dock.Avalonia.Editor" Version="0.0.2-build654" />
+    <PackageReference Include="Dock.CodeGen" Version="0.0.2-build654" />
+    <PackageReference Include="Dock.Model" Version="0.0.2-build654" />
+    <PackageReference Include="Dock.Model.ReactiveUI" Version="0.0.2-build654" />
+    <PackageReference Include="Dock.Serializer" Version="0.0.2-build654" />
+    <PackageReference Include="DryIoc.dll" Version="3.1.0-preview-05" />
   </ItemGroup>
 
   <ItemGroup>
