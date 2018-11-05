@@ -12,7 +12,6 @@
     <ProjectReference Include="..\Portable.Xaml\src\Portable.Xaml\Portable.Xaml-netstandard2.0.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
-    <ProjectReference Include="..\ZenPlatform.XmlSerializer\ZenPlatform.XmlSerializer.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="dnlib" Version="1.6.1" />

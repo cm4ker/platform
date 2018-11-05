@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.5" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.0-alpha" />
     <PackageReference Include="MessagePack" Version="1.7.3.4" />
-    <PackageReference Include="NetMQ" Version="4.0.0.1" />
+    <PackageReference Include="NetMQ" Version="4.0.0.175-pre" />
   </ItemGroup>
 
   <ItemGroup>

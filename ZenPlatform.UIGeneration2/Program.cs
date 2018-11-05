@@ -20,36 +20,39 @@ namespace ZenPlatform.UIBuilder
         {
             DataGrid dg = new DataGrid();
 
-            var appBuilder = BuildAvaloniaApp().SetupWithoutStarting();
+            var result = AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .SetupWithoutStarting();
+
 
             var window = new UIWindow().With(x =>
                 x.Group()
-                    .With(gi =>
-                    {
-                        var tb = gi.TextBox();
-                        tb.DataSource = "Person";
-                        return tb;
-                    })
+//                    .With(gi =>
+//                    {
+//                        var tb = gi.TextBox();
+//                        tb.DataSource = "Person";
+//                        return tb;
+//                    })
                     .With(l => l.Label("Label component"))
-                        .With(f => f.CheckBox("Checkbox component"))
-                        .With(f =>
+                    .With(f => f.CheckBox("Checkbox component"))
+//                        .With(f =>
+//                        {
+//                            var b = f.Button("Button component");
+//                            b.OnClick = "Click";
+//                            return b;
+//                        })
+//                        .With(new UIObjectPicker())
+//                    .With(new UIDataGrid().WithColumn(g => g.TextColumn()))
+                    .With(tc => tc.TabControl().WithTab(t =>
                         {
-                            var b = f.Button("Button component");
-                            b.OnClick = "Click";
-                            return b;
+                            t.Header = "Page 1";
+                            t.With(f => f.Label("This is content on page 1"));
                         })
-                        .With(new UIObjectPicker())
-                    .With(new UIDataGrid().WithColumn(g => g.TextColumn()))
-                        .With(tc => tc.TabControl().WithTab(t =>
-                            {
-                                t.Header = "Page 1";
-                                t.With(f => f.Label("This is content on page 1"));
-                            })
-                            .WithTab(t =>
-                            {
-                                t.Header = "Page 2";
-                                t.With(f => f.Label("This is content on page 2"));
-                            })));
+                        .WithTab(t =>
+                        {
+                            t.Header = "Page 2";
+                            t.With(f => f.Label("This is content on page 2"));
+                        })));
 
             window.Height = 400;
             window.Width = 300;
@@ -66,16 +69,16 @@ namespace ZenPlatform.UIBuilder
 
 
             Window w = AvaloniaXamlLoader.Parse<Window>(text);
-            TestObject obj = new TestObject();
-            obj.Person = "123";
-            w.DataContext = obj;
+//            TestObject obj = new TestObject();
+//            obj.Person = "123";
+//            w.DataContext = obj;
 
-            appBuilder.Instance.Run(w);
+            result.Instance.Run(w);
 
             w.ShowDialog();
 
             //XamlWriterTest();
-            Console.Write(obj.Person);
+            //Console.Write(obj.Person);
             Console.Read();
         }
 
@@ -93,7 +96,6 @@ namespace ZenPlatform.UIBuilder
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .UseReactiveUI()
                 .LogToDebug();
 
 
