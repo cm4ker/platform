@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -39,12 +40,18 @@ namespace ZenPlatform.Tests.Common
 
             root.Data.Components.Add(component);
 
+            var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            store.Name = "Store";
+            store.Description = "this is a store entity";
+            store.Initialize();
+            
             var prop = new XCSingleEntityProperty();
             prop.Name = "CompositeProperty";
             prop.Types.Add(new XCBinary());
             prop.Types.Add(new XCBoolean());
             prop.Types.Add(new XCString());
             prop.Types.Add(new XCDateTime());
+            prop.Types.Add(store);
             
             var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             invoice.Properties.Add(prop);

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Portable.Xaml.Schema;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -13,12 +15,16 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// <summary>
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
-    public abstract class XCObjectPropertyBase : IXmlSerializable
+    public abstract class XCObjectPropertyBase
     {
+        private List<XCTypeBase> _serializedTypes;
+        private readonly List<XCTypeBase> _types;
+
         protected XCObjectPropertyBase()
         {
-            Types = new List<XCTypeBase>();
+            _types = new List<XCTypeBase>();
             Guid = Guid.NewGuid();
+            _serializedTypes = new List<XCTypeBase>();
         }
 
         /// <summary>
@@ -75,10 +81,28 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Типы, описывающие поле
         /// </summary>
-        [XmlArray]
-        [XmlArrayItem(ElementName = "Type", Type = typeof(XCUnknownType))]
-        [XmlArrayItem(ElementName = "Type", Type = typeof(XCDateTime))]
-        public List<XCTypeBase> Types { get; }
+        [System.ComponentModel.DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public List<XCTypeBase> Types => _types;
+
+        /// <summary>
+        /// Поля для выгрузки конфигурации здесь происходит подмена XCObjectType на XCUnknownType
+        /// </summary>
+        public List<XCTypeBase> SerializedTypes => _serializedTypes;
+
+        private IEnumerable<XCTypeBase> GetTypes()
+        {
+            foreach (var type in Types)
+            {
+                if (type is XCPremitiveType) yield return type;
+                if (type is XCObjectTypeBase objType) yield return new XCUnknownType() {Guid = objType.Guid};
+            }
+        }
+
+        public bool ShouldSerializeSerializedTypes()
+        {
+            _serializedTypes = GetTypes().ToList();
+            return true;
+        }
 
         /// <summary>
         /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
@@ -103,49 +127,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
          *      В таком случае на каждый тип отводится своя колонка. Биндинг должен осуществляться таким
          *      не хитрым мапированием: Свойство, Тип -> Колонка
          */
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
-
-        public void ReadXml(XmlReader reader)
-        {
-//            reader.MoveToAttribute("Id");
-//            reader.ReadAttributeValue();
-//            var vId = reader.Value;
-            while (reader.Read())
-            {
-            }
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
-            // Системные поля никогда не пишутся в конфигурацию
-            if (IsSystemProperty)
-            {
-                return;
-            }
-
-            writer.WriteStartAttribute(nameof(Name));
-            writer.WriteValue(Name);
-            writer.WriteEndAttribute();
-
-            if (Guid != Guid.Empty)
-            {
-                writer.WriteStartAttribute(nameof(Guid));
-                writer.WriteValue(Guid.ToString());
-                writer.WriteEndAttribute();
-            }
-
-
-            //Пишем только тогда, когда есть тип даты-время
-            if (Types.Any(x => x is XCDateTime))
-            {
-                writer.WriteStartAttribute(nameof(DateCase));
-                writer.WriteValue(DateCase.ToString());
-                writer.WriteEndAttribute();
-            }
-        }
     }
 
 
