@@ -7,6 +7,7 @@ using System.Runtime.Caching;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
@@ -78,18 +79,20 @@ namespace ZenPlatform.EntityComponent.Configuration
             {
                 var configurationTypes = new List<XCTypeBase>();
 
-                foreach (var propertyType in property.Types)
+                //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные
+                foreach (var propertyType in property.SerializedTypes)
                 {
-                    var type = Data.PlatformTypes.FirstOrDefault(x => x.Guid == propertyType.Guid);
-                    //Если по какой то причине тип поля не найден, в таком случае считаем, что конфигурация битая и выкидываем исключение
-                    if (type == null) throw new Exception("Invalid configuration");
+                    if (propertyType is XCPremitiveType)
+                        property.Types.Add(propertyType);
+                    if (propertyType is XCUnknownType)
+                    {
+                        var type = Data.PlatformTypes.FirstOrDefault(x => x.Guid == propertyType.Guid);
+                        //Если по какой то причине тип поля не найден, в таком случае считаем, что конфигурация битая и выкидываем исключение
+                        if (type == null) throw new Exception("Invalid configuration");
 
-                    configurationTypes.Add(type);
+                        property.Types.Add(type);
+                    }
                 }
-
-                //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные 
-                property.Types.Clear();
-                property.Types.AddRange(configurationTypes);
 
                 var id = property.Id;
                 property.Parent.Root.Storage.GetId(property.Guid, ref id);

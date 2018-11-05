@@ -91,8 +91,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avalonia.DataGrid.Themes.De
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0F50FE96-6008-4DE8-9331-F7EA052B27FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.XmlSerializer", "ZenPlatform.XmlSerializer\ZenPlatform.XmlSerializer.csproj", "{FAF5EB28-C148-4DAE-90ED-815FB86276C3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portable.Xaml-netstandard2.0", "Portable.Xaml\src\Portable.Xaml\Portable.Xaml-netstandard2.0.csproj", "{ACA292A2-11B5-4912-8ED0-2BFECF942153}"
 EndProject
 Global
@@ -1187,38 +1185,6 @@ Global
 		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|x86.ActiveCfg = Release|Any CPU
 		{0F50FE96-6008-4DE8-9331-F7EA052B27FF}.Release|x86.Build.0 = Release|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.AppStore|Any CPU.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.AppStore|iPhone.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.AppStore|x86.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.AppStore|x86.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Debug|x86.Build.0 = Debug|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Release|iPhone.Build.0 = Release|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Release|x86.ActiveCfg = Release|Any CPU
-		{FAF5EB28-C148-4DAE-90ED-815FB86276C3}.Release|x86.Build.0 = Release|Any CPU
 		{ACA292A2-11B5-4912-8ED0-2BFECF942153}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
 		{ACA292A2-11B5-4912-8ED0-2BFECF942153}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
 		{ACA292A2-11B5-4912-8ED0-2BFECF942153}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU

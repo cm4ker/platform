@@ -29,6 +29,7 @@ namespace ZenPlatform.Tests.Conf
             Assert.Equal(conf.Data.Components.Count, loadedConf.Data.Components.Count);
             Assert.Equal(conf.Data.ComponentTypes.Count(), loadedConf.Data.ComponentTypes.Count());
             Assert.Equal(conf.Data.ComponentTypes.First().GetProperties().Any(x=>x.Unique), loadedConf.Data.ComponentTypes.First().GetProperties().Any(x=>x.Unique));
+            
         }
     }
 }
