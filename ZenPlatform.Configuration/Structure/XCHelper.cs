@@ -3,9 +3,6 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using ExtendedXmlSerializer.Configuration;
-using ExtendedXmlSerializer.ExtensionModel.Content;
-using ExtendedXmlSerializer.ExtensionModel.Xml;
 using Portable.Xaml;
 using ZenPlatform.Configuration.Structure.Data;
 
@@ -32,7 +29,7 @@ namespace ZenPlatform.Configuration.Structure
 
         public static T DeserializeFromStream<T>(Stream stream)
         {
-            XamlSchemaContext context = new XamlSchemaContext();
+            XamlSchemaContext context = new XCXamlSchemaContext();
 
             XamlObjectWriter writer = new XamlObjectWriter(context);
             XamlXmlReader reader = new XamlXmlReader(stream, context);
@@ -47,9 +44,9 @@ namespace ZenPlatform.Configuration.Structure
         {
             using (var sw = new StringWriter())
             {
-                XamlSchemaContext context = new XamlSchemaContext();
+                XamlSchemaContext context = new XCXamlSchemaContext();
 
-                XamlObjectReader reader = new XamlObjectReader(obj);
+                XamlObjectReader reader = new XamlObjectReader(obj, context);
                 XamlXmlWriter writer = new XamlXmlWriter(sw, context);
                 XamlServices.Transform(reader, writer);
 
@@ -60,9 +57,9 @@ namespace ZenPlatform.Configuration.Structure
         public static Stream SerializeToStream(this object obj)
         {
             MemoryStream ms = new MemoryStream();
-            XamlSchemaContext context = new XamlSchemaContext();
+            XamlSchemaContext context = new XCXamlSchemaContext();
 
-            XamlObjectReader reader = new XamlObjectReader(obj);
+            XamlObjectReader reader = new XamlObjectReader(obj, context);
             XamlXmlWriter writer = new XamlXmlWriter(ms, context);
             XamlServices.Transform(reader, writer);
             

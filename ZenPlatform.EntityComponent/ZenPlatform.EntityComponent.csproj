@@ -4,7 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj" />
-    <ProjectReference Include="..\ZenPlatform.UIGeneration2\ZenPlatform.UIBuilder.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System">

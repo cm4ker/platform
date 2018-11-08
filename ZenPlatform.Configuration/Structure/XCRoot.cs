@@ -5,7 +5,6 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using ExtendedXmlSerializer.Configuration;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 

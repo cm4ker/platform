@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MonoMac.OpenGL;
 using Xunit;
 using Xunit.Sdk;
 using ZenPlatform.Configuration.Exceptions;
