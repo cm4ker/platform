@@ -6,7 +6,6 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.Shared.ParenChildCollection;
-using ZenPlatform.XmlSerializer;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -24,8 +23,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             using (var sr = new StringReader(content.RealContent))
             {
-                var ser = new Serializer();
-                var rule = ser.Deserialize<XCSingleEntityRule>(sr) ?? throw new Exception("Rule not loaded");
+                var rule = XCHelper.Deserialize<XCSingleEntityRule>(sr.ReadToEnd()) ?? throw new Exception("Rule not loaded");
 
                 ((IChildItem<XCDataRuleContent>) rule).Parent = content;
 

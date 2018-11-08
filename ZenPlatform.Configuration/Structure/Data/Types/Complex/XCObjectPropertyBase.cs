@@ -87,7 +87,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Поля для выгрузки конфигурации здесь происходит подмена XCObjectType на XCUnknownType
         /// </summary>
-        public List<XCTypeBase> SerializedTypes => _serializedTypes;
+        [XCDecoratedForSerialization]
+        internal List<XCTypeBase> SerializedTypes => _serializedTypes;
 
         private IEnumerable<XCTypeBase> GetTypes()
         {
@@ -103,6 +104,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             _serializedTypes = GetTypes().ToList();
             return true;
         }
+
+        public List<XCTypeBase> GetUnprocessedPropertyTypes() => _serializedTypes;
 
         /// <summary>
         /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ZenPlatform.UIBuilder.Interface;
+
 
 namespace ZenPlatform.DataComponent.UI
 {
@@ -10,9 +10,9 @@ namespace ZenPlatform.DataComponent.UI
     /// </summary>
     public class UIGenerator
     {
-        public UINode GetForeignView()
-        {
-            return new UIObjectPicker();
-        }
+//        public UINode GetForeignView()
+//        {
+//            return new UIObjectPicker();
+//        }
     }
 }

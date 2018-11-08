@@ -80,7 +80,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 var configurationTypes = new List<XCTypeBase>();
 
                 //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные
-                foreach (var propertyType in property.SerializedTypes)
+                foreach (var propertyType in property.GetUnprocessedPropertyTypes())
                 {
                     if (propertyType is XCPremitiveType)
                         property.Types.Add(propertyType);

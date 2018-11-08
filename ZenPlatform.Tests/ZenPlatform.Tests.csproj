@@ -14,8 +14,6 @@
     <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Cli.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
-    <ProjectReference Include="..\ZenPlatform.UIGeneration2\ZenPlatform.UIBuilder.csproj" />
-    <ProjectReference Include="..\ZenPlatform.XmlSerializer\ZenPlatform.XmlSerializer.csproj" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-ildasm" Version="0.7.8-beta-build-0070" />
