@@ -4,6 +4,9 @@ using System.Text;
 
 namespace ZenPlatform.Configuration.Exceptions
 {
+    /// <summary>
+    /// Ошибка загрузки конфигурации
+    /// </summary>
     public class InvalidLoadConfigurationException : Exception
     {
         public InvalidLoadConfigurationException()

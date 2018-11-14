@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DryIoc.dll" Version="3.1.0-preview-06" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.0-alpha" />
     <PackageReference Include="MessagePack" Version="1.7.3.4" />
     <PackageReference Include="NetMQ" Version="4.0.0.175-pre" />
@@ -13,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Messages.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
   </ItemGroup>
 
 </Project>
