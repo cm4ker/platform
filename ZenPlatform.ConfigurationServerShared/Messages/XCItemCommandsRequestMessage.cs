@@ -1,14 +1,14 @@
 ﻿using System;
 using MessagePack;
 
-namespace ZenPlatform.ConfigurationServerMessages.Messages
+namespace ZenPlatform.IdeIntegration.Messages.Messages
 {
     
     /// <summary>
     /// Запрос на доступные команды у элемента конфигурации
     /// </summary>
     [MessagePackObject]
-    public class XCItemCommandsRequestMessage : XCMessage
+    public class XCItemCommandsRequestMessage : PlatformMessage
     {
         /// <summary>
         /// Идентификатор запрашиваемого элемента

@@ -13,7 +13,6 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    [Serializable]
     public class XCData : IChildItem<XCRoot>
     {
         private XCRoot _parent;
@@ -40,11 +39,8 @@ namespace ZenPlatform.Configuration.Structure
                     }
                 }
             };
-
         }
 
-        [XmlArray("Components")]
-        [XmlArrayItem(ElementName = "Component", Type = typeof(XCComponent))]
         public ChildItemCollection<XCData, XCComponent> Components { get; }
 
         /// <summary>
@@ -59,7 +55,7 @@ namespace ZenPlatform.Configuration.Structure
             _platformTypes.Add(new XCBoolean());
             _platformTypes.Add(new XCNumeric());
             _platformTypes.Add(new XCGuid());
-            
+
             LoadComponents();
             LoadDependencies();
         }
@@ -116,17 +112,15 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Все типы платформы
         /// </summary>
-        [XmlIgnore]
         public IEnumerable<XCTypeBase> PlatformTypes => _platformTypes;
 
         /// <summary>
         /// Все типы, которые относятся к компонентам
         /// </summary>
-        [XmlIgnore]
         public IEnumerable<XCObjectTypeBase> ComponentTypes =>
             PlatformTypes.Where(x => x is XCObjectTypeBase).Cast<XCObjectTypeBase>();
 
-        [XmlIgnore] public XCRoot Parent => _parent;
+        public XCRoot Parent => _parent;
 
 
         XCRoot IChildItem<XCRoot>.Parent
@@ -143,13 +137,5 @@ namespace ZenPlatform.Configuration.Structure
         {
             _platformTypes.Add(type);
         }
-    }
-
-    internal class TypeNotFoundException : Exception
-    {
-    }
-
-    public class ComponentNotFoundException : Exception
-    {
     }
 }
