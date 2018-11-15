@@ -1,7 +1,8 @@
 ﻿using System;
 using MessagePack;
+using ZenPlatform.Configuration;
 
-namespace ZenPlatform.ConfigurationServerMessages.Models
+namespace ZenPlatform.IdeIntegration.Messages.Models
 {
     /// <summary>
     /// Данные элемента конфигурации
@@ -14,6 +15,12 @@ namespace ZenPlatform.ConfigurationServerMessages.Models
         /// </summary>
         [Key(0)]
         public Guid ItemId { get; set; }
+
+        /// <summary>
+        /// Тип элемента
+        /// </summary>
+        [Key(3)]
+        public XCNodeKind NodeType { get; set; }
 
         /// <summary>
         /// Имя элемента

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MessagePack;
-using ZenPlatform.ConfigurationServerMessages.Models;
+using ZenPlatform.IdeIntegration.Messages.Models;
 
 namespace ZenPlatform.IdeIntegration.Messages.Messages
 {
@@ -11,6 +11,11 @@ namespace ZenPlatform.IdeIntegration.Messages.Messages
     [MessagePackObject]
     public class XCTreeResponceMessage : PlatformMessage
     {
+        public XCTreeResponceMessage()
+        {
+            Items = new List<XCItem>();
+        }
+
         /// <summary>
         /// Идентификатор запроса, необходим для ассинхронной модели, чтобы знать на что мы отвечаем
         /// </summary>
