@@ -18,6 +18,7 @@ namespace ZenPlatform.Configuration.Structure
         private IXCConfigurationStorage _storage;
         private IXCConfigurationUniqueCounter _counter;
 
+
         public XCRoot()
         {
             ProjectId = Guid.NewGuid();
@@ -36,33 +37,31 @@ namespace ZenPlatform.Configuration.Structure
 
         public IXCConfigurationStorage Storage => _storage;
         public IXCConfigurationUniqueCounter Counter => _counter;
-        
+
         /// <summary>
         /// Идентификатор конфигурации
         /// </summary>
-        [XmlElement("ProjectId")]
         public Guid ProjectId { get; set; }
 
         /// <summary>
         /// Имя конфигурации
         /// </summary>
-        [XmlElement("ProjectName")]
         public string ProjectName { get; set; }
 
         /// <summary>
         /// Версия конфигурации
         /// </summary>
-        [XmlElement("ProjectVersion")]
         public string ProjectVersion { get; set; }
 
         /// <summary>
         /// Настройки сессии
         /// </summary>
-        [XmlArray("SessionSettings")]
-        [XmlArrayItem(ElementName = "SessionSetting", Type = typeof(XCSessionSetting))]
         public ChildItemCollection<XCRoot, XCSessionSetting> SessionSettings { get; }
 
-        [XmlElement(Type = typeof(XCData), ElementName = "Data")]
+
+        /// <summary>
+        /// Раздел данных
+        /// </summary>
         public XCData Data
         {
             get => _data;
@@ -74,9 +73,9 @@ namespace ZenPlatform.Configuration.Structure
             }
         }
 
-        [XmlElement] public XCInterface Interface { get; set; }
+        public XCInterface Interface { get; set; }
 
-        [XmlElement]
+
         public XCRoles Roles
         {
             get => _roles;
@@ -87,12 +86,10 @@ namespace ZenPlatform.Configuration.Structure
             }
         }
 
-        [XmlElement] public XCModules Modules { get; set; }
+        public XCModules Modules { get; set; }
 
-        [XmlElement] public XCSchedules Schedules { get; set; }
+        public XCSchedules Schedules { get; set; }
 
-        [XmlArray]
-        [XmlArrayItem(ElementName = "Language", Type = typeof(XCLanguage))]
         public XCLanguageList Languages { get; set; }
 
         /// <summary>
@@ -110,7 +107,7 @@ namespace ZenPlatform.Configuration.Structure
             //Сохраняем хранилище
             conf._storage = storage;
             conf._counter = storage;
-            
+
             //Инициализация компонентов данных
             conf.Data.Load();
 
@@ -166,8 +163,6 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Save()
         {
-           
-
             //Сохранение раздела данных
             Data.Save();
 
@@ -177,7 +172,7 @@ namespace ZenPlatform.Configuration.Structure
             //Сохранение раздела интерфейсов
 
             //Сохранение раздела ...
-            
+
             var ms = this.SerializeToStream();
             _storage.SaveRootBlob(ms);
             //TODO: Необходимо инициировать сохранение для всех компонентов
@@ -199,12 +194,16 @@ namespace ZenPlatform.Configuration.Structure
             _counter = actualCounter;
         }
 
-
-        //TODO: Сделать механизм сравнения двух конфигураций
-    }
-
-
-    public class XCLanguageList : List<XCLanguage>
-    {
+        /// <summary>
+        /// Сравнивает две конфигурации
+        /// </summary>
+        /// <param name="another"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public object CompareConfiguration(XCRoot another)
+        {
+            //TODO: Сделать механизм сравнения двух конфигураций
+            throw new NotImplementedException();
+        }
     }
 }

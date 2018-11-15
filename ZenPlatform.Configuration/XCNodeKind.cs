@@ -27,7 +27,13 @@ namespace ZenPlatform.Configuration
         /// <summary>
         /// Корень конфигурации
         /// </summary>
-        Root
+        Root,
+        
+        /// <summary>
+        /// Раздел данных 
+        /// </summary>
+        Data,
+        
 
     }
 }

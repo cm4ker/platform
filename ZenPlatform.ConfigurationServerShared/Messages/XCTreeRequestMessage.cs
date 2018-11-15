@@ -1,5 +1,6 @@
 ﻿using System;
 using MessagePack;
+using ZenPlatform.Configuration;
 
 namespace ZenPlatform.IdeIntegration.Messages.Messages
 {
@@ -24,22 +25,7 @@ namespace ZenPlatform.IdeIntegration.Messages.Messages
         /// <summary>
         /// Тип элемента
         /// </summary>
-        public XCTreeItemType ItemType { get; set; }
-    }
-
-    /// <summary>
-    /// Запросить корневой элемент
-    /// </summary>
-    public enum XCTreeItemType
-    {
-        /// <summary>
-        /// Корневой элемент
-        /// </summary>
-        Root,
-
-        /// <summary>
-        /// Данные
-        /// </summary>
-        Data,
+        [Key(2)]
+        public XCNodeKind ItemType { get; set; }
     }
 }
