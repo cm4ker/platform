@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.IdeIntegration.Messages.Messages;
@@ -37,7 +38,6 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     responce.RequestId = treeRequest.RequestId;
                     responce.ParentId = treeRequest.ItemId;
 
-
                     var dataItem = new XCItem() {NodeType = XCNodeKind.Data, ItemName = "Data"};
 
                     responce.Items.Add(dataItem);
@@ -45,6 +45,44 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                 }
                 case XCNodeKind.Data:
                 {
+                    responce.RequestId = treeRequest.RequestId;
+                    responce.ParentId = treeRequest.ItemId;
+
+                    var items = _conf.Data.Components.Select(x => new XCItem()
+                    {
+                        NodeType = XCNodeKind.Component,
+                        ItemId = x.Info.ComponentId,
+                        ItemName = x.Info.ComponentName
+                    }).ToList();
+
+                    responce.Items.AddRange(items);
+                    break;
+                }
+                case XCNodeKind.Component:
+                {
+                    responce.RequestId = treeRequest.RequestId;
+                    responce.ParentId = treeRequest.ItemId;
+
+                    var items = _conf.Data
+                        .Components
+                        .FirstOrDefault(x => x.Info.ComponentId == treeRequest.ItemId)
+                        ?.Types.Select(x => new XCItem()
+                        {
+                            NodeType = XCNodeKind.Type,
+                            ItemId = x.Guid,
+                            ItemName = x.Name
+                        }).ToList();
+
+                    responce.Items.AddRange(items);
+                    break;
+                }
+                case XCNodeKind.Type:
+                {
+                    responce.RequestId = treeRequest.RequestId;
+                    responce.ParentId = treeRequest.ItemId;
+
+                    var type = _conf.Data.ComponentTypes.FirstOrDefault(x => x.Guid == treeRequest.ItemId);
+                    type.Parent.AttachedComponents
                     break;
                 }
             }

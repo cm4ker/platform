@@ -28,12 +28,15 @@ namespace ZenPlatform.Configuration
         /// Корень конфигурации
         /// </summary>
         Root,
-        
+
         /// <summary>
         /// Раздел данных 
         /// </summary>
         Data,
-        
 
+        /// <summary>
+        /// Присоединённый компонент
+        /// </summary>
+        AttachedComponent
     }
 }

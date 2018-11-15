@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Security;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -6,6 +7,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using Xunit;
 using ZenPlatform.Configuration;
+using ZenPlatform.EntityComponent;
 using ZenPlatform.IdeIntegration.Messages.Messages;
 using ZenPlatform.IdeIntegration.Server.Infrastructure;
 using ZenPlatform.Tests.Common;
@@ -49,6 +51,21 @@ namespace ZenPlatform.Tests.IDE
 
                     var msg = Assert.IsType<XCTreeResponceMessage>(responce);
                     Assert.Equal(1, msg.Items.Count);
+
+                    requestFrame = MessagePack.MessagePackSerializer.Typeless.Serialize(
+                        new XCTreeRequestMessage()
+                        {
+                            ItemType = XCNodeKind.Data,
+                        });
+
+                    client.SendFrame(requestFrame);
+                    responceFrame = client.ReceiveFrameBytes();
+                    responce = MessagePack.MessagePackSerializer.Typeless.Deserialize(responceFrame);
+                    msg = Assert.IsType<XCTreeResponceMessage>(responce);
+
+                    Assert.Equal(1, msg.Items.Count);
+                    Assert.Equal(new Info().ComponentName, msg.Items.First().ItemName);
+                    Assert.Equal(new Info().ComponentId, msg.Items.First().ItemId);
                 }
 
                 Task.Delay(5000).Wait();
