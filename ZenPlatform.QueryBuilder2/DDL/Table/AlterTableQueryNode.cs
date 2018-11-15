@@ -29,7 +29,6 @@ namespace ZenPlatform.QueryBuilder.DDL.CreateTable
             col.WithType(typeOption);
             Childs.AddRange(Tokens.AlterToken, Tokens.SpaceToken, Tokens.ColumnToken, Tokens.SpaceToken, col);
             return this;
-            return this;
         }
 
         public AlterTableQueryNode AddColumn(string columnName,
