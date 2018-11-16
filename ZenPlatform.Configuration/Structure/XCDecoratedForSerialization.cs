@@ -7,6 +7,5 @@ namespace ZenPlatform.Configuration.Structure
     /// </summary>
     public class XCDecoratedForSerializationAttribute : Attribute
     {
-        
     }
 }
