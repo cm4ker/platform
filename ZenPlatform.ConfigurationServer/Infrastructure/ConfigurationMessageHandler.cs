@@ -82,7 +82,8 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     responce.ParentId = treeRequest.ItemId;
 
                     var type = _conf.Data.ComponentTypes.FirstOrDefault(x => x.Guid == treeRequest.ItemId);
-                    type.Parent.AttachedComponents
+                    var attachedComponents = type.Parent.AttachedComponents;
+                    
                     break;
                 }
             }
