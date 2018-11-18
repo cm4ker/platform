@@ -4,6 +4,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.1" />
     <PackageReference Include="dotnet-ildasm" Version="0.7.8-beta-build-0070" />
     <PackageReference Include="xunit" Version="2.4.1-pre.build.4059" />
     <PackageReference Include="xunit.core" Version="2.4.1-pre.build.4059" />
@@ -11,10 +12,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Cli.csproj" />
+    <ProjectReference Include="..\ZenPlatform.ConfigurationServer\ZenPlatform.IdeIntegration.Server.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
-    <ProjectReference Include="..\ZenPlatform.Pidl\ZenPlatform.Pidl.csproj" />
-    <ProjectReference Include="..\ZenPlatform.UIGeneration2\ZenPlatform.UIBuilder.csproj" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-ildasm" Version="0.7.8-beta-build-0070" />

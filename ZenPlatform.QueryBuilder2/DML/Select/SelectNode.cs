@@ -1,6 +1,6 @@
 ﻿using System;
 using ZenPlatform.QueryBuilder.Common;
-using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.Shared.ParenChildCollection;
 using ZenPlatform.Shared.Tree;
 
@@ -19,9 +19,9 @@ namespace ZenPlatform.QueryBuilder.DML.Select
             return Select(fieldName, (f) => { });
         }
 
-        public SelectNode Select(string fieldName, Action<SelectFieldNode> options)
+        public SelectNode Select(string fieldName, Action<SelectColumnNode> options)
         {
-            var f = new SelectFieldNode(fieldName);
+            var f = new SelectColumnNode(fieldName);
             options(f);
 
             OnAddField();

@@ -1,6 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
+using Portable.Xaml;
+using ZenPlatform.Configuration.Structure.Data;
+
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -9,14 +14,7 @@ namespace ZenPlatform.Configuration.Structure
         public static T Deserialize<T>(this string content)
             where T : class
         {
-            XmlSerializer ser = new XmlSerializer(typeof(T));
-
-            var xml = content.Trim('"');
-
-            using (var sr = new StringReader(xml))
-            {
-                return (T)ser.Deserialize(sr);
-            }
+            throw new Exception();
         }
 
         public static T DeserializeFromFile<T>(string fileName)
@@ -31,8 +29,13 @@ namespace ZenPlatform.Configuration.Structure
 
         public static T DeserializeFromStream<T>(Stream stream)
         {
-            XmlSerializer ser = new XmlSerializer(typeof(T));
-            return (T)ser.Deserialize(stream);
+            XamlSchemaContext context = new XCXamlSchemaContext();
+
+            XamlObjectWriter writer = new XamlObjectWriter(context);
+            XamlXmlReader reader = new XamlXmlReader(stream, context);
+            XamlServices.Transform(reader, writer);
+
+            return (T) writer.Result;
         }
 
         public static string BaseDirectory { get; private set; }
@@ -41,21 +44,26 @@ namespace ZenPlatform.Configuration.Structure
         {
             using (var sw = new StringWriter())
             {
-                XmlSerializer xs = new XmlSerializer(obj.GetType());
-                xs.Serialize(sw, obj);
+                XamlSchemaContext context = new XCXamlSchemaContext();
+
+                XamlObjectReader reader = new XamlObjectReader(obj, context);
+                XamlXmlWriter writer = new XamlXmlWriter(sw, context);
+                XamlServices.Transform(reader, writer);
 
                 return sw.ToString();
             }
         }
+
         public static Stream SerializeToStream(this object obj)
         {
-            using (var ms = new MemoryStream())
-            {
-                XmlSerializer xs = new XmlSerializer(obj.GetType());
-                xs.Serialize(ms, obj);
+            MemoryStream ms = new MemoryStream();
+            XamlSchemaContext context = new XCXamlSchemaContext();
 
-                return ms;
-            }
+            XamlObjectReader reader = new XamlObjectReader(obj, context);
+            XamlXmlWriter writer = new XamlXmlWriter(ms, context);
+            XamlServices.Transform(reader, writer);
+            
+            return ms;
         }
     }
 }

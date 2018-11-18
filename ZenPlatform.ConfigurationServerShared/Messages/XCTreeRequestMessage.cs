@@ -1,13 +1,14 @@
 ﻿using System;
 using MessagePack;
+using ZenPlatform.Configuration;
 
-namespace ZenPlatform.ConfigurationServerMessages.Messages
+namespace ZenPlatform.IdeIntegration.Messages.Messages
 {
     /// <summary>
     /// Запрос на дочерние элементы элемента конфигурации
     /// </summary>
     [MessagePackObject]
-    public class XCTreeRequestMessage : XCMessage
+    public class XCTreeRequestMessage : PlatformMessage
     {
         /// <summary>
         /// Идентификатор элемента, для которого запрашиваем поддерево
@@ -20,5 +21,11 @@ namespace ZenPlatform.ConfigurationServerMessages.Messages
         /// </summary>
         [Key(1)]
         public Guid RequestId { get; set; }
+
+        /// <summary>
+        /// Тип элемента
+        /// </summary>
+        [Key(2)]
+        public XCNodeKind ItemType { get; set; }
     }
 }

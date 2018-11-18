@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
@@ -12,6 +16,8 @@ namespace ZenPlatform.Configuration.Structure
         private XCData _data;
         private XCRoles _roles;
         private IXCConfigurationStorage _storage;
+        private IXCConfigurationUniqueCounter _counter;
+
 
         public XCRoot()
         {
@@ -22,18 +28,40 @@ namespace ZenPlatform.Configuration.Structure
             Roles = new XCRoles();
             Modules = new XCModules();
             Schedules = new XCSchedules();
-            Languages = new List<XCLanguage>();
+            Languages = new XCLanguageList();
+            SessionSettings = new ChildItemCollection<XCRoot, XCSessionSetting>(this);
+
+            //Берем счетчик по умолчанию
+            _counter = new XCSimpleCounter();
         }
 
         public IXCConfigurationStorage Storage => _storage;
+        public IXCConfigurationUniqueCounter Counter => _counter;
 
-        [XmlElement("ProjectId")] public Guid ProjectId { get; set; }
+        /// <summary>
+        /// Идентификатор конфигурации
+        /// </summary>
+        public Guid ProjectId { get; set; }
 
-        [XmlElement("ProjectName")] public string ProjectName { get; set; }
+        /// <summary>
+        /// Имя конфигурации
+        /// </summary>
+        public string ProjectName { get; set; }
 
-        [XmlElement("ProjectVersion")] public string ProjectVersion { get; set; }
+        /// <summary>
+        /// Версия конфигурации
+        /// </summary>
+        public string ProjectVersion { get; set; }
 
-        [XmlElement(Type = typeof(XCData), ElementName = "Data")]
+        /// <summary>
+        /// Настройки сессии
+        /// </summary>
+        public ChildItemCollection<XCRoot, XCSessionSetting> SessionSettings { get; }
+
+
+        /// <summary>
+        /// Раздел данных
+        /// </summary>
         public XCData Data
         {
             get => _data;
@@ -41,30 +69,28 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _data = value;
-                ((IChildItem<XCRoot>)_data).Parent = this;
+                ((IChildItem<XCRoot>) _data).Parent = this;
             }
         }
 
-        [XmlElement] public XCInterface Interface { get; set; }
+        public XCInterface Interface { get; set; }
 
-        [XmlElement]
+
         public XCRoles Roles
         {
             get => _roles;
             set
             {
                 _roles = value;
-                ((IChildItem<XCRoot>)_roles).Parent = this;
+                ((IChildItem<XCRoot>) _roles).Parent = this;
             }
         }
 
-        [XmlElement] public XCModules Modules { get; set; }
+        public XCModules Modules { get; set; }
 
-        [XmlElement] public XCSchedules Schedules { get; set; }
+        public XCSchedules Schedules { get; set; }
 
-        [XmlArray]
-        [XmlArrayItem(ElementName = "Language", Type = typeof(XCLanguage))]
-        public List<XCLanguage> Languages { get; set; }
+        public XCLanguageList Languages { get; set; }
 
         /// <summary>
         /// Загрузить концигурацию
@@ -80,6 +106,7 @@ namespace ZenPlatform.Configuration.Structure
 
             //Сохраняем хранилище
             conf._storage = storage;
+            conf._counter = storage;
 
             //Инициализация компонентов данных
             conf.Data.Load();
@@ -87,7 +114,31 @@ namespace ZenPlatform.Configuration.Structure
             //Инициализация ролевой системы
             conf.Roles.Load();
 
+            //Инициализация параметров сессии
+            conf.LoadSessionSettings();
+
             return conf;
+        }
+
+        private void LoadSessionSettings()
+        {
+            foreach (var setting in SessionSettings)
+            {
+                var configurationTypes = new List<XCTypeBase>();
+
+                foreach (var propertyType in setting.Types)
+                {
+                    var type = Data.PlatformTypes.FirstOrDefault(x => x.Guid == propertyType.Guid);
+                    //Если по какой то причине тип поля не найден, в таком случае считаем, что конфигурация битая и выкидываем исключение
+                    if (type == null) throw new Exception("Invalid configuration");
+
+                    configurationTypes.Add(type);
+                }
+
+                //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные 
+                setting.Types.Clear();
+                setting.Types.AddRange(configurationTypes);
+            }
         }
 
         /// <summary>
@@ -112,23 +163,19 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Save()
         {
-            using (MemoryStream sw = new MemoryStream())
-            {
-                XmlSerializer serializer = new XmlSerializer(typeof(XCRoot));
-                serializer.Serialize(sw, this);
+            //Сохранение раздела данных
+            Data.Save();
 
-                //Сохранение раздела данных
-                Data.Save();
+            //Сохранение раздела ролей
+            Roles.Save();
 
-                //Сохранение раздела ролей
-                Roles.Save();
+            //Сохранение раздела интерфейсов
 
-                //Сохранение раздела интерфейсов
+            //Сохранение раздела ...
 
-                //Сохранение раздела ...
-                _storage.SaveRootBlob(sw);
-                //TODO: Необходимо инициировать сохранение для всех компонентов
-            }
+            var ms = this.SerializeToStream();
+            _storage.SaveRootBlob(ms);
+            //TODO: Необходимо инициировать сохранение для всех компонентов
         }
 
         /// <summary>
@@ -138,17 +185,25 @@ namespace ZenPlatform.Configuration.Structure
         public void Save(IXCConfigurationStorage storage)
         {
             //Всё просто, подменяем хранилище, сохраняем, заменяем обратно
-
             var actualStorage = _storage;
-
+            var actualCounter = _counter;
             _storage = storage;
-
+            _counter = storage;
             Save();
-
             _storage = actualStorage;
+            _counter = actualCounter;
         }
 
-
-        //TODO: Сделать механизм сравнения двух конфигураций
+        /// <summary>
+        /// Сравнивает две конфигурации
+        /// </summary>
+        /// <param name="another"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public object CompareConfiguration(XCRoot another)
+        {
+            //TODO: Сделать механизм сравнения двух конфигураций
+            throw new NotImplementedException();
+        }
     }
 }

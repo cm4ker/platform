@@ -1,13 +1,9 @@
 ﻿using System;
 using System.ServiceModel.Channels;
-using System.Text;
-using MessagePack;
-using MessagePack.Formatters;
-using NetMQ;
+using System.Threading.Tasks;
 using NetMQ.Sockets;
-using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.ConfigurationServer
+namespace ZenPlatform.IdeIntegration.Server
 {
     class Program
     {
@@ -29,6 +25,8 @@ namespace ZenPlatform.ConfigurationServer
                 
                 Console.ReadKey();
             }
+
+          
         }
     }
 

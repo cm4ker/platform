@@ -1,12 +1,12 @@
 ﻿using System;
 using MessagePack;
 
-namespace ZenPlatform.ConfigurationServerMessages.Messages
+namespace ZenPlatform.IdeIntegration.Messages.Models
 {
     /// <summary>
     /// Команда элемента конфигурации
     /// </summary>
-    [MessagePackObject()]
+    [MessagePackObject]
     public class XCItemCommand
     {
         /// <summary>

@@ -92,7 +92,7 @@ namespace ZenPlatform.Shared.Tree
 
 
         /// <summary>
-        /// Открупить ноду. Внимание свойство Parent автоматически будет присвоено в null
+        /// Отсоединить ноду. Внимание свойство Parent автоматически будет присвоено в null
         /// </summary>
         public virtual void Detach()
         {

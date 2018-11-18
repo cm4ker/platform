@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using MessagePack;
-using ZenPlatform.ConfigurationServerMessages.Models;
+using ZenPlatform.IdeIntegration.Messages.Models;
 
-namespace ZenPlatform.ConfigurationServerMessages.Messages
+namespace ZenPlatform.IdeIntegration.Messages.Messages
 {
     /// <summary>
     /// Сообщение - ответ связанное с деревом конфигурации. Когда мы пытаемся открыть плюсиком список, срабатывает именно оно
     /// </summary>
     [MessagePackObject]
-    public class XCTreeResponceMessage : XCMessage
+    public class XCTreeResponceMessage : PlatformMessage
     {
+        public XCTreeResponceMessage()
+        {
+            Items = new List<XCItem>();
+        }
+
         /// <summary>
         /// Идентификатор запроса, необходим для ассинхронной модели, чтобы знать на что мы отвечаем
         /// </summary>

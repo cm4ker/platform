@@ -20,7 +20,7 @@ namespace ZenPlatform.DataComponent.Configuration
             _component = component;
         }
 
-        protected XCComponent Component { get; set; }
+        protected XCComponent Component => _component;
 
         public virtual XCObjectTypeBase Create(XCObjectTypeBase parentType = null)
         {

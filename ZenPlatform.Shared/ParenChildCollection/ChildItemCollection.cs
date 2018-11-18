@@ -130,7 +130,8 @@ namespace ZenPlatform.Shared.ParenChildCollection
 
         public int Add(object value)
         {
-            throw new NotImplementedException();
+            Add((TChildren) value);
+            return 0;
         }
 
         public void Clear()

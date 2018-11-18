@@ -3,7 +3,7 @@ using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.Columns;
 using ZenPlatform.QueryBuilder.Common.Factoryes;
 using ZenPlatform.QueryBuilder.Common.Operations;
-using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.Shared.Tree;
 
@@ -28,7 +28,6 @@ namespace ZenPlatform.QueryBuilder.DDL.CreateTable
             ColumnDefinitionNode col = new ColumnDefinitionNode(columnName);
             col.WithType(typeOption);
             Childs.AddRange(Tokens.AlterToken, Tokens.SpaceToken, Tokens.ColumnToken, Tokens.SpaceToken, col);
-            return this;
             return this;
         }
 

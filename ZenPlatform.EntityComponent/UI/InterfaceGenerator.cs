@@ -3,7 +3,7 @@ using System.Reflection.Metadata;
 using Microsoft.CodeAnalysis.Diagnostics;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
-using ZenPlatform.UIBuilder.Interface;
+
 
 namespace ZenPlatform.EntityComponent.UIGenerations
 {
@@ -28,37 +28,39 @@ namespace ZenPlatform.EntityComponent.UIGenerations
         /// <param name="conf">Конфигурация</param>
         /// <param name="mode">Режим генерации формы, если форма сгенерирована только для чтения, автоматически будут выключены все элементы</param>
         /// <returns></returns>
-        public UINode Generate(XCSingleEntity conf, InterfaceGeneratorMode mode = InterfaceGeneratorMode.Edit)
-        {
-            UIFactory f = UIFactory.Get();
+//        public UINode Generate(XCSingleEntity conf, InterfaceGeneratorMode mode = InterfaceGeneratorMode.Edit)
+//        {
+//            UIFactory f = UIFactory.Get();
+//
+//            var window = f.Window();
+//
+//            var group = f.Group();
+//
+//            //TODO: Необходимо на разные типы подбирать разные контролы
+//            foreach (var props in conf.Properties)
+//            {
+//
+//                //Если количество типов 1, тогда мы смотрим если он примитивный,
+//                //то рендерим соответствующий контрол, если нет, то нужно рендерить контрол на чужую форму из компонента
+//                if (props.Types.Count == 1)
+//                {
+//                    var foreigFieldType = props.Types.First();
+//
+//                    //Примитивный тип, значит просто рендерим обычный контрол
+//                    if (foreigFieldType is XCPremitiveType)
+//                    {
+//                    }
+//                }
+//
+//                group.With(x => x.TextBox());
+//            }
+//
+//            window.With(group);
+//
+//            return window;
+//        }
 
-            var window = f.Window();
-
-            var group = f.Group();
-
-            //TODO: Необходимо на разные типы подбирать разные контролы
-            foreach (var props in conf.Properties)
-            {
-
-                //Если количество типов 1, тогда мы смотрим если он примитивный,
-                //то рендерим соответствующий контрол, если нет, то нужно рендерить контрол на чужую форму из компонента
-                if (props.Types.Count == 1)
-                {
-                    var foreigFieldType = props.Types.First();
-
-                    //Примитивный тип, значит просто рендерим обычный контрол
-                    if (foreigFieldType is XCPremitiveType)
-                    {
-                    }
-                }
-
-                group.With(x => x.TextBox());
-            }
-
-            window.With(group);
-
-            return window;
-        }
+        
     }
 
 

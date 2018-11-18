@@ -72,5 +72,8 @@
     <None Update="Configuration\Roles\Директор.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Configuration\Data\Entity\Invoice.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

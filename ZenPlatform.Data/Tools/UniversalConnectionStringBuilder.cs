@@ -25,6 +25,43 @@ namespace ZenPlatform.Data.Tools
 
         public SqlDatabaseType SqlDatabaseType { get; set; }
 
+        public static UniversalConnectionStringBuilder FromConnectionString(SqlDatabaseType dbType, string connectionString)
+        {
+            switch (dbType)
+            {
+                case SqlDatabaseType.SqlServer:
+                    {
+                        var sb = new UniversalConnectionStringBuilder(dbType);
+                        var sqlServerSb = new SqlConnectionStringBuilder(connectionString);
+
+                        var serverPort = sqlServerSb.InitialCatalog.Split(',');
+
+                        sb.Database = serverPort[0];
+                        sb.Server = sqlServerSb.DataSource;
+                        sb.Username = sqlServerSb.UserID;
+                        if (serverPort.Length > 1)
+                            sb.Port = int.Parse(serverPort[1]);
+                        sb.Password = sqlServerSb.Password;
+
+                        return sb;
+                    }
+                case SqlDatabaseType.Postgres:
+                    {
+                        var sb = new UniversalConnectionStringBuilder(dbType);
+                        var conSb = new NpgsqlConnectionStringBuilder(connectionString);
+
+                        sb.Database = conSb.Database;
+                        sb.Server = conSb.Host;
+                        sb.Username = conSb.Username;
+                        sb.Port = conSb.Port;
+                        sb.Password = conSb.Password;
+
+                        return sb;
+                    }
+            }
+            throw new NotSupportedException();
+        }
+
 
         /// <summary>
         /// База данных
@@ -87,5 +124,8 @@ namespace ZenPlatform.Data.Tools
 
             return "";
         }
+
+
+
     }
 }

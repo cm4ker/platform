@@ -35,10 +35,10 @@ namespace ZenPlatform.QueryBuilder.DML.Insert
             return this;
         }
 
-        public InsertQueryNode WithField(Func<SqlNodeFactory, FieldNode> fieldExp)
+        public InsertQueryNode WithField(Func<SqlNodeFactory, ColumnNode> fieldExp)
         {
             var fac = new SqlNodeFactory();
-            _table.WithField(fieldExp(fac));
+            _table.WithColumn(fieldExp(fac));
             //_insertInto.Add(exp(fac));
             return this;
         }
@@ -50,7 +50,7 @@ namespace ZenPlatform.QueryBuilder.DML.Insert
             return this;
         }
 
-        public InsertQueryNode WithFieldAndValue(Func<SqlNodeFactory, FieldNode> fieldExp,
+        public InsertQueryNode WithFieldAndValue(Func<SqlNodeFactory, ColumnNode> fieldExp,
             Func<SqlNodeFactory, SqlNode> valExp)
         {
             WithField(fieldExp);

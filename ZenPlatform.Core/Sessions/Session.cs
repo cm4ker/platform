@@ -23,7 +23,7 @@ namespace ZenPlatform.Core.Sessions
         public int Id { get; }
 
         protected DataContextManger DataContextManger { get; }
-        protected TPlatformEnv Environment { get; }
+        internal TPlatformEnv Environment { get; }
 
         protected UserManager UserManager { get; }
 

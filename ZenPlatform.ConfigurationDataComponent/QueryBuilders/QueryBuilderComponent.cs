@@ -4,6 +4,7 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
+using ZenPlatform.QueryBuilder.Common;
 
 namespace ZenPlatform.DataComponent.QueryBuilders
 {

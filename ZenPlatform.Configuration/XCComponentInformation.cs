@@ -36,7 +36,7 @@ namespace ZenPlatform.Configuration
         public virtual string Version => this.GetType().Assembly.GetName().Version.ToString();
 
         /// <summary>
-        /// Пространство в Session для компонента.
+        /// Пространство имён в Session для компонента.
         /// Если вы будите обращаться к компоненту из кода или же ваш компонент учавствует в кодогенерации,
         /// то это совойство обязательно к реализации
         /// </summary>

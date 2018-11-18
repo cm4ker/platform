@@ -13,7 +13,6 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    [Serializable]
     public class XCData : IChildItem<XCRoot>
     {
         private XCRoot _parent;
@@ -34,17 +33,14 @@ namespace ZenPlatform.Configuration.Structure
                     {
                         uint id = item.Id;
 
-                        _parent.Storage.GetId(item.Guid, ref id);
+                        _parent.Counter.GetId(item.Guid, ref id);
 
                         item.Id = id;
                     }
                 }
             };
-
         }
 
-        [XmlArray("Components")]
-        [XmlArrayItem(ElementName = "Component", Type = typeof(XCComponent))]
         public ChildItemCollection<XCData, XCComponent> Components { get; }
 
         /// <summary>
@@ -59,7 +55,7 @@ namespace ZenPlatform.Configuration.Structure
             _platformTypes.Add(new XCBoolean());
             _platformTypes.Add(new XCNumeric());
             _platformTypes.Add(new XCGuid());
-            
+
             LoadComponents();
             LoadDependencies();
         }
@@ -116,17 +112,15 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Все типы платформы
         /// </summary>
-        [XmlIgnore]
         public IEnumerable<XCTypeBase> PlatformTypes => _platformTypes;
 
         /// <summary>
         /// Все типы, которые относятся к компонентам
         /// </summary>
-        [XmlIgnore]
         public IEnumerable<XCObjectTypeBase> ComponentTypes =>
             PlatformTypes.Where(x => x is XCObjectTypeBase).Cast<XCObjectTypeBase>();
 
-        [XmlIgnore] public XCRoot Parent => _parent;
+        public XCRoot Parent => _parent;
 
 
         XCRoot IChildItem<XCRoot>.Parent
@@ -135,18 +129,13 @@ namespace ZenPlatform.Configuration.Structure
             set => _parent = value;
         }
 
-
+        /// <summary>
+        /// Зарегистрировать тип данных на уровне конфигурации платформы
+        /// </summary>
+        /// <param name="type"></param>
         public void RegisterType(XCObjectTypeBase type)
         {
             _platformTypes.Add(type);
         }
-    }
-
-    internal class TypeNotFoundException : Exception
-    {
-    }
-
-    public class ComponentNotFoundException : Exception
-    {
     }
 }

@@ -25,12 +25,12 @@ namespace ZenPlatform.QueryBuilder.Common.Table
             return this;
         }
 
-        public TableWithColumnsNode WithField(string fieldName)
+        public TableWithColumnsNode WithColumn(string columnName)
         {
-            return WithField(new FieldNode(fieldName));
+            return WithColumn(new ColumnNode(columnName));
         }
 
-        public TableWithColumnsNode WithField(FieldNode node)
+        public TableWithColumnsNode WithColumn(ColumnNode node)
         {
             _columnList.Add(node);
             return this;

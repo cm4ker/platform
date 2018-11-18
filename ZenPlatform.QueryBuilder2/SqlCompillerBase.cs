@@ -3,9 +3,10 @@ using System.Linq;
 using System.Text;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.Columns;
+using ZenPlatform.QueryBuilder.Common.Conditions;
 using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.Common.Table;
-using ZenPlatform.QueryBuilder.Common.Tokens;
 using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 using ZenPlatform.QueryBuilder.DDL.Index;
 using ZenPlatform.QueryBuilder.DML.Delete;
@@ -87,9 +88,9 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<WhereNode>(i => VisitWhereNode(i, sb))
                 .CaseIs<HavingNode>(i => VisitHavingNode(i, sb))
                 .CaseIs<GroupByNode>(i => VisitGroupByNode(i, sb))
-                .CaseIs<SelectFieldNode>(i => VisitSelectFieldNode(i, sb))
+                .CaseIs<SelectColumnNode>(i => VisitSelectFieldNode(i, sb))
                 .CaseIs<SetFieldNode>(i => VisitSetFieldNode(i, sb))
-                .CaseIs<FieldNode>((i) => { VisitFieldNode(i, sb); })
+                .CaseIs<ColumnNode>((i) => { VisitFieldNode(i, sb); })
                 .CaseIs<JoinNode>((i) => { VisitJoinNode(i, sb); })
                 .CaseIs<AliasedTableNode>((i) => { VisitAliasedTableNode(i, sb); })
                 .CaseIs<AliasNode>((i) => { VisitAliasNode(i, sb); })
@@ -99,9 +100,9 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<SelectNastedQueryNode>((i) => { VisitSelectNastedQueryNode(i, sb); })
                 .CaseIs<OnNode>(i => { VisitOnNode(i, sb); })
                 .CaseIs<CompareOperatorNode>(i => { VisitCompareOperatorNode(i, sb); })
-                .CaseIs<BinaryWhereNode>(i => { VisitBinaryWhereNode(i, sb); })
+                .CaseIs<BinaryConditionNode>(i => { VisitBinaryWhereNode(i, sb); })
                 .CaseIs<ParameterNode>(i => VisitParameterNode(i, sb))
-                .CaseIs<LikeWhereNode>(i => VisitLikeWhereNode(i, sb))
+                .CaseIs<LikeConditionNode>(i => VisitLikeWhereNode(i, sb))
                 .CaseIs<StringLiteralNode>(i => VisitStringLiteralNode(i, sb))
                 .CaseIs<TableNode>(i => VisitTableNode(i, sb))
                 .CaseIs<Token>(i => VisitTokens(i, sb))
@@ -113,7 +114,37 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<CreateIndexQueryNode>(i => VisitCreateIndexQueryNode(i, sb))
                 .CaseIs<IndexTableNode>(i => VisitIndexTableNode(i, sb))
                 .CaseIs<IndexTableColumnNode>(i => VisitIndexTableColumnNode(i, sb))
+                .CaseIs<AndConditionNode>(i => VisitAndConditionNode(i, sb))
+                .CaseIs<IsNullConditionNode>(i => VisitIsNullConditionNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        private void VisitIsNullConditionNode(IsNullConditionNode isNullConditionNode, StringBuilder sb)
+        {
+            VisitChilds(isNullConditionNode, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.IsToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.NullToken, sb);
+        }
+
+        private void VisitAndConditionNode(AndConditionNode andConditionNode, StringBuilder sb)
+        {
+            VisitNode(Tokens.LeftBracketToken, sb);
+
+            VisitChildsForeach(andConditionNode, sb, (node, builder, arg3) =>
+            {
+                if (arg3 > 0)
+                {
+                    VisitNode(Tokens.SpaceToken, sb);
+                    VisitNode(Tokens.AndToken, sb);
+                    VisitNode(Tokens.SpaceToken, sb);
+                }
+
+                VisitNode(node, sb);
+            });
+
+            VisitNode(Tokens.RightBracketToken, sb);
         }
 
         private void VisitIndexTableColumnNode(IndexTableColumnNode indexTableColumnNode, StringBuilder sb)
@@ -286,9 +317,13 @@ namespace ZenPlatform.QueryBuilder
             VisitChilds(havingNode, sb);
         }
 
-        protected virtual void VisitLikeWhereNode(LikeWhereNode likeWhereNode, StringBuilder sb)
+        protected virtual void VisitLikeWhereNode(LikeConditionNode likeConditionNode, StringBuilder sb)
         {
-            VisitChilds(likeWhereNode, sb);
+            VisitNode(likeConditionNode.Expression, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.LikeToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(likeConditionNode.Pattern, sb);
         }
 
         protected virtual void VisitSetFieldNode(SetFieldNode setFieldNode, StringBuilder sb)
@@ -320,14 +355,14 @@ namespace ZenPlatform.QueryBuilder
             VisitChilds(parameterNode, sb);
         }
 
-        protected virtual void VisitBinaryWhereNode(BinaryWhereNode binaryWhereNode, StringBuilder sb)
+        protected virtual void VisitBinaryWhereNode(BinaryConditionNode binaryConditionNode, StringBuilder sb)
         {
-            VisitChilds(binaryWhereNode, sb);
+            VisitChilds(binaryConditionNode, sb);
         }
 
-        protected virtual void VisitFieldNode(FieldNode fieldNode, StringBuilder sb)
+        protected virtual void VisitFieldNode(ColumnNode columnNode, StringBuilder sb)
         {
-            VisitChilds(fieldNode, sb);
+            VisitChilds(columnNode, sb);
         }
 
         protected virtual void VisitCompareOperatorNode(CompareOperatorNode compareOperatorNode, StringBuilder sb)
@@ -440,9 +475,9 @@ namespace ZenPlatform.QueryBuilder
             //            }
         }
 
-        protected virtual void VisitSelectFieldNode(SelectFieldNode selectFieldNode, StringBuilder sb)
+        protected virtual void VisitSelectFieldNode(SelectColumnNode selectColumnNode, StringBuilder sb)
         {
-            VisitChilds(selectFieldNode, sb);
+            VisitChilds(selectColumnNode, sb);
         }
 
         protected virtual void VisitFromNode(FromNode fromNode, StringBuilder sb)
