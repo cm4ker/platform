@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Dynamic;
 using System.IO;
 using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Logging.Serilog;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Context;
-using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Metadata;
 using Portable.Xaml;
-using Portable.Xaml.Markup;
 using ZenPlatform.UIBuilder.Compilers;
 using ZenPlatform.UIBuilder.Compilers.Avalonia;
 using ZenPlatform.UIBuilder.Interface;
@@ -27,35 +20,39 @@ namespace ZenPlatform.UIBuilder
         {
             DataGrid dg = new DataGrid();
 
-            var appBuilder = BuildAvaloniaApp().SetupWithoutStarting();
+            var result = AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .SetupWithoutStarting();
+
 
             var window = new UIWindow().With(x =>
                 x.Group()
-                    .With(gi =>
-                    {
-                        var tb = gi.TextBox();
-                        tb.DataSource = "Person";
-                        return tb;
-                    })
+//                    .With(gi =>
+//                    {
+//                        var tb = gi.TextBox();
+//                        tb.DataSource = "Person";
+//                        return tb;
+//                    })
                     .With(l => l.Label("Label component"))
-                        .With(f => f.CheckBox("Checkbox component"))
-                        .With(f =>
+                    .With(f => f.CheckBox("Checkbox component"))
+//                        .With(f =>
+//                        {
+//                            var b = f.Button("Button component");
+//                            b.OnClick = "Click";
+//                            return b;
+//                        })
+//                        .With(new UIObjectPicker())
+//                    .With(new UIDataGrid().WithColumn(g => g.TextColumn()))
+                    .With(tc => tc.TabControl().WithTab(t =>
                         {
-                            var b = f.Button("Button component");
-                            b.OnClick = "Click";
-                            return b;
+                            t.Header = "Page 1";
+                            t.With(f => f.Label("This is content on page 1"));
                         })
-                        .With(new UIObjectPicker())
-                        .With(tc => tc.TabControl().WithTab(t =>
-                            {
-                                t.Header = "Page 1";
-                                t.With(f => f.Label("This is content on page 1"));
-                            })
-                            .WithTab(t =>
-                            {
-                                t.Header = "Page 2";
-                                t.With(f => f.Label("This is content on page 2"));
-                            })));
+                        .WithTab(t =>
+                        {
+                            t.Header = "Page 2";
+                            t.With(f => f.Label("This is content on page 2"));
+                        })));
 
             window.Height = 400;
             window.Width = 300;
@@ -70,49 +67,18 @@ namespace ZenPlatform.UIBuilder
 
             XamlWriterTest();
 
-            var test = @"
-            <Window Height=""400"" Width=""300"" xmlns=""https://github.com/avaloniaui"">
-                <Window.Content>
-                    <StackPanel Orientation=""Vertical"">
-                        <StackPanel.Children>
-                            <TextBox Height=""28"" Width=""100"" Text=""{Binding Path=Person, Mode=TwoWay}"" />
-                            <TextBlock Text=""Label component"" />
-                            <CheckBox Content=""Checkbox component"" />
-                            <Button Content=""Button component"" />
-                            <ObjectPicker xmlns=""clr-namespace:ZenPlatform.Controls.Avalonia;assembly=ZenPlatform.Controls.Avalonia"" />
-                            <TabControl>
-                                <TabControl.Items>
-                                    <TabItem Header=""Page 1"">
-                                        <TabItem.Content>
-                                             <TextBlock Text=""This is content on page 1"" />
-                                        </TabItem.Content>
-                                    </TabItem>
-                                    <TabItem Header=""Page 2"">
-                                        <TabItem.Content>
-                                            <TextBlock Text=""This is content on page 2"" />
-                                        </TabItem.Content>
-                                    </TabItem>
-                                </TabControl.Items>
-                            </TabControl>
-                        </StackPanel.Children>
-                    </StackPanel>
-                </Window.Content>
-            </Window>
-            ";
-
-
 
             Window w = AvaloniaXamlLoader.Parse<Window>(text);
-            TestObject obj = new TestObject();
-            obj.Person = "123";
-            w.DataContext = obj;
+//            TestObject obj = new TestObject();
+//            obj.Person = "123";
+//            w.DataContext = obj;
 
-            appBuilder.Instance.Run(w);
+            result.Instance.Run(w);
 
             w.ShowDialog();
 
             //XamlWriterTest();
-            Console.Write(obj.Person);
+            //Console.Write(obj.Person);
             Console.Read();
         }
 
@@ -130,24 +96,24 @@ namespace ZenPlatform.UIBuilder
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .UseReactiveUI()
                 .LogToDebug();
+
 
         public static void XamlWriterTest()
         {
-            TextBox tb = new TextBox();
-            tb.Text = "Hello";
+            //TextBox tb = new TextBox();
+            //tb.Text = "Hello";
 
-            var context = new AvaloniaCustomXamlSchemaContext(new AvaloniaRuntimeTypeProvider());
+            //var context = new AvaloniaCustomXamlSchemaContext(new AvaloniaRuntimeTypeProvider());
 
-            var sb = new StringBuilder();
-            var sw = new StringWriter(sb);
+            //var sb = new StringBuilder();
+            //var sw = new StringWriter(sb);
 
-            XamlWriter xw = new XamlXmlWriter(sw, context);
+            //XamlWriter xw = new XamlXmlWriter(sw, context);
 
-            xw.Close();
+            //xw.Close();
 
-            Console.WriteLine(sb.ToString());
+            //Console.WriteLine(sb.ToString());
         }
     }
 }

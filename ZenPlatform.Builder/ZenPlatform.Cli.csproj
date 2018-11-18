@@ -3,7 +3,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>ZenPlatform.Cli</AssemblyName>
     <RootNamespace>ZenPlatform.Cli</RootNamespace>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>default</LangVersion>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>

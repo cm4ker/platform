@@ -17,7 +17,7 @@ namespace ZenPlatform.Tests.Component.BaseComponent
         [Fact]
         public void TestXCPropertyHelper()
         {
-            var conf = ExampleConfiguration.GetExample();
+            var conf = Factory.GetExampleConfigutaion();
 
             var componentType = conf.Data.ComponentTypes.First();
 
@@ -25,7 +25,7 @@ namespace ZenPlatform.Tests.Component.BaseComponent
 
             var actual = ColumnsHelper.GetColumnsFromProperty(componentProperty).Select(x => x.DatabaseColumnName)
                 .ToList();
-            var expected = new List<string> {"fld101_DateTime", "fld101_Binary", "fld101_Boolean", "fld101_Guid"};
+            var expected = new List<string> { "fld101_DateTime", "fld101_Binary", "fld101_Boolean", "fld101_Guid" };
 
             Assert.Equal(expected, actual);
         }

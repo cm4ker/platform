@@ -1,13 +1,13 @@
 ﻿using System;
 using MessagePack;
 
-namespace ZenPlatform.ConfigurationServerMessages.Messages
+namespace ZenPlatform.IdeIntegration.Messages.Messages
 {
     /// <summary>
     /// Новый элемент. Относится либо к корню компонента либо к одному из его дочерних элементов
     /// </summary>
     [MessagePackObject]
-    public class XCNewItemMessage : XCMessage
+    public class XCNewItemMessage : PlatformMessage
     {
         /// <summary>
         /// Идентификатор запроса, необходим для ассинхронной модели, чтобы знать на что мы отвечаем

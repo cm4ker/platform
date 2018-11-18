@@ -1,15 +1,17 @@
-﻿namespace ZenPlatform.QueryBuilder.Common.Operations
+﻿using ZenPlatform.QueryBuilder.Common.SqlTokens;
+
+namespace ZenPlatform.QueryBuilder.Common.Operations
 {
     public class NumericTypeDefinitionNode : TypeDefinitionNode
     {
         public NumericTypeDefinitionNode(int scale, int precision) : base("numeric")
         {
             Childs.AddRange(
-                Tokens.Tokens.LeftBracketToken,
+                Tokens.LeftBracketToken,
                 new RawSqlNode(scale.ToString()),
-                Tokens.Tokens.CommaToken,
+                Tokens.CommaToken,
                 new RawSqlNode(precision.ToString()),
-                Tokens.Tokens.RightBracketToken
+                Tokens.RightBracketToken
             );
         }
     }

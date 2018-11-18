@@ -3,6 +3,16 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Language\QueryLanguage\QuerySyntax.g4" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.5" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     <ProjectReference Include="..\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj" />

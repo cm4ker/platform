@@ -2,7 +2,6 @@
 using System.Security.Cryptography.X509Certificates;
 using Avalonia;
 using Avalonia.Logging.Serilog;
-using DryIoc;
 using ZenPlatform.ServerManagementTool.ViewModels;
 using ZenPlatform.ServerManagementTool.Views;
 
@@ -22,13 +21,5 @@ namespace ZenPlatform.ServerManagementTool
                 .UsePlatformDetect()
                 .UseReactiveUI()
                 .LogToDebug();
-    }
-
-    public class Bootstrapper
-    {
-        public static void Init()
-        {
-            IoC.Container.Register<IMainWindow, MainWindowViewModel>();
-        }
     }
 }

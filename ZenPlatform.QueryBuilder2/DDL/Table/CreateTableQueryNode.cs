@@ -2,8 +2,8 @@
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.Factoryes;
 using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.Common.Table;
-using ZenPlatform.QueryBuilder.Common.Tokens;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder.DDL.CreateTable

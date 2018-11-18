@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -32,17 +33,31 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Ссылка на базовый тип
         /// </summary>
-        [XmlAttribute]
         public Guid BaseTypeId { get; set; }
 
-        [XmlIgnore] public XCComponent Parent => _parent;
+        /// <summary>
+        /// Родительский компонент
+        /// </summary>
+        public XCComponent Parent => _parent;
 
-        [XmlIgnore] protected XCRoot Root => _parent.Root;
+        /// <summary>
+        /// Корень
+        /// </summary>
+        protected XCRoot Root => _parent.Root;
 
-        [XmlIgnore] protected XCData Data => Root.Data;
+        /// <summary>
+        /// Раздел данных
+        /// </summary>
+        protected XCData Data => Root.Data;
 
-        [XmlIgnore] public XCBlob AttachedBlob { get; set; }
+        /// <summary>
+        /// Присоединённые файлы
+        /// </summary>
+        public XCBlob AttachedBlob { get; set; }
 
+        /// <summary>
+        /// Родительский компонент
+        /// </summary>
         XCComponent IChildItem<XCComponent>.Parent
         {
             get => _parent;
@@ -70,12 +85,23 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         }
 
         /// <summary>
+        /// У объекта есть поддержка свойств
+        /// </summary>
+        public virtual bool HasProperties { get; }
+
+        /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
         /// <returns></returns>
         public virtual IEnumerable<XCObjectPropertyBase> GetProperties()
         {
             throw new NotSupportedException();
+        }
+
+
+        public virtual XCObjectPropertyBase GetPropertyByName(string name)
+        {
+            return GetProperties().First(x => x.Name == name);
         }
     }
 }

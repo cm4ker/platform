@@ -1,5 +1,5 @@
 ﻿using ZenPlatform.QueryBuilder.Common;
-using ZenPlatform.QueryBuilder.Common.Tokens;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 
 namespace ZenPlatform.QueryBuilder.DML.Functions
 {

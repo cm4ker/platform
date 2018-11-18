@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using MessagePack;
+using ZenPlatform.IdeIntegration.Messages.Models;
 
-namespace ZenPlatform.ConfigurationServerMessages.Messages
+namespace ZenPlatform.IdeIntegration.Messages.Messages
 {
     /// <summary>
     /// Ответ на доступные команды конфигурации
     /// </summary>
     [MessagePackObject]
-    public class XCItemCommandsResponceMessage : XCMessage
+    public class XCItemCommandsResponseMessage : PlatformMessage
     {
         /// <summary>
         /// Идентификатор запроса, необходим для ассинхронной модели, чтобы знать на что мы отвечаем

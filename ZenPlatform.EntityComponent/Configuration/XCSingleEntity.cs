@@ -7,6 +7,7 @@ using System.Runtime.Caching;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
@@ -33,7 +34,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
                         try
                         {
-                            if (mailElement.Alias == compareElement.Alias
+                            if (mailElement.Name == compareElement.Name
                                 || (!string.IsNullOrEmpty(mailElement.DatabaseColumnName)
                                     && !string.IsNullOrEmpty(compareElement.DatabaseColumnName)
                                     && mailElement.DatabaseColumnName == compareElement.DatabaseColumnName))
@@ -65,29 +66,33 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// </summary>
         //TODO: Продумать структуру, в которой будут храниться сопоставление Тип -> Дополнительные настройки компонента 
         /*
-         * Результаты раздумий: Все мапинги должны быть в БД. 
+         * Результаты раздумий: Все мапинги должны быть в БД, а не в конфигурации. Оставляю TODO
+         * выше просто для того, чтобы можно было поразмышлять,  вдруг я был не прав
          */
         [XmlIgnore]
         public string RelTableName { get; set; }
 
+        /// <inheritdoc />
         public override void LoadDependencies()
         {
             foreach (var property in Properties)
             {
                 var configurationTypes = new List<XCTypeBase>();
 
-                foreach (var propertyType in property.Types)
+                //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные
+                foreach (var propertyType in property.GetUnprocessedPropertyTypes())
                 {
-                    var type = Data.PlatformTypes.FirstOrDefault(x => x.Guid == propertyType.Guid);
-                    //Если по какой то причине тип поля не найден, в таком случае считаем, что конфигурация битая и выкидываем исключение
-                    if (type == null) throw new Exception("Invalid configuration");
+                    if (propertyType is XCPremitiveType)
+                        property.Types.Add(propertyType);
+                    if (propertyType is XCUnknownType)
+                    {
+                        var type = Data.PlatformTypes.FirstOrDefault(x => x.Guid == propertyType.Guid);
+                        //Если по какой то причине тип поля не найден, в таком случае считаем, что конфигурация битая и выкидываем исключение
+                        if (type == null) throw new Exception("Invalid configuration");
 
-                    configurationTypes.Add(type);
+                        property.Types.Add(type);
+                    }
                 }
-
-                //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные 
-                property.Types.Clear();
-                property.Types.AddRange(configurationTypes);
 
                 var id = property.Id;
                 property.Parent.Root.Storage.GetId(property.Guid, ref id);
@@ -98,7 +103,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override void Initialize()
         {
             if (Properties.FirstOrDefault(x => x.Unique) == null)
-                Properties.Add(StandartDocumentPropertyHelper.CreateUniqueProperty());
+                Properties.Add(StandardEntityPropertyHelper.CreateUniqueProperty());
         }
 
         public override IEnumerable<XCObjectPropertyBase> GetProperties()

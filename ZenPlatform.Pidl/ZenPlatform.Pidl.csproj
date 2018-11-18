@@ -3,6 +3,6 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.6.2-build5984-beta" />
+    <PackageReference Include="Avalonia" Version="0.7.0" />
   </ItemGroup>
 </Project>

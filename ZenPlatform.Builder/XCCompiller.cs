@@ -60,7 +60,7 @@ namespace ZenPlatform.Cli
             var compilation = CSharpCompilation.Create("Build.dll", sources, references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            var emitResult = compilation.Emit("Data.dll");
+            var emitResult = compilation.Emit("Build.dll");
 
             if (emitResult.Success)
             {
