@@ -42,7 +42,7 @@ namespace ZenPlatform.Tests.Common
 
             var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             store.Name = "Store";
-            store.Description = "this is a store entity";
+            store.Description = "This is a store entity";
             store.Initialize();
             
             var prop = new XCSingleEntityProperty();
