@@ -83,7 +83,19 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
 
                     var type = _conf.Data.ComponentTypes.FirstOrDefault(x => x.Guid == treeRequest.ItemId);
                     var attachedComponents = type.Parent.AttachedComponents;
+
+                    if (type.HasProperties)
+                    {
+                        responce.Items.Add(new XCItem()
+                        {
+                            NodeType = XCNodeKind.PropertyRoot,
+                            ItemName = "Properties",
+                            ParentId = treeRequest.ItemId
+                        });
+                    }
                     
+                    //TODO: Обработать присоединённые компоненты
+
                     break;
                 }
             }

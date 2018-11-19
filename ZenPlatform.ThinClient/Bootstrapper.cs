@@ -10,7 +10,7 @@ namespace ZenPlatform.ThinClient
         public static void Init()
         {
             IoC.Container.Register<IMainWindow, MainWindowViewModel>();
-            IoC.Container.Register<IDockFactory, DemoDockFactory>(made: Made.Of(() => new DemoDockFactory()));
+            IoC.Container.Register<IDockFactory, StartDockFactory>(made: Made.Of(() => new StartDockFactory()));
         }
     }
 }

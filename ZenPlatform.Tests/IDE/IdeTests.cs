@@ -35,8 +35,9 @@ namespace ZenPlatform.Tests.IDE
         {
             using (MessageServer ss = new MessageServer())
             {
+                var conf = Factory.CreateExampleConfiguration();
                 ss.RunAsync();
-                ss.Register(new ConfigurationMessageHandler(Factory.CreateExampleConfiguration()));
+                ss.Register(new ConfigurationMessageHandler(conf));
 
                 using (var client = new RequestSocket(">tcp://localhost:5556")) // connect
                 {
@@ -66,6 +67,21 @@ namespace ZenPlatform.Tests.IDE
                     Assert.Equal(1, msg.Items.Count);
                     Assert.Equal(new Info().ComponentName, msg.Items.First().ItemName);
                     Assert.Equal(new Info().ComponentId, msg.Items.First().ItemId);
+
+                    //Components
+                    requestFrame = MessagePack.MessagePackSerializer.Typeless.Serialize(
+                        new XCTreeRequestMessage()
+                        {
+                            ItemType = XCNodeKind.Component,
+                            ItemId = conf.Data.Components.First().Info.ComponentId
+                        });
+
+                    client.SendFrame(requestFrame);
+                    responceFrame = client.ReceiveFrameBytes();
+                    responce = MessagePack.MessagePackSerializer.Typeless.Deserialize(responceFrame);
+                    msg = Assert.IsType<XCTreeResponceMessage>(responce);
+
+                    Assert.Equal(conf.Data.ComponentTypes.First().Name, msg.Items.First().ItemName);
                 }
 
                 Task.Delay(5000).Wait();

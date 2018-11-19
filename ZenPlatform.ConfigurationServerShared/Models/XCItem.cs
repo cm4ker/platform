@@ -29,6 +29,13 @@ namespace ZenPlatform.IdeIntegration.Messages.Models
         public string ItemName { get; set; }
 
         /// <summary>
+        /// Идентификатор родителя
+        /// </summary>
+        [Key(4)]
+        public Guid ParentId { get; set; }
+
+
+        /// <summary>
         /// Картинка элемента
         /// </summary>
         [Key(2)]

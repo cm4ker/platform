@@ -3,9 +3,9 @@ using Avalonia.Markup.Xaml;
 
 namespace ZenPlatform.ThinClient.Views
 {
-    public class Document1 : UserControl
+    public class ConfTreeView : UserControl
     {
-        public Document1()
+        public ConfTreeView()
         {
             this.InitializeComponent();
         }

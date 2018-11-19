@@ -20,6 +20,12 @@ namespace ZenPlatform.Configuration
         Property,
 
         /// <summary>
+        /// Корневой элемент свойств
+        /// </summary>
+        PropertyRoot,
+        
+        
+        /// <summary>
         /// Тип
         /// </summary>
         Type,
