@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Dock.Model.Controls;
 using ZenPlatform.IdeIntegration.Messages.Models;
+using ZenPlatform.ThinClient.Models;
 
 namespace ZenPlatform.ThinClient.ViewModels.Configuration
 {

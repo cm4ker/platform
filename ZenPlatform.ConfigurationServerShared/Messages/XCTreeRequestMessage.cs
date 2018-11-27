@@ -28,4 +28,27 @@ namespace ZenPlatform.IdeIntegration.Messages.Messages
         [Key(2)]
         public XCNodeKind ItemType { get; set; }
     }
+
+    /// <summary>
+    /// Запрос команд конкретного элемента, происходит при нажатии правой кнопки мыши на элементе
+    /// </summary>
+    [MessagePackObject]
+    public class XCItemCommandRequest : PlatformMessage
+    {
+        /// <summary>
+        /// Идентификатор элемента для которого будут вычисленны команды
+        /// </summary>
+        public Guid ItemId { get; set; }
+
+        /// <summary>
+        /// Идентификатор запроса для ассинхронной модели
+        /// </summary>
+        public Guid RequestId { get; set; }
+
+        /// <summary>
+        /// Тип элемента
+        /// </summary>
+        [Key(2)]
+        public XCNodeKind ItemType { get; set; }
+    }
 }

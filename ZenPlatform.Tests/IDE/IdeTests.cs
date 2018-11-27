@@ -84,7 +84,7 @@ namespace ZenPlatform.Tests.IDE
                     Assert.Equal(conf.Data.ComponentTypes.First().Name, msg.Items.First().ItemName);
                 }
 
-                Task.Delay(5000).Wait();
+                // Task.Delay(5000).Wait();
             }
         }
     }
