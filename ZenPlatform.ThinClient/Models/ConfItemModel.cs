@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ReactiveUI;
+using ZenPlatform.ThinClient.ViewModels;
 
-namespace ZenPlatform.ThinClient.ViewModels.Configuration
+namespace ZenPlatform.ThinClient.Models
 {
     /// <summary>
     /// Элемент конфигурации

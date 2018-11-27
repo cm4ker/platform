@@ -38,7 +38,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     responce.RequestId = treeRequest.RequestId;
                     responce.ParentId = treeRequest.ItemId;
 
-                    var dataItem = new XCItem() {NodeType = XCNodeKind.Data, ItemName = "Data"};
+                    var dataItem = new XCItem() {ItemType = XCNodeKind.Data, ItemName = "Data"};
 
                     responce.Items.Add(dataItem);
                     break;
@@ -49,8 +49,8 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     responce.ParentId = treeRequest.ItemId;
 
                     var items = _conf.Data.Components.Select(x => new XCItem()
-                    {
-                        NodeType = XCNodeKind.Component,
+                    {    
+                        ItemType = XCNodeKind.Component,
                         ItemId = x.Info.ComponentId,
                         ItemName = x.Info.ComponentName
                     }).ToList();
@@ -68,7 +68,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                         .FirstOrDefault(x => x.Info.ComponentId == treeRequest.ItemId)
                         ?.Types.Select(x => new XCItem()
                         {
-                            NodeType = XCNodeKind.Type,
+                            ItemType = XCNodeKind.Type,
                             ItemId = x.Guid,
                             ItemName = x.Name
                         }).ToList();
@@ -88,7 +88,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     {
                         responce.Items.Add(new XCItem()
                         {
-                            NodeType = XCNodeKind.PropertyRoot,
+                            ItemType = XCNodeKind.PropertyRoot,
                             ItemName = "Properties",
                             ParentId = treeRequest.ItemId
                         });
