@@ -44,11 +44,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Messages.csproj" />
+        <Folder Include="Assets" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Assets" />
+      <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj" />
     </ItemGroup>
 
 

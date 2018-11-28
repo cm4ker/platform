@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NetMQ, Version=4.0.0.175, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\netmq\4.0.0.175-pre\lib\netstandard1.6\NetMQ.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI, Version=9.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\reactiveui\9.0.1\lib\netcoreapp2.0\ReactiveUI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="1.7.3.4" />
+    <PackageReference Include="NetMQ" Version="4.0.0.175-pre" />
+  </ItemGroup>
+
+</Project>

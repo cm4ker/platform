@@ -2,7 +2,7 @@
 using MessagePack;
 using ZenPlatform.Configuration;
 
-namespace ZenPlatform.IdeIntegration.Messages.Messages
+namespace ZenPlatform.IdeIntegration.Shared.Messages
 {
     /// <summary>
     /// Запрос на дочерние элементы элемента конфигурации

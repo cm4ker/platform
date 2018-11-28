@@ -1,7 +1,7 @@
 using System;
-using ZenPlatform.IdeIntegration.Messages.Messages;
+using ZenPlatform.IdeIntegration.Shared.Messages;
 
-namespace ZenPlatform.IdeIntegration.Server.Infrastructure
+namespace ZenPlatform.IdeIntegration.Shared.Infrastructure
 {
     /// <summary>
     /// Аргументы обработки сообщений

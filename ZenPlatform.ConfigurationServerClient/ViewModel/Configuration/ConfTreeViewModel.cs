@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dock.Model.Controls;
-using ZenPlatform.IdeIntegration.Shared.Models;
-using ZenPlatform.ThinClient.Models;
+using ZenPlatform.IdeIntegration.ReactiveClient.Models;
 
 namespace ZenPlatform.ThinClient.ViewModels.Configuration
 {
-    public class ConfTreeViewModel : DocumentTab
+    public class ConfTreeViewModel
     {
         public ConfTreeViewModel()
         {
@@ -29,7 +27,6 @@ namespace ZenPlatform.ThinClient.ViewModels.Configuration
                                 {
                                     Name = "Object",
                                     ItemId = Guid.NewGuid()
-                                    
                                 }
                             }
                         }
@@ -38,5 +35,8 @@ namespace ZenPlatform.ThinClient.ViewModels.Configuration
         }
 
         public List<ConfItemModel> Items { get; set; }
+
+
+        
     }
 }

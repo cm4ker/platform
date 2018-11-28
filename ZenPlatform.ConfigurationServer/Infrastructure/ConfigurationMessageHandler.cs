@@ -3,8 +3,9 @@ using System.Diagnostics;
 using System.Linq;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.IdeIntegration.Messages.Messages;
-using ZenPlatform.IdeIntegration.Messages.Models;
+using ZenPlatform.IdeIntegration.Shared.Infrastructure;
+using ZenPlatform.IdeIntegration.Shared.Messages;
+using ZenPlatform.IdeIntegration.Shared.Models;
 
 namespace ZenPlatform.IdeIntegration.Server.Infrastructure
 {

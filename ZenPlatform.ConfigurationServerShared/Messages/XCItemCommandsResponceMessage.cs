@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using MessagePack;
-using ZenPlatform.IdeIntegration.Messages.Models;
+using ZenPlatform.IdeIntegration.Shared.Models;
 
-namespace ZenPlatform.IdeIntegration.Messages.Messages
+namespace ZenPlatform.IdeIntegration.Shared.Messages
 {
     /// <summary>
     /// Ответ на доступные команды конфигурации

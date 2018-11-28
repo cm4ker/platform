@@ -1,7 +1,7 @@
 ﻿using System;
 using MessagePack;
 
-namespace ZenPlatform.IdeIntegration.Messages.Messages
+namespace ZenPlatform.IdeIntegration.Shared.Messages
 {
     /// <summary>
     /// Новый элемент. Относится либо к корню компонента либо к одному из его дочерних элементов

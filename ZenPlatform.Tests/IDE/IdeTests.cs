@@ -8,8 +8,9 @@ using NetMQ.Sockets;
 using Xunit;
 using ZenPlatform.Configuration;
 using ZenPlatform.EntityComponent;
-using ZenPlatform.IdeIntegration.Messages.Messages;
+using ZenPlatform.IdeIntegration.Shared.Messages;
 using ZenPlatform.IdeIntegration.Server.Infrastructure;
+using ZenPlatform.IdeIntegration.Shared.Infrastructure;
 using ZenPlatform.Tests.Common;
 
 namespace ZenPlatform.Tests.IDE
@@ -64,7 +65,7 @@ namespace ZenPlatform.Tests.IDE
                     responce = MessagePack.MessagePackSerializer.Typeless.Deserialize(responceFrame);
                     msg = Assert.IsType<XCTreeResponceMessage>(responce);
 
-                    Assert.Equal(1, msg.Items.Count);
+                    Assert.Single(msg.Items);
                     Assert.Equal(new Info().ComponentName, msg.Items.First().ItemName);
                     Assert.Equal(new Info().ComponentId, msg.Items.First().ItemId);
 
