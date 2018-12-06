@@ -8,6 +8,7 @@ using NetMQ.Sockets;
 using Xunit;
 using ZenPlatform.Configuration;
 using ZenPlatform.EntityComponent;
+using ZenPlatform.IdeIntegration.Client;
 using ZenPlatform.IdeIntegration.Shared.Messages;
 using ZenPlatform.IdeIntegration.Server.Infrastructure;
 using ZenPlatform.IdeIntegration.Shared.Infrastructure;
@@ -36,17 +37,18 @@ namespace ZenPlatform.Tests.IDE
         {
             using (MessageServer ss = new MessageServer())
             {
-                var conf = Factory.CreateExampleConfiguration();
-                ss.RunAsync();
-                ss.Register(new ConfigurationMessageHandler(conf));
-
-                using (var client = new RequestSocket(">tcp://localhost:5556")) // connect
+                using (MessageClient mc = new MessageClient("localhost", 5556))
                 {
+                    var conf = Factory.CreateExampleConfiguration();
+                    ss.RunAsync();
+                    ss.Register(new ConfigurationMessageHandler(conf));
+
                     var requestFrame = MessagePack.MessagePackSerializer.Typeless.Serialize(
                         new XCTreeRequestMessage()
                         {
                             ItemType = XCNodeKind.Root,
                         });
+                    
                     client.SendFrame(requestFrame);
                     var responceFrame = client.ReceiveFrameBytes();
                     var responce = MessagePack.MessagePackSerializer.Typeless.Deserialize(responceFrame);

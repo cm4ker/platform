@@ -2,7 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using ReactiveUI;
 
-namespace ZenPlatform.IdeIntegration.ReactiveClient.Models
+namespace ZenPlatform.IdeIntegration.Client.Models
 {
     /// <summary>
     /// Элемент конфигурации
