@@ -10,6 +10,14 @@ namespace ZenPlatform.IdeIntegration.Shared.Messages
     [MessagePackObject]
     public class XCTreeRequestMessage : PlatformMessage
     {
+        public XCTreeRequestMessage(Guid itemId, Guid requestId, XCNodeKind itemType)
+        {
+            ItemId = itemId;
+            RequestId = requestId;
+            ItemType = itemType;
+        }
+
+
         /// <summary>
         /// Идентификатор элемента, для которого запрашиваем поддерево
         /// </summary>
