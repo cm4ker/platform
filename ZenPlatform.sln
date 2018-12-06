@@ -73,7 +73,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryUIBuilder"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Server", "ZenPlatform.ConfigurationServer\ZenPlatform.IdeIntegration.Server.csproj", "{E38829E8-E501-4222-BB70-DA023F9BADD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.ReactiveClient", "ZenPlatform.ConfigurationServerClient\ZenPlatform.IdeIntegration.ReactiveClient.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Client", "ZenPlatform.ConfigurationServerClient\ZenPlatform.IdeIntegration.Client.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Shared", "ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj", "{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1}"
 EndProject
