@@ -1,42 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using ZenPlatform.IdeIntegration.ReactiveClient.Models;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using ReactiveUI;
+using ZenPlatform.IdeIntegration.Client.Models;
 
-namespace ZenPlatform.ThinClient.ViewModels.Configuration
+namespace ZenPlatform.IdeIntegration.Client.ViewModel.Configuration
 {
-    public class ConfTreeViewModel
+    public class ConfTreeViewModel : ReactiveObject
     {
+        /// <summary>
+        /// Модель дерева конфигурации.
+        /// </summary>
         public ConfTreeViewModel()
         {
-            Items = new List<ConfItemModel>();
-
-            Items.Add(
-                new ConfItemModel()
-                {
-                    Name = "Root item",
-                    ItemId = Guid.NewGuid(),
-                    Childs =
-                    {
-                        new ConfItemModel()
-                        {
-                            Name = "Component item",
-                            ItemId = Guid.NewGuid(),
-                            Childs =
-                            {
-                                new ConfItemModel()
-                                {
-                                    Name = "Object",
-                                    ItemId = Guid.NewGuid()
-                                }
-                            }
-                        }
-                    }
-                });
+            Items = new ObservableCollection<ConfItemModel>();
         }
 
-        public List<ConfItemModel> Items { get; set; }
 
-
-        
+        /// <summary>
+        /// Элементы дерева
+        /// </summary>
+        public ObservableCollection<ConfItemModel> Items { get; }
     }
 }
