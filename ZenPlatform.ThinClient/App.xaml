@@ -3,8 +3,8 @@
              xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
              xmlns:editor="clr-namespace:Dock.Avalonia.Editor.Controls;assembly=Dock.Avalonia.Editor"
              xmlns:views="clr-namespace:ZenPlatform.ThinClient.Views;assembly=ZenPlatform.ThinClient"
-             xmlns:Documents="clr-namespace:ZenPlatform.ThinClient.ViewModels.Documents;assembly=ZenPlatform.ThinClient"
-             xmlns:ViewModels="clr-namespace:ZenPlatform.ThinClient.ViewModels;assembly=ZenPlatform.ThinClient">
+             xmlns:ViewModels="clr-namespace:ZenPlatform.ThinClient.ViewModels;assembly=ZenPlatform.ThinClient"
+             xmlns:configuration="clr-namespace:ZenPlatform.ThinClient.ViewModels.Configuration">
   <Application.Styles>
     <StyleInclude Source="resm:Avalonia.Themes.Default.DefaultTheme.xaml?assembly=Avalonia.Themes.Default" />
     <StyleInclude Source="resm:Avalonia.Themes.Default.Accents.BaseLight.xaml?assembly=Avalonia.Themes.Default" />
@@ -22,8 +22,8 @@
   </Application.Resources>
   <Application.DataTemplates>
     <!-- Documents -->
-    <DataTemplate DataType="Documents:DocumentViewModel1">
-      <views:Document1/>
+    <DataTemplate DataType="configuration:ConfTreeViewModel">
+      <views:ConfTreeView/>
     </DataTemplate>
     <!-- Views -->
     <DataTemplate DataType="ViewModels:HomeViewModel">

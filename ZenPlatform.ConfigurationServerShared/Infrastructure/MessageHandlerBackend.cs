@@ -1,19 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
-using ZenPlatform.IdeIntegration.Messages.Messages;
+using ZenPlatform.IdeIntegration.Shared.Messages;
 
-namespace ZenPlatform.IdeIntegration.Server.Infrastructure
+namespace ZenPlatform.IdeIntegration.Shared.Infrastructure
 {
     /// <summary>
-    ///  Сервер, обслуживающий непосредственно сообщения
+    ///  Бэкент обработки сообщений с возможностью расширения кастомными обработчиками
     /// </summary>
-    public sealed class MessageHandlerBackend
+    public class MessageHandlerBackend
     {
         private List<IMessageHandler> _handlers;
 

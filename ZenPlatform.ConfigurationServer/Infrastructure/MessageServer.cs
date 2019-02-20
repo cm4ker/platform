@@ -1,7 +1,8 @@
 using System;
 using NetMQ;
 using NetMQ.Sockets;
-using ZenPlatform.IdeIntegration.Messages.Messages;
+using ZenPlatform.IdeIntegration.Shared.Infrastructure;
+using ZenPlatform.IdeIntegration.Shared.Messages;
 
 namespace ZenPlatform.IdeIntegration.Server.Infrastructure
 {

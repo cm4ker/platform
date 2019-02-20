@@ -2,7 +2,7 @@
 using MessagePack;
 using ZenPlatform.Configuration;
 
-namespace ZenPlatform.IdeIntegration.Messages.Models
+namespace ZenPlatform.IdeIntegration.Shared.Models
 {
     /// <summary>
     /// Данные элемента конфигурации
@@ -20,7 +20,7 @@ namespace ZenPlatform.IdeIntegration.Messages.Models
         /// Тип элемента
         /// </summary>
         [Key(3)]
-        public XCNodeKind NodeType { get; set; }
+        public XCNodeKind ItemType { get; set; }
 
         /// <summary>
         /// Имя элемента
@@ -29,9 +29,48 @@ namespace ZenPlatform.IdeIntegration.Messages.Models
         public string ItemName { get; set; }
 
         /// <summary>
+        /// Идентификатор родителя
+        /// </summary>
+        [Key(4)]
+        public Guid ParentId { get; set; }
+
+
+        /// <summary>
         /// Картинка элемента
         /// </summary>
         [Key(2)]
         public byte[] ItemImage { get; set; }
+    }
+
+
+    /// <summary>
+    /// Команда 
+    /// </summary>
+    [MessagePackObject]
+    public class XCCommand
+    {
+        /// <summary>
+        /// Какому элементу принадлежит команда
+        /// </summary>
+        [Key(0)]
+        public Guid ParentId { get; set; }
+
+        /// <summary>
+        /// Имя команды
+        /// </summary>
+        [Key(1)]
+        public string CommandName { get; set; }
+
+        /// <summary>
+        /// Описание команды
+        /// </summary>
+        [Key(3)]
+        public string CommandDescription { get; set; }
+
+        /// <summary>
+        /// Уникальный идентификатор команды
+        /// </summary>
+        [Key(2)]
+        public string CommandUID { get; set; }
     }
 }

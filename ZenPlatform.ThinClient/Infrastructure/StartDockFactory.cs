@@ -6,37 +6,31 @@ using Dock.Avalonia.Editor;
 using Dock.Model;
 using Dock.Model.Controls;
 using ZenPlatform.ThinClient.ViewModels;
-using ZenPlatform.ThinClient.ViewModels.Documents;
+using ZenPlatform.ThinClient.ViewModels.Configuration;
 
 
 namespace ZenPlatform.ThinClient.Infrastructure
 {
-    public class DemoDockFactory : DockFactory
+    public class StartDockFactory : Dock.Model.DockFactory
     {
         private object _context;
 
-        public DemoDockFactory()
+        public StartDockFactory()
         {
             _context = new object();
         }
 
-        public DemoDockFactory(object context)
+        public StartDockFactory(object context)
         {
             _context = context;
         }
 
         public override IDock CreateLayout()
         {
-            var document1 = new DocumentViewModel1
+            var confTree = new ConfTreeViewModel
             {
-                Id = "ПриходнаяНакладная",
-                Title = "Документ 001"
-            };
-
-            var document2 = new DocumentViewModel1
-            {
-                Id = "РасходнаяНакладная",
-                Title = "Документ 007"
+                Id = Guid.NewGuid().ToString(),
+                Title = "Configuration"
             };
 
             var mainLayout = new LayoutDock
@@ -48,19 +42,29 @@ namespace ZenPlatform.ThinClient.Infrastructure
                 CurrentView = null,
                 Views = CreateList<IView>
                 (
-                  new DocumentDock
-                  {
-                      Id = "DocumentsPane",
-                      Title = "DocumentsPane",
-                      Proportion = double.NaN,
-                      CurrentView = document1,
-                      Views = CreateList<IView>
+                    new LayoutDock
+                    {
+                        Id = "DocumentsPane",
+                        Title = "DocumentsPane",
+                        Orientation = Orientation.Vertical,
+                        Proportion = double.NaN,
+                        CurrentView = null,
+                        Views = CreateList<IView>
                         (
-                            document1,
-                            document2
+                            new ToolDock
+                            {
+                                Id = "LeftPaneTop",
+                                Title = "LeftPaneTop",
+                                Proportion = double.NaN,
+                                CurrentView = confTree,
+                                Views = CreateList<IView>
+                                (
+                                    confTree
+                                )
+                            }
                         )
-                  }
-                  )
+                    }
+                )
             };
 
             var homeViewModel = new HomeViewModel

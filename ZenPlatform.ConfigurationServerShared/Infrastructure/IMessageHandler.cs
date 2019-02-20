@@ -1,6 +1,6 @@
 using System;
 
-namespace ZenPlatform.IdeIntegration.Server.Infrastructure
+namespace ZenPlatform.IdeIntegration.Shared.Infrastructure
 {
     /// <summary>
     /// Обработчик сообщений
