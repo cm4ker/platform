@@ -3,8 +3,9 @@ using System.Diagnostics;
 using System.Linq;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.IdeIntegration.Messages.Messages;
-using ZenPlatform.IdeIntegration.Messages.Models;
+using ZenPlatform.IdeIntegration.Shared.Infrastructure;
+using ZenPlatform.IdeIntegration.Shared.Messages;
+using ZenPlatform.IdeIntegration.Shared.Models;
 
 namespace ZenPlatform.IdeIntegration.Server.Infrastructure
 {
@@ -38,7 +39,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     responce.RequestId = treeRequest.RequestId;
                     responce.ParentId = treeRequest.ItemId;
 
-                    var dataItem = new XCItem() {NodeType = XCNodeKind.Data, ItemName = "Data"};
+                    var dataItem = new XCItem() {ItemType = XCNodeKind.Data, ItemName = "Data"};
 
                     responce.Items.Add(dataItem);
                     break;
@@ -49,8 +50,8 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     responce.ParentId = treeRequest.ItemId;
 
                     var items = _conf.Data.Components.Select(x => new XCItem()
-                    {
-                        NodeType = XCNodeKind.Component,
+                    {    
+                        ItemType = XCNodeKind.Component,
                         ItemId = x.Info.ComponentId,
                         ItemName = x.Info.ComponentName
                     }).ToList();
@@ -68,7 +69,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                         .FirstOrDefault(x => x.Info.ComponentId == treeRequest.ItemId)
                         ?.Types.Select(x => new XCItem()
                         {
-                            NodeType = XCNodeKind.Type,
+                            ItemType = XCNodeKind.Type,
                             ItemId = x.Guid,
                             ItemName = x.Name
                         }).ToList();
@@ -83,7 +84,19 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
 
                     var type = _conf.Data.ComponentTypes.FirstOrDefault(x => x.Guid == treeRequest.ItemId);
                     var attachedComponents = type.Parent.AttachedComponents;
+
+                    if (type.HasProperties)
+                    {
+                        responce.Items.Add(new XCItem()
+                        {
+                            ItemType = XCNodeKind.PropertyRoot,
+                            ItemName = "Properties",
+                            ParentId = treeRequest.ItemId
+                        });
+                    }
                     
+                    //TODO: Обработать присоединённые компоненты
+
                     break;
                 }
             }

@@ -8,8 +8,11 @@ using NetMQ.Sockets;
 using Xunit;
 using ZenPlatform.Configuration;
 using ZenPlatform.EntityComponent;
-using ZenPlatform.IdeIntegration.Messages.Messages;
+using ZenPlatform.IdeIntegration.Client;
+using ZenPlatform.IdeIntegration.Client.Infrastructure;
+using ZenPlatform.IdeIntegration.Shared.Messages;
 using ZenPlatform.IdeIntegration.Server.Infrastructure;
+using ZenPlatform.IdeIntegration.Shared.Infrastructure;
 using ZenPlatform.Tests.Common;
 
 namespace ZenPlatform.Tests.IDE
@@ -35,16 +38,14 @@ namespace ZenPlatform.Tests.IDE
         {
             using (MessageServer ss = new MessageServer())
             {
-                ss.RunAsync();
-                ss.Register(new ConfigurationMessageHandler(Factory.CreateExampleConfiguration()));
-
-                using (var client = new RequestSocket(">tcp://localhost:5556")) // connect
+                using (MessageClient mc = new MessageClient("localhost", 5556))
                 {
-                    var requestFrame = MessagePack.MessagePackSerializer.Typeless.Serialize(
-                        new XCTreeRequestMessage()
-                        {
-                            ItemType = XCNodeKind.Root,
-                        });
+                    var conf = Factory.CreateExampleConfiguration();
+                    ss.RunAsync();
+                    ss.Register(new ConfigurationMessageHandler(conf));
+
+                    mc.RequestItems(conf.ProjectId, XCNodeKind.Root);
+
                     client.SendFrame(requestFrame);
                     var responceFrame = client.ReceiveFrameBytes();
                     var responce = MessagePack.MessagePackSerializer.Typeless.Deserialize(responceFrame);
@@ -63,12 +64,27 @@ namespace ZenPlatform.Tests.IDE
                     responce = MessagePack.MessagePackSerializer.Typeless.Deserialize(responceFrame);
                     msg = Assert.IsType<XCTreeResponceMessage>(responce);
 
-                    Assert.Equal(1, msg.Items.Count);
+                    Assert.Single(msg.Items);
                     Assert.Equal(new Info().ComponentName, msg.Items.First().ItemName);
                     Assert.Equal(new Info().ComponentId, msg.Items.First().ItemId);
+
+                    //Components
+                    requestFrame = MessagePack.MessagePackSerializer.Typeless.Serialize(
+                        new XCTreeRequestMessage()
+                        {
+                            ItemType = XCNodeKind.Component,
+                            ItemId = conf.Data.Components.First().Info.ComponentId
+                        });
+
+                    client.SendFrame(requestFrame);
+                    responceFrame = client.ReceiveFrameBytes();
+                    responce = MessagePack.MessagePackSerializer.Typeless.Deserialize(responceFrame);
+                    msg = Assert.IsType<XCTreeResponceMessage>(responce);
+
+                    Assert.Equal(conf.Data.ComponentTypes.First().Name, msg.Items.First().ItemName);
                 }
 
-                Task.Delay(5000).Wait();
+                // Task.Delay(5000).Wait();
             }
         }
     }

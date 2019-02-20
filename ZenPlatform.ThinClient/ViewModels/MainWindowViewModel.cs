@@ -14,7 +14,7 @@ namespace ZenPlatform.ThinClient.ViewModels
 
         public void Command1()
         {
-
+            
         }
 
         private IDockFactory _factory;

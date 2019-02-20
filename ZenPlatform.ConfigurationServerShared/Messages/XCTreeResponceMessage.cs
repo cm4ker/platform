@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using MessagePack;
-using ZenPlatform.IdeIntegration.Messages.Models;
+using ZenPlatform.IdeIntegration.Shared.Models;
 
-namespace ZenPlatform.IdeIntegration.Messages.Messages
+namespace ZenPlatform.IdeIntegration.Shared.Messages
 {
     /// <summary>
     /// Сообщение - ответ связанное с деревом конфигурации. Когда мы пытаемся открыть плюсиком список, срабатывает именно оно

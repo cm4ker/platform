@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 
-namespace ZenPlatform.IdeIntegration.Messages.Messages
+namespace ZenPlatform.IdeIntegration.Shared.Messages
 {
     /// <summary>
     /// Базовый тип сообщения
