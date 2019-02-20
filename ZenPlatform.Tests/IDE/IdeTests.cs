@@ -9,6 +9,7 @@ using Xunit;
 using ZenPlatform.Configuration;
 using ZenPlatform.EntityComponent;
 using ZenPlatform.IdeIntegration.Client;
+using ZenPlatform.IdeIntegration.Client.Infrastructure;
 using ZenPlatform.IdeIntegration.Shared.Messages;
 using ZenPlatform.IdeIntegration.Server.Infrastructure;
 using ZenPlatform.IdeIntegration.Shared.Infrastructure;
@@ -43,12 +44,8 @@ namespace ZenPlatform.Tests.IDE
                     ss.RunAsync();
                     ss.Register(new ConfigurationMessageHandler(conf));
 
-                    var requestFrame = MessagePack.MessagePackSerializer.Typeless.Serialize(
-                        new XCTreeRequestMessage()
-                        {
-                            ItemType = XCNodeKind.Root,
-                        });
-                    
+                    mc.RequestItems(conf.ProjectId, XCNodeKind.Root);
+
                     client.SendFrame(requestFrame);
                     var responceFrame = client.ReceiveFrameBytes();
                     var responce = MessagePack.MessagePackSerializer.Typeless.Deserialize(responceFrame);

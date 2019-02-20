@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ServiceModel;
 using ReactiveUI;
 
 namespace ZenPlatform.IdeIntegration.Client.Models
@@ -29,5 +30,21 @@ namespace ZenPlatform.IdeIntegration.Client.Models
             set => this.RaiseAndSetIfChanged(ref _name, value);
         }
         public ObservableCollection<ConfItemModel> Childs { get; set; }
+        
+        [Server]
+        void MethodServer()
+        {
+            var invoice = Documents.Invoice.Create();
+            invoice.Date = DateTime.Now;
+            invoice.Save();
+        }
+
+        [Client]
+        void MethodClient()
+        {
+            MethodServer(); //< ---- Тут я должен подменить вызов на что
+            //то вроде InternalTools.InvokeServer(args).Wait();
+        }
     }
 }
+

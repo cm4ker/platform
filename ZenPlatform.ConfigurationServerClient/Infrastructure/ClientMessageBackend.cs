@@ -11,14 +11,10 @@ namespace ZenPlatform.IdeIntegration.Client.Infrastructure
     /// <summary>
     /// Обработчик сообщений на клиенте
     /// </summary>
-    public class ClientMessageBackend
+    public class ClientMessageBackend : MessageHandlerBackend
     {
-        private readonly XCRoot _conf;
-
         public ClientMessageBackend()
         {
         }
-
-      
     }
 }

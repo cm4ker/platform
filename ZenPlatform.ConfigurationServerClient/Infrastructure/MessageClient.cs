@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Security.Cryptography;
 using NetMQ;
 using NetMQ.Sockets;
 using ZenPlatform.Configuration;
-using ZenPlatform.IdeIntegration.Client.Infrastructure;
 using ZenPlatform.IdeIntegration.Shared.Infrastructure;
 using ZenPlatform.IdeIntegration.Shared.Messages;
 using ZenPlatform.IdeIntegration.Shared.Models;
 
-namespace ZenPlatform.IdeIntegration.Client
+namespace ZenPlatform.IdeIntegration.Client.Infrastructure
 {
     public class MessageClient : IDisposable
     {
