@@ -7,7 +7,7 @@ namespace ZenPlatform.IdeIntegration.Shared.Infrastructure
     /// <summary>
     ///  Бэкент обработки сообщений с возможностью расширения кастомными обработчиками
     /// </summary>
-    public sealed class MessageHandlerBackend
+    public class MessageHandlerBackend
     {
         private List<IMessageHandler> _handlers;
 
