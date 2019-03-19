@@ -73,9 +73,15 @@ namespace ZenPlatform.Configuration.Structure
             }
         }
 
+        /// <summary>
+        /// Раздел  интерфейсов (UI)
+        /// </summary>
         public XCInterface Interface { get; set; }
 
 
+        /// <summary>
+        /// Раздел ролей
+        /// </summary>
         public XCRoles Roles
         {
             get => _roles;
@@ -86,10 +92,21 @@ namespace ZenPlatform.Configuration.Structure
             }
         }
 
+        /// <summary>
+        /// Раздел модулей
+        /// </summary>
         public XCModules Modules { get; set; }
 
+        
+        /// <summary>
+        /// Раздел переодических заданий
+        /// </summary>
         public XCSchedules Schedules { get; set; }
 
+        
+        /// <summary>
+        /// Раздел языков
+        /// </summary>
         public XCLanguageList Languages { get; set; }
 
         /// <summary>

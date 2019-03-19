@@ -1,7 +1,7 @@
 ﻿using ZenPlatform.Shared.ParenChildCollection;
 using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.ConfigurationServerMessages.ViewModel
+namespace ZenPlatform.IdeIntegration.Client.ViewModel
 {
     /// <summary>
     /// Модель представления корня конфигурации конфигурации

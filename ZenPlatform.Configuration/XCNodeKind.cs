@@ -10,6 +10,11 @@ namespace ZenPlatform.Configuration
     public enum XCNodeKind
     {
         /// <summary>
+        /// Начало конфигурации
+        /// </summary>
+        Nil,
+    
+        /// <summary>
         /// Компонент
         /// </summary>
         Component,
@@ -39,7 +44,27 @@ namespace ZenPlatform.Configuration
         /// Раздел данных 
         /// </summary>
         Data,
-
+        
+        /// <summary>
+        /// Раздел ролей
+        /// </summary>
+        Roles,
+        
+        /// <summary>
+        /// Раздел модулей
+        /// </summary>
+        Modules,
+        
+        /// <summary>
+        /// Раздел интерфейсов (UI)
+        /// </summary>
+        Interface,
+        
+        /// <summary>
+        /// Раздел языков
+        /// </summary>
+        Languages,
+        
         /// <summary>
         /// Присоединённый компонент
         /// </summary>
