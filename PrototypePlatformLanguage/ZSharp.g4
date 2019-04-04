@@ -2,35 +2,116 @@
 grammar ZSharp;
 
 entryPoint: 
-    (statement ';')+;
+    moduleDefinition
+    | typeDefinition;
 
-statement:
-    expression assignStatement
-     | declareVarialbe; 
 
-assignStatement: 
-    '=' expressionForAssigment;  
+/*
+================START MODULE==================
+*/
 
-declareVarialbe:
-    (type | VAR)  IDENTIFIER assignStatement?;
+moduleDefinition: MODULE IDENTIFIER '{' moduleBody '}';
+
+moduleBody: functionDeclaration;
+/*
+================END MODULE==================
+*/
+
+/*
+================START TYPE==================
+*/
+
+typeDefinition: TYPE IDENTIFIER '{' '}';
+
+/*
+================END TYPE==================
+*/
+
+
+block : '{' (statements ';')* '}';
+
+
+
+functionDeclaration:accessModifier? type IDENTIFIER '(' parameters? ')' block;
+
+statement: functionCall; 
+
+statements: 
+    statement+;
+
+variableDeclaration:
+    type IDENTIFIER 
+    | type IDENTIFIER '=' ;
+    
+
+functionCall: 
+    '(' arguments ')'
+;
+
+parameters: parameter (',' parameter)*;
+
+parameter:
+    (REF)? type IDENTIFIER;
+
+arguments:
+    argument (',' argument)*;
+
+argument:
+    (REF)? expression
+;
+
+
+primaryExpression:
+'d'
+;
 
 type:
+    structureType | primitiveType | arrayType;
+
+structureType:
     IDENTIFIER;
+    
+primitiveType:
+    BOOL 
+    | INT
+    | STRING 
+    | CHAR 
+    | DOUBLE
+    | VOID;
 
+accessModifier: 
+    PUBLIC
+    | PRIVATE;
 
+arrayType: 
+    (structureType | primitiveType )'[' ']';
 
 expression:
     IDENTIFIER
 ;   
 
 expressionForAssigment: 
-    DEC_DIGIT;
+    DEC_DIGIT | IDENTIFIER;
 
 WHITESPACES:   (Whitespace | NewLine)+            -> channel(HIDDEN);
 
 VAR : 'var';
+BOOL : 'bool';
+INT : 'int';
+DOUBLE : 'double';
+CHAR : 'char';
+STRING : 'string';
+VOID : 'void';
+TYPE : 'type';
 
-IDENTIFIER : 'a'..'z'+;
+REF: 'ref';
+
+PUBLIC : 'public';
+PRIVATE : 'private';
+
+MODULE : 'module';
+
+IDENTIFIER : ('a'..'z' | 'A'..'Z')+;
 DEC_DIGIT: '1'..'9' '0'..'9'* ('.' '0'..'9')*;
 
 
