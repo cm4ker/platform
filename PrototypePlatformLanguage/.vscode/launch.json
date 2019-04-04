@@ -7,7 +7,7 @@
             "request": "launch",
             "input": "input.txt",
             "grammar": "ZSharp.g4",
-            "actionFile": "exampleActions.js",
+//            "actionFile": "action.js",
             "startRule": "entryPoint",
             "printParseTree": true,
             "visualParseTree": true
