@@ -31,24 +31,36 @@ typeDefinition: TYPE IDENTIFIER '{' '}';
 */
 
 
-block : '{' (statements)* '}';
+methodBody : '{' (statements)* '}';
 
 
 
-functionDeclaration:accessModifier? type IDENTIFIER '(' parameters? ')' block;
+functionDeclaration:accessModifier? type IDENTIFIER '(' parameters? ')' methodBody;
 
-statement: functionCall; 
+statement: 
+        (variableDeclaration
+        | functionCall
+        | assigment
+        | RETURN expression)*; 
 
 statements: 
     (statement ';')+;
 
 variableDeclaration:
-    type IDENTIFIER 
-    | type IDENTIFIER '=' ;
+    variableType IDENTIFIER 
+    | variableType IDENTIFIER '=' expression
+    | variableType IDENTIFIER '=' NEW '[' expression ']'
+   ;
     
+assigment: 
+   name '=' expression
+   | name '[' expression ']' '=' expression
+   | name '++'
+   | name '--' 
+;    
 
 functionCall: 
-    IDENTIFIER'(' arguments? ')'
+    name '(' arguments? ')'
 ;
 
 parameters: parameter (',' parameter)*;
@@ -60,7 +72,7 @@ arguments:
     argument (',' argument)*;
 
 argument:
-    (REF)? 
+    (REF)? expression? 
 ;
 
 
@@ -87,7 +99,9 @@ string_literal
 
 
 expression:
-    
+    expressionTerm
+    | expression '+' expressionTerm
+    | expression '-' expressionTerm
 ;
 
 expressionUnary:
@@ -104,18 +118,35 @@ expressionBinary:
     | expressionBinary '||' expressionUnary
 ;
 
-
 expressionFactor: 
-    expressionBinary |
+    expressionBinary 
+    | expressionFactor '%' expressionBinary
+    | expressionFactor '>' expressionBinary
+    | expressionFactor '<' expressionBinary
+    | expressionFactor '>=' expressionBinary
+    | expressionFactor '<=' expressionBinary
+    | expressionFactor '==' expressionBinary
+    | expressionFactor '!=' expressionBinary
+;
+
+expressionTerm:
+    expressionFactor
+    | expressionTerm '*' expressionFactor
+    | expressionTerm '/' expressionFactor
 ;
 
 expressionPrimary:
     IDENTIFIER
     | functionCall
     | literal
-    | expression
+    | '(' expression ')'
     
 ;
+
+variableType: 
+    type | VAR
+    ;
+    
 
 type:
     structureType | primitiveType | arrayType;
@@ -138,5 +169,9 @@ accessModifier:
 arrayType: 
     (structureType | primitiveType )'[' ']';
 
+name:
+    IDENTIFIER
+    | name '.' IDENTIFIER
+    ;
 
 

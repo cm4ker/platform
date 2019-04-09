@@ -28,7 +28,8 @@ CHAR : 'char';
 STRING : 'string';
 VOID : 'void';
 TYPE : 'type';
-
+NEW  : 'new';
+RETURN : 'return';
 
 SEMICOLON:                ';';
 PLUS:                     '+';
