@@ -31,11 +31,9 @@ typeDefinition: TYPE IDENTIFIER '{' '}';
 */
 
 
-methodBody : '{' (statements)* '}';
+instructionsBody : '{' (statements)* '}';
 
-
-
-functionDeclaration:accessModifier? type IDENTIFIER '(' parameters? ')' methodBody;
+functionDeclaration:accessModifier? type IDENTIFIER '(' parameters? ')' instructionsBody;
 
 statement: 
         (variableDeclaration
@@ -100,43 +98,43 @@ string_literal
 
 expression:
     expressionTerm
-    | expression '+' expressionTerm
-    | expression '-' expressionTerm
+    | expression PLUS expressionTerm
+    | expression MINUS expressionTerm
 ;
 
 expressionUnary:
-    '+' expressionPrimary
-    | '-' expressionPrimary
-    | '!' expressionPrimary
+    PLUS expressionPrimary
+    | MINUS expressionPrimary
+    | BANG expressionPrimary
     | expressionPrimary
     | expressionPrimary '[' expression ']'
 ;
 
 expressionBinary:
     expressionUnary
-    | expressionBinary '&&' expressionUnary
-    | expressionBinary '||' expressionUnary
+    | expressionBinary OP_AND expressionUnary
+    | expressionBinary OP_OR expressionUnary
 ;
 
 expressionFactor: 
     expressionBinary 
-    | expressionFactor '%' expressionBinary
-    | expressionFactor '>' expressionBinary
-    | expressionFactor '<' expressionBinary
-    | expressionFactor '>=' expressionBinary
-    | expressionFactor '<=' expressionBinary
-    | expressionFactor '==' expressionBinary
-    | expressionFactor '!=' expressionBinary
+    | expressionFactor PERCENT expressionBinary
+    | expressionFactor GT expressionBinary
+    | expressionFactor LT expressionBinary
+    | expressionFactor OP_GT expressionBinary
+    | expressionFactor OP_LE expressionBinary
+    | expressionFactor OP_EQ expressionBinary
+    | expressionFactor OP_NE expressionBinary
 ;
 
 expressionTerm:
     expressionFactor
-    | expressionTerm '*' expressionFactor
-    | expressionTerm '/' expressionFactor
+    | expressionTerm STAR expressionFactor
+    | expressionTerm DIV expressionFactor
 ;
 
 expressionPrimary:
-    IDENTIFIER
+    name
     | functionCall
     | literal
     | '(' expression ')'
