@@ -134,9 +134,9 @@ expressionTerm:
 ;
 
 expressionPrimary:
-    name
+    literal
     | functionCall
-    | literal
+    | name
     | '(' expression ')'
     
 ;

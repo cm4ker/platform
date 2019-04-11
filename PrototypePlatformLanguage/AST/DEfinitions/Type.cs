@@ -60,10 +60,13 @@ namespace PrototypePlatformLanguage.AST.Definitions
                         return typeof(bool);
                     else if (PrimitiveType == PrimitiveType.Character)
                         return typeof(char);
-                    else if (PrimitiveType == PrimitiveType.Real)
-                        return typeof(float);
+                    else if (PrimitiveType == PrimitiveType.Double)
+                        return typeof(double);
+                    else if (PrimitiveType == PrimitiveType.String)
+                        return typeof(string);
                     else if (PrimitiveType == PrimitiveType.Void)
                         return typeof(void);
+                    
                 }
                 else if (VariableType == VariableType.PrimitiveArray)
                 {

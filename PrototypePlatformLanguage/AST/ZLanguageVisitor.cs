@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Text.RegularExpressions;
 using PrototypePlatformLanguage.AST.Definitions;
 using PrototypePlatformLanguage.AST.Definitions.Functions;
 using PrototypePlatformLanguage.AST.Infrastructure;
@@ -99,12 +100,26 @@ namespace PrototypePlatformLanguage.AST
         public override object VisitLiteral(ZSharpParser.LiteralContext context)
         {
             object result = null;
-            if (context.string_literal() != null) result = new Literal(context.GetText(), LiteralType.String);
+            if (context.string_literal() != null)
+            {
+                //Строки парсятся сюда вместе с кавычками и чтобы их убрать приходится
+                //заниматься таким вот извращением
+
+                var text = context.string_literal().REGULAR_STRING()?.GetText() ??
+                           context.string_literal().VERBATIUM_STRING()?.GetText();
+
+                text = Regex.Unescape(text ?? throw new NullReferenceException());
+
+                if (context.string_literal().REGULAR_STRING() != null)
+                    result = new Literal(text.Substring(1, text.Length - 2), LiteralType.String);
+                else
+                    result = new Literal(text.Substring(2, text.Length - 3), LiteralType.String);
+            }
             else if (context.boolean_literal() != null) result = new Literal(context.GetText(), LiteralType.Boolean);
             else if (context.INTEGER_LITERAL() != null) result = new Literal(context.GetText(), LiteralType.Integer);
             else if (context.REAL_LITERAL() != null) result = new Literal(context.GetText(), LiteralType.Real);
             else if (context.CHARACTER_LITERAL() != null)
-                result = new Literal(context.GetText(), LiteralType.Character);
+                result = new Literal(context.GetText().Substring(1, 1), LiteralType.Character);
 
             //TODO: Не обработанным остался HEX INTEGER LITERAL его необходимо доделать
 
@@ -327,13 +342,16 @@ namespace PrototypePlatformLanguage.AST
 
             object result;
 
-            if (context.RETURN().Length == 0)
+            if (context.RETURN().Length != 0)
                 if (context.expression() == null)
                     result = new Return(null);
                 else
                     result = new Return(_syntaxStack.PopExpression());
             else if (context.expression() != null)
+            {
                 _syntaxStack.PeekType<IList>().Add(_syntaxStack.PopStatement());
+                //_syntaxStack.PeekType<IList>().Add(new Return(null));
+            }
 
             return null;
         }

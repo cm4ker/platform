@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Xml.Serialization;
@@ -22,11 +23,11 @@ using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 namespace PrototypePlatformLanguage.Generation
 {
-    public class Label()
+    public class Label
     {
         public Instruction Instruction = Instruction.Create(Mono.Cecil.Cil.OpCodes.Nop);
     }
-    
+
     public class Generator
     {
         private Module _module = null;
@@ -49,7 +50,7 @@ namespace PrototypePlatformLanguage.Generation
             TypeDefinition td = new TypeDefinition("TestNamespace", "SomeName",
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.Sealed);
 
-
+            _dllModule.Types.Add(td);
             //
             // Create global variables.
             //
@@ -62,13 +63,10 @@ namespace PrototypePlatformLanguage.Generation
 
 
             _module.TypeBody.SymbolTable = _global;
-            BuildFunctions(_module.TypeBody, td);
-
-            foreach (Function function in _module.TypeBody.Functions)
+            foreach (var methodDefinition in BuildFunctions(_module.TypeBody))
             {
-                BuildFunction(function);
+                td.Methods.Add(methodDefinition);
             }
-
 
             var moduleName = $"{_module.Name}.dll";
 
@@ -168,11 +166,15 @@ namespace PrototypePlatformLanguage.Generation
                     case LiteralType.Integer:
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, Int32.Parse(literal.Value));
                         break;
+                    case LiteralType.String:
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, literal.Value);
+                        break;
                     case LiteralType.Real:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_R4, float.Parse(literal.Value));
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_R8,
+                            double.Parse(literal.Value, CultureInfo.InvariantCulture));
                         break;
                     case LiteralType.Character:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, char.GetNumericValue(literal.Value, 0));
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, char.ConvertToUtf32(literal.Value, 0));
                         break;
                     case LiteralType.Boolean:
                         if (literal.Value == "true")
@@ -219,9 +221,9 @@ namespace PrototypePlatformLanguage.Generation
         /// <param name="builder"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        private List<MethodDefinition> BuildFunctions(TypeBody typeBody, TypeDefinition typeDefinition)
+        private List<MethodDefinition> BuildFunctions(TypeBody typeBody)
         {
-            if (typeBody == null || typeDefinition == null)
+            if (typeBody == null)
                 throw new ArgumentNullException();
 
             SymbolTable sibillings = new SymbolTable(_global);
@@ -297,6 +299,8 @@ namespace PrototypePlatformLanguage.Generation
                 }
             }
 
+            EmitFunction(function);
+
             return method;
         }
 
@@ -311,28 +315,27 @@ namespace PrototypePlatformLanguage.Generation
 
             ILProcessor il = function.Builder;
 
-            EmitBody(il, function.InstructionsBody, false);
+            EmitBody(il, function.InstructionsBody);
 
-            return;
+            il.Emit(Mono.Cecil.Cil.OpCodes.Ret);
         }
 
-        private void EmitBody(ILProcessor il, InstructionsBody body, bool root)
+        private void EmitBody(ILProcessor il, InstructionsBody body)
         {
-            //
-            // Declare local variables.
-            //
-
             foreach (Statement statement in body.Statements)
             {
+                //
+                // Declare local variables.
+                //
+
                 if (statement is Variable)
                 {
                     Variable variable = statement as Variable;
 
-                    VariableDefinition local = null;
-                    //FieldBuilder global = null;
+                    VariableDefinition local =
+                        new VariableDefinition(_dllModule.ImportReference(variable.Type.ToSystemType()));
+                    il.Body.Variables.Add(local);
 
-
-                    local = new VariableDefinition(_dllModule.ImportReference(variable.Type.ToSystemType()));
                     body.SymbolTable.Add(variable.Name, SymbolType.Variable, variable, local);
 
                     //
@@ -428,7 +431,7 @@ namespace PrototypePlatformLanguage.Generation
 
                         var exit = new Label();
                         il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, exit.Instruction);
-                        EmitBody(il, ifStatement.IfInstructionsBody, false);
+                        EmitBody(il, ifStatement.IfInstructionsBody);
                         il.Append(exit.Instruction);
                     }
                     else if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody != null)
@@ -438,10 +441,10 @@ namespace PrototypePlatformLanguage.Generation
                         Label exit = new Label();
                         Label elseLabel = new Label();
                         il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, elseLabel.Instruction);
-                        EmitBody(il, ifStatement.IfInstructionsBody, false);
+                        EmitBody(il, ifStatement.IfInstructionsBody);
                         il.Emit(Mono.Cecil.Cil.OpCodes.Br, exit.Instruction);
                         il.Append(elseLabel.Instruction);
-                        EmitBody(il, ifStatement.ElseInstructionsBody, false);
+                        EmitBody(il, ifStatement.ElseInstructionsBody);
                         il.Append(exit.Instruction);
                     }
                 }
@@ -460,7 +463,7 @@ namespace PrototypePlatformLanguage.Generation
                     // Eval condition
                     EmitExpression(il, whileStatement.Condition, body.SymbolTable);
                     il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, exit.Instruction);
-                    EmitBody(il, whileStatement.InstructionsBody, false);
+                    EmitBody(il, whileStatement.InstructionsBody);
                     il.Emit(Mono.Cecil.Cil.OpCodes.Br, begin.Instruction);
                     il.Append(exit.Instruction);
                 }
@@ -475,7 +478,7 @@ namespace PrototypePlatformLanguage.Generation
 
                     Label loop = new Label();
                     il.Append(loop.Instruction);
-                    EmitBody(il, doStatement.InstructionsBody, false);
+                    EmitBody(il, doStatement.InstructionsBody);
                     EmitExpression(il, doStatement.Condition, body.SymbolTable);
                     il.Emit(Mono.Cecil.Cil.OpCodes.Brtrue, loop.Instruction);
                 }
@@ -498,7 +501,7 @@ namespace PrototypePlatformLanguage.Generation
                     EmitExpression(il, forStatement.Condition, body.SymbolTable);
                     il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, exit.Instruction);
                     // Emit body
-                    EmitBody(il, forStatement.InstructionsBody, false);
+                    EmitBody(il, forStatement.InstructionsBody);
                     // Emit counter
                     EmitAssignment(il, forStatement.Counter, body.SymbolTable);
                     il.Emit(Mono.Cecil.Cil.OpCodes.Br, loop.Instruction);
