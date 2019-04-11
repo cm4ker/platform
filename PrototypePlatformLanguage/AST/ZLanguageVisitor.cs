@@ -1,14 +1,10 @@
 using System;
 using System.Collections;
-using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
 using PrototypePlatformLanguage.AST.Definitions;
 using PrototypePlatformLanguage.AST.Definitions.Functions;
 using PrototypePlatformLanguage.AST.Infrastructure;
-using BinaryExpression = PrototypePlatformLanguage.AST.Definitions.Expression.BinaryExpression;
+using PrototypePlatformLanguage.AST.Definitions.Expression;
 using Type = PrototypePlatformLanguage.AST.Definitions.Type;
-using UnaryExpression = PrototypePlatformLanguage.AST.Definitions.Expression.UnaryExpression;
 
 namespace PrototypePlatformLanguage.AST
 {
@@ -331,7 +327,7 @@ namespace PrototypePlatformLanguage.AST
 
             object result;
 
-            if (context.RETURN().Any())
+            if (context.RETURN().Length == 0)
                 if (context.expression() == null)
                     result = new Return(null);
                 else
