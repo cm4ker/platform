@@ -38,6 +38,7 @@ namespace PrototypePlatformLanguage.AST.Definitions
     {
         public FunctionCollection Functions = null;
 
+        public SymbolTable SymbolTable = null;
 
         public TypeBody(MemberCollection members)
         {
