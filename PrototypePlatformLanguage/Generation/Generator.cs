@@ -10,14 +10,23 @@ using PrototypePlatformLanguage.AST.Definitions.Statements;
 using PrototypePlatformLanguage.AST.Definitions.Symbols;
 using PrototypePlatformLanguage.AST.Infrastructure;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
+using PrototypePlatformLanguage.AST.Definitions.Expression;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 using Module = PrototypePlatformLanguage.AST.Definitions.Module;
+using OpCode = Mono.Cecil.Cil.OpCode;
+using OpCodes = System.Reflection.Emit.OpCodes;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 
 namespace PrototypePlatformLanguage.Generation
 {
+    public class Label()
+    {
+        public Instruction Instruction = Instruction.Create(Mono.Cecil.Cil.OpCodes.Nop);
+    }
+    
     public class Generator
     {
         private Module _module = null;
@@ -53,37 +62,19 @@ namespace PrototypePlatformLanguage.Generation
 
 
             _module.TypeBody.SymbolTable = _global;
-            BuildFunctions(_module.TypeBody, moduleBuilder);
+            BuildFunctions(_module.TypeBody, td);
 
             foreach (Function function in _module.TypeBody.Functions)
             {
                 BuildFunction(function);
             }
 
-            //
-            // Create entry point.
-            //
 
-            MethodBuilder mainBuilder = moduleBuilder.DefineGlobalMethod("Main",
-                MethodAttributes.Public | MethodAttributes.Static, typeof(void), null);
-            ILGenerator mainIL = mainBuilder.GetILGenerator();
+            var moduleName = $"{_module.Name}.dll";
 
-            EmitBody(mainIL, _module.Body, true);
+            ad.Write(moduleName);
 
-            moduleBuilder.CreateGlobalFunctions();
-            assemblyBuilder.SetEntryPoint(mainBuilder.GetBaseDefinition());
-            assemblyBuilder.Save(_module.Name + ".exe");
-
-            System.IO.File.Move(_module.Name + ".exe", path);
-        }
-
-        private void FindFunction(Body body, ArrayList functions)
-        {
-            if (body != null && body.Functions != null)
-            {
-                foreach (Function function in body.Functions)
-                    FindFunction(function.Body, functions);
-            }
+            System.IO.File.Move(moduleName, path);
         }
 
         private void Error(string message)
@@ -91,7 +82,7 @@ namespace PrototypePlatformLanguage.Generation
             throw new Exception(message);
         }
 
-        private void EmitExpression(ILGenerator il, Expression expression, SymbolTable symbolTable)
+        private void EmitExpression(ILProcessor il, Expression expression, SymbolTable symbolTable)
         {
             if (expression is BinaryExpression)
             {
@@ -101,49 +92,49 @@ namespace PrototypePlatformLanguage.Generation
                 switch (((BinaryExpression) expression).BinaryOperatorType)
                 {
                     case BinaryOperatorType.Add:
-                        il.Emit(OpCodes.Add);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Add);
                         break;
                     case BinaryOperatorType.Subtract:
-                        il.Emit(OpCodes.Sub);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Sub);
                         break;
                     case BinaryOperatorType.Multiply:
-                        il.Emit(OpCodes.Mul);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Mul);
                         break;
                     case BinaryOperatorType.Divide:
-                        il.Emit(OpCodes.Div);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Div);
                         break;
                     case BinaryOperatorType.Modulo:
-                        il.Emit(OpCodes.Rem);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Rem);
                         break;
                     case BinaryOperatorType.Equal:
-                        il.Emit(OpCodes.Ceq);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
                         break;
                     case BinaryOperatorType.NotEqual:
-                        il.Emit(OpCodes.Ceq);
-                        il.Emit(OpCodes.Ldc_I4_0);
-                        il.Emit(OpCodes.Ceq);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
                         break;
                     case BinaryOperatorType.GreaterThen:
-                        il.Emit(OpCodes.Cgt);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Cgt);
                         break;
                     case BinaryOperatorType.LessThen:
-                        il.Emit(OpCodes.Clt);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Clt);
                         break;
                     case BinaryOperatorType.GraterOrEqualTo:
-                        il.Emit(OpCodes.Clt);
-                        il.Emit(OpCodes.Ldc_I4_0);
-                        il.Emit(OpCodes.Ceq);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Clt);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
                         break;
                     case BinaryOperatorType.LessOrEqualTo:
-                        il.Emit(OpCodes.Cgt);
-                        il.Emit(OpCodes.Ldc_I4_0);
-                        il.Emit(OpCodes.Ceq);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Cgt);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
                         break;
                     case BinaryOperatorType.And:
-                        il.Emit(OpCodes.And);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.And);
                         break;
                     case BinaryOperatorType.Or:
-                        il.Emit(OpCodes.Or);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Or);
                         break;
                 }
             }
@@ -156,15 +147,15 @@ namespace PrototypePlatformLanguage.Generation
                     case UnaryOperatorType.Indexer:
                         EmitExpression(il, unaryExpression.Value, symbolTable);
                         EmitExpression(il, unaryExpression.Indexer, symbolTable);
-                        il.Emit(OpCodes.Ldelem_I4);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldelem_I4);
                         break;
                     case UnaryOperatorType.Negative:
                         EmitExpression(il, unaryExpression.Value, symbolTable);
-                        il.Emit(OpCodes.Neg);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Neg);
                         break;
                     case UnaryOperatorType.Not:
                         EmitExpression(il, unaryExpression.Value, symbolTable);
-                        il.Emit(OpCodes.Not);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Not);
                         break;
                 }
             }
@@ -175,19 +166,19 @@ namespace PrototypePlatformLanguage.Generation
                 switch (literal.LiteralType)
                 {
                     case LiteralType.Integer:
-                        il.Emit(OpCodes.Ldc_I4, Int32.Parse(literal.Value));
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, Int32.Parse(literal.Value));
                         break;
                     case LiteralType.Real:
-                        il.Emit(OpCodes.Ldc_R4, float.Parse(literal.Value));
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_R4, float.Parse(literal.Value));
                         break;
                     case LiteralType.Character:
-                        il.Emit(OpCodes.Ldc_I4, char.GetNumericValue(literal.Value, 0));
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, char.GetNumericValue(literal.Value, 0));
                         break;
                     case LiteralType.Boolean:
                         if (literal.Value == "true")
-                            il.Emit(OpCodes.Ldc_I4, 1);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, 1);
                         else if (literal.Value == "false")
-                            il.Emit(OpCodes.Ldc_I4, 0);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, 0);
                         break;
                 }
             }
@@ -199,16 +190,16 @@ namespace PrototypePlatformLanguage.Generation
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
 
-                if (variable.CodeObject is LocalBuilder)
-                    il.Emit(OpCodes.Ldloc, (LocalBuilder) variable.CodeObject);
-                else if (variable.CodeObject is FieldBuilder)
-                    il.Emit(OpCodes.Ldsfld, (FieldBuilder) variable.CodeObject);
-                else if (variable.CodeObject is ParameterBuilder)
+                if (variable.CodeObject is VariableDefinition)
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloc, (VariableDefinition) variable.CodeObject);
+                else if (variable.CodeObject is FieldDefinition)
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsfld, (FieldDefinition) variable.CodeObject);
+                else if (variable.CodeObject is ParameterDefinition)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
-                    il.Emit(OpCodes.Ldarg_S, ((ParameterBuilder) variable.CodeObject).Position - 1);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_S, ((ParameterDefinition) variable.CodeObject).Sequence - 1);
                     if (p.PassMethod == PassMethod.ByReference)
-                        il.Emit(OpCodes.Ldind_I4);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldind_I4);
                 }
             }
             else if (expression is Call)
@@ -224,33 +215,37 @@ namespace PrototypePlatformLanguage.Generation
         /// <summary>
         /// Создание функций исходя из тела типа
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="typeBody"></param>
         /// <param name="builder"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        private List<MethodDefinition> BuildFunctions(TypeBody body, TypeDefinition typeDefinition)
+        private List<MethodDefinition> BuildFunctions(TypeBody typeBody, TypeDefinition typeDefinition)
         {
-            if (body == null || typeDefinition == null)
+            if (typeBody == null || typeDefinition == null)
                 throw new ArgumentNullException();
 
             SymbolTable sibillings = new SymbolTable(_global);
 
             List<MethodDefinition> result = new List<MethodDefinition>();
 
-            if (body != null && body.Functions != null)
+            if (typeBody != null && typeBody.Functions != null)
             {
-                foreach (Function function in body.Functions)
+                foreach (Function function in typeBody.Functions)
                 {
                     // Make child visible to sibillings
                     function.InstructionsBody.SymbolTable = sibillings;
 
-                    MethodBuilder method = BuildFunction(function);
+                    MethodDefinition method = BuildFunction(function);
+
+                    result.Add(method);
 
                     // Make child visible to parent.
-                    body.SymbolTable.Add(function.Name, SymbolType.Function, function, method);
+                    typeBody.SymbolTable.Add(function.Name, SymbolType.Function, function, method);
                     sibillings.Add(function.Name, SymbolType.Function, function, method);
                 }
             }
+
+            return result;
         }
 
         private MethodDefinition BuildFunction(Function function)
@@ -285,6 +280,8 @@ namespace PrototypePlatformLanguage.Generation
             MethodDefinition method = new MethodDefinition(functionName,
                 MethodAttributes.Public | MethodAttributes.Static, _dllModule.ImportReference(returnType));
 
+            function.Builder = method.Body.GetILProcessor();
+
             if (function.Parameters != null)
             {
                 for (int x = 0; x < function.Parameters.Count; x++)
@@ -312,14 +309,14 @@ namespace PrototypePlatformLanguage.Generation
             // Build function body.
             //
 
-            ILGenerator il = function.Builder.GetILGenerator();
+            ILProcessor il = function.Builder;
 
             EmitBody(il, function.InstructionsBody, false);
 
             return;
         }
 
-        private void EmitBody(ILGenerator il, InstructionsBody body, bool root)
+        private void EmitBody(ILProcessor il, InstructionsBody body, bool root)
         {
             //
             // Declare local variables.
@@ -331,18 +328,12 @@ namespace PrototypePlatformLanguage.Generation
                 {
                     Variable variable = statement as Variable;
 
-                    LocalBuilder local = null;
-                    FieldBuilder global = null;
+                    VariableDefinition local = null;
+                    //FieldBuilder global = null;
 
-                    if (root)
-                    {
-                        global = (FieldBuilder) body.SymbolTable.Find(variable.Name, SymbolType.Variable).CodeObject;
-                    }
-                    else
-                    {
-                        local = il.DeclareLocal(variable.Type.ToSystemType());
-                        body.SymbolTable.Add(variable.Name, SymbolType.Variable, variable, local);
-                    }
+
+                    local = new VariableDefinition(_dllModule.ImportReference(variable.Type.ToSystemType()));
+                    body.SymbolTable.Add(variable.Name, SymbolType.Variable, variable, local);
 
                     //
                     // Initialize  variable.
@@ -354,10 +345,7 @@ namespace PrototypePlatformLanguage.Generation
                         {
                             EmitExpression(il, (Expression) variable.Value, body.SymbolTable);
 
-                            if (root)
-                                il.Emit(OpCodes.Stsfld, global);
-                            else
-                                il.Emit(OpCodes.Stloc, local);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, local);
                         }
                     }
                     else if (variable.Type.VariableType == VariableType.PrimitiveArray)
@@ -366,36 +354,31 @@ namespace PrototypePlatformLanguage.Generation
                         if (variable.Value != null && variable.Value is Expression)
                         {
                             EmitExpression(il, (Expression) variable.Value, body.SymbolTable);
-                            il.Emit(OpCodes.Newarr, variable.Type.ToSystemType());
-                            if (root)
-                                il.Emit(OpCodes.Stsfld, global);
-                            else
-                                il.Emit(OpCodes.Stloc, local);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Newarr,
+                                _dllModule.ImportReference(variable.Type.ToSystemType()));
+
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, local);
                         }
                         else if (variable.Value != null && variable.Value is ElementCollection)
                         {
                             ElementCollection elements = variable.Value as ElementCollection;
 
-                            il.Emit(OpCodes.Ldc_I4, elements.Count);
-                            il.Emit(OpCodes.Newarr, variable.Type.ToSystemType());
-                            if (root)
-                                il.Emit(OpCodes.Stsfld, global);
-                            else
-                                il.Emit(OpCodes.Stloc, local);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, elements.Count);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Newarr,
+                                _dllModule.ImportReference(variable.Type.ToSystemType()));
+
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, local);
 
                             for (int x = 0; x < elements.Count; x++)
                             {
                                 // Load array
-                                if (root)
-                                    il.Emit(OpCodes.Ldsfld, global);
-                                else
-                                    il.Emit(OpCodes.Ldloc, local);
+                                il.Emit(Mono.Cecil.Cil.OpCodes.Ldloc, local);
                                 // Load index
-                                il.Emit(OpCodes.Ldc_I4, x);
+                                il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, x);
                                 // Load value
                                 EmitExpression(il, elements[x].Expression, body.SymbolTable);
                                 // Store
-                                il.Emit(OpCodes.Stelem_I4);
+                                il.Emit(Mono.Cecil.Cil.OpCodes.Stelem_I4);
                             }
                         }
                     }
@@ -408,7 +391,7 @@ namespace PrototypePlatformLanguage.Generation
                 {
                     if (((Return) statement).Value != null)
                         EmitExpression(il, ((Return) statement).Value, body.SymbolTable);
-                    il.Emit(OpCodes.Ret);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Ret);
                 }
                 else if (statement is CallStatement)
                 {
@@ -419,12 +402,12 @@ namespace PrototypePlatformLanguage.Generation
                     if (symbol != null)
                     {
                         if (((MethodBuilder) symbol.CodeObject).ReturnType != typeof(void))
-                            il.Emit(OpCodes.Pop);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Pop);
                     }
                     else
                     {
                         if (call.Name == "Read")
-                            il.Emit(OpCodes.Pop);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Pop);
                     }
                 }
                 else if (statement is If)
@@ -438,26 +421,28 @@ namespace PrototypePlatformLanguage.Generation
                     // Eval condition
                     EmitExpression(il, ifStatement.Condition, body.SymbolTable);
 
-                    if (ifStatement.IfBody != null && ifStatement.ElseBody == null)
+                    if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody == null)
                     {
-                        ifStatement.IfBody.SymbolTable = new SymbolTable(body.SymbolTable);
-                        Label exit = il.DefineLabel();
-                        il.Emit(OpCodes.Brfalse, exit);
-                        EmitBody(il, ifStatement.IfBody, false);
-                        il.MarkLabel(exit);
+                        ifStatement.IfInstructionsBody.SymbolTable = new SymbolTable(body.SymbolTable);
+
+
+                        var exit = new Label();
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, exit.Instruction);
+                        EmitBody(il, ifStatement.IfInstructionsBody, false);
+                        il.Append(exit.Instruction);
                     }
-                    else if (ifStatement.IfBody != null && ifStatement.ElseBody != null)
+                    else if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody != null)
                     {
-                        ifStatement.IfBody.SymbolTable = new SymbolTable(body.SymbolTable);
-                        ifStatement.ElseBody.SymbolTable = new SymbolTable(body.SymbolTable);
-                        Label exit = il.DefineLabel();
-                        Label elseLabel = il.DefineLabel();
-                        il.Emit(OpCodes.Brfalse, elseLabel);
-                        EmitBody(il, ifStatement.IfBody, false);
-                        il.Emit(OpCodes.Br, exit);
-                        il.MarkLabel(elseLabel);
-                        EmitBody(il, ifStatement.ElseBody, false);
-                        il.MarkLabel(exit);
+                        ifStatement.IfInstructionsBody.SymbolTable = new SymbolTable(body.SymbolTable);
+                        ifStatement.ElseInstructionsBody.SymbolTable = new SymbolTable(body.SymbolTable);
+                        Label exit = new Label();
+                        Label elseLabel = new Label();
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, elseLabel.Instruction);
+                        EmitBody(il, ifStatement.IfInstructionsBody, false);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Br, exit.Instruction);
+                        il.Append(elseLabel.Instruction);
+                        EmitBody(il, ifStatement.ElseInstructionsBody, false);
+                        il.Append(exit.Instruction);
                     }
                 }
 
@@ -468,16 +453,16 @@ namespace PrototypePlatformLanguage.Generation
                     //
 
                     While whileStatement = statement as While;
-                    whileStatement.Body.SymbolTable = new SymbolTable(body.SymbolTable);
-                    Label begin = il.DefineLabel();
-                    Label exit = il.DefineLabel();
-                    il.MarkLabel(begin);
+                    whileStatement.InstructionsBody.SymbolTable = new SymbolTable(body.SymbolTable);
+                    Label begin = new Label();
+                    Label exit = new Label();
+                    il.Append(begin.Instruction);
                     // Eval condition
                     EmitExpression(il, whileStatement.Condition, body.SymbolTable);
-                    il.Emit(OpCodes.Brfalse, exit);
-                    EmitBody(il, whileStatement.Body, false);
-                    il.Emit(OpCodes.Br, begin);
-                    il.MarkLabel(exit);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, exit.Instruction);
+                    EmitBody(il, whileStatement.InstructionsBody, false);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Br, begin.Instruction);
+                    il.Append(exit.Instruction);
                 }
                 else if (statement is Do)
                 {
@@ -486,13 +471,13 @@ namespace PrototypePlatformLanguage.Generation
                     //
 
                     Do doStatement = statement as Do;
-                    doStatement.Body.SymbolTable = new SymbolTable(body.SymbolTable);
+                    doStatement.InstructionsBody.SymbolTable = new SymbolTable(body.SymbolTable);
 
-                    Label loop = il.DefineLabel();
-                    il.MarkLabel(loop);
-                    EmitBody(il, doStatement.Body, false);
+                    Label loop = new Label();
+                    il.Append(loop.Instruction);
+                    EmitBody(il, doStatement.InstructionsBody, false);
                     EmitExpression(il, doStatement.Condition, body.SymbolTable);
-                    il.Emit(OpCodes.Brtrue, loop);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Brtrue, loop.Instruction);
                 }
                 else if (statement is For)
                 {
@@ -501,28 +486,28 @@ namespace PrototypePlatformLanguage.Generation
                     //
 
                     For forStatement = statement as For;
-                    forStatement.Body.SymbolTable = new SymbolTable(body.SymbolTable);
+                    forStatement.InstructionsBody.SymbolTable = new SymbolTable(body.SymbolTable);
 
-                    Label loop = il.DefineLabel();
-                    Label exit = il.DefineLabel();
+                    Label loop = new Label();
+                    Label exit = new Label();
 
                     // Emit initializer
                     EmitAssignment(il, forStatement.Initializer, body.SymbolTable);
-                    il.MarkLabel(loop);
+                    il.Append(loop.Instruction);
                     // Emit condition
                     EmitExpression(il, forStatement.Condition, body.SymbolTable);
-                    il.Emit(OpCodes.Brfalse, exit);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, exit.Instruction);
                     // Emit body
-                    EmitBody(il, forStatement.Body, false);
+                    EmitBody(il, forStatement.InstructionsBody, false);
                     // Emit counter
                     EmitAssignment(il, forStatement.Counter, body.SymbolTable);
-                    il.Emit(OpCodes.Br, loop);
-                    il.MarkLabel(exit);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Br, loop.Instruction);
+                    il.Append(exit.Instruction);
                 }
             }
         }
 
-        private void EmitAssignment(ILGenerator il, Assignment assignment, SymbolTable symbolTable)
+        private void EmitAssignment(ILProcessor il, Assignment assignment, SymbolTable symbolTable)
         {
             Symbol variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
             if (variable == null)
@@ -531,47 +516,48 @@ namespace PrototypePlatformLanguage.Generation
             // Non-indexed assignment
             if (assignment.Index == null)
             {
-                if (variable.CodeObject is ParameterBuilder)
+                if (variable.CodeObject is ParameterDefinition)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
-                        il.Emit(OpCodes.Ldarg_S, ((ParameterBuilder) variable.CodeObject).Position - 1);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_S,
+                            ((ParameterDefinition) variable.CodeObject).Sequence - 1);
                 }
 
                 // Load value
                 EmitExpression(il, assignment.Value, symbolTable);
 
                 // Store
-                if (variable.CodeObject is LocalBuilder)
-                    il.Emit(OpCodes.Stloc, (LocalBuilder) variable.CodeObject);
-                else if (variable.CodeObject is FieldBuilder)
-                    il.Emit(OpCodes.Stsfld, (FieldBuilder) variable.CodeObject);
-                else if (variable.CodeObject is ParameterBuilder)
+                if (variable.CodeObject is VariableDefinition)
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, (VariableDefinition) variable.CodeObject);
+                else if (variable.CodeObject is FieldDefinition)
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Stsfld, (FieldDefinition) variable.CodeObject);
+                else if (variable.CodeObject is ParameterDefinition)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
-                        il.Emit(OpCodes.Stind_I4);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Stind_I4);
                     else
-                        il.Emit(OpCodes.Starg, ((ParameterBuilder) variable.CodeObject).Position - 1);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Starg, ((ParameterDefinition) variable.CodeObject).Sequence - 1);
                 }
             }
             else
             {
                 // Load array.
-                if (variable.CodeObject is LocalBuilder)
-                    il.Emit(OpCodes.Ldloc, (LocalBuilder) variable.CodeObject);
-                else if (variable.CodeObject is FieldBuilder)
-                    il.Emit(OpCodes.Ldsfld, (FieldBuilder) variable.CodeObject);
+                if (variable.CodeObject is VariableDefinition)
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloc, (VariableDefinition) variable.CodeObject);
+                else if (variable.CodeObject is FieldDefinition)
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsfld, (FieldDefinition) variable.CodeObject);
                 // Load index.
                 EmitExpression(il, assignment.Index, symbolTable);
                 // Load value.
                 EmitExpression(il, assignment.Value, symbolTable);
                 // Set
-                il.Emit(OpCodes.Stelem_I4);
+                il.Emit(Mono.Cecil.Cil.OpCodes.Stelem_I4);
             }
         }
 
-        private void EmitCall(ILGenerator il, Call call, SymbolTable symbolTable)
+        private void EmitCall(ILProcessor il, Call call, SymbolTable symbolTable)
         {
             Symbol symbol = symbolTable.Find(call.Name, SymbolType.Function);
 
@@ -617,17 +603,18 @@ namespace PrototypePlatformLanguage.Generation
                             if (argument.Value is Name)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is LocalBuilder)
+                                if (variable.CodeObject is VariableDefinition)
                                 {
-                                    il.Emit(OpCodes.Ldloca, variable.CodeObject as LocalBuilder);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, variable.CodeObject as VariableDefinition);
                                 }
-                                else if (variable.CodeObject is FieldBuilder)
+                                else if (variable.CodeObject is FieldDefinition)
                                 {
-                                    il.Emit(OpCodes.Ldsflda, variable.CodeObject as FieldBuilder);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsflda, variable.CodeObject as FieldDefinition);
                                 }
                                 else if (variable.CodeObject is ParameterBuilder)
                                 {
-                                    il.Emit(OpCodes.Ldarga_S, ((ParameterBuilder) variable.CodeObject).Position - 1);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarga_S,
+                                        ((ParameterBuilder) variable.CodeObject).Position - 1);
                                 }
                             }
                             else if (argument.Value is UnaryExpression &&
@@ -639,25 +626,26 @@ namespace PrototypePlatformLanguage.Generation
                                     if (((Variable) variable.SyntaxObject).Type.VariableType ==
                                         VariableType.PrimitiveArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.Emit(OpCodes.Ldloca, variable.CodeObject as LocalBuilder);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, variable.CodeObject as VariableDefinition);
                                 }
                                 else if (variable.CodeObject is FieldBuilder)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.VariableType ==
                                         VariableType.PrimitiveArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.Emit(OpCodes.Ldsflda, variable.CodeObject as FieldBuilder);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsflda, variable.CodeObject as FieldDefinition);
                                 }
-                                else if (variable.CodeObject is ParameterBuilder)
+                                else if (variable.CodeObject is ParameterDefinition)
                                 {
                                     if (((Parameter) variable.SyntaxObject).Type.VariableType ==
                                         VariableType.PrimitiveArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.Emit(OpCodes.Ldarga, ((ParameterBuilder) variable.CodeObject).Position - 1);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarga,
+                                        ((ParameterDefinition) variable.CodeObject).Sequence - 1);
                                 }
 
                                 EmitExpression(il, ((UnaryExpression) argument.Value).Indexer, symbolTable);
-                                il.Emit(OpCodes.Ldelema);
+                                il.Emit(Mono.Cecil.Cil.OpCodes.Ldelema);
                             }
                             else
                             {
@@ -672,29 +660,29 @@ namespace PrototypePlatformLanguage.Generation
                 }
 
                 Hack:
-                il.Emit(OpCodes.Call, ((MethodBuilder) symbol.CodeObject));
+                il.Emit(Mono.Cecil.Cil.OpCodes.Call, ((MethodDefinition) symbol.CodeObject));
             }
             else
             {
                 if (call.Name == "Read")
                 {
-                    il.Emit(OpCodes.Ldstr, "Input > ");
-                    MethodInfo write = System.Type.GetType("System.Console")
-                        .GetMethod("Write", new System.Type[] {typeof(string)});
-                    il.EmitCall(OpCodes.Call, write, null);
-
-                    MethodInfo read = System.Type.GetType("System.Console").GetMethod("ReadLine");
-                    MethodInfo parse = System.Type.GetType("System.Int32")
-                        .GetMethod("Parse", new System.Type[] {typeof(string)});
-                    il.EmitCall(OpCodes.Call, read, null);
-                    il.EmitCall(OpCodes.Call, parse, null);
+//                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, "Input > ");
+//                    MethodInfo write = System.Type.GetType("System.Console")
+//                        .GetMethod("Write", new System.Type[] {typeof(string)});
+//                    il.Emit(Mono.Cecil.Cil.OpCodes.Call, write, null);
+//
+//                    MethodInfo read = System.Type.GetType("System.Console").GetMethod("ReadLine");
+//                    MethodInfo parse = System.Type.GetType("System.Int32")
+//                        .GetMethod("Parse", new System.Type[] {typeof(string)});
+//                    il.Emit(Mono.Cecil.Cil.OpCodes.Call, read, null);
+//                    il.Emit(Mono.Cecil.Cil.OpCodes.Call, parse, null);
                 }
                 else if (call.Name == "Write")
                 {
-                    EmitExpression(il, call.Arguments[0].Value, symbolTable);
-                    MethodInfo write = System.Type.GetType("System.Console")
-                        .GetMethod("WriteLine", new System.Type[] {typeof(int)});
-                    il.EmitCall(OpCodes.Call, write, null);
+//                    EmitExpression(il, call.Arguments[0].Value, symbolTable);
+//                    MethodInfo write = System.Type.GetType("System.Console")
+//                        .GetMethod("WriteLine", new System.Type[] {typeof(int)});
+//                    il.EmitCall(OpCodes.Call, write, null);
                 }
                 else
                 {
@@ -704,7 +692,7 @@ namespace PrototypePlatformLanguage.Generation
         }
 
 
-        private void EmitCallStatement(ILGenerator il, CallStatement call, SymbolTable symbolTable)
+        private void EmitCallStatement(ILProcessor il, CallStatement call, SymbolTable symbolTable)
         {
             Symbol symbol = symbolTable.Find(call.Name, SymbolType.Function);
 
@@ -754,42 +742,44 @@ namespace PrototypePlatformLanguage.Generation
                                     if (((Variable) variable.SyntaxObject).Type.VariableType ==
                                         VariableType.PrimitiveArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.Emit(OpCodes.Ldloca, variable.CodeObject as LocalBuilder);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, variable.CodeObject as VariableDefinition);
                                 }
                                 else if (variable.CodeObject is FieldBuilder)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.VariableType ==
                                         VariableType.PrimitiveArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.Emit(OpCodes.Ldsflda, variable.CodeObject as FieldBuilder);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsflda, variable.CodeObject as FieldDefinition);
                                 }
                                 else if (variable.CodeObject is ParameterBuilder)
                                 {
                                     if (((Parameter) variable.SyntaxObject).Type.VariableType ==
                                         VariableType.PrimitiveArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.Emit(OpCodes.Ldarga, ((ParameterBuilder) variable.CodeObject).Position - 1);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarga,
+                                        ((ParameterBuilder) variable.CodeObject).Position - 1);
                                 }
                             }
                             else if (argument.Value is UnaryExpression &&
                                      ((UnaryExpression) argument.Value).UnaryOperatorType == UnaryOperatorType.Indexer)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is LocalBuilder)
+                                if (variable.CodeObject is VariableDefinition)
                                 {
-                                    il.Emit(OpCodes.Ldloc, variable.CodeObject as LocalBuilder);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloc, variable.CodeObject as VariableDefinition);
                                 }
                                 else if (variable.CodeObject is FieldBuilder)
                                 {
-                                    il.Emit(OpCodes.Ldsfld, variable.CodeObject as FieldBuilder);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsfld, variable.CodeObject as FieldDefinition);
                                 }
                                 else if (variable.CodeObject is ParameterBuilder)
                                 {
-                                    il.Emit(OpCodes.Ldarga, ((ParameterBuilder) variable.CodeObject).Position - 1);
+                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarga,
+                                        ((ParameterBuilder) variable.CodeObject).Position - 1);
                                 }
 
                                 EmitExpression(il, ((UnaryExpression) argument.Value).Indexer, symbolTable);
-                                il.Emit(OpCodes.Ldelema);
+                                il.Emit(Mono.Cecil.Cil.OpCodes.Ldelema);
                             }
                             else
                             {
@@ -804,34 +794,34 @@ namespace PrototypePlatformLanguage.Generation
                 }
 
                 Hack:
-                il.Emit(OpCodes.Call, ((MethodBuilder) symbol.CodeObject));
+                il.Emit(Mono.Cecil.Cil.OpCodes.Call, ((MethodDefinition) symbol.CodeObject));
             }
             else
             {
-                if (call.Name == "Read")
-                {
-                    il.Emit(OpCodes.Ldstr, "Input > ");
-                    MethodInfo write = System.Type.GetType("System.Console")
-                        .GetMethod("Write", new System.Type[] {typeof(string)});
-                    il.EmitCall(OpCodes.Call, write, null);
-
-                    MethodInfo read = System.Type.GetType("System.Console").GetMethod("ReadLine");
-                    MethodInfo parse = System.Type.GetType("System.Int32")
-                        .GetMethod("Parse", new System.Type[] {typeof(string)});
-                    il.EmitCall(OpCodes.Call, read, null);
-                    il.EmitCall(OpCodes.Call, parse, null);
-                }
-                else if (call.Name == "Write")
-                {
-                    EmitExpression(il, call.Arguments[0].Value, symbolTable);
-                    MethodInfo write = System.Type.GetType("System.Console")
-                        .GetMethod("WriteLine", new System.Type[] {typeof(int)});
-                    il.EmitCall(OpCodes.Call, write, null);
-                }
-                else
-                {
-                    Error("Unknown function name. [" + call.Name + "]");
-                }
+//                if (call.Name == "Read")
+//                {
+//                    il.Emit(OpCodes.Ldstr, "Input > ");
+//                    MethodInfo write = System.Type.GetType("System.Console")
+//                        .GetMethod("Write", new System.Type[] {typeof(string)});
+//                    il.EmitCall(OpCodes.Call, write, null);
+//
+//                    MethodInfo read = System.Type.GetType("System.Console").GetMethod("ReadLine");
+//                    MethodInfo parse = System.Type.GetType("System.Int32")
+//                        .GetMethod("Parse", new System.Type[] {typeof(string)});
+//                    il.EmitCall(OpCodes.Call, read, null);
+//                    il.EmitCall(OpCodes.Call, parse, null);
+//                }
+//                else if (call.Name == "Write")
+//                {
+//                    EmitExpression(il, call.Arguments[0].Value, symbolTable);
+//                    MethodInfo write = System.Type.GetType("System.Console")
+//                        .GetMethod("WriteLine", new System.Type[] {typeof(int)});
+//                    il.EmitCall(OpCodes.Call, write, null);
+//                }
+//                else
+//                {
+//                    Error("Unknown function name. [" + call.Name + "]");
+//                }
             }
         }
     }
