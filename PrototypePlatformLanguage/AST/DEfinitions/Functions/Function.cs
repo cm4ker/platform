@@ -1,4 +1,5 @@
 using System.Reflection.Emit;
+using Mono.Cecil.Cil;
 using PrototypePlatformLanguage.AST.Definitions.Statements;
 using PrototypePlatformLanguage.AST.Infrastructure;
 
@@ -32,7 +33,7 @@ namespace PrototypePlatformLanguage.AST.Definitions.Functions
         /// <summary>
         /// IL method builder.
         /// </summary>
-        public MethodBuilder Builder;
+        public ILProcessor Builder;
 
         /// <summary>
         /// Creates a function object.
