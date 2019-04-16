@@ -1,4 +1,5 @@
-﻿using MessagePack;
+﻿using System;
+using MessagePack;
 
 namespace ZenPlatform.IdeIntegration.Shared.Messages
 {
@@ -13,6 +14,12 @@ namespace ZenPlatform.IdeIntegration.Shared.Messages
         /// </summary>
         [Key(100000)]
         public string ComponentName { get; set; }
+
+        /// <summary>
+        /// Идентификатор запроса
+        /// </summary>
+        [Key(100001)]
+        public Guid RequestId { get; set; }
     }
 
 
@@ -22,10 +29,8 @@ namespace ZenPlatform.IdeIntegration.Shared.Messages
     [MessagePackObject]
     public class XCHelloMessage : PlatformMessage
     {
-        [Key(0)]
-        public string TextMessage { get; set; } = "Hello world";
+        [Key(0)] public string TextMessage { get; set; } = "Hello world";
 
-        [Key(1)]
-        public bool Handled { get; set; }
+        [Key(1)] public bool Handled { get; set; }
     }
 }

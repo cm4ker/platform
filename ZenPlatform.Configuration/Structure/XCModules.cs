@@ -3,10 +3,14 @@ using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.Structure
 {
+    /// <summary>
+    /// Хостит в себе все подключенные модули
+    /// </summary>
     public class XCModules
     {
-        [XmlArray("IncludedFiles")]
-        [XmlArrayItem(ElementName = "File", Type = typeof(XCFile))]
+        /// <summary>
+        /// Включенные файлы
+        /// </summary>
         public List<XCFile> IncludedFiles { get; set; }
     }
 }

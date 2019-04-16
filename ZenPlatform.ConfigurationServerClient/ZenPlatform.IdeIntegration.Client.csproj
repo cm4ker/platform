@@ -24,6 +24,7 @@
   <ItemGroup>
     <PackageReference Include="MessagePack" Version="1.7.3.4" />
     <PackageReference Include="NetMQ" Version="4.0.0.175-pre" />
+    <PackageReference Include="Splat" Version="4.0.0" />
   </ItemGroup>
 
 </Project>
