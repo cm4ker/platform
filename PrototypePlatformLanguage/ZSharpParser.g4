@@ -61,6 +61,10 @@ functionCall:
     name '(' arguments? ')'
 ;
 
+functionCallExpression:
+   functionCall
+   ;
+
 parameters: parameter (',' parameter)*;
 
 parameter:
@@ -135,7 +139,7 @@ expressionTerm:
 
 expressionPrimary:
     literal
-    | functionCall
+    | functionCallExpression
     | name
     | '(' expression ')'
     

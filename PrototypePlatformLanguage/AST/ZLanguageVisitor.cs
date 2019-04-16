@@ -138,7 +138,7 @@ namespace PrototypePlatformLanguage.AST
             if (context.expression() == null)
                 result = new Variable(null, context.IDENTIFIER().GetText(), _syntaxStack.PopType());
             else
-                result = new Variable(_syntaxStack.PopExpression(), context.IDENTIFIER().GetText(),
+                result = new Variable(_syntaxStack.Pop(), context.IDENTIFIER().GetText(),
                     _syntaxStack.PopType());
 
 
@@ -180,20 +180,19 @@ namespace PrototypePlatformLanguage.AST
         public override object VisitParameters(ZSharpParser.ParametersContext context)
         {
             _syntaxStack.Push(new ParameterCollection());
-            base.VisitParameters(context);
-            return null;
+            return base.VisitParameters(context);
         }
 
 
         public override object VisitParameter(ZSharpParser.ParameterContext context)
         {
+            var paramList = _syntaxStack.PeekCollection();
+
             base.VisitParameter(context);
 
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
 
-            _syntaxStack.PeekCollection()
-                .Add(new Parameter(context.IDENTIFIER().GetText(), _syntaxStack.PopType(), passMethod));
-
+            paramList.Add(new Parameter(context.IDENTIFIER().GetText(), _syntaxStack.PopType(), passMethod));
 
             return null;
         }
@@ -222,9 +221,20 @@ namespace PrototypePlatformLanguage.AST
             base.VisitFunctionCall(context);
 
             _syntaxStack.Push(new CallStatement((ArgumentCollection) _syntaxStack.Pop(), _syntaxStack.PopString()));
+
             return null;
         }
 
+
+        public override object VisitFunctionCallExpression(ZSharpParser.FunctionCallExpressionContext context)
+        {
+            base.VisitFunctionCallExpression(context);
+
+            var callStatement = (CallStatement) _syntaxStack.Pop();
+
+            _syntaxStack.Push(new Call(callStatement.Arguments, callStatement.Name));
+            return null;
+        }
 
         public override object VisitStatements(ZSharpParser.StatementsContext context)
         {

@@ -33,8 +33,7 @@ namespace PrototypePlatformLanguage.Generation
     {
         private Module _module = null;
         private ModuleDefinition _dllModule = null;
-        private SymbolTable _global = null;
-
+        private SymbolTable _typeSymbols = null;
 
         public Generator(Module module)
         {
@@ -43,12 +42,17 @@ namespace PrototypePlatformLanguage.Generation
 
         public void Compile(string path)
         {
+            //
+            // Create functions.
+            //
+
             AssemblyDefinition ad = AssemblyDefinition.CreateAssembly(
                 new AssemblyNameDefinition("BetaName", Version.Parse("1.0.0.0")), "ZModule", ModuleKind.Dll);
 
             _dllModule = ad.MainModule;
 
-            TypeDefinition td = new TypeDefinition("TestNamespace", "SomeName",
+
+            TypeDefinition td = new TypeDefinition("CompileNamespace", _module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.Sealed);
 
             _dllModule.Types.Add(td);
@@ -56,18 +60,18 @@ namespace PrototypePlatformLanguage.Generation
             // Create global variables.
             //
 
-            _global = new SymbolTable();
+            _typeSymbols = new SymbolTable();
 
-            //
-            // Create functions.
-            //
+            _module.TypeBody.SymbolTable = _typeSymbols;
 
-
-            _module.TypeBody.SymbolTable = _global;
-            foreach (var methodDefinition in BuildFunctions(_module.TypeBody))
+            // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
+            // Для того, чтобы можно было делать вызов функции из другой функции
+            foreach (var item in PrebuildFunctions(_module.TypeBody))
             {
-                td.Methods.Add(methodDefinition);
+                BuildFunction(item.Item1, item.Item2);
+                td.Methods.Add(item.Item2);
             }
+
 
             var moduleName = $"{_module.Name}.dll";
 
@@ -220,7 +224,8 @@ namespace PrototypePlatformLanguage.Generation
                 else if (variable.CodeObject is ParameterDefinition)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_S, ((ParameterDefinition) variable.CodeObject).Sequence - 1);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_S,
+                        (byte) ((ParameterDefinition) variable.CodeObject).Sequence);
                     if (p.PassMethod == PassMethod.ByReference)
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldind_I4);
                 }
@@ -242,25 +247,29 @@ namespace PrototypePlatformLanguage.Generation
         /// <param name="builder"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        private List<MethodDefinition> BuildFunctions(TypeBody typeBody)
+        private List<(Function, MethodDefinition)> PrebuildFunctions(TypeBody typeBody)
         {
             if (typeBody == null)
                 throw new ArgumentNullException();
 
-            SymbolTable symbolTable = new SymbolTable(_global);
 
-            List<MethodDefinition> result = new List<MethodDefinition>();
+            List<(Function, MethodDefinition)> result = new List<(Function, MethodDefinition)>();
 
             if (typeBody != null && typeBody.Functions != null)
             {
                 foreach (Function function in typeBody.Functions)
                 {
+                    //Для каждого метода создаём свою таблицу символов
+                    SymbolTable symbolTable = new SymbolTable(_typeSymbols);
+
                     // Make child visible to sibillings
                     function.InstructionsBody.SymbolTable = symbolTable;
 
-                    MethodDefinition method = BuildFunction(function);
+                    // Create method.
+                    MethodDefinition method = new MethodDefinition(function.Name,
+                        MethodAttributes.Public | MethodAttributes.Static, ToCecilType(function.Type.ToSystemType()));
 
-                    result.Add(method);
+                    result.Add((function, method));
 
                     // Make child visible to parent.
                     typeBody.SymbolTable.Add(function.Name, SymbolType.Function, function, method);
@@ -271,7 +280,7 @@ namespace PrototypePlatformLanguage.Generation
             return result;
         }
 
-        private MethodDefinition BuildFunction(Function function)
+        private MethodDefinition BuildFunction(Function function, MethodDefinition method)
         {
             if (function == null)
                 throw new ArgumentNullException();
@@ -299,22 +308,20 @@ namespace PrototypePlatformLanguage.Generation
                 }
             }
 
-            // Create method.
-            MethodDefinition method = new MethodDefinition(functionName,
-                MethodAttributes.Public | MethodAttributes.Static, ToCecilType(returnType));
-
             function.Builder = method.Body.GetILProcessor();
 
             if (function.Parameters != null)
             {
                 for (int x = 0; x < function.Parameters.Count; x++)
                 {
-                    var pType = function.Parameters[x].Type.ToSystemType();
+                    var pType = function.Parameters[x].Type;
                     var pName = function.Parameters[x].Name;
 
 
                     ParameterDefinition p = new ParameterDefinition(pName, ParameterAttributes.None,
-                        ToCecilType(pType));
+                        ToCecilType(pType.ToSystemType()));
+
+                    function.InstructionsBody.SymbolTable.Add(pName, SymbolType.Variable, function.Parameters[x], p);
 
                     method.Parameters.Add(p);
                 }
@@ -426,7 +433,7 @@ namespace PrototypePlatformLanguage.Generation
 
                     if (symbol != null)
                     {
-                        if (((MethodBuilder) symbol.CodeObject).ReturnType != typeof(void))
+                        if (((MethodDefinition) symbol.CodeObject).ReturnType != _dllModule.TypeSystem.Void)
                             il.Emit(Mono.Cecil.Cil.OpCodes.Pop);
                     }
                     else
