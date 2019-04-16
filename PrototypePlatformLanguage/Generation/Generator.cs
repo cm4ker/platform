@@ -18,6 +18,7 @@ using Module = PrototypePlatformLanguage.AST.Definitions.Module;
 using OpCode = Mono.Cecil.Cil.OpCode;
 using OpCodes = System.Reflection.Emit.OpCodes;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
+using Type = System.Type;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 
@@ -78,6 +79,26 @@ namespace PrototypePlatformLanguage.Generation
         private void Error(string message)
         {
             throw new Exception(message);
+        }
+
+
+        private TypeReference ToCecilType(Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Int32: return _dllModule.TypeSystem.Int32;
+                case TypeCode.Boolean: return _dllModule.TypeSystem.Boolean;
+                case TypeCode.String: return _dllModule.TypeSystem.String;
+                case TypeCode.Double: return _dllModule.TypeSystem.Double;
+                case TypeCode.Char: return _dllModule.TypeSystem.Char;
+
+                default:
+                {
+                    if (type == typeof(void))
+                        return _dllModule.TypeSystem.Void;
+                    return ToCecilType(type);
+                }
+            }
         }
 
         private void EmitExpression(ILProcessor il, Expression expression, SymbolTable symbolTable)
@@ -226,7 +247,7 @@ namespace PrototypePlatformLanguage.Generation
             if (typeBody == null)
                 throw new ArgumentNullException();
 
-            SymbolTable sibillings = new SymbolTable(_global);
+            SymbolTable symbolTable = new SymbolTable(_global);
 
             List<MethodDefinition> result = new List<MethodDefinition>();
 
@@ -235,7 +256,7 @@ namespace PrototypePlatformLanguage.Generation
                 foreach (Function function in typeBody.Functions)
                 {
                     // Make child visible to sibillings
-                    function.InstructionsBody.SymbolTable = sibillings;
+                    function.InstructionsBody.SymbolTable = symbolTable;
 
                     MethodDefinition method = BuildFunction(function);
 
@@ -243,7 +264,7 @@ namespace PrototypePlatformLanguage.Generation
 
                     // Make child visible to parent.
                     typeBody.SymbolTable.Add(function.Name, SymbolType.Function, function, method);
-                    sibillings.Add(function.Name, SymbolType.Function, function, method);
+                    symbolTable.Add(function.Name, SymbolType.Function, function, method);
                 }
             }
 
@@ -280,7 +301,7 @@ namespace PrototypePlatformLanguage.Generation
 
             // Create method.
             MethodDefinition method = new MethodDefinition(functionName,
-                MethodAttributes.Public | MethodAttributes.Static, _dllModule.ImportReference(returnType));
+                MethodAttributes.Public | MethodAttributes.Static, ToCecilType(returnType));
 
             function.Builder = method.Body.GetILProcessor();
 
@@ -293,7 +314,7 @@ namespace PrototypePlatformLanguage.Generation
 
 
                     ParameterDefinition p = new ParameterDefinition(pName, ParameterAttributes.None,
-                        _dllModule.ImportReference(pType));
+                        ToCecilType(pType));
 
                     method.Parameters.Add(p);
                 }
@@ -317,7 +338,8 @@ namespace PrototypePlatformLanguage.Generation
 
             EmitBody(il, function.InstructionsBody);
 
-            il.Emit(Mono.Cecil.Cil.OpCodes.Ret);
+            if (function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void)
+                il.Emit(Mono.Cecil.Cil.OpCodes.Ret);
         }
 
         private void EmitBody(ILProcessor il, InstructionsBody body)
@@ -333,7 +355,7 @@ namespace PrototypePlatformLanguage.Generation
                     Variable variable = statement as Variable;
 
                     VariableDefinition local =
-                        new VariableDefinition(_dllModule.ImportReference(variable.Type.ToSystemType()));
+                        new VariableDefinition(ToCecilType(variable.Type.ToSystemType()));
                     il.Body.Variables.Add(local);
 
                     body.SymbolTable.Add(variable.Name, SymbolType.Variable, variable, local);
@@ -358,7 +380,7 @@ namespace PrototypePlatformLanguage.Generation
                         {
                             EmitExpression(il, (Expression) variable.Value, body.SymbolTable);
                             il.Emit(Mono.Cecil.Cil.OpCodes.Newarr,
-                                _dllModule.ImportReference(variable.Type.ToSystemType()));
+                                ToCecilType(variable.Type.ToSystemType()));
 
                             il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, local);
                         }
@@ -368,7 +390,7 @@ namespace PrototypePlatformLanguage.Generation
 
                             il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, elements.Count);
                             il.Emit(Mono.Cecil.Cil.OpCodes.Newarr,
-                                _dllModule.ImportReference(variable.Type.ToSystemType()));
+                                ToCecilType(variable.Type.ToSystemType()));
 
                             il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, local);
 
