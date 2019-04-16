@@ -1,13 +1,15 @@
-﻿using ZenPlatform.Configuration.Contracts;
+﻿using System.Dynamic;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Data.Contracts
 {
+
     /// <summary>
     /// Интерфейс комопнента данных
     /// </summary>
-    public interface IDataComponent
+    public interface IDataComponent 
     {
         /// <summary>
         /// Событие, вызываемое перед инициализацией компонента

@@ -46,9 +46,28 @@ namespace ZenPlatform.DataComponent.Entity
             var preffix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
             var postfix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
 
-            return $"{preffix}{obj.Name}{postfix}";
+            return $"{preffix}{obj.Name}{postfix}"; 
         }
 
+        /*
+         *using System;
+         *
+         * namspace Documents
+         * {
+         *    public class Invoice
+         *     {
+         *        Session _session;
+         *        InvoiceDTO _dto;
+         * 
+         *        public Invoice(Session session, InvoiceDTO dto)
+         *        {
+         *         }
+         *     
+         *     }
+         * }
+         * 
+         */
+        
         public virtual string GetMultiDataStorageClassName(XCObjectPropertyBase property)
         {
             return $"MultiDataStorage_{property.DatabaseColumnName}";
