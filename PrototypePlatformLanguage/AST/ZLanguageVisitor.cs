@@ -343,10 +343,13 @@ namespace PrototypePlatformLanguage.AST
             object result;
 
             if (context.RETURN().Length != 0)
+            {
                 if (context.expression() == null)
                     result = new Return(null);
                 else
                     result = new Return(_syntaxStack.PopExpression());
+                _syntaxStack.PeekType<IList>().Add(result);
+            }
             else if (context.expression() != null)
             {
                 _syntaxStack.PeekType<IList>().Add(_syntaxStack.PopStatement());
