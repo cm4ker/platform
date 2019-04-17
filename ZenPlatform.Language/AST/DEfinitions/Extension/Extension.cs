@@ -12,10 +12,18 @@ namespace ZenPlatform.Language.AST.Definitions.Extension
         public string Path;
 
         public InstructionsBody InstructionsBody { get; set; }
+
+        public ExtensionKind Kind;
+
+        public Extension(string extensionName, ExtensionKind kind = ExtensionKind.CallOrAssign)
+        {
+            ExtensionName = extensionName;
+            Kind = kind;
+        }
     }
 
 
-    public enum ExtensionType
+    public enum ExtensionKind
     {
         CallOrAssign,
         Instructions
