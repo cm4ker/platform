@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
-using ZenPlatfrom.Language.AST.Definitions;
-using ZenPlatfrom.Language.AST.Definitions.Expression;
-using ZenPlatfrom.Language.AST.Definitions.Functions;
-using ZenPlatfrom.Language.AST.Infrastructure;
-using Type = ZenPlatfrom.Language.AST.Definitions.Type;
+using ZenPlatform.Language.AST.Definitions;
+using ZenPlatform.Language.AST.Definitions.Expression;
+using ZenPlatform.Language.AST.Definitions.Functions;
+using ZenPlatform.Language.AST.Infrastructure;
+using Type = ZenPlatform.Language.AST.Definitions.Type;
 
-namespace ZenPlatfrom.Language.AST
+namespace ZenPlatform.Language.AST
 {
     public class ZLanguageVisitor : ZSharpParserBaseVisitor<object>
     {
@@ -64,7 +64,7 @@ namespace ZenPlatfrom.Language.AST
 
         public override object VisitStructureType(ZSharpParser.StructureTypeContext context)
         {
-            var result = new Type(context.GetText());
+            var result = new Definitions.Type(context.GetText());
             _syntaxStack.Push(result);
             return result;
         }
@@ -72,12 +72,12 @@ namespace ZenPlatfrom.Language.AST
         public override object VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
         {
             object result = null;
-            if (context.STRING() != null) result = new Type(PrimitiveType.String);
-            else if (context.INT() != null) result = new Type(PrimitiveType.Integer);
-            else if (context.BOOL() != null) result = new Type(PrimitiveType.Boolean);
-            else if (context.DOUBLE() != null) result = new Type(PrimitiveType.Double);
-            else if (context.CHAR() != null) result = new Type(PrimitiveType.Character);
-            else if (context.VOID() != null) result = new Type(PrimitiveType.Void);
+            if (context.STRING() != null) result = new Definitions.Type(PrimitiveType.String);
+            else if (context.INT() != null) result = new Definitions.Type(PrimitiveType.Integer);
+            else if (context.BOOL() != null) result = new Definitions.Type(PrimitiveType.Boolean);
+            else if (context.DOUBLE() != null) result = new Definitions.Type(PrimitiveType.Double);
+            else if (context.CHAR() != null) result = new Definitions.Type(PrimitiveType.Character);
+            else if (context.VOID() != null) result = new Definitions.Type(PrimitiveType.Void);
 
             if (result == null)
                 throw new Exception("Unknown primitive type");

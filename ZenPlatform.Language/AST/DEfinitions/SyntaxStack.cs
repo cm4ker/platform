@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Linq;
-using ZenPlatfrom.Language.AST.Definitions.Functions;
-using ZenPlatfrom.Language.AST.Definitions.Statements;
+using ZenPlatform.Language.AST.Definitions.Functions;
+using ZenPlatform.Language.AST.Definitions.Statements;
 
-namespace ZenPlatfrom.Language.AST.Definitions
+namespace ZenPlatform.Language.AST.Definitions
 {
     /// <summary>
     /// Стэк дерева синтаксиса

@@ -2,11 +2,11 @@
 using System.IO;
 using Antlr4.Runtime;
 using Mono.Cecil;
-using ZenPlatfrom.Language.AST;
-using ZenPlatfrom.Language.AST.Definitions;
-using ZenPlatfrom.Language.Generation;
+using ZenPlatform.Language.AST;
+using ZenPlatform.Language.AST.Definitions;
+using ZenPlatform.Language.Generation;
 
-namespace ZenPlatfrom.Language
+namespace ZenPlatform.Language
 {
     class Program
     {
@@ -54,22 +54,12 @@ module Test
             var result = (Module) visitor.VisitEntryPoint(parser.entryPoint());
             Generator g = new Generator(result);
 
+            if (File.Exists("debug.dll"))
+                File.Delete("debug.dll");
             g.Compile("debug.dll");
         }
     }
 
-
-    public class Listener : BaseErrorListener
-    {
-        public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line,
-            int charPositionInLine, string msg,
-            RecognitionException e)
-        {
-            Console.WriteLine($"Error at line {line} at char {charPositionInLine}: {msg}");
-
-            base.SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
-        }
-    }
 
     static class Test
     {

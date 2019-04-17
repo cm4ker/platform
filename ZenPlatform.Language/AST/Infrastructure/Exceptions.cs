@@ -1,6 +1,6 @@
 using System;
 
-namespace ZenPlatfrom.Language.AST.Infrastructure
+namespace ZenPlatform.Language.AST.Infrastructure
 {
 	public class SymbolException : Exception 
 	{

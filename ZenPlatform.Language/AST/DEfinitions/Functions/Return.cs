@@ -1,6 +1,6 @@
-using ZenPlatfrom.Language.AST.Definitions.Statements;
+using ZenPlatform.Language.AST.Definitions.Statements;
 
-namespace ZenPlatfrom.Language.AST.Definitions.Functions
+namespace ZenPlatform.Language.AST.Definitions.Functions
 {
     /// <summary>
     /// Describes a return statement.

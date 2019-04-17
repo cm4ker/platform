@@ -1,4 +1,4 @@
-namespace ZenPlatfrom.Language.AST.Definitions.Symbols
+namespace ZenPlatform.Language.AST.Definitions.Symbols
 {
     public enum SymbolType
     {

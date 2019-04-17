@@ -4,20 +4,20 @@ using System.Globalization;
 using System.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using ZenPlatfrom.Language.AST.Definitions;
-using ZenPlatfrom.Language.AST.Definitions.Expression;
-using ZenPlatfrom.Language.AST.Definitions.Functions;
-using ZenPlatfrom.Language.AST.Definitions.Statements;
-using ZenPlatfrom.Language.AST.Definitions.Symbols;
-using ZenPlatfrom.Language.AST.Infrastructure;
+using ZenPlatform.Language.AST.Definitions;
+using ZenPlatform.Language.AST.Definitions.Expression;
+using ZenPlatform.Language.AST.Definitions.Functions;
+using ZenPlatform.Language.AST.Definitions.Statements;
+using ZenPlatform.Language.AST.Definitions.Symbols;
+using ZenPlatform.Language.AST.Infrastructure;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
-using Module = ZenPlatfrom.Language.AST.Definitions.Module;
+using Module = ZenPlatform.Language.AST.Definitions.Module;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
 using Type = System.Type;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 
-namespace ZenPlatfrom.Language.Generation
+namespace ZenPlatform.Language.Generation
 {
     public class Label
     {
@@ -26,11 +26,11 @@ namespace ZenPlatfrom.Language.Generation
 
     public class Generator
     {
-        private Module _module = null;
+        private AST.Definitions.Module _module = null;
         private ModuleDefinition _dllModule = null;
         private SymbolTable _typeSymbols = null;
 
-        public Generator(Module module)
+        public Generator(AST.Definitions.Module module)
         {
             _module = module;
         }
