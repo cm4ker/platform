@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using ZenPlatform.Language.AST.Definitions;
 using ZenPlatform.Language.AST.Definitions.Expression;
+using ZenPlatform.Language.AST.Definitions.Extension;
 using ZenPlatform.Language.AST.Definitions.Functions;
 using ZenPlatform.Language.AST.Infrastructure;
 using Type = ZenPlatform.Language.AST.Definitions.Type;
@@ -303,6 +304,29 @@ namespace ZenPlatform.Language.AST
             }
 
             return null;
+        }
+
+        public override object VisitExtensionExpression(ZSharpParser.ExtensionExpressionContext context)
+        {
+            base.VisitExtensionExpression(context);
+            Extension result;
+
+            var extensionObj = _syntaxStack.Pop();
+            if (extensionObj is InstructionsBody ib)
+            {
+                result = new Extension(_syntaxStack.PopString(), ExtensionKind.Instructions);
+                result.InstructionsBody = ib;
+            }
+            else
+            {
+                var path = _syntaxStack.PopString();
+                var extensionName = path.Split('.')[0];
+                result = new Extension(extensionName);
+                result.Path = path;
+            }
+
+
+            _syntaxStack.Push();
         }
 
         public override object VisitExpressionFactor(ZSharpParser.ExpressionFactorContext context)

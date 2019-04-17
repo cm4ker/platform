@@ -177,7 +177,9 @@ name:
     ;
 
 extensionExpression:
-    DOLLAR ('{'statements'}' || name)  
+    '$' 
+        (name ('{'statements'}')?)
+        | functionCall;  
    
 
 
