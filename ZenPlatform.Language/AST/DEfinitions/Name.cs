@@ -1,4 +1,4 @@
-namespace ZenPlatfrom.Language.AST.Definitions
+namespace ZenPlatform.Language.AST.Definitions
 {
     public class Name : Infrastructure.Expression
     {

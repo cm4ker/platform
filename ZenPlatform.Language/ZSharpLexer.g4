@@ -31,6 +31,8 @@ TYPE : 'type';
 NEW  : 'new';
 RETURN : 'return';
 
+DOLLAR:                   '$';
+
 SEMICOLON:                ';';
 PLUS:                     '+';
 MINUS:                    '-';
@@ -78,6 +80,7 @@ CLOSE_PARENS:             ')';
 DOT:                      '.';
 COMMA:                    ',';
 COLON:                    ':';
+
 
 REF: 'ref';
 

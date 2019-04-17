@@ -1,6 +1,6 @@
-using ZenPlatfrom.Language.AST.Definitions;
+using ZenPlatform.Language.AST.Definitions;
 
-namespace ZenPlatfrom.Language.AST.Infrastructure
+namespace ZenPlatform.Language.AST.Infrastructure
 {
     public abstract class Expression
     {

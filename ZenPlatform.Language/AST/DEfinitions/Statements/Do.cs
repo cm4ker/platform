@@ -1,4 +1,4 @@
-namespace ZenPlatfrom.Language.AST.Definitions.Statements
+namespace ZenPlatform.Language.AST.Definitions.Statements
 {
     public class Do : Statement
     {

@@ -1,6 +1,6 @@
-using ZenPlatfrom.Language.AST.Infrastructure;
+using ZenPlatform.Language.AST.Infrastructure;
 
-namespace ZenPlatfrom.Language.AST.Definitions.Expression
+namespace ZenPlatform.Language.AST.Definitions.Expression
 {
     public class UnaryExpression : Infrastructure.Expression
     {

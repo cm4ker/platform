@@ -176,4 +176,9 @@ name:
     | name '.' IDENTIFIER
     ;
 
+extensionExpression:
+    DOLLAR ('{'statements'}' || name)  
+   
+
+
 
