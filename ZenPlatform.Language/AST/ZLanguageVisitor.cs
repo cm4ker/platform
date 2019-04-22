@@ -147,6 +147,16 @@ namespace ZenPlatform.Language.AST
             return result;
         }
 
+        public override object VisitCastExpression(ZSharpParser.CastExpressionContext context)
+        {
+            base.VisitCastExpression(context);
+
+            var result = new UnaryExpression(null, _syntaxStack.PopExpression(), UnaryOperatorType.Cast);
+            result.Cast = _syntaxStack.PopType();
+
+            return result;
+        }
+
         public override object VisitFunctionDeclaration(ZSharpParser.FunctionDeclarationContext context)
         {
             base.VisitFunctionDeclaration(context);
@@ -326,7 +336,8 @@ namespace ZenPlatform.Language.AST
             }
 
 
-            _syntaxStack.Push();
+            //_syntaxStack.Push();
+            return null;
         }
 
         public override object VisitExpressionFactor(ZSharpParser.ExpressionFactorContext context)

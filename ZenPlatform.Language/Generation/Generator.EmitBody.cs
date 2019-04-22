@@ -24,6 +24,7 @@ namespace ZenPlatform.Language.Generation
 
                     VariableDefinition local =
                         new VariableDefinition(ToCecilType(variable.Type.ToSystemType()));
+
                     il.Body.Variables.Add(local);
 
                     body.SymbolTable.Add(variable.Name, SymbolType.Variable, variable, local);
@@ -38,7 +39,10 @@ namespace ZenPlatform.Language.Generation
                         {
                             EmitExpression(il, (Expression) variable.Value, body.SymbolTable);
 
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, local);
+                            if (local.Index > 255)
+                                il.Emit(OpCodes.Stloc, local);
+                            else
+                                il.Emit(OpCodes.Stloc_S, local);
                         }
                     }
                     else if (variable.Type.VariableType == VariableType.PrimitiveArray)
@@ -47,31 +51,37 @@ namespace ZenPlatform.Language.Generation
                         if (variable.Value != null && variable.Value is Expression)
                         {
                             EmitExpression(il, (Expression) variable.Value, body.SymbolTable);
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Newarr,
+                            il.Emit(OpCodes.Newarr,
                                 ToCecilType(variable.Type.ToSystemType()));
 
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, local);
+                            if (local.Index > 255)
+                                il.Emit(OpCodes.Stloc, local);
+                            else
+                                il.Emit(OpCodes.Stloc_S, local);
                         }
                         else if (variable.Value != null && variable.Value is ElementCollection)
                         {
                             ElementCollection elements = variable.Value as ElementCollection;
 
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, elements.Count);
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Newarr,
+                            il.Emit(OpCodes.Ldc_I4, elements.Count);
+                            il.Emit(OpCodes.Newarr,
                                 ToCecilType(variable.Type.ToSystemType()));
 
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, local);
+                            if (local.Index > 255)
+                                il.Emit(OpCodes.Stloc, local);
+                            else
+                                il.Emit(OpCodes.Stloc_S, local);
 
                             for (int x = 0; x < elements.Count; x++)
                             {
                                 // Load array
-                                il.Emit(Mono.Cecil.Cil.OpCodes.Ldloc, local);
+                                il.Emit(OpCodes.Ldloc, local);
                                 // Load index
-                                il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, x);
+                                il.Emit(OpCodes.Ldc_I4, x);
                                 // Load value
                                 EmitExpression(il, elements[x].Expression, body.SymbolTable);
                                 // Store
-                                il.Emit(Mono.Cecil.Cil.OpCodes.Stelem_I4);
+                                il.Emit(OpCodes.Stelem_I4);
                             }
                         }
                     }
@@ -84,7 +94,7 @@ namespace ZenPlatform.Language.Generation
                 {
                     if (((Return) statement).Value != null)
                         EmitExpression(il, ((Return) statement).Value, body.SymbolTable);
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Ret);
+                    il.Emit(OpCodes.Ret);
                 }
                 else if (statement is CallStatement)
                 {
@@ -95,12 +105,12 @@ namespace ZenPlatform.Language.Generation
                     if (symbol != null)
                     {
                         if (((MethodDefinition) symbol.CodeObject).ReturnType != _dllModule.TypeSystem.Void)
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Pop);
+                            il.Emit(OpCodes.Pop);
                     }
                     else
                     {
                         if (call.Name == "Read")
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Pop);
+                            il.Emit(OpCodes.Pop);
                     }
                 }
                 else if (statement is If)
@@ -120,7 +130,7 @@ namespace ZenPlatform.Language.Generation
 
 
                         var exit = new Label();
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, exit.Instruction);
+                        il.Emit(OpCodes.Brfalse, exit.Instruction);
                         EmitBody(il, ifStatement.IfInstructionsBody);
                         il.Append(exit.Instruction);
                     }
@@ -130,9 +140,9 @@ namespace ZenPlatform.Language.Generation
                         ifStatement.ElseInstructionsBody.SymbolTable = new SymbolTable(body.SymbolTable);
                         Label exit = new Label();
                         Label elseLabel = new Label();
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, elseLabel.Instruction);
+                        il.Emit(OpCodes.Brfalse, elseLabel.Instruction);
                         EmitBody(il, ifStatement.IfInstructionsBody);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Br, exit.Instruction);
+                        il.Emit(OpCodes.Br, exit.Instruction);
                         il.Append(elseLabel.Instruction);
                         EmitBody(il, ifStatement.ElseInstructionsBody);
                         il.Append(exit.Instruction);
@@ -152,9 +162,9 @@ namespace ZenPlatform.Language.Generation
                     il.Append(begin.Instruction);
                     // Eval condition
                     EmitExpression(il, whileStatement.Condition, body.SymbolTable);
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, exit.Instruction);
+                    il.Emit(OpCodes.Brfalse, exit.Instruction);
                     EmitBody(il, whileStatement.InstructionsBody);
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Br, begin.Instruction);
+                    il.Emit(OpCodes.Br, begin.Instruction);
                     il.Append(exit.Instruction);
                 }
                 else if (statement is Do)
@@ -170,7 +180,7 @@ namespace ZenPlatform.Language.Generation
                     il.Append(loop.Instruction);
                     EmitBody(il, doStatement.InstructionsBody);
                     EmitExpression(il, doStatement.Condition, body.SymbolTable);
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Brtrue, loop.Instruction);
+                    il.Emit(OpCodes.Brtrue, loop.Instruction);
                 }
                 else if (statement is For)
                 {
@@ -189,12 +199,12 @@ namespace ZenPlatform.Language.Generation
                     il.Append(loop.Instruction);
                     // Emit condition
                     EmitExpression(il, forStatement.Condition, body.SymbolTable);
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, exit.Instruction);
+                    il.Emit(OpCodes.Brfalse, exit.Instruction);
                     // Emit body
                     EmitBody(il, forStatement.InstructionsBody);
                     // Emit counter
                     EmitAssignment(il, forStatement.Counter, body.SymbolTable);
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Br, loop.Instruction);
+                    il.Emit(OpCodes.Br, loop.Instruction);
                     il.Append(exit.Instruction);
                 }
             }

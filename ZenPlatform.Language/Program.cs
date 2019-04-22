@@ -23,22 +23,24 @@ namespace ZenPlatform.Language
 
 module Test
 {
-    void Main()
+    int Multiply(int a, int b)
     {
-        int i = 123;
-        string s = ""Hello \""world"";
-    //    bool b = false;
-        char c = 'V';
-        double d = 123.23;
-        
-        int a = Mainly(i);
-        Mainly(0);
+        return a * b;
     }
 
-    int Mainly(int b)
+    int Add(int a, int b)
     {
-        int a = 2;
         return b + a;
+    }
+
+    int Sub(int a, int b)
+    {
+        return a - b;
+    }
+
+    double Div(int a, int b)
+    {
+        return (Double)a / (Double)b;
     }
 }
 
@@ -54,9 +56,9 @@ module Test
             var result = (Module) visitor.VisitEntryPoint(parser.entryPoint());
             Generator g = new Generator(result);
 
-            if (File.Exists("debug.dll"))
-                File.Delete("debug.dll");
-            g.Compile("debug.dll");
+            if (File.Exists("BetaName.dll"))
+                File.Delete("BetaName.dll");
+            g.Compile("BetaName.dll");
         }
     }
 
