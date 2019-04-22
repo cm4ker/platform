@@ -23,6 +23,12 @@ namespace ZenPlatform.Language
 
 module Test
 {
+
+    void Main()
+    {
+        double testCast = (double)1;
+    }
+
     int Multiply(int a, int b)
     {
         return a * b;
@@ -54,6 +60,7 @@ module Test
             parser.AddErrorListener(new Listener());
             ZLanguageVisitor visitor = new ZLanguageVisitor();
             var result = (Module) visitor.VisitEntryPoint(parser.entryPoint());
+
             Generator g = new Generator(result);
 
             if (File.Exists("BetaName.dll"))
