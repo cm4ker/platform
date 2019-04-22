@@ -42,11 +42,11 @@ namespace ZenPlatform.Language.Generation
             _dllModule = ad.MainModule;
 
             
-            
-
             TypeDefinition td = new TypeDefinition("CompileNamespace", _module.Name,
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.Sealed);
-
+                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, 
+                _dllModule.TypeSystem.Object);
+            
+            
             _dllModule.Types.Add(td);
             //
             // Create global variables.
@@ -92,7 +92,7 @@ namespace ZenPlatform.Language.Generation
                 {
                     if (type == typeof(void))
                         return _dllModule.TypeSystem.Void;
-                    return ToCecilType(type);
+                    return null;
                 }
             }
         }
@@ -174,10 +174,8 @@ namespace ZenPlatform.Language.Generation
                         break;
                 }
             }
-            else if (expression is Literal)
+            else if (expression is Literal literal)
             {
-                Literal literal = expression as Literal;
-
                 switch (literal.LiteralType)
                 {
                     case LiteralType.Integer:
@@ -195,9 +193,9 @@ namespace ZenPlatform.Language.Generation
                         break;
                     case LiteralType.Boolean:
                         if (literal.Value == "true")
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, 1);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (byte) 1);
                         else if (literal.Value == "false")
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, 0);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (byte) 0);
                         break;
                 }
             }
@@ -258,7 +256,9 @@ namespace ZenPlatform.Language.Generation
 
                     // Create method.
                     MethodDefinition method = new MethodDefinition(function.Name,
-                        MethodAttributes.Public | MethodAttributes.Static, ToCecilType(function.Type.ToSystemType()));
+                        MethodAttributes.Public | MethodAttributes.Static
+                                                | MethodAttributes.HideBySig,
+                        ToCecilType(function.Type.ToSystemType()));
 
                     result.Add((function, method));
 
@@ -334,7 +334,10 @@ namespace ZenPlatform.Language.Generation
 
             ILProcessor il = function.Builder;
 
+            il.Body.InitLocals = true;
+
             EmitBody(il, function.InstructionsBody);
+
 
             if (function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void)
                 il.Emit(Mono.Cecil.Cil.OpCodes.Ret);
