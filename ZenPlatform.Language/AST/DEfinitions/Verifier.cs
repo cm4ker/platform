@@ -50,10 +50,14 @@ namespace ZenPlatform.Language.AST.Definitions
 
         public Type GetExpressionType(SymbolTable symbolTable, Infrastructure.Expression expression)
         {
-            if (expression is UnaryExpression)
+            if (expression is UnaryExpression unary)
             {
-                UnaryExpression unary = (UnaryExpression) expression;
-                return FindType(GetExpressionType(symbolTable, unary.Value), unary.UnaryOperatorType);
+                if (unary is IndexerExpression ie)
+                    return FindType(GetExpressionType(symbolTable, unary.Value), UnaryOperatorType.Negative);
+                if (unary is LogicalOrArithmeticExpression lae)
+                    return FindType(GetExpressionType(symbolTable, unary.Value), lae.Type);
+                if (unary is CastExpression ce)
+                    return ce.Type;
             }
             else if (expression is BinaryExpression)
             {
@@ -65,16 +69,7 @@ namespace ZenPlatform.Language.AST.Definitions
             {
                 Literal literal = expression as Literal;
 
-                if (literal.LiteralType == LiteralType.Boolean)
-                    return new Type(PrimitiveType.Boolean);
-                if (literal.LiteralType == LiteralType.Character)
-                    return new Type(PrimitiveType.Character);
-                if (literal.LiteralType == LiteralType.Integer)
-                    return new Type(PrimitiveType.Integer);
-                if (literal.LiteralType == LiteralType.Real)
-                    return new Type(PrimitiveType.Real);
-                if (literal.LiteralType == LiteralType.String)
-                    return new Type(PrimitiveType.Void);
+                return literal.Type;
             }
             else if (expression is Name)
             {

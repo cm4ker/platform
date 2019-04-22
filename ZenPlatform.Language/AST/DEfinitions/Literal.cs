@@ -1,29 +1,24 @@
 namespace ZenPlatform.Language.AST.Definitions
 {
     /// <summary>
-    /// Describes a literal found in text
+    /// Представляет символ литера
     /// </summary>
     public class Literal : Infrastructure.Expression
     {
         /// <summary>
-        /// Textual value of the literal, string and character literals include quotes.
+        /// Создать литерал
         /// </summary>
-        public string Value;
-
-        /// <summary>
-        /// Type of literal.
-        /// </summary>
-        public LiteralType LiteralType;
-
-        /// <summary>
-        /// Create a literal object.
-        /// </summary>
-        /// <param name="value">Value of the literal.</param>
-        /// <param name="literalType">Literal type.</param>
-        public Literal(string value, LiteralType literalType)
+        /// <param name="value">Текстовое представление литерала</param>
+        /// <param name="type">Тип литерала</param>
+        public Literal(string value, Type type)
         {
             Value = value;
-            LiteralType = literalType;
+            Type = type;
         }
+
+        /// <summary>
+        /// Текстовое представление литерала, строки и символы включают кавычки
+        /// </summary>
+        public string Value;
     }
 }

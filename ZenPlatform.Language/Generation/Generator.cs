@@ -41,12 +41,13 @@ namespace ZenPlatform.Language.Generation
 
             _dllModule = ad.MainModule;
 
-            
+
             TypeDefinition td = new TypeDefinition("CompileNamespace", _module.Name,
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, 
+                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
+                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
                 _dllModule.TypeSystem.Object);
-            
-            
+
+
             _dllModule.Types.Add(td);
             //
             // Create global variables.
@@ -87,7 +88,7 @@ namespace ZenPlatform.Language.Generation
                 case TypeCode.String: return _dllModule.TypeSystem.String;
                 case TypeCode.Double: return _dllModule.TypeSystem.Double;
                 case TypeCode.Char: return _dllModule.TypeSystem.Char;
-
+                case TypeCode.Object: return _dllModule.ImportReference(type);
                 default:
                 {
                     if (type == typeof(void))
@@ -153,45 +154,55 @@ namespace ZenPlatform.Language.Generation
                         break;
                 }
             }
-            else if (expression is UnaryExpression)
+            else if (expression is UnaryExpression ue)
             {
-                UnaryExpression unaryExpression = expression as UnaryExpression;
-
-                switch (unaryExpression.UnaryOperatorType)
+                if (ue is IndexerExpression ie)
                 {
-                    case UnaryOperatorType.Indexer:
-                        EmitExpression(il, unaryExpression.Value, symbolTable);
-                        EmitExpression(il, unaryExpression.Indexer, symbolTable);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldelem_I4);
-                        break;
-                    case UnaryOperatorType.Negative:
-                        EmitExpression(il, unaryExpression.Value, symbolTable);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Neg);
-                        break;
-                    case UnaryOperatorType.Not:
-                        EmitExpression(il, unaryExpression.Value, symbolTable);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Not);
-                        break;
+                    EmitExpression(il, ie.Value, symbolTable);
+                    EmitExpression(il, ie.Indexer, symbolTable);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldelem_I4);
+                }
+
+                if (ue is LogicalOrArithmeticExpression lae)
+
+                    switch (lae.Type)
+                    {
+                        case UnaryOperatorType.Indexer:
+
+                            break;
+                        case UnaryOperatorType.Negative:
+                            EmitExpression(il, lae.Value, symbolTable);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Neg);
+                            break;
+                        case UnaryOperatorType.Not:
+                            EmitExpression(il, lae.Value, symbolTable);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Not);
+                            break;
+                    }
+
+                if (ue is CastExpression ce)
+                {
+                    //TODO: Сделать обработку cast
                 }
             }
             else if (expression is Literal literal)
             {
-                switch (literal.LiteralType)
+                switch (literal.Type.PrimitiveType)
                 {
-                    case LiteralType.Integer:
+                    case PrimitiveType.Integer:
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, Int32.Parse(literal.Value));
                         break;
-                    case LiteralType.String:
+                    case PrimitiveType.String:
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, literal.Value);
                         break;
-                    case LiteralType.Real:
+                    case PrimitiveType.Double:
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_R8,
                             double.Parse(literal.Value, CultureInfo.InvariantCulture));
                         break;
-                    case LiteralType.Character:
+                    case PrimitiveType.Character:
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, char.ConvertToUtf32(literal.Value, 0));
                         break;
-                    case LiteralType.Boolean:
+                    case PrimitiveType.Boolean:
                         if (literal.Value == "true")
                             il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (byte) 1);
                         else if (literal.Value == "false")
