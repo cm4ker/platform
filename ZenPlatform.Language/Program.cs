@@ -24,7 +24,7 @@ namespace ZenPlatform.Language
 module Test
 {
 
-    void Main()
+/*    void Main()
     {
         double testCast = (double)1;
     }
@@ -43,10 +43,10 @@ module Test
     {
         return a - b;
     }
-
+*/
     double Div(int a, int b)
     {
-        return (Double)a / (Double)b;
+        return (double)a / (double)b;
     }
 }
 
