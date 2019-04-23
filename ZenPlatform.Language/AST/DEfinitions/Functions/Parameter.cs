@@ -1,6 +1,6 @@
-using ZenPlatfrom.Language.AST.Infrastructure;
+using ZenPlatform.Language.AST.Infrastructure;
 
-namespace ZenPlatfrom.Language.AST.Definitions.Functions
+namespace ZenPlatform.Language.AST.Definitions.Functions
 {
     /// <summary>
     /// Describes a parameter.

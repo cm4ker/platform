@@ -1,6 +1,6 @@
-using ZenPlatfrom.Language.AST.Definitions.Functions;
+using ZenPlatform.Language.AST.Definitions.Functions;
 
-namespace ZenPlatfrom.Language.AST.Definitions.Statements
+namespace ZenPlatform.Language.AST.Definitions.Statements
 {
     public class For : Statement
     {

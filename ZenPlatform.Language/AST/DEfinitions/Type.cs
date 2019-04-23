@@ -1,6 +1,6 @@
-using ZenPlatfrom.Language.AST.Infrastructure;
+using ZenPlatform.Language.AST.Infrastructure;
 
-namespace ZenPlatfrom.Language.AST.Definitions
+namespace ZenPlatform.Language.AST.Definitions
 {
     /// <summary>
     /// Describes a type.
@@ -66,7 +66,6 @@ namespace ZenPlatfrom.Language.AST.Definitions
                         return typeof(string);
                     else if (PrimitiveType == PrimitiveType.Void)
                         return typeof(void);
-                    
                 }
                 else if (VariableType == VariableType.PrimitiveArray)
                 {
@@ -138,5 +137,18 @@ namespace ZenPlatfrom.Language.AST.Definitions
             newType.Name = name;
             return newType;
         }
+
+
+        #region Primitive types
+
+        public static Type String = new Type(PrimitiveType.String);
+        public static Type Character = new Type(PrimitiveType.Character);
+        public static Type Int = new Type(PrimitiveType.Integer);
+        public static Type Double = new Type(PrimitiveType.Double);
+        public static Type Void = new Type(PrimitiveType.Void);
+        public static Type Bool = new Type(PrimitiveType.Boolean);
+        public static Type Real = new Type(PrimitiveType.Real);
+
+        #endregion
     }
 }
