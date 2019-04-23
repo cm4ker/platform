@@ -9,4 +9,8 @@
       <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ZenPlatform.Language\ZenPlatform.Language.csproj" />
+    </ItemGroup>
+
 </Project>

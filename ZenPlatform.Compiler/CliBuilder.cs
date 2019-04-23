@@ -1,35 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
-using FluentMigrator.Runner.Initialization;
 using McMaster.Extensions.CommandLineUtils;
-using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Core.Configuration;
-using ZenPlatform.Data;
-using ZenPlatform.Data.Tools;
-using ZenPlatform.Initializer;
-using ZenPlatform.Initializer.InternalDatabaseStructureMigrations;
-using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
+using Mono.Cecil;
 
 namespace ZenPlatform.Compiler
 {
     public static class CliBuilder
     {
-        /*
-         * Для тулзы будут доступны следующие режимы
-         * 
-         * zenbuilder build "project filename"
-         *
-         * zenbuilder deploy "project filename" server "address" port "port" user "userName" password "password"
-         *
-         * zenbuilder run "project filename"
-         *
-         * zenbuilder run server "address" port "port" user "userName" password "password"
-         * 
-         */
-
         public static int Build(params string[] args)
         {
             var app = new CommandLineApplication();
@@ -45,8 +22,32 @@ namespace ZenPlatform.Compiler
 
         private static void RegisterCompileCommand(CommandLineApplication app)
         {
-            app.Command("compile", () => { })
-        }
+            app.Command("compile", (conf) =>
+            {
+                conf.HelpOption(true);
 
+                var fileArg = conf.Argument("file", "File for compilation", true);
+                var outArg = conf.Argument("out", "Output path", true);
+                var assemblyName = conf.Argument("asmName", "Name of assembly", false);
+
+
+                conf.OnExecute(() =>
+                {
+                    CompilationBackend cb = new CompilationBackend();
+                    var ad = Mono.Cecil.AssemblyDefinition.CreateAssembly(
+                        new AssemblyNameDefinition(assemblyName.Name, Version.Parse("1.0.0.0")), assemblyName.Value,
+                        ModuleKind.Dll);
+
+
+                    foreach (var file in fileArg.Values)
+                    {
+                        using (var fs = File.OpenRead(file))
+                            cb.Compile(fs, ad);
+                    }
+
+                    ad.Write(outArg.Value);
+                });
+            });
+        }
     }
 }
