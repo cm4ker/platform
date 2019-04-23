@@ -1,6 +1,6 @@
-using ZenPlatfrom.Language.AST.Infrastructure;
+using ZenPlatform.Language.AST.Infrastructure;
 
-namespace ZenPlatfrom.Language.AST.Definitions
+namespace ZenPlatform.Language.AST.Definitions
 {
     /// <summary>
     /// Describes an array or structure initialization element.

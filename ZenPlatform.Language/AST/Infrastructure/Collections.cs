@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using ZenPlatfrom.Language.AST.Definitions;
-using ZenPlatfrom.Language.AST.Definitions.Functions;
-using ZenPlatfrom.Language.AST.Definitions.Statements;
+using ZenPlatform.Language.AST.Definitions;
+using ZenPlatform.Language.AST.Definitions.Functions;
+using ZenPlatform.Language.AST.Definitions.Statements;
 
-namespace ZenPlatfrom.Language.AST.Infrastructure
+namespace ZenPlatform.Language.AST.Infrastructure
 {
     public class ElementCollection : List<Element>
     {

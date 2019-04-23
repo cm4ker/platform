@@ -1,9 +1,9 @@
-using ZenPlatfrom.Language.AST.Definitions.Functions;
-using ZenPlatfrom.Language.AST.Definitions.Statements;
-using ZenPlatfrom.Language.AST.Definitions.Symbols;
-using ZenPlatfrom.Language.AST.Infrastructure;
+using ZenPlatform.Language.AST.Definitions.Functions;
+using ZenPlatform.Language.AST.Definitions.Statements;
+using ZenPlatform.Language.AST.Definitions.Symbols;
+using ZenPlatform.Language.AST.Infrastructure;
 
-namespace ZenPlatfrom.Language.AST.Definitions
+namespace ZenPlatform.Language.AST.Definitions
 {
     /// <summary>
     /// Блок инструкций

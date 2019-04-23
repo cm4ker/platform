@@ -1,8 +1,8 @@
 using System.Collections;
-using ZenPlatfrom.Language.AST.Definitions.Functions;
-using ZenPlatfrom.Language.AST.Infrastructure;
+using ZenPlatform.Language.AST.Definitions.Functions;
+using ZenPlatform.Language.AST.Infrastructure;
 
-namespace ZenPlatfrom.Language.AST.Definitions.Symbols
+namespace ZenPlatform.Language.AST.Definitions.Symbols
 {
     public class SymbolTable
     {
@@ -64,6 +64,8 @@ namespace ZenPlatfrom.Language.AST.Definitions.Symbols
             else
                 return null;
         }
+        
+        
 
         private string PrefixFromType(SymbolType type)
         {

@@ -1,7 +1,7 @@
-using ZenPlatfrom.Language.AST.Definitions.Statements;
-using ZenPlatfrom.Language.AST.Infrastructure;
+using ZenPlatform.Language.AST.Definitions.Statements;
+using ZenPlatform.Language.AST.Infrastructure;
 
-namespace ZenPlatfrom.Language.AST.Definitions.Functions
+namespace ZenPlatform.Language.AST.Definitions.Functions
 {
     /// <summary>
     /// Describes a function call statement.

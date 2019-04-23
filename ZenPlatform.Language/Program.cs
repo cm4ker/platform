@@ -2,11 +2,11 @@
 using System.IO;
 using Antlr4.Runtime;
 using Mono.Cecil;
-using ZenPlatfrom.Language.AST;
-using ZenPlatfrom.Language.AST.Definitions;
-using ZenPlatfrom.Language.Generation;
+using ZenPlatform.Language.AST;
+using ZenPlatform.Language.AST.Definitions;
+using ZenPlatform.Language.Generation;
 
-namespace ZenPlatfrom.Language
+namespace ZenPlatform.Language
 {
     class Program
     {
@@ -23,22 +23,30 @@ namespace ZenPlatfrom.Language
 
 module Test
 {
-    void Main()
+
+/*    void Main()
     {
-        int i = 123;
-        string s = ""Hello \""world"";
-    //    bool b = false;
-        char c = 'V';
-        double d = 123.23;
-        
-        int a = Mainly(i);
-        Mainly(0);
+        double testCast = (double)1;
     }
 
-    int Mainly(int b)
+    int Multiply(int a, int b)
     {
-        int a = 2;
+        return a * b;
+    }
+
+    int Add(int a, int b)
+    {
         return b + a;
+    }
+
+    int Sub(int a, int b)
+    {
+        return a - b;
+    }
+*/
+    double Div(int a, int b)
+    {
+        return (double)a / (double)b;
     }
 }
 
@@ -52,24 +60,15 @@ module Test
             parser.AddErrorListener(new Listener());
             ZLanguageVisitor visitor = new ZLanguageVisitor();
             var result = (Module) visitor.VisitEntryPoint(parser.entryPoint());
+
             Generator g = new Generator(result);
 
-            g.Compile("debug.dll");
+            if (File.Exists("BetaName.dll"))
+                File.Delete("BetaName.dll");
+            g.Compile("BetaName.dll");
         }
     }
 
-
-    public class Listener : BaseErrorListener
-    {
-        public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line,
-            int charPositionInLine, string msg,
-            RecognitionException e)
-        {
-            Console.WriteLine($"Error at line {line} at char {charPositionInLine}: {msg}");
-
-            base.SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
-        }
-    }
 
     static class Test
     {

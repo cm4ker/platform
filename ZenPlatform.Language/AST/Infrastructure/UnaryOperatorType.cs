@@ -1,4 +1,4 @@
-namespace ZenPlatfrom.Language.AST.Infrastructure
+namespace ZenPlatform.Language.AST.Infrastructure
 {
     public enum UnaryOperatorType
     {
@@ -6,6 +6,7 @@ namespace ZenPlatfrom.Language.AST.Infrastructure
         Positive,
         Negative,
         Not,
-        Indexer
+        Indexer,
+        Cast
     }
 }

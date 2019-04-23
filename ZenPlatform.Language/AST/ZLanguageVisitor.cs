@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
-using ZenPlatfrom.Language.AST.Definitions;
-using ZenPlatfrom.Language.AST.Definitions.Expression;
-using ZenPlatfrom.Language.AST.Definitions.Functions;
-using ZenPlatfrom.Language.AST.Infrastructure;
-using Type = ZenPlatfrom.Language.AST.Definitions.Type;
+using ZenPlatform.Language.AST.Definitions;
+using ZenPlatform.Language.AST.Definitions.Expression;
+using ZenPlatform.Language.AST.Definitions.Extension;
+using ZenPlatform.Language.AST.Definitions.Functions;
+using ZenPlatform.Language.AST.Infrastructure;
+using Type = ZenPlatform.Language.AST.Definitions.Type;
 
-namespace ZenPlatfrom.Language.AST
+namespace ZenPlatform.Language.AST
 {
     public class ZLanguageVisitor : ZSharpParserBaseVisitor<object>
     {
@@ -64,7 +65,7 @@ namespace ZenPlatfrom.Language.AST
 
         public override object VisitStructureType(ZSharpParser.StructureTypeContext context)
         {
-            var result = new Type(context.GetText());
+            var result = new Definitions.Type(context.GetText());
             _syntaxStack.Push(result);
             return result;
         }
@@ -72,12 +73,12 @@ namespace ZenPlatfrom.Language.AST
         public override object VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
         {
             object result = null;
-            if (context.STRING() != null) result = new Type(PrimitiveType.String);
-            else if (context.INT() != null) result = new Type(PrimitiveType.Integer);
-            else if (context.BOOL() != null) result = new Type(PrimitiveType.Boolean);
-            else if (context.DOUBLE() != null) result = new Type(PrimitiveType.Double);
-            else if (context.CHAR() != null) result = new Type(PrimitiveType.Character);
-            else if (context.VOID() != null) result = new Type(PrimitiveType.Void);
+            if (context.STRING() != null) result = new Definitions.Type(PrimitiveType.String);
+            else if (context.INT() != null) result = new Definitions.Type(PrimitiveType.Integer);
+            else if (context.BOOL() != null) result = new Definitions.Type(PrimitiveType.Boolean);
+            else if (context.DOUBLE() != null) result = new Definitions.Type(PrimitiveType.Double);
+            else if (context.CHAR() != null) result = new Definitions.Type(PrimitiveType.Character);
+            else if (context.VOID() != null) result = new Definitions.Type(PrimitiveType.Void);
 
             if (result == null)
                 throw new Exception("Unknown primitive type");
@@ -111,15 +112,15 @@ namespace ZenPlatfrom.Language.AST
                 text = Regex.Unescape(text ?? throw new NullReferenceException());
 
                 if (context.string_literal().REGULAR_STRING() != null)
-                    result = new Literal(text.Substring(1, text.Length - 2), LiteralType.String);
+                    result = new Literal(text.Substring(1, text.Length - 2), Type.String);
                 else
-                    result = new Literal(text.Substring(2, text.Length - 3), LiteralType.String);
+                    result = new Literal(text.Substring(2, text.Length - 3), Type.String);
             }
-            else if (context.boolean_literal() != null) result = new Literal(context.GetText(), LiteralType.Boolean);
-            else if (context.INTEGER_LITERAL() != null) result = new Literal(context.GetText(), LiteralType.Integer);
-            else if (context.REAL_LITERAL() != null) result = new Literal(context.GetText(), LiteralType.Real);
+            else if (context.boolean_literal() != null) result = new Literal(context.GetText(), Type.Bool);
+            else if (context.INTEGER_LITERAL() != null) result = new Literal(context.GetText(), Type.Int);
+            else if (context.REAL_LITERAL() != null) result = new Literal(context.GetText(), Type.Double);
             else if (context.CHARACTER_LITERAL() != null)
-                result = new Literal(context.GetText().Substring(1, 1), LiteralType.Character);
+                result = new Literal(context.GetText().Substring(1, 1), Type.Character);
 
             //TODO: Не обработанным остался HEX INTEGER LITERAL его необходимо доделать
 
@@ -134,6 +135,7 @@ namespace ZenPlatfrom.Language.AST
         public override object VisitVariableDeclaration(ZSharpParser.VariableDeclarationContext context)
         {
             base.VisitVariableDeclaration(context);
+            
             object result;
             if (context.expression() == null)
                 result = new Variable(null, context.IDENTIFIER().GetText(), _syntaxStack.PopType());
@@ -143,6 +145,17 @@ namespace ZenPlatfrom.Language.AST
 
 
             _syntaxStack.Push(result);
+            return result;
+        }
+
+        public override object VisitCastExpression(ZSharpParser.CastExpressionContext context)
+        {
+            base.VisitCastExpression(context);
+
+            var result = new CastExpression(_syntaxStack.PopExpression(), _syntaxStack.PopType());
+
+            _syntaxStack.Push(result);
+
             return result;
         }
 
@@ -275,14 +288,16 @@ namespace ZenPlatfrom.Language.AST
             base.VisitExpressionUnary(context);
 
             if (context.PLUS() != null)
-                _syntaxStack.Push(new UnaryExpression(null, _syntaxStack.PopExpression(), UnaryOperatorType.Positive));
+                _syntaxStack.Push(new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(),
+                    UnaryOperatorType.Positive));
             if (context.MINUS() != null)
-                _syntaxStack.Push(new UnaryExpression(null, _syntaxStack.PopExpression(), UnaryOperatorType.Negative));
+                _syntaxStack.Push(new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(),
+                    UnaryOperatorType.Negative));
             if (context.BANG() != null)
-                _syntaxStack.Push(new UnaryExpression(null, _syntaxStack.PopExpression(), UnaryOperatorType.Not));
+                _syntaxStack.Push(
+                    new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(), UnaryOperatorType.Not));
             if (context.expression() != null)
-                _syntaxStack.Push(new UnaryExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression(),
-                    UnaryOperatorType.Indexer));
+                _syntaxStack.Push(new IndexerExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression()));
 
             return null;
         }
@@ -302,6 +317,30 @@ namespace ZenPlatfrom.Language.AST
                     opType));
             }
 
+            return null;
+        }
+
+        public override object VisitExtensionExpression(ZSharpParser.ExtensionExpressionContext context)
+        {
+            base.VisitExtensionExpression(context);
+            Extension result;
+
+            var extensionObj = _syntaxStack.Pop();
+            if (extensionObj is InstructionsBody ib)
+            {
+                result = new Extension(_syntaxStack.PopString(), ExtensionKind.Instructions);
+                result.InstructionsBody = ib;
+            }
+            else
+            {
+                var path = _syntaxStack.PopString();
+                var extensionName = path.Split('.')[0];
+                result = new Extension(extensionName);
+                result.Path = path;
+            }
+
+
+            //_syntaxStack.Push();
             return null;
         }
 

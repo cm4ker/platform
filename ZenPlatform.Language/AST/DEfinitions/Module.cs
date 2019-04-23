@@ -1,20 +1,10 @@
-namespace ZenPlatfrom.Language.AST.Definitions
+namespace ZenPlatform.Language.AST.Definitions
 {
     /// <summary>
-    /// Describes a compilation unit.
+    /// Описывает модуль
     /// </summary>
-    public class Module
+    public class Module : TypeEntity
     {
-        /// <summary>
-        /// Name of module.
-        /// </summary>
-        public string Name;
-
-        /// <summary>
-        /// Module body.
-        /// </summary>
-        public TypeBody TypeBody;
-
         /// <summary>
         /// Create a module object.
         /// </summary>
