@@ -12,6 +12,8 @@ using ZenPlatform.Language.AST.Definitions.Symbols;
 using ZenPlatform.Language.AST.Infrastructure;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 using Module = ZenPlatform.Language.AST.Definitions.Module;
+using OpCode = Mono.Cecil.Cil.OpCode;
+using OpCodes = System.Reflection.Emit.OpCodes;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
 using Type = System.Type;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
@@ -40,7 +42,6 @@ namespace ZenPlatform.Language.Generation
                 new AssemblyNameDefinition("BetaName", Version.Parse("1.0.0.0")), "ZModule", ModuleKind.Dll);
 
             _dllModule = ad.MainModule;
-
 
             TypeDefinition td = new TypeDefinition("CompileNamespace", _module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
@@ -182,7 +183,8 @@ namespace ZenPlatform.Language.Generation
 
                 if (ue is CastExpression ce)
                 {
-                    //TODO: Сделать обработку cast
+                    EmitExpression(il, ce.Value, symbolTable);
+                    EmitConvert(il, ce, symbolTable);
                 }
             }
             else if (expression is Literal literal)
@@ -210,10 +212,8 @@ namespace ZenPlatform.Language.Generation
                         break;
                 }
             }
-            else if (expression is Name)
+            else if (expression is Name name)
             {
-                Name name = expression as Name;
-
                 Symbol variable = symbolTable.Find(name.Value, SymbolType.Variable);
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
@@ -231,9 +231,9 @@ namespace ZenPlatform.Language.Generation
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldind_I4);
                 }
             }
-            else if (expression is Call)
+            else if (expression is Call call)
             {
-                EmitCall(il, expression as Call, symbolTable);
+                EmitCall(il, call, symbolTable);
             }
         }
 
@@ -352,6 +352,41 @@ namespace ZenPlatform.Language.Generation
 
             if (function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void)
                 il.Emit(Mono.Cecil.Cil.OpCodes.Ret);
+        }
+
+
+        private void EmitConvert(ILProcessor il, CastExpression expression, SymbolTable symbolTable)
+        {
+            if (expression.Value is Name name)
+            {
+                Symbol variable = symbolTable.Find(name.Value, SymbolType.Variable);
+                if (variable == null)
+                    Error("Assignment variable " + name.Value + " unknown.");
+
+                if (variable.SyntaxObject is Variable v)
+                    expression.Value.Type = v.Type;
+                else if (variable.SyntaxObject is Parameter p)
+                    expression.Value.Type = p.Type;
+            }
+
+            var valueType = expression.Value.Type;
+            var convertType = expression.Type;
+
+            if (valueType.VariableType == VariableType.Primitive && convertType.VariableType == VariableType.Primitive)
+            {
+                var opCode = GetOpCodeFromType(convertType);
+                il.Emit(opCode);
+            }
+        }
+
+        private OpCode GetOpCodeFromType(AST.Definitions.Type type)
+        {
+            if (type.PrimitiveType == PrimitiveType.Integer) return Mono.Cecil.Cil.OpCodes.Conv_I4;
+            if (type.PrimitiveType == PrimitiveType.Double) return Mono.Cecil.Cil.OpCodes.Conv_R8;
+            if (type.PrimitiveType == PrimitiveType.Character) return Mono.Cecil.Cil.OpCodes.Conv_U2;
+            if (type.PrimitiveType == PrimitiveType.Real) return Mono.Cecil.Cil.OpCodes.Conv_R4;
+
+            throw new Exception("Converting to this value not supported");
         }
     }
 }

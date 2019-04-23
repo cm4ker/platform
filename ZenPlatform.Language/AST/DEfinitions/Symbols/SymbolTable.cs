@@ -64,6 +64,8 @@ namespace ZenPlatform.Language.AST.Definitions.Symbols
             else
                 return null;
         }
+        
+        
 
         private string PrefixFromType(SymbolType type)
         {
