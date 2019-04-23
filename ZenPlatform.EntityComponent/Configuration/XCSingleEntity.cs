@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -60,6 +61,13 @@ namespace ZenPlatform.EntityComponent.Configuration
         public XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty> Properties { get; }
 
         /// <summary>
+        /// Коллекция модулей сущности
+        /// </summary>
+        [XmlArray]
+        [XmlArrayItem(ElementName = "Modules", Type = typeof(XCSingleEntityModule))]
+        public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; set; }
+
+        /// <summary>
         /// Имя связанной таблицы документа
         /// 
         /// При миграции присваивается движком. В последствии хранится в структурых инициализации конкретной базы.
@@ -109,6 +117,11 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override IEnumerable<XCObjectPropertyBase> GetProperties()
         {
             return Properties;
+        }
+
+        public override IEnumerable<XCProgramModuleBase> GetProgramModules()
+        {
+            return Modules;
         }
     }
 }
