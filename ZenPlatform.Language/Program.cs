@@ -52,6 +52,8 @@ module Test
 
 ");
 
+            AssemblyDefinition ad = AssemblyDefinition.CreateAssembly(null, null, ModuleKind.Dll);
+
             AntlrInputStream inputStream = new AntlrInputStream(text);
             ZSharpLexer lexer = new ZSharpLexer(inputStream);
             CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
@@ -61,11 +63,7 @@ module Test
             ZLanguageVisitor visitor = new ZLanguageVisitor();
             var result = (Module) visitor.VisitEntryPoint(parser.entryPoint());
 
-            Generator g = new Generator(result);
-
-            if (File.Exists("BetaName.dll"))
-                File.Delete("BetaName.dll");
-            g.Compile("BetaName.dll");
+            Generator g = new Generator(result, ad);
         }
     }
 

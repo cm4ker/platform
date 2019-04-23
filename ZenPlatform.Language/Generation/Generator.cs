@@ -1,19 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using ZenPlatform.Language.AST.Definitions;
 using ZenPlatform.Language.AST.Definitions.Expression;
 using ZenPlatform.Language.AST.Definitions.Functions;
-using ZenPlatform.Language.AST.Definitions.Statements;
 using ZenPlatform.Language.AST.Definitions.Symbols;
 using ZenPlatform.Language.AST.Infrastructure;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
-using Module = ZenPlatform.Language.AST.Definitions.Module;
 using OpCode = Mono.Cecil.Cil.OpCode;
-using OpCodes = System.Reflection.Emit.OpCodes;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
 using Type = System.Type;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
@@ -23,25 +19,20 @@ namespace ZenPlatform.Language.Generation
 {
     public partial class Generator
     {
-        private AST.Definitions.Module _module = null;
+        private Module _module = null;
+        private readonly AssemblyDefinition _asm;
         private ModuleDefinition _dllModule = null;
         private SymbolTable _typeSymbols = null;
 
-        public Generator(AST.Definitions.Module module)
+        public Generator(Module module, AssemblyDefinition asm)
         {
             _module = module;
+            _asm = asm;
         }
 
-        public void Compile(string path)
+        public void Emit()
         {
-            //
-            // Create functions.
-            //
-
-            AssemblyDefinition ad = AssemblyDefinition.CreateAssembly(
-                new AssemblyNameDefinition("BetaName", Version.Parse("1.0.0.0")), "ZModule", ModuleKind.Dll);
-
-            _dllModule = ad.MainModule;
+            _dllModule = _asm.MainModule;
 
             TypeDefinition td = new TypeDefinition("CompileNamespace", _module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
@@ -65,13 +56,6 @@ namespace ZenPlatform.Language.Generation
                 BuildFunction(item.Item1, item.Item2);
                 td.Methods.Add(item.Item2);
             }
-
-
-            var moduleName = $"{_module.Name}.dll";
-
-            ad.Write(moduleName);
-
-            System.IO.File.Move(moduleName, path);
         }
 
         private void Error(string message)
