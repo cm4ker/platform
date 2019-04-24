@@ -12,6 +12,8 @@ using ZenPlatform.Language.AST.Definitions.Symbols;
 using ZenPlatform.Language.AST.Infrastructure;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 using Module = ZenPlatform.Language.AST.Definitions.Module;
+using OpCode = Mono.Cecil.Cil.OpCode;
+using OpCodes = System.Reflection.Emit.OpCodes;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
 using Type = System.Type;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
@@ -41,11 +43,11 @@ namespace ZenPlatform.Language.Generation
 
             _dllModule = ad.MainModule;
 
-            
-            
-
             TypeDefinition td = new TypeDefinition("CompileNamespace", _module.Name,
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.Sealed);
+                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
+                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
+                _dllModule.TypeSystem.Object);
+
 
             _dllModule.Types.Add(td);
             //
@@ -87,12 +89,12 @@ namespace ZenPlatform.Language.Generation
                 case TypeCode.String: return _dllModule.TypeSystem.String;
                 case TypeCode.Double: return _dllModule.TypeSystem.Double;
                 case TypeCode.Char: return _dllModule.TypeSystem.Char;
-
+                case TypeCode.Object: return _dllModule.ImportReference(type);
                 default:
                 {
                     if (type == typeof(void))
                         return _dllModule.TypeSystem.Void;
-                    return ToCecilType(type);
+                    return null;
                 }
             }
         }
@@ -153,58 +155,65 @@ namespace ZenPlatform.Language.Generation
                         break;
                 }
             }
-            else if (expression is UnaryExpression)
+            else if (expression is UnaryExpression ue)
             {
-                UnaryExpression unaryExpression = expression as UnaryExpression;
-
-                switch (unaryExpression.UnaryOperatorType)
+                if (ue is IndexerExpression ie)
                 {
-                    case UnaryOperatorType.Indexer:
-                        EmitExpression(il, unaryExpression.Value, symbolTable);
-                        EmitExpression(il, unaryExpression.Indexer, symbolTable);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldelem_I4);
-                        break;
-                    case UnaryOperatorType.Negative:
-                        EmitExpression(il, unaryExpression.Value, symbolTable);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Neg);
-                        break;
-                    case UnaryOperatorType.Not:
-                        EmitExpression(il, unaryExpression.Value, symbolTable);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Not);
-                        break;
+                    EmitExpression(il, ie.Value, symbolTable);
+                    EmitExpression(il, ie.Indexer, symbolTable);
+                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldelem_I4);
+                }
+
+                if (ue is LogicalOrArithmeticExpression lae)
+
+                    switch (lae.Type)
+                    {
+                        case UnaryOperatorType.Indexer:
+
+                            break;
+                        case UnaryOperatorType.Negative:
+                            EmitExpression(il, lae.Value, symbolTable);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Neg);
+                            break;
+                        case UnaryOperatorType.Not:
+                            EmitExpression(il, lae.Value, symbolTable);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Not);
+                            break;
+                    }
+
+                if (ue is CastExpression ce)
+                {
+                    EmitExpression(il, ce.Value, symbolTable);
+                    EmitConvert(il, ce, symbolTable);
                 }
             }
-            else if (expression is Literal)
+            else if (expression is Literal literal)
             {
-                Literal literal = expression as Literal;
-
-                switch (literal.LiteralType)
+                switch (literal.Type.PrimitiveType)
                 {
-                    case LiteralType.Integer:
+                    case PrimitiveType.Integer:
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, Int32.Parse(literal.Value));
                         break;
-                    case LiteralType.String:
+                    case PrimitiveType.String:
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, literal.Value);
                         break;
-                    case LiteralType.Real:
+                    case PrimitiveType.Double:
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_R8,
                             double.Parse(literal.Value, CultureInfo.InvariantCulture));
                         break;
-                    case LiteralType.Character:
+                    case PrimitiveType.Character:
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, char.ConvertToUtf32(literal.Value, 0));
                         break;
-                    case LiteralType.Boolean:
+                    case PrimitiveType.Boolean:
                         if (literal.Value == "true")
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, 1);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (byte) 1);
                         else if (literal.Value == "false")
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, 0);
+                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (byte) 0);
                         break;
                 }
             }
-            else if (expression is Name)
+            else if (expression is Name name)
             {
-                Name name = expression as Name;
-
                 Symbol variable = symbolTable.Find(name.Value, SymbolType.Variable);
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
@@ -222,9 +231,9 @@ namespace ZenPlatform.Language.Generation
                         il.Emit(Mono.Cecil.Cil.OpCodes.Ldind_I4);
                 }
             }
-            else if (expression is Call)
+            else if (expression is Call call)
             {
-                EmitCall(il, expression as Call, symbolTable);
+                EmitCall(il, call, symbolTable);
             }
         }
 
@@ -258,7 +267,9 @@ namespace ZenPlatform.Language.Generation
 
                     // Create method.
                     MethodDefinition method = new MethodDefinition(function.Name,
-                        MethodAttributes.Public | MethodAttributes.Static, ToCecilType(function.Type.ToSystemType()));
+                        MethodAttributes.Public | MethodAttributes.Static
+                                                | MethodAttributes.HideBySig,
+                        ToCecilType(function.Type.ToSystemType()));
 
                     result.Add((function, method));
 
@@ -334,10 +345,48 @@ namespace ZenPlatform.Language.Generation
 
             ILProcessor il = function.Builder;
 
+            il.Body.InitLocals = true;
+
             EmitBody(il, function.InstructionsBody);
+
 
             if (function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void)
                 il.Emit(Mono.Cecil.Cil.OpCodes.Ret);
+        }
+
+
+        private void EmitConvert(ILProcessor il, CastExpression expression, SymbolTable symbolTable)
+        {
+            if (expression.Value is Name name)
+            {
+                Symbol variable = symbolTable.Find(name.Value, SymbolType.Variable);
+                if (variable == null)
+                    Error("Assignment variable " + name.Value + " unknown.");
+
+                if (variable.SyntaxObject is Variable v)
+                    expression.Value.Type = v.Type;
+                else if (variable.SyntaxObject is Parameter p)
+                    expression.Value.Type = p.Type;
+            }
+
+            var valueType = expression.Value.Type;
+            var convertType = expression.Type;
+
+            if (valueType.VariableType == VariableType.Primitive && convertType.VariableType == VariableType.Primitive)
+            {
+                var opCode = GetOpCodeFromType(convertType);
+                il.Emit(opCode);
+            }
+        }
+
+        private OpCode GetOpCodeFromType(AST.Definitions.Type type)
+        {
+            if (type.PrimitiveType == PrimitiveType.Integer) return Mono.Cecil.Cil.OpCodes.Conv_I4;
+            if (type.PrimitiveType == PrimitiveType.Double) return Mono.Cecil.Cil.OpCodes.Conv_R8;
+            if (type.PrimitiveType == PrimitiveType.Character) return Mono.Cecil.Cil.OpCodes.Conv_U2;
+            if (type.PrimitiveType == PrimitiveType.Real) return Mono.Cecil.Cil.OpCodes.Conv_R4;
+
+            throw new Exception("Converting to this value not supported");
         }
     }
 }

@@ -112,6 +112,11 @@ expressionUnary:
     | BANG expressionPrimary
     | expressionPrimary
     | expressionPrimary '[' expression ']'
+    | castExpression 
+;
+
+castExpression: 
+    '(' type ')' expressionPrimary
 ;
 
 expressionBinary:

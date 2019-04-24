@@ -71,8 +71,7 @@ namespace ZenPlatform.Language.Generation
                                         ((ParameterBuilder) variable.CodeObject).Position - 1);
                                 }
                             }
-                            else if (argument.Value is UnaryExpression &&
-                                     ((UnaryExpression) argument.Value).UnaryOperatorType == UnaryOperatorType.Indexer)
+                            else if (argument.Value is IndexerExpression ue)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
                                 if (variable.CodeObject is LocalBuilder)
@@ -98,7 +97,7 @@ namespace ZenPlatform.Language.Generation
                                         ((ParameterDefinition) variable.CodeObject).Sequence - 1);
                                 }
 
-                                EmitExpression(il, ((UnaryExpression) argument.Value).Indexer, symbolTable);
+                                EmitExpression(il, ue.Indexer, symbolTable);
                                 il.Emit(Mono.Cecil.Cil.OpCodes.Ldelema);
                             }
                             else

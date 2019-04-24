@@ -112,15 +112,15 @@ namespace ZenPlatform.Language.AST
                 text = Regex.Unescape(text ?? throw new NullReferenceException());
 
                 if (context.string_literal().REGULAR_STRING() != null)
-                    result = new Literal(text.Substring(1, text.Length - 2), LiteralType.String);
+                    result = new Literal(text.Substring(1, text.Length - 2), Type.String);
                 else
-                    result = new Literal(text.Substring(2, text.Length - 3), LiteralType.String);
+                    result = new Literal(text.Substring(2, text.Length - 3), Type.String);
             }
-            else if (context.boolean_literal() != null) result = new Literal(context.GetText(), LiteralType.Boolean);
-            else if (context.INTEGER_LITERAL() != null) result = new Literal(context.GetText(), LiteralType.Integer);
-            else if (context.REAL_LITERAL() != null) result = new Literal(context.GetText(), LiteralType.Real);
+            else if (context.boolean_literal() != null) result = new Literal(context.GetText(), Type.Bool);
+            else if (context.INTEGER_LITERAL() != null) result = new Literal(context.GetText(), Type.Int);
+            else if (context.REAL_LITERAL() != null) result = new Literal(context.GetText(), Type.Double);
             else if (context.CHARACTER_LITERAL() != null)
-                result = new Literal(context.GetText().Substring(1, 1), LiteralType.Character);
+                result = new Literal(context.GetText().Substring(1, 1), Type.Character);
 
             //TODO: Не обработанным остался HEX INTEGER LITERAL его необходимо доделать
 
@@ -135,6 +135,7 @@ namespace ZenPlatform.Language.AST
         public override object VisitVariableDeclaration(ZSharpParser.VariableDeclarationContext context)
         {
             base.VisitVariableDeclaration(context);
+            
             object result;
             if (context.expression() == null)
                 result = new Variable(null, context.IDENTIFIER().GetText(), _syntaxStack.PopType());
@@ -144,6 +145,17 @@ namespace ZenPlatform.Language.AST
 
 
             _syntaxStack.Push(result);
+            return result;
+        }
+
+        public override object VisitCastExpression(ZSharpParser.CastExpressionContext context)
+        {
+            base.VisitCastExpression(context);
+
+            var result = new CastExpression(_syntaxStack.PopExpression(), _syntaxStack.PopType());
+
+            _syntaxStack.Push(result);
+
             return result;
         }
 
@@ -276,14 +288,16 @@ namespace ZenPlatform.Language.AST
             base.VisitExpressionUnary(context);
 
             if (context.PLUS() != null)
-                _syntaxStack.Push(new UnaryExpression(null, _syntaxStack.PopExpression(), UnaryOperatorType.Positive));
+                _syntaxStack.Push(new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(),
+                    UnaryOperatorType.Positive));
             if (context.MINUS() != null)
-                _syntaxStack.Push(new UnaryExpression(null, _syntaxStack.PopExpression(), UnaryOperatorType.Negative));
+                _syntaxStack.Push(new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(),
+                    UnaryOperatorType.Negative));
             if (context.BANG() != null)
-                _syntaxStack.Push(new UnaryExpression(null, _syntaxStack.PopExpression(), UnaryOperatorType.Not));
+                _syntaxStack.Push(
+                    new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(), UnaryOperatorType.Not));
             if (context.expression() != null)
-                _syntaxStack.Push(new UnaryExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression(),
-                    UnaryOperatorType.Indexer));
+                _syntaxStack.Push(new IndexerExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression()));
 
             return null;
         }
@@ -337,8 +351,7 @@ namespace ZenPlatform.Language.AST
                 throw new Exception($"The extension {result.ExtensionName} not found or not loaded");
             }
 
-            _syntaxStack.Push(ext.Transform(result));
-
+            //_syntaxStack.Push();
             return null;
         }
 

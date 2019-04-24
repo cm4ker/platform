@@ -4,6 +4,6 @@ namespace ZenPlatform.Language.AST.Infrastructure
 {
     public abstract class Expression : IAstItem
     {
-        public Type Type;
+        public virtual Type Type { get; set; }
     }
 }
