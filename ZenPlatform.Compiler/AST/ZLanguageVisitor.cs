@@ -5,6 +5,7 @@ using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Extension;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
+using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using Type = ZenPlatform.Compiler.AST.Definitions.Type;
 
@@ -135,7 +136,7 @@ namespace ZenPlatform.Compiler.AST
         public override object VisitVariableDeclaration(ZSharpParser.VariableDeclarationContext context)
         {
             base.VisitVariableDeclaration(context);
-            
+
             object result;
             if (context.expression() == null)
                 result = new Variable(null, context.IDENTIFIER().GetText(), _syntaxStack.PopType());
@@ -165,7 +166,7 @@ namespace ZenPlatform.Compiler.AST
             object result = null;
             ParameterCollection pc = null;
 
-            var body = _syntaxStack.PopMethodBody();
+            var body = _syntaxStack.PopInstructionsBody();
 
             if (context.parameters() != null)
             {
@@ -417,6 +418,24 @@ namespace ZenPlatform.Compiler.AST
             }
 
             return null;
+        }
+
+        public override object VisitIfStatement(ZSharpParser.IfStatementContext context)
+        {
+            base.VisitIfStatement(context);
+
+            InstructionsBody @else = null;
+
+            if (context.ELSE() != null)
+            {
+                @else = _syntaxStack.PopInstructionsBody();
+            }
+
+            var result = new If(@else, _syntaxStack.PopInstructionsBody(), _syntaxStack.PopExpression());
+
+            _syntaxStack.Push(result);
+
+            return result;
         }
     }
 }
