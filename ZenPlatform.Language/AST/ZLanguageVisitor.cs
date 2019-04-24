@@ -339,6 +339,17 @@ namespace ZenPlatform.Language.AST
                 result.Path = path;
             }
 
+            // Вот тут мы должны сделать следующее: 
+            // 1) Установить, какой хендлер это обрабатывает
+            // 2) Вызвать обработчик. Он должен переопределить дерево вызовов.
+
+            //_syntaxStack.Push();
+
+
+            if (!ExtensionManager.Managers.TryGetValue(result.ExtensionName, out var ext))
+            {
+                throw new Exception($"The extension {result.ExtensionName} not found or not loaded");
+            }
 
             //_syntaxStack.Push();
             return null;
