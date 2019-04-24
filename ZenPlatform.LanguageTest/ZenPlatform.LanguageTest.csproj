@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="BetaName, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\ZenPlatform.Language\BetaName.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>
