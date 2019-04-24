@@ -6,6 +6,7 @@ namespace ZenPlatform.Language.AST.Infrastructure
         Positive,
         Negative,
         Not,
-        Indexer
+        Indexer,
+        Cast
     }
 }

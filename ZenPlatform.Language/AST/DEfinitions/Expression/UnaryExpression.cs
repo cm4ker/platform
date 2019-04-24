@@ -2,17 +2,49 @@ using ZenPlatform.Language.AST.Infrastructure;
 
 namespace ZenPlatform.Language.AST.Definitions.Expression
 {
-    public class UnaryExpression : Infrastructure.Expression
+    public abstract class UnaryExpression : Infrastructure.Expression
     {
-        public Infrastructure.Expression Value = null;
-        public Infrastructure.Expression Indexer = null;
-        public UnaryOperatorType UnaryOperatorType = UnaryOperatorType.None;
-
-        public UnaryExpression(Infrastructure.Expression indexer, Infrastructure.Expression value, UnaryOperatorType unaryOperatorType)
+        protected UnaryExpression(Infrastructure.Expression value)
         {
             Value = value;
+        }
+
+        public Infrastructure.Expression Value { get; }
+
+        public override Type Type => Value.Type;
+    }
+
+
+    public class CastExpression : UnaryExpression
+    {
+        public Type CastType { get; }
+
+        public CastExpression(Infrastructure.Expression value, Type castType) : base(value)
+        {
+            CastType = castType;
+        }
+
+        public override Type Type => CastType;
+    }
+
+    public class IndexerExpression : UnaryExpression
+    {
+        public Infrastructure.Expression Indexer { get; }
+
+
+        public IndexerExpression(Infrastructure.Expression indexer, Infrastructure.Expression value) : base(value)
+        {
             Indexer = indexer;
-            UnaryOperatorType = unaryOperatorType;
+        }
+    }
+
+    public class LogicalOrArithmeticExpression : UnaryExpression
+    {
+        public UnaryOperatorType Type { get; }
+
+        public LogicalOrArithmeticExpression(Infrastructure.Expression value, UnaryOperatorType type) : base(value)
+        {
+            Type = type;
         }
     }
 }
