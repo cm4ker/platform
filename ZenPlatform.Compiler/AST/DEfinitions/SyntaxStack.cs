@@ -69,7 +69,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
             return (Type) internalStack.Pop();
         }
 
-        public InstructionsBody PopMethodBody()
+        public InstructionsBody PopInstructionsBody()
         {
             return (InstructionsBody) internalStack.Pop();
         }

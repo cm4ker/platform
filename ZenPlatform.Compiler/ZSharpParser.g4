@@ -39,7 +39,9 @@ statement:
         (variableDeclaration
         | functionCall
         | assigment
-        | RETURN expression)*; 
+        | RETURN expression
+        | ifStatement)*
+        ; 
 
 statements: 
     (statement ';')+;
@@ -185,7 +187,7 @@ extensionExpression:
     '$' 
         (name ('{'statements'}')?)
         | functionCall;  
-   
-
+ifStatement:
+    IF '(' expression ')' instructionsBody (ELSE instructionsBody)?;
 
 

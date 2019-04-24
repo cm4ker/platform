@@ -46,13 +46,22 @@ module Test
 */
     double Div(int a, int b)
     {
-        return (double)a / (double)b;
+        if(a > b)
+        {
+            return (double)a / (double)b;
+        }
+        else
+        {
+            return 0.0;
+        };
     }
 }
 
 ");
 
-            AssemblyDefinition ad = AssemblyDefinition.CreateAssembly(null, null, ModuleKind.Dll);
+            var name = new AssemblyNameDefinition("Debug.dll", new Version(1, 0));
+
+            AssemblyDefinition ad = AssemblyDefinition.CreateAssembly(name, "Debug", ModuleKind.Dll);
 
             AntlrInputStream inputStream = new AntlrInputStream(text);
             ZSharpLexer lexer = new ZSharpLexer(inputStream);
@@ -64,6 +73,12 @@ module Test
             var result = (Module) visitor.VisitEntryPoint(parser.entryPoint());
 
             Generator g = new Generator(result, ad);
+            g.Emit();
+            
+            if(File.Exists("Debug.dll"))
+                File.Delete("Debug.dll");
+            
+            ad.Write("debug.dll");
         }
     }
 

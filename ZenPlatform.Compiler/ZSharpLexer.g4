@@ -31,6 +31,9 @@ TYPE : 'type';
 NEW  : 'new';
 RETURN : 'return';
 
+IF : 'if';
+ELSE : 'else';
+
 DOLLAR:                   '$';
 
 SEMICOLON:                ';';
