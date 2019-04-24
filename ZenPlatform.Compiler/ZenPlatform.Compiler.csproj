@@ -6,11 +6,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.4" />
-    </ItemGroup>
+        <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
 
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
+        <PackageReference Include="Mono.Cecil" Version="0.10.3" />
+    </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Language\ZenPlatform.Language.csproj" />
+        <Content Include=".\ZSharpParser.g4" />
+        <Content Include=".\ZSharpLexer.g4" />
     </ItemGroup>
-
+    <ItemGroup>
+      <Reference Include="BetaName, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>BetaName.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>
