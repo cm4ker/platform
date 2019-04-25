@@ -4,12 +4,13 @@ namespace ZenPlatform.Compiler.AST.Definitions.Statements
 {
     public class For : Statement
     {
-        public Assignment Initializer = null;
+        public Statement Initializer = null;
         public Infrastructure.Expression Condition = null;
-        public Assignment Counter = null;
+        public Statement Counter = null;
+        
         public InstructionsBody InstructionsBody = null;
 
-        public For(InstructionsBody instructionsBody, Assignment counter, Infrastructure.Expression condition, Assignment initializer)
+        public For(InstructionsBody instructionsBody, Statement counter, Infrastructure.Expression condition, Statement initializer)
         {
             InstructionsBody = instructionsBody;
             Counter = counter;

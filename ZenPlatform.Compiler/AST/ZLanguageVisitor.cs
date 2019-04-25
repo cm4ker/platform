@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
@@ -7,6 +8,8 @@ using ZenPlatform.Compiler.AST.Definitions.Extension;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using BinaryExpression = ZenPlatform.Compiler.AST.Definitions.Expression.BinaryExpression;
+using Expression = System.Linq.Expressions.Expression;
 using Type = ZenPlatform.Compiler.AST.Definitions.Type;
 
 namespace ZenPlatform.Compiler.AST
@@ -397,6 +400,27 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
+        public override object VisitAssigment(ZSharpParser.AssigmentContext context)
+        {
+            base.VisitAssigment(context);
+
+            Statement result;
+
+            if (context.indexExpression != null)
+                result = new Assignment(_syntaxStack.PopExpression(), _syntaxStack.PopExpression(),
+                    _syntaxStack.PopString());
+            else if (context.OP_INC() != null)
+            {
+                result = new PostIncrementStatement(new Name(_syntaxStack.PopString()));
+            }
+            else
+                result = new Assignment(_syntaxStack.PopExpression(), null, _syntaxStack.PopString());
+
+            _syntaxStack.Push(result);
+
+            return result;
+        }
+
         public override object VisitStatement(ZSharpParser.StatementContext context)
         {
             base.VisitStatement(context);
@@ -432,6 +456,18 @@ namespace ZenPlatform.Compiler.AST
             }
 
             var result = new If(@else, _syntaxStack.PopInstructionsBody(), _syntaxStack.PopExpression());
+
+            _syntaxStack.Push(result);
+
+            return result;
+        }
+
+        public override object VisitForStatement(ZSharpParser.ForStatementContext context)
+        {
+            base.VisitForStatement(context);
+
+            var result = new For(_syntaxStack.PopInstructionsBody(), _syntaxStack.PopStatement(),
+                _syntaxStack.PopExpression(), _syntaxStack.PopStatement());
 
             _syntaxStack.Push(result);
 

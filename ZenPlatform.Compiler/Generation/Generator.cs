@@ -73,11 +73,10 @@ namespace ZenPlatform.Compiler.Generation
                 case TypeCode.String: return _dllModule.TypeSystem.String;
                 case TypeCode.Double: return _dllModule.TypeSystem.Double;
                 case TypeCode.Char: return _dllModule.TypeSystem.Char;
+                case TypeCode.Object when type == typeof(void): return _dllModule.TypeSystem.Void;
                 case TypeCode.Object: return _dllModule.ImportReference(type);
                 default:
                 {
-                    if (type == typeof(void))
-                        return _dllModule.TypeSystem.Void;
                     return null;
                 }
             }
@@ -93,49 +92,49 @@ namespace ZenPlatform.Compiler.Generation
                 switch (((BinaryExpression) expression).BinaryOperatorType)
                 {
                     case BinaryOperatorType.Add:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Add);
+                        il.Emit(OpCodes.Add);
                         break;
                     case BinaryOperatorType.Subtract:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Sub);
+                        il.Emit(OpCodes.Sub);
                         break;
                     case BinaryOperatorType.Multiply:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Mul);
+                        il.Emit(OpCodes.Mul);
                         break;
                     case BinaryOperatorType.Divide:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Div);
+                        il.Emit(OpCodes.Div);
                         break;
                     case BinaryOperatorType.Modulo:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Rem);
+                        il.Emit(OpCodes.Rem);
                         break;
                     case BinaryOperatorType.Equal:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
+                        il.Emit(OpCodes.Ceq);
                         break;
                     case BinaryOperatorType.NotEqual:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
+                        il.Emit(OpCodes.Ceq);
+                        il.Emit(OpCodes.Ldc_I4_0);
+                        il.Emit(OpCodes.Ceq);
                         break;
                     case BinaryOperatorType.GreaterThen:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Cgt);
+                        il.Emit(OpCodes.Cgt);
                         break;
                     case BinaryOperatorType.LessThen:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Clt);
+                        il.Emit(OpCodes.Clt);
                         break;
                     case BinaryOperatorType.GraterOrEqualTo:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Clt);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
+                        il.Emit(OpCodes.Clt);
+                        il.Emit(OpCodes.Ldc_I4_0);
+                        il.Emit(OpCodes.Ceq);
                         break;
                     case BinaryOperatorType.LessOrEqualTo:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Cgt);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ceq);
+                        il.Emit(OpCodes.Cgt);
+                        il.Emit(OpCodes.Ldc_I4_0);
+                        il.Emit(OpCodes.Ceq);
                         break;
                     case BinaryOperatorType.And:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.And);
+                        il.Emit(OpCodes.And);
                         break;
                     case BinaryOperatorType.Or:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Or);
+                        il.Emit(OpCodes.Or);
                         break;
                 }
             }
@@ -145,7 +144,7 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     EmitExpression(il, ie.Value, symbolTable);
                     EmitExpression(il, ie.Indexer, symbolTable);
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldelem_I4);
+                    il.Emit(OpCodes.Ldelem_I4);
                 }
 
                 if (ue is LogicalOrArithmeticExpression lae)
@@ -157,11 +156,11 @@ namespace ZenPlatform.Compiler.Generation
                             break;
                         case UnaryOperatorType.Negative:
                             EmitExpression(il, lae.Value, symbolTable);
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Neg);
+                            il.Emit(OpCodes.Neg);
                             break;
                         case UnaryOperatorType.Not:
                             EmitExpression(il, lae.Value, symbolTable);
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Not);
+                            il.Emit(OpCodes.Not);
                             break;
                     }
 
@@ -176,23 +175,23 @@ namespace ZenPlatform.Compiler.Generation
                 switch (literal.Type.PrimitiveType)
                 {
                     case PrimitiveType.Integer:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, Int32.Parse(literal.Value));
+                        il.Emit(OpCodes.Ldc_I4, Int32.Parse(literal.Value));
                         break;
                     case PrimitiveType.String:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, literal.Value);
+                        il.Emit(OpCodes.Ldstr, literal.Value);
                         break;
                     case PrimitiveType.Double:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_R8,
+                        il.Emit(OpCodes.Ldc_R8,
                             double.Parse(literal.Value, CultureInfo.InvariantCulture));
                         break;
                     case PrimitiveType.Character:
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4, char.ConvertToUtf32(literal.Value, 0));
+                        il.Emit(OpCodes.Ldc_I4, char.ConvertToUtf32(literal.Value, 0));
                         break;
                     case PrimitiveType.Boolean:
                         if (literal.Value == "true")
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (byte) 1);
+                            il.Emit(OpCodes.Ldc_I4_S, (byte) 1);
                         else if (literal.Value == "false")
-                            il.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (byte) 0);
+                            il.Emit(OpCodes.Ldc_I4_S, (byte) 0);
                         break;
                 }
             }
@@ -203,16 +202,16 @@ namespace ZenPlatform.Compiler.Generation
                     Error("Assignment variable " + name.Value + " unknown.");
 
                 if (variable.CodeObject is VariableDefinition)
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloc, (VariableDefinition) variable.CodeObject);
+                    il.Emit(OpCodes.Ldloc, (VariableDefinition) variable.CodeObject);
                 else if (variable.CodeObject is FieldDefinition)
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsfld, (FieldDefinition) variable.CodeObject);
+                    il.Emit(OpCodes.Ldsfld, (FieldDefinition) variable.CodeObject);
                 else if (variable.CodeObject is ParameterDefinition)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_S,
+                    il.Emit(OpCodes.Ldarg_S,
                         (byte) ((ParameterDefinition) variable.CodeObject).Sequence);
                     if (p.PassMethod == PassMethod.ByReference)
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldind_I4);
+                        il.Emit(OpCodes.Ldind_I4);
                 }
             }
             else if (expression is Call call)
@@ -280,13 +279,13 @@ namespace ZenPlatform.Compiler.Generation
                 functionName += "#";
 
             // Find return type.
-            System.Type returnType = function.Type.ToSystemType();
+            Type returnType = function.Type.ToSystemType();
 
             // Find parameters.
-            System.Type[] parameters = null;
+            Type[] parameters = null;
             if (function.Parameters != null)
             {
-                parameters = new System.Type[function.Parameters.Count];
+                parameters = new Type[function.Parameters.Count];
 
                 for (int x = 0; x < function.Parameters.Count; x++)
                 {
@@ -323,19 +322,30 @@ namespace ZenPlatform.Compiler.Generation
             if (function == null)
                 throw new ArgumentNullException();
 
-            //
-            // Build function body.
-            //
-
             ILProcessor il = function.Builder;
 
             il.Body.InitLocals = true;
 
-            EmitBody(il, function.InstructionsBody);
+
+            var returnVariable = new VariableDefinition(ToCecilType(function.Type.ToSystemType()));
+            var returnInstruction = il.Create(OpCodes.Ldloc, returnVariable);
+
+            var isVoid = function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void;
+
+            if (!isVoid)
+            {
+                il.Body.Variables.Add(returnVariable);
+            }
+
+            EmitBody(il, function.InstructionsBody, returnInstruction, returnVariable);
 
 
-            if (function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void)
-                il.Emit(Mono.Cecil.Cil.OpCodes.Ret);
+            if (!isVoid)
+                il.Append(returnInstruction);
+            il.Emit(OpCodes.Ret);
+
+//            if (function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void)
+//                il.Append(Mono.Cecil.Cil.OpCodes.Ret);
         }
 
 
@@ -358,19 +368,30 @@ namespace ZenPlatform.Compiler.Generation
 
             if (valueType.VariableType == VariableType.Primitive && convertType.VariableType == VariableType.Primitive)
             {
-                var opCode = GetOpCodeFromType(convertType);
+                var opCode = GetConvCodeFromType(convertType);
                 il.Emit(opCode);
             }
         }
 
-        private OpCode GetOpCodeFromType(AST.Definitions.Type type)
+        private OpCode GetConvCodeFromType(AST.Definitions.Type type)
         {
-            if (type.PrimitiveType == PrimitiveType.Integer) return Mono.Cecil.Cil.OpCodes.Conv_I4;
-            if (type.PrimitiveType == PrimitiveType.Double) return Mono.Cecil.Cil.OpCodes.Conv_R8;
-            if (type.PrimitiveType == PrimitiveType.Character) return Mono.Cecil.Cil.OpCodes.Conv_U2;
-            if (type.PrimitiveType == PrimitiveType.Real) return Mono.Cecil.Cil.OpCodes.Conv_R4;
+            if (type.PrimitiveType == PrimitiveType.Integer) return OpCodes.Conv_I4;
+            if (type.PrimitiveType == PrimitiveType.Double) return OpCodes.Conv_R8;
+            if (type.PrimitiveType == PrimitiveType.Character) return OpCodes.Conv_U2;
+            if (type.PrimitiveType == PrimitiveType.Real) return OpCodes.Conv_R4;
 
             throw new Exception("Converting to this value not supported");
+        }
+
+        private OpCode GetLdcCodeFromType(AST.Definitions.Type type)
+        {
+            switch (type.PrimitiveType)
+            {
+                case PrimitiveType.Integer: return OpCodes.Ldc_I4;
+                case PrimitiveType.Double: return OpCodes.Ldc_R8;
+                case PrimitiveType.Real: return OpCodes.Ldc_R4;
+                default: return OpCodes.Ldc_I4;
+            }
         }
     }
 }

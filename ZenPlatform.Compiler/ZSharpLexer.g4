@@ -33,6 +33,7 @@ RETURN : 'return';
 
 IF : 'if';
 ELSE : 'else';
+FOR : 'for';
 
 DOLLAR:                   '$';
 
