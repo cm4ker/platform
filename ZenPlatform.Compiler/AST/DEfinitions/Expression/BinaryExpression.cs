@@ -18,4 +18,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expression
             BinaryOperatorType = binaryOperatorType;
         }
     }
+    
+    
+    
 }

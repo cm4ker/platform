@@ -40,7 +40,8 @@ statement:
         | functionCall
         | assigment
         | RETURN expression
-        | ifStatement)*
+        | ifStatement
+        | forStatement)*
         ; 
 
 statements: 
@@ -54,10 +55,10 @@ variableDeclaration:
     
 assigment: 
    name '=' expression
-   | name '[' expression ']' '=' expression
-   | name '++'
-   | name '--' 
-;    
+   | name '[' indexExpression=expression ']' '=' assigmentExpression=expression
+   | name OP_INC
+   | name OP_DEC
+;   
 
 functionCall: 
     name '(' arguments? ')'
@@ -189,5 +190,8 @@ extensionExpression:
         | functionCall;  
 ifStatement:
     IF '(' expression ')' instructionsBody (ELSE instructionsBody)?;
+    
+forStatement:
+    FOR '('variableDeclaration ';' conditionExpression=expression ';' assigment ')' instructionsBody;
 
 

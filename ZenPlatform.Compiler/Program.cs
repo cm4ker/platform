@@ -24,7 +24,7 @@ namespace ZenPlatform.Compiler
 module Test
 {
 
-/*    void Main()
+   void Main()
     {
         double testCast = (double)1;
     }
@@ -43,18 +43,36 @@ module Test
     {
         return a - b;
     }
-*/
+
     double Div(int a, int b)
     {
         if(a > b)
         {
-            return (double)a / (double)b;
+            a = a + 2;
         }
         else
         {
-            return 0.0;
+            a = a + 1;
+           
         };
+
+         return (double)a;
     }
+
+    int Factor(int a)
+    {
+        int result = 1;
+        for(int i = 1; i <= a; i++)
+        {
+            result = result * i;
+        };
+
+        a++;
+
+        a = a + 1;
+        return result;
+    }
+    
 }
 
 ");
@@ -85,9 +103,19 @@ module Test
 
     static class Test
     {
-        public static void Method()
+        public static double M(int a, int b)
         {
-            string test;
+            if(a > b)
+            {
+                a = a + 2;
+            }
+            else
+            {
+                a = a + 1;
+            };
+
+            
+            return (double)a;
         }
     }
 }

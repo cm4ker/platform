@@ -39,7 +39,7 @@ namespace ZenPlatform.Compiler.Generation
                     if (p.PassMethod == PassMethod.ByReference)
                         il.Emit(Mono.Cecil.Cil.OpCodes.Stind_I4);
                     else
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Starg, ((ParameterDefinition) variable.CodeObject).Sequence - 1);
+                        il.Emit(Mono.Cecil.Cil.OpCodes.Starg, ((ParameterDefinition) variable.CodeObject).Sequence);
                 }
             }
             else

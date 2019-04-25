@@ -15,4 +15,22 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
             Index = index;
         }
     }
+
+    /// <summary>
+    /// Выражение для постинкрементирования
+    /// </summary>
+    public class PostIncrementStatement : Statement
+    {
+        public Name Name { get; }
+
+        public PostIncrementStatement(string name)
+        {
+            Name = new Name(name);
+        }
+
+        public PostIncrementStatement(Name name)
+        {
+            Name = name;
+        }
+    }
 }
