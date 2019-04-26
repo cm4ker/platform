@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
@@ -9,7 +8,6 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using BinaryExpression = ZenPlatform.Compiler.AST.Definitions.Expression.BinaryExpression;
-using Expression = System.Linq.Expressions.Expression;
 using Type = ZenPlatform.Compiler.AST.Definitions.Type;
 
 namespace ZenPlatform.Compiler.AST
@@ -69,7 +67,7 @@ namespace ZenPlatform.Compiler.AST
 
         public override object VisitStructureType(ZSharpParser.StructureTypeContext context)
         {
-            var result = new Definitions.Type(context.GetText());
+            var result = new Type(context.GetText());
             _syntaxStack.Push(result);
             return result;
         }
@@ -77,12 +75,12 @@ namespace ZenPlatform.Compiler.AST
         public override object VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
         {
             object result = null;
-            if (context.STRING() != null) result = new Definitions.Type(PrimitiveType.String);
-            else if (context.INT() != null) result = new Definitions.Type(PrimitiveType.Integer);
-            else if (context.BOOL() != null) result = new Definitions.Type(PrimitiveType.Boolean);
-            else if (context.DOUBLE() != null) result = new Definitions.Type(PrimitiveType.Double);
-            else if (context.CHAR() != null) result = new Definitions.Type(PrimitiveType.Character);
-            else if (context.VOID() != null) result = new Definitions.Type(PrimitiveType.Void);
+            if (context.STRING() != null) result = new Type(PrimitiveType.String);
+            else if (context.INT() != null) result = new Type(PrimitiveType.Integer);
+            else if (context.BOOL() != null) result = new Type(PrimitiveType.Boolean);
+            else if (context.DOUBLE() != null) result = new Type(PrimitiveType.Double);
+            else if (context.CHAR() != null) result = new Type(PrimitiveType.Character);
+            else if (context.VOID() != null) result = new Type(PrimitiveType.Void);
 
             if (result == null)
                 throw new Exception("Unknown primitive type");
@@ -283,7 +281,26 @@ namespace ZenPlatform.Compiler.AST
             base.VisitExpressionPrimary(context);
 
             if (context.name() != null)
-                _syntaxStack.Push(new Name(_syntaxStack.PopString()));
+            {
+                var identifier = _syntaxStack.PopString().Split('.');
+
+                //Если мы пытаемся получить какое-то свойство у переменной, то мы обязательно должны пометить это как PropertyExpression
+                // Похожая механика реализована и в FunctionCall
+                if (identifier.Length > 1)
+                {
+                    _syntaxStack.Push(new Name(identifier[0]));
+
+                    foreach (var str in identifier[1..])
+                    {
+                        _syntaxStack.Push(new PropertyExpression(_syntaxStack.PopExpression(), str));
+                    }
+                }
+                else
+                {
+                    _syntaxStack.Push(new Name(identifier[0]));
+                }
+            }
+
             return null;
         }
 
@@ -471,6 +488,15 @@ namespace ZenPlatform.Compiler.AST
 
             _syntaxStack.Push(result);
 
+            return result;
+        }
+
+        public override object VisitWhileStatement(ZSharpParser.WhileStatementContext context)
+        {
+            base.VisitWhileStatement(context);
+
+            var result = new While(_syntaxStack.PopInstructionsBody(), _syntaxStack.PopExpression());
+            _syntaxStack.Push(result);
             return result;
         }
     }

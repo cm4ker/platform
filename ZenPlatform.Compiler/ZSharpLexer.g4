@@ -34,8 +34,11 @@ RETURN : 'return';
 IF : 'if';
 ELSE : 'else';
 FOR : 'for';
-
+WHILE : 'while';
 DOLLAR:                   '$';
+
+TRUE: 'true';
+FALSE: 'false';
 
 SEMICOLON:                ';';
 PLUS:                     '+';
@@ -93,11 +96,8 @@ PRIVATE : 'private';
 
 MODULE : 'module';
 
-IDENTIFIER : ('a'..'z' | 'A'..'Z')+;
+IDENTIFIER : ('a'..'z' | 'A'..'Z')+ ('a'..'z' | 'A'..'Z' | '0'..'9')*;
 DEC_DIGIT: '1'..'9' '0'..'9'* ('.' '0'..'9')*;
-
-TRUE: 'true';
-FALSE: 'false';
 
 
 fragment CommonCharacter

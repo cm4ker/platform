@@ -41,7 +41,8 @@ statement:
         | assigment
         | RETURN expression
         | ifStatement
-        | forStatement)*
+        | forStatement
+        | whileStatement)*
         ; 
 
 statements: 
@@ -61,7 +62,7 @@ assigment:
 ;   
 
 functionCall: 
-    name '(' arguments? ')'
+    name '(' arguments? ')' ( '.' propertyExpression = name )* ('.' functionCall)*
 ;
 
 functionCallExpression:
@@ -193,5 +194,8 @@ ifStatement:
     
 forStatement:
     FOR '('variableDeclaration ';' conditionExpression=expression ';' assigment ')' instructionsBody;
+
+whileStatement:
+    WHILE '(' expression ')' instructionsBody;
 
 

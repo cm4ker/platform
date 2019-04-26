@@ -3,32 +3,22 @@ using ZenPlatform.Compiler.AST.Infrastructure;
 namespace ZenPlatform.Compiler.AST.Definitions
 {
     /// <summary>
-    /// Describes a type.
+    /// Описывает тип
     /// </summary>
     public class Type
     {
-        /// <summary>
-        /// Name of type, generally name of structure if VariableType is Structure.
-        /// </summary>
-        public string Name;
+        #region Constructors
 
-        /// <summary>
-        /// Variable type.
-        /// </summary>
-        public VariableType VariableType = VariableType.Primitive;
-
-        /// <summary>
-        /// Primitive type if VariableType is Primitive.
-        /// </summary>
-        public PrimitiveType PrimitiveType = PrimitiveType.Void;
-
-        public bool IsRef = false;
+        private Type()
+        {
+            PrimitiveType = PrimitiveType.Void;
+        }
 
         /// <summary>
         /// Create a primitive type.
         /// </summary>
         /// <param name="primitiveType"></param>
-        public Type(PrimitiveType primitiveType)
+        public Type(PrimitiveType primitiveType) : this()
         {
             VariableType = VariableType.Primitive;
             PrimitiveType = primitiveType;
@@ -38,17 +28,45 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// Create a structure type.
         /// </summary>
         /// <param name="name"></param>
-        public Type(string name)
+        public Type(string name) : this()
         {
             VariableType = VariableType.Structure;
             Name = name;
         }
 
+        #endregion
+
+        #region Fields
+
+        /// <summary>
+        /// Имя типа
+        /// </summary>
+        public string Name;
+
+        /// <summary>
+        /// Тип переменной.
+        /// <br />
+        /// Примитивный
+        /// Примитивный массив
+        /// Структура
+        /// Массив структур  
+        /// </summary>
+        public VariableType VariableType;
+
+        /// <summary>
+        /// Приметивный тип - используется если тип переменной приметивный
+        /// </summary>
+        public PrimitiveType PrimitiveType;
+
+        public bool IsRef => false;
+
+        #endregion
+
         /// <summary>
         /// Creates a .NET system type from type.
         /// </summary>
         /// <returns></returns>
-        public System.Type ToSystemType()
+        public System.Type ToClrType()
         {
             if (!IsRef)
             {
@@ -100,9 +118,6 @@ namespace ZenPlatform.Compiler.AST.Definitions
             return null;
         }
 
-        private Type()
-        {
-        } // Hidden default constructor.
 
         /// <summary>
         /// Create a primitive array type from a non array type.
@@ -139,7 +154,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         }
 
 
-        #region Primitive types
+        #region Primitive static types
 
         public static Type String = new Type(PrimitiveType.String);
         public static Type Character = new Type(PrimitiveType.Character);
