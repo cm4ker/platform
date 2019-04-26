@@ -189,9 +189,9 @@ namespace ZenPlatform.Compiler.Generation
                         break;
                     case PrimitiveType.Boolean:
                         if (literal.Value == "true")
-                            il.Emit(OpCodes.Ldc_I4_S, (byte) 1);
+                            il.Emit(OpCodes.Ldc_I4, 1);
                         else if (literal.Value == "false")
-                            il.Emit(OpCodes.Ldc_I4_S, (byte) 0);
+                            il.Emit(OpCodes.Ldc_I4, 0);
                         break;
                 }
             }
@@ -217,6 +217,14 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is Call call)
             {
                 EmitCall(il, call, symbolTable);
+            }
+            else if (expression is PropertyExpression pe)
+            {
+                EmitExpression(il, pe.Expression, symbolTable);
+
+                var fi = pe.Expression.Type.ToClrType().GetField(pe.Name);
+                var fr = new FieldReference(pe.Name, ToCecilType(fi.FieldType));
+                il.Emit(OpCodes.Ldfld, fr);
             }
         }
 
@@ -252,7 +260,7 @@ namespace ZenPlatform.Compiler.Generation
                     MethodDefinition method = new MethodDefinition(function.Name,
                         MethodAttributes.Public | MethodAttributes.Static
                                                 | MethodAttributes.HideBySig,
-                        ToCecilType(function.Type.ToSystemType()));
+                        ToCecilType(function.Type.ToClrType()));
 
                     result.Add((function, method));
 
@@ -279,7 +287,7 @@ namespace ZenPlatform.Compiler.Generation
                 functionName += "#";
 
             // Find return type.
-            Type returnType = function.Type.ToSystemType();
+            Type returnType = function.Type.ToClrType();
 
             // Find parameters.
             Type[] parameters = null;
@@ -289,7 +297,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 for (int x = 0; x < function.Parameters.Count; x++)
                 {
-                    parameters[x] = function.Parameters[x].Type.ToSystemType();
+                    parameters[x] = function.Parameters[x].Type.ToClrType();
                 }
             }
 
@@ -304,7 +312,7 @@ namespace ZenPlatform.Compiler.Generation
 
 
                     ParameterDefinition p = new ParameterDefinition(pName, ParameterAttributes.None,
-                        ToCecilType(pType.ToSystemType()));
+                        ToCecilType(pType.ToClrType()));
 
                     function.InstructionsBody.SymbolTable.Add(pName, SymbolType.Variable, function.Parameters[x], p);
 
@@ -327,7 +335,7 @@ namespace ZenPlatform.Compiler.Generation
             il.Body.InitLocals = true;
 
 
-            var returnVariable = new VariableDefinition(ToCecilType(function.Type.ToSystemType()));
+            var returnVariable = new VariableDefinition(ToCecilType(function.Type.ToClrType()));
             var returnInstruction = il.Create(OpCodes.Ldloc, returnVariable);
 
             var isVoid = function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void;

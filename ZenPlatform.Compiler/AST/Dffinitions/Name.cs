@@ -12,4 +12,18 @@ namespace ZenPlatform.Compiler.AST.Definitions
             Value = value;
         }
     }
+
+    public class PropertyExpression : Infrastructure.Expression
+    {
+        public Infrastructure.Expression Expression { get; }
+        public string Name { get; }
+
+        public PropertyExpression(Infrastructure.Expression expression, string name)
+        {
+            Expression = expression;
+            Name = name;
+        }
+        
+        
+    }
 }

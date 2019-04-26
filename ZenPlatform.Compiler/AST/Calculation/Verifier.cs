@@ -1,11 +1,12 @@
 using System.Diagnostics;
+using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 
-namespace ZenPlatform.Compiler.AST.Definitions
+namespace ZenPlatform.Compiler.AST.Calculation
 {
     public class Verifier
     {

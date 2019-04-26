@@ -24,7 +24,7 @@ namespace ZenPlatform.Compiler
 module Test
 {
 
-   void Main()
+ /*  void Main()
     {
         double testCast = (double)1;
     }
@@ -72,9 +72,42 @@ module Test
         a = a + 1;
         return result;
     }
-    
-}
 
+    int Counter(int a)
+    {
+        bool i = true;
+        while ( i )
+        {
+           a++;
+
+            if( a > 10) 
+            {
+                i = false;
+            }
+            else
+            {
+                a = Factor(a);
+            };
+        };
+        
+        return 0;
+    }
+    */
+
+    int Average(int[] arr)
+    {
+        double result = 0;
+
+        for(int i = 0; i < arr.Length; i++)
+        {
+            result = result + arr[i];
+        };    
+
+        result = result / arr.Length;
+        
+        return result;
+    }
+}
 ");
 
             var name = new AssemblyNameDefinition("Debug.dll", new Version(1, 0));
@@ -116,6 +149,20 @@ module Test
 
             
             return (double)a;
+        }
+        
+        static double Average(int[] arr)
+        {
+            double result = 0;
+
+            for(int i = 0; i < arr.Length; i++)
+            {
+                result = result + arr[i];
+            };    
+
+            result = result / arr.Length;
+        
+            return result;
         }
     }
 }

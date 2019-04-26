@@ -36,7 +36,7 @@ namespace ZenPlatform.Compiler.Generation
                 Variable variable = statement as Variable;
 
                 VariableDefinition local =
-                    new VariableDefinition(ToCecilType(variable.Type.ToSystemType()));
+                    new VariableDefinition(ToCecilType(variable.Type.ToClrType()));
 
                 il.Body.Variables.Add(local);
 
@@ -65,7 +65,7 @@ namespace ZenPlatform.Compiler.Generation
                     {
                         EmitExpression(il, (Expression) variable.Value, context.SymbolTable);
                         il.Emit(OpCodes.Newarr,
-                            ToCecilType(variable.Type.ToSystemType()));
+                            ToCecilType(variable.Type.ToClrType()));
 
                         if (local.Index > 255)
                             il.Emit(OpCodes.Stloc, local);
@@ -78,7 +78,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         il.Emit(OpCodes.Ldc_I4, elements.Count);
                         il.Emit(OpCodes.Newarr,
-                            ToCecilType(variable.Type.ToSystemType()));
+                            ToCecilType(variable.Type.ToClrType()));
 
                         if (local.Index > 255)
                             il.Emit(OpCodes.Stloc, local);
