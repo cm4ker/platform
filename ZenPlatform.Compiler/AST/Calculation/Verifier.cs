@@ -19,7 +19,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
             _module = module;
         }
 
-        private void BuildSymbolTable(SymbolTable parent, InstructionsBody body)
+        private void BuildSymbolTable(SymbolTable parent, InstructionsBodyNode body)
         {
             if (body.Statements != null)
             {
@@ -204,7 +204,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
         }
 
 
-        public bool VerifyBody(InstructionsBody body)
+        public bool VerifyBody(InstructionsBodyNode body)
         {
             //
             // Check variable declarations.

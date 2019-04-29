@@ -5,7 +5,7 @@ using ZenPlatform.Compiler.AST.Definitions.Statements;
 
 namespace ZenPlatform.Compiler.AST.Infrastructure
 {
-    public class ElementCollection : List<Element>
+    public class ElementCollection : List<ElementNode>
     {
     }
 

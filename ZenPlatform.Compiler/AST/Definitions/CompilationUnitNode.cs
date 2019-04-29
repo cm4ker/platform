@@ -5,7 +5,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// <summary>
     /// Единица компиляции
     /// </summary>
-    public class CompilationUnit
+    public class CompilationUnitNode
     {
         public List<TypeEntity> TypeEntities;
     }

@@ -8,6 +8,7 @@ using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Cecil.Backend;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 using OpCode = Mono.Cecil.Cil.OpCode;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
@@ -331,8 +332,9 @@ namespace ZenPlatform.Compiler.Generation
                 throw new ArgumentNullException();
 
             ILProcessor il = function.Builder;
-
             il.Body.InitLocals = true;
+
+            var emitter = new Emitter(il);
 
 
             var returnVariable = new VariableDefinition(ToCecilType(function.Type.ToClrType()));

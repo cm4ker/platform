@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Function body.
         /// </summary>
-        public InstructionsBody InstructionsBody;
+        public InstructionsBodyNode InstructionsBody;
 
         /// <summary>
         /// Function type.
@@ -37,7 +37,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Creates a function object.
         /// </summary>
-        public Function(InstructionsBody instructionsBody, ParameterCollection parameters, string name, Type type)
+        public Function(InstructionsBodyNode instructionsBody, ParameterCollection parameters, string name, Type type)
         {
             InstructionsBody = instructionsBody;
             Parameters = parameters;

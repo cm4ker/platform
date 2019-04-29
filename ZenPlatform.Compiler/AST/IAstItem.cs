@@ -6,4 +6,9 @@ namespace ZenPlatform.Compiler.AST
     public interface IAstItem
     {
     }
+
+
+    public class AstNode
+    {
+    }
 }

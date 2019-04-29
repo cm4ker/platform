@@ -2,7 +2,10 @@ using ZenPlatform.Compiler.AST.Definitions;
 
 namespace ZenPlatform.Compiler.AST.Infrastructure
 {
-    public abstract class Expression : IAstItem
+    /// <summary>
+    /// Выражение
+    /// </summary>
+    public abstract class Expression : AstNode, IAstItem
     {
         public virtual Type Type { get; set; }
     }

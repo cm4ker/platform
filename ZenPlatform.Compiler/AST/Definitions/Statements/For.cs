@@ -8,9 +8,9 @@ namespace ZenPlatform.Compiler.AST.Definitions.Statements
         public Infrastructure.Expression Condition = null;
         public Statement Counter = null;
         
-        public InstructionsBody InstructionsBody = null;
+        public InstructionsBodyNode InstructionsBody = null;
 
-        public For(InstructionsBody instructionsBody, Statement counter, Infrastructure.Expression condition, Statement initializer)
+        public For(InstructionsBodyNode instructionsBody, Statement counter, Infrastructure.Expression condition, Statement initializer)
         {
             InstructionsBody = instructionsBody;
             Counter = counter;

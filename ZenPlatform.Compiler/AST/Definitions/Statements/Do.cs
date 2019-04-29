@@ -3,9 +3,9 @@ namespace ZenPlatform.Compiler.AST.Definitions.Statements
     public class Do : Statement
     {
         public Infrastructure.Expression Condition = null;
-        public InstructionsBody InstructionsBody = null;
+        public InstructionsBodyNode InstructionsBody = null;
 
-        public Do(Infrastructure.Expression condition, InstructionsBody instructionsBody)
+        public Do(Infrastructure.Expression condition, InstructionsBodyNode instructionsBody)
         {
             InstructionsBody = instructionsBody;
             Condition = condition;
