@@ -3,12 +3,13 @@ using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Cecil.Backend;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitAssignment(ILProcessor il, Assignment assignment, SymbolTable symbolTable)
+        private void EmitAssignment(Emitter il, Assignment assignment, SymbolTable symbolTable)
         {
             Symbol variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
             if (variable == null)
@@ -17,44 +18,43 @@ namespace ZenPlatform.Compiler.Generation
             // Non-indexed assignment
             if (assignment.Index == null)
             {
-                if (variable.CodeObject is ParameterDefinition)
+                if (variable.CodeObject is ParameterDefinition pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_S,
-                            ((ParameterDefinition) variable.CodeObject).Sequence - 1);
+                        il.LdArg(pd.Sequence - 1);
                 }
 
                 // Load value
                 EmitExpression(il, assignment.Value, symbolTable);
 
                 // Store
-                if (variable.CodeObject is VariableDefinition)
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Stloc, (VariableDefinition) variable.CodeObject);
-                else if (variable.CodeObject is FieldDefinition)
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Stsfld, (FieldDefinition) variable.CodeObject);
+                if (variable.CodeObject is VariableDefinition vd)
+                    il.StLoc(vd);
+                else if (variable.CodeObject is FieldDefinition fd)
+                    il.LdsFld(fd);
                 else if (variable.CodeObject is ParameterDefinition)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Stind_I4);
+                        il.StIndI4();
                     else
-                        il.Emit(Mono.Cecil.Cil.OpCodes.Starg, ((ParameterDefinition) variable.CodeObject).Sequence);
+                        il.StArg((ParameterDefinition) variable.CodeObject);
                 }
             }
             else
             {
                 // Load array.
-                if (variable.CodeObject is VariableDefinition)
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloc, (VariableDefinition) variable.CodeObject);
-                else if (variable.CodeObject is FieldDefinition)
-                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsfld, (FieldDefinition) variable.CodeObject);
+                if (variable.CodeObject is VariableDefinition vd)
+                    il.LdLoc(vd);
+                else if (variable.CodeObject is FieldDefinition fd)
+                    il.LdsFld(fd);
                 // Load index.
                 EmitExpression(il, assignment.Index, symbolTable);
                 // Load value.
                 EmitExpression(il, assignment.Value, symbolTable);
                 // Set
-                il.Emit(Mono.Cecil.Cil.OpCodes.Stelem_I4);
+                il.StElemI4();
             }
         }
     }

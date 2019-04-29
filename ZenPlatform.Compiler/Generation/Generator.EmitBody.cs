@@ -14,7 +14,7 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitBody(Emitter emitter, InstructionsBodyNode body, Instruction returnLabel,
+        private void EmitBody(Emitter e, InstructionsBodyNode body, Label returnLabel,
             VariableDefinition returnVariable)
         {
             foreach (Statement statement in body.Statements)
@@ -22,15 +22,15 @@ namespace ZenPlatform.Compiler.Generation
                 //
                 // Declare local variables.
                 //
-                EmitStatement(emitter, statement, body, returnLabel, returnVariable);
+                EmitStatement(e, statement, body, returnLabel, returnVariable);
 
                 var isLastStatement = body.Statements.Last() == statement;
             }
         }
 
 
-        private void EmitStatement(Emitter emitter, Statement statement, InstructionsBodyNode context,
-            Instruction returnLabel, VariableDefinition returnVariable)
+        private void EmitStatement(Emitter e, Statement statement, InstructionsBodyNode context,
+            Label returnLabel, VariableDefinition returnVariable)
         {
             if (statement is Variable)
             {
@@ -39,7 +39,7 @@ namespace ZenPlatform.Compiler.Generation
                 VariableDefinition local =
                     new VariableDefinition(ToCecilType(variable.Type.ToClrType()));
 
-                emitter.Variable(local);
+                e.Variable(local);
 
                 context.SymbolTable.Add(variable.Name, SymbolType.Variable, variable, local);
 
@@ -51,9 +51,9 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     if (variable.Value != null && variable.Value is Expression)
                     {
-                        EmitExpression(emitter, (Expression) variable.Value, context.SymbolTable);
+                        EmitExpression(e, (Expression) variable.Value, context.SymbolTable);
 
-                        emitter.StLoc(local);
+                        e.StLoc(local);
                     }
                 }
                 else if (variable.Type.VariableType == VariableType.PrimitiveArray)
@@ -61,73 +61,73 @@ namespace ZenPlatform.Compiler.Generation
                     // Empty array initialization.
                     if (variable.Value != null && variable.Value is Expression)
                     {
-                        EmitExpression(emitter, (Expression) variable.Value, context.SymbolTable);
-                        emitter.NewArr(ToCecilType(variable.Type.ToClrType()));
-                        emitter.StLoc(local);
+                        EmitExpression(e, (Expression) variable.Value, context.SymbolTable);
+                        e.NewArr(ToCecilType(variable.Type.ToClrType()));
+                        e.StLoc(local);
                     }
                     else if (variable.Value != null && variable.Value is ElementCollection)
                     {
                         ElementCollection elements = variable.Value as ElementCollection;
 
-                        emitter.LdcI4(elements.Count);
-                        emitter.NewArr(ToCecilType(variable.Type.ToClrType()));
-                        emitter.StLoc(local);
+                        e.LdcI4(elements.Count);
+                        e.NewArr(ToCecilType(variable.Type.ToClrType()));
+                        e.StLoc(local);
 
                         for (int x = 0; x < elements.Count; x++)
                         {
                             // Load array
-                            emitter.LdLoc(local);
+                            e.LdLoc(local);
                             // Load index
-                            emitter.LdcI4(x);
+                            e.LdcI4(x);
                             // Load value
-                            EmitExpression(emitter, elements[x].Expression, context.SymbolTable);
+                            EmitExpression(e, elements[x].Expression, context.SymbolTable);
                             // Store
-                            emitter.StElemI4();
+                            e.StElemI4();
                         }
                     }
                 }
             }
             else if (statement is Assignment)
             {
-                EmitAssignment(emitter, statement as Assignment, context.SymbolTable);
+                EmitAssignment(e, statement as Assignment, context.SymbolTable);
             }
             else if (statement is Return)
             {
                 if (((Return) statement).Value != null)
-                    EmitExpression(emitter, ((Return) statement).Value, context.SymbolTable);
+                    EmitExpression(e, ((Return) statement).Value, context.SymbolTable);
 
-                emitter.StLoc(returnVariable)
+                e.StLoc(returnVariable)
                     .Br(returnLabel);
             }
             else if (statement is CallStatement)
             {
                 CallStatement call = statement as CallStatement;
                 Symbol symbol = context.SymbolTable.Find(call.Name, SymbolType.Function);
-                EmitCallStatement(emitter, statement as CallStatement, context.SymbolTable);
+                EmitCallStatement(e, statement as CallStatement, context.SymbolTable);
 
                 if (symbol != null)
                 {
                     if (((MethodDefinition) symbol.CodeObject).ReturnType != _dllModule.TypeSystem.Void)
-                        emitter.Pop();
+                        e.Pop();
                 }
                 else
                 {
                     if (call.Name == "Read")
-                        emitter.Pop();
+                        e.Pop();
                 }
             }
             else if (statement is If ifStatement)
             {
                 // Eval condition
-                EmitExpression(emitter, ifStatement.Condition, context.SymbolTable);
+                EmitExpression(e, ifStatement.Condition, context.SymbolTable);
 
                 if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody == null)
                 {
                     ifStatement.IfInstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
                     var exit = new Label();
-                    emitter.BrFalse(exit);
-                    EmitBody(emitter, ifStatement.IfInstructionsBody, returnLabel, returnVariable);
-                    emitter.Append(exit.Instruction);
+                    e.BrFalse(exit);
+                    EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, returnVariable);
+                    e.Append(exit.Instruction);
                 }
                 else if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody != null)
                 {
@@ -138,13 +138,13 @@ namespace ZenPlatform.Compiler.Generation
                     Label exit = new Label();
                     Label elseLabel = new Label();
 
-                    emitter.BrFalse(elseLabel);
-                    EmitBody(emitter, ifStatement.IfInstructionsBody, returnLabel, returnVariable);
-                    if (emitter.MethodBody.Instructions.Last().OpCode != OpCodes.Br)
-                        emitter.Br(exit);
-                    emitter.Append(elseLabel.Instruction);
-                    EmitBody(emitter, ifStatement.ElseInstructionsBody, returnLabel, returnVariable);
-                    emitter.Append(exit.Instruction);
+                    e.BrFalse(elseLabel);
+                    EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, returnVariable);
+                    if (e.MethodBody.Instructions.Last().OpCode != OpCodes.Br)
+                        e.Br(exit);
+                    e.Append(elseLabel.Instruction);
+                    EmitBody(e, ifStatement.ElseInstructionsBody, returnLabel, returnVariable);
+                    e.Append(exit.Instruction);
                 }
             }
 
@@ -159,13 +159,13 @@ namespace ZenPlatform.Compiler.Generation
                 Label begin = new Label();
                 Label exit = new Label();
 
-                emitter.Append(begin);
+                e.Append(begin);
                 // Eval condition
-                EmitExpression(emitter, whileStatement.Condition, context.SymbolTable);
-                emitter.BrFalse(exit);
-                EmitBody(emitter, whileStatement.InstructionsBody, returnLabel, returnVariable);
+                EmitExpression(e, whileStatement.Condition, context.SymbolTable);
+                e.BrFalse(exit);
+                EmitBody(e, whileStatement.InstructionsBody, returnLabel, returnVariable);
 
-                emitter.Br(begin)
+                e.Br(begin)
                     .Append(exit);
             }
             else if (statement is Do)
@@ -178,10 +178,10 @@ namespace ZenPlatform.Compiler.Generation
                 doStatement.InstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
 
                 Label loop = new Label();
-                emitter.Append(loop);
-                EmitBody(emitter, doStatement.InstructionsBody, returnLabel, returnVariable);
-                EmitExpression(emitter, doStatement.Condition, context.SymbolTable);
-                emitter.BrTrue(loop);
+                e.Append(loop);
+                EmitBody(e, doStatement.InstructionsBody, returnLabel, returnVariable);
+                EmitExpression(e, doStatement.Condition, context.SymbolTable);
+                e.BrTrue(loop);
             }
             else if (statement is For)
             {
@@ -196,18 +196,18 @@ namespace ZenPlatform.Compiler.Generation
                 Label exit = new Label();
 
                 // Emit initializer
-                EmitStatement(il, forStatement.Initializer, context, returnLabel, returnVariable);
-                il.Append(loop.Instruction);
+                EmitStatement(e, forStatement.Initializer, context, returnLabel, returnVariable);
+                e.Append(loop);
                 // Emit condition
-                EmitExpression(il, forStatement.Condition, context.SymbolTable);
-                il.Emit(OpCodes.Brfalse, exit.Instruction);
+                EmitExpression(e, forStatement.Condition, context.SymbolTable);
+                e.BrFalse(exit);
                 // Emit body
-                EmitBody(il, forStatement.InstructionsBody, returnLabel, returnVariable);
+                EmitBody(e, forStatement.InstructionsBody, returnLabel, returnVariable);
                 // Emit counter
-                EmitStatement(il, forStatement.Counter, context, returnLabel, returnVariable);
+                EmitStatement(e, forStatement.Counter, context, returnLabel, returnVariable);
                 //EmitAssignment(il, forStatement.Counter, context.SymbolTable);
-                il.Emit(OpCodes.Br, loop.Instruction);
-                il.Append(exit.Instruction);
+                e.Br(loop);
+                e.Append(exit);
             }
             else if (statement is PostIncrementStatement pis)
             {
@@ -221,15 +221,15 @@ namespace ZenPlatform.Compiler.Generation
                     opType = v.Type;
 
 
-                EmitExpression(il, pis.Name, context.SymbolTable);
+                EmitExpression(e, pis.Name, context.SymbolTable);
 
-                il.Emit(GetLdcCodeFromType(opType), 1);
-                il.Emit(OpCodes.Add);
+                EmitIncrement(e, opType);
+                e.Add();
 
                 if (symbol.CodeObject is ParameterDefinition pd)
-                    il.Emit(OpCodes.Starg, pd);
+                    e.StArg(pd);
                 if (symbol.CodeObject is VariableDefinition vd)
-                    il.Emit(OpCodes.Stloc, vd);
+                    e.StLoc(vd);
             }
         }
     }
