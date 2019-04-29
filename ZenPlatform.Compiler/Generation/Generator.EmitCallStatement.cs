@@ -6,12 +6,13 @@ using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Cecil.Backend;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitCallStatement(ILProcessor il, CallStatement call, SymbolTable symbolTable)
+        private void EmitCallStatement(Emitter il, CallStatement call, SymbolTable symbolTable)
         {
             Symbol symbol = symbolTable.Find(call.Name, SymbolType.Function);
 
@@ -61,43 +62,41 @@ namespace ZenPlatform.Compiler.Generation
                                     if (((Variable) variable.SyntaxObject).Type.VariableType ==
                                         VariableType.PrimitiveArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, variable.CodeObject as VariableDefinition);
+                                    il.LdLocA(variable.CodeObject as VariableDefinition);
                                 }
                                 else if (variable.CodeObject is FieldBuilder)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.VariableType ==
                                         VariableType.PrimitiveArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsflda, variable.CodeObject as FieldDefinition);
+                                    il.LdsFldA(variable.CodeObject as FieldDefinition);
                                 }
-                                else if (variable.CodeObject is ParameterBuilder)
+                                else if (variable.CodeObject is ParameterBuilder pb)
                                 {
                                     if (((Parameter) variable.SyntaxObject).Type.VariableType ==
                                         VariableType.PrimitiveArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarga,
-                                        ((ParameterBuilder) variable.CodeObject).Position - 1);
+                                    il.LdArgA(pb.Position - 1);
                                 }
                             }
                             else if (argument.Value is IndexerExpression ue)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is VariableDefinition)
+                                if (variable.CodeObject is VariableDefinition vd)
                                 {
-                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldloc, variable.CodeObject as VariableDefinition);
+                                    il.LdLoc(vd);
                                 }
                                 else if (variable.CodeObject is FieldBuilder)
                                 {
-                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldsfld, variable.CodeObject as FieldDefinition);
+                                    il.LdsFld(variable.CodeObject as FieldDefinition);
                                 }
                                 else if (variable.CodeObject is ParameterBuilder)
                                 {
-                                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldarga,
-                                        ((ParameterBuilder) variable.CodeObject).Position - 1);
+                                    il.LdArgA(((ParameterBuilder) variable.CodeObject).Position - 1);
                                 }
 
                                 EmitExpression(il, ue.Indexer, symbolTable);
-                                il.Emit(Mono.Cecil.Cil.OpCodes.Ldelema);
+                                il.LdElemA();
                             }
                             else
                             {
@@ -112,7 +111,7 @@ namespace ZenPlatform.Compiler.Generation
                 }
 
                 Hack:
-                il.Emit(Mono.Cecil.Cil.OpCodes.Call, ((MethodDefinition) symbol.CodeObject));
+                il.Call(((MethodDefinition) symbol.CodeObject));
             }
             else
             {

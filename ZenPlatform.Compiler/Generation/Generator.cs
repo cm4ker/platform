@@ -83,59 +83,53 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        private void EmitExpression(ILProcessor il, Expression expression, SymbolTable symbolTable)
+        private void EmitExpression(Emitter e, Expression expression, SymbolTable symbolTable)
         {
             if (expression is BinaryExpression)
             {
-                EmitExpression(il, ((BinaryExpression) expression).Left, symbolTable);
-                EmitExpression(il, ((BinaryExpression) expression).Right, symbolTable);
+                EmitExpression(e, ((BinaryExpression) expression).Left, symbolTable);
+                EmitExpression(e, ((BinaryExpression) expression).Right, symbolTable);
 
                 switch (((BinaryExpression) expression).BinaryOperatorType)
                 {
                     case BinaryOperatorType.Add:
-                        il.Emit(OpCodes.Add);
+                        e.Add();
                         break;
                     case BinaryOperatorType.Subtract:
-                        il.Emit(OpCodes.Sub);
+                        e.Sub();
                         break;
                     case BinaryOperatorType.Multiply:
-                        il.Emit(OpCodes.Mul);
+                        e.Mul();
                         break;
                     case BinaryOperatorType.Divide:
-                        il.Emit(OpCodes.Div);
+                        e.Div();
                         break;
                     case BinaryOperatorType.Modulo:
-                        il.Emit(OpCodes.Rem);
+                        e.Rem();
                         break;
                     case BinaryOperatorType.Equal:
-                        il.Emit(OpCodes.Ceq);
+                        e.Ceq();
                         break;
                     case BinaryOperatorType.NotEqual:
-                        il.Emit(OpCodes.Ceq);
-                        il.Emit(OpCodes.Ldc_I4_0);
-                        il.Emit(OpCodes.Ceq);
+                        e.NotEqual();
                         break;
                     case BinaryOperatorType.GreaterThen:
-                        il.Emit(OpCodes.Cgt);
+                        e.Cgt();
                         break;
                     case BinaryOperatorType.LessThen:
-                        il.Emit(OpCodes.Clt);
+                        e.Clt();
                         break;
                     case BinaryOperatorType.GraterOrEqualTo:
-                        il.Emit(OpCodes.Clt);
-                        il.Emit(OpCodes.Ldc_I4_0);
-                        il.Emit(OpCodes.Ceq);
+                        e.GreaterOrEqual();
                         break;
                     case BinaryOperatorType.LessOrEqualTo:
-                        il.Emit(OpCodes.Cgt);
-                        il.Emit(OpCodes.Ldc_I4_0);
-                        il.Emit(OpCodes.Ceq);
+                        e.LessOrEqual();
                         break;
                     case BinaryOperatorType.And:
-                        il.Emit(OpCodes.And);
+                        e.Add();
                         break;
                     case BinaryOperatorType.Or:
-                        il.Emit(OpCodes.Or);
+                        e.Or();
                         break;
                 }
             }
@@ -143,9 +137,9 @@ namespace ZenPlatform.Compiler.Generation
             {
                 if (ue is IndexerExpression ie)
                 {
-                    EmitExpression(il, ie.Value, symbolTable);
-                    EmitExpression(il, ie.Indexer, symbolTable);
-                    il.Emit(OpCodes.Ldelem_I4);
+                    EmitExpression(e, ie.Value, symbolTable);
+                    EmitExpression(e, ie.Indexer, symbolTable);
+                    e.LdElemI4();
                 }
 
                 if (ue is LogicalOrArithmeticExpression lae)
@@ -156,19 +150,19 @@ namespace ZenPlatform.Compiler.Generation
 
                             break;
                         case UnaryOperatorType.Negative:
-                            EmitExpression(il, lae.Value, symbolTable);
-                            il.Emit(OpCodes.Neg);
+                            EmitExpression(e, lae.Value, symbolTable);
+                            e.Neg();
                             break;
                         case UnaryOperatorType.Not:
-                            EmitExpression(il, lae.Value, symbolTable);
-                            il.Emit(OpCodes.Not);
+                            EmitExpression(e, lae.Value, symbolTable);
+                            e.Not();
                             break;
                     }
 
                 if (ue is CastExpression ce)
                 {
-                    EmitExpression(il, ce.Value, symbolTable);
-                    EmitConvert(il, ce, symbolTable);
+                    EmitExpression(e, ce.Value, symbolTable);
+                    EmitConvert(e, ce, symbolTable);
                 }
             }
             else if (expression is Literal literal)
@@ -176,23 +170,22 @@ namespace ZenPlatform.Compiler.Generation
                 switch (literal.Type.PrimitiveType)
                 {
                     case PrimitiveType.Integer:
-                        il.Emit(OpCodes.Ldc_I4, Int32.Parse(literal.Value));
+                        e.LdcI4(Int32.Parse(literal.Value));
                         break;
                     case PrimitiveType.String:
-                        il.Emit(OpCodes.Ldstr, literal.Value);
+                        e.LdStr(literal.Value);
                         break;
                     case PrimitiveType.Double:
-                        il.Emit(OpCodes.Ldc_R8,
-                            double.Parse(literal.Value, CultureInfo.InvariantCulture));
+                        e.LdcR8(double.Parse(literal.Value, CultureInfo.InvariantCulture));
                         break;
                     case PrimitiveType.Character:
-                        il.Emit(OpCodes.Ldc_I4, char.ConvertToUtf32(literal.Value, 0));
+                        e.LdcI4(char.ConvertToUtf32(literal.Value, 0));
                         break;
                     case PrimitiveType.Boolean:
                         if (literal.Value == "true")
-                            il.Emit(OpCodes.Ldc_I4, 1);
+                            e.LdcI4(1);
                         else if (literal.Value == "false")
-                            il.Emit(OpCodes.Ldc_I4, 0);
+                            e.LdcI4(0);
                         break;
                 }
             }
@@ -202,30 +195,29 @@ namespace ZenPlatform.Compiler.Generation
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
 
-                if (variable.CodeObject is VariableDefinition)
-                    il.Emit(OpCodes.Ldloc, (VariableDefinition) variable.CodeObject);
-                else if (variable.CodeObject is FieldDefinition)
-                    il.Emit(OpCodes.Ldsfld, (FieldDefinition) variable.CodeObject);
-                else if (variable.CodeObject is ParameterDefinition)
+                if (variable.CodeObject is VariableDefinition vd)
+                    e.LdLoc(vd);
+                else if (variable.CodeObject is FieldDefinition fd)
+                    e.LdsFld(fd);
+                else if (variable.CodeObject is ParameterDefinition pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
-                    il.Emit(OpCodes.Ldarg_S,
-                        (byte) ((ParameterDefinition) variable.CodeObject).Sequence);
+                    e.LdArg(pd.Sequence);
                     if (p.PassMethod == PassMethod.ByReference)
-                        il.Emit(OpCodes.Ldind_I4);
+                        e.LdIndI4();
                 }
             }
             else if (expression is Call call)
             {
-                EmitCall(il, call, symbolTable);
+                EmitCall(e, call, symbolTable);
             }
             else if (expression is PropertyExpression pe)
             {
-                EmitExpression(il, pe.Expression, symbolTable);
+                EmitExpression(e, pe.Expression, symbolTable);
 
                 var fi = pe.Expression.Type.ToClrType().GetField(pe.Name);
                 var fr = new FieldReference(pe.Name, ToCecilType(fi.FieldType));
-                il.Emit(OpCodes.Ldfld, fr);
+                e.LdFld(fr);
             }
         }
 
@@ -338,7 +330,7 @@ namespace ZenPlatform.Compiler.Generation
 
 
             var returnVariable = new VariableDefinition(ToCecilType(function.Type.ToClrType()));
-            var returnInstruction = il.Create(OpCodes.Ldloc, returnVariable);
+            var returnInstruction = new Label(il.Create(OpCodes.Ldloc, returnVariable));
 
             var isVoid = function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void;
 
@@ -347,11 +339,11 @@ namespace ZenPlatform.Compiler.Generation
                 il.Body.Variables.Add(returnVariable);
             }
 
-            EmitBody(il, function.InstructionsBody, returnInstruction, returnVariable);
+            EmitBody(emitter, function.InstructionsBody, returnInstruction, returnVariable);
 
 
             if (!isVoid)
-                il.Append(returnInstruction);
+                emitter.Append(returnInstruction);
             il.Emit(OpCodes.Ret);
 
 //            if (function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void)
@@ -359,7 +351,7 @@ namespace ZenPlatform.Compiler.Generation
         }
 
 
-        private void EmitConvert(ILProcessor il, CastExpression expression, SymbolTable symbolTable)
+        private void EmitConvert(Emitter e, CastExpression expression, SymbolTable symbolTable)
         {
             if (expression.Value is Name name)
             {
@@ -378,29 +370,36 @@ namespace ZenPlatform.Compiler.Generation
 
             if (valueType.VariableType == VariableType.Primitive && convertType.VariableType == VariableType.Primitive)
             {
-                var opCode = GetConvCodeFromType(convertType);
-                il.Emit(opCode);
+                EmitConvCode(e, convertType);
             }
         }
 
-        private OpCode GetConvCodeFromType(AST.Definitions.Type type)
+        private void EmitConvCode(Emitter e, AST.Definitions.Type type)
         {
-            if (type.PrimitiveType == PrimitiveType.Integer) return OpCodes.Conv_I4;
-            if (type.PrimitiveType == PrimitiveType.Double) return OpCodes.Conv_R8;
-            if (type.PrimitiveType == PrimitiveType.Character) return OpCodes.Conv_U2;
-            if (type.PrimitiveType == PrimitiveType.Real) return OpCodes.Conv_R4;
+            if (type.PrimitiveType == PrimitiveType.Integer) e.ConvI4();
+            if (type.PrimitiveType == PrimitiveType.Double) e.ConvR8();
+            if (type.PrimitiveType == PrimitiveType.Character) e.ConvU2();
+            if (type.PrimitiveType == PrimitiveType.Real) e.ConvR4();
 
             throw new Exception("Converting to this value not supported");
         }
 
-        private OpCode GetLdcCodeFromType(AST.Definitions.Type type)
+        private void EmitIncrement(Emitter e, AST.Definitions.Type type)
         {
             switch (type.PrimitiveType)
             {
-                case PrimitiveType.Integer: return OpCodes.Ldc_I4;
-                case PrimitiveType.Double: return OpCodes.Ldc_R8;
-                case PrimitiveType.Real: return OpCodes.Ldc_R4;
-                default: return OpCodes.Ldc_I4;
+                case PrimitiveType.Integer:
+                    e.LdcI4(1);
+                    break;
+                case PrimitiveType.Double:
+                    e.LdcR8(1);
+                    break;
+                case PrimitiveType.Real:
+                    e.LdcR4(1);
+                    break;
+                default:
+                    e.LdcI4(1);
+                    break;
             }
         }
     }

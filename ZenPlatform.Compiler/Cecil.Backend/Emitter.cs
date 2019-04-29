@@ -3,6 +3,8 @@ using System.Data;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions;
+using ZenPlatform.Compiler.AST.Infrastructure;
+using Type = ZenPlatform.Compiler.AST.Definitions.Type;
 
 namespace ZenPlatform.Compiler.Cecil.Backend
 {
@@ -82,6 +84,20 @@ namespace ZenPlatform.Compiler.Cecil.Backend
             return this;
         }
 
+        public Emitter Neg()
+        {
+            _ce.Emit(OpCodes.Neg);
+
+            return this;
+        }
+
+        public Emitter Not()
+        {
+            _ce.Emit(OpCodes.Not);
+
+            return this;
+        }
+
         public Emitter LdcI4(int i)
         {
             switch (i)
@@ -126,11 +142,18 @@ namespace ZenPlatform.Compiler.Cecil.Backend
         /// Загружает индекс элемента массива на стэк
         /// </summary>
         /// <returns></returns>
-        public Emitter LdElemI4(int i)
+        public Emitter LdElemI4()
         {
             _ce.Emit(OpCodes.Ldelem_I4);
             return this;
         }
+
+        public Emitter LdElemA()
+        {
+            _ce.Emit(OpCodes.Ldelema);
+            return this;
+        }
+
 
         /// <summary>
         /// Получает из стэка индекс массива
@@ -142,9 +165,9 @@ namespace ZenPlatform.Compiler.Cecil.Backend
             return this;
         }
 
-        public Emitter LdStr()
+        public Emitter LdStr(string value)
         {
-            _ce.Emit(OpCodes.Ldstr);
+            _ce.Emit(OpCodes.Ldstr, value);
 
             return this;
         }
@@ -152,6 +175,13 @@ namespace ZenPlatform.Compiler.Cecil.Backend
         public Emitter LdcR8(double d)
         {
             _ce.Emit(OpCodes.Ldc_R8, d);
+
+            return this;
+        }
+
+        public Emitter LdcR4(float f)
+        {
+            _ce.Emit(OpCodes.Ldc_R4, f);
 
             return this;
         }
@@ -180,10 +210,31 @@ namespace ZenPlatform.Compiler.Cecil.Backend
                         break;
                 }
             else
-                _ce.Emit(OpCodes.Ldarga_S, i);
+                _ce.Emit(OpCodes.Ldarg_S, i);
 
             return this;
         }
+
+        public Emitter LdArgA(int i)
+        {
+            _ce.Emit(OpCodes.Ldarga_S, i);
+            return this;
+        }
+
+
+        public Emitter StArg(ParameterDefinition pd)
+        {
+            _ce.Emit(OpCodes.Starg, pd);
+            return this;
+        }
+
+        public Emitter StIndI4()
+        {
+            _ce.Emit(OpCodes.Stind_I4);
+
+            return this;
+        }
+
 
         public Emitter LdIndI4()
         {
@@ -214,6 +265,39 @@ namespace ZenPlatform.Compiler.Cecil.Backend
             return this;
         }
 
+        public Emitter LdLocA(VariableDefinition vd)
+        {
+            _ce.Emit(OpCodes.Ldloca, vd);
+            return this;
+        }
+
+        public Emitter StsFld(FieldDefinition fd)
+        {
+            _ce.Emit(OpCodes.Stsfld, fd);
+
+            return this;
+        }
+
+        public Emitter LdsFld(FieldDefinition fd)
+        {
+            _ce.Emit(OpCodes.Ldsfld, fd);
+
+            return this;
+        }
+
+        public Emitter LdsFldA(FieldDefinition fd)
+        {
+            _ce.Emit(OpCodes.Ldsflda, fd);
+
+            return this;
+        }
+
+        public Emitter LdFld(FieldReference fr)
+        {
+            _ce.Emit(OpCodes.Ldfld, fr);
+
+            return this;
+        }
 
         public Emitter NewArr(TypeReference tr)
         {
@@ -246,6 +330,13 @@ namespace ZenPlatform.Compiler.Cecil.Backend
         public Emitter Pop()
         {
             _ce.Emit(OpCodes.Pop);
+
+            return this;
+        }
+
+        public Emitter Call(MethodDefinition md)
+        {
+            _ce.Emit(OpCodes.Call, md);
 
             return this;
         }
@@ -300,6 +391,66 @@ namespace ZenPlatform.Compiler.Cecil.Backend
 
 
         public MethodBody MethodBody => _ce.Body;
+
+        #region Convert
+
+        public Emitter ConvI4()
+        {
+            _ce.Emit(OpCodes.Conv_I4);
+
+            return this;
+        }
+
+        public Emitter ConvR4()
+        {
+            _ce.Emit(OpCodes.Conv_R4);
+
+            return this;
+        }
+
+        public Emitter ConvR8()
+        {
+            _ce.Emit(OpCodes.Conv_R8);
+
+            return this;
+        }
+
+        public Emitter ConvU2()
+        {
+            _ce.Emit(OpCodes.Conv_U2);
+
+            return this;
+        }
+
+        #endregion
+    }
+
+
+    public static class TypeExtension
+    {
+        public TypeReference GetCecilType(this Type type, ModuleDefinition m)
+        {
+            if (type.VariableType == VariableType.Primitive)
+            {
+                if (type == Type.Int) return m.TypeSystem.Int32;
+                if (type == Type.Bool) return m.TypeSystem.Boolean;
+                if (type == Type.String) return m.TypeSystem.String;
+                if (type == Type.Double) return m.TypeSystem.Double;
+                if (type == Type.Character) return m.TypeSystem.Char;
+                if (type == Type.Void) return m.TypeSystem.Void;
+            }
+            else if (type.VariableType == VariableType.PrimitiveArray)
+            {
+                return new ArrayType(GetCecilType(new Type(type.PrimitiveType), m));
+            }
+
+            type.ToClrType()
+            m.ImportReference();
+            default:
+            {
+                return null;
+            }
+        }
     }
 
     public interface IBackendCodeObject
@@ -385,5 +536,14 @@ namespace ZenPlatform.Compiler.Cecil.Backend
     public class Label
     {
         public Instruction Instruction = Instruction.Create(OpCodes.Nop);
+
+        public Label()
+        {
+        }
+
+        public Label(Instruction i)
+        {
+            Instruction = i;
+        }
     }
 }
