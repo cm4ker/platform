@@ -3,9 +3,9 @@ namespace ZenPlatform.Compiler.AST.Definitions.Statements
     public class While : Statement
     {
         public Infrastructure.Expression Condition = null;
-        public InstructionsBody InstructionsBody = null;
+        public InstructionsBodyNode InstructionsBody = null;
 
-        public While(InstructionsBody instructionsBody, Infrastructure.Expression condition)
+        public While(InstructionsBodyNode instructionsBody, Infrastructure.Expression condition)
         {
             InstructionsBody = instructionsBody;
             Condition = condition;

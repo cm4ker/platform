@@ -8,7 +8,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// <summary>
     /// Блок инструкций
     /// </summary>
-    public class InstructionsBody
+    public class InstructionsBodyNode : AstNode
     {
         public StatementCollection Statements = null;
 
@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Создать блок из коллекции инструкций
         /// </summary>
-        public InstructionsBody(StatementCollection statements)
+        public InstructionsBodyNode(StatementCollection statements)
         {
             if (statements == null)
                 return;

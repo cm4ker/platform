@@ -5,7 +5,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// <summary>
     /// Describes an array or structure initialization element.
     /// </summary>
-    public class Element
+    public class ElementNode : AstNode
     {
         public ElementType ElementType = ElementType.Expression;
         public ElementCollection Elements = null;
@@ -14,7 +14,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Creates an element collection element object.
         /// </summary>
-        public Element(ElementCollection elements)
+        public ElementNode(ElementCollection elements)
         {
             ElementType = ElementType.Collection;
             Elements = elements;
@@ -23,7 +23,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Creates a expression element object.
         /// </summary>
-        public Element(Infrastructure.Expression expression)
+        public ElementNode(Infrastructure.Expression expression)
         {
             ElementType = ElementType.Expression;
             Expression = expression;

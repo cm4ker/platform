@@ -3,10 +3,10 @@ namespace ZenPlatform.Compiler.AST.Definitions.Statements
     public class If : Statement
     {
         public Infrastructure.Expression Condition = null;
-        public InstructionsBody IfInstructionsBody = null;
-        public InstructionsBody ElseInstructionsBody = null;
+        public InstructionsBodyNode IfInstructionsBody = null;
+        public InstructionsBodyNode ElseInstructionsBody = null;
 
-        public If(InstructionsBody elseInstructionsBody, InstructionsBody ifInstructionsBody, Infrastructure.Expression condition)
+        public If(InstructionsBodyNode elseInstructionsBody, InstructionsBodyNode ifInstructionsBody, Infrastructure.Expression condition)
         {
             ElseInstructionsBody = elseInstructionsBody;
             IfInstructionsBody = ifInstructionsBody;

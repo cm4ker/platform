@@ -11,7 +11,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Extension
 
         public string Path;
 
-        public InstructionsBody InstructionsBody { get; set; }
+        public InstructionsBodyNode InstructionsBody { get; set; }
 
         public ExtensionKind Kind;
 

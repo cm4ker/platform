@@ -188,7 +188,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitInstructionsBody(context);
             var sc = (StatementCollection) _syntaxStack.Pop();
-            _syntaxStack.Push(new InstructionsBody(sc));
+            _syntaxStack.Push(new InstructionsBodyNode(sc));
             return null;
         }
 
@@ -347,7 +347,7 @@ namespace ZenPlatform.Compiler.AST
             Extension result;
 
             var extensionObj = _syntaxStack.Pop();
-            if (extensionObj is InstructionsBody ib)
+            if (extensionObj is InstructionsBodyNode ib)
             {
                 result = new Extension(_syntaxStack.PopString(), ExtensionKind.Instructions);
                 result.InstructionsBody = ib;
@@ -465,7 +465,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitIfStatement(context);
 
-            InstructionsBody @else = null;
+            InstructionsBodyNode @else = null;
 
             if (context.ELSE() != null)
             {
