@@ -20,43 +20,90 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private Module _module = null;
+        private readonly CompilationUnit _compilationUnit;
         private readonly AssemblyDefinition _asm;
         private ModuleDefinition _dllModule = null;
         private SymbolTable _typeSymbols = null;
 
-        public Generator(Module module, AssemblyDefinition asm)
+
+        private const string AsmNamespace = "CompileNamespace";
+
+
+        public Generator(CompilationUnit compilationUnit, AssemblyDefinition asm)
         {
-            _module = module;
+            _compilationUnit = compilationUnit;
             _asm = asm;
+
+            foreach (var typeEntity in compilationUnit.TypeEntities)
+            {
+                switch (typeEntity)
+                {
+                    case Module m:
+                        BuildModule(m);
+                        break;
+                    case Class c:
+                        EmitClass(c);
+                        break;
+
+                    default:
+                        throw new Exception("The type entity not supproted");
+                }
+            }
         }
 
-        public void Emit()
+
+        private void BuildModule(Module module)
         {
             _dllModule = _asm.MainModule;
 
-            TypeDefinition td = new TypeDefinition("CompileNamespace", _module.Name,
+            var td = new TypeDefinition(AsmNamespace, module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
                 _dllModule.TypeSystem.Object);
 
 
             _dllModule.Types.Add(td);
-            //
-            // Create global variables.
-            //
 
             _typeSymbols = new SymbolTable();
 
-            _module.TypeBody.SymbolTable = _typeSymbols;
+            module.TypeBody.SymbolTable = _typeSymbols;
 
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
-            foreach (var item in PrebuildFunctions(_module.TypeBody))
+            foreach (var item in PrebuildFunctions(module.TypeBody))
             {
                 BuildFunction(item.Item1, item.Item2);
                 td.Methods.Add(item.Item2);
             }
+        }
+
+        private void EmitClass(Class @class)
+        {
+            _dllModule = _asm.MainModule;
+
+            TypeDefinition td = new TypeDefinition(AsmNamespace, @class.Name,
+                TypeAttributes.Class | TypeAttributes.NotPublic |
+                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
+                _dllModule.TypeSystem.Object);
+
+
+            _dllModule.Types.Add(td);
+
+            _typeSymbols = new SymbolTable();
+
+            @class.TypeBody.SymbolTable = _typeSymbols;
+
+            // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
+            // Для того, чтобы можно было делать вызов функции из другой функции
+            foreach (var item in PrebuildFunctions(@class.TypeBody))
+            {
+                BuildFunction(item.Item1, item.Item2);
+                td.Methods.Add(item.Item2);
+            }
+        }
+
+        public void Emit()
+        {
         }
 
         private void Error(string message)
@@ -215,6 +262,8 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitExpression(e, pe.Expression, symbolTable);
 
+                //TODO: Необходим лукап типа в сборке через cecil, оттуда уже забирать проперти
+
                 var fi = pe.Expression.Type.ToClrType().GetField(pe.Name);
                 var fr = new FieldReference(pe.Name, ToCecilType(fi.FieldType));
                 e.LdFld(fr);
@@ -252,8 +301,7 @@ namespace ZenPlatform.Compiler.Generation
                     // Create method.
                     MethodDefinition method = new MethodDefinition(function.Name,
                         MethodAttributes.Public | MethodAttributes.Static
-                                                | MethodAttributes.HideBySig,
-                        ToCecilType(function.Type.ToClrType()));
+                                                | MethodAttributes.HideBySig, function.Type.GetCecilType(_dllModule));
 
                     result.Add((function, method));
 
@@ -386,19 +434,29 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitIncrement(Emitter e, AST.Definitions.Type type)
         {
+            EmitAddValue(e, type, 1);
+        }
+
+        private void EmitDecrement(Emitter e, AST.Definitions.Type type)
+        {
+            EmitAddValue(e, type, -1);
+        }
+
+        private void EmitAddValue(Emitter e, AST.Definitions.Type type, int value)
+        {
             switch (type.PrimitiveType)
             {
                 case PrimitiveType.Integer:
-                    e.LdcI4(1);
+                    e.LdcI4(value);
                     break;
                 case PrimitiveType.Double:
-                    e.LdcR8(1);
+                    e.LdcR8(value);
                     break;
                 case PrimitiveType.Real:
-                    e.LdcR4(1);
+                    e.LdcR4(value);
                     break;
                 default:
-                    e.LdcI4(1);
+                    e.LdcI4(value);
                     break;
             }
         }

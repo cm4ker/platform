@@ -121,14 +121,14 @@ module Test
 
             parser.AddErrorListener(new Listener());
             ZLanguageVisitor visitor = new ZLanguageVisitor();
-            var result = (Module) visitor.VisitEntryPoint(parser.entryPoint());
+            var result = (CompilationUnit) visitor.VisitEntryPoint(parser.entryPoint());
 
             Generator g = new Generator(result, ad);
             g.Emit();
-            
-            if(File.Exists("Debug.dll"))
+
+            if (File.Exists("Debug.dll"))
                 File.Delete("Debug.dll");
-            
+
             ad.Write("debug.dll");
         }
     }
@@ -138,30 +138,34 @@ module Test
     {
         public static double M(int a, int b)
         {
-            if(a > b)
+            if (a > b)
             {
                 a = a + 2;
             }
             else
             {
                 a = a + 1;
-            };
+            }
 
-            
-            return (double)a;
+            ;
+
+
+            return (double) a;
         }
-        
+
         static double Average(int[] arr)
         {
             double result = 0;
 
-            for(int i = 0; i < arr.Length; i++)
+            for (int i = 0; i < arr.Length; i++)
             {
                 result = result + arr[i];
-            };    
+            }
+
+            ;
 
             result = result / arr.Length;
-        
+
             return result;
         }
     }

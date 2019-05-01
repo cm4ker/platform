@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Text.RegularExpressions;
+using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Extension;
@@ -25,9 +28,12 @@ namespace ZenPlatform.Compiler.AST
         {
             _syntaxStack.Clear();
 
+            var cu = new CompilationUnit();
+            _syntaxStack.Push(cu.TypeEntities);
+
             base.VisitEntryPoint(context);
 
-            return _syntaxStack.Pop();
+            return cu;
         }
 
         public override object VisitModuleDefinition(ZSharpParser.ModuleDefinitionContext context)
@@ -36,7 +42,18 @@ namespace ZenPlatform.Compiler.AST
 
             object result = new Module(_syntaxStack.PopTypeBody(), context.IDENTIFIER().GetText());
 
-            _syntaxStack.Push(result);
+            _syntaxStack.PeekCollection().Add(result);
+
+            return result;
+        }
+
+        public override object VisitTypeDefinition(ZSharpParser.TypeDefinitionContext context)
+        {
+            base.VisitTypeDefinition(context);
+
+            var result = new Class(_syntaxStack.PopTypeBody(), context.IDENTIFIER().GetText());
+
+            _syntaxStack.PeekCollection().Add(result);
 
             return result;
         }
@@ -429,6 +446,10 @@ namespace ZenPlatform.Compiler.AST
             else if (context.OP_INC() != null)
             {
                 result = new PostIncrementStatement(new Name(_syntaxStack.PopString()));
+            }
+            else if (context.OP_DEC() != null)
+            {
+                result = new PostDecrementStatement(new Name(_syntaxStack.PopString()));
             }
             else
                 result = new Assignment(_syntaxStack.PopExpression(), null, _syntaxStack.PopString());

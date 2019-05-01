@@ -5,5 +5,13 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// </summary>
     public class Class : TypeEntity
     {
+        /// <summary>
+        /// Create a module object.
+        /// </summary>
+        public Class(TypeBody typeBody, string name)
+        {
+            TypeBody = typeBody;
+            Name = name;
+        }
     }
 }

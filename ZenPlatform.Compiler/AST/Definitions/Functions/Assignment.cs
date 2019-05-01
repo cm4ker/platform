@@ -33,4 +33,19 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
             Name = name;
         }
     }
+
+    public class PostDecrementStatement : Statement
+    {
+        public Name Name { get; }
+
+        public PostDecrementStatement(string name)
+        {
+            Name = new Name(name);
+        }
+
+        public PostDecrementStatement(Name name)
+        {
+            Name = name;
+        }
+    }
 }

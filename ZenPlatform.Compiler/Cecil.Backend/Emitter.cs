@@ -428,7 +428,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
 
     public static class TypeExtension
     {
-        public TypeReference GetCecilType(this Type type, ModuleDefinition m)
+        public static TypeReference GetCecilType(this Type type, ModuleDefinition m)
         {
             if (type.VariableType == VariableType.Primitive)
             {
@@ -444,12 +444,29 @@ namespace ZenPlatform.Compiler.Cecil.Backend
                 return new ArrayType(GetCecilType(new Type(type.PrimitiveType), m));
             }
 
-            type.ToClrType()
-            m.ImportReference();
-            default:
+            return null;
+        }
+    }
+
+    public class TypeResolver
+    {
+        private readonly AssemblyDefinition _relativeAssembly;
+
+        public TypeResolver(AssemblyDefinition relativeAssembly)
+        {
+            _relativeAssembly = relativeAssembly;
+        }
+
+        public TypeReference Resolve(string @namespace, string typeName)
+        {
+            foreach (var module in _relativeAssembly.Modules)
             {
-                return null;
+                var result = module.GetType(@namespace, typeName);
+
+                if (result != null) return result;
             }
+
+            return null;
         }
     }
 
