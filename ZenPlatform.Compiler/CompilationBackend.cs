@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler
         {
             var pTree = Parse(input);
             ZLanguageVisitor v = new ZLanguageVisitor();
-            var module = v.VisitEntryPoint(pTree.entryPoint()) as Module;
+            var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit;
             Generator g = new Generator(module, assemblyDefinition);
             g.Emit();
         }

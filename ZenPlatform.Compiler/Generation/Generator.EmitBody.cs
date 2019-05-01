@@ -231,6 +231,28 @@ namespace ZenPlatform.Compiler.Generation
                 if (symbol.CodeObject is VariableDefinition vd)
                     e.StLoc(vd);
             }
+            else if (statement is PostDecrementStatement pds)
+            {
+                var symbol = context.SymbolTable.Find(pds.Name.Value, SymbolType.Variable) ??
+                             throw new Exception($"Variable {pds.Name} not found");
+
+                Type opType = null;
+                if (symbol.SyntaxObject is Parameter p)
+                    opType = p.Type;
+                else if (symbol.SyntaxObject is Variable v)
+                    opType = v.Type;
+
+
+                EmitExpression(e, pds.Name, context.SymbolTable);
+
+                EmitDecrement(e, opType);
+                e.Add();
+
+                if (symbol.CodeObject is ParameterDefinition pd)
+                    e.StArg(pd);
+                if (symbol.CodeObject is VariableDefinition vd)
+                    e.StLoc(vd);
+            }
         }
     }
 }
