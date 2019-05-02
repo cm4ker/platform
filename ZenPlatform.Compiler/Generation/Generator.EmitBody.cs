@@ -8,7 +8,6 @@ using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Cecil.Backend;
-using Type = ZenPlatform.Compiler.AST.Definitions.Type;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -32,12 +31,10 @@ namespace ZenPlatform.Compiler.Generation
         private void EmitStatement(Emitter e, Statement statement, InstructionsBodyNode context,
             Label returnLabel, VariableDefinition returnVariable)
         {
-            if (statement is Variable)
+            if (statement is Variable variable)
             {
-                Variable variable = statement as Variable;
-
                 VariableDefinition local =
-                    new VariableDefinition(ToCecilType(variable.Type.ToClrType()));
+                    new VariableDefinition(_typeResolver.Resolve(variable.Type));
 
                 e.Variable(local);
 
@@ -47,7 +44,7 @@ namespace ZenPlatform.Compiler.Generation
                 // Initialize  variable.
                 //
 
-                if (variable.Type.VariableType == VariableType.Primitive)
+                if (variable.Type.IsSystem)
                 {
                     if (variable.Value != null && variable.Value is Expression)
                     {
@@ -56,13 +53,13 @@ namespace ZenPlatform.Compiler.Generation
                         e.StLoc(local);
                     }
                 }
-                else if (variable.Type.VariableType == VariableType.PrimitiveArray)
+                else if (variable.Type is ZArray a)
                 {
                     // Empty array initialization.
-                    if (variable.Value != null && variable.Value is Expression)
+                    if (variable.Value != null && variable.Value is Expression value)
                     {
-                        EmitExpression(e, (Expression) variable.Value, context.SymbolTable);
-                        e.NewArr(ToCecilType(variable.Type.ToClrType()));
+                        EmitExpression(e, value, context.SymbolTable);
+                        e.NewArr(_typeResolver.Resolve(variable.Type));
                         e.StLoc(local);
                     }
                     else if (variable.Value != null && variable.Value is ElementCollection)
@@ -70,7 +67,7 @@ namespace ZenPlatform.Compiler.Generation
                         ElementCollection elements = variable.Value as ElementCollection;
 
                         e.LdcI4(elements.Count);
-                        e.NewArr(ToCecilType(variable.Type.ToClrType()));
+                        e.NewArr(_typeResolver.Resolve(variable.Type));
                         e.StLoc(local);
 
                         for (int x = 0; x < elements.Count; x++)
@@ -214,7 +211,7 @@ namespace ZenPlatform.Compiler.Generation
                 var symbol = context.SymbolTable.Find(pis.Name.Value, SymbolType.Variable) ??
                              throw new Exception($"Variable {pis.Name} not found");
 
-                Type opType = null;
+                ZType opType = null;
                 if (symbol.SyntaxObject is Parameter p)
                     opType = p.Type;
                 else if (symbol.SyntaxObject is Variable v)
@@ -236,7 +233,7 @@ namespace ZenPlatform.Compiler.Generation
                 var symbol = context.SymbolTable.Find(pds.Name.Value, SymbolType.Variable) ??
                              throw new Exception($"Variable {pds.Name} not found");
 
-                Type opType = null;
+                ZType opType = null;
                 if (symbol.SyntaxObject is Parameter p)
                     opType = p.Type;
                 else if (symbol.SyntaxObject is Variable v)

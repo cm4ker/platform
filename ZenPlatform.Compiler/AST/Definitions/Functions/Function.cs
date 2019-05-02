@@ -22,7 +22,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Function type.
         /// </summary>
-        public Type Type;
+        public ZType Type;
 
         /// <summary>
         /// Function parameters.
@@ -37,7 +37,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Creates a function object.
         /// </summary>
-        public Function(InstructionsBodyNode instructionsBody, ParameterCollection parameters, string name, Type type)
+        public Function(InstructionsBodyNode instructionsBody, ParameterCollection parameters, string name, ZType type)
         {
             InstructionsBody = instructionsBody;
             Parameters = parameters;

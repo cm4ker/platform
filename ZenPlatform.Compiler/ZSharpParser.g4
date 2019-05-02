@@ -6,8 +6,12 @@ options { tokenVocab = ZSharpLexer; }
 
 entryPoint: 
     moduleDefinition
-    | typeDefinition;
+    | typeDefinition
+    | usingDefinition;
 
+usingDefinition : 
+        USING name ';'
+;
 
 /*
 ================START MODULE==================

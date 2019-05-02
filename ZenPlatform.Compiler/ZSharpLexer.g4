@@ -40,6 +40,8 @@ DOLLAR:                   '$';
 TRUE: 'true';
 FALSE: 'false';
 
+USING : 'using';
+
 SEMICOLON:                ';';
 PLUS:                     '+';
 MINUS:                    '-';

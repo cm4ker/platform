@@ -1,6 +1,6 @@
 using ZenPlatform.Compiler.AST.Infrastructure;
 
-namespace ZenPlatform.Compiler.AST.Definitions.Expression
+namespace ZenPlatform.Compiler.AST.Definitions.Expressions
 {
     /// <summary>
     /// Binary expression

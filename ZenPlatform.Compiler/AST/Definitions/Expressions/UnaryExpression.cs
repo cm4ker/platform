@@ -11,20 +11,20 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expression
 
         public Infrastructure.Expression Value { get; }
 
-        public override Type Type => Value.Type;
+        public override ZType Type => Value.Type;
     }
 
 
     public class CastExpression : UnaryExpression
     {
-        public Type CastType { get; }
+        public ZType CastType { get; }
 
-        public CastExpression(Infrastructure.Expression value, Type castType) : base(value)
+        public CastExpression(Infrastructure.Expression value, ZType castType) : base(value)
         {
             CastType = castType;
         }
 
-        public override Type Type => CastType;
+        public override ZType Type => CastType;
     }
 
     public class IndexerExpression : UnaryExpression

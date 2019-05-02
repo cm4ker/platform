@@ -4,6 +4,6 @@ namespace ZenPlatform.Compiler.AST
 {
     public class TypeResolver
     {
-        public Type Resolve { get; set; }
+        public ZType Resolve { get; set; }
     }
 }

@@ -14,4 +14,8 @@ namespace ZenPlatform.Compiler
         /// <returns></returns>
         IAstItem Transform(IAstItem item);
     }
+
+    public interface IAstItem
+    {
+    }
 }

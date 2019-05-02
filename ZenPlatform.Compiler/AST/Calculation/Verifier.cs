@@ -1,6 +1,9 @@
 using System.Diagnostics;
+using Antlr4.Runtime.Atn;
+using Mono.Cecil;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
+using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
@@ -8,15 +11,15 @@ using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.AST.Calculation
 {
-    public class Verifier
+    public class AstVerifier
     {
+        private readonly CompilationUnit _cUnit;
         public event VerifierEventHandler Error;
 
-        private Module _module = null;
 
-        public Verifier(Module module)
+        public AstVerifier(CompilationUnit cUnit)
         {
-            _module = module;
+            _cUnit = cUnit;
         }
 
         private void BuildSymbolTable(SymbolTable parent, InstructionsBodyNode body)
@@ -49,7 +52,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
             }
         }
 
-        public Type GetExpressionType(SymbolTable symbolTable, Infrastructure.Expression expression)
+        public ZType GetExpressionType(SymbolTable symbolTable, Infrastructure.Expression expression)
         {
             if (expression is UnaryExpression unary)
             {
@@ -84,27 +87,27 @@ namespace ZenPlatform.Compiler.AST.Calculation
             return null;
         }
 
-        public Type FindType(Type leftType, Type rightType, BinaryOperatorType operatorType)
+        public ZType FindType(ZType leftType, ZType rightType, BinaryOperatorType operatorType)
         {
             //
             // Binary operations can only be performed on primitive types.
             //
 
-            if ((leftType.VariableType != VariableType.Primitive) || (rightType.VariableType != VariableType.Primitive))
+            if (!leftType.IsSystem || !rightType.IsSystem)
                 throw new VerifierException("Binary operations can only be performed on primitive types.");
 
             //
             // Boolean operations.
             //
 
-            if (leftType.PrimitiveType == PrimitiveType.Boolean && rightType.PrimitiveType == PrimitiveType.Boolean)
+            if (leftType is ZBool && rightType is ZBool)
             {
                 switch (operatorType)
                 {
                     case BinaryOperatorType.And:
                     case BinaryOperatorType.Or:
                     case BinaryOperatorType.NotEqual:
-                        return new Type(PrimitiveType.Boolean);
+                        return ZTypeSystem.Bool;
                         break;
                     default:
                         throw new VerifierException("Specified operator cannot be applied to boolean types.");
@@ -116,8 +119,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
             // Integer operations.
             //
 
-            else if (leftType.PrimitiveType == PrimitiveType.Integer &&
-                     rightType.PrimitiveType == PrimitiveType.Integer)
+            else if (leftType is ZInt && rightType is ZInt)
             {
                 switch (operatorType)
                 {
@@ -131,78 +133,40 @@ namespace ZenPlatform.Compiler.AST.Calculation
                     case BinaryOperatorType.LessThen:
                     case BinaryOperatorType.Equal:
                     case BinaryOperatorType.NotEqual:
-                        return new Type(PrimitiveType.Boolean);
+                        return ZTypeSystem.Bool;
                         break;
                     default:
-                        return new Type(PrimitiveType.Integer);
-                }
-            }
-
-            //
-            // Real operations.
-            //
-
-            else if (leftType.PrimitiveType == PrimitiveType.Real && rightType.PrimitiveType == PrimitiveType.Real)
-            {
-                switch (operatorType)
-                {
-                    case BinaryOperatorType.And:
-                    case BinaryOperatorType.Or:
-                        throw new VerifierException("Specified operator cannot be applied to real types.");
-                        break;
-                    default:
-                        return new Type(PrimitiveType.Real);
-                }
-            }
-
-            //
-            // Character operations.
-            //
-
-            else if (leftType.PrimitiveType == PrimitiveType.Character &&
-                     rightType.PrimitiveType == PrimitiveType.Character)
-            {
-                switch (operatorType)
-                {
-                    case BinaryOperatorType.And:
-                    case BinaryOperatorType.Or:
-                        throw new VerifierException("Specified operator cannot be applied to character types.");
-                        break;
-                    default:
-                        return new Type(PrimitiveType.Character);
+                        return ZTypeSystem.Bool;
                 }
             }
 
             throw new VerifierException("Incompatible types for specified operation.");
         }
 
-        public Type FindType(Type type, UnaryOperatorType operatorType)
+        public ZType FindType(ZType type, UnaryOperatorType operatorType)
         {
             switch (operatorType)
             {
                 case UnaryOperatorType.Indexer:
-                    if (type.VariableType == VariableType.PrimitiveArray)
-                        return new Type(type.PrimitiveType);
-                    else if (type.VariableType == VariableType.StructureArray)
-                        return new Type(type.Name);
+                    if (type.IsArray && type is ZArray a)
+                        return a.TypeOfElements;
                     else
                         throw new VerifierException("The indexer operator cannot be applied to the specified type.");
                     break;
                 case UnaryOperatorType.Not:
-                    if (type.PrimitiveType == PrimitiveType.Boolean)
-                        return new Type(type.PrimitiveType);
+                    if (type is ZBool)
+                        return type;
                     else
                         throw new VerifierException("The NOT operator cannot be applied to the specified type.");
                     break;
                 default:
-                    if (type.VariableType == VariableType.Primitive)
-                        return new Type(type.PrimitiveType);
+                    if (type.IsSystem)
+                        return type;
                     else
                         throw new VerifierException("The +/- operators cannot be applied to the specified type.");
                     break;
             }
         }
-
 
         public bool VerifyBody(InstructionsBodyNode body)
         {
