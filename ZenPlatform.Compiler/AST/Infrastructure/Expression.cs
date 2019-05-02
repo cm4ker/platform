@@ -5,8 +5,8 @@ namespace ZenPlatform.Compiler.AST.Infrastructure
     /// <summary>
     /// Выражение
     /// </summary>
-    public abstract class Expression : AstNode, IAstItem
+    public abstract class Expression : AstNode
     {
-        public virtual Type Type { get; set; }
+        public virtual ZType Type { get; set; }
     }
 }

@@ -5,7 +5,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
     /// <summary>
     /// Describes a parameter.
     /// </summary>
-    public class Parameter
+    public class Parameter : AstNode
     {
         /// <summary>
         /// Parameter name.
@@ -15,7 +15,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Parameter type.
         /// </summary>
-        public Type Type;
+        public ZType Type;
 
         /// <summary>
         /// Parameter pass method.
@@ -25,7 +25,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Create parameter object.
         /// </summary>
-        public Parameter(string name, Type type, PassMethod passMethod)
+        public Parameter(string name, ZType type, PassMethod passMethod)
         {
             Name = name;
             Type = type;

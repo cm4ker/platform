@@ -1,14 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using Type = ZenPlatform.Compiler.AST.Definitions.Type;
 
 namespace ZenPlatform.Compiler.Cecil.Backend
 {
-    public class Emitter
+    public class Emitter : IEmitter
     {
         private readonly ILProcessor _ce;
 
@@ -425,36 +426,64 @@ namespace ZenPlatform.Compiler.Cecil.Backend
         #endregion
     }
 
-
-    public static class TypeExtension
+    public class TypeResolver
     {
-        public static TypeReference GetCecilType(this Type type, ModuleDefinition m)
+        private readonly CompilationUnit _cu;
+        private readonly AssemblyDefinition _relativeAssembly;
+
+        public TypeResolver(CompilationUnit cu, AssemblyDefinition relativeAssembly)
         {
-            if (type.VariableType == VariableType.Primitive)
+            _cu = cu;
+            _relativeAssembly = relativeAssembly;
+        }
+
+        public TypeReference Resolve(ZType type)
+        {
+            var m = _relativeAssembly.MainModule;
+
+            if (type.IsSystem)
             {
-                if (type == Type.Int) return m.TypeSystem.Int32;
-                if (type == Type.Bool) return m.TypeSystem.Boolean;
-                if (type == Type.String) return m.TypeSystem.String;
-                if (type == Type.Double) return m.TypeSystem.Double;
-                if (type == Type.Character) return m.TypeSystem.Char;
-                if (type == Type.Void) return m.TypeSystem.Void;
+                switch (type)
+                {
+                    case ZInt t:
+                        return m.TypeSystem.Int32;
+                    case ZBool t:
+                        return m.TypeSystem.Boolean;
+                    case ZCharacter t:
+                        return m.TypeSystem.Char;
+                    case ZDouble t:
+                        return m.TypeSystem.Double;
+                    case ZVoid t:
+                        return m.TypeSystem.Void;
+                    case ZString t:
+                        return m.TypeSystem.String;
+                }
             }
-            else if (type.VariableType == VariableType.PrimitiveArray)
+            else if (!type.IsSystem && !type.IsArray && type is ZStructureType st)
             {
-                return new ArrayType(GetCecilType(new Type(type.PrimitiveType), m));
+                if (type.Namespace is null)
+                {
+                    TypeReference tr = null;
+                    foreach (var ns in _cu.Namespaces)
+                    {
+                        if (tr != null) throw new Exception("Can't certainly identify the type");
+                        tr = Resolve(ns, type.Name);
+                    }
+
+                    if (tr is null)
+                        throw new Exception("Type not found: " + tr.Name);
+
+                    st.SetNamespace(tr.Namespace);
+                }
+
+                return Resolve(type.Name, type.Namespace);
+            }
+            else if (type.IsArray && type is ZArray a)
+            {
+                return new ArrayType(Resolve(a.TypeOfElements));
             }
 
             return null;
-        }
-    }
-
-    public class TypeResolver
-    {
-        private readonly AssemblyDefinition _relativeAssembly;
-
-        public TypeResolver(AssemblyDefinition relativeAssembly)
-        {
-            _relativeAssembly = relativeAssembly;
         }
 
         public TypeReference Resolve(string @namespace, string typeName)
@@ -469,6 +498,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
             return null;
         }
     }
+
 
     public interface IBackendCodeObject
     {

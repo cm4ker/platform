@@ -27,6 +27,11 @@ namespace ZenPlatform.Compiler.AST.Definitions
             return internalStack.Peek();
         }
 
+        public AstNode PeekAst()
+        {
+            return internalStack.Peek() as AstNode;
+        }
+
         public void Push(object value)
         {
             internalStack.Push(value);
@@ -64,15 +69,16 @@ namespace ZenPlatform.Compiler.AST.Definitions
             return (string) internalStack.Pop();
         }
 
-        public Type PopType()
+        public ZType PopType()
         {
-            return (Type) internalStack.Pop();
+            return (ZType) internalStack.Pop();
         }
 
         public InstructionsBodyNode PopInstructionsBody()
         {
             return (InstructionsBodyNode) internalStack.Pop();
         }
+
 
         public TypeBody PopTypeBody()
         {

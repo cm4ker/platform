@@ -13,17 +13,17 @@ namespace ZenPlatform.Compiler.AST.Definitions
         }
     }
 
-    public class PropertyExpression : Infrastructure.Expression
+    public class FieldExpression : Infrastructure.Expression
     {
         public Infrastructure.Expression Expression { get; }
         public string Name { get; }
 
-        public PropertyExpression(Infrastructure.Expression expression, string name)
+        public FieldExpression(Infrastructure.Expression expression, string name)
         {
             Expression = expression;
             Name = name;
+            Line = expression.Line;
+            Position = expression.Position;
         }
-        
-        
     }
 }

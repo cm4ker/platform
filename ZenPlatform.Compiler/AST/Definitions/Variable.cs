@@ -15,7 +15,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Variable type.
         /// </summary>
-        public Type Type;
+        public ZType Type;
 
         /// <summary>
         /// Variable initial value;
@@ -25,7 +25,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Create a variable object.
         /// </summary>
-        public Variable(object value, string name, Type type)
+        public Variable(object value, string name, ZType type)
         {
             Name = name;
             Type = type;

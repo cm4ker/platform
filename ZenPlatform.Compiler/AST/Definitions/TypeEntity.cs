@@ -3,7 +3,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// <summary>
     /// Тип сущности
     /// </summary>
-    public class TypeEntity
+    public class TypeEntity : AstNode
     {
         /// <summary>
         /// Имя типа

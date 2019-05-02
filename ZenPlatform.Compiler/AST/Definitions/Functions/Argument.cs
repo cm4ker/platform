@@ -5,7 +5,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
     /// <summary>
     /// Describes an argument.
     /// </summary>
-    public class Argument
+    public class Argument : AstNode
     {
         /// <summary>
         /// Argument expression.

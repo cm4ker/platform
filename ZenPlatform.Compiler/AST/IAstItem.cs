@@ -1,14 +1,14 @@
 namespace ZenPlatform.Compiler.AST
 {
-    /// <summary>
-    /// Олицетворяет единицу дерева AST
-    /// </summary>
-    public interface IAstItem
+    public interface ILineInfo
     {
+        int Line { get; set; }
+        int Position { get; set; }
     }
 
-
-    public class AstNode
+    public class AstNode : ILineInfo
     {
+        public int Line { get; set; }
+        public int Position { get; set; }
     }
 }

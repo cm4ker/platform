@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
+using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
@@ -23,16 +25,21 @@ namespace ZenPlatform.Compiler.Generation
         private readonly CompilationUnit _compilationUnit;
         private readonly AssemblyDefinition _asm;
         private ModuleDefinition _dllModule = null;
+
         private SymbolTable _typeSymbols = null;
+        private SymbolTable _functions = new SymbolTable();
 
+        private TypeResolver _typeResolver;
 
-        private const string AsmNamespace = "CompileNamespace";
+        private const string ASM_NAMESPACE = "CompileNamespace";
 
 
         public Generator(CompilationUnit compilationUnit, AssemblyDefinition asm)
         {
             _compilationUnit = compilationUnit;
             _asm = asm;
+
+            _typeResolver = new TypeResolver(compilationUnit, _asm);
 
             foreach (var typeEntity in compilationUnit.TypeEntities)
             {
@@ -56,7 +63,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             _dllModule = _asm.MainModule;
 
-            var td = new TypeDefinition(AsmNamespace, module.Name,
+            var td = new TypeDefinition(ASM_NAMESPACE, module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
                 _dllModule.TypeSystem.Object);
@@ -81,7 +88,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             _dllModule = _asm.MainModule;
 
-            TypeDefinition td = new TypeDefinition(AsmNamespace, @class.Name,
+            TypeDefinition td = new TypeDefinition(ASM_NAMESPACE, @class.Name,
                 TypeAttributes.Class | TypeAttributes.NotPublic |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
                 _dllModule.TypeSystem.Object);
@@ -214,21 +221,21 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Literal literal)
             {
-                switch (literal.Type.PrimitiveType)
+                switch (literal.Type)
                 {
-                    case PrimitiveType.Integer:
+                    case ZInt t:
                         e.LdcI4(Int32.Parse(literal.Value));
                         break;
-                    case PrimitiveType.String:
+                    case ZString t:
                         e.LdStr(literal.Value);
                         break;
-                    case PrimitiveType.Double:
+                    case ZDouble t:
                         e.LdcR8(double.Parse(literal.Value, CultureInfo.InvariantCulture));
                         break;
-                    case PrimitiveType.Character:
+                    case ZCharacter t:
                         e.LdcI4(char.ConvertToUtf32(literal.Value, 0));
                         break;
-                    case PrimitiveType.Boolean:
+                    case ZBool t:
                         if (literal.Value == "true")
                             e.LdcI4(1);
                         else if (literal.Value == "false")
@@ -258,20 +265,19 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitCall(e, call, symbolTable);
             }
-            else if (expression is PropertyExpression pe)
+            else if (expression is FieldExpression fe)
             {
-                EmitExpression(e, pe.Expression, symbolTable);
+                EmitExpression(e, fe.Expression, symbolTable);
 
                 //TODO: Необходим лукап типа в сборке через cecil, оттуда уже забирать проперти
 
-                var fi = pe.Expression.Type.ToClrType().GetField(pe.Name);
-                var fr = new FieldReference(pe.Name, ToCecilType(fi.FieldType));
+                var td = _typeResolver.Resolve(fe.Expression.Type).Resolve();
+                var fr = td.Fields.FirstOrDefault(x => x.Name == fe.Name) ??
+                         throw new Exception("Field not found: " + fe.Name);
                 e.LdFld(fr);
             }
         }
 
-        // Used to keep all function names unique.
-        private SymbolTable m_Functions = new SymbolTable();
 
         /// <summary>
         /// Создание функций исходя из тела типа
@@ -301,7 +307,7 @@ namespace ZenPlatform.Compiler.Generation
                     // Create method.
                     MethodDefinition method = new MethodDefinition(function.Name,
                         MethodAttributes.Public | MethodAttributes.Static
-                                                | MethodAttributes.HideBySig, function.Type.GetCecilType(_dllModule));
+                                                | MethodAttributes.HideBySig, _typeResolver.Resolve(function.Type));
 
                     result.Add((function, method));
 
@@ -324,21 +330,18 @@ namespace ZenPlatform.Compiler.Generation
 
             // Find an unique name.
             string functionName = function.Name;
-            while (m_Functions.Find(functionName, SymbolType.Function) != null)
+            while (_functions.Find(functionName, SymbolType.Function) != null)
                 functionName += "#";
 
-            // Find return type.
-            Type returnType = function.Type.ToClrType();
-
             // Find parameters.
-            Type[] parameters = null;
+            TypeReference[] parameters = null;
             if (function.Parameters != null)
             {
-                parameters = new Type[function.Parameters.Count];
+                parameters = new TypeReference[function.Parameters.Count];
 
                 for (int x = 0; x < function.Parameters.Count; x++)
                 {
-                    parameters[x] = function.Parameters[x].Type.ToClrType();
+                    parameters[x] = _typeResolver.Resolve(function.Parameters[x].Type);
                 }
             }
 
@@ -353,9 +356,10 @@ namespace ZenPlatform.Compiler.Generation
 
 
                     ParameterDefinition p = new ParameterDefinition(pName, ParameterAttributes.None,
-                        ToCecilType(pType.ToClrType()));
+                        parameters[x]);
 
-                    function.InstructionsBody.SymbolTable.Add(pName, SymbolType.Variable, function.Parameters[x], p);
+                    function.InstructionsBody.SymbolTable.Add(pName, SymbolType.Variable,
+                        function.Parameters[x], p);
 
                     method.Parameters.Add(p);
                 }
@@ -377,10 +381,10 @@ namespace ZenPlatform.Compiler.Generation
             var emitter = new Emitter(il);
 
 
-            var returnVariable = new VariableDefinition(ToCecilType(function.Type.ToClrType()));
+            var returnVariable = new VariableDefinition(_typeResolver.Resolve(function.Type));
             var returnInstruction = new Label(il.Create(OpCodes.Ldloc, returnVariable));
 
-            var isVoid = function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void;
+            var isVoid = function.Type == null || function.Type is ZVoid;
 
             if (!isVoid)
             {
@@ -416,44 +420,49 @@ namespace ZenPlatform.Compiler.Generation
             var valueType = expression.Value.Type;
             var convertType = expression.Type;
 
-            if (valueType.VariableType == VariableType.Primitive && convertType.VariableType == VariableType.Primitive)
+            if (valueType.IsSystem && convertType.IsSystem)
             {
                 EmitConvCode(e, convertType);
             }
         }
 
-        private void EmitConvCode(Emitter e, AST.Definitions.Type type)
+        private void EmitConvCode(Emitter e, AST.Definitions.ZType type)
         {
-            if (type.PrimitiveType == PrimitiveType.Integer) e.ConvI4();
-            if (type.PrimitiveType == PrimitiveType.Double) e.ConvR8();
-            if (type.PrimitiveType == PrimitiveType.Character) e.ConvU2();
-            if (type.PrimitiveType == PrimitiveType.Real) e.ConvR4();
+            switch (type)
+            {
+                case ZInt t:
+                    e.ConvI4();
+                    break;
+                case ZDouble t:
+                    e.ConvR4();
+                    break;
+                case ZCharacter t:
+                    e.ConvU2();
+                    break;
+            }
 
             throw new Exception("Converting to this value not supported");
         }
 
-        private void EmitIncrement(Emitter e, AST.Definitions.Type type)
+        private void EmitIncrement(Emitter e, AST.Definitions.ZType type)
         {
             EmitAddValue(e, type, 1);
         }
 
-        private void EmitDecrement(Emitter e, AST.Definitions.Type type)
+        private void EmitDecrement(Emitter e, AST.Definitions.ZType type)
         {
             EmitAddValue(e, type, -1);
         }
 
-        private void EmitAddValue(Emitter e, AST.Definitions.Type type, int value)
+        private void EmitAddValue(Emitter e, AST.Definitions.ZType type, int value)
         {
-            switch (type.PrimitiveType)
+            switch (type)
             {
-                case PrimitiveType.Integer:
+                case ZInt t:
                     e.LdcI4(value);
                     break;
-                case PrimitiveType.Double:
+                case ZDouble d:
                     e.LdcR8(value);
-                    break;
-                case PrimitiveType.Real:
-                    e.LdcR4(value);
                     break;
                 default:
                     e.LdcI4(value);

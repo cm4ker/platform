@@ -34,7 +34,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// <summary>
     /// Описывает тело типа (методы, поля, события, конструкторы и т.д.)
     /// </summary>
-    public class TypeBody
+    public class TypeBody : AstNode
     {
         public FunctionCollection Functions = null;
 
