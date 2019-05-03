@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
@@ -16,6 +18,7 @@ using OpCode = Mono.Cecil.Cil.OpCode;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
 using Type = System.Type;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
+using TypeResolver = ZenPlatform.Compiler.Cecil.Backend.TypeResolver;
 
 
 namespace ZenPlatform.Compiler.Generation
@@ -246,8 +249,13 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is Name name)
             {
                 Symbol variable = symbolTable.Find(name.Value, SymbolType.Variable);
+
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
+
+                if (name.Type is null)
+                    if (variable.SyntaxObject is ITypedNode tn)
+                        name.Type = tn.Type;
 
                 if (variable.CodeObject is VariableDefinition vd)
                     e.LdLoc(vd);
@@ -271,10 +279,32 @@ namespace ZenPlatform.Compiler.Generation
 
                 //TODO: Необходим лукап типа в сборке через cecil, оттуда уже забирать проперти
 
-                var td = _typeResolver.Resolve(fe.Expression.Type).Resolve();
-                var fr = td.Fields.FirstOrDefault(x => x.Name == fe.Name) ??
-                         throw new Exception("Field not found: " + fe.Name);
-                e.LdFld(fr);
+                TypeDefinition td;
+
+                if (fe.Expression.Type.IsArray)
+                {
+                    var asmCoreDefinition =
+                        _dllModule.AssemblyResolver.Resolve((AssemblyNameReference) _dllModule.TypeSystem.CoreLibrary);
+                    td = asmCoreDefinition.MainModule.ExportedTypes
+                        .FirstOrDefault(x => x.Namespace == "System" && x.Name == "Array")
+                        ?.Resolve();
+                }
+                else
+                    td = _typeResolver.Resolve(fe.Expression.Type).Resolve();
+
+                try
+                {
+                    var fr = td.Fields.FirstOrDefault(x => x.Name == fe.Name) ??
+                             throw new Exception("Field not found: " + fe.Name);
+                    e.LdFld(fr);
+                }
+                catch
+                {
+                    var pr = td.Properties.FirstOrDefault(x => x.Name == fe.Name) ??
+                             throw new Exception("Field not found: " + fe.Name);
+                    var md = _dllModule.ImportReference(pr.GetMethod);
+                    e.Call(md);
+                }
             }
         }
 

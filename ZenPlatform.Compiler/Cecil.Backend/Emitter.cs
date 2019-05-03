@@ -4,12 +4,13 @@ using System.Data;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Collections.Generic;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Cecil.Backend
 {
-    public class Emitter : IEmitter
+    public class Emitter
     {
         private readonly ILProcessor _ce;
 
@@ -335,7 +336,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
             return this;
         }
 
-        public Emitter Call(MethodDefinition md)
+        public Emitter Call(MethodReference md)
         {
             _ce.Emit(OpCodes.Call, md);
 
@@ -430,11 +431,16 @@ namespace ZenPlatform.Compiler.Cecil.Backend
     {
         private readonly CompilationUnit _cu;
         private readonly AssemblyDefinition _relativeAssembly;
+        private readonly AssemblyDefinition _coreAssembly;
 
         public TypeResolver(CompilationUnit cu, AssemblyDefinition relativeAssembly)
         {
             _cu = cu;
             _relativeAssembly = relativeAssembly;
+
+            var asmNr = (AssemblyNameReference) _relativeAssembly.MainModule.TypeSystem.CoreLibrary;
+            var asmNd = new AssemblyNameDefinition(asmNr.Name, asmNr.Version);
+            _coreAssembly = _relativeAssembly.MainModule.AssemblyResolver.Resolve(asmNd);
         }
 
         public TypeReference Resolve(ZType type)

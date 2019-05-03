@@ -5,7 +5,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
     /// <summary>
     /// Describes a parameter.
     /// </summary>
-    public class Parameter : AstNode
+    public class Parameter : AstNode, ITypedNode
     {
         /// <summary>
         /// Parameter name.
@@ -15,7 +15,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Parameter type.
         /// </summary>
-        public ZType Type;
+        public ZType Type { get; set; }
 
         /// <summary>
         /// Parameter pass method.
@@ -31,5 +31,10 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
             Type = type;
             PassMethod = passMethod;
         }
+    }
+
+    public interface ITypedNode
+    {
+        ZType Type { get; set; }
     }
 }
