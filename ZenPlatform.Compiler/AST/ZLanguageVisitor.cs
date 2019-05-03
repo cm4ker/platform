@@ -532,6 +532,8 @@ namespace ZenPlatform.Compiler.AST
                     result = new Return(null);
                 else
                     result = new Return(_syntaxStack.PopExpression());
+                
+                SetLineInfo(result, context.start);
                 _syntaxStack.PeekType<IList>().Add(result);
             }
             else if (context.expression() != null)
@@ -540,7 +542,7 @@ namespace ZenPlatform.Compiler.AST
                 //_syntaxStack.PeekType<IList>().Add(new Return(null));
             }
 
-            SetLineInfo(result, context.start);
+           
 
             return result;
         }

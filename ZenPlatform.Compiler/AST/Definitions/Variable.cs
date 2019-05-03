@@ -1,3 +1,4 @@
+using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 
 namespace ZenPlatform.Compiler.AST.Definitions
@@ -5,7 +6,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// <summary>
     /// Describes a variable.
     /// </summary>
-    public class Variable : Statement
+    public class Variable : Statement, ITypedNode
     {
         /// <summary>
         /// Variable name.
@@ -15,7 +16,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Variable type.
         /// </summary>
-        public ZType Type;
+        public ZType Type { get; set; }
 
         /// <summary>
         /// Variable initial value;
