@@ -2,28 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Cecil.Backend;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
-using OpCode = Mono.Cecil.Cil.OpCode;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
-using Type = System.Type;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
-using TypeResolver = ZenPlatform.Compiler.Cecil.Backend.TypeResolver;
 
 
-namespace ZenPlatform.Compiler.Generation
+namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
 {
-    public partial class Generator
+    public partial class SyntaxAnalyser
     {
         private readonly CompilationUnit _compilationUnit;
         private readonly AssemblyDefinition _asm;
@@ -37,7 +31,7 @@ namespace ZenPlatform.Compiler.Generation
         private const string ASM_NAMESPACE = "CompileNamespace";
 
 
-        public Generator(CompilationUnit compilationUnit, AssemblyDefinition asm)
+        public SyntaxAnalyser(CompilationUnit compilationUnit, AssemblyDefinition asm)
         {
             _compilationUnit = compilationUnit;
             _asm = asm;
@@ -52,7 +46,7 @@ namespace ZenPlatform.Compiler.Generation
                         BuildModule(m);
                         break;
                     case Class c:
-                        EmitClass(c);
+                        ResolveClass(c);
                         break;
 
                     default:
@@ -62,7 +56,7 @@ namespace ZenPlatform.Compiler.Generation
         }
 
 
-        private void BuildModule(Module module)
+        public void BuildModule(Module module)
         {
             _dllModule = _asm.MainModule;
 
@@ -70,7 +64,6 @@ namespace ZenPlatform.Compiler.Generation
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
                 _dllModule.TypeSystem.Object);
-
 
             _dllModule.Types.Add(td);
 
@@ -87,7 +80,7 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        private void EmitClass(Class @class)
+        private void ResolveClass(Class @class)
         {
             _dllModule = _asm.MainModule;
 
@@ -112,114 +105,37 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        public void Emit()
-        {
-        }
-
         private void Error(string message)
         {
             throw new Exception(message);
         }
 
-
-        private TypeReference ToCecilType(Type type)
-        {
-            switch (Type.GetTypeCode(type))
-            {
-                case TypeCode.Int32: return _dllModule.TypeSystem.Int32;
-                case TypeCode.Boolean: return _dllModule.TypeSystem.Boolean;
-                case TypeCode.String: return _dllModule.TypeSystem.String;
-                case TypeCode.Double: return _dllModule.TypeSystem.Double;
-                case TypeCode.Char: return _dllModule.TypeSystem.Char;
-                case TypeCode.Object when type == typeof(void): return _dllModule.TypeSystem.Void;
-                case TypeCode.Object: return _dllModule.ImportReference(type);
-                default:
-                {
-                    return null;
-                }
-            }
-        }
-
-        private void EmitExpression(Emitter e, Expression expression, SymbolTable symbolTable)
+        private void ResolveExpression(Emitter e, Expression expression, SymbolTable symbolTable)
         {
             if (expression is BinaryExpression)
             {
-                EmitExpression(e, ((BinaryExpression) expression).Left, symbolTable);
-                EmitExpression(e, ((BinaryExpression) expression).Right, symbolTable);
+                ResolveExpression(e, ((BinaryExpression) expression).Left, symbolTable);
+                ResolveExpression(e, ((BinaryExpression) expression).Right, symbolTable);
 
                 switch (((BinaryExpression) expression).BinaryOperatorType)
                 {
-                    case BinaryOperatorType.Add:
-                        e.Add();
-                        break;
-                    case BinaryOperatorType.Subtract:
-                        e.Sub();
-                        break;
-                    case BinaryOperatorType.Multiply:
-                        e.Mul();
-                        break;
-                    case BinaryOperatorType.Divide:
-                        e.Div();
-                        break;
-                    case BinaryOperatorType.Modulo:
-                        e.Rem();
-                        break;
-                    case BinaryOperatorType.Equal:
-                        e.Ceq();
-                        break;
-                    case BinaryOperatorType.NotEqual:
-                        e.NotEqual();
-                        break;
-                    case BinaryOperatorType.GreaterThen:
-                        e.Cgt();
-                        break;
-                    case BinaryOperatorType.LessThen:
-                        e.Clt();
-                        break;
-                    case BinaryOperatorType.GraterOrEqualTo:
-                        e.GreaterOrEqual();
-                        break;
-                    case BinaryOperatorType.LessOrEqualTo:
-                        e.LessOrEqual();
-                        break;
-                    case BinaryOperatorType.And:
-                        e.Add();
-                        break;
-                    case BinaryOperatorType.Or:
-                        e.Or();
-                        break;
                 }
             }
             else if (expression is UnaryExpression ue)
             {
                 if (ue is IndexerExpression ie)
                 {
-                    EmitExpression(e, ie.Value, symbolTable);
-                    EmitExpression(e, ie.Indexer, symbolTable);
-                    e.LdElemI4();
+                    ResolveExpression(e, ie.Value, symbolTable);
+                    ResolveExpression(e, ie.Indexer, symbolTable);
                 }
 
                 if (ue is LogicalOrArithmeticExpression lae)
-
-                    switch (lae.Type)
-                    {
-                        case UnaryOperatorType.Indexer:
-
-                            break;
-                        case UnaryOperatorType.Negative:
-                            EmitExpression(e, lae.Value, symbolTable);
-                            e.Neg();
-                            break;
-                        case UnaryOperatorType.Not:
-                            EmitExpression(e, lae.Value, symbolTable);
-                            e.Not();
-                            break;
-                    }
+                    ResolveExpression(e, lae.Value, symbolTable);
 
                 if (ue is CastExpression ce)
                 {
-                    EmitExpression(e, ce.Value, symbolTable);
-                    EmitConvert(e, ce, symbolTable);
+                    ResolveExpression(e, ce.Value, symbolTable);
+                    ResolveConvert(e, ce, symbolTable);
                 }
             }
             else if (expression is Literal literal)
@@ -275,7 +191,7 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is FieldExpression fe)
             {
-                EmitExpression(e, fe.Expression, symbolTable);
+                ResolveExpression(e, fe.Expression, symbolTable);
 
                 //TODO: Необходим лукап типа в сборке через cecil, оттуда уже забирать проперти
 
@@ -301,7 +217,7 @@ namespace ZenPlatform.Compiler.Generation
                     var pr = td.Properties.FirstOrDefault(x => x.Name == fe.Name) ??
                              throw new Exception("Field not found: " + fe.Name);
                     var md = _dllModule.ImportReference(pr.GetMethod);
-                    
+
                     e.Call(md);
                 }
             }
@@ -410,29 +326,11 @@ namespace ZenPlatform.Compiler.Generation
             var emitter = new Emitter(il);
 
 
-            var returnVariable = new VariableDefinition(_typeResolver.Resolve(function.Type));
-            var returnInstruction = new Label(il.Create(OpCodes.Ldloc, returnVariable));
-
-            var isVoid = function.Type == null || function.Type is ZVoid;
-
-            if (!isVoid)
-            {
-                il.Body.Variables.Add(returnVariable);
-            }
-
-            EmitBody(emitter, function.InstructionsBody, returnInstruction, returnVariable);
-
-
-            if (!isVoid)
-                emitter.Append(returnInstruction);
-            il.Emit(OpCodes.Ret);
-
-//            if (function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void)
-//                il.Append(Mono.Cecil.Cil.OpCodes.Ret);
+            ResolveBody(emitter, function.InstructionsBody);
         }
 
 
-        private void EmitConvert(Emitter e, CastExpression expression, SymbolTable symbolTable)
+        private void ResolveConvert(Emitter e, CastExpression expression, SymbolTable symbolTable)
         {
             if (expression.Value is Name name)
             {
@@ -455,7 +353,7 @@ namespace ZenPlatform.Compiler.Generation
 
             var convertType = expression.Type;
 
-            if (valueType is null || (valueType.IsSystem && convertType.IsSystem))
+            if (valueType.IsSystem && convertType.IsSystem)
             {
                 EmitConvCode(e, convertType);
             }
@@ -469,7 +367,7 @@ namespace ZenPlatform.Compiler.Generation
                     e.ConvI4();
                     return;
                 case ZDouble t:
-                    e.ConvR8();
+                    e.ConvR4();
                     return;
                 case ZCharacter t:
                     e.ConvU2();

@@ -21,9 +21,4 @@
         <Content Include=".\ZSharpParser.g4" />
         <Content Include=".\ZSharpLexer.g4" />
     </ItemGroup>
-    <ItemGroup>
-      <Reference Include="BetaName, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>BetaName.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@ using Antlr4.Runtime;
 using Mono.Cecil;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
+using ZenPlatform.Compiler.Cecil.Backend;
 using ZenPlatform.Compiler.Generation;
 
 namespace ZenPlatform.Compiler
@@ -94,16 +95,16 @@ module Test
     }
     */
 
-    int Average(int[] arr)
+    double Average(int[] arr)
     {
-        double result = 0;
+        double result = 0.0;
 
         for(int i = 0; i < arr.Length; i++)
         {
-            result = result + arr[i];
+            result = result + (double)(arr[i]);
         };    
 
-        result = result / arr.Length;
+        result = result / (double)(arr.Length);
         
         return result;
     }
@@ -112,7 +113,12 @@ module Test
 
             var name = new AssemblyNameDefinition("Debug.dll", new Version(1, 0));
 
-            AssemblyDefinition ad = AssemblyDefinition.CreateAssembly(name, "Debug", ModuleKind.Dll);
+            AssemblyDefinition ad =
+                AssemblyDefinition.CreateAssembly(name, "Debug", new ModuleParameters()
+                {
+                    Kind = ModuleKind.Dll,
+                    AssemblyResolver = new CustomAssemblyResolver(),
+                });
 
             AntlrInputStream inputStream = new AntlrInputStream(text);
             ZSharpLexer lexer = new ZSharpLexer(inputStream);
