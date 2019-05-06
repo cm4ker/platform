@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST.Definitions;
@@ -387,7 +388,7 @@ namespace ZenPlatform.Compiler.AST
             if (context.BANG() != null)
                 _syntaxStack.Push(
                     new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(), UnaryOperatorType.Not));
-            if (context.expression() != null)
+            if (context.indexerExpression != null)
                 _syntaxStack.Push(new IndexerExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression()));
 
             SetLineInfo(context.start);
@@ -516,6 +517,7 @@ namespace ZenPlatform.Compiler.AST
                 result = new Assignment(_syntaxStack.PopExpression(), null, _syntaxStack.PopString());
 
             _syntaxStack.Push(result);
+
             SetLineInfo(result, context.start);
             return result;
         }
@@ -532,17 +534,16 @@ namespace ZenPlatform.Compiler.AST
                     result = new Return(null);
                 else
                     result = new Return(_syntaxStack.PopExpression());
-                
+
                 SetLineInfo(result, context.start);
                 _syntaxStack.PeekType<IList>().Add(result);
             }
-            else if (context.expression() != null)
+            else
             {
                 _syntaxStack.PeekType<IList>().Add(_syntaxStack.PopStatement());
                 //_syntaxStack.PeekType<IList>().Add(new Return(null));
             }
 
-           
 
             return result;
         }
@@ -576,7 +577,7 @@ namespace ZenPlatform.Compiler.AST
 
             _syntaxStack.Push(result);
             SetLineInfo(result, context.start);
-            
+
             return result;
         }
 

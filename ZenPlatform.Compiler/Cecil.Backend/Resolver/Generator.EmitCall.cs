@@ -6,11 +6,10 @@ using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Cecil.Backend;
 
-namespace ZenPlatform.Compiler.Generation
+namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
 {
-    public partial class Generator
+    public partial class SyntaxAnalyser
     {
         private void EmitCall(Emitter e, Call call, SymbolTable symbolTable)
         {
@@ -93,7 +92,7 @@ namespace ZenPlatform.Compiler.Generation
                                     e.LdArgA(pd.Sequence - 1);
                                 }
 
-                                EmitExpression(e, ue.Indexer, symbolTable);
+                                ResolveExpression(e, ue.Indexer, symbolTable);
                                 e.LdElemA();
                             }
                             else
@@ -103,7 +102,7 @@ namespace ZenPlatform.Compiler.Generation
                         }
                         else
                         {
-                            EmitExpression(e, argument.Value, symbolTable);
+                            ResolveExpression(e, argument.Value, symbolTable);
                         }
                     }
                 }

@@ -119,7 +119,7 @@ expressionUnary:
     | MINUS expressionPrimary
     | BANG expressionPrimary
     | expressionPrimary
-    | expressionPrimary '[' expression ']'
+    | expressionPrimary '[' indexerExpression=expression ']'
     | castExpression 
 ;
 

@@ -6,13 +6,12 @@ using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Cecil.Backend;
 
-namespace ZenPlatform.Compiler.Generation
+namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
 {
-    public partial class Generator
+    public partial class SyntaxAnalyser
     {
-        private void EmitCall(Emitter e, Call call, SymbolTable symbolTable)
+        private void EmitCallStatement(Emitter il, CallStatement call, SymbolTable symbolTable)
         {
             Symbol symbol = symbolTable.Find(call.Name, SymbolType.Function);
 
@@ -23,7 +22,6 @@ namespace ZenPlatform.Compiler.Generation
                 //
                 // Check arguments
                 //
-
                 if (call.Arguments == null && function.Parameters == null)
                 {
                     // Ugly hack.
@@ -58,43 +56,43 @@ namespace ZenPlatform.Compiler.Generation
                             if (argument.Value is Name)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is VariableDefinition vd)
-                                {
-                                    e.LdLocA(vd);
-                                }
-                                else if (variable.CodeObject is FieldDefinition fd)
-                                {
-                                    e.LdsFldA(fd);
-                                }
-                                else if (variable.CodeObject is ParameterBuilder pb)
-                                {
-                                    e.LdArgA(pb.Position - 1);
-                                }
-                            }
-                            else if (argument.Value is IndexerExpression ue)
-                            {
-                                Symbol variable = symbolTable.Find(((Name)ue.Value).Value, SymbolType.Variable);
                                 if (variable.CodeObject is LocalBuilder)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    e.LdLocA(variable.CodeObject as VariableDefinition);
+                                    il.LdLocA(variable.CodeObject as VariableDefinition);
                                 }
                                 else if (variable.CodeObject is FieldBuilder)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    e.LdsFldA(variable.CodeObject as FieldDefinition);
+                                    il.LdsFldA(variable.CodeObject as FieldDefinition);
                                 }
-                                else if (variable.CodeObject is ParameterDefinition pd)
+                                else if (variable.CodeObject is ParameterBuilder pb)
                                 {
                                     if (((Parameter) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    e.LdArgA(pd.Sequence - 1);
+                                    il.LdArgA(pb.Position - 1);
+                                }
+                            }
+                            else if (argument.Value is IndexerExpression ue)
+                            {
+                                Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
+                                if (variable.CodeObject is VariableDefinition vd)
+                                {
+                                    il.LdLoc(vd);
+                                }
+                                else if (variable.CodeObject is FieldBuilder)
+                                {
+                                    il.LdsFld(variable.CodeObject as FieldDefinition);
+                                }
+                                else if (variable.CodeObject is ParameterBuilder)
+                                {
+                                    il.LdArgA(((ParameterBuilder) variable.CodeObject).Position - 1);
                                 }
 
-                                EmitExpression(e, ue.Indexer, symbolTable);
-                                e.LdElemA();
+                                ResolveExpression(il, ue.Indexer, symbolTable);
+                                il.LdElemA();
                             }
                             else
                             {
@@ -103,40 +101,40 @@ namespace ZenPlatform.Compiler.Generation
                         }
                         else
                         {
-                            EmitExpression(e, argument.Value, symbolTable);
+                            ResolveExpression(il, argument.Value, symbolTable);
                         }
                     }
                 }
 
                 Hack:
-                e.Call(((MethodDefinition) symbol.CodeObject));
+                il.Call(((MethodDefinition) symbol.CodeObject));
             }
             else
             {
-                if (call.Name == "Read")
-                {
-//                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, "Input > ");
+//                if (call.Name == "Read")
+//                {
+//                    il.Emit(OpCodes.Ldstr, "Input > ");
 //                    MethodInfo write = System.Type.GetType("System.Console")
 //                        .GetMethod("Write", new System.Type[] {typeof(string)});
-//                    il.Emit(Mono.Cecil.Cil.OpCodes.Call, write, null);
+//                    il.EmitCall(OpCodes.Call, write, null);
 //
 //                    MethodInfo read = System.Type.GetType("System.Console").GetMethod("ReadLine");
 //                    MethodInfo parse = System.Type.GetType("System.Int32")
 //                        .GetMethod("Parse", new System.Type[] {typeof(string)});
-//                    il.Emit(Mono.Cecil.Cil.OpCodes.Call, read, null);
-//                    il.Emit(Mono.Cecil.Cil.OpCodes.Call, parse, null);
-                }
-                else if (call.Name == "Write")
-                {
+//                    il.EmitCall(OpCodes.Call, read, null);
+//                    il.EmitCall(OpCodes.Call, parse, null);
+//                }
+//                else if (call.Name == "Write")
+//                {
 //                    EmitExpression(il, call.Arguments[0].Value, symbolTable);
 //                    MethodInfo write = System.Type.GetType("System.Console")
 //                        .GetMethod("WriteLine", new System.Type[] {typeof(int)});
 //                    il.EmitCall(OpCodes.Call, write, null);
-                }
-                else
-                {
-                    Error("Unknown function name. [" + call.Name + "]");
-                }
+//                }
+//                else
+//                {
+//                    Error("Unknown function name. [" + call.Name + "]");
+//                }
             }
         }
     }
