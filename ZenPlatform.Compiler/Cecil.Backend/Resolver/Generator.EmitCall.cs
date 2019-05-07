@@ -65,25 +65,25 @@ namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
                                 {
                                     e.LdsFldA(fd);
                                 }
-                                else if (variable.CodeObject is ParameterBuilder pb)
+                                else if (variable.CodeObject is ParameterDefinition pb)
                                 {
-                                    e.LdArgA(pb.Position - 1);
+                                    e.LdArgA(pb.Sequence - 1);
                                 }
                             }
                             else if (argument.Value is IndexerExpression ue)
                             {
                                 Symbol variable = symbolTable.Find(((Name)ue.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is LocalBuilder)
+                                if (variable.CodeObject is VariableDefinition definition)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    e.LdLocA(variable.CodeObject as VariableDefinition);
+                                    e.LdLocA(definition);
                                 }
-                                else if (variable.CodeObject is FieldBuilder)
+                                else if (variable.CodeObject is FieldDefinition codeObject)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    e.LdsFldA(variable.CodeObject as FieldDefinition);
+                                    e.LdsFldA(codeObject);
                                 }
                                 else if (variable.CodeObject is ParameterDefinition pd)
                                 {

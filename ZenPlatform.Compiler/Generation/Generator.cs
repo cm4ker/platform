@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
@@ -13,13 +11,6 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Cecil.Backend;
-using MethodAttributes = Mono.Cecil.MethodAttributes;
-using OpCode = Mono.Cecil.Cil.OpCode;
-using ParameterAttributes = Mono.Cecil.ParameterAttributes;
-using Type = System.Type;
-using TypeAttributes = Mono.Cecil.TypeAttributes;
-using TypeResolver = ZenPlatform.Compiler.Cecil.Backend.TypeResolver;
-
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -301,7 +292,7 @@ namespace ZenPlatform.Compiler.Generation
                     var pr = td.Properties.FirstOrDefault(x => x.Name == fe.Name) ??
                              throw new Exception("Field not found: " + fe.Name);
                     var md = _dllModule.ImportReference(pr.GetMethod);
-                    
+
                     e.Call(md);
                 }
             }

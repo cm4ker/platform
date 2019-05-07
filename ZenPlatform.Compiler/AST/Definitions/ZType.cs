@@ -94,6 +94,10 @@ namespace ZenPlatform.Compiler.AST.Definitions
         {
         }
 
+        public ZStructureType(string name, string @namespace) : base(name, @namespace)
+        {
+        }
+
         public void SetNamespace(string @namespace)
         {
             Namespace = @namespace;
