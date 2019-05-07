@@ -6,6 +6,7 @@ using Mono.Cecil;
 
 namespace ZenPlatform.Compiler.Cecil.Backend
 {
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class CustomAssemblyResolver : IAssemblyResolver
     {
         private static readonly string BaseDirectory = System.AppContext.BaseDirectory;
@@ -91,24 +92,6 @@ namespace ZenPlatform.Compiler.Cecil.Backend
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }
-    }
-
-    public class CustomMetadataResolver : IMetadataResolver
-    {
-        public TypeDefinition Resolve(TypeReference type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public FieldDefinition Resolve(FieldReference field)
-        {
-            throw new NotImplementedException();
-        }
-
-        public MethodDefinition Resolve(MethodReference method)
-        {
-            throw new NotImplementedException();
         }
     }
 }

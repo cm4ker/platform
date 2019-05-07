@@ -1,4 +1,3 @@
-using System.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions;
@@ -57,23 +56,23 @@ namespace ZenPlatform.Compiler.Generation
                             if (argument.Value is Name)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is LocalBuilder)
+                                if (variable.CodeObject is VariableDefinition definition)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.LdLocA(variable.CodeObject as VariableDefinition);
+                                    il.LdLocA(definition);
                                 }
-                                else if (variable.CodeObject is FieldBuilder)
+                                else if (variable.CodeObject is FieldDefinition variableCodeObject)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.LdsFldA(variable.CodeObject as FieldDefinition);
+                                    il.LdsFldA(variableCodeObject);
                                 }
-                                else if (variable.CodeObject is ParameterBuilder pb)
+                                else if (variable.CodeObject is ParameterDefinition pb)
                                 {
                                     if (((Parameter) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.LdArgA(pb.Position - 1);
+                                    il.LdArgA(pb.Sequence - 1);
                                 }
                             }
                             else if (argument.Value is IndexerExpression ue)
@@ -83,13 +82,13 @@ namespace ZenPlatform.Compiler.Generation
                                 {
                                     il.LdLoc(vd);
                                 }
-                                else if (variable.CodeObject is FieldBuilder)
+                                else if (variable.CodeObject is FieldDefinition df)
                                 {
-                                    il.LdsFld(variable.CodeObject as FieldDefinition);
+                                    il.LdsFld(df);
                                 }
-                                else if (variable.CodeObject is ParameterBuilder)
+                                else if (variable.CodeObject is ParameterDefinition pd)
                                 {
-                                    il.LdArgA(((ParameterBuilder) variable.CodeObject).Position - 1);
+                                    il.LdArgA(pd.Sequence - 1);
                                 }
 
                                 EmitExpression(il, ue.Indexer, symbolTable);

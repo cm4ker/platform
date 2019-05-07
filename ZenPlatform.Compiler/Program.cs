@@ -129,6 +129,9 @@ module Test
             ZLanguageVisitor visitor = new ZLanguageVisitor();
             var result = (CompilationUnit) visitor.VisitEntryPoint(parser.entryPoint());
 
+            AstVisitor av = new AstVisitor();
+            av.Visit(result);
+            
             Generator g = new Generator(result, ad);
             g.Emit();
 

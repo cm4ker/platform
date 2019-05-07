@@ -11,10 +11,12 @@ namespace ZenPlatform.Shared
         private T _item;
 
         private bool _executed;
+        private bool _breaked;
 
         private ItemSwitch(T item)
         {
             _item = item;
+            _breaked = false;
         }
 
         public static ItemSwitch<T> Switch(T item)
@@ -25,12 +27,20 @@ namespace ZenPlatform.Shared
         public ItemSwitch<T> CaseIs<TIsType>(Action<TIsType> action)
             where TIsType : T
         {
+            if (_breaked) return this;
+
             if (_item is TIsType type)
             {
                 _executed = true;
                 action(type);
             }
 
+            return this;
+        }
+
+        public ItemSwitch<T> BreakIfExecuted()
+        {
+            _breaked = true;
             return this;
         }
 

@@ -360,7 +360,8 @@ namespace ZenPlatform.Compiler.AST
                 {
                     _syntaxStack.Push(new Name(identifier[0]));
                     SetLineInfo(context.start);
-                    foreach (var str in identifier[1..])
+
+                    foreach (var str in identifier.ToList().GetRange(1, identifier.Length - 1))
                     {
                         _syntaxStack.Push(new FieldExpression(_syntaxStack.PopExpression(), str));
                     }

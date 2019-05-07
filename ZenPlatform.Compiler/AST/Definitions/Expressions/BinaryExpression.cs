@@ -11,14 +11,12 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expressions
         public Infrastructure.Expression Left = null;
         public BinaryOperatorType BinaryOperatorType;
 
-        public BinaryExpression(Infrastructure.Expression right, Infrastructure.Expression left, BinaryOperatorType binaryOperatorType)
+        public BinaryExpression(Infrastructure.Expression right, Infrastructure.Expression left,
+            BinaryOperatorType binaryOperatorType)
         {
             Right = right;
             Left = left;
             BinaryOperatorType = binaryOperatorType;
         }
     }
-    
-    
-    
 }

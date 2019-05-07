@@ -23,9 +23,8 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
     {
         public Name Name { get; }
 
-        public PostIncrementStatement(string name)
+        public PostIncrementStatement(string name) : this(new Name(name))
         {
-            Name = new Name(name);
         }
 
         public PostIncrementStatement(Name name)
@@ -38,10 +37,10 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
     {
         public Name Name { get; }
 
-        public PostDecrementStatement(string name)
+        public PostDecrementStatement(string name) : this(new Name(name))
         {
-            Name = new Name(name);
         }
+
 
         public PostDecrementStatement(Name name)
         {

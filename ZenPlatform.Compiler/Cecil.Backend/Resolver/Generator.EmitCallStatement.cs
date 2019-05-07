@@ -56,23 +56,23 @@ namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
                             if (argument.Value is Name)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is LocalBuilder)
+                                if (variable.CodeObject is VariableDefinition definition)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.LdLocA(variable.CodeObject as VariableDefinition);
+                                    il.LdLocA(definition);
                                 }
-                                else if (variable.CodeObject is FieldBuilder)
+                                else if (variable.CodeObject is FieldDefinition)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
                                     il.LdsFldA(variable.CodeObject as FieldDefinition);
                                 }
-                                else if (variable.CodeObject is ParameterBuilder pb)
+                                else if (variable.CodeObject is ParameterDefinition pb)
                                 {
                                     if (((Parameter) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.LdArgA(pb.Position - 1);
+                                    il.LdArgA(pb.Sequence - 1);
                                 }
                             }
                             else if (argument.Value is IndexerExpression ue)
@@ -82,13 +82,13 @@ namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
                                 {
                                     il.LdLoc(vd);
                                 }
-                                else if (variable.CodeObject is FieldBuilder)
+                                else if (variable.CodeObject is FieldDefinition definition)
                                 {
-                                    il.LdsFld(variable.CodeObject as FieldDefinition);
+                                    il.LdsFld(definition);
                                 }
-                                else if (variable.CodeObject is ParameterBuilder)
+                                else if (variable.CodeObject is ParameterDefinition parameterDefinition)
                                 {
-                                    il.LdArgA(((ParameterBuilder) variable.CodeObject).Position - 1);
+                                    il.LdArgA(parameterDefinition.Sequence - 1);
                                 }
 
                                 ResolveExpression(il, ue.Indexer, symbolTable);
