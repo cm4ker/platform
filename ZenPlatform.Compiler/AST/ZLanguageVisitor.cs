@@ -545,8 +545,26 @@ namespace ZenPlatform.Compiler.AST
                 //_syntaxStack.PeekType<IList>().Add(new Return(null));
             }
 
-
             return result;
+        }
+
+        public override object VisitInstructionsOrSingleStatement(
+            ZSharpParser.InstructionsOrSingleStatementContext context)
+        {
+            var sc = new StatementCollection();
+
+            if (context.statement() != null)
+                _syntaxStack.Push(sc);
+
+            base.VisitInstructionsOrSingleStatement(context);
+
+            if (context.statement() != null)
+            {
+                _syntaxStack.Pop();
+                _syntaxStack.Push(new InstructionsBodyNode(sc));
+            }
+
+            return null;
         }
 
         public override object VisitIfStatement(ZSharpParser.IfStatementContext context)
