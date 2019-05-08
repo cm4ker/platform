@@ -40,12 +40,14 @@ namespace ZenPlatform.Shared
 
         public ItemSwitch<T> BreakIfExecuted()
         {
-            _breaked = true;
+            if (_executed)
+                _breaked = true;
             return this;
         }
 
         public ItemSwitch<T> Case(Func<T, bool> c, Action action)
         {
+            if (_breaked) return this;
             if (c(_item) && !_executed)
             {
                 _executed = true;

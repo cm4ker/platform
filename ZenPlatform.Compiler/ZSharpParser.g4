@@ -35,22 +35,25 @@ typeDefinition: TYPE IDENTIFIER '{' '}';
 */
 
 
-instructionsBody : '{' (statements)* '}';
+instructionsBody : '{' (statements)? '}';
+
+instructionsOrSingleStatement : 
+    instructionsBody | (statement ';');
 
 functionDeclaration:accessModifier? type IDENTIFIER '(' parameters? ')' instructionsBody;
 
 statement: 
-        (variableDeclaration
-        | functionCall
-        | assigment
-        | RETURN expression
+        ((variableDeclaration ';')
+        | (functionCall ';')
+        | (assigment ';')
+        | (RETURN expression ';')
         | ifStatement
         | forStatement
-        | whileStatement)*
+        | whileStatement)* 
         ; 
 
 statements: 
-    (statement ';')+;
+    (statement)*;
 
 variableDeclaration:
     variableType IDENTIFIER 
@@ -193,13 +196,14 @@ extensionExpression:
     '$' 
         (name ('{'statements'}')?)
         | functionCall;  
+        
 ifStatement:
-    IF '(' expression ')' instructionsBody (ELSE instructionsBody)?;
+    IF '(' expression ')' instructionsOrSingleStatement (ELSE instructionsOrSingleStatement)?;
     
 forStatement:
-    FOR '('variableDeclaration ';' conditionExpression=expression ';' assigment ')' instructionsBody;
+    FOR '('variableDeclaration ';' conditionExpression=expression ';' assigment ')' instructionsOrSingleStatement;
 
 whileStatement:
-    WHILE '(' expression ')' instructionsBody;
+    WHILE '(' expression ')' instructionsOrSingleStatement;
 
 

@@ -24,76 +24,13 @@ namespace ZenPlatform.Compiler
 
 module Test
 {
-
- /*  void Main()
+    int Fibonachi(int n)
     {
-        double testCast = (double)1;
+        if(n == 0) return 0;
+        if(n == 1) return 1;
+
+        return Fibonachi(n-2) + Fibonachi(n-1);
     }
-
-    int Multiply(int a, int b)
-    {
-        return a * b;
-    }
-
-    int Add(int a, int b)
-    {
-        return b + a;
-    }
-
-    int Sub(int a, int b)
-    {
-        return a - b;
-    }
-
-    double Div(int a, int b)
-    {
-        if(a > b)
-        {
-            a = a + 2;
-        }
-        else
-        {
-            a = a + 1;
-           
-        };
-
-         return (double)a;
-    }
-
-    int Factor(int a)
-    {
-        int result = 1;
-        for(int i = 1; i <= a; i++)
-        {
-            result = result * i;
-        };
-
-        a++;
-
-        a = a + 1;
-        return result;
-    }
-
-    int Counter(int a)
-    {
-        bool i = true;
-        while ( i )
-        {
-           a++;
-
-            if( a > 10) 
-            {
-                i = false;
-            }
-            else
-            {
-                a = Factor(a);
-            };
-        };
-        
-        return 0;
-    }
-    */
 
     double Average(int[] arr)
     {
@@ -102,7 +39,7 @@ module Test
         for(int i = 0; i < arr.Length; i++)
         {
             result = result + (double)(arr[i]);
-        };    
+        }  
 
         result = result / (double)(arr.Length);
         
