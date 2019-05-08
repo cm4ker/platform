@@ -21,7 +21,6 @@ namespace ZenPlatform.Compiler
         {
             string test;
             var text = new StringReader(@"
-
 module Test
 {
     int Fibonachi(int n)
@@ -48,7 +47,7 @@ module Test
 }
 ");
 
-            var name = new AssemblyNameDefinition("Debug.dll", new Version(1, 0));
+            var name = new AssemblyNameDefinition("Debug", new Version(1, 0));
 
             AssemblyDefinition ad =
                 AssemblyDefinition.CreateAssembly(name, "Debug", new ModuleParameters()

@@ -35,21 +35,21 @@ typeDefinition: TYPE IDENTIFIER '{' '}';
 */
 
 
-instructionsBody : '{' (statements)? '}';
+instructionsBody : '{' statements '}';
 
 instructionsOrSingleStatement : 
-    instructionsBody | (statement ';');
+    instructionsBody | statement;
 
 functionDeclaration:accessModifier? type IDENTIFIER '(' parameters? ')' instructionsBody;
 
+/*чертовски сложное правило*/
 statement: 
-        ((variableDeclaration ';')
-        | (functionCall ';')
-        | (assigment ';')
-        | (RETURN expression ';')
-        | ifStatement
-        | forStatement
-        | whileStatement)* 
+        ((variableDeclaration 
+        | functionCall
+        | assigment
+        | (RETURN returnExpression = expression))
+        ';'+ )
+         | (ifStatement | forStatement | whileStatement)
         ; 
 
 statements: 
