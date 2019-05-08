@@ -529,9 +529,9 @@ namespace ZenPlatform.Compiler.AST
 
             AstNode result = null;
 
-            if (context.RETURN().Length != 0)
+            if (context.RETURN() != null)
             {
-                if (context.expression() == null)
+                if (context.returnExpression == null)
                     result = new Return(null);
                 else
                     result = new Return(_syntaxStack.PopExpression());
