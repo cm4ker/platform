@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using Mono.Cecil;
 
 namespace ZenPlatform.Compiler.Cecil.Backend
@@ -14,6 +15,9 @@ namespace ZenPlatform.Compiler.Cecil.Backend
 
         private static readonly string NetstandardDirectory =
             @"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref";
+
+        private static readonly string MacNetstandardDirectory =
+            "/usr/local/share/dotnet/sdk/NuGetFallbackFolder/netstandard.library/2.0.3/build/netstandard2.0/ref";
 
         Dictionary<string, AssemblyDefinition> libraries;
 
@@ -47,6 +51,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
             List<string> paths = new List<string>();
             paths.Add(BaseDirectory);
             paths.Add(NetstandardDirectory);
+            paths.Add(MacNetstandardDirectory);
             paths.Add(RuntimeDirectory);
             paths.Add("");
 
@@ -66,7 +71,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
                     {
                         def = AssemblyDefinition.ReadAssembly(dllPath);
                         this.libraries.Add(libname, def);
-                        
+
                         return def;
                     }
                 }
