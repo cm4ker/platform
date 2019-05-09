@@ -17,6 +17,7 @@
 
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
         <PackageReference Include="Mono.Cecil" Version="0.10.3" />
+        <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     </ItemGroup>
     <ItemGroup>
         <Content Include=".\ZSharpParser.g4" />
