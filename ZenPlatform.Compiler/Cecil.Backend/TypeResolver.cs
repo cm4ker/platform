@@ -44,7 +44,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
             }
             else if (!type.IsSystem && !type.IsArray && type is ZStructureType st)
             {
-                if (type.Namespace is null)
+                if (type is null)
                 {
                     TypeReference tr = null;
                     foreach (var ns in _cu.Namespaces)
@@ -55,11 +55,9 @@ namespace ZenPlatform.Compiler.Cecil.Backend
 
                     if (tr is null)
                         throw new Exception("Type not found: " + tr.Name);
-
-                    st.SetNamespace(tr.Namespace);
                 }
 
-                return Resolve(type.Name, type.Namespace);
+                return Resolve(type.Name);
             }
             else if (type.IsArray && type is ZArray a)
             {

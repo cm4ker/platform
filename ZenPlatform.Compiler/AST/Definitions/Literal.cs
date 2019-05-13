@@ -1,9 +1,11 @@
+using ZenPlatform.Compiler.AST.Infrastructure;
+
 namespace ZenPlatform.Compiler.AST.Definitions
 {
     /// <summary>
     /// Представляет символ литера
     /// </summary>
-    public class Literal : Infrastructure.Expression
+    public class Literal : Expression
     {
         /// <summary>
         /// Создать литерал

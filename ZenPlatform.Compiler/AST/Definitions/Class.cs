@@ -8,7 +8,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Create a module object.
         /// </summary>
-        public Class(TypeBody typeBody, string name)
+        public Class(ILineInfo li, TypeBody typeBody, string name) : base(li)
         {
             TypeBody = typeBody;
             Name = name;

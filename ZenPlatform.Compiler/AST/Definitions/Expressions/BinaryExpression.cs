@@ -5,14 +5,14 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expressions
     /// <summary>
     /// Binary expression
     /// </summary>
-    public class BinaryExpression : Infrastructure.Expression
+    public class BinaryExpression : Expression
     {
-        public Infrastructure.Expression Right = null;
-        public Infrastructure.Expression Left = null;
+        public Expression Right;
+        public Expression Left;
         public BinaryOperatorType BinaryOperatorType;
 
-        public BinaryExpression(Infrastructure.Expression right, Infrastructure.Expression left,
-            BinaryOperatorType binaryOperatorType)
+        public BinaryExpression(ILineInfo li, Expression right, Expression left,
+            BinaryOperatorType binaryOperatorType) : base(li)
         {
             Right = right;
             Left = left;

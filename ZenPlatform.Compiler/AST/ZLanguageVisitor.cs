@@ -1,17 +1,14 @@
-using System;
+    using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Expression;
+using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Extension;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using BinaryExpression = ZenPlatform.Compiler.AST.Definitions.Expressions.BinaryExpression;
 
 namespace ZenPlatform.Compiler.AST
 {
@@ -24,25 +21,14 @@ namespace ZenPlatform.Compiler.AST
             _syntaxStack = new SyntaxStack();
         }
 
-        private void SetLineInfo(IToken token)
-        {
-            SetLineInfo(_syntaxStack.PeekAst(), token);
-        }
-
-        private void SetLineInfo(AstNode node, IToken token)
-        {
-            node.Line = token.Line;
-            node.Position = token.Column;
-        }
 
         public override object VisitEntryPoint(ZSharpParser.EntryPointContext context)
         {
             _syntaxStack.Clear();
 
-            var cu = new CompilationUnit();
+            var cu = new CompilationUnit(context.start.ToLineInfo());
             _syntaxStack.Push(cu);
 
-            SetLineInfo(context.start);
 
             base.VisitEntryPoint(context);
 
@@ -61,8 +47,9 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitModuleDefinition(context);
 
-            Module result = new Module(_syntaxStack.PopTypeBody(), context.IDENTIFIER().GetText());
-            SetLineInfo(result, context.start);
+            Module result = new Module(context.start.ToLineInfo(), _syntaxStack.PopTypeBody(),
+                context.IDENTIFIER().GetText());
+
             _syntaxStack.PeekType<CompilationUnit>().TypeEntities.Add(result);
 
             return result;
@@ -72,9 +59,9 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitTypeDefinition(context);
 
-            var result = new Class(_syntaxStack.PopTypeBody(), context.IDENTIFIER().GetText());
+            var result = new Class(context.start.ToLineInfo(), _syntaxStack.PopTypeBody(),
+                context.IDENTIFIER().GetText());
 
-            SetLineInfo(result, context.start);
             _syntaxStack.PeekType<CompilationUnit>().TypeEntities.Add(result);
 
             return result;
@@ -93,8 +80,6 @@ namespace ZenPlatform.Compiler.AST
             else
                 result = new TypeBody((MemberCollection) _syntaxStack.Pop());
 
-            SetLineInfo(result, context.start);
-
             _syntaxStack.Push(result);
             return result;
         }
@@ -108,9 +93,8 @@ namespace ZenPlatform.Compiler.AST
 
         public override object VisitStructureType(ZSharpParser.StructureTypeContext context)
         {
-            var result = new ZStructureType(context.GetText());
+            var result = new ZStructureType(context.start.ToLineInfo(), context.GetText());
 
-            SetLineInfo(result, context.start);
             _syntaxStack.Push(result);
             return result;
         }
@@ -125,8 +109,6 @@ namespace ZenPlatform.Compiler.AST
             else if (context.CHAR() != null) result = new ZCharacter();
             else if (context.VOID() != null) result = new ZVoid();
 
-            SetLineInfo(result, context.start);
-
             if (result == null)
                 throw new Exception("Unknown primitive type");
             _syntaxStack.Push(result);
@@ -139,8 +121,6 @@ namespace ZenPlatform.Compiler.AST
             base.VisitArrayType(context);
 
             var result = new ZArray(_syntaxStack.PopType());
-
-            SetLineInfo(result, context.start);
 
             _syntaxStack.Push(result);
 
@@ -177,8 +157,6 @@ namespace ZenPlatform.Compiler.AST
             if (result == null)
                 throw new Exception("Unknown literal");
 
-            SetLineInfo(result, context.start);
-
             _syntaxStack.Push(result);
 
             return result;
@@ -190,12 +168,11 @@ namespace ZenPlatform.Compiler.AST
 
             AstNode result;
             if (context.expression() == null)
-                result = new Variable(null, context.IDENTIFIER().GetText(), _syntaxStack.PopType());
-            else
-                result = new Variable(_syntaxStack.Pop(), context.IDENTIFIER().GetText(),
+                result = new Variable(context.start.ToLineInfo(), null, context.IDENTIFIER().GetText(),
                     _syntaxStack.PopType());
-
-            SetLineInfo(result, context.start);
+            else
+                result = new Variable(context.start.ToLineInfo(), _syntaxStack.Pop(), context.IDENTIFIER().GetText(),
+                    _syntaxStack.PopType());
 
             _syntaxStack.Push(result);
             return result;
@@ -205,9 +182,8 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitCastExpression(context);
 
-            var result = new CastExpression(_syntaxStack.PopExpression(), _syntaxStack.PopType());
-
-            SetLineInfo(result, context.start);
+            var result = new CastExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                _syntaxStack.PopType());
 
             _syntaxStack.Push(result);
 
@@ -230,8 +206,7 @@ namespace ZenPlatform.Compiler.AST
             var type = _syntaxStack.PopType();
             var funcName = context.IDENTIFIER().GetText();
 
-            result = new Function(body, pc, funcName, type);
-            SetLineInfo(result, context.start);
+            result = new Function(context.start.ToLineInfo(), body, pc, funcName, type);
 
             _syntaxStack.PeekCollection().Add(result);
 
@@ -261,9 +236,8 @@ namespace ZenPlatform.Compiler.AST
 
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
 
-            var parameter = new Parameter(context.IDENTIFIER().GetText(), _syntaxStack.PopType(), passMethod);
-
-            SetLineInfo(parameter, context.start);
+            var parameter = new Parameter(context.start.ToLineInfo(), context.IDENTIFIER().GetText(),
+                _syntaxStack.PopType(), passMethod);
 
             paramList.Add(parameter);
 
@@ -284,8 +258,8 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitArgument(context);
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
-            var result = new Argument(_syntaxStack.PopExpression(), passMethod);
-            SetLineInfo(result, context.start);
+            var result = new Argument(context.start.ToLineInfo(), _syntaxStack.PopExpression(), passMethod);
+
             _syntaxStack.PeekCollection().Add(result);
             return result;
         }
@@ -294,9 +268,9 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitFunctionCall(context);
 
-            var result = new CallStatement((ArgumentCollection) _syntaxStack.Pop(), _syntaxStack.PopString());
+            var result = new CallStatement(context.start.ToLineInfo(), (ArgumentCollection) _syntaxStack.Pop(),
+                _syntaxStack.PopString());
 
-            SetLineInfo(result, context.start);
 
             _syntaxStack.Push(result);
 
@@ -310,8 +284,8 @@ namespace ZenPlatform.Compiler.AST
 
             var callStatement = (CallStatement) _syntaxStack.Pop();
 
-            var result = new Call(callStatement.Arguments, callStatement.Name);
-            SetLineInfo(result, context.start);
+            var result = new Call(context.start.ToLineInfo(), callStatement.Arguments, callStatement.Name);
+
             _syntaxStack.Push(result);
             return null;
         }
@@ -334,10 +308,9 @@ namespace ZenPlatform.Compiler.AST
                 if (context.PLUS() != null) opType = BinaryOperatorType.Add;
                 if (context.MINUS() != null) opType = BinaryOperatorType.Subtract;
 
-                var result = new BinaryExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression(),
+                var result = new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression(),
                     opType);
-
-                SetLineInfo(result, context.start);
 
                 _syntaxStack.Push(result);
             }
@@ -353,13 +326,12 @@ namespace ZenPlatform.Compiler.AST
             if (context.name() != null)
             {
                 var identifier = _syntaxStack.PopString().Split('.');
-
+                var li = context.name().start.ToLineInfo();
                 //Если мы пытаемся получить какое-то свойство у переменной, то мы обязательно должны пометить это как PropertyExpression
                 // Похожая механика реализована и в FunctionCall
                 if (identifier.Length > 1)
                 {
-                    _syntaxStack.Push(new Name(identifier[0]));
-                    SetLineInfo(context.start);
+                    _syntaxStack.Push(new Name(li, identifier[0]));
 
                     foreach (var str in identifier.ToList().GetRange(1, identifier.Length - 1))
                     {
@@ -368,8 +340,7 @@ namespace ZenPlatform.Compiler.AST
                 }
                 else
                 {
-                    _syntaxStack.Push(new Name(identifier[0]));
-                    SetLineInfo(context.start);
+                    _syntaxStack.Push(new Name(li, identifier[0]));
                 }
             }
 
@@ -380,19 +351,20 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitExpressionUnary(context);
 
+            var li = context.start.ToLineInfo();
+
             if (context.PLUS() != null)
-                _syntaxStack.Push(new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(),
+                _syntaxStack.Push(new LogicalOrArithmeticExpression(li, _syntaxStack.PopExpression(),
                     UnaryOperatorType.Positive));
             if (context.MINUS() != null)
-                _syntaxStack.Push(new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(),
+                _syntaxStack.Push(new LogicalOrArithmeticExpression(li, _syntaxStack.PopExpression(),
                     UnaryOperatorType.Negative));
             if (context.BANG() != null)
                 _syntaxStack.Push(
-                    new LogicalOrArithmeticExpression(_syntaxStack.PopExpression(), UnaryOperatorType.Not));
+                    new LogicalOrArithmeticExpression(li, _syntaxStack.PopExpression(), UnaryOperatorType.Not));
             if (context.indexerExpression != null)
-                _syntaxStack.Push(new IndexerExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression()));
-
-            SetLineInfo(context.start);
+                _syntaxStack.Push(new IndexerExpression(li, _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression()));
 
             return null;
         }
@@ -408,9 +380,8 @@ namespace ZenPlatform.Compiler.AST
                 if (context.DIV() != null) opType = BinaryOperatorType.Divide;
                 if (context.STAR() != null) opType = BinaryOperatorType.Multiply;
 
-                _syntaxStack.Push(new BinaryExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression(),
-                    opType));
-                SetLineInfo(context.start);
+                _syntaxStack.Push(new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression(), opType));
             }
 
             return null;
@@ -424,14 +395,15 @@ namespace ZenPlatform.Compiler.AST
             var extensionObj = _syntaxStack.Pop();
             if (extensionObj is InstructionsBodyNode ib)
             {
-                result = new Extension(_syntaxStack.PopString(), ExtensionKind.Instructions);
+                result = new Extension(context.start.ToLineInfo(), _syntaxStack.PopString(),
+                    ExtensionKind.Instructions);
                 result.InstructionsBody = ib;
             }
             else
             {
                 var path = _syntaxStack.PopString();
                 var extensionName = path.Split('.')[0];
-                result = new Extension(extensionName);
+                result = new Extension(context.start.ToLineInfo(), extensionName);
                 result.Path = path;
             }
 
@@ -469,10 +441,9 @@ namespace ZenPlatform.Compiler.AST
                 if (context.OP_GT() != null) opType = BinaryOperatorType.GraterOrEqualTo;
                 if (context.OP_LE() != null) opType = BinaryOperatorType.LessOrEqualTo;
 
-                _syntaxStack.Push(new BinaryExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression(),
+                _syntaxStack.Push(new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression(),
                     opType));
-
-                SetLineInfo(context.start);
             }
 
             return null;
@@ -485,13 +456,13 @@ namespace ZenPlatform.Compiler.AST
             if (context.expressionBinary() != null)
             {
                 if (context.OP_AND() != null)
-                    _syntaxStack.Push(new BinaryExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression(),
+                    _syntaxStack.Push(new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                        _syntaxStack.PopExpression(),
                         BinaryOperatorType.And));
                 if (context.OP_OR() != null)
-                    _syntaxStack.Push(new BinaryExpression(_syntaxStack.PopExpression(), _syntaxStack.PopExpression(),
+                    _syntaxStack.Push(new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                        _syntaxStack.PopExpression(),
                         BinaryOperatorType.Or));
-
-                SetLineInfo(context.start);
             }
 
             return null;
@@ -504,22 +475,23 @@ namespace ZenPlatform.Compiler.AST
             Statement result;
 
             if (context.indexExpression != null)
-                result = new Assignment(_syntaxStack.PopExpression(), _syntaxStack.PopExpression(),
+                result = new Assignment(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression(),
                     _syntaxStack.PopString());
             else if (context.OP_INC() != null)
             {
-                result = new PostIncrementStatement(new Name(_syntaxStack.PopString()));
+                result = new PostIncrementStatement(context.start.ToLineInfo(), _syntaxStack.PopString());
             }
             else if (context.OP_DEC() != null)
             {
-                result = new PostDecrementStatement(new Name(_syntaxStack.PopString()));
+                result = new PostDecrementStatement(context.start.ToLineInfo(), _syntaxStack.PopString());
             }
             else
-                result = new Assignment(_syntaxStack.PopExpression(), null, _syntaxStack.PopString());
+                result = new Assignment(context.start.ToLineInfo(), _syntaxStack.PopExpression(), null,
+                    _syntaxStack.PopString());
 
             _syntaxStack.Push(result);
 
-            SetLineInfo(result, context.start);
             return result;
         }
 
@@ -532,11 +504,10 @@ namespace ZenPlatform.Compiler.AST
             if (context.RETURN() != null)
             {
                 if (context.returnExpression == null)
-                    result = new Return(null);
+                    result = new Return(context.start.ToLineInfo(), null);
                 else
-                    result = new Return(_syntaxStack.PopExpression());
+                    result = new Return(context.start.ToLineInfo(), _syntaxStack.PopExpression());
 
-                SetLineInfo(result, context.start);
                 _syntaxStack.PeekType<IList>().Add(result);
             }
             else
@@ -578,11 +549,10 @@ namespace ZenPlatform.Compiler.AST
                 @else = _syntaxStack.PopInstructionsBody();
             }
 
-            var result = new If(@else, _syntaxStack.PopInstructionsBody(), _syntaxStack.PopExpression());
+            var result = new If(context.start.ToLineInfo(), @else, _syntaxStack.PopInstructionsBody(),
+                _syntaxStack.PopExpression());
 
             _syntaxStack.Push(result);
-
-            SetLineInfo(result, context.start);
 
             return result;
         }
@@ -591,11 +561,11 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitForStatement(context);
 
-            var result = new For(_syntaxStack.PopInstructionsBody(), _syntaxStack.PopStatement(),
+            var result = new For(context.start.ToLineInfo(), _syntaxStack.PopInstructionsBody(),
+                _syntaxStack.PopStatement(),
                 _syntaxStack.PopExpression(), _syntaxStack.PopStatement());
 
             _syntaxStack.Push(result);
-            SetLineInfo(result, context.start);
 
             return result;
         }
@@ -604,9 +574,10 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitWhileStatement(context);
 
-            var result = new While(_syntaxStack.PopInstructionsBody(), _syntaxStack.PopExpression());
+            var result = new While(context.start.ToLineInfo(), _syntaxStack.PopInstructionsBody(),
+                _syntaxStack.PopExpression());
             _syntaxStack.Push(result);
-            SetLineInfo(result, context.start);
+
             return result;
         }
     }

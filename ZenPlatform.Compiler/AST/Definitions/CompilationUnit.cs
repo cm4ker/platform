@@ -7,7 +7,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// </summary>
     public class CompilationUnit : AstNode
     {
-        public CompilationUnit()
+        public CompilationUnit(ILineInfo li) : base(li)
         {
             TypeEntities = new List<TypeEntity>();
             Namespaces = new HashSet<string>();

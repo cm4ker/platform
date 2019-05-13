@@ -6,7 +6,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Symbols
 {
     public class SymbolTable
     {
-        private SymbolTable _parent = null;
+        private SymbolTable _parent;
         private Hashtable _hashtable = new Hashtable();
 
         public SymbolTable()
@@ -18,22 +18,12 @@ namespace ZenPlatform.Compiler.AST.Definitions.Symbols
             _parent = parent;
         }
 
-        public Symbol Add(Variable variable)
+        public Symbol Add(IAstSymbol astSymbol)
         {
-            return Add(variable.Name, SymbolType.Variable, variable, null);
+            return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol, null);
         }
 
-        public Symbol Add(Function function)
-        {
-            return Add(function.Name, SymbolType.Function, function, null);
-        }
-
-        public Symbol Add(Structure structure)
-        {
-            return Add(structure.Name, SymbolType.Structure, structure, null);
-        }
-
-        public Symbol Add(string name, SymbolType type, object syntaxObject, object codeObject)
+        public Symbol Add(string name, SymbolType type, IAstSymbol syntaxObject, object codeObject)
         {
             string prefix = PrefixFromType(type);
 
@@ -44,6 +34,21 @@ namespace ZenPlatform.Compiler.AST.Definitions.Symbols
             _hashtable.Add(prefix + name, symbol);
 
             return symbol;
+        }
+
+        public Symbol ConnectCodeObject(IAstSymbol v, object codeObject)
+        {
+            var result = Find(v.Name, v.SymbolType);
+            if (result == null)
+            {
+                return Add(v.Name, v.SymbolType, v, codeObject);
+            }
+            else
+            {
+                result.CodeObject = codeObject;
+            }
+
+            return result;
         }
 
         public bool Contains(string name, SymbolType type)
@@ -57,23 +62,26 @@ namespace ZenPlatform.Compiler.AST.Definitions.Symbols
 
             if (_hashtable.Contains(prefix + name))
                 return (Symbol) _hashtable[prefix + name];
-            else if (_parent != null)
+            if (_parent != null)
             {
                 return _parent.Find(name, type);
             }
-            else
-                return null;
+
+            return null;
         }
-        
-        
+
+        public void Clear()
+        {
+            _hashtable.Clear();
+        }
 
         private string PrefixFromType(SymbolType type)
         {
             if (type == SymbolType.Function)
                 return "f_";
-            else if (type == SymbolType.Structure)
+            if (type == SymbolType.Structure)
                 return "s_";
-            else if (type == SymbolType.Variable)
+            if (type == SymbolType.Variable)
                 return "v_";
             return "";
         }

@@ -1,7 +1,7 @@
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Expression;
+using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
@@ -27,7 +27,8 @@ namespace ZenPlatform.Compiler.Generation
                     // Ugly hack.
                     goto Hack;
                 }
-                else if (call.Arguments.Count != function.Parameters.Count)
+
+                if (call.Arguments.Count != function.Parameters.Count)
                 {
                     Error("Argument mismatch [" + call.Name + "]");
                 }
@@ -108,33 +109,6 @@ namespace ZenPlatform.Compiler.Generation
 
                 Hack:
                 il.Call(((MethodDefinition) symbol.CodeObject));
-            }
-            else
-            {
-//                if (call.Name == "Read")
-//                {
-//                    il.Emit(OpCodes.Ldstr, "Input > ");
-//                    MethodInfo write = System.Type.GetType("System.Console")
-//                        .GetMethod("Write", new System.Type[] {typeof(string)});
-//                    il.EmitCall(OpCodes.Call, write, null);
-//
-//                    MethodInfo read = System.Type.GetType("System.Console").GetMethod("ReadLine");
-//                    MethodInfo parse = System.Type.GetType("System.Int32")
-//                        .GetMethod("Parse", new System.Type[] {typeof(string)});
-//                    il.EmitCall(OpCodes.Call, read, null);
-//                    il.EmitCall(OpCodes.Call, parse, null);
-//                }
-//                else if (call.Name == "Write")
-//                {
-//                    EmitExpression(il, call.Arguments[0].Value, symbolTable);
-//                    MethodInfo write = System.Type.GetType("System.Console")
-//                        .GetMethod("WriteLine", new System.Type[] {typeof(int)});
-//                    il.EmitCall(OpCodes.Call, write, null);
-//                }
-//                else
-//                {
-//                    Error("Unknown function name. [" + call.Name + "]");
-//                }
             }
         }
     }

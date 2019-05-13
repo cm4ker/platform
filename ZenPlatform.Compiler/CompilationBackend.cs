@@ -1,8 +1,6 @@
 using System.IO;
-using System.Threading;
 using Antlr4.Runtime;
 using Mono.Cecil;
-using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Generation;

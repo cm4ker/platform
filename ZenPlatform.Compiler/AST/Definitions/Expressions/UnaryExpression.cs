@@ -1,16 +1,16 @@
-using System;
+using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST.Infrastructure;
 
-namespace ZenPlatform.Compiler.AST.Definitions.Expression
+namespace ZenPlatform.Compiler.AST.Definitions.Expressions
 {
-    public abstract class UnaryExpression : Infrastructure.Expression
+    public abstract class UnaryExpression : Expression
     {
-        protected UnaryExpression(Infrastructure.Expression value)
+        protected UnaryExpression(ILineInfo li, Expression value) : base(li)
         {
             Value = value;
         }
 
-        public Infrastructure.Expression Value { get; }
+        public Expression Value { get; }
 
         public override ZType Type => Value.Type;
     }
@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expression
     {
         public ZType CastType { get; }
 
-        public CastExpression(Infrastructure.Expression value, ZType castType) : base(value)
+        public CastExpression(ILineInfo token, Expression value, ZType castType) : base(token, value)
         {
             CastType = castType;
         }
@@ -30,10 +30,10 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expression
 
     public class IndexerExpression : UnaryExpression
     {
-        public Infrastructure.Expression Indexer { get; }
+        public Expression Indexer { get; }
 
 
-        public IndexerExpression(Infrastructure.Expression indexer, Infrastructure.Expression value) : base(value)
+        public IndexerExpression(ILineInfo token, Expression indexer, Expression value) : base(token, value)
         {
             Indexer = indexer;
         }
@@ -43,7 +43,8 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expression
     {
         public UnaryOperatorType Type { get; }
 
-        public LogicalOrArithmeticExpression(Infrastructure.Expression value, UnaryOperatorType type) : base(value)
+        public LogicalOrArithmeticExpression(ILineInfo token, Expression value, UnaryOperatorType type) :
+            base(token, value)
         {
             Type = type;
         }

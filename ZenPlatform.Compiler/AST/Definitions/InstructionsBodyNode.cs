@@ -10,14 +10,14 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// </summary>
     public class InstructionsBodyNode : AstNode
     {
-        public StatementCollection Statements = null;
+        public StatementCollection Statements;
 
         public SymbolTable SymbolTable = null;
 
         /// <summary>
         /// Создать блок из коллекции инструкций
         /// </summary>
-        public InstructionsBodyNode(StatementCollection statements)
+        public InstructionsBodyNode(StatementCollection statements) : base(null)
         {
             if (statements == null)
                 return;
@@ -36,11 +36,11 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// </summary>
     public class TypeBody : AstNode
     {
-        public FunctionCollection Functions = null;
+        public FunctionCollection Functions;
 
         public SymbolTable SymbolTable = null;
 
-        public TypeBody(MemberCollection members)
+        public TypeBody(MemberCollection members) : base(null)
         {
             if (members == null)
                 return;

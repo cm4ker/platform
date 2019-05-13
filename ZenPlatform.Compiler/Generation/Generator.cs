@@ -4,13 +4,14 @@ using System.Globalization;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Cecil.Backend;
+using TypeResolver = ZenPlatform.Compiler.Cecil.Backend.TypeResolver;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -18,9 +19,9 @@ namespace ZenPlatform.Compiler.Generation
     {
         private readonly CompilationUnit _compilationUnit;
         private readonly AssemblyDefinition _asm;
-        private ModuleDefinition _dllModule = null;
+        private ModuleDefinition _dllModule;
 
-        private SymbolTable _typeSymbols = null;
+        private SymbolTable _typeSymbols;
         private SymbolTable _functions = new SymbolTable();
 
         private TypeResolver _typeResolver;
@@ -31,6 +32,10 @@ namespace ZenPlatform.Compiler.Generation
         public Generator(CompilationUnit compilationUnit, AssemblyDefinition asm)
         {
             _compilationUnit = compilationUnit;
+
+            AstSymbolVisitor asv = new AstSymbolVisitor();
+            asv.Visit(_compilationUnit);
+
             _asm = asm;
 
             _typeResolver = new TypeResolver(compilationUnit, _asm);
@@ -452,7 +457,7 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        private void EmitConvCode(Emitter e, AST.Definitions.ZType type)
+        private void EmitConvCode(Emitter e, ZType type)
         {
             switch (type)
             {
@@ -470,17 +475,17 @@ namespace ZenPlatform.Compiler.Generation
             throw new Exception("Converting to this value not supported");
         }
 
-        private void EmitIncrement(Emitter e, AST.Definitions.ZType type)
+        private void EmitIncrement(Emitter e, ZType type)
         {
             EmitAddValue(e, type, 1);
         }
 
-        private void EmitDecrement(Emitter e, AST.Definitions.ZType type)
+        private void EmitDecrement(Emitter e, ZType type)
         {
             EmitAddValue(e, type, -1);
         }
 
-        private void EmitAddValue(Emitter e, AST.Definitions.ZType type, int value)
+        private void EmitAddValue(Emitter e, ZType type, int value)
         {
             switch (type)
             {

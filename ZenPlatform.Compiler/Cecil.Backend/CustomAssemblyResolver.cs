@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Reflection;
 using Mono.Cecil;
 
 namespace ZenPlatform.Compiler.Cecil.Backend
@@ -10,7 +8,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class CustomAssemblyResolver : IAssemblyResolver
     {
-        private static readonly string BaseDirectory = System.AppContext.BaseDirectory;
+        private static readonly string BaseDirectory = AppContext.BaseDirectory;
         private static readonly string RuntimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
 
         private static readonly string NetstandardDirectory =
@@ -70,7 +68,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
                     if (File.Exists(dllPath))
                     {
                         def = AssemblyDefinition.ReadAssembly(dllPath);
-                        this.libraries.Add(libname, def);
+                        libraries.Add(libname, def);
 
                         return def;
                     }
@@ -87,7 +85,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
             if (!disposing)
                 return;
 
-            foreach (var def in this.libraries.Values)
+            foreach (var def in libraries.Values)
             {
                 def.Dispose();
             }

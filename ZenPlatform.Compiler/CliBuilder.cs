@@ -22,19 +22,19 @@ namespace ZenPlatform.Compiler
 
         private static void RegisterCompileCommand(CommandLineApplication app)
         {
-            app.Command("compile", (conf) =>
+            app.Command("compile", conf =>
             {
                 conf.HelpOption(true);
 
                 var fileArg = conf.Argument("file", "File for compilation", true);
                 var outArg = conf.Argument("out", "Output path", true);
-                var assemblyName = conf.Argument("asmName", "Name of assembly", false);
+                var assemblyName = conf.Argument("asmName", "Name of assembly");
 
 
                 conf.OnExecute(() =>
                 {
                     CompilationBackend cb = new CompilationBackend();
-                    var ad = Mono.Cecil.AssemblyDefinition.CreateAssembly(
+                    var ad = AssemblyDefinition.CreateAssembly(
                         new AssemblyNameDefinition(assemblyName.Name, Version.Parse("1.0.0.0")), assemblyName.Value,
                         ModuleKind.Dll);
 
