@@ -27,7 +27,7 @@ namespace ZenPlatform.Compiler.AST
         }
     }
 
-    public class AstNode : ILineInfo, IChildItem<AstNode>
+    public class AstNode : ILineInfo, IChildItem<AstNode>, IAstNode
     {
         public AstNode(ILineInfo lineInfo)
         {

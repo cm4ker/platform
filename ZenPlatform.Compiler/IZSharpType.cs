@@ -1,17 +1,44 @@
+using System;
+using Mono.Cecil;
 using ZenPlatform.Compiler.Cecil.Backend;
 
 namespace ZenPlatform.Compiler
 {
-    public interface ITypeBuilder
+    public interface IType : IAstNode
     {
-        IPropertyBuilder CreateProperty(string name);
+        string Name { get; set; }
+
+        bool IsArray { get; }
     }
 
-    public interface IPropertyBuilder
+    public class UnresolvedType : IType
     {
-        Emitter GetMethodEmitter { get; }
-        Emitter SetMethodEmitter { get; }
+        public UnresolvedType(string name)
+        {
+            Name = name;
+        }
 
-        string Name { get; }
+        public string Name { get; set; }
+        public bool IsArray => throw new NotImplementedException();
+    }
+
+    public class CecilType : IType
+    {
+        private readonly TypeReference _tr;
+        private readonly TypeSystem _typeSystem;
+
+        public CecilType(TypeReference tr, TypeSystem typeSystem)
+        {
+            _tr = tr;
+            _typeSystem = typeSystem;
+        }
+
+        public string Name
+        {
+            get => _tr.Name;
+            set => throw new NotImplementedException();
+        }
+
+        public bool IsArray => _tr.IsArray;
     }
 }
