@@ -1,8 +1,5 @@
 using System.Diagnostics;
-using Antlr4.Runtime.Atn;
-using Mono.Cecil;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
@@ -34,7 +31,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
             }
         }
 
-        public bool VerifyExpression(SymbolTable symbolTable, Infrastructure.Expression expression)
+        public bool VerifyExpression(SymbolTable symbolTable, Expression expression)
         {
             //
             // Verify expression.
@@ -47,12 +44,12 @@ namespace ZenPlatform.Compiler.AST.Calculation
             }
             catch (VerifierException x)
             {
-                System.Diagnostics.Debug.WriteLine(x.Message);
+                Debug.WriteLine(x.Message);
                 return false;
             }
         }
 
-        public ZType GetExpressionType(SymbolTable symbolTable, Infrastructure.Expression expression)
+        public ZType GetExpressionType(SymbolTable symbolTable, Expression expression)
         {
             if (expression is UnaryExpression unary)
             {
@@ -119,7 +116,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
             // Integer operations.
             //
 
-            else if (leftType is ZInt && rightType is ZInt)
+            if (leftType is ZInt && rightType is ZInt)
             {
                 switch (operatorType)
                 {
@@ -179,9 +176,9 @@ namespace ZenPlatform.Compiler.AST.Calculation
                 if (statement is Variable)
                 {
                     Variable variable = (Variable) statement;
-                    if (variable.Value is Infrastructure.Expression)
+                    if (variable.Value is Expression)
                     {
-                        if (VerifyExpression(body.SymbolTable, (Infrastructure.Expression) variable.Value))
+                        if (VerifyExpression(body.SymbolTable, (Expression) variable.Value))
                             Debug.WriteLine("All right");
                         else
                             Debug.WriteLine("Smth wrong");

@@ -1,3 +1,4 @@
+using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST.Definitions;
 
 namespace ZenPlatform.Compiler.AST.Infrastructure
@@ -8,5 +9,10 @@ namespace ZenPlatform.Compiler.AST.Infrastructure
     public abstract class Expression : AstNode
     {
         public virtual ZType Type { get; set; }
+
+
+        protected Expression(ILineInfo li) : base(li)
+        {
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Argument expression.
         /// </summary>
-        public Infrastructure.Expression Value;
+        public Expression Value;
 
         /// <summary>
         /// Argument pass method.
@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Create argument object.
         /// </summary>
-        public Argument(Infrastructure.Expression value, PassMethod passMethod)
+        public Argument(ILineInfo lineInfo, Expression value, PassMethod passMethod) : base(lineInfo)
         {
             Value = value;
             PassMethod = passMethod;

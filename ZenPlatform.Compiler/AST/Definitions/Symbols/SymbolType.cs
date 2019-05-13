@@ -7,4 +7,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Symbols
         Structure,
         Variable
     }
+
+
+    public interface IAstSymbol
+    {
+        string Name { get; set; }
+        SymbolType SymbolType { get; }
+    }
 }

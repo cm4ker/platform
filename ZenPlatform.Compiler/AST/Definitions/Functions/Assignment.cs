@@ -1,14 +1,15 @@
 using ZenPlatform.Compiler.AST.Definitions.Statements;
+using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Functions
 {
     public class Assignment : Statement
     {
         public string Name;
-        public Infrastructure.Expression Value;
-        public Infrastructure.Expression Index;
+        public Expression Value;
+        public Expression Index;
 
-        public Assignment(Infrastructure.Expression value, Infrastructure.Expression index, string name)
+        public Assignment(ILineInfo lineInfo, Expression value, Expression index, string name) : base(lineInfo)
         {
             Value = value;
             Name = name;
@@ -23,11 +24,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
     {
         public Name Name { get; }
 
-        public PostIncrementStatement(string name) : this(new Name(name))
+        public PostIncrementStatement(ILineInfo li, string name) : this(li, new Name(li, name))
         {
         }
 
-        public PostIncrementStatement(Name name)
+        public PostIncrementStatement(ILineInfo lineInfo, Name name) : base(lineInfo)
         {
             Name = name;
         }
@@ -37,12 +38,12 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
     {
         public Name Name { get; }
 
-        public PostDecrementStatement(string name) : this(new Name(name))
+        public PostDecrementStatement(ILineInfo li, string name) : this(li, new Name(li, name))
         {
         }
 
 
-        public PostDecrementStatement(Name name)
+        public PostDecrementStatement(ILineInfo lineInfo, Name name) : base(lineInfo)
         {
             Name = name;
         }

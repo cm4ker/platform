@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.AST.Definitions.Statements;
+using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Functions
 {
@@ -10,13 +11,13 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Return value;
         /// </summary>
-        public Infrastructure.Expression Value;
+        public Expression Value;
 
         /// <summary>
         /// Create return object.
         /// </summary>
         /// <param name="value"></param>
-        public Return(Infrastructure.Expression value)
+        public Return(ILineInfo li, Expression value) : base(li)
         {
             Value = value;
         }

@@ -1,10 +1,5 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Mono.Collections.Generic;
-using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Cecil.Backend
 {

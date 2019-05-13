@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Extension
 {
     /// <summary>
     /// Отвечает за расширение языка через знак $
     /// </summary>
-    public class Extension : Infrastructure.Expression
+    public class Extension : Expression
     {
         public string ExtensionName;
 
@@ -15,7 +15,8 @@ namespace ZenPlatform.Compiler.AST.Definitions.Extension
 
         public ExtensionKind Kind;
 
-        public Extension(string extensionName, ExtensionKind kind = ExtensionKind.CallOrAssign)
+        public Extension(ILineInfo lineInfo, string extensionName, ExtensionKind kind = ExtensionKind.CallOrAssign) :
+            base(lineInfo)
         {
             ExtensionName = extensionName;
             Kind = kind;

@@ -1,5 +1,6 @@
 using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
+using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Functions
@@ -7,13 +8,8 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
     /// <summary>
     /// Describes a function.
     /// </summary>
-    public class Function : Member
+    public class Function : Member, IAstSymbol
     {
-        /// <summary>
-        /// Function name.
-        /// </summary>
-        public string Name;
-
         /// <summary>
         /// Function body.
         /// </summary>
@@ -37,12 +33,16 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Creates a function object.
         /// </summary>
-        public Function(InstructionsBodyNode instructionsBody, ParameterCollection parameters, string name, ZType type)
+        public Function(ILineInfo li, InstructionsBodyNode instructionsBody, ParameterCollection parameters,
+            string name, ZType type) : base(li)
         {
             InstructionsBody = instructionsBody;
             Parameters = parameters;
             Name = name;
             Type = type;
         }
+
+        public string Name { get; set; }
+        public SymbolType SymbolType => SymbolType.Function;
     }
 }

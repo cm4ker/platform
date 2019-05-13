@@ -1,22 +1,19 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Shared;
 
-
 namespace ZenPlatform.Compiler.AST
 {
-    public class AstVisitor
+    public abstract class AstVisitorBase
     {
         private Stack<AstNode> _visitStack;
 
-        public AstVisitor()
+        public AstVisitorBase()
         {
             _visitStack = new Stack<AstNode>();
         }
@@ -60,66 +57,66 @@ namespace ZenPlatform.Compiler.AST
             _visitStack.Pop();
         }
 
-        private void VisitLiteral(Literal obj)
+        public virtual void VisitLiteral(Literal obj)
         {
         }
 
-        private void VisitIf(If obj)
+        public virtual void VisitIf(If obj)
         {
             Visit(obj.ElseInstructionsBody);
             Visit(obj.Condition);
             Visit(obj.IfInstructionsBody);
         }
 
-        private void VisitFieldExpression(FieldExpression obj)
+        public virtual void VisitFieldExpression(FieldExpression obj)
         {
             Visit(obj.Expression);
         }
 
-        private void VisitCastExpression(CastExpression obj)
+        public virtual void VisitCastExpression(CastExpression obj)
         {
             Visit(obj.Value);
         }
 
-        private void VisitBinaryExpression(BinaryExpression obj)
+        public virtual void VisitBinaryExpression(BinaryExpression obj)
         {
             Visit(obj.Left);
             Visit(obj.Right);
         }
 
-        private void VisitReturn(Return obj)
+        public virtual void VisitReturn(Return obj)
         {
             Visit(obj.Value);
         }
 
-        private void VisitAssigment(Assignment obj)
+        public virtual void VisitAssigment(Assignment obj)
         {
             Visit(obj.Value);
             Visit(obj.Index);
         }
 
-        private void VisitVariable(Variable obj)
+        public virtual void VisitVariable(Variable obj)
         {
             //Do nothing
         }
 
-        private void VisitInstructionsBody(InstructionsBodyNode obj)
+        public virtual void VisitInstructionsBody(InstructionsBodyNode obj)
         {
             obj.Statements.ForEach(Visit);
         }
 
-        private void VisitType(ZType obj)
+        public virtual void VisitType(ZType obj)
         {
         }
 
-        private void VisitFunction(Function obj)
+        public virtual void VisitFunction(Function obj)
         {
             obj.Parameters.ForEach(Visit);
             Visit(obj.Type);
             Visit(obj.InstructionsBody);
         }
 
-        private void VisitTypeBody(TypeBody obj)
+        public virtual void VisitTypeBody(TypeBody obj)
         {
             obj.Functions.ForEach(Visit);
         }
@@ -129,25 +126,32 @@ namespace ZenPlatform.Compiler.AST
             Visit(obj.TypeBody);
         }
 
-        private void VisitCallStatement(CallStatement obj)
+        public virtual void VisitCallStatement(CallStatement obj)
         {
         }
 
-        private void VisitCall(Call obj)
+        public virtual void VisitCall(Call obj)
         {
         }
 
-        private void VisitParameter(Parameter obj)
+        public virtual void VisitParameter(Parameter obj)
         {
+            Visit(obj.Type);
         }
 
-        private void VisitWhile(While obj)
+        public virtual void VisitWhile(While obj)
         {
             Visit(obj.InstructionsBody);
         }
 
         public virtual void VisitFor(For obj)
         {
+            Visit(obj.Initializer);
+            Visit(obj.Condition);
+            Visit(obj.Counter);
+
+
+            Visit(obj.InstructionsBody);
         }
 
         public virtual void VisitName(Name obj)
@@ -164,5 +168,67 @@ namespace ZenPlatform.Compiler.AST
         {
             cu.TypeEntities.ForEach(Visit);
         }
+    }
+
+    public class AstSymbolVisitor : AstVisitorBase
+    {
+        public override void VisitExpression(Expression e)
+        {
+            if (e.Type is null)
+                base.VisitExpression(e);
+        }
+
+        public override void VisitVariable(Variable obj)
+        {
+            if (obj.Parent is InstructionsBodyNode ibn)
+            {
+                ibn.SymbolTable.Add(obj);
+            }
+            else
+            {
+                throw new Exception($"Invalid register variable in scope {obj.Name}");
+            }
+        }
+
+        public override void VisitParameter(Parameter obj)
+        {
+            if (obj.Parent is Function f)
+            {
+                f.InstructionsBody.SymbolTable.Add(obj);
+            }
+            else
+            {
+                throw new Exception("Invalid register parameter in scope");
+            }
+        }
+
+        public override void VisitTypeBody(TypeBody obj)
+        {
+            obj.SymbolTable.Clear();
+            base.VisitTypeBody(obj);
+        }
+
+        public override void VisitFunction(Function obj)
+        {
+            obj.InstructionsBody.SymbolTable.Clear();
+            if (obj.Parent is TypeEntity te)
+            {
+                te.TypeBody.SymbolTable.Add(obj);
+            }
+            else
+            {
+                throw new Exception("Invalid register function in scope");
+            }
+
+            base.VisitFunction(obj);
+        }
+    }
+
+
+    /// <summary>
+    /// Визитор для вычисления типа
+    /// </summary>
+    public class AstTypeCalculationVisitor : AstVisitorBase
+    {
     }
 }

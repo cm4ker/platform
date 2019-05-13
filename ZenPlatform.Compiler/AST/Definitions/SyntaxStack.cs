@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
+using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -85,9 +86,9 @@ namespace ZenPlatform.Compiler.AST.Definitions
             return (TypeBody) internalStack.Pop();
         }
 
-        public Infrastructure.Expression PopExpression()
+        public Expression PopExpression()
         {
-            return (Infrastructure.Expression) internalStack.Pop();
+            return (Expression) internalStack.Pop();
         }
 
         public T PeekType<T>()

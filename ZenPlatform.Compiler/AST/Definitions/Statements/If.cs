@@ -1,12 +1,16 @@
+using ZenPlatform.Compiler.AST.Infrastructure;
+
 namespace ZenPlatform.Compiler.AST.Definitions.Statements
 {
     public class If : Statement
     {
-        public Infrastructure.Expression Condition = null;
-        public InstructionsBodyNode IfInstructionsBody = null;
-        public InstructionsBodyNode ElseInstructionsBody = null;
+        public Expression Condition;
+        public InstructionsBodyNode IfInstructionsBody;
+        public InstructionsBodyNode ElseInstructionsBody;
 
-        public If(InstructionsBodyNode elseInstructionsBody, InstructionsBodyNode ifInstructionsBody, Infrastructure.Expression condition)
+        public If(ILineInfo li, InstructionsBodyNode elseInstructionsBody, InstructionsBodyNode ifInstructionsBody,
+            Expression condition)
+            : base(li)
         {
             ElseInstructionsBody = elseInstructionsBody;
             IfInstructionsBody = ifInstructionsBody;

@@ -5,15 +5,10 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Expression;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using MethodAttributes = Mono.Cecil.MethodAttributes;
-using ParameterAttributes = Mono.Cecil.ParameterAttributes;
-using TypeAttributes = Mono.Cecil.TypeAttributes;
-
 
 namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
 {
@@ -21,9 +16,9 @@ namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
     {
         private readonly CompilationUnit _compilationUnit;
         private readonly AssemblyDefinition _asm;
-        private ModuleDefinition _dllModule = null;
+        private ModuleDefinition _dllModule;
 
-        private SymbolTable _typeSymbols = null;
+        private SymbolTable _typeSymbols;
         private SymbolTable _functions = new SymbolTable();
 
         private TypeResolver _typeResolver;
@@ -359,7 +354,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
             }
         }
 
-        private void EmitConvCode(Emitter e, AST.Definitions.ZType type)
+        private void EmitConvCode(Emitter e, ZType type)
         {
             switch (type)
             {
@@ -377,17 +372,17 @@ namespace ZenPlatform.Compiler.Cecil.Backend.Resolver
             throw new Exception("Converting to this value not supported");
         }
 
-        private void EmitIncrement(Emitter e, AST.Definitions.ZType type)
+        private void EmitIncrement(Emitter e, ZType type)
         {
             EmitAddValue(e, type, 1);
         }
 
-        private void EmitDecrement(Emitter e, AST.Definitions.ZType type)
+        private void EmitDecrement(Emitter e, ZType type)
         {
             EmitAddValue(e, type, -1);
         }
 
-        private void EmitAddValue(Emitter e, AST.Definitions.ZType type, int value)
+        private void EmitAddValue(Emitter e, ZType type, int value)
         {
             switch (type)
             {

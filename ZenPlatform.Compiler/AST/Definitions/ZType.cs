@@ -1,6 +1,3 @@
-using System.Threading;
-using ZenPlatform.Compiler.AST.Infrastructure;
-
 namespace ZenPlatform.Compiler.AST.Definitions
 {
     /// <summary>
@@ -8,18 +5,15 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// </summary>
     public abstract class ZType : AstNode
     {
-        public ZType(string name, string @namespace)
+        public ZType(ILineInfo li, string name) : base(li)
         {
             Name = name;
-            Namespace = @namespace;
         }
 
         /// <summary>
         /// Имя типа
         /// </summary>
         public string Name { get; }
-
-        public string Namespace { get; protected set; }
 
         public virtual bool IsArray { get; }
         public virtual bool IsSystem { get; }
@@ -29,7 +23,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
     {
         public override bool IsSystem => true;
 
-        public ZSystemType(string name) : base(name, "System")
+        public ZSystemType(string name) : base(null, name)
         {
         }
     }
@@ -80,27 +74,26 @@ namespace ZenPlatform.Compiler.AST.Definitions
     {
         public ZType TypeOfElements { get; }
 
-        public ZArray(ZType typeOfElements) : base($"{typeOfElements.Name}[]", "System.Collections")
+        public ZArray(ZType typeOfElements) : base(null, $"{typeOfElements.Name}[]")
         {
             TypeOfElements = typeOfElements;
         }
 
         public override bool IsArray => true;
+        public override bool IsSystem => true;
     }
 
     public class ZStructureType : ZType
     {
-        public ZStructureType(string name) : base(name, null)
+        public ZStructureType(ILineInfo li, string name) : base(li, name)
         {
         }
+    }
 
-        public ZStructureType(string name, string @namespace) : base(name, @namespace)
+    public class ZUnknownType : ZType
+    {
+        public ZUnknownType(ILineInfo li, string name) : base(li, name)
         {
-        }
-
-        public void SetNamespace(string @namespace)
-        {
-            Namespace = @namespace;
         }
     }
 

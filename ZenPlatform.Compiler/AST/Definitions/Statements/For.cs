@@ -1,16 +1,17 @@
-using ZenPlatform.Compiler.AST.Definitions.Functions;
+using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Statements
 {
     public class For : Statement
     {
-        public Statement Initializer = null;
-        public Infrastructure.Expression Condition = null;
-        public Statement Counter = null;
-        
-        public InstructionsBodyNode InstructionsBody = null;
+        public Statement Initializer;
+        public Expression Condition;
+        public Statement Counter;
 
-        public For(InstructionsBodyNode instructionsBody, Statement counter, Infrastructure.Expression condition, Statement initializer)
+        public InstructionsBodyNode InstructionsBody;
+
+        public For(ILineInfo li, InstructionsBodyNode instructionsBody, Statement counter, Expression condition,
+            Statement initializer) : base(li)
         {
             InstructionsBody = instructionsBody;
             Counter = counter;

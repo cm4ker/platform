@@ -50,10 +50,10 @@ module Test
             var name = new AssemblyNameDefinition("Debug", new Version(1, 0));
 
             AssemblyDefinition ad =
-                AssemblyDefinition.CreateAssembly(name, "Debug", new ModuleParameters()
+                AssemblyDefinition.CreateAssembly(name, "Debug", new ModuleParameters
                 {
                     Kind = ModuleKind.Dll,
-                    AssemblyResolver = new CustomAssemblyResolver(),
+                    AssemblyResolver = new CustomAssemblyResolver()
                 });
 
             AntlrInputStream inputStream = new AntlrInputStream(text);
@@ -65,7 +65,7 @@ module Test
             ZLanguageVisitor visitor = new ZLanguageVisitor();
             var result = (CompilationUnit) visitor.VisitEntryPoint(parser.entryPoint());
 
-            AstVisitor av = new AstVisitor();
+            AstVisitorBase av = new AstVisitorBase();
             av.Visit(result);
             
             Generator g = new Generator(result, ad);
@@ -95,7 +95,7 @@ module Test
             ;
 
 
-            return (double) a;
+            return a;
         }
 
         static double Average(int[] arr)

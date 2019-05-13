@@ -14,5 +14,9 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// Тело типа
         /// </summary>
         public TypeBody TypeBody;
+
+        public TypeEntity(ILineInfo lineInfo) : base(lineInfo)
+        {
+        }
     }
 }

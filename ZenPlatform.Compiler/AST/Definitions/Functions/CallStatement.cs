@@ -21,7 +21,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Creates a function call object.
         /// </summary>
-        public CallStatement(ArgumentCollection arguments, string name)
+        public CallStatement(ILineInfo li, ArgumentCollection arguments, string name) : base(li)
         {
             Arguments = arguments;
             Name = name;
