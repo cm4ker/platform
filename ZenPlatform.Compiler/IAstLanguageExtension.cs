@@ -8,12 +8,12 @@ namespace ZenPlatform.Compiler
         /// <summary>
         /// Метод трансформирует одно AST дерево в другое 
         /// </summary>
-        /// <param name="item">Трансформируемое дерево</param>
+        /// <param name="node">Трансформируемое дерево</param>
         /// <returns></returns>
-        IAstItem Transform(IAstItem item);
+        IAstNode Transform(IAstNode node);
     }
 
-    public interface IAstItem
+    public interface IAstNode
     {
     }
 }
