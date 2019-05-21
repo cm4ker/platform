@@ -1,4 +1,4 @@
-    using System;
+using System;
 using System.Collections;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -131,6 +131,7 @@ namespace ZenPlatform.Compiler.AST
         public override object VisitLiteral(ZSharpParser.LiteralContext context)
         {
             AstNode result = null;
+            ILineInfo li = context.start.ToLineInfo();
             if (context.string_literal() != null)
             {
                 //Строки парсятся сюда вместе с кавычками и чтобы их убрать приходится
@@ -142,15 +143,15 @@ namespace ZenPlatform.Compiler.AST
                 text = Regex.Unescape(text ?? throw new NullReferenceException());
 
                 if (context.string_literal().REGULAR_STRING() != null)
-                    result = new Literal(text.Substring(1, text.Length - 2), ZTypeSystem.String);
+                    result = new Literal(li, text.Substring(1, text.Length - 2), ZTypeSystem.String);
                 else
-                    result = new Literal(text.Substring(2, text.Length - 3), ZTypeSystem.String);
+                    result = new Literal(li, text.Substring(2, text.Length - 3), ZTypeSystem.String);
             }
-            else if (context.boolean_literal() != null) result = new Literal(context.GetText(), ZTypeSystem.Bool);
-            else if (context.INTEGER_LITERAL() != null) result = new Literal(context.GetText(), ZTypeSystem.Int);
-            else if (context.REAL_LITERAL() != null) result = new Literal(context.GetText(), ZTypeSystem.Double);
+            else if (context.boolean_literal() != null) result = new Literal(li, context.GetText(), ZTypeSystem.Bool);
+            else if (context.INTEGER_LITERAL() != null) result = new Literal(li, context.GetText(), ZTypeSystem.Int);
+            else if (context.REAL_LITERAL() != null) result = new Literal(li, context.GetText(), ZTypeSystem.Double);
             else if (context.CHARACTER_LITERAL() != null)
-                result = new Literal(context.GetText().Substring(1, 1), ZTypeSystem.Char);
+                result = new Literal(li, context.GetText().Substring(1, 1), ZTypeSystem.Char);
 
             //TODO: Не обработанным остался HEX INTEGER LITERAL его необходимо доделать
 

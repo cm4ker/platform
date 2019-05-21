@@ -57,7 +57,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
                         throw new Exception("Type not found: " + tr.Name);
                 }
 
-                return Resolve(type.Name);
+                return null; //Resolve(type.Name);
             }
             else if (type.IsArray && type is ZArray a)
             {
@@ -77,14 +77,6 @@ namespace ZenPlatform.Compiler.Cecil.Backend
             }
 
             return null;
-        }
-
-
-        public ZType ResolvePlatformType(TypeReference typeReference)
-        {
-            var result = new ZStructureType(typeReference.Name, typeReference.Namespace);
-
-            return result;
         }
     }
 }

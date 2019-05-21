@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Antlr4.Runtime;
 using Mono.Cecil;
 using ZenPlatform.Compiler.AST;
@@ -9,13 +11,41 @@ using ZenPlatform.Compiler.Generation;
 
 namespace ZenPlatform.Compiler
 {
+    public class SimpleAR : BaseAssemblyResolver
+    {
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            Main2(args);
+            //Main2(args);
+            TestAsm();
         }
 
+
+        static void TestAsm()
+        {
+            var name = new AssemblyNameDefinition("Debug", new Version(1, 0));
+
+            AssemblyDefinition ad =
+                AssemblyDefinition.CreateAssembly(name, "Debug", new ModuleParameters
+                {
+                    Kind = ModuleKind.Dll,
+                    AssemblyResolver = new CustomAssemblyResolver()
+                });
+
+
+            var sysAd = (new SimpleAR()).Resolve(new AssemblyNameReference("mscorlib", new Version(4, 0)));
+            var arrType = sysAd.MainModule.ExportedTypes.First(x => x.Name == "Array" && x.Namespace == "System");
+            var arrRef = new TypeReference("System", "Array", sysAd.MainModule, arrType.Scope);
+            ad.MainModule.ImportReference(arrRef);
+
+            if (File.Exists("Debug.dll"))
+                File.Delete("Debug.dll");
+
+            ad.Write("debug.dll");
+        }
 
         static void Main2(string[] args)
         {
@@ -65,9 +95,6 @@ module Test
             ZLanguageVisitor visitor = new ZLanguageVisitor();
             var result = (CompilationUnit) visitor.VisitEntryPoint(parser.entryPoint());
 
-            AstVisitorBase av = new AstVisitorBase();
-            av.Visit(result);
-            
             Generator g = new Generator(result, ad);
             g.Emit();
 

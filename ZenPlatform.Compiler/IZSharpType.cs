@@ -31,6 +31,7 @@ namespace ZenPlatform.Compiler
         {
             _tr = tr;
             _typeSystem = typeSystem;
+            
         }
 
         public string Name

@@ -8,9 +8,5 @@ namespace ZenPlatform.Compiler.AST.Definitions.Statements
         public Statement(ILineInfo lineInfo) : base(lineInfo)
         {
         }
-
-        public Statement(int line, int position) : base(line, position)
-        {
-        }
     }
 }
