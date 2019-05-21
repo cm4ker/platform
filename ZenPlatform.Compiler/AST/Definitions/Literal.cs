@@ -12,7 +12,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// </summary>
         /// <param name="value">Текстовое представление литерала</param>
         /// <param name="type">Тип литерала</param>
-        public Literal(string value, ZType type)
+        public Literal(ILineInfo li, string value, ZType type) : base(li)
         {
             Value = value;
             Type = type;

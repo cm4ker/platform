@@ -8,9 +8,5 @@ namespace ZenPlatform.Compiler.AST.Definitions.Statements
         public Member(ILineInfo lineInfo) : base(lineInfo)
         {
         }
-
-        public Member(int line, int position) : base(line, position)
-        {
-        }
     }
 }

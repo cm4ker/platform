@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         public Expression Expression { get; }
         public string Name { get; }
 
-        public FieldExpression(Expression expression, string name)
+        public FieldExpression(Expression expression, string name) : base(null)
         {
             Expression = expression;
             Name = name;

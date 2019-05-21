@@ -26,7 +26,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
                 foreach (Statement statement in body.Statements)
                 {
                     if (statement is Variable)
-                        parent.Add(statement as Variable).SyntaxObject = statement;
+                        parent.Add(statement as Variable);
                 }
             }
         }
