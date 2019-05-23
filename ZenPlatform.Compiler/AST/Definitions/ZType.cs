@@ -1,3 +1,5 @@
+using ZenPlatform.Compiler.Contracts;
+
 namespace ZenPlatform.Compiler.AST.Definitions
 {
     /// <summary>
@@ -72,9 +74,9 @@ namespace ZenPlatform.Compiler.AST.Definitions
 
     public class ZArray : ZType
     {
-        public ZType TypeOfElements { get; }
+        public IType TypeOfElements { get; }
 
-        public ZArray(ZType typeOfElements) : base(null, $"{typeOfElements.Name}[]")
+        public ZArray(IType typeOfElements) : base(null, $"{typeOfElements.Name}[]")
         {
             TypeOfElements = typeOfElements;
         }
