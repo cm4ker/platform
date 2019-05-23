@@ -11,25 +11,27 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Cecil.Backend;
+using ZenPlatform.Compiler.Contracts;
 using TypeResolver = ZenPlatform.Compiler.Cecil.Backend.TypeResolver;
+using SreTA = System.Reflection.TypeAttributes;
+
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
         private readonly CompilationUnit _compilationUnit;
-        private readonly AssemblyDefinition _asm;
-        private ModuleDefinition _dllModule;
+        private readonly IAssemblyBuilder _asm;
 
         private SymbolTable _typeSymbols;
         private SymbolTable _functions = new SymbolTable();
 
-        private TypeResolver _typeResolver;
+        private SystemTypeBindings _bindings;
 
         private const string ASM_NAMESPACE = "CompileNamespace";
 
 
-        public Generator(CompilationUnit compilationUnit, AssemblyDefinition asm)
+        public Generator(CompilationUnit compilationUnit, IAssemblyBuilder asm)
         {
             _compilationUnit = compilationUnit;
 
@@ -60,15 +62,9 @@ namespace ZenPlatform.Compiler.Generation
 
         private void BuildModule(Module module)
         {
-            _dllModule = _asm.MainModule;
-
-            var td = new TypeDefinition(ASM_NAMESPACE, module.Name,
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
-                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
-                _dllModule.TypeSystem.Object);
-
-
-            _dllModule.Types.Add(td);
+            var typeBuilder = _asm.DefineType(ASM_NAMESPACE, module.Name,
+                SreTA.Class | SreTA.Public | SreTA.Abstract |
+                SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
 
             _typeSymbols = new SymbolTable();
 
@@ -220,27 +216,25 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Literal literal)
             {
-                switch (literal.Type)
-                {
-                    case ZInt t:
-                        e.LdcI4(Int32.Parse(literal.Value));
-                        break;
-                    case ZString t:
-                        e.LdStr(literal.Value);
-                        break;
-                    case ZDouble t:
-                        e.LdcR8(double.Parse(literal.Value, CultureInfo.InvariantCulture));
-                        break;
-                    case ZCharacter t:
-                        e.LdcI4(char.ConvertToUtf32(literal.Value, 0));
-                        break;
-                    case ZBool t:
-                        if (literal.Value == "true")
-                            e.LdcI4(1);
-                        else if (literal.Value == "false")
-                            e.LdcI4(0);
-                        break;
-                }
+                if (literal.Type.IsSystem)
+                    switch (literal.Type.Name)
+                    {
+                        case "Int32":
+                            e.LdcI4(Int32.Parse(literal.Value));
+                            break;
+                        case "String":
+                            e.LdStr(literal.Value);
+                            break;
+                        case "Double":
+                            e.LdcR8(double.Parse(literal.Value, CultureInfo.InvariantCulture));
+                            break;
+                        case "Char":
+                            e.LdcI4(char.ConvertToUtf32(literal.Value, 0));
+                            break;
+                        case "Boolean":
+                            e.LdcI4(bool.Parse(literal.Value) ? 1 : 0);
+                            break;
+                    }
             }
             else if (expression is Name name)
             {
@@ -272,34 +266,7 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is FieldExpression fe)
             {
                 EmitExpression(e, fe.Expression, symbolTable);
-
                 //TODO: Необходим лукап типа в сборке через cecil, оттуда уже забирать проперти
-
-                TypeDefinition td;
-
-                if (fe.Expression.Type.IsArray)
-                {
-                    var asmCoreDefinition =
-                        _dllModule.AssemblyResolver.Resolve((AssemblyNameReference) _dllModule.TypeSystem.CoreLibrary);
-                    td = asmCoreDefinition.MainModule.GetType("System", "Array").Resolve();
-                }
-                else
-                    td = _typeResolver.Resolve(fe.Expression.Type).Resolve();
-
-                try
-                {
-                    var fr = td.Fields.FirstOrDefault(x => x.Name == fe.Name) ??
-                             throw new Exception("Field not found: " + fe.Name);
-                    e.LdFld(fr);
-                }
-                catch
-                {
-                    var pr = td.Properties.FirstOrDefault(x => x.Name == fe.Name) ??
-                             throw new Exception("Field not found: " + fe.Name);
-                    var md = _dllModule.ImportReference(pr.GetMethod);
-
-                    e.Call(md);
-                }
             }
         }
 

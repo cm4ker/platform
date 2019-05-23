@@ -7,7 +7,7 @@ using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 
 namespace ZenPlatform.Compiler.Cecil
 {
-    class CecilProperty : IProperty
+    class CecilProperty : IPropertyBuilder
     {
         private readonly TypeReference _declaringType;
         public CecilTypeSystem TypeSystem { get; }
@@ -38,12 +38,23 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IMethod Getter => Property.GetMethod == null
             ? null
-            : _getter ?? (_getter = TypeSystem.Resolve(Property.GetMethod, _declaringType));
+            : _getter ??= TypeSystem.Resolve(Property.GetMethod, _declaringType);
 
         private IReadOnlyList<ICustomAttribute> _attributes;
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes =>
-            _attributes ?? (_attributes =
-                Property.CustomAttributes.Select(ca => new CecilCustomAttribute(TypeSystem, ca)).ToList());
+            _attributes ??= Property.CustomAttributes.Select(ca => new CecilCustomAttribute(TypeSystem, ca)).ToList();
+
+        public IPropertyBuilder WithSetter(IMethod method)
+        {
+            Property.SetMethod = ((CecilMethod) method).Definition;
+            return this;
+        }
+
+        public IPropertyBuilder WithGetter(IMethod method)
+        {
+            Property.GetMethod = ((CecilMethod) method).Definition;
+            return this;
+        }
     }
 }

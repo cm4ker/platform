@@ -3,6 +3,7 @@ using System.Linq;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -70,9 +71,9 @@ namespace ZenPlatform.Compiler.AST.Definitions
             return (string) internalStack.Pop();
         }
 
-        public ZType PopType()
+        public IType PopType()
         {
-            return (ZType) internalStack.Pop();
+            return (IType) internalStack.Pop();
         }
 
         public InstructionsBodyNode PopInstructionsBody()

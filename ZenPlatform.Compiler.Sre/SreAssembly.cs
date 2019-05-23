@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -52,16 +51,18 @@ namespace ZenPlatform.Compiler.Sre
         }
     }
 
-    class SreDynamicAssembly : IAssembly
+    class SreAssemblyBuilder : IAssemblyBuilder
     {
         private readonly SreTypeSystem _system;
         private IReadOnlyList<ICustomAttribute> _customAttributes;
         public AssemblyBuilder Assembly { get; }
+        public ModuleBuilder MainModule { get; }
 
-        public SreDynamicAssembly(SreTypeSystem system, AssemblyBuilder asm)
+        public SreAssemblyBuilder(SreTypeSystem system, AssemblyBuilder asm)
         {
             _system = system;
             Assembly = asm;
+            MainModule = Assembly.DefineDynamicModule("Default");
         }
 
         public bool Equals(IAssembly other) => Assembly == ((SreAssembly) other)?.Assembly;
@@ -88,23 +89,17 @@ namespace ZenPlatform.Compiler.Sre
             generator.GenerateAssembly(Assembly, fileName);
         }
 
+        public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
+        {
+            return new SreTypeBuilder(_system,
+                MainModule.DefineType($"{@namespace}.{name}", typeAttributes, _system.GetType(baseType)));
+        }
+
         public void Init()
         {
             var types = Assembly.GetExportedTypes().Select(t => _system.ResolveType(t)).ToList();
             Types = types;
             _typeDic = types.ToDictionary(t => t.Type.FullName);
-        }
-    }
-
-
-    public class SreAssemblyFactory : IAssemblyFactory
-    {
-        public IAssembly Create(ITypeSystem ts, string assemblyName, Version assemblyVersion)
-        {
-            var da = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(Guid.NewGuid().ToString("N")),
-                AssemblyBuilderAccess.Run);
-
-            return new SreDynamicAssembly((SreTypeSystem) ts, da);
         }
     }
 }

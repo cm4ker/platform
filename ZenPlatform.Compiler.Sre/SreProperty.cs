@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using ZenPlatform.Compiler.Contracts;
@@ -12,8 +13,6 @@ namespace ZenPlatform.Compiler.Sre
         public SreProperty(SreTypeSystem system, PropertyInfo member) : base(system, member)
         {
             Member = member;
-            Setter = member.SetMethod == null ? null : new SreMethod(system, member.SetMethod);
-            Getter = member.GetMethod == null ? null : new SreMethod(system, member.GetMethod);
         }
 
         public bool Equals(IProperty other)
@@ -26,19 +25,18 @@ namespace ZenPlatform.Compiler.Sre
         }
 
         public IType PropertyType => System.ResolveType(Member.PropertyType);
-        public IMethod Setter { get; }
-        public IMethod Getter { get; }
     }
 
     class SrePropertyBuilder : SreMemberInfo, IPropertyBuilder
     {
-        public PropertyInfo Member { get; }
+        private IMethod _setter;
+        private IMethod _getter;
 
-        public SrePropertyBuilder(SreTypeSystem system, PropertyInfo member) : base(system, member)
+        public PropertyBuilder Member { get; }
+
+        public SrePropertyBuilder(SreTypeSystem system, PropertyBuilder member) : base(system, member)
         {
             Member = member;
-            Setter = member.SetMethod == null ? null : new SreMethod(system, member.SetMethod);
-            Getter = member.GetMethod == null ? null : new SreMethod(system, member.GetMethod);
         }
 
         public bool Equals(IProperty other)
@@ -51,22 +49,43 @@ namespace ZenPlatform.Compiler.Sre
         }
 
         public IType PropertyType => System.ResolveType(Member.PropertyType);
-        public IMethod Setter { get; }
-        public IMethod Getter { get; }
 
-        public IPropertyBuilder WithPropType(IType propertyType)
+        public IMethod Setter
         {
-            return 
+            get => _setter;
+            private set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+
+                _setter = value;
+                Member.SetSetMethod(((SreMethodBuilder) _setter).MethodBuilder);
+            }
+        }
+
+        public IMethod Getter
+        {
+            get { return _getter; }
+            private set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+
+                _getter = value;
+                Member.SetGetMethod(((SreMethodBuilder) _getter).MethodBuilder);
+            }
         }
 
         public IPropertyBuilder WithSetter(IMethod method)
         {
-            throw new System.NotImplementedException();
+            Setter = method;
+            return this;
         }
 
         public IPropertyBuilder WithGetter(IMethod method)
         {
-            throw new System.NotImplementedException();
+            Getter = method;
+            return this;
         }
     }
 }

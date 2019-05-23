@@ -7,10 +7,6 @@ namespace ZenPlatform.Compiler.Contracts
     {
         IType PropertyType { get; }
 
-        IMethod Setter { get; }
-
-        IMethod Getter { get; }
-
         IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
     }
 
@@ -19,8 +15,6 @@ namespace ZenPlatform.Compiler.Contracts
     /// </summary>
     public interface IPropertyBuilder : IProperty
     {
-        IPropertyBuilder WithPropType(IType propertyType);
-
         IPropertyBuilder WithSetter(IMethod method);
 
         IPropertyBuilder WithGetter(IMethod method);

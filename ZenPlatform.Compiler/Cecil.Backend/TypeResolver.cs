@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Mono.Cecil;
 using ZenPlatform.Compiler.AST.Definitions;
 

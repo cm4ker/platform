@@ -2,6 +2,7 @@ using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Functions
 {
@@ -18,7 +19,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Function type.
         /// </summary>
-        public ZType Type;
+        public IType Type;
 
         /// <summary>
         /// Function parameters.
@@ -34,7 +35,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// Creates a function object.
         /// </summary>
         public Function(ILineInfo li, InstructionsBodyNode instructionsBody, ParameterCollection parameters,
-            string name, ZType type) : base(li)
+            string name, IType type) : base(li)
         {
             InstructionsBody = instructionsBody;
             Parameters = parameters;

@@ -74,6 +74,9 @@ namespace ZenPlatform.Compiler.Cecil
         }
 
         public IAssembly TargetAssembly { get; private set; }
+
+        internal MetadataResolver MetadataResolver => _resolver;
+
         public AssemblyDefinition TargetAssemblyDefinition { get; private set; }
         public IReadOnlyList<IAssembly> Assemblies => _asms.AsReadOnly();
         public IAssembly FindAssembly(string name) => _asms.FirstOrDefault(a => a.Assembly.Name.Name == name);
@@ -149,6 +152,7 @@ namespace ZenPlatform.Compiler.Cecil
             return wrapped;
         }
 
+
         public IAssembly CreateAndRegisterAssembly(string name, Version version, ModuleKind kind)
         {
             var def = AssemblyDefinition.CreateAssembly(new AssemblyNameDefinition(name, version), name,
@@ -168,12 +172,6 @@ namespace ZenPlatform.Compiler.Cecil
         }
 
         internal CecilType GetTypeFor(TypeReference reference) => _typeCache.Get(reference);
-
-
-        public ITypeBuilder CreateTypeBuilder(TypeDefinition def)
-        {
-            return new CecilTypeBuilder(this, FindAsm(def.Module.Assembly), def);
-        }
 
         public AssemblyDefinition GetAssembly(IAssembly asm)
             => ((CecilAssembly) asm).Assembly;
