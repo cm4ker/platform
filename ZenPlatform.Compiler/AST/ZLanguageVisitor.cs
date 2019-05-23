@@ -9,16 +9,21 @@ using ZenPlatform.Compiler.AST.Definitions.Extension;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.AST
 {
     public class ZLanguageVisitor : ZSharpParserBaseVisitor<object>
     {
         private SyntaxStack _syntaxStack;
+        private ITypeSystem _ts;
+        private SystemTypeBindings _sb;
+
 
         public ZLanguageVisitor()
         {
             _syntaxStack = new SyntaxStack();
+            _sb = new SystemTypeBindings(_ts);
         }
 
 
@@ -143,15 +148,15 @@ namespace ZenPlatform.Compiler.AST
                 text = Regex.Unescape(text ?? throw new NullReferenceException());
 
                 if (context.string_literal().REGULAR_STRING() != null)
-                    result = new Literal(li, text.Substring(1, text.Length - 2), ZTypeSystem.String);
+                    result = new Literal(li, text.Substring(1, text.Length - 2), _sb.String);
                 else
-                    result = new Literal(li, text.Substring(2, text.Length - 3), ZTypeSystem.String);
+                    result = new Literal(li, text.Substring(2, text.Length - 3), _sb.String);
             }
-            else if (context.boolean_literal() != null) result = new Literal(li, context.GetText(), ZTypeSystem.Bool);
-            else if (context.INTEGER_LITERAL() != null) result = new Literal(li, context.GetText(), ZTypeSystem.Int);
-            else if (context.REAL_LITERAL() != null) result = new Literal(li, context.GetText(), ZTypeSystem.Double);
+            else if (context.boolean_literal() != null) result = new Literal(li, context.GetText(), _sb.Bool);
+            else if (context.INTEGER_LITERAL() != null) result = new Literal(li, context.GetText(), _sb.Int);
+            else if (context.REAL_LITERAL() != null) result = new Literal(li, context.GetText(), _sb.Double);
             else if (context.CHARACTER_LITERAL() != null)
-                result = new Literal(li, context.GetText().Substring(1, 1), ZTypeSystem.Char);
+                result = new Literal(li, context.GetText().Substring(1, 1), _sb.Char);
 
             //TODO: Не обработанным остался HEX INTEGER LITERAL его необходимо доделать
 

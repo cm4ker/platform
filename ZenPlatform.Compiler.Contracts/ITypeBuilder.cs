@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -24,6 +25,6 @@ namespace ZenPlatform.Compiler.Contracts
 
     public interface IAssemblyBuilder : IAssembly
     {
-        ITypeBuilder DefineType();
+        ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType);
     }
 }

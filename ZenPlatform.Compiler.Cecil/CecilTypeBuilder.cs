@@ -67,14 +67,10 @@ namespace ZenPlatform.Compiler.Cecil
             return rv;
         }
 
-        public IProperty DefineProperty(IType propertyType, string name, IMethod setter, IMethod getter)
+        public IPropertyBuilder DefineProperty(IType propertyType, string name)
         {
-            var s = (CecilMethod) setter;
-            var g = (CecilMethod) getter;
             var def = new PropertyDefinition(name, PropertyAttributes.None,
                 GetReference(propertyType));
-            def.SetMethod = s?.Definition;
-            def.GetMethod = g?.Definition;
             Definition.Properties.Add(def);
             var rv = new CecilProperty(TypeSystem, def, SelfReference);
             ((List<CecilProperty>) Properties).Add(rv);

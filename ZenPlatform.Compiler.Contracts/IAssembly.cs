@@ -14,7 +14,7 @@ namespace ZenPlatform.Compiler.Contracts
 
     public interface IAssemblyFactory
     {
-        IAssembly Create(ITypeSystem ts, string assemblyName, Version assemblyVersion);
+        IAssemblyBuilder Create(ITypeSystem ts, string assemblyName, Version assemblyVersion);
     }
 
 

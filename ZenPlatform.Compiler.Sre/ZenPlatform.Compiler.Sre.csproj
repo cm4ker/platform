@@ -5,9 +5,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\ILPack\src\Lokad.ILPack.csproj" />
+      <ProjectReference Include="..\ILPack\src\Lokad.ILPack.csproj" />
       <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Compiler\ZenPlatform.Compiler.csproj" />
     </ItemGroup>
 
 </Project>

@@ -36,25 +36,10 @@ namespace ZenPlatform.Compiler.Cecil
             return rv;
         }
 
-        private static Dictionary<SreOpCode, OpCode> Dic = new Dictionary<SreOpCode, OpCode>();
+
         private List<CecilLabel> _markedLabels = new List<CecilLabel>();
 
-        static CecilEmitter()
-        {
-            foreach (var sreField in typeof(SreOpCodes)
-                .GetFields(BindingFlags.Static | BindingFlags.Public)
-                .Where(f => f.FieldType == typeof(SreOpCode)))
-
-            {
-                var sre = (SreOpCode) sreField.GetValue(null);
-                var cecilField = typeof(OpCodes).GetField(sreField.Name);
-                if (cecilField == null)
-                    continue;
-                var cecil = (OpCode) cecilField.GetValue(null);
-                Dic[sre] = cecil;
-            }
-        }
-
+        private Dictionary<SreOpCode, OpCode> Dic = SreMapper.OpCodeDic;
 
         private readonly MethodBody _body;
         private readonly MethodDefinition _method;

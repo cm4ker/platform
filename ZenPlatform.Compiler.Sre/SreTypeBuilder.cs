@@ -31,23 +31,6 @@ namespace ZenPlatform.Compiler.Sre
             _tb.AddInterfaceImplementation(((SreType) type).Type);
         }
 
-        class SreMethodBuilder : SreMethod, IMethodBuilder
-        {
-            public MethodBuilder MethodBuilder { get; }
-
-            public SreMethodBuilder(SreTypeSystem system, MethodBuilder methodBuilder) : base(system, methodBuilder)
-            {
-                MethodBuilder = methodBuilder;
-                Generator = new SreEmitter(system, methodBuilder.GetILGenerator());
-            }
-
-            public IEmitter Generator { get; }
-
-            public void EmitClosure(IEnumerable<IType> fields)
-            {
-                throw new NotImplementedException();
-            }
-        }
 
         public IMethodBuilder DefineMethod(IType returnType, IEnumerable<IType> args, string name,
             bool isPublic, bool isStatic,
@@ -66,26 +49,12 @@ namespace ZenPlatform.Compiler.Sre
             return new SreMethodBuilder(_system, m);
         }
 
-        public IProperty DefineProperty(IType propertyType, string name, IMethod setter, IMethod getter)
+        public IPropertyBuilder DefineProperty(IType propertyType, string name)
         {
-            var p = _tb.DefineProperty(name, PropertyAttributes.None, ((SreType) propertyType).Type, new Type[0]);
-            if (setter != null)
-                p.SetSetMethod(((SreMethodBuilder) setter).MethodBuilder);
-            if (getter != null)
-                p.SetGetMethod(((SreMethodBuilder) getter).MethodBuilder);
-            return new SreProperty(_system, p);
+            var propBuilder = _tb.DefineProperty(name, PropertyAttributes.None, ((SreType) propertyType).Type, null);
+
+            return new SrePropertyBuilder(this._system, propBuilder);
         }
-
-        class SreConstructorBuilder : SreConstructor, IConstructorBuilder
-        {
-            public SreConstructorBuilder(SreTypeSystem system, ConstructorBuilder ctor) : base(system, ctor)
-            {
-                Generator = new SreEmitter(system, ctor.GetILGenerator());
-            }
-
-            public IEmitter Generator { get; }
-        }
-
 
         public IConstructorBuilder DefineConstructor(bool isStatic, params IType[] args)
         {
@@ -123,5 +92,35 @@ namespace ZenPlatform.Compiler.Sre
                     builders[c].SetGenericParameterAttributes(GenericParameterAttributes.ReferenceTypeConstraint);
             }
         }
+    }
+
+
+    class SreMethodBuilder : SreMethod, IMethodBuilder
+    {
+        public MethodBuilder MethodBuilder { get; }
+
+        public SreMethodBuilder(SreTypeSystem system, MethodBuilder methodBuilder) : base(system, methodBuilder)
+        {
+            MethodBuilder = methodBuilder;
+            Generator = new SreEmitter(system, methodBuilder.GetILGenerator());
+        }
+
+        public IEmitter Generator { get; }
+
+        public void EmitClosure(IEnumerable<IType> fields)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    class SreConstructorBuilder : SreConstructor, IConstructorBuilder
+    {
+        public SreConstructorBuilder(SreTypeSystem system, ConstructorBuilder ctor) : base(system, ctor)
+        {
+            Generator = new SreEmitter(system, ctor.GetILGenerator());
+        }
+
+        public IEmitter Generator { get; }
     }
 }

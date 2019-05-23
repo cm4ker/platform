@@ -101,7 +101,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
 
     public class ZTypeSystem
     {
-        public static ZType String = new ZString();
+        public static ZType String = null;
         public static ZType Double = new ZDouble();
         public static ZType Bool = new ZBool();
         public static ZType Int = new ZInt();

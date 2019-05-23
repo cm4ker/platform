@@ -4,11 +4,12 @@ using System.Linq;
 using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
+using TypeAttributes = System.Reflection.TypeAttributes;
 
 
 namespace ZenPlatform.Compiler.Cecil
 {
-    public class CecilAssembly : IAssembly
+    public class CecilAssembly : IAssembly, IAssemblyBuilder
     {
         private Dictionary<string, CecilType> _typeCache = new Dictionary<string, CecilType>();
         public CecilTypeSystem TypeSystem { get; }
@@ -50,13 +51,12 @@ namespace ZenPlatform.Compiler.Cecil
         {
             Assembly.Write(fileName);
         }
-    }
 
-    public class CecilAssemblyFactory : IAssemblyFactory
-    {
-        public IAssembly Create(ITypeSystem ts, string assemblyName, Version assemblyVersion)
+        public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
-            return (ts as CecilTypeSystem)?.CreateAndRegisterAssembly(assemblyName, assemblyVersion, ModuleKind.Dll);
+            return new CecilTypeBuilder(TypeSystem, this,
+                new TypeDefinition(@namespace, name, SreMapper.Convert(typeAttributes),
+                    TypeSystem.GetTypeReference(baseType)));
         }
     }
 }
