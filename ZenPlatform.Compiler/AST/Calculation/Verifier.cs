@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
@@ -5,6 +6,7 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.AST.Calculation
 {
@@ -49,7 +51,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
             }
         }
 
-        public ZType GetExpressionType(SymbolTable symbolTable, Expression expression)
+        public IType GetExpressionType(SymbolTable symbolTable, Expression expression)
         {
             if (expression is UnaryExpression unary)
             {
@@ -84,7 +86,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
             return null;
         }
 
-        public ZType FindType(ZType leftType, ZType rightType, BinaryOperatorType operatorType)
+        public IType FindType(IType leftType, IType rightType, BinaryOperatorType operatorType)
         {
             //
             // Binary operations can only be performed on primitive types.
@@ -104,7 +106,7 @@ namespace ZenPlatform.Compiler.AST.Calculation
                     case BinaryOperatorType.And:
                     case BinaryOperatorType.Or:
                     case BinaryOperatorType.NotEqual:
-                        return ZTypeSystem.Bool;
+                        throw new NotImplementedException();
                         break;
                     default:
                         throw new VerifierException("Specified operator cannot be applied to boolean types.");
@@ -130,17 +132,17 @@ namespace ZenPlatform.Compiler.AST.Calculation
                     case BinaryOperatorType.LessThen:
                     case BinaryOperatorType.Equal:
                     case BinaryOperatorType.NotEqual:
-                        return ZTypeSystem.Bool;
+                        throw new NotImplementedException();
                         break;
                     default:
-                        return ZTypeSystem.Bool;
+                        throw new NotImplementedException();
                 }
             }
 
             throw new VerifierException("Incompatible types for specified operation.");
         }
 
-        public ZType FindType(ZType type, UnaryOperatorType operatorType)
+        public IType FindType(IType type, UnaryOperatorType operatorType)
         {
             switch (operatorType)
             {

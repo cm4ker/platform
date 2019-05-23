@@ -1,5 +1,6 @@
 using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Expressions
 {
@@ -12,20 +13,20 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expressions
 
         public Expression Value { get; }
 
-        public override ZType Type => Value.Type;
+        public override IType Type => Value.Type;
     }
 
 
     public class CastExpression : UnaryExpression
     {
-        public ZType CastType { get; }
+        public IType CastType { get; }
 
-        public CastExpression(ILineInfo token, Expression value, ZType castType) : base(token, value)
+        public CastExpression(ILineInfo token, Expression value, IType castType) : base(token, value)
         {
             CastType = castType;
         }
 
-        public override ZType Type => CastType;
+        public override IType Type => CastType;
     }
 
     public class IndexerExpression : UnaryExpression

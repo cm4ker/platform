@@ -1,5 +1,6 @@
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Functions
 {
@@ -11,7 +12,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Parameter type.
         /// </summary>
-        public ZType Type { get; set; }
+        public IType Type { get; set; }
 
         /// <summary>
         /// Parameter pass method.
@@ -21,7 +22,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Create parameter object.
         /// </summary>
-        public Parameter(ILineInfo li, string name, ZType type, PassMethod passMethod) : base(li)
+        public Parameter(ILineInfo li, string name, IType type, PassMethod passMethod) : base(li)
         {
             Name = name;
             Type = type;
@@ -34,6 +35,6 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
 
     public interface ITypedNode
     {
-        ZType Type { get; set; }
+        IType Type { get; set; }
     }
 }

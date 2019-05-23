@@ -13,12 +13,14 @@ namespace ZenPlatform.Compiler.AST
     {
         private Stack<AstNode> _visitStack;
 
+        protected Stack<AstNode> VisitStack => _visitStack;
+
         public AstVisitorBase()
         {
             _visitStack = new Stack<AstNode>();
         }
 
-        public virtual void Visit(AstNode node)
+        public virtual void BeforeVisitNode(AstNode node)
         {
             if (node is null) return;
 
@@ -28,6 +30,16 @@ namespace ZenPlatform.Compiler.AST
             }
 
             _visitStack.Push(node);
+        }
+
+        public virtual void AfterVisitNode(AstNode node)
+        {
+            _visitStack.Pop();
+        }
+
+        public virtual void Visit(AstNode node)
+        {
+            BeforeVisitNode(node);
 
             ItemSwitch<AstNode>
                 .Switch(node)
@@ -41,7 +53,6 @@ namespace ZenPlatform.Compiler.AST
                 .CaseIs<Module>(VisitModuleStatement)
                 .CaseIs<Function>(VisitFunction)
                 .CaseIs<TypeBody>(VisitTypeBody)
-                .CaseIs<ZType>(VisitType)
                 .CaseIs<InstructionsBodyNode>(VisitInstructionsBody)
                 .CaseIs<Variable>(VisitVariable)
                 .CaseIs<Assignment>(VisitAssigment)
@@ -54,7 +65,6 @@ namespace ZenPlatform.Compiler.AST
                 .BreakIfExecuted()
                 .CaseIs<Expression>(VisitExpression)
                 .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null);
-            _visitStack.Pop();
         }
 
         public virtual void VisitLiteral(Literal obj)
@@ -136,7 +146,6 @@ namespace ZenPlatform.Compiler.AST
 
         public virtual void VisitParameter(Parameter obj)
         {
-            Visit(obj.Type);
         }
 
         public virtual void VisitWhile(While obj)

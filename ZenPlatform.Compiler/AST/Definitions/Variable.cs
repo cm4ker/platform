@@ -1,6 +1,7 @@
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -12,7 +13,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Create a variable object.
         /// </summary>
-        public Variable(ILineInfo li, object value, string name, ZType type) : base(li)
+        public Variable(ILineInfo li, object value, string name, IType type) : base(li)
         {
             Name = name;
             Type = type;
@@ -27,7 +28,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Variable type.
         /// </summary>
-        public ZType Type { get; set; }
+        public IType Type { get; set; }
 
         /// <summary>
         /// Variable initial value;

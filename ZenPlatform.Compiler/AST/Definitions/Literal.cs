@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -12,7 +13,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// </summary>
         /// <param name="value">Текстовое представление литерала</param>
         /// <param name="type">Тип литерала</param>
-        public Literal(ILineInfo li, string value, ZType type) : base(li)
+        public Literal(ILineInfo li, string value, IType type) : base(li)
         {
             Value = value;
             Type = type;
