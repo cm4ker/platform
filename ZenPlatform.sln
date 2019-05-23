@@ -99,7 +99,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Compiler.Sre", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Compiler.Contracts", "ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj", "{CB9307A1-D35C-4034-8853-11B5BDB10C65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.ILPack", "..\ILPack\src\Lokad.ILPack.csproj", "{BE26BFA8-3E12-4B26-97F9-A962CAB36C98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lokad.ILPack", "ILPack\src\Lokad.ILPack.csproj", "{BE26BFA8-3E12-4B26-97F9-A962CAB36C98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
