@@ -81,7 +81,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public IEmitter CreateCodeGen(MethodBuilder mb)
         {
-            return new SreEmitter(this, mb.GetILGenerator());
+            return new SreEmitter(this, new SreMethodEmitterProvider(mb));
         }
 
         public Type GetType(IType t) => ((SreType) t).Type;

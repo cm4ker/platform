@@ -6,13 +6,15 @@ namespace ZenPlatform.Compiler.Sre
 {
     class SreEmitter : IEmitter
     {
+        private readonly SreMethodEmitterProviderBase _provider;
         private readonly ILGenerator _ilg;
         public ITypeSystem TypeSystem { get; }
 
-        public SreEmitter(SreTypeSystem system, ILGenerator ilg)
+        public SreEmitter(SreTypeSystem system, SreMethodEmitterProviderBase provider)
         {
+            _provider = provider;
             TypeSystem = system;
-            _ilg = ilg;
+            _ilg = provider.Generator;
             SymbolTable = new SymbolTable();
         }
 
@@ -99,6 +101,12 @@ namespace ZenPlatform.Compiler.Sre
             return this;
         }
 
+        public bool InitLocals
+        {
+            get => _provider.InitLocals;
+            set => _provider.InitLocals = value;
+        }
+
 
         public void InsertSequencePoint(IFileSource file, int line, int position)
         {
@@ -118,5 +126,50 @@ namespace ZenPlatform.Compiler.Sre
             _ilg.Emit(code, ((SreField) field).Field);
             return this;
         }
+    }
+
+
+    abstract class SreMethodEmitterProviderBase
+    {
+        public abstract bool InitLocals { get; set; }
+
+        public abstract ILGenerator Generator { get; }
+    }
+
+
+    class SreConstructorEmitterProvider : SreMethodEmitterProviderBase
+    {
+        private readonly ConstructorBuilder _cb;
+
+        public SreConstructorEmitterProvider(ConstructorBuilder cb)
+        {
+            _cb = cb;
+        }
+
+        public override bool InitLocals
+        {
+            get => _cb.InitLocals;
+            set => _cb.InitLocals = value;
+        }
+
+        public override ILGenerator Generator => _cb.GetILGenerator();
+    }
+
+    class SreMethodEmitterProvider : SreMethodEmitterProviderBase
+    {
+        private readonly MethodBuilder _mb;
+
+        public SreMethodEmitterProvider(MethodBuilder mb)
+        {
+            _mb = mb;
+        }
+
+        public override bool InitLocals
+        {
+            get => _mb.InitLocals;
+            set => _mb.InitLocals = value;
+        }
+
+        public override ILGenerator Generator => _mb.GetILGenerator();
     }
 }

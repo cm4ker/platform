@@ -118,10 +118,10 @@ namespace ZenPlatform.Compiler.Cecil
         }
 
         public IEmitter Emit(SreOpCode code, IMethod method)
-            => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilMethod) method).IlReference)));
+            => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilMethod) method).Definition)));
 
         public IEmitter Emit(SreOpCode code, IConstructor ctor)
-            => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilConstructor) ctor).IlReference)));
+            => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilConstructor) ctor).Definition)));
 
         public IEmitter Emit(SreOpCode code, string arg)
             => Emit(Instruction.Create(Dic[code], arg));
@@ -173,6 +173,8 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IEmitter Emit(SreOpCode code, ILocal local)
             => Emit(Instruction.Create(Dic[code], ((CecilLocal) local).Variable));
+
+        public bool InitLocals { get; set; }
 
         private static readonly Guid LanguageGuid = new Guid("9a37fc74-96b5-4dbc-8b8a-c4e603735a63");
         private static readonly Guid LanguageVendorGuid = new Guid("3c631bf9-0cbe-4aab-a24a-5e417734441c");

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -32,17 +31,14 @@ namespace ZenPlatform.Compiler.Sre
         }
 
 
-        public IMethodBuilder DefineMethod(IType returnType, IEnumerable<IType> args, string name,
+        public IMethodBuilder DefineMethod(string name,
             bool isPublic, bool isStatic,
             bool isInterfaceImpl, IMethod overrideMethod)
         {
-            var ret = ((SreType) returnType).Type;
-            var argTypes = args?.Cast<SreType>().Select(t => t.Type) ?? Type.EmptyTypes;
             var m = _tb.DefineMethod(name,
                 (isPublic ? MethodAttributes.Public : MethodAttributes.Private)
                 | (isStatic ? MethodAttributes.Static : default(MethodAttributes))
-                | (isInterfaceImpl ? MethodAttributes.Virtual | MethodAttributes.NewSlot : default(MethodAttributes))
-                , ret, argTypes.ToArray());
+                | (isInterfaceImpl ? MethodAttributes.Virtual | MethodAttributes.NewSlot : default(MethodAttributes)));
             if (overrideMethod != null)
                 _tb.DefineMethodOverride(m, ((SreMethod) overrideMethod).Method);
 
@@ -95,30 +91,11 @@ namespace ZenPlatform.Compiler.Sre
     }
 
 
-    class SreMethodBuilder : SreMethod, IMethodBuilder
-    {
-        public MethodBuilder MethodBuilder { get; }
-
-        public SreMethodBuilder(SreTypeSystem system, MethodBuilder methodBuilder) : base(system, methodBuilder)
-        {
-            MethodBuilder = methodBuilder;
-            Generator = new SreEmitter(system, methodBuilder.GetILGenerator());
-        }
-
-        public IEmitter Generator { get; }
-
-        public void EmitClosure(IEnumerable<IType> fields)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
     class SreConstructorBuilder : SreConstructor, IConstructorBuilder
     {
         public SreConstructorBuilder(SreTypeSystem system, ConstructorBuilder ctor) : base(system, ctor)
         {
-            Generator = new SreEmitter(system, ctor.GetILGenerator());
+            Generator = new SreEmitter(system, new SreConstructorEmitterProvider(ctor));
         }
 
         public IEmitter Generator { get; }

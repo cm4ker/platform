@@ -25,13 +25,13 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter Stsfld(this IEmitter emitter, IField field)
             => emitter.Emit(OpCodes.Stsfld, field);
 
-        public static IEmitter Ldloc(this IEmitter emitter, ILocal local)
+        public static IEmitter LdLoc(this IEmitter emitter, ILocal local)
             => emitter.Emit(OpCodes.Ldloc, local);
 
-        public static IEmitter Ldloca(this IEmitter emitter, ILocal local)
+        public static IEmitter LdLoca(this IEmitter emitter, ILocal local)
             => emitter.Emit(OpCodes.Ldloca, local);
 
-        public static IEmitter Stloc(this IEmitter emitter, ILocal local)
+        public static IEmitter StLoc(this IEmitter emitter, ILocal local)
             => emitter.Emit(OpCodes.Stloc, local);
 
         public static IEmitter Ldnull(this IEmitter emitter) => emitter.Emit(OpCodes.Ldnull);
@@ -42,12 +42,22 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter Throw(this IEmitter emitter)
             => emitter.Emit(OpCodes.Throw);
 
-        public static IEmitter Ldc_I4(this IEmitter emitter, int arg)
-            => arg == 0
-                ? emitter.Emit(OpCodes.Ldc_I4_0)
-                : arg == 1
-                    ? emitter.Emit(OpCodes.Ldc_I4_1)
-                    : emitter.Emit(OpCodes.Ldc_I4, arg);
+        public static IEmitter LdcI4(this IEmitter emitter, int arg)
+        {
+            switch (arg)
+            {
+                case 0: return emitter.Emit(OpCodes.Ldc_I4_0);
+                case 1: return emitter.Emit(OpCodes.Ldc_I4_1);
+                case 2: return emitter.Emit(OpCodes.Ldc_I4_2);
+                case 3: return emitter.Emit(OpCodes.Ldc_I4_3);
+                case 4: return emitter.Emit(OpCodes.Ldc_I4_4);
+                case 5: return emitter.Emit(OpCodes.Ldc_I4_5);
+                case 6: return emitter.Emit(OpCodes.Ldc_I4_6);
+                case 7: return emitter.Emit(OpCodes.Ldc_I4_7);
+                case 8: return emitter.Emit(OpCodes.Ldc_I4_8);
+                default: return emitter.Emit(OpCodes.Ldc_I4, arg);
+            }
+        }
 
         public static IEmitter Beq(this IEmitter emitter, ILabel label)
             => emitter.Emit(OpCodes.Beq, label);
@@ -67,10 +77,10 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter Br(this IEmitter emitter, ILabel label)
             => emitter.Emit(OpCodes.Br, label);
 
-        public static IEmitter Brfalse(this IEmitter emitter, ILabel label)
+        public static IEmitter BrFalse(this IEmitter emitter, ILabel label)
             => emitter.Emit(OpCodes.Brfalse, label);
 
-        public static IEmitter Brtrue(this IEmitter emitter, ILabel label)
+        public static IEmitter BrTrue(this IEmitter emitter, ILabel label)
             => emitter.Emit(OpCodes.Brtrue, label);
 
         public static IEmitter Ret(this IEmitter emitter)
@@ -128,5 +138,31 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter Ldlen(this IEmitter emitter) => emitter.Emit(OpCodes.Ldlen);
 
         public static IEmitter Add(this IEmitter emitter) => emitter.Emit(OpCodes.Add);
+        public static IEmitter Sub(this IEmitter emitter) => emitter.Emit(OpCodes.Sub);
+        public static IEmitter Mul(this IEmitter emitter) => emitter.Emit(OpCodes.Mul);
+        public static IEmitter Div(this IEmitter emitter) => emitter.Emit(OpCodes.Div);
+        public static IEmitter Ceq(this IEmitter emitter) => emitter.Emit(OpCodes.Ceq);
+        public static IEmitter Or(this IEmitter emitter) => emitter.Emit(OpCodes.Or);
+
+        public static IEmitter Neg(this IEmitter emitter) => emitter.Emit(OpCodes.Neg);
+        public static IEmitter Not(this IEmitter emitter) => emitter.Emit(OpCodes.Not);
+
+        public static IEmitter NotEqual(this IEmitter e) => e.Ceq().LdcI4(0).Ceq();
+
+        public static IEmitter Rem(this IEmitter emitter) => emitter.Emit(OpCodes.Rem);
+        public static IEmitter Clt(this IEmitter emitter) => emitter.Emit(OpCodes.Clt);
+        public static IEmitter Cgt(this IEmitter emitter) => emitter.Emit(OpCodes.Cgt);
+
+        public static IEmitter GreaterOrEqual(this IEmitter e) => e.Clt().LdcI4(0).Ceq();
+        public static IEmitter LessOrEqual(this IEmitter e) => e.Cgt().LdcI4(0).Ceq();
+
+        public static IEmitter NewArr(this IEmitter emitter, IType type) => emitter.Emit(OpCodes.Newarr, type);
+
+        public static IEmitter StElemI4(this IEmitter emitter) => emitter.Emit(OpCodes.Stelem_I4);
+        public static IEmitter LdElemI4(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelem_I4);
+
+
+        public static IEmitter StArg(this IEmitter emitter, IParameter parameter) =>
+            emitter.Emit(OpCodes.Stelem_I4, parameter);
     }
 }

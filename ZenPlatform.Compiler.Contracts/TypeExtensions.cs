@@ -69,7 +69,7 @@ namespace ZenPlatform.Compiler.Contracts
                     for (var c = 0; c < args.Length; c++)
                     {
                         if (allowDowncast)
-                            mismatch = !m.Parameters[c].IsAssignableFrom(args[c]);
+                            mismatch = !m.Parameters[c].Type.IsAssignableFrom(args[c]);
                         else
                             mismatch = !m.Parameters[c].Equals(args[c]);
                         if (mismatch)
@@ -97,7 +97,7 @@ namespace ZenPlatform.Compiler.Contracts
                 var mismatch = false;
                 for (var c = 0; c < args.Count; c++)
                 {
-                    mismatch = !ctor.Parameters[c].IsAssignableFrom(args[c]);
+                    mismatch = !ctor.Parameters[c].Type.IsAssignableFrom(args[c]);
                     if (mismatch)
                         break;
                 }
@@ -181,16 +181,7 @@ namespace ZenPlatform.Compiler.Contracts
         }
 
         public static IType ThisOrFirstParameter(this IMethod method) =>
-            method.IsStatic ? method.Parameters[0] : method.DeclaringType;
-
-        public static IReadOnlyList<IType> ParametersWithThis(this IMethod method)
-        {
-            if (method.IsStatic)
-                return method.Parameters;
-            var lst = method.Parameters.ToList();
-            lst.Insert(0, method.DeclaringType);
-            return lst;
-        }
+            method.IsStatic ? method.Parameters[0].Type : method.DeclaringType;
 
         public static IEmitter DebugHatch(this IEmitter emitter, string message)
         {

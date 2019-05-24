@@ -103,7 +103,7 @@ namespace ZenPlatform.Compiler.Cecil
 
 
         public TypeReference GetTypeReference(IType t) => ((ITypeReference) t).Reference;
-        public MethodReference GetMethodReference(IMethod t) => ((CecilMethod) t).IlReference;
+        public MethodReference GetMethodReference(IMethod t) => ((CecilMethodBase) t).Definition;
 
         internal CecilAssembly FindAsm(AssemblyDefinition d)
         {

@@ -12,6 +12,7 @@ namespace ZenPlatform.Compiler.Sre
         private readonly SreTypeSystem _system;
         private IReadOnlyList<ICustomAttribute> _customAttributes;
         public Assembly Assembly { get; }
+        public ITypeSystem TypeSystem => _system;
 
         public SreAssembly(SreTypeSystem system, Assembly asm)
         {
@@ -57,6 +58,8 @@ namespace ZenPlatform.Compiler.Sre
         private IReadOnlyList<ICustomAttribute> _customAttributes;
         public AssemblyBuilder Assembly { get; }
         public ModuleBuilder MainModule { get; }
+        public ITypeSystem TypeSystem => _system;
+
 
         public SreAssemblyBuilder(SreTypeSystem system, AssemblyBuilder asm)
         {

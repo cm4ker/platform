@@ -35,13 +35,14 @@ namespace ZenPlatform.Compiler.Cecil
             return rv;
         }
 
+
         public void AddInterfaceImplementation(IType type)
         {
             Definition.Interfaces.Add(new InterfaceImplementation(GetReference(type)));
             _interfaces = null;
         }
 
-        public IMethodBuilder DefineMethod(IType returnType, IEnumerable<IType> args, string name, bool isPublic,
+        public IMethodBuilder DefineMethod(string name, bool isPublic,
             bool isStatic,
             bool isInterfaceImpl, IMethod overrideMethod = null)
         {
@@ -54,16 +55,15 @@ namespace ZenPlatform.Compiler.Cecil
             if (isInterfaceImpl)
                 attrs |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
 
-            var def = new MethodDefinition(name, attrs, GetReference(returnType));
-            if (args != null)
-                foreach (var a in args)
-                    def.Parameters.Add(new ParameterDefinition(GetReference(a)));
+            var def = new MethodDefinition(name, attrs, null);
+
             if (overrideMethod != null)
-                def.Overrides.Add(Definition.Module.ImportReference(((CecilMethod) overrideMethod).Reference));
+                def.Overrides.Add(Definition.Module.ImportReference(((CecilMethod) overrideMethod).Definition));
+
             def.Body.InitLocals = true;
             Definition.Methods.Add(def);
-            var rv = new CecilMethod(TypeSystem, def, SelfReference);
-            ((List<CecilMethod>) Methods).Add(rv);
+            var rv = new CecilMethodBuilder(TypeSystem, def, SelfReference);
+            ((List<IMethod>) Methods).Add(rv);
             return rv;
         }
 
