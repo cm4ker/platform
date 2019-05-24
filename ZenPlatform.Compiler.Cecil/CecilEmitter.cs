@@ -174,6 +174,10 @@ namespace ZenPlatform.Compiler.Cecil
         public IEmitter Emit(SreOpCode code, ILocal local)
             => Emit(Instruction.Create(Dic[code], ((CecilLocal) local).Variable));
 
+        public IEmitter Emit(SreOpCode code, IParameter parameter) =>
+            Emit(Instruction.Create(Dic[code], ((CecilParameter) parameter).ParameterDefinition));
+
+
         public bool InitLocals { get; set; }
 
         private static readonly Guid LanguageGuid = new Guid("9a37fc74-96b5-4dbc-8b8a-c4e603735a63");

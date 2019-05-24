@@ -4,20 +4,50 @@ namespace ZenPlatform.Compiler.Contracts
 {
     public static class TypeSystemExtensions
     {
-        public static IEmitter Ldarg(this IEmitter emitter, int arg)
-            => emitter.Emit(OpCodes.Ldarg, arg);
+        public static IEmitter LdArg(this IEmitter emitter, int arg)
+        {
+            if (arg < 4)
+                switch (arg)
+                {
+                    case 0:
+                        emitter.Emit(OpCodes.Ldarg_0);
+                        break;
+                    case 1:
+                        emitter.Emit(OpCodes.Ldarg_1);
+                        break;
+                    case 2:
+                        emitter.Emit(OpCodes.Ldarg_2);
+                        break;
+                    case 3:
+                        emitter.Emit(OpCodes.Ldarg_3);
+                        break;
+                }
+            else
+                emitter.Emit(OpCodes.Ldarg_S, arg);
 
-        public static IEmitter Ldarg_0(this IEmitter emitter)
+            return emitter;
+        }
+
+        public static IEmitter LdArg_0(this IEmitter emitter)
             => emitter.Emit(OpCodes.Ldarg_0);
 
-        public static IEmitter Ldfld(this IEmitter emitter, IField field)
+        public static IEmitter LdFld(this IEmitter emitter, IField field)
             => emitter.Emit(OpCodes.Ldfld, field);
 
-        public static IEmitter Ldsfld(this IEmitter emitter, IField field)
+        public static IEmitter LdFldA(this IEmitter emitter, IField field)
+            => emitter.Emit(OpCodes.Ldflda, field);
+
+        public static IEmitter LdsFld(this IEmitter emitter, IField field)
             => emitter.Emit(OpCodes.Ldsfld, field);
 
+        public static IEmitter LdsFldA(this IEmitter emitter, IField field)
+            => emitter.Emit(OpCodes.Ldsflda, field);
+
+        public static IEmitter LdArgA(this IEmitter emitter, IParameter parameter)
+            => emitter.Emit(OpCodes.Ldarga, parameter.Sequence - 1);
+
         public static IEmitter LdThisFld(this IEmitter emitter, IField field)
-            => emitter.Ldarg_0().Emit(OpCodes.Ldfld, field);
+            => emitter.LdArg_0().Emit(OpCodes.Ldfld, field);
 
         public static IEmitter Stfld(this IEmitter emitter, IField field)
             => emitter.Emit(OpCodes.Stfld, field);
@@ -28,7 +58,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter LdLoc(this IEmitter emitter, ILocal local)
             => emitter.Emit(OpCodes.Ldloc, local);
 
-        public static IEmitter LdLoca(this IEmitter emitter, ILocal local)
+        public static IEmitter LdLocA(this IEmitter emitter, ILocal local)
             => emitter.Emit(OpCodes.Ldloca, local);
 
         public static IEmitter StLoc(this IEmitter emitter, ILocal local)
@@ -134,6 +164,8 @@ namespace ZenPlatform.Compiler.Contracts
             => emitter.Emit(OpCodes.Newarr, type);
 
         public static IEmitter Ldelem_ref(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelem_Ref);
+
+        public static IEmitter LdElemA(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelema);
         public static IEmitter Stelem_ref(this IEmitter emitter) => emitter.Emit(OpCodes.Stelem_Ref);
         public static IEmitter Ldlen(this IEmitter emitter) => emitter.Emit(OpCodes.Ldlen);
 
@@ -161,6 +193,17 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter StElemI4(this IEmitter emitter) => emitter.Emit(OpCodes.Stelem_I4);
         public static IEmitter LdElemI4(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelem_I4);
 
+        public static IEmitter LdIndI4(this IEmitter emitter) => emitter.Emit(OpCodes.Ldind_I4);
+        public static IEmitter StIndI4(this IEmitter emitter) => emitter.Emit(OpCodes.Stind_I4);
+
+        public static IEmitter ConvI4(this IEmitter emitter) => emitter.Emit(OpCodes.Conv_I4);
+        public static IEmitter ConvR4(this IEmitter emitter) => emitter.Emit(OpCodes.Conv_R4);
+        public static IEmitter ConvR8(this IEmitter emitter) => emitter.Emit(OpCodes.Conv_R8);
+        public static IEmitter ConvU2(this IEmitter emitter) => emitter.Emit(OpCodes.Conv_U2);
+
+        public static IEmitter LdStr(this IEmitter emitter, string str) => emitter.Emit(OpCodes.Ldstr, str);
+
+        public static IEmitter LdcR8(this IEmitter emitter, double value) => emitter.Emit(OpCodes.Ldc_R8, value);
 
         public static IEmitter StArg(this IEmitter emitter, IParameter parameter) =>
             emitter.Emit(OpCodes.Stelem_I4, parameter);

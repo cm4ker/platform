@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
-using Mono.Cecil;
+
 
 namespace ZenPlatform.Compiler
 {
@@ -33,19 +33,19 @@ namespace ZenPlatform.Compiler
 
                 conf.OnExecute(() =>
                 {
-                    CompilationBackend cb = new CompilationBackend();
-                    var ad = AssemblyDefinition.CreateAssembly(
-                        new AssemblyNameDefinition(assemblyName.Name, Version.Parse("1.0.0.0")), assemblyName.Value,
-                        ModuleKind.Dll);
-
-
-                    foreach (var file in fileArg.Values)
-                    {
-                        using (var fs = File.OpenRead(file))
-                            cb.Compile(fs, ad);
-                    }
-
-                    ad.Write(outArg.Value);
+//                    CompilationBackend cb = new CompilationBackend();
+//                    var ad = AssemblyDefinition.CreateAssembly(
+//                        new AssemblyNameDefinition(assemblyName.Name, Version.Parse("1.0.0.0")), assemblyName.Value,
+//                        ModuleKind.Dll);
+//
+//
+//                    foreach (var file in fileArg.Values)
+//                    {
+//                        using (var fs = File.OpenRead(file))
+//                            cb.Compile(fs, ad);
+//                    }
+//
+//                    ad.Write(outArg.Value);
                 });
             });
         }

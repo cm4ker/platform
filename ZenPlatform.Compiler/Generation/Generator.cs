@@ -2,17 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Cecil.Backend;
+
 using ZenPlatform.Compiler.Contracts;
-using TypeResolver = ZenPlatform.Compiler.Cecil.Backend.TypeResolver;
+
 using SreTA = System.Reflection.TypeAttributes;
 
 
@@ -72,7 +70,6 @@ namespace ZenPlatform.Compiler.Generation
             foreach (var item in PrebuildFunctions(module.TypeBody, typeBuilder))
             {
                 BuildFunction(item.Item1, item.Item2);
-                td.Methods.Add(item.Item2);
             }
         }
 
@@ -92,7 +89,6 @@ namespace ZenPlatform.Compiler.Generation
             foreach (var item in PrebuildFunctions(@class.TypeBody, tb))
             {
                 BuildFunction(item.Item1, item.Item2);
-                td.Methods.Add(item.Item2);
             }
         }
 
@@ -216,11 +212,11 @@ namespace ZenPlatform.Compiler.Generation
                     if (variable.SyntaxObject is ITypedNode tn)
                         name.Type = tn.Type;
 
-                if (variable.CodeObject is VariableDefinition vd)
+                if (variable.CodeObject is ILocal vd)
                     e.LdLoc(vd);
-                else if (variable.CodeObject is FieldDefinition fd)
+                else if (variable.CodeObject is IField fd)
                     e.LdsFld(fd);
-                else if (variable.CodeObject is ParameterDefinition pd)
+                else if (variable.CodeObject is IParameter pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
                     e.LdArg(pd.Sequence);
@@ -319,16 +315,16 @@ namespace ZenPlatform.Compiler.Generation
             if (function == null)
                 throw new ArgumentNullException();
 
-            IEmitter il = function.Builder;
-            il.InitLocals = true;
+            IEmitter emitter = function.Builder;
+            emitter.InitLocals = true;
 
             EmitBody(emitter, function.InstructionsBody, null, null);
 
-            il.Ret();
+            emitter.Ret();
         }
 
 
-        private void EmitConvert(Emitter e, CastExpression expression, SymbolTable symbolTable)
+        private void EmitConvert(IEmitter e, CastExpression expression, SymbolTable symbolTable)
         {
             if (expression.Value is Name name)
             {
@@ -357,7 +353,7 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        private void EmitConvCode(Emitter e, ZType type)
+        private void EmitConvCode(IEmitter e, IType type)
         {
             switch (type)
             {
@@ -375,17 +371,17 @@ namespace ZenPlatform.Compiler.Generation
             throw new Exception("Converting to this value not supported");
         }
 
-        private void EmitIncrement(Emitter e, ZType type)
+        private void EmitIncrement(IEmitter e, IType type)
         {
             EmitAddValue(e, type, 1);
         }
 
-        private void EmitDecrement(Emitter e, ZType type)
+        private void EmitDecrement(IEmitter e, IType type)
         {
             EmitAddValue(e, type, -1);
         }
 
-        private void EmitAddValue(Emitter e, ZType type, int value)
+        private void EmitAddValue(IEmitter e, IType type, int value)
         {
             switch (type)
             {

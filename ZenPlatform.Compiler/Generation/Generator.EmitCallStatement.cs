@@ -1,11 +1,9 @@
-using Mono.Cecil;
-using Mono.Cecil.Cil;
+
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Cecil.Backend;
 using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Generation
@@ -58,39 +56,39 @@ namespace ZenPlatform.Compiler.Generation
                             if (argument.Value is Name)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is VariableDefinition definition)
+                                if (variable.CodeObject is ILocal definition)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
                                     il.LdLocA(definition);
                                 }
-                                else if (variable.CodeObject is FieldDefinition variableCodeObject)
+                                else if (variable.CodeObject is IField variableCodeObject)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
                                     il.LdsFldA(variableCodeObject);
                                 }
-                                else if (variable.CodeObject is ParameterDefinition pb)
+                                else if (variable.CodeObject is IParameter pb)
                                 {
                                     if (((Parameter) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    il.LdArgA(pb.Sequence - 1);
+                                    il.LdArgA(pb);
                                 }
                             }
                             else if (argument.Value is IndexerExpression ue)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is VariableDefinition vd)
+                                if (variable.CodeObject is ILocal vd)
                                 {
                                     il.LdLoc(vd);
                                 }
-                                else if (variable.CodeObject is FieldDefinition df)
+                                else if (variable.CodeObject is IField df)
                                 {
                                     il.LdsFld(df);
                                 }
-                                else if (variable.CodeObject is ParameterDefinition pd)
+                                else if (variable.CodeObject is IParameter pd)
                                 {
-                                    il.LdArgA(pd.Sequence - 1);
+                                    il.LdArgA(pd);
                                 }
 
                                 EmitExpression(il, ue.Indexer, symbolTable);
@@ -109,7 +107,7 @@ namespace ZenPlatform.Compiler.Generation
                 }
 
                 Hack:
-                il.Call(((MethodDefinition) symbol.CodeObject));
+                il.EmitCall((IMethod) symbol.CodeObject);
             }
         }
     }

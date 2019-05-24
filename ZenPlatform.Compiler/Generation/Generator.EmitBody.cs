@@ -1,13 +1,11 @@
 using System;
 using System.Linq;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
+
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Cecil.Backend;
 using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Generation
@@ -207,7 +205,7 @@ namespace ZenPlatform.Compiler.Generation
                 var symbol = context.SymbolTable.Find(pis.Name.Value, SymbolType.Variable) ??
                              throw new Exception($"Variable {pis.Name} not found");
 
-                ZType opType = null;
+                IType opType = null;
                 if (symbol.SyntaxObject is Parameter p)
                     opType = p.Type;
                 else if (symbol.SyntaxObject is Variable v)
@@ -230,7 +228,7 @@ namespace ZenPlatform.Compiler.Generation
                 var symbol = context.SymbolTable.Find(pds.Name.Value, SymbolType.Variable) ??
                              throw new Exception($"Variable {pds.Name} not found");
 
-                ZType opType = null;
+                IType opType = null;
                 if (symbol.SyntaxObject is Parameter p)
                     opType = p.Type;
                 else if (symbol.SyntaxObject is Variable v)

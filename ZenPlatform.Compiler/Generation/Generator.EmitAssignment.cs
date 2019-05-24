@@ -1,9 +1,6 @@
-using Mono.Cecil;
-using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Cecil.Backend;
 using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Generation
@@ -19,7 +16,7 @@ namespace ZenPlatform.Compiler.Generation
             // Non-indexed assignment
             if (assignment.Index == null)
             {
-                if (variable.CodeObject is ParameterDefinition pd)
+                if (variable.CodeObject is IParameter pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
@@ -30,25 +27,25 @@ namespace ZenPlatform.Compiler.Generation
                 EmitExpression(il, assignment.Value, symbolTable);
 
                 // Store
-                if (variable.CodeObject is VariableDefinition vd)
+                if (variable.CodeObject is ILocal vd)
                     il.StLoc(vd);
-                else if (variable.CodeObject is FieldDefinition fd)
+                else if (variable.CodeObject is IField fd)
                     il.LdsFld(fd);
-                else if (variable.CodeObject is ParameterDefinition)
+                else if (variable.CodeObject is IParameter ppd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
                         il.StIndI4();
                     else
-                        il.StArg((ParameterDefinition) variable.CodeObject);
+                        il.StArg(ppd);
                 }
             }
             else
             {
                 // Load array.
-                if (variable.CodeObject is VariableDefinition vd)
+                if (variable.CodeObject is ILocal vd)
                     il.LdLoc(vd);
-                else if (variable.CodeObject is FieldDefinition fd)
+                else if (variable.CodeObject is IField fd)
                     il.LdsFld(fd);
                 // Load index.
                 EmitExpression(il, assignment.Index, symbolTable);
