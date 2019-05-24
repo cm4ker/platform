@@ -101,6 +101,12 @@ namespace ZenPlatform.Compiler.Sre
             return this;
         }
 
+        public IEmitter Emit(OpCode code, IParameter parameter)
+        {
+            _ilg.Emit(code, ((SreParameter) parameter).ParameterInfo.Position);
+            return this;
+        }
+
         public bool InitLocals
         {
             get => _provider.InitLocals;

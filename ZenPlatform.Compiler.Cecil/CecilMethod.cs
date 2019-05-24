@@ -55,5 +55,4 @@ namespace ZenPlatform.Compiler.Cecil
             return this;
         }
     }
-
- }
+}

@@ -6,21 +6,22 @@ namespace ZenPlatform.Compiler.Cecil
     public class CecilParameter : IParameter
     {
         private readonly CecilTypeSystem _ts;
-        private readonly ParameterDefinition _pi;
+        private readonly ParameterDefinition _pd;
 
         public CecilParameter(CecilTypeSystem ts, ParameterDefinition pi)
         {
             _ts = ts;
-            _pi = pi;
+            _pd = pi;
         }
 
+        public ParameterDefinition ParameterDefinition => _pd;
+        public string Name => ParameterDefinition.Name;
+        public IType Type => _ts.Resolve(ParameterDefinition.ParameterType);
+        public int Sequence => _pd.Sequence;
 
         public bool Equals(IParameter other)
         {
             throw new System.NotImplementedException();
         }
-
-        public string Name => _pi.Name;
-        public IType Type => _ts.Resolve(_pi.ParameterType);
     }
 }

@@ -16,5 +16,7 @@ namespace ZenPlatform.Compiler.Contracts
         /// Parameter type
         /// </summary>
         IType Type { get; }
+
+        int Sequence { get; }
     }
 }

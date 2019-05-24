@@ -1,17 +1,16 @@
-using Mono.Cecil;
-using Mono.Cecil.Cil;
+
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Cecil.Backend;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitCall(Emitter e, Call call, SymbolTable symbolTable)
+        private void EmitCall(IEmitter e, Call call, SymbolTable symbolTable)
         {
             Symbol symbol = symbolTable.Find(call.Name, SymbolType.Function);
 
@@ -58,39 +57,39 @@ namespace ZenPlatform.Compiler.Generation
                             if (argument.Value is Name)
                             {
                                 Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is VariableDefinition vd)
+                                if (variable.CodeObject is ILocal vd)
                                 {
                                     e.LdLocA(vd);
                                 }
-                                else if (variable.CodeObject is FieldDefinition fd)
+                                else if (variable.CodeObject is IField fd)
                                 {
                                     e.LdsFldA(fd);
                                 }
-                                else if (variable.CodeObject is ParameterDefinition pb)
+                                else if (variable.CodeObject is IParameter pb)
                                 {
-                                    e.LdArgA(pb.Sequence - 1);
+                                    e.LdArgA(pb);
                                 }
                             }
                             else if (argument.Value is IndexerExpression ue)
                             {
-                                Symbol variable = symbolTable.Find(((Name)ue.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is VariableDefinition codeObject)
+                                Symbol variable = symbolTable.Find(((Name) ue.Value).Value, SymbolType.Variable);
+                                if (variable.CodeObject is ILocal codeObject)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
                                     e.LdLocA(codeObject);
                                 }
-                                else if (variable.CodeObject is FieldDefinition definition)
+                                else if (variable.CodeObject is IField definition)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
                                     e.LdsFldA(definition);
                                 }
-                                else if (variable.CodeObject is ParameterDefinition pd)
+                                else if (variable.CodeObject is IParameter pd)
                                 {
                                     if (((Parameter) variable.SyntaxObject).Type.IsArray)
                                         Error("ref cannot be applied to arrays");
-                                    e.LdArgA(pd.Sequence - 1);
+                                    e.LdArgA(pd);
                                 }
 
                                 EmitExpression(e, ue.Indexer, symbolTable);
@@ -109,7 +108,7 @@ namespace ZenPlatform.Compiler.Generation
                 }
 
                 Hack:
-                e.Call(((MethodDefinition) symbol.CodeObject));
+                e.EmitCall((IMethod) symbol.CodeObject);
             }
             else
             {
