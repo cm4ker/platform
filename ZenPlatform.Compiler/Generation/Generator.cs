@@ -22,6 +22,8 @@ namespace ZenPlatform.Compiler.Generation
     {
         private readonly CompilationUnit _compilationUnit;
         private readonly IAssemblyBuilder _asm;
+        private readonly ITypeSystem _ts;
+
 
         private SymbolTable _typeSymbols;
         private SymbolTable _functions = new SymbolTable();
@@ -34,13 +36,8 @@ namespace ZenPlatform.Compiler.Generation
         public Generator(CompilationUnit compilationUnit, IAssemblyBuilder asm)
         {
             _compilationUnit = compilationUnit;
-
-            AstSymbolVisitor asv = new AstSymbolVisitor();
-            asv.Visit(_compilationUnit);
-
             _asm = asm;
-
-            _typeResolver = new TypeResolver(compilationUnit, _asm);
+            _ts = asm.TypeSystem;
 
             foreach (var typeEntity in compilationUnit.TypeEntities)
             {
@@ -72,7 +69,7 @@ namespace ZenPlatform.Compiler.Generation
 
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
-            foreach (var item in PrebuildFunctions(module.TypeBody))
+            foreach (var item in PrebuildFunctions(module.TypeBody, typeBuilder))
             {
                 BuildFunction(item.Item1, item.Item2);
                 td.Methods.Add(item.Item2);
@@ -81,15 +78,10 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitClass(Class @class)
         {
-            _dllModule = _asm.MainModule;
-
-            TypeDefinition td = new TypeDefinition(ASM_NAMESPACE, @class.Name,
-                TypeAttributes.Class | TypeAttributes.NotPublic |
-                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
-                _dllModule.TypeSystem.Object);
-
-
-            _dllModule.Types.Add(td);
+            var tb = _asm.DefineType(ASM_NAMESPACE, @class.Name,
+                SreTA.Class | SreTA.NotPublic |
+                SreTA.BeforeFieldInit | SreTA.AnsiClass,
+                _bindings.Object);
 
             _typeSymbols = new SymbolTable();
 
@@ -97,15 +89,11 @@ namespace ZenPlatform.Compiler.Generation
 
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
-            foreach (var item in PrebuildFunctions(@class.TypeBody))
+            foreach (var item in PrebuildFunctions(@class.TypeBody, tb))
             {
                 BuildFunction(item.Item1, item.Item2);
                 td.Methods.Add(item.Item2);
             }
-        }
-
-        public void Emit()
-        {
         }
 
         private void Error(string message)
@@ -113,26 +101,7 @@ namespace ZenPlatform.Compiler.Generation
             throw new Exception(message);
         }
 
-
-        private TypeReference ToCecilType(Type type)
-        {
-            switch (Type.GetTypeCode(type))
-            {
-                case TypeCode.Int32: return _dllModule.TypeSystem.Int32;
-                case TypeCode.Boolean: return _dllModule.TypeSystem.Boolean;
-                case TypeCode.String: return _dllModule.TypeSystem.String;
-                case TypeCode.Double: return _dllModule.TypeSystem.Double;
-                case TypeCode.Char: return _dllModule.TypeSystem.Char;
-                case TypeCode.Object when type == typeof(void): return _dllModule.TypeSystem.Void;
-                case TypeCode.Object: return _dllModule.ImportReference(type);
-                default:
-                {
-                    return null;
-                }
-            }
-        }
-
-        private void EmitExpression(Emitter e, Expression expression, SymbolTable symbolTable)
+        private void EmitExpression(IEmitter e, Expression expression, SymbolTable symbolTable)
         {
             if (expression is BinaryExpression)
             {
@@ -278,13 +247,13 @@ namespace ZenPlatform.Compiler.Generation
         /// <param name="builder"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        private List<(Function, MethodDefinition)> PrebuildFunctions(TypeBody typeBody)
+        private List<(Function, IMethodBuilder)> PrebuildFunctions(TypeBody typeBody, ITypeBuilder tb)
         {
             if (typeBody == null)
                 throw new ArgumentNullException();
 
 
-            List<(Function, MethodDefinition)> result = new List<(Function, MethodDefinition)>();
+            List<(Function, IMethodBuilder)> result = new List<(Function, IMethodBuilder)>();
 
             if (typeBody != null && typeBody.Functions != null)
             {
@@ -296,10 +265,14 @@ namespace ZenPlatform.Compiler.Generation
                     // Make child visible to sibillings
                     function.InstructionsBody.SymbolTable = symbolTable;
 
-                    // Create method.
-                    MethodDefinition method = new MethodDefinition(function.Name,
-                        MethodAttributes.Public | MethodAttributes.Static
-                                                | MethodAttributes.HideBySig, _typeResolver.Resolve(function.Type));
+
+                    foreach (var parameter in function.Parameters)
+                    {
+                    }
+
+
+                    var method = tb.DefineMethod(function.Name, true, true, false)
+                        .WithReturnType(function.Type);
 
                     result.Add((function, method));
 
@@ -312,7 +285,7 @@ namespace ZenPlatform.Compiler.Generation
             return result;
         }
 
-        private MethodDefinition BuildFunction(Function function, MethodDefinition method)
+        private IMethodBuilder BuildFunction(Function function, IMethodBuilder method)
         {
             if (function == null)
                 throw new ArgumentNullException();
@@ -325,37 +298,16 @@ namespace ZenPlatform.Compiler.Generation
             while (_functions.Find(functionName, SymbolType.Function) != null)
                 functionName += "#";
 
-            // Find parameters.
-            TypeReference[] parameters = null;
             if (function.Parameters != null)
             {
-                parameters = new TypeReference[function.Parameters.Count];
-
-                for (int x = 0; x < function.Parameters.Count; x++)
+                foreach (var p in function.Parameters)
                 {
-                    parameters[x] = _typeResolver.Resolve(function.Parameters[x].Type);
+                    method.WithParameter(p.Name, p.Type, false, false);
                 }
             }
 
-            function.Builder = method.Body.GetILProcessor();
+            function.Builder = method.Generator;
 
-            if (function.Parameters != null)
-            {
-                for (int x = 0; x < function.Parameters.Count; x++)
-                {
-                    var pType = function.Parameters[x].Type;
-                    var pName = function.Parameters[x].Name;
-
-
-                    ParameterDefinition p = new ParameterDefinition(pName, ParameterAttributes.None,
-                        parameters[x]);
-
-                    function.InstructionsBody.SymbolTable.Add(pName, SymbolType.Variable,
-                        function.Parameters[x], p);
-
-                    method.Parameters.Add(p);
-                }
-            }
 
             EmitFunction(function);
 
@@ -367,31 +319,12 @@ namespace ZenPlatform.Compiler.Generation
             if (function == null)
                 throw new ArgumentNullException();
 
-            ILProcessor il = function.Builder;
-            il.Body.InitLocals = true;
+            IEmitter il = function.Builder;
+            il.InitLocals = true;
 
-            var emitter = new Emitter(il);
+            EmitBody(emitter, function.InstructionsBody, null, null);
 
-
-            var returnVariable = new VariableDefinition(_typeResolver.Resolve(function.Type));
-            var returnInstruction = new Label(il.Create(OpCodes.Ldloc, returnVariable));
-
-            var isVoid = function.Type == null || function.Type is ZVoid;
-
-            if (!isVoid)
-            {
-                il.Body.Variables.Add(returnVariable);
-            }
-
-            EmitBody(emitter, function.InstructionsBody, returnInstruction, returnVariable);
-
-
-            if (!isVoid)
-                emitter.Append(returnInstruction);
-            il.Emit(OpCodes.Ret);
-
-//            if (function.Type == null || function.Type.PrimitiveType == PrimitiveType.Void)
-//                il.Append(Mono.Cecil.Cil.OpCodes.Ret);
+            il.Ret();
         }
 
 

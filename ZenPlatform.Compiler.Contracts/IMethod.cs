@@ -8,7 +8,7 @@ namespace ZenPlatform.Compiler.Contracts
         bool IsPublic { get; }
         bool IsStatic { get; }
         IType ReturnType { get; }
-        IReadOnlyList<IType> Parameters { get; }
+        IReadOnlyList<IParameter> Parameters { get; }
         IType DeclaringType { get; }
     }
 }

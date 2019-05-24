@@ -4,12 +4,13 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Cecil.Backend;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitAssignment(Emitter il, Assignment assignment, SymbolTable symbolTable)
+        private void EmitAssignment(IEmitter il, Assignment assignment, SymbolTable symbolTable)
         {
             Symbol variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
             if (variable == null)

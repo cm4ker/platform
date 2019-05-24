@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// IL method builder.
         /// </summary>
-        public ILProcessor Builder;
+        public IEmitter Builder;
 
         /// <summary>
         /// Creates a function object.

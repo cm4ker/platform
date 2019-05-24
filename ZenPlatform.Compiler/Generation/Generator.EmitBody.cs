@@ -8,13 +8,14 @@ using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Cecil.Backend;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitBody(Emitter e, InstructionsBodyNode body, Label returnLabel,
-            VariableDefinition returnVariable)
+        private void EmitBody(IEmitter e, InstructionsBodyNode body, ILabel returnLabel,
+            ILocal returnVariable)
         {
             foreach (Statement statement in body.Statements)
             {
@@ -28,16 +29,12 @@ namespace ZenPlatform.Compiler.Generation
         }
 
 
-        private void EmitStatement(Emitter e, Statement statement, InstructionsBodyNode context,
-            Label returnLabel, VariableDefinition returnVariable)
+        private void EmitStatement(IEmitter e, Statement statement, InstructionsBodyNode context,
+            ILabel returnLabel, ILocal returnVariable)
         {
             if (statement is Variable variable)
             {
-                VariableDefinition local =
-                    new VariableDefinition(_typeResolver.Resolve(variable.Type));
-
-                e.Variable(local);
-
+                ILocal local = e.DefineLocal(variable.Type);
                 context.SymbolTable.Add(variable.Name, SymbolType.Variable, variable, local);
 
                 //
@@ -59,7 +56,7 @@ namespace ZenPlatform.Compiler.Generation
                     if (variable.Value != null && variable.Value is Expression value)
                     {
                         EmitExpression(e, value, context.SymbolTable);
-                        e.NewArr(_typeResolver.Resolve(variable.Type));
+                        e.NewArr(variable.Type);
                         e.StLoc(local);
                     }
                     else if (variable.Value != null && variable.Value is ElementCollection)
@@ -67,7 +64,7 @@ namespace ZenPlatform.Compiler.Generation
                         ElementCollection elements = variable.Value as ElementCollection;
 
                         e.LdcI4(elements.Count);
-                        e.NewArr(_typeResolver.Resolve(variable.Type));
+                        e.NewArr(variable.Type);
                         e.StLoc(local);
 
                         for (int x = 0; x < elements.Count; x++)
@@ -104,7 +101,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (symbol != null)
                 {
-                    if (((MethodDefinition) symbol.CodeObject).ReturnType != _dllModule.TypeSystem.Void)
+                    if (((IMethod) symbol.CodeObject).ReturnType != _bindings.Void)
                         e.Pop();
                 }
                 else
@@ -121,10 +118,10 @@ namespace ZenPlatform.Compiler.Generation
                 if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody == null)
                 {
                     ifStatement.IfInstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
-                    var exit = new Label();
+                    var exit = e.DefineLabel();
                     e.BrFalse(exit);
                     EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, returnVariable);
-                    e.Append(exit.Instruction);
+                    e.MarkLabel(exit);
                 }
                 else if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody != null)
                 {
@@ -132,16 +129,15 @@ namespace ZenPlatform.Compiler.Generation
                     ifStatement.ElseInstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
 
 
-                    Label exit = new Label();
-                    Label elseLabel = new Label();
+                    ILabel exit = e.DefineLabel();
+                    ILabel elseLabel = e.DefineLabel();
 
                     e.BrFalse(elseLabel);
                     EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, returnVariable);
-                    if (e.MethodBody.Instructions.Last().OpCode != OpCodes.Br)
-                        e.Br(exit);
-                    e.Append(elseLabel.Instruction);
+                    e.Br(exit);
+                    e.MarkLabel(elseLabel);
                     EmitBody(e, ifStatement.ElseInstructionsBody, returnLabel, returnVariable);
-                    e.Append(exit.Instruction);
+                    e.MarkLabel(exit);
                 }
             }
 
@@ -153,17 +149,17 @@ namespace ZenPlatform.Compiler.Generation
 
                 While whileStatement = statement as While;
                 whileStatement.InstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
-                Label begin = new Label();
-                Label exit = new Label();
+                ILabel begin = e.DefineLabel();
+                ILabel exit = e.DefineLabel();
 
-                e.Append(begin);
+                e.MarkLabel(begin);
                 // Eval condition
                 EmitExpression(e, whileStatement.Condition, context.SymbolTable);
                 e.BrFalse(exit);
                 EmitBody(e, whileStatement.InstructionsBody, returnLabel, returnVariable);
 
                 e.Br(begin)
-                    .Append(exit);
+                    .MarkLabel(exit);
             }
             else if (statement is Do)
             {
@@ -174,8 +170,8 @@ namespace ZenPlatform.Compiler.Generation
                 Do doStatement = statement as Do;
                 doStatement.InstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
 
-                Label loop = new Label();
-                e.Append(loop);
+                ILabel loop = e.DefineLabel();
+                e.MarkLabel(loop);
                 EmitBody(e, doStatement.InstructionsBody, returnLabel, returnVariable);
                 EmitExpression(e, doStatement.Condition, context.SymbolTable);
                 e.BrTrue(loop);
@@ -189,12 +185,12 @@ namespace ZenPlatform.Compiler.Generation
                 For forStatement = statement as For;
                 forStatement.InstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
 
-                Label loop = new Label();
-                Label exit = new Label();
+                ILabel loop = e.DefineLabel();
+                ILabel exit = e.DefineLabel();
 
                 // Emit initializer
                 EmitStatement(e, forStatement.Initializer, context, returnLabel, returnVariable);
-                e.Append(loop);
+                e.MarkLabel(loop);
                 // Emit condition
                 EmitExpression(e, forStatement.Condition, context.SymbolTable);
                 e.BrFalse(exit);
@@ -204,7 +200,7 @@ namespace ZenPlatform.Compiler.Generation
                 EmitStatement(e, forStatement.Counter, context, returnLabel, returnVariable);
                 //EmitAssignment(il, forStatement.Counter, context.SymbolTable);
                 e.Br(loop);
-                e.Append(exit);
+                e.MarkLabel(exit);
             }
             else if (statement is PostIncrementStatement pis)
             {
@@ -223,9 +219,10 @@ namespace ZenPlatform.Compiler.Generation
                 EmitIncrement(e, opType);
                 e.Add();
 
-                if (symbol.CodeObject is ParameterDefinition pd)
+                if (symbol.CodeObject is IParameter pd)
                     e.StArg(pd);
-                if (symbol.CodeObject is VariableDefinition vd)
+
+                if (symbol.CodeObject is ILocal vd)
                     e.StLoc(vd);
             }
             else if (statement is PostDecrementStatement pds)
@@ -245,9 +242,10 @@ namespace ZenPlatform.Compiler.Generation
                 EmitDecrement(e, opType);
                 e.Add();
 
-                if (symbol.CodeObject is ParameterDefinition pd)
+                if (symbol.CodeObject is IParameter pd)
                     e.StArg(pd);
-                if (symbol.CodeObject is VariableDefinition vd)
+
+                if (symbol.CodeObject is ILocal vd)
                     e.StLoc(vd);
             }
         }

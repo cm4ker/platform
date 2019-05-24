@@ -12,12 +12,14 @@ namespace ZenPlatform.Compiler.Cecil
     public class CecilAssembly : IAssembly, IAssemblyBuilder
     {
         private Dictionary<string, CecilType> _typeCache = new Dictionary<string, CecilType>();
-        public CecilTypeSystem TypeSystem { get; }
+
+        public ITypeSystem TypeSystem => _typeSystem;
+
         public AssemblyDefinition Assembly { get; }
 
         public CecilAssembly(CecilTypeSystem typeSystem, AssemblyDefinition assembly)
         {
-            TypeSystem = typeSystem;
+            _typeSystem = typeSystem;
             Assembly = assembly;
         }
 
@@ -25,9 +27,10 @@ namespace ZenPlatform.Compiler.Cecil
 
         public string Name => Assembly.Name.Name;
         private IReadOnlyList<ICustomAttribute> _attributes;
+        private readonly CecilTypeSystem _typeSystem;
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes =>
-            _attributes ??= Assembly.CustomAttributes.Select(ca => new CecilCustomAttribute(TypeSystem, ca))
+            _attributes ??= Assembly.CustomAttributes.Select(ca => new CecilCustomAttribute(_typeSystem, ca))
                 .ToList();
 
         public IType FindType(string fullName)
@@ -42,7 +45,7 @@ namespace ZenPlatform.Compiler.Cecil
                     fullName.Substring(lastDot + 1), Assembly.MainModule, asmRef);
             var resolved = tref.Resolve();
             if (resolved != null)
-                return _typeCache[fullName] = TypeSystem.GetTypeFor(resolved);
+                return _typeCache[fullName] = _typeSystem.GetTypeFor(resolved);
 
             return null;
         }
@@ -54,9 +57,9 @@ namespace ZenPlatform.Compiler.Cecil
 
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
-            return new CecilTypeBuilder(TypeSystem, this,
+            return new CecilTypeBuilder(_typeSystem, this,
                 new TypeDefinition(@namespace, name, SreMapper.Convert(typeAttributes),
-                    TypeSystem.GetTypeReference(baseType)));
+                    _typeSystem.GetTypeReference(baseType)));
         }
     }
 }

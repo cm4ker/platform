@@ -11,7 +11,7 @@ namespace ZenPlatform.Compiler.Sre
     {
         private readonly MethodBase _method;
 
-        private IReadOnlyList<IType> _parameters;
+        private IReadOnlyList<IParameter> _parameters;
 
         public SreMethodBase(SreTypeSystem system, MethodBase method) : base(system, method)
         {
@@ -21,8 +21,7 @@ namespace ZenPlatform.Compiler.Sre
         public bool IsPublic => _method.IsPublic;
         public bool IsStatic => _method.IsStatic;
 
-        public IReadOnlyList<IType> Parameters =>
-            _parameters ?? (_parameters = _method.GetParameters()
-                .Select(p => System.ResolveType(p.ParameterType)).ToList());
+        public IReadOnlyList<IParameter> Parameters => _parameters ??= _method.GetParameters()
+            .Select(p => new SreParameter(System, p)).ToList();
     }
 }

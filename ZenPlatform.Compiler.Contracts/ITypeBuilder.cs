@@ -11,7 +11,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         IField DefineField(IType type, string name, bool isPublic, bool isStatic);
 
-        IMethodBuilder DefineMethod(IType returnType, IEnumerable<IType> args, string name,
+        IMethodBuilder DefineMethod(string name,
             bool isPublic, bool isStatic,
             bool isInterfaceImpl, IMethod overrideMethod = null);
 

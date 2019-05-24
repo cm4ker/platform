@@ -21,6 +21,9 @@ namespace ZenPlatform.Compiler.Contracts
         IEmitter MarkLabel(ILabel label);
         IEmitter Emit(OpCode code, ILabel label);
         IEmitter Emit(OpCode code, ILocal local);
+        IEmitter Emit(OpCode code, IParameter parameter);
+
+        bool InitLocals { get; set; }
 
         void InsertSequencePoint(IFileSource file, int line, int position);
         SymbolTable SymbolTable { get; }

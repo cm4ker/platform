@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Reflection.Metadata;
 using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Sre
@@ -8,7 +9,10 @@ namespace ZenPlatform.Compiler.Sre
     class SreMethod : SreMethodBase, IMethod
     {
         public MethodInfo Method { get; }
-        private readonly SreTypeSystem _system;
+        readonly SreTypeSystem _system;
+
+        protected SreTypeSystem TypeSystem => _system;
+
 
         public SreMethod(SreTypeSystem system, MethodInfo method) : base(system, method)
         {

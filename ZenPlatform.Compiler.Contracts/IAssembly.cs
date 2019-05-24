@@ -10,6 +10,9 @@ namespace ZenPlatform.Compiler.Contracts
         IType FindType(string fullName);
 
         void Write(string fileName);
+
+
+        ITypeSystem TypeSystem { get; }
     }
 
     public interface IAssemblyFactory
