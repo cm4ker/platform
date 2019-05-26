@@ -7,6 +7,6 @@ namespace ZenPlatform.Compiler.Visitor
 
     public interface IVisitor
     {
-        
+        T Visit<T>(IVisitable visitable);
     }
 }
