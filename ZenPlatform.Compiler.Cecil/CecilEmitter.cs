@@ -162,6 +162,71 @@ namespace ZenPlatform.Compiler.Cecil
 
         public ILabel DefineLabel() => new CecilLabel();
 
+        private Stack<CecilException> _exceptionStack;
+
+        class CecilException
+        {
+            private readonly CecilEmitter _emitter;
+            private ExceptionHandler _handler;
+            private ExceptionHandlerType _type;
+
+            private CecilLabel _tryStart;
+            private CecilLabel _tryEnd;
+
+            private CecilLabel _handlerStart;
+            private CecilLabel _handlerEnd;
+
+            public CecilException(CecilEmitter emitter)
+            {
+                _emitter = emitter;
+                _tryStart = (CecilLabel) _emitter.DefineLabel();
+            }
+
+            public void WithCatch()
+            {
+                _tryEnd = (CecilLabel) _emitter.DefineLabel();
+                _type = ExceptionHandlerType.Catch;
+            }
+
+            public ILabel Start => _tryStart;
+
+            public void DefferedCreate()
+            {
+                _handler = new ExceptionHandler(_type);
+                _handler.TryStart = _tryStart.Instruction;
+                _handler.TryEnd = _tryEnd.Instruction;
+                _handler.HandlerStart = _handlerStart.Instruction;
+                _handler.HandlerEnd = _handlerEnd.Instruction;
+
+                _emitter._body.ExceptionHandlers.Add(_handler);
+            }
+        }
+
+        public ILabel BeginExceptionBlock()
+        {
+            var ce = new CecilException(this);
+            _exceptionStack.Push(ce);
+
+            return ce.Start;
+        }
+
+        public IEmitter BeginCatchBlock(IType exceptionType)
+        {
+            _exceptionStack.Peek().WithCatch();
+            return this;
+        }
+
+        public IEmitter EndExceptionBlock()
+        {
+            _exceptionStack.Pop().DefferedCreate();
+            return this;
+        }
+
+        public IEmitter ThrowException(IType exceptionType)
+        {
+            return this.Emit(SreOpCodes.Throw, exceptionType);
+        }
+
         public IEmitter MarkLabel(ILabel label)
         {
             _markedLabels.Add((CecilLabel) label);

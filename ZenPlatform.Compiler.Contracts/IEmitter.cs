@@ -18,6 +18,12 @@ namespace ZenPlatform.Compiler.Contracts
         IEmitter Emit(OpCode code, double arg);
         ILocal DefineLocal(IType type);
         ILabel DefineLabel();
+
+        ILabel BeginExceptionBlock();
+        IEmitter BeginCatchBlock(IType exceptionType);
+        IEmitter ThrowException(IType exceptionType);
+        IEmitter EndExceptionBlock();
+
         IEmitter MarkLabel(ILabel label);
         IEmitter Emit(OpCode code, ILabel label);
         IEmitter Emit(OpCode code, ILocal local);
