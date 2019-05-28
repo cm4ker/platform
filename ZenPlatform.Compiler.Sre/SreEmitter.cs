@@ -83,6 +83,29 @@ namespace ZenPlatform.Compiler.Sre
             return new SreLabel(_ilg.DefineLabel());
         }
 
+        public ILabel BeginExceptionBlock()
+        {
+            return new SreLabel(_ilg.BeginExceptionBlock());
+        }
+
+        public IEmitter BeginCatchBlock(IType exceptionType)
+        {
+            _ilg.BeginCatchBlock(((SreType) exceptionType).Type);
+            return this;
+        }
+
+        public IEmitter EndExceptionBlock()
+        {
+            _ilg.EndExceptionBlock();
+            return this;
+        }
+
+        public IEmitter ThrowException(IType exceptionType)
+        {
+            _ilg.ThrowException(((SreType) exceptionType).Type);
+            return this;
+        }
+
         public IEmitter MarkLabel(ILabel label)
         {
             _ilg.MarkLabel(((SreLabel) label).Label);
