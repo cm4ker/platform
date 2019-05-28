@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Expressions
 {
@@ -17,6 +18,12 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expressions
             Right = right;
             Left = left;
             BinaryOperatorType = binaryOperatorType;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Right);
+            visitor.Visit(Left);
         }
     }
 }

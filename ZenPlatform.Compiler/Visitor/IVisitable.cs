@@ -1,13 +1,40 @@
 namespace ZenPlatform.Compiler.Visitor
 {
-    public interface IVisitable
+    public class Visitor
     {
-        T Accept<T>(IVisitor visitor);
+        private readonly VisitorContext _context;
+
+        public Visitor(VisitorContext context)
+        {
+            _context = context;
+        }
+
+        public void Visit(Item item)
+        {
+            _context.SetVisitor(new Visitor(_context));
+        }
     }
 
-    public interface IVisitor
-    
+    public class VisitorContext
     {
-        T Visit<T>(IVisitable visitable);
+        private Visitor _visitor;
+
+        public void SetVisitor(Visitor visitor)
+        {
+            _visitor = visitor;
+        }
+
+        public void Visit(Item item)
+        {
+            _visitor.Visit(item);
+        }
+    }
+
+    public class Item
+    {
+        public void Accept(VisitorContext visitor)
+        {
+            visitor.Visit();
+        }
     }
 }

@@ -1,4 +1,5 @@
 using Antlr4.Runtime;
+using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Compiler.AST
@@ -27,7 +28,7 @@ namespace ZenPlatform.Compiler.AST
         }
     }
 
-    public class AstNode : ILineInfo, IChildItem<AstNode>, IAstNode
+    public abstract class AstNode : ILineInfo, IChildItem<AstNode>, IAstNode, IVisitable
     {
         public AstNode(ILineInfo lineInfo)
         {
@@ -43,5 +44,7 @@ namespace ZenPlatform.Compiler.AST
         public int Position { get; set; }
 
         public AstNode Parent { get; set; }
+
+        public abstract void Accept(IVisitor visitor);
     }
 }

@@ -1,6 +1,7 @@
 using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Expressions
 {
@@ -19,7 +20,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expressions
 
     public class CastExpression : UnaryExpression
     {
-        public IType CastType { get; }
+        public IType CastType { get; set; }
 
         public CastExpression(ILineInfo token, Expression value, IType castType) : base(token, value)
         {
@@ -27,6 +28,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expressions
         }
 
         public override IType Type => CastType;
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Value);
+        }
     }
 
     public class IndexerExpression : UnaryExpression
@@ -38,6 +44,12 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expressions
         {
             Indexer = indexer;
         }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Indexer);
+            visitor.Visit(Value);
+        }
     }
 
     public class LogicalOrArithmeticExpression : UnaryExpression
@@ -48,6 +60,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expressions
             base(token, value)
         {
             Type = type;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Value);
         }
     }
 }
