@@ -3,9 +3,11 @@ using System.Collections.Generic;
 
 namespace ZenPlatform.Compiler.Contracts
 {
-    public class PseudoType : IType
+    public class UnknownType : IType
     {
-        public PseudoType(string name)
+        private readonly ITypeSystem _ts;
+
+        public UnknownType(string name)
         {
             Name = name;
         }
@@ -13,7 +15,7 @@ namespace ZenPlatform.Compiler.Contracts
         public bool Equals(IType other) => other == this;
 
         public object Id { get; } = Guid.NewGuid();
-        public string Name { get; }
+        public string Name { get; protected set; }
         public string Namespace { get; } = "";
         public string FullName => Name;
         public IAssembly Assembly { get; } = null;
@@ -24,7 +26,10 @@ namespace ZenPlatform.Compiler.Contracts
         public IReadOnlyList<IConstructor> Constructors { get; } = new IConstructor[0];
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; } = new ICustomAttribute[0];
         public IReadOnlyList<IType> GenericArguments { get; } = new IType[0];
-        public IType MakeArrayType(int dimensions) => throw new NullReferenceException();
+
+        public virtual IType MakeArrayType() => throw new NotImplementedException();
+
+        public virtual IType MakeArrayType(int dimensions) => throw new NullReferenceException();
 
         public IType BaseType { get; }
         public bool IsValueType { get; } = false;
@@ -43,9 +48,34 @@ namespace ZenPlatform.Compiler.Contracts
         }
 
         public IType GenericTypeDefinition => null;
-        public bool IsArray { get; }
-        public IType ArrayElementType { get; }
-        public static PseudoType Null { get; } = new PseudoType("{x:Null}");
-        public static PseudoType Unknown { get; } = new PseudoType("{Unknown type}");
+        public bool IsArray { get; protected set; }
+        public IType ArrayElementType { get; protected set; }
+
+        public static readonly IType Unknown = new UnknownType("{Unknown type}");
+    }
+
+
+    public class UnknownArrayType : UnknownType
+    {
+        public UnknownArrayType(string name, IType arrayElemType) : base(name)
+        {
+            ArrayElementType = arrayElemType;
+            IsArray = true;
+
+            if (!(arrayElemType is UnknownType))
+            {
+                Name = $"{arrayElemType.Name}[]";
+            }
+        }
+
+        public override IType MakeArrayType()
+        {
+            return ArrayElementType.MakeArrayType();
+        }
+
+        public override IType MakeArrayType(int dimensions)
+        {
+            return ArrayElementType.MakeArrayType(dimensions);
+        }
     }
 }

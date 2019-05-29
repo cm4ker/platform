@@ -6,6 +6,7 @@ using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler
 {
@@ -13,7 +14,7 @@ namespace ZenPlatform.Compiler
     {
         static void Main(string[] args)
         {
-            //Main2(args);
+            Main2(args);
         }
 
         static void Main2(string[] args)
@@ -53,6 +54,12 @@ module Test
             parser.AddErrorListener(new Listener());
             ZLanguageVisitor visitor = new ZLanguageVisitor();
             var result = (CompilationUnit) visitor.VisitEntryPoint(parser.entryPoint());
+
+            AstSymbolVisitor sv = new AstSymbolVisitor();
+            result.Accept(sv);
+
+            BasicVisitor bv = new BasicVisitor();
+            result.Accept(bv);
 
 
             if (File.Exists("Debug.dll"))

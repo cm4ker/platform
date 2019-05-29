@@ -1,6 +1,7 @@
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -26,5 +27,11 @@ namespace ZenPlatform.Compiler.AST.Definitions
 
         public string Name { get; set; }
         public SymbolType SymbolType { get; }
+
+
+        public override void Accept(IVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

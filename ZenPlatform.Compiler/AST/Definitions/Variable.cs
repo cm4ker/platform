@@ -2,6 +2,7 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -13,7 +14,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Create a variable object.
         /// </summary>
-        public Variable(ILineInfo li, object value, string name, IType type) : base(li)
+        public Variable(ILineInfo li, object value, string name, TypeNode type) : base(li)
         {
             Name = name;
             Type = type;
@@ -28,11 +29,18 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// <summary>
         /// Variable type.
         /// </summary>
-        public IType Type { get; set; }
+        public TypeNode Type { get; set; }
 
         /// <summary>
         /// Variable initial value;
         /// </summary>
         public object Value;
+
+        public override void Accept(IVisitor visitor)
+        {
+            if (Value is AstNode an)
+                visitor.Visit(an);
+            visitor.Visit(Type);
+        }
     }
 }

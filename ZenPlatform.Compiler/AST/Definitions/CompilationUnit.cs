@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -16,5 +17,13 @@ namespace ZenPlatform.Compiler.AST.Definitions
         public HashSet<string> Namespaces { get; }
 
         public List<TypeEntity> TypeEntities { get; }
+
+        public override void Accept(IVisitor visitor)
+        {
+            foreach (var entity in TypeEntities)
+            {
+                visitor.Visit(entity);
+            }
+        }
     }
 }

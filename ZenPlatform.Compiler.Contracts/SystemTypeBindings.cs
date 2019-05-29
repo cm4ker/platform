@@ -9,6 +9,10 @@ namespace ZenPlatform.Compiler.Contracts
     public class SystemTypeBindings
     {
         private readonly ITypeSystem _ts;
+
+        private const string MSCORLIB =
+            "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
+
         private const string SYSTEM_NAMESPACE = "System";
 
         public SystemTypeBindings(ITypeSystem ts)
@@ -16,20 +20,20 @@ namespace ZenPlatform.Compiler.Contracts
             _ts = ts;
         }
 
-        public IType Int => _ts.FindType(SYSTEM_NAMESPACE, nameof(Int));
+        public IType Int => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Int32)}", MSCORLIB);
 
-        public IType String => _ts.FindType(SYSTEM_NAMESPACE, nameof(String));
+        public IType String => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(String)}", MSCORLIB);
 
-        public IType Char => _ts.FindType(SYSTEM_NAMESPACE, nameof(Char));
+        public IType Char => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Char)}", MSCORLIB);
 
-        public IType Bool => _ts.FindType(SYSTEM_NAMESPACE, nameof(Bool));
+        public IType Bool => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Bool)}", MSCORLIB);
 
-        public IType Double => _ts.FindType(SYSTEM_NAMESPACE, nameof(Double));
+        public IType Double => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Double)}", MSCORLIB);
 
-        public IType Guid => _ts.FindType(SYSTEM_NAMESPACE, nameof(Guid));
+        public IType Guid => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Guid)}", MSCORLIB);
 
-        public IType Void => _ts.FindType(SYSTEM_NAMESPACE, nameof(Void));
+        public IType Void => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Void)}", MSCORLIB);
 
-        public IType Object => _ts.FindType(SYSTEM_NAMESPACE, nameof(Object));
+        public IType Object => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Object)}", MSCORLIB);
     }
 }

@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -27,6 +28,11 @@ namespace ZenPlatform.Compiler.AST.Definitions
         {
             ElementType = ElementType.Expression;
             Expression = expression;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

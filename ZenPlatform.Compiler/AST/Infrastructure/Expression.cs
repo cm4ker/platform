@@ -9,7 +9,7 @@ namespace ZenPlatform.Compiler.AST.Infrastructure
     /// </summary>
     public abstract class Expression : AstNode
     {
-        public virtual IType Type { get; set; }
+        public virtual TypeNode Type { get; set; }
 
 
         protected Expression(ILineInfo li) : base(li)

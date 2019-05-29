@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Extension
 {
@@ -20,6 +21,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Extension
         {
             ExtensionName = extensionName;
             Kind = kind;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            throw new System.NotImplementedException();
         }
     }
 

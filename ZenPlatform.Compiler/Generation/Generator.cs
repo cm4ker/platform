@@ -8,9 +8,7 @@ using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-
 using ZenPlatform.Compiler.Contracts;
-
 using SreTA = System.Reflection.TypeAttributes;
 
 
@@ -181,8 +179,8 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Literal literal)
             {
-                if (literal.Type.IsSystem)
-                    switch (literal.Type.Name)
+                if (literal.Type.Type.IsSystem)
+                    switch (literal.Type.Type.Name)
                     {
                         case "Int32":
                             e.LdcI4(Int32.Parse(literal.Value));
@@ -268,7 +266,7 @@ namespace ZenPlatform.Compiler.Generation
 
 
                     var method = tb.DefineMethod(function.Name, true, true, false)
-                        .WithReturnType(function.Type);
+                        .WithReturnType(function.Type.Type);
 
                     result.Add((function, method));
 
@@ -298,7 +296,7 @@ namespace ZenPlatform.Compiler.Generation
             {
                 foreach (var p in function.Parameters)
                 {
-                    method.WithParameter(p.Name, p.Type, false, false);
+                    method.WithParameter(p.Name, p.Type.Type, false, false);
                 }
             }
 
@@ -338,14 +336,14 @@ namespace ZenPlatform.Compiler.Generation
                     expression.Value.Type = p.Type;
             }
 
-            var valueType = expression.Value.Type;
+            var valueType = expression.Value.Type.Type;
 
-            if (expression.Value is IndexerExpression && valueType.IsArray && valueType is ZArray a)
+            if (expression.Value is IndexerExpression && valueType.IsArray)
             {
-                valueType = a.TypeOfElements;
+                valueType = valueType.ArrayElementType;
             }
 
-            var convertType = expression.Type;
+            var convertType = expression.Type.Type;
 
             if (valueType is null || (valueType.IsSystem && convertType.IsSystem))
             {
@@ -355,19 +353,6 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitConvCode(IEmitter e, IType type)
         {
-            switch (type)
-            {
-                case ZInt t:
-                    e.ConvI4();
-                    return;
-                case ZDouble t:
-                    e.ConvR8();
-                    return;
-                case ZCharacter t:
-                    e.ConvU2();
-                    return;
-            }
-
             throw new Exception("Converting to this value not supported");
         }
 
@@ -383,18 +368,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitAddValue(IEmitter e, IType type, int value)
         {
-            switch (type)
-            {
-                case ZInt t:
-                    e.LdcI4(value);
-                    break;
-                case ZDouble d:
-                    e.LdcR8(value);
-                    break;
-                default:
-                    e.LdcI4(value);
-                    break;
-            }
+            throw new NotImplementedException();
         }
     }
 }

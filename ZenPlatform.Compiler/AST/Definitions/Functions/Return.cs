@@ -1,5 +1,6 @@
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Functions
 {
@@ -20,6 +21,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         public Return(ILineInfo li, Expression value) : base(li)
         {
             Value = value;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Value);
         }
     }
 }

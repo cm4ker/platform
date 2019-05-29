@@ -3,7 +3,7 @@ using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Cecil
 {
-    class UnresolvedCecilType : PseudoType, ITypeReference
+    class UnresolvedCecilType : UnknownType, ITypeReference
     {
         public TypeReference Reference { get; }
 

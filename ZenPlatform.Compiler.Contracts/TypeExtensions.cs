@@ -185,11 +185,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public static IEmitter DebugHatch(this IEmitter emitter, string message)
         {
-#if DEBUG
-            var debug = emitter.TypeSystem.GetType("XamlIl.XamlIlDebugHatch").FindMethod(m => m.Name == "Debug");
-            emitter.Emit(OpCodes.Ldstr, message);
-            emitter.Emit(OpCodes.Call, debug);
-#endif
+
             return emitter;
         }
     }

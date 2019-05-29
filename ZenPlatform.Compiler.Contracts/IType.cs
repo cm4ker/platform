@@ -22,7 +22,10 @@ namespace ZenPlatform.Compiler.Contracts
         IType GenericTypeDefinition { get; }
         bool IsArray { get; }
         IType ArrayElementType { get; }
+
+        IType MakeArrayType();
         IType MakeArrayType(int dimensions);
+
         IType BaseType { get; }
         bool IsValueType { get; }
         bool IsEnum { get; }
@@ -32,6 +35,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         IType GetEnumUnderlyingType();
         IReadOnlyList<IType> GenericParameters { get; }
+
         int GetHashCode();
     }
 }

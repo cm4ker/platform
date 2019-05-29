@@ -2,6 +2,7 @@ using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Functions
 {
@@ -18,7 +19,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Function type.
         /// </summary>
-        public IType Type;
+        public TypeNode Type;
 
         /// <summary>
         /// Function parameters.
@@ -34,7 +35,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// Creates a function object.
         /// </summary>
         public Function(ILineInfo li, InstructionsBodyNode instructionsBody, ParameterCollection parameters,
-            string name, IType type) : base(li)
+            string name, TypeNode type) : base(li)
         {
             InstructionsBody = instructionsBody;
             Parameters = parameters;
@@ -44,5 +45,18 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
 
         public string Name { get; set; }
         public SymbolType SymbolType => SymbolType.Function;
+
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Type);
+
+            foreach (var parameter in Parameters)
+            {
+                visitor.Visit(parameter);
+            }
+
+            visitor.Visit(InstructionsBody);
+        }
     }
 }

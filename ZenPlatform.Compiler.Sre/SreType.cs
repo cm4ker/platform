@@ -87,15 +87,6 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool IsAssignableFrom(IType type)
         {
-            if (type == PseudoType.Null)
-            {
-                if (!Type.IsValueType)
-                    return true;
-                if (Type.IsConstructedGenericType && Type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                    return true;
-                return false;
-            }
-
             return Type.IsAssignableFrom(((SreType) type).Type);
         }
 
@@ -111,6 +102,11 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool IsArray => Type.IsArray;
         public IType ArrayElementType => IsArray ? System.ResolveType(Type.GetElementType()) : null;
+
+        public IType MakeArrayType()
+        {
+            return System.ResolveType(Type.MakeArrayType());
+        }
 
         public IType MakeArrayType(int dimensions) => System.ResolveType(
             dimensions == 1 ? Type.MakeArrayType() : Type.MakeArrayType(dimensions));
