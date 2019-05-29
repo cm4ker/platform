@@ -45,6 +45,17 @@ namespace ZenPlatform.Compiler.AST
 
         public AstNode Parent { get; set; }
 
+        public T GetParent<T>() where T : AstNode
+        {
+            if (Parent is null) return null;
+            
+            if (Parent is T p)
+                return p;
+            
+            return Parent.GetParent<T>();
+        }
+
+
         public abstract void Accept(IVisitor visitor);
     }
 }

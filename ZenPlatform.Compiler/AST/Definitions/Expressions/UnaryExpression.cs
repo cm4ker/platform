@@ -14,20 +14,20 @@ namespace ZenPlatform.Compiler.AST.Definitions.Expressions
 
         public Expression Value { get; }
 
-        public override IType Type => Value.Type;
+        public override TypeNode Type => Value.Type;
     }
 
 
     public class CastExpression : UnaryExpression
     {
-        public IType CastType { get; set; }
+        public TypeNode CastType { get; set; }
 
-        public CastExpression(ILineInfo token, Expression value, IType castType) : base(token, value)
+        public CastExpression(ILineInfo token, Expression value, TypeNode castType) : base(token, value)
         {
             CastType = castType;
         }
 
-        public override IType Type => CastType;
+        public override TypeNode Type => CastType;
 
         public override void Accept(IVisitor visitor)
         {

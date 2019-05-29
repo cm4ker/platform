@@ -2,6 +2,7 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -29,6 +30,11 @@ namespace ZenPlatform.Compiler.AST.Definitions
                 Statements.Add(statement);
             }
         }
+
+        public override void Accept(IVisitor visitor)
+        {
+            Statements.ForEach(visitor.Visit);
+        }
     }
 
     /// <summary>
@@ -51,6 +57,14 @@ namespace ZenPlatform.Compiler.AST.Definitions
             {
                 if (member is Function func)
                     Functions.Add(func);
+            }
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            foreach (var function in Functions)
+            {
+                visitor.Visit(function);
             }
         }
     }

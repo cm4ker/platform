@@ -22,6 +22,6 @@ namespace ZenPlatform.Compiler.Contracts
         /// <param name="namespace"></param>
         /// <param name="typeName"></param>
         /// <returns></returns>
-        IType FindType(string @namespace, string typeName);
+        IType FindType(string name, string assembly);
     }
 }

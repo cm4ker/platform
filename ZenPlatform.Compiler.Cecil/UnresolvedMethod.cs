@@ -15,8 +15,8 @@ namespace ZenPlatform.Compiler.Cecil
         public string Name { get; }
         public bool IsPublic { get; }
         public bool IsStatic { get; }
-        public IType ReturnType { get; } = PseudoType.Unknown;
+        public IType ReturnType { get; } = UnknownType.Unknown;
         public IReadOnlyList<IParameter> Parameters { get; } = new IParameter[0];
-        public IType DeclaringType { get; } = PseudoType.Unknown;
+        public IType DeclaringType { get; } = UnknownType.Unknown;
     }
 }

@@ -10,6 +10,7 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Sre;
 
 namespace ZenPlatform.Compiler.AST
 {
@@ -23,6 +24,7 @@ namespace ZenPlatform.Compiler.AST
         public ZLanguageVisitor()
         {
             _syntaxStack = new SyntaxStack();
+            _ts = new SreTypeSystem();
             _sb = new SystemTypeBindings(_ts);
         }
 
@@ -98,7 +100,7 @@ namespace ZenPlatform.Compiler.AST
 
         public override object VisitStructureType(ZSharpParser.StructureTypeContext context)
         {
-            var result = new ZStructureType(context.start.ToLineInfo(), context.GetText());
+            var result = new TypeNode(context.start.ToLineInfo(), context.GetText());
 
             _syntaxStack.Push(result);
             return result;
@@ -106,17 +108,17 @@ namespace ZenPlatform.Compiler.AST
 
         public override object VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
         {
-            AstNode result = null;
-            if (context.STRING() != null) result = new ZString();
-            else if (context.INT() != null) result = new ZInt();
-            else if (context.BOOL() != null) result = new ZBool();
-            else if (context.DOUBLE() != null) result = new ZDouble();
-            else if (context.CHAR() != null) result = new ZCharacter();
-            else if (context.VOID() != null) result = new ZVoid();
+            IType result = null;
+            if (context.STRING() != null) result = _sb.String;
+            else if (context.INT() != null) result = _sb.Int;
+            else if (context.BOOL() != null) result = _sb.Bool;
+            else if (context.DOUBLE() != null) result = _sb.Double;
+            else if (context.CHAR() != null) result = _sb.Char;
+            else if (context.VOID() != null) result = _sb.Void;
 
             if (result == null)
                 throw new Exception("Unknown primitive type");
-            _syntaxStack.Push(result);
+            _syntaxStack.Push(new TypeNode(context.start.ToLineInfo(), result));
 
             return result;
         }
@@ -125,11 +127,10 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitArrayType(context);
 
-            var result = new ZArray(_syntaxStack.PopType());
+            var result = new TypeNode(context.start.ToLineInfo(),
+                new UnknownArrayType(context.GetText(), _syntaxStack.PopType().Type));
 
             _syntaxStack.Push(result);
-
-
             return result;
         }
 
@@ -148,15 +149,18 @@ namespace ZenPlatform.Compiler.AST
                 text = Regex.Unescape(text ?? throw new NullReferenceException());
 
                 if (context.string_literal().REGULAR_STRING() != null)
-                    result = new Literal(li, text.Substring(1, text.Length - 2), _sb.String);
+                    result = new Literal(li, text.Substring(1, text.Length - 2), new TypeNode(li, _sb.String));
                 else
-                    result = new Literal(li, text.Substring(2, text.Length - 3), _sb.String);
+                    result = new Literal(li, text.Substring(2, text.Length - 3), new TypeNode(li, _sb.String));
             }
-            else if (context.boolean_literal() != null) result = new Literal(li, context.GetText(), _sb.Bool);
-            else if (context.INTEGER_LITERAL() != null) result = new Literal(li, context.GetText(), _sb.Int);
-            else if (context.REAL_LITERAL() != null) result = new Literal(li, context.GetText(), _sb.Double);
+            else if (context.boolean_literal() != null)
+                result = new Literal(li, context.GetText(), new TypeNode(li, _sb.Bool));
+            else if (context.INTEGER_LITERAL() != null)
+                result = new Literal(li, context.GetText(), new TypeNode(li, _sb.Int));
+            else if (context.REAL_LITERAL() != null)
+                result = new Literal(li, context.GetText(), new TypeNode(li, _sb.Double));
             else if (context.CHARACTER_LITERAL() != null)
-                result = new Literal(li, context.GetText().Substring(1, 1), _sb.Char);
+                result = new Literal(li, context.GetText().Substring(1, 1), new TypeNode(li, _sb.Char));
 
             //TODO: Не обработанным остался HEX INTEGER LITERAL его необходимо доделать
 

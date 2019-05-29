@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions
 {
@@ -13,6 +14,11 @@ namespace ZenPlatform.Compiler.AST.Definitions
         {
             Value = value;
         }
+
+        public override void Accept(IVisitor visitor)
+        {
+            //Nothing to do
+        }
     }
 
     public class FieldExpression : Expression
@@ -26,6 +32,11 @@ namespace ZenPlatform.Compiler.AST.Definitions
             Name = name;
             Line = expression.Line;
             Position = expression.Position;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Expression);
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
@@ -32,14 +31,14 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (statement is Variable variable)
             {
-                ILocal local = e.DefineLocal(variable.Type);
+                ILocal local = e.DefineLocal(variable.Type.Type);
                 context.SymbolTable.Add(variable.Name, SymbolType.Variable, variable, local);
 
                 //
                 // Initialize  variable.
                 //
 
-                if (variable.Type.IsSystem)
+                if (variable.Type.Type.IsSystem)
                 {
                     if (variable.Value != null && variable.Value is Expression)
                     {
@@ -48,13 +47,13 @@ namespace ZenPlatform.Compiler.Generation
                         e.StLoc(local);
                     }
                 }
-                else if (variable.Type is ZArray a)
+                else if (variable.Type.Type.IsArray)
                 {
                     // Empty array initialization.
                     if (variable.Value != null && variable.Value is Expression value)
                     {
                         EmitExpression(e, value, context.SymbolTable);
-                        e.NewArr(variable.Type);
+                        e.NewArr(variable.Type.Type.ArrayElementType);
                         e.StLoc(local);
                     }
                     else if (variable.Value != null && variable.Value is ElementCollection)
@@ -62,7 +61,7 @@ namespace ZenPlatform.Compiler.Generation
                         ElementCollection elements = variable.Value as ElementCollection;
 
                         e.LdcI4(elements.Count);
-                        e.NewArr(variable.Type);
+                        e.NewArr(variable.Type.Type.ArrayElementType);
                         e.StLoc(local);
 
                         for (int x = 0; x < elements.Count; x++)
@@ -207,9 +206,9 @@ namespace ZenPlatform.Compiler.Generation
 
                 IType opType = null;
                 if (symbol.SyntaxObject is Parameter p)
-                    opType = p.Type;
+                    opType = p.Type.Type;
                 else if (symbol.SyntaxObject is Variable v)
-                    opType = v.Type;
+                    opType = v.Type.Type;
 
 
                 EmitExpression(e, pis.Name, context.SymbolTable);
@@ -230,9 +229,9 @@ namespace ZenPlatform.Compiler.Generation
 
                 IType opType = null;
                 if (symbol.SyntaxObject is Parameter p)
-                    opType = p.Type;
+                    opType = p.Type.Type;
                 else if (symbol.SyntaxObject is Variable v)
-                    opType = v.Type;
+                    opType = v.Type.Type;
 
 
                 EmitExpression(e, pds.Name, context.SymbolTable);

@@ -75,19 +75,19 @@ namespace ZenPlatform.Compiler.Generation
                                 Symbol variable = symbolTable.Find(((Name) ue.Value).Value, SymbolType.Variable);
                                 if (variable.CodeObject is ILocal codeObject)
                                 {
-                                    if (((Variable) variable.SyntaxObject).Type.IsArray)
+                                    if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
                                         Error("ref cannot be applied to arrays");
                                     e.LdLocA(codeObject);
                                 }
                                 else if (variable.CodeObject is IField definition)
                                 {
-                                    if (((Variable) variable.SyntaxObject).Type.IsArray)
+                                    if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
                                         Error("ref cannot be applied to arrays");
                                     e.LdsFldA(definition);
                                 }
                                 else if (variable.CodeObject is IParameter pd)
                                 {
-                                    if (((Parameter) variable.SyntaxObject).Type.IsArray)
+                                    if (((Parameter) variable.SyntaxObject).Type.Type.IsArray)
                                         Error("ref cannot be applied to arrays");
                                     e.LdArgA(pd);
                                 }

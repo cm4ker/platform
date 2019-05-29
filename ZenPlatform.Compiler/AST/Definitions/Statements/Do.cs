@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Statements
 {
@@ -11,6 +12,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Statements
         {
             InstructionsBody = instructionsBody;
             Condition = condition;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

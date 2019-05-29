@@ -1,3 +1,5 @@
+using ZenPlatform.Compiler.Visitor;
+
 namespace ZenPlatform.Compiler.AST.Definitions
 {
     /// <summary>
@@ -12,6 +14,11 @@ namespace ZenPlatform.Compiler.AST.Definitions
         {
             TypeBody = typeBody;
             Name = name;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(TypeBody);
         }
     }
 }

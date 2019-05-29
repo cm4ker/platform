@@ -1,6 +1,7 @@
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Functions
 {
@@ -12,7 +13,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Parameter type.
         /// </summary>
-        public IType Type { get; set; }
+        public TypeNode Type { get; set; }
 
         /// <summary>
         /// Parameter pass method.
@@ -22,7 +23,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// <summary>
         /// Create parameter object.
         /// </summary>
-        public Parameter(ILineInfo li, string name, IType type, PassMethod passMethod) : base(li)
+        public Parameter(ILineInfo li, string name, TypeNode type, PassMethod passMethod) : base(li)
         {
             Name = name;
             Type = type;
@@ -31,10 +32,15 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
 
         public string Name { get; set; }
         public SymbolType SymbolType => SymbolType.Variable;
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Type);
+        }
     }
 
     public interface ITypedNode
     {
-        IType Type { get; set; }
+        TypeNode Type { get; set; }
     }
 }

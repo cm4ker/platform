@@ -103,10 +103,6 @@ namespace ZenPlatform.Compiler.Cecil
 
         public bool IsAssignableFrom(IType type)
         {
-            if (!type.IsValueType
-                && type == PseudoType.Null)
-                return true;
-
             if (type.IsValueType
                 && GenericTypeDefinition?.FullName == "System.Nullable`1"
                 && GenericArguments[0].Equals(type))
@@ -152,6 +148,8 @@ namespace ZenPlatform.Compiler.Cecil
         public IType ArrayElementType =>
             _arrayType ?? (_arrayType =
                 IsArray ? TypeSystem.Resolve(Definition) : null);
+
+        public IType MakeArrayType() => TypeSystem.Resolve(Reference.MakeArrayType());
 
         public IType MakeArrayType(int dimensions) => TypeSystem.Resolve(Reference.MakeArrayType(dimensions));
 

@@ -5,12 +5,15 @@ using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
+using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Shared;
 
 namespace ZenPlatform.Compiler.Visitor
 {
-    public abstract class AstVisitorBase
+    public abstract class AstVisitorBase : IVisitor
     {
         private Stack<AstNode> _visitStack;
 
@@ -38,10 +41,19 @@ namespace ZenPlatform.Compiler.Visitor
             _visitStack.Pop();
         }
 
+
+        public void Visit(IVisitable visitable)
+        {
+            if (visitable is null) return;
+
+            BeforeVisitNode(visitable as AstNode);
+            Visit(visitable as AstNode);
+            visitable.Accept(this);
+            AfterVisitNode(visitable as AstNode);
+        }
+
         public virtual void Visit(AstNode node)
         {
-            BeforeVisitNode(node);
-
             ItemSwitch<AstNode>
                 .Switch(node)
                 .CaseIs<CompilationUnit>(VisitCompilationUnit)
@@ -54,18 +66,39 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<Module>(VisitModuleStatement)
                 .CaseIs<Function>(VisitFunction)
                 .CaseIs<TypeBody>(VisitTypeBody)
+                .CaseIs<TypeNode>(VisitType)
                 .CaseIs<InstructionsBodyNode>(VisitInstructionsBody)
                 .CaseIs<Variable>(VisitVariable)
                 .CaseIs<Assignment>(VisitAssigment)
+                .CaseIs<PostIncrementStatement>(VisitPostIncrementStatement)
+                .CaseIs<PostDecrementStatement>(VisitPostDecrementStatement)
+                .CaseIs<Argument>(VisitArgument)
                 .CaseIs<Return>(VisitReturn)
                 .CaseIs<BinaryExpression>(VisitBinaryExpression)
                 .CaseIs<CastExpression>(VisitCastExpression)
                 .CaseIs<FieldExpression>(VisitFieldExpression)
                 .CaseIs<If>(VisitIf)
                 .CaseIs<Literal>(VisitLiteral)
+                .CaseIs<IndexerExpression>(VisitIndexerExpression)
                 .BreakIfExecuted()
                 .CaseIs<Expression>(VisitExpression)
                 .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null);
+        }
+
+        public virtual void VisitIndexerExpression(IndexerExpression obj)
+        {
+        }
+
+        public virtual void VisitPostDecrementStatement(PostDecrementStatement obj)
+        {
+        }
+
+        public virtual void VisitPostIncrementStatement(PostIncrementStatement obj)
+        {
+        }
+
+        public virtual void VisitArgument(Argument obj)
+        {
         }
 
         public virtual void VisitLiteral(Literal obj)
@@ -105,7 +138,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
         }
 
-        public virtual void VisitType(ZType obj)
+        public virtual void VisitType(TypeNode obj)
         {
         }
 
@@ -145,7 +178,6 @@ namespace ZenPlatform.Compiler.Visitor
         {
         }
 
-
         public virtual void VisitExpression(Expression e)
         {
             throw new Exception("Unknown expression: " + e.GetType());
@@ -153,6 +185,28 @@ namespace ZenPlatform.Compiler.Visitor
 
         public virtual void VisitCompilationUnit(CompilationUnit cu)
         {
+        }
+    }
+
+
+    public class BasicVisitor : AstVisitorBase
+    {
+        private ITypeSystem _ts;
+
+        public BasicVisitor()
+        {
+            _ts = new SreTypeSystem();
+        }
+
+        public override void VisitType(TypeNode obj)
+        {
+            Console.Write($"We found type:{obj.Type.Name}, at {obj.Line}:{obj.Position} type: {obj.GetType()}");
+            Console.WriteLine();
+
+            if (obj.Type is UnknownArrayType)
+            {
+                obj.SetType(obj.Type.ArrayElementType.MakeArrayType());
+            }
         }
     }
 
@@ -164,7 +218,8 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override void VisitVariable(Variable obj)
         {
-            if (obj.Parent is InstructionsBodyNode ibn)
+            var ibn = obj.GetParent<InstructionsBodyNode>();
+            if (ibn != null)
             {
                 ibn.SymbolTable.Add(obj);
             }
@@ -188,15 +243,22 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override void VisitTypeBody(TypeBody obj)
         {
+            if (obj.SymbolTable == null)
+                obj.SymbolTable = new SymbolTable();
+
             obj.SymbolTable.Clear();
         }
 
         public override void VisitFunction(Function obj)
         {
-            obj.InstructionsBody.SymbolTable.Clear();
-            if (obj.Parent is TypeEntity te)
+            if (obj.Parent is TypeBody te)
             {
-                te.TypeBody.SymbolTable.Add(obj);
+                if (obj.InstructionsBody.SymbolTable == null)
+                    obj.InstructionsBody.SymbolTable = new SymbolTable(te.SymbolTable);
+
+                obj.InstructionsBody.SymbolTable.Clear();
+
+                te.SymbolTable.Add(obj);
             }
             else
             {
@@ -204,7 +266,6 @@ namespace ZenPlatform.Compiler.Visitor
             }
         }
     }
-
 
     /// <summary>
     /// Визитор для вычисления типа

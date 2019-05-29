@@ -1,5 +1,6 @@
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Functions
 {
@@ -14,6 +15,12 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
             Value = value;
             Name = name;
             Index = index;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Index);
+            visitor.Visit(Value);
         }
     }
 
@@ -32,6 +39,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         {
             Name = name;
         }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Name);
+        }
     }
 
     public class PostDecrementStatement : Statement
@@ -46,6 +58,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         public PostDecrementStatement(ILineInfo lineInfo, Name name) : base(lineInfo)
         {
             Name = name;
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Name);
         }
     }
 }

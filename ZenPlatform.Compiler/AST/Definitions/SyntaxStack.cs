@@ -71,9 +71,9 @@ namespace ZenPlatform.Compiler.AST.Definitions
             return (string) internalStack.Pop();
         }
 
-        public IType PopType()
+        public TypeNode PopType()
         {
-            return (IType) internalStack.Pop();
+            return (TypeNode) internalStack.Pop();
         }
 
         public InstructionsBodyNode PopInstructionsBody()

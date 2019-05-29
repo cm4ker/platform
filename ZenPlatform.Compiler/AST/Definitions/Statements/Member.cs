@@ -1,3 +1,5 @@
+using ZenPlatform.Compiler.Visitor;
+
 namespace ZenPlatform.Compiler.AST.Definitions.Statements
 {
     /// <summary>
@@ -7,6 +9,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Statements
     {
         public Member(ILineInfo lineInfo) : base(lineInfo)
         {
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
