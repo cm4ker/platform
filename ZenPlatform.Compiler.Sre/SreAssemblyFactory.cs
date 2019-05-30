@@ -9,8 +9,8 @@ namespace ZenPlatform.Compiler.Sre
     {
         public IAssemblyBuilder Create(ITypeSystem ts, string assemblyName, Version assemblyVersion)
         {
-            var da = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(Guid.NewGuid().ToString("N")),
-                AssemblyBuilderAccess.Run);
+            var da = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(assemblyName),
+                AssemblyBuilderAccess.RunAndCollect);
 
             return new SreAssemblyBuilder((SreTypeSystem) ts, da);
         }

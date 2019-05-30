@@ -65,7 +65,7 @@ namespace ZenPlatform.Compiler.Sre
         {
             _system = system;
             Assembly = asm;
-            MainModule = Assembly.DefineDynamicModule("Default");
+            MainModule = Assembly.DefineDynamicModule(asm.GetName().Name);
         }
 
         public bool Equals(IAssembly other) => Assembly == ((SreAssembly) other)?.Assembly;

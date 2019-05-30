@@ -6,20 +6,22 @@ using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Sre
 {
-    class SreMethodBuilder : SreMethodBase, IMethodBuilder
+    class SreMethodBuilder : SreMethodBase, IMethodBuilder, ISreMethod
     {
         private int _parameterIndex = 1;
 
         public SreTypeSystem System { get; }
-        public MethodBuilder MethodBuilder { get; }
+
+        public MethodInfo Method => _methodBuilder;
 
         private List<Type> _parameters = new List<Type>();
+        private readonly MethodBuilder _methodBuilder;
 
         public SreMethodBuilder(SreTypeSystem system, MethodBuilder methodBuilder) : base(system,
             methodBuilder)
         {
             System = system;
-            MethodBuilder = methodBuilder;
+            _methodBuilder = methodBuilder;
             Generator = new SreEmitter(system, new SreMethodEmitterProvider(methodBuilder));
         }
 
@@ -33,8 +35,8 @@ namespace ZenPlatform.Compiler.Sre
         public IMethodBuilder WithParameter(string name, IType type, bool isOut, bool isRef)
         {
             _parameters.Add(System.GetType(type));
-            MethodBuilder.SetParameters(_parameters.ToArray());
-            MethodBuilder.DefineParameter(_parameterIndex, ParameterAttributes.None, name);
+            _methodBuilder.SetParameters(_parameters.ToArray());
+            _methodBuilder.DefineParameter(_parameterIndex, ParameterAttributes.None, name);
             _parameterIndex++;
 
             return this;
@@ -42,7 +44,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public IMethodBuilder WithReturnType(IType type)
         {
-            MethodBuilder.SetReturnType(System.GetType(type));
+            _methodBuilder.SetReturnType(System.GetType(type));
             return this;
         }
 
@@ -53,10 +55,10 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool Equals(IMethod other)
         {
-            return ((SreMethodBuilder) other)?.MethodBuilder.Equals(MethodBuilder) == true;
+            return ((SreMethodBuilder) other)?._methodBuilder.Equals(_methodBuilder) == true;
         }
 
-        public IType ReturnType => System.ResolveType(MethodBuilder.ReturnType);
-        public IType DeclaringType => System.ResolveType(MethodBuilder.DeclaringType);
+        public IType ReturnType => System.ResolveType(_methodBuilder.ReturnType);
+        public IType DeclaringType => System.ResolveType(_methodBuilder.DeclaringType);
     }
 }

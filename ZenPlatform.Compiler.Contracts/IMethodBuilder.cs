@@ -6,4 +6,6 @@ namespace ZenPlatform.Compiler.Contracts
         IMethodBuilder WithParameter(string name, IType type, bool isOut, bool isRef);
         IMethodBuilder WithReturnType(IType type);
     }
+    
+    
 }

@@ -21,8 +21,8 @@ namespace ZenPlatform.Compiler.Generation
         private readonly ITypeSystem _ts;
 
 
-        private SymbolTable _typeSymbols;
-        private SymbolTable _functions = new SymbolTable();
+//        private SymbolTable _typeSymbols;
+//        private SymbolTable _functions = new SymbolTable();
 
         private SystemTypeBindings _bindings;
 
@@ -34,6 +34,8 @@ namespace ZenPlatform.Compiler.Generation
             _compilationUnit = compilationUnit;
             _asm = asm;
             _ts = asm.TypeSystem;
+
+            _bindings = new SystemTypeBindings(_ts);
 
             foreach (var typeEntity in compilationUnit.TypeEntities)
             {
@@ -59,9 +61,9 @@ namespace ZenPlatform.Compiler.Generation
                 SreTA.Class | SreTA.Public | SreTA.Abstract |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
 
-            _typeSymbols = new SymbolTable();
+            //_typeSymbols = new SymbolTable();
 
-            module.TypeBody.SymbolTable = _typeSymbols;
+            //module.TypeBody.SymbolTable = _typeSymbols;
 
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
@@ -78,9 +80,9 @@ namespace ZenPlatform.Compiler.Generation
                 SreTA.BeforeFieldInit | SreTA.AnsiClass,
                 _bindings.Object);
 
-            _typeSymbols = new SymbolTable();
+            //_typeSymbols = new SymbolTable();
 
-            @class.TypeBody.SymbolTable = _typeSymbols;
+            //@class.TypeBody.SymbolTable = _typeSymbols;
 
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
@@ -174,7 +176,7 @@ namespace ZenPlatform.Compiler.Generation
                 if (ue is CastExpression ce)
                 {
                     EmitExpression(e, ce.Value, symbolTable);
-                    EmitConvert(e, ce, symbolTable);
+                    //EmitConvert(e, ce, symbolTable);
                 }
             }
             else if (expression is Literal literal)
@@ -254,10 +256,10 @@ namespace ZenPlatform.Compiler.Generation
                 foreach (Function function in typeBody.Functions)
                 {
                     //Для каждого метода создаём свою таблицу символов
-                    SymbolTable symbolTable = new SymbolTable(_typeSymbols);
+                    //SymbolTable symbolTable = new SymbolTable(_typeSymbols);
 
                     // Make child visible to sibillings
-                    function.InstructionsBody.SymbolTable = symbolTable;
+                    //function.InstructionsBody.SymbolTable = symbolTable;
 
 
                     foreach (var parameter in function.Parameters)
@@ -271,8 +273,8 @@ namespace ZenPlatform.Compiler.Generation
                     result.Add((function, method));
 
                     // Make child visible to parent.
-                    typeBody.SymbolTable.Add(function.Name, SymbolType.Function, function, method);
-                    symbolTable.Add(function.Name, SymbolType.Function, function, method);
+                    typeBody.SymbolTable.ConnectCodeObject(function, method);
+                    //symbolTable.Add(function.Name, SymbolType.Function, function, method);
                 }
             }
 
@@ -287,10 +289,10 @@ namespace ZenPlatform.Compiler.Generation
             // Build function stub.
             //
 
-            // Find an unique name.
-            string functionName = function.Name;
-            while (_functions.Find(functionName, SymbolType.Function) != null)
-                functionName += "#";
+//            // Find an unique name.
+//            string functionName = function.Name;
+//            while (_functions.Find(functionName, SymbolType.Function) != null)
+//                functionName += "#";
 
             if (function.Parameters != null)
             {
@@ -316,8 +318,10 @@ namespace ZenPlatform.Compiler.Generation
             IEmitter emitter = function.Builder;
             emitter.InitLocals = true;
 
-            EmitBody(emitter, function.InstructionsBody, null, null);
-
+            var resultVar = emitter.DefineLocal(function.Type.Type);
+            var returnLabel = emitter.DefineLabel();
+            EmitBody(emitter, function.InstructionsBody, returnLabel, resultVar);
+            emitter.MarkLabel(returnLabel);
             emitter.Ret();
         }
 
@@ -353,7 +357,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitConvCode(IEmitter e, IType type)
         {
-            throw new Exception("Converting to this value not supported");
+            //throw new Exception("Converting to this value not supported");
         }
 
         private void EmitIncrement(IEmitter e, IType type)
@@ -368,7 +372,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitAddValue(IEmitter e, IType type, int value)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

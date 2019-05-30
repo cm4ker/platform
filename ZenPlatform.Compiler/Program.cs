@@ -6,6 +6,7 @@ using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler
@@ -61,9 +62,16 @@ module Test
             BasicVisitor bv = new BasicVisitor();
             result.Accept(bv);
 
-
             if (File.Exists("Debug.dll"))
                 File.Delete("Debug.dll");
+
+            SreAssemblyFactory af = new SreAssemblyFactory();
+            var b = af.Create(new SreTypeSystem(), "debug", new Version(1, 0));
+            Generator g = new Generator(result, b);
+            
+            b.Write("Debug.dll");
+            
+            
         }
     }
 
