@@ -32,7 +32,7 @@ namespace ZenPlatform.Compiler.Generation
             if (statement is Variable variable)
             {
                 ILocal local = e.DefineLocal(variable.Type.Type);
-                context.SymbolTable.Add(variable.Name, SymbolType.Variable, variable, local);
+                context.SymbolTable.ConnectCodeObject(variable, local);
 
                 //
                 // Initialize  variable.

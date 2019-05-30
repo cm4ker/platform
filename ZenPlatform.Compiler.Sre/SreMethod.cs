@@ -5,8 +5,13 @@ using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Sre
 {
+    public interface ISreMethod
+    {
+        MethodInfo Method { get; }
+    }
+
     [DebuggerDisplay("{Method}")]
-    class SreMethod : SreMethodBase, IMethod
+    class SreMethod : SreMethodBase, IMethod, ISreMethod
     {
         public MethodInfo Method { get; }
         readonly SreTypeSystem _system;

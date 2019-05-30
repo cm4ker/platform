@@ -59,7 +59,7 @@ namespace ZenPlatform.Compiler.Sre
                     throw new ArgumentNullException("value");
 
                 _setter = value;
-                Member.SetSetMethod(((SreMethodBuilder) _setter).MethodBuilder);
+                Member.SetSetMethod((MethodBuilder) ((SreMethodBuilder) _setter).Method);
             }
         }
 
@@ -72,7 +72,7 @@ namespace ZenPlatform.Compiler.Sre
                     throw new ArgumentNullException("value");
 
                 _getter = value;
-                Member.SetGetMethod(((SreMethodBuilder) _getter).MethodBuilder);
+                Member.SetGetMethod((MethodBuilder) ((SreMethodBuilder) _getter).Method);
             }
         }
 

@@ -33,7 +33,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public IEmitter Emit(OpCode code, IMethod method)
         {
-            _ilg.Emit(code, ((SreMethod) method).Method);
+            _ilg.Emit(code, ((ISreMethod) method).Method);
             return this;
         }
 
