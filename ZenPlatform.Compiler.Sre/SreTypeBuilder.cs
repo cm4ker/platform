@@ -79,6 +79,12 @@ namespace ZenPlatform.Compiler.Sre
             return new SreTypeBuilder(_system, builder);
         }
 
+        public IType EndBuild()
+        {
+            var resType = _tb.CreateType();
+            return new SreType(_system, new SreAssembly(_system, resType.Assembly), resType);
+        }
+
         public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, GenericParameterConstraint>> args)
         {
             var builders = _tb.DefineGenericParameters(args.Select(x => x.Key).ToArray());

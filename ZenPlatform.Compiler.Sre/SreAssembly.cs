@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -65,7 +66,8 @@ namespace ZenPlatform.Compiler.Sre
         {
             _system = system;
             Assembly = asm;
-            MainModule = Assembly.DefineDynamicModule(asm.GetName().Name);
+            Assembly.GetName().Version = new Version(1,0 );
+            MainModule = Assembly.DefineDynamicModule("SomeModule");
         }
 
         public bool Equals(IAssembly other) => Assembly == ((SreAssembly) other)?.Assembly;

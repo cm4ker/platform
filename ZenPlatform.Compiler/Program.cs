@@ -66,7 +66,9 @@ module Test
                 File.Delete("Debug.dll");
 
             SreAssemblyFactory af = new SreAssemblyFactory();
+            
             var b = af.Create(new SreTypeSystem(), "debug", new Version(1, 0));
+            
             Generator g = new Generator(result, b);
             
             b.Write("Debug.dll");
