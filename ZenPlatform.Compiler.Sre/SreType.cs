@@ -35,28 +35,26 @@ namespace ZenPlatform.Compiler.Sre
         public IAssembly Assembly { get; }
 
         public IReadOnlyList<IProperty> Properties =>
-            _properties ?? (_properties = Type
+            _properties ??= Type
                 .GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance |
-                               BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
-                .Select(p => new SreProperty(System, p)).ToList());
+                               BindingFlags.NonPublic)
+                .Select(p => new SreProperty(System, p)).ToList();
 
         public IReadOnlyList<IField> Fields =>
-            _fields ?? (_fields = Type.GetFields(BindingFlags.Public | BindingFlags.Static
-                                                                     | BindingFlags.Instance |
-                                                                     BindingFlags.NonPublic
-                                                                     | BindingFlags.DeclaredOnly)
-                .Select(f => new SreField(System, f)).ToList());
+            _fields ??= Type.GetFields(
+                    BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic)
+                .Select(f => new SreField(System, f)).ToList();
 
         public IReadOnlyList<IMethod> Methods =>
-            _methods ?? (_methods = Type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
-                                                    BindingFlags.Static |
-                                                    BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                .Select(m => new SreMethod(System, m)).ToList());
+            _methods ??= Type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                                         BindingFlags.Static |
+                                         BindingFlags.Instance)
+                .Select(m => new SreMethod(System, m)).ToList();
 
         public IReadOnlyList<IConstructor> Constructors =>
-            _constructors ?? (_constructors = Type.GetConstructors(
+            _constructors ??= Type.GetConstructors(
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
-                .Select(c => new SreConstructor(System, c)).ToList());
+                .Select(c => new SreConstructor(System, c)).ToList();
 
         public IReadOnlyList<IType> Interfaces =>
             _interfaces ?? (_interfaces = Type.GetInterfaces().Select(System.ResolveType).ToList());

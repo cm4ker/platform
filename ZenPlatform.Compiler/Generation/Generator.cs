@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Globalization;
 using System.Linq;
 using ZenPlatform.Compiler.AST;
@@ -178,7 +179,7 @@ namespace ZenPlatform.Compiler.Generation
                 if (ue is CastExpression ce)
                 {
                     EmitExpression(e, ce.Value, symbolTable);
-                    //EmitConvert(e, ce, symbolTable);
+                    EmitConvert(e, ce, symbolTable);
                 }
             }
             else if (expression is Literal literal)
@@ -233,7 +234,10 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is FieldExpression fe)
             {
                 EmitExpression(e, fe.Expression, symbolTable);
-                //TODO: Необходим лукап типа в сборке через cecil, оттуда уже забирать проперти
+                var expType = fe.Expression.Type.Type;
+                var expProp = expType.Properties.First(x => x.Name == fe.Name);
+                fe.Type = new TypeNode(null, expProp.PropertyType);
+                e.PropGetValue(expProp);
             }
         }
 
@@ -327,7 +331,6 @@ namespace ZenPlatform.Compiler.Generation
             emitter.Ret();
         }
 
-
         private void EmitConvert(IEmitter e, CastExpression expression, SymbolTable symbolTable)
         {
             if (expression.Value is Name name)
@@ -351,7 +354,7 @@ namespace ZenPlatform.Compiler.Generation
 
             var convertType = expression.Type.Type;
 
-            if (valueType is null || (valueType.IsSystem && convertType.IsSystem))
+            if (valueType is null || (valueType.IsValueType && convertType.IsValueType))
             {
                 EmitConvCode(e, convertType);
             }
@@ -359,7 +362,14 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitConvCode(IEmitter e, IType type)
         {
-            //throw new Exception("Converting to this value not supported");
+            if (type.Equals(_bindings.Int))
+                e.ConvI4();
+            else if (type.Equals(_bindings.Double))
+                e.ConvR8();
+            else if (type.Equals(_bindings.Char))
+                e.ConvU2();
+            else
+                throw new Exception("Converting to this value not supported");
         }
 
         private void EmitIncrement(IEmitter e, IType type)
@@ -374,7 +384,12 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitAddValue(IEmitter e, IType type, int value)
         {
-            //throw new NotImplementedException();
+            if (type == _bindings.Int)
+                e.LdcI4(value);
+            else if (type == _bindings.Double)
+                e.LdcR8(value);
+            else if (type == _bindings.Char)
+                e.LdcI4(value);
         }
     }
 }

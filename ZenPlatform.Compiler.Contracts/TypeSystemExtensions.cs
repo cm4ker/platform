@@ -207,5 +207,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public static IEmitter StArg(this IEmitter emitter, IParameter parameter) =>
             emitter.Emit(OpCodes.Stelem_I4, parameter);
+
+        public static IEmitter PropGetValue(this IEmitter emitter, IProperty prop) => emitter.EmitCall(prop.Getter);
     }
 }
