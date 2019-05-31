@@ -20,6 +20,9 @@ namespace ZenPlatform.Compiler.Contracts
         IConstructorBuilder DefineConstructor(bool isStatic, params IType[] args);
 
         ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic);
+
+        IType EndBuild();
+
     }
 
 

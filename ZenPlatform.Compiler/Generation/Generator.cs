@@ -71,6 +71,8 @@ namespace ZenPlatform.Compiler.Generation
             {
                 BuildFunction(item.Item1, item.Item2);
             }
+
+            typeBuilder.EndBuild();
         }
 
         private void EmitClass(Class @class)

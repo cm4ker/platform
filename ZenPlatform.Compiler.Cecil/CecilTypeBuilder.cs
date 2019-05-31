@@ -109,6 +109,11 @@ namespace ZenPlatform.Compiler.Cecil
             return new CecilTypeBuilder(TypeSystem, (CecilAssembly) Assembly, td);
         }
 
+        public IType EndBuild()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, GenericParameterConstraint>> args)
         {
             foreach (var arg in args)
