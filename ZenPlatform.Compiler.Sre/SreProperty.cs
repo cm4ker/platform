@@ -8,6 +8,8 @@ namespace ZenPlatform.Compiler.Sre
 {
     class SreProperty : SreMemberInfo, IProperty
     {
+        private IMethod _getMethod;
+        private IMethod _setMethod;
         public PropertyInfo Member { get; }
 
         public SreProperty(SreTypeSystem system, PropertyInfo member) : base(system, member)
@@ -25,6 +27,10 @@ namespace ZenPlatform.Compiler.Sre
         }
 
         public IType PropertyType => System.ResolveType(Member.PropertyType);
+
+        public IMethod Getter => _getMethod ??= new SreMethod(System, Member.GetMethod);
+
+        public IMethod Setter => _setMethod ??= new SreMethod(System, Member.SetMethod);
     }
 
     class SrePropertyBuilder : SreMemberInfo, IPropertyBuilder

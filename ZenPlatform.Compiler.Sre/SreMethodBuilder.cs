@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ZenPlatform.Compiler.Contracts;
+using TypeExtensions = System.Reflection.TypeExtensions;
 
 namespace ZenPlatform.Compiler.Sre
 {
@@ -14,7 +15,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public MethodInfo Method => _methodBuilder;
 
-        private List<Type> _parameters = new List<Type>();
+        private List<Type> _parameters = new List<Type>() {};
         private readonly MethodBuilder _methodBuilder;
 
         public SreMethodBuilder(SreTypeSystem system, MethodBuilder methodBuilder) : base(system,
@@ -35,16 +36,23 @@ namespace ZenPlatform.Compiler.Sre
         public IMethodBuilder WithParameter(string name, IType type, bool isOut, bool isRef)
         {
             _parameters.Add(System.GetType(type));
-            _methodBuilder.SetParameters(_parameters.ToArray());
+            UpdateParameters();
             _methodBuilder.DefineParameter(_parameterIndex, ParameterAttributes.None, name);
             _parameterIndex++;
 
             return this;
         }
 
+        private void UpdateParameters()
+        {
+            _methodBuilder.SetParameters(_parameters.ToArray());
+        }
+
         public IMethodBuilder WithReturnType(IType type)
         {
+            
             _methodBuilder.SetReturnType(System.GetType(type));
+            
             return this;
         }
 

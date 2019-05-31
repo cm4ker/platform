@@ -7,6 +7,10 @@ namespace ZenPlatform.Compiler.Contracts
     {
         IType PropertyType { get; }
 
+
+        IMethod Getter { get; }
+        IMethod Setter { get; }
+
         IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
     }
 
