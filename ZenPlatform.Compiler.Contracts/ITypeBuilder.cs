@@ -22,7 +22,6 @@ namespace ZenPlatform.Compiler.Contracts
         ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic);
 
         IType EndBuild();
-
     }
 
 

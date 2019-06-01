@@ -10,6 +10,7 @@ namespace ZenPlatform.Compiler.Sre
     {
         private readonly SreTypeSystem _system;
         private readonly TypeBuilder _tb;
+        private readonly List<SreMethodBuilder> _definedMethods = new List<SreMethodBuilder>();
 
         public SreTypeBuilder(SreTypeSystem system, TypeBuilder tb) : base(system, null, tb)
         {
@@ -19,7 +20,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public IField DefineField(IType type, string name, bool isPublic, bool isStatic)
         {
-            var f = _tb.DefineField(name, ((SreType) type).Type,
+            var f = _tb.DefineField(name, ((SreType)type).Type,
                 (isPublic ? FieldAttributes.Public : FieldAttributes.Private)
                 | (isStatic ? FieldAttributes.Static : default(FieldAttributes)));
             return new SreField(_system, f);
@@ -27,7 +28,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public void AddInterfaceImplementation(IType type)
         {
-            _tb.AddInterfaceImplementation(((SreType) type).Type);
+            _tb.AddInterfaceImplementation(((SreType)type).Type);
         }
 
 
@@ -40,14 +41,16 @@ namespace ZenPlatform.Compiler.Sre
                 | (isStatic ? MethodAttributes.Static : default(MethodAttributes))
                 | (isInterfaceImpl ? MethodAttributes.Virtual | MethodAttributes.NewSlot : default(MethodAttributes)));
             if (overrideMethod != null)
-                _tb.DefineMethodOverride(m, ((SreMethod) overrideMethod).Method);
+                _tb.DefineMethodOverride(m, ((SreMethod)overrideMethod).Method);
 
-            return new SreMethodBuilder(_system, m);
+            var result = new SreMethodBuilder(_system, m);
+            _definedMethods.Add(result);
+            return result;
         }
 
         public IPropertyBuilder DefineProperty(IType propertyType, string name)
         {
-            var propBuilder = _tb.DefineProperty(name, PropertyAttributes.None, ((SreType) propertyType).Type, null);
+            var propBuilder = _tb.DefineProperty(name, PropertyAttributes.None, ((SreType)propertyType).Type, null);
 
             return new SrePropertyBuilder(this._system, propBuilder);
         }
@@ -74,13 +77,18 @@ namespace ZenPlatform.Compiler.Sre
                 attrs |= TypeAttributes.NestedPrivate;
 
             var builder = _tb.DefineNestedType(name, attrs,
-                ((SreType) baseType).Type);
+                ((SreType)baseType).Type);
 
             return new SreTypeBuilder(_system, builder);
         }
 
         public IType EndBuild()
         {
+            foreach (SreMethodBuilder method in _definedMethods)
+            {
+                method.Bake();
+            }
+
             var resType = _tb.CreateType();
             return new SreType(_system, new SreAssembly(_system, resType.Assembly), resType);
         }

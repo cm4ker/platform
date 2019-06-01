@@ -85,13 +85,13 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool IsAssignableFrom(IType type)
         {
-            return Type.IsAssignableFrom(((SreType) type).Type);
+            return Type.IsAssignableFrom(((SreType)type).Type);
         }
 
         public IType MakeGenericType(IReadOnlyList<IType> typeArguments)
         {
             return System.ResolveType(
-                Type.MakeGenericType(typeArguments.Select(t => ((SreType) t).Type).ToArray()));
+                Type.MakeGenericType(typeArguments.Select(t => ((SreType)t).Type).ToArray()));
         }
 
         public IType GenericTypeDefinition => Type.IsConstructedGenericType
