@@ -38,7 +38,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
             string name, TypeNode type) : base(li)
         {
             InstructionsBody = instructionsBody;
-            Parameters = parameters;
+            Parameters = parameters ?? new ParameterCollection();
             Name = name;
             Type = type;
         }
@@ -51,10 +51,11 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         {
             visitor.Visit(Type);
 
-            foreach (var parameter in Parameters)
-            {
-                visitor.Visit(parameter);
-            }
+            if (Parameters != null)
+                foreach (var parameter in Parameters)
+                {
+                    visitor.Visit(parameter);
+                }
 
             visitor.Visit(InstructionsBody);
         }

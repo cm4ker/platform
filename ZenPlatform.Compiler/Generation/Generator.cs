@@ -267,12 +267,6 @@ namespace ZenPlatform.Compiler.Generation
                     // Make child visible to sibillings
                     //function.InstructionsBody.SymbolTable = symbolTable;
 
-
-                    foreach (var parameter in function.Parameters)
-                    {
-                    }
-
-
                     var method = tb.DefineMethod(function.Name, true, true, false)
                         .WithReturnType(function.Type.Type);
 

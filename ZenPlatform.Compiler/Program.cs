@@ -24,6 +24,16 @@ namespace ZenPlatform.Compiler
             var text = new StringReader(@"
 module Test
 {
+    void Test1()
+    {
+        int a = 1; 
+    }
+
+    int Add(int a, int b)
+    {
+        return a + b;
+    }
+
     int Fibonachi(int n)
     {
         if(n == 0) return 0;
