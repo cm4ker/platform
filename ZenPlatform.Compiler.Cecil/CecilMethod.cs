@@ -41,12 +41,14 @@ namespace ZenPlatform.Compiler.Cecil
         public bool IsPublic => _methodDef.IsPublic;
         public bool IsStatic => _methodDef.IsStatic;
 
-        public IMethodBuilder WithParameter(string name, IType type, bool isOut, bool isRef)
+        public IParameter WithParameter(string name, IType type, bool isOut, bool isRef)
         {
-            _methodDef.Parameters.Add(new ParameterDefinition(name, ParameterAttributes.None,
-                TypeSystem.GetTypeReference(type)));
+            var param = new ParameterDefinition(name, ParameterAttributes.None,
+                TypeSystem.GetTypeReference(type));
+            
+            _methodDef.Parameters.Add(param);
 
-            return this;
+            return new CecilParameter(TypeSystem, param);
         }
 
         public IMethodBuilder WithReturnType(IType type)

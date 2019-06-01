@@ -5,10 +5,7 @@ using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
-using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Shared;
 
 namespace ZenPlatform.Compiler.Visitor
@@ -80,9 +77,15 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<If>(VisitIf)
                 .CaseIs<Literal>(VisitLiteral)
                 .CaseIs<IndexerExpression>(VisitIndexerExpression)
+                .CaseIs<Try>(VisitTry)
                 .BreakIfExecuted()
                 .CaseIs<Expression>(VisitExpression)
                 .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null);
+        }
+
+        public virtual void VisitTry(Try obj)
+        {
+            
         }
 
         public virtual void VisitIndexerExpression(IndexerExpression obj)
@@ -186,91 +189,5 @@ namespace ZenPlatform.Compiler.Visitor
         public virtual void VisitCompilationUnit(CompilationUnit cu)
         {
         }
-    }
-
-
-    public class BasicVisitor : AstVisitorBase
-    {
-        private ITypeSystem _ts;
-
-        public BasicVisitor()
-        {
-            _ts = new SreTypeSystem();
-        }
-
-        public override void VisitType(TypeNode obj)
-        {
-            Console.Write($"We found type:{obj.Type.Name}, at {obj.Line}:{obj.Position} type: {obj.GetType()}");
-            Console.WriteLine();
-
-            if (obj.Type is UnknownArrayType)
-            {
-                obj.SetType(obj.Type.ArrayElementType.MakeArrayType());
-            }
-        }
-    }
-
-    public class AstSymbolVisitor : AstVisitorBase
-    {
-        public override void VisitExpression(Expression e)
-        {
-        }
-
-        public override void VisitVariable(Variable obj)
-        {
-            var ibn = obj.GetParent<InstructionsBodyNode>();
-            if (ibn != null)
-            {
-                ibn.SymbolTable.Add(obj);
-            }
-            else
-            {
-                throw new Exception($"Invalid register variable in scope {obj.Name}");
-            }
-        }
-
-        public override void VisitParameter(Parameter obj)
-        {
-            if (obj.Parent is Function f)
-            {
-                f.InstructionsBody.SymbolTable.Add(obj);
-            }
-            else
-            {
-                throw new Exception("Invalid register parameter in scope");
-            }
-        }
-
-        public override void VisitTypeBody(TypeBody obj)
-        {
-            if (obj.SymbolTable == null)
-                obj.SymbolTable = new SymbolTable();
-
-            obj.SymbolTable.Clear();
-        }
-
-        public override void VisitFunction(Function obj)
-        {
-            if (obj.Parent is TypeBody te)
-            {
-                if (obj.InstructionsBody.SymbolTable == null)
-                    obj.InstructionsBody.SymbolTable = new SymbolTable(te.SymbolTable);
-
-                obj.InstructionsBody.SymbolTable.Clear();
-
-                te.SymbolTable.Add(obj);
-            }
-            else
-            {
-                throw new Exception("Invalid register function in scope");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Визитор для вычисления типа
-    /// </summary>
-    public class AstTypeCalculationVisitor : AstVisitorBase
-    {
     }
 }

@@ -31,6 +31,10 @@ TYPE : 'type';
 NEW  : 'new';
 RETURN : 'return';
 
+TRY : 'try';
+CATCH: 'catch';
+FINALY: 'finally';
+
 IF : 'if';
 ELSE : 'else';
 FOR : 'for';
