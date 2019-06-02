@@ -3,7 +3,6 @@ using Portable.Xaml.Markup;
 using ZenPlatform.Configuration;
 
 [assembly: XmlnsDefinition("http://zplatform.com/conf/entityComponent", "ZenPlatform.EntityComponent.Configuration")]
-
 namespace ZenPlatform.EntityComponent
 {
     /// <inheritdoc />
