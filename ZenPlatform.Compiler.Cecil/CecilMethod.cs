@@ -26,11 +26,13 @@ namespace ZenPlatform.Compiler.Cecil
     internal class CecilMethodBuilder : CecilMethodBase, IMethodBuilder
     {
         private readonly MethodDefinition _methodDef;
+        private readonly ModuleDefinition _md;
 
         public CecilMethodBuilder(CecilTypeSystem typeSystem, MethodDefinition methodDef,
-            TypeReference declaringType) : base(typeSystem, methodDef, declaringType)
+            TypeReference declaringType, ModuleDefinition md) : base(typeSystem, methodDef, declaringType)
         {
             _methodDef = methodDef;
+            _md = md;
         }
 
         public bool Equals(IMethod other)
@@ -53,7 +55,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IMethodBuilder WithReturnType(IType type)
         {
-            _methodDef.ReturnType = TypeSystem.GetTypeReference(type);
+            _methodDef.ReturnType = _md.ImportReference(((ITypeReference) type).Reference);
             return this;
         }
     }

@@ -25,22 +25,28 @@ namespace ZenPlatform.Compiler
             var text = new StringReader(@"
 module Test
 {
-    int Inc(int a)
+    double Inc(int a)
     {
         a++;
-        return 0;
+        return 0.0;
     }
 
     int Add(int a, int b)
     {
+        int c = 1;
         try
         {
-            return a + b;
+            c = c + 2;
+            //return a + b;
         }
         catch
         {
-            return 0;
+            c++;//return 0;
         }
+        
+        int i = c + a;
+        
+        return i;
     }
 
     int Fibonachi(int n)
@@ -67,7 +73,10 @@ module Test
 }
 ");
             var ts = new CecilTypeSystem(new string[] { });
-
+            CecilAssemblyFactory af = new CecilAssemblyFactory();
+            //var ts = new SreTypeSystem();
+            //SreAssemblyFactory af = new SreAssemblyFactory();
+            
             AntlrInputStream inputStream = new AntlrInputStream(text);
             ZSharpLexer lexer = new ZSharpLexer(inputStream);
             CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
@@ -87,7 +96,7 @@ module Test
             if (File.Exists("Debug.dll"))
                 File.Delete("Debug.dll");
 
-            CecilAssemblyFactory af = new CecilAssemblyFactory();
+            
 
             var b = af.Create(ts, "debug", new Version(1, 0));
 

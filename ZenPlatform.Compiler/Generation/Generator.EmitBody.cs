@@ -90,7 +90,7 @@ namespace ZenPlatform.Compiler.Generation
                 if (inTry)
                 {
                     e.StLoc(returnVariable);
-                    //e.Leave(returnLabel);
+                    e.Leave(returnLabel);
                 }
                 else
                 {
