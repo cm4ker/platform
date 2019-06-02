@@ -78,7 +78,7 @@ namespace ZenPlatform.EntityComponent
         public object LoadDtoObject(UserSession session, Type type, object key)
         {
             // Получить контекс данных 
-            var context = session.GetDataContext();
+            var context = session.DataContext;
 
             var def = session.GetMetadata(type);
 

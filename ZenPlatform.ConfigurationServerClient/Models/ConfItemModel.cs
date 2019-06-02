@@ -31,20 +31,20 @@ namespace ZenPlatform.IdeIntegration.Client.Models
         }
         public ObservableCollection<ConfItemModel> Childs { get; set; }
         
-        [Server]
-        void MethodServer()
-        {
-            var invoice = Documents.Invoice.Create();
-            invoice.Date = DateTime.Now;
-            invoice.Save();
-        }
-
-        [Client]
-        void MethodClient()
-        {
-            MethodServer(); //< ---- Тут я должен подменить вызов на что
-            //то вроде InternalTools.InvokeServer(args).Wait();
-        }
+//        [Server]
+//        void MethodServer()
+//        {
+//            var invoice = Documents.Invoice.Create();
+//            invoice.Date = DateTime.Now;
+//            invoice.Save();
+//        }
+//
+//        [Client]
+//        void MethodClient()
+//        {
+//            MethodServer(); //< ---- Тут я должен подменить вызов на что
+//            //то вроде InternalTools.InvokeServer(args).Wait();
+//        }
     }
 }
 
