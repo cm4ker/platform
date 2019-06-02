@@ -1,0 +1,4 @@
+namespace ZenPlatform.Compiler.Generation
+{
+    
+}

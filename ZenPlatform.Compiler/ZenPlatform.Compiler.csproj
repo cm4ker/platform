@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <LangVersion>8</LangVersion>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
+        <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include=".\ZSharpParser.g4" />
+        <Content Include=".\ZSharpLexer.g4" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
+      <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
+      <ProjectReference Include="..\ZenPlatform.Compiler.Sre\ZenPlatform.Compiler.Sre.csproj" />
+      <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Infrastructure" />
+    </ItemGroup>
+    
+    
+</Project>
