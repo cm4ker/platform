@@ -9,9 +9,9 @@ namespace ZenPlatform.Compiler.Visitor
     {
         private ITypeSystem _ts;
 
-        public BasicVisitor()
+        public BasicVisitor(ITypeSystem ts)
         {
-            _ts = new SreTypeSystem();
+            _ts = ts;
         }
 
         public override void VisitType(TypeNode obj)
