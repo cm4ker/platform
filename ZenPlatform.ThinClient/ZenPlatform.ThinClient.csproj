@@ -49,6 +49,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj" />
+      <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
     </ItemGroup>
 
 
