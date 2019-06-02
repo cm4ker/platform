@@ -171,6 +171,8 @@ namespace ZenPlatform.Compiler.Cecil
             private ExceptionHandler _handler;
             private ExceptionHandlerType _type;
 
+            private TypeReference _catchType;
+
             private CecilLabel _tryStart;
             private CecilLabel _tryEnd;
 
@@ -181,26 +183,34 @@ namespace ZenPlatform.Compiler.Cecil
             {
                 _emitter = emitter;
                 _tryStart = (CecilLabel) _emitter.DefineLabel();
-                _handlerStart = (CecilLabel) _emitter.DefineLabel();
-                _handlerEnd = (CecilLabel) _emitter.DefineLabel();
+
+
+                _emitter.MarkLabel(_tryStart);
             }
 
-            public void WithCatch()
+            public void WithCatch(TypeReference type)
             {
                 _tryEnd = (CecilLabel) _emitter.DefineLabel();
+                _emitter.MarkLabel(_tryEnd);
+                _handlerStart = (CecilLabel) _emitter.DefineLabel();
+                _emitter.MarkLabel(_handlerStart);
                 _type = ExceptionHandlerType.Catch;
+                _catchType = type;
             }
 
             public ILabel Start => _tryStart;
 
             public void DefferedCreate()
             {
+                _handlerEnd = (CecilLabel) _emitter.DefineLabel();
+                _emitter.MarkLabel(_handlerEnd);
+
                 _handler = new ExceptionHandler(_type);
                 _handler.TryStart = _tryStart.Instruction;
                 _handler.TryEnd = _tryEnd.Instruction;
                 _handler.HandlerStart = _handlerStart.Instruction;
                 _handler.HandlerEnd = _handlerEnd.Instruction;
-
+                _handler.CatchType = _catchType;
                 _emitter._body.ExceptionHandlers.Add(_handler);
             }
         }
@@ -215,7 +225,8 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IEmitter BeginCatchBlock(IType exceptionType)
         {
-            _exceptionStack.Peek().WithCatch();
+            var tr = ((CecilTypeSystem) TypeSystem).GetTypeReference(exceptionType);
+            _exceptionStack.Peek().WithCatch(tr);
             return this;
         }
 

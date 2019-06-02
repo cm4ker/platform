@@ -12,7 +12,7 @@ namespace ZenPlatform.Compiler.Cecil
     {
         private List<CecilAssembly> _asms = new List<CecilAssembly>();
 
-        private CustomAssemblyResolver _asmResolver = new CustomAssemblyResolver();
+        private CustomAssemblyResolver _asmResolver;
 
         private Dictionary<string, CecilAssembly> _assemblyCache = new Dictionary<string, CecilAssembly>();
 
@@ -24,7 +24,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         private Dictionary<string, IType> _unresolvedTypeCache = new Dictionary<string, IType>();
 
-        private CustomMetadataResolver _resolver;
+        private CustomMetadataResolver _metadataResolver;
         private CecilTypeCache _typeCache;
 
         public void Dispose()
@@ -55,7 +55,9 @@ namespace ZenPlatform.Compiler.Cecil
         {
             if (targetPath != null)
                 paths = paths.Concat(new[] {targetPath});
-            _resolver = new CustomMetadataResolver(this);
+
+            _asmResolver = new CustomAssemblyResolver(this);
+            _metadataResolver = new CustomMetadataResolver(this);
             _typeCache = new CecilTypeCache(this);
             foreach (var path in paths.Distinct())
             {
@@ -65,7 +67,7 @@ namespace ZenPlatform.Compiler.Cecil
                     ReadWrite = isTarget,
                     InMemory = true,
                     AssemblyResolver = this,
-                    MetadataResolver = _resolver,
+                    MetadataResolver = _metadataResolver,
                     SymbolReaderProvider = isTarget ? new DefaultSymbolReaderProvider(true) : null,
                     ReadSymbols = isTarget
                 });
@@ -80,7 +82,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IAssembly TargetAssembly { get; private set; }
 
-        internal MetadataResolver MetadataResolver => _resolver;
+        internal MetadataResolver MetadataResolver => _metadataResolver;
 
         public AssemblyDefinition TargetAssemblyDefinition { get; private set; }
         public IReadOnlyList<IAssembly> Assemblies => _asms.AsReadOnly();
@@ -166,7 +168,7 @@ namespace ZenPlatform.Compiler.Cecil
                 new ModuleParameters()
                 {
                     AssemblyResolver = this,
-                    MetadataResolver = this._resolver,
+                    MetadataResolver = this._metadataResolver,
                     Kind = kind
                 });
 
