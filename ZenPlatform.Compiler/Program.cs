@@ -24,6 +24,12 @@ namespace ZenPlatform.Compiler
             var text = new StringReader(@"
 module Test
 {
+    int Inc(int a)
+    {
+        a++;
+        return 0;
+    }
+
     int Add(int a, int b)
     {
         try

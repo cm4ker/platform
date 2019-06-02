@@ -38,7 +38,7 @@ namespace ZenPlatform.Compiler.Generation
                 // Initialize  variable.
                 //
 
-                if (variable.Type.Type.IsSystem)
+                if (variable.Type.Type.IsValueType)
                 {
                     if (variable.Value != null && variable.Value is Expression)
                     {

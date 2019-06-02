@@ -382,11 +382,11 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitAddValue(IEmitter e, IType type, int value)
         {
-            if (type == _bindings.Int)
+            if (type.Equals(_bindings.Int))
                 e.LdcI4(value);
-            else if (type == _bindings.Double)
+            else if (type.Equals(_bindings.Double))
                 e.LdcR8(value);
-            else if (type == _bindings.Char)
+            else if (type.Equals(_bindings.Char))
                 e.LdcI4(value);
         }
     }
