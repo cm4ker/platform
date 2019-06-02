@@ -52,6 +52,7 @@ namespace ZenPlatform.Compiler.Cecil
             _body = method.Body;
             TypeSystem = typeSystem;
             SymbolTable = new SymbolTable();
+            _exceptionStack = new Stack<CecilTryHandler>();
         }
 
         public CecilEmitter(ITypeSystem typeSystem, MethodDefinition method, SymbolTable parentSymbols)
@@ -118,7 +119,7 @@ namespace ZenPlatform.Compiler.Cecil
         }
 
         public IEmitter Emit(SreOpCode code, IMethod method)
-            => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilMethod) method).Definition)));
+            => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilMethodBase) method).Definition)));
 
         public IEmitter Emit(SreOpCode code, IConstructor ctor)
             => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilConstructor) ctor).Definition)));
@@ -162,9 +163,9 @@ namespace ZenPlatform.Compiler.Cecil
 
         public ILabel DefineLabel() => new CecilLabel();
 
-        private Stack<CecilException> _exceptionStack;
+        private Stack<CecilTryHandler> _exceptionStack;
 
-        class CecilException
+        class CecilTryHandler
         {
             private readonly CecilEmitter _emitter;
             private ExceptionHandler _handler;
@@ -176,10 +177,12 @@ namespace ZenPlatform.Compiler.Cecil
             private CecilLabel _handlerStart;
             private CecilLabel _handlerEnd;
 
-            public CecilException(CecilEmitter emitter)
+            public CecilTryHandler(CecilEmitter emitter)
             {
                 _emitter = emitter;
                 _tryStart = (CecilLabel) _emitter.DefineLabel();
+                _handlerStart = (CecilLabel) _emitter.DefineLabel();
+                _handlerEnd = (CecilLabel) _emitter.DefineLabel();
             }
 
             public void WithCatch()
@@ -204,7 +207,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         public ILabel BeginExceptionBlock()
         {
-            var ce = new CecilException(this);
+            var ce = new CecilTryHandler(this);
             _exceptionStack.Push(ce);
 
             return ce.Start;

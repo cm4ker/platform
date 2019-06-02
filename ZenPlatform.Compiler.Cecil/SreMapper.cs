@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CecilOpCode = Mono.Cecil.Cil.OpCode;
-using CecilOpCodes = Mono.Cecil.Cil.OpCode;
+using CecilOpCodes = Mono.Cecil.Cil.OpCodes;
 using CecilTypeAttr = Mono.Cecil.TypeAttributes;
 using SreOpCode = System.Reflection.Emit.OpCode;
 using SreOpCodes = System.Reflection.Emit.OpCodes;
@@ -25,7 +25,7 @@ namespace ZenPlatform.Compiler.Cecil
                 var cecilField = typeof(CecilOpCodes).GetField(sreField.Name);
                 if (cecilField == null)
                     continue;
-                var cecil = (CecilOpCodes) cecilField.GetValue(null);
+                var cecil = (CecilOpCode) cecilField.GetValue(null);
                 OpCodeDic[sre] = cecil;
             }
 
@@ -38,14 +38,23 @@ namespace ZenPlatform.Compiler.Cecil
 
                 foreach (CecilTypeAttr cEnumValue in cecilType.GetEnumValues())
                 {
-                    var cName = cecilType.GetEnumName(cEnumValue);
-                    if (cName == sName)
+                    try
                     {
-                        TypeAttrDic.Add(sEnumValue, cEnumValue);
-                        break;
+                        var cName = cecilType.GetEnumName(cEnumValue);
+                        if (cName == sName)
+                        {
+                            TypeAttrDic.TryAdd(sEnumValue, cEnumValue);
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
                     }
                 }
             }
+
+            //Custom
+            TypeAttrDic.Add(SreTypeAttr.NotPublic, CecilTypeAttr.NotPublic);
         }
 
         public static Dictionary<SreOpCode, CecilOpCode> OpCodeDic = new Dictionary<SreOpCode, CecilOpCode>();

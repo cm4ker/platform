@@ -16,8 +16,8 @@ namespace ZenPlatform.Compiler
         public void Compile(Stream input)
         {
             var pTree = Parse(input);
-            ZLanguageVisitor v = new ZLanguageVisitor();
-            var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit;
+//            ZLanguageVisitor v = new ZLanguageVisitor();
+//            var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit;
         }
 
 

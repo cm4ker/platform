@@ -45,7 +45,7 @@ namespace ZenPlatform.Compiler.Cecil
         {
             var param = new ParameterDefinition(name, ParameterAttributes.None,
                 TypeSystem.GetTypeReference(type));
-            
+
             _methodDef.Parameters.Add(param);
 
             return new CecilParameter(TypeSystem, param);

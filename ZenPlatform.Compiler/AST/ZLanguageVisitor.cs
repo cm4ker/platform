@@ -20,10 +20,10 @@ namespace ZenPlatform.Compiler.AST
         private ITypeSystem _ts;
         private SystemTypeBindings _sb;
 
-        public ZLanguageVisitor()
+        public ZLanguageVisitor(ITypeSystem typeSystem)
         {
             _syntaxStack = new SyntaxStack();
-            _ts = new SreTypeSystem();
+            _ts = typeSystem;
             _sb = new SystemTypeBindings(_ts);
         }
 
