@@ -11,13 +11,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime" Version="4.6.5" />
-    <PackageReference Include="Grpc" Version="1.19.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="NLog" Version="4.6.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     <ProjectReference Include="..\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
+    <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
   </ItemGroup>
 </Project>

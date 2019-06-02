@@ -31,6 +31,7 @@ namespace ZenPlatform.WorkProcess
         public WorkProcess(StartupConfig config)
         {
             _env = new WorkEnvironment(config);
+
         }
 
         public void Start()
