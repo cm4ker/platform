@@ -98,6 +98,17 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             throw new NotSupportedException();
         }
 
+        
+        /// <summary>
+        /// Получить доступные программные модули объекта
+        /// </summary>
+        /// <returns>Список программных модулей</returns>
+        /// <exception cref="NotSupportedException">Выдается в случае, если программные модули не поддерживаются компонентом</exception>
+        public virtual IEnumerable<XCProgramModuleBase> GetProgramModules()
+        {
+            throw new NotSupportedException();
+        }
+
 
         public virtual XCObjectPropertyBase GetPropertyByName(string name)
         {

@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.Structure
 {
+    /// <summary>
+    /// Для UI
+    /// </summary>
     public class XCInterface
     {
         [XmlArray("IncludedFiles")]
