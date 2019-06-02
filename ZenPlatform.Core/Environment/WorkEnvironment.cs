@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Data;
+using ZenPlatform.ServerClientShared.DI;
+using ZenPlatform.ServerClientShared.Logging;
+using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -41,14 +48,23 @@ namespace ZenPlatform.Core.Environment
          *
          */
 
-        public WorkEnvironment(StartupConfig config) : base(config)
+        public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger, 
+            IAuthenticationManager authenticationManager, IDependencyResolver resolver, 
+            IDataContextManager contextManager, IUserManager userManager) : base(contextManager)
         {
+
             _locking = new object();
+            _resolver = resolver;
+            _logger = logger;
+            _userManager = userManager;
+            InvokeService = invokeService;
 
             Globals = new Dictionary<string, object>();
 
             Managers = new Dictionary<Type, IEntityManager>();
             Entityes = new Dictionary<Guid, EntityMetadata>();
+
+            AuthenticationManager = authenticationManager;
         }
 
         /// <summary>
@@ -56,13 +72,33 @@ namespace ZenPlatform.Core.Environment
         /// На этом этапе происходит создание подключения к базе
         /// Загрузка конфигурации и так далее
         /// </summary>
-        public override void Initialize()
+        public override void Initialize(StartupConfig config)
         {
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
-            base.Initialize();
+            base.Initialize(config);
+            _logger.Info("Database '{0}' loaded.", Configuration.ProjectName);
 
+            AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
+
+
+            InvokeService.Register(new Route("test"), (c, a) => (int)a[0]+1);
+
+
+            InvokeService.RegisterStream(new Route("stream"), (context, stream ,arg) =>
+            {
+
+                
+                using (StreamWriter writer = new StreamWriter(stream))
+                {
+                    writer.WriteLine("dsadsdasdasdasdsadasdsadsd");
+
+                }
+            });
+            /*
             //TODO: получить библиотеку с сгенерированными сущностями dto и так далее
             Build = Assembly.LoadFile("");
+
+           
 
             //Зарегистрируем все даные
             foreach (var type in Configuration.Data.ComponentTypes)
@@ -79,7 +115,20 @@ namespace ZenPlatform.Core.Environment
                 RegisterManager(csEntityType, manager);
                 RegisterEntity(new EntityMetadata(type, csEntityType, csDtoType));
             }
+            */
         }
+
+        private ILogger _logger;
+
+        private IDependencyResolver _resolver;
+
+        private IUserManager _userManager;
+
+        public override IInvokeService InvokeService { get; }
+
+        public override IAuthenticationManager AuthenticationManager { get; }
+        
+
 
         /// <summary>
         /// Сборка конфигурации.
@@ -108,15 +157,15 @@ namespace ZenPlatform.Core.Environment
         /// <param name="user">Пользователь</param>
         /// <returns></returns>
         /// <exception cref="Exception">Если платформа не инициализирована</exception>
-        public ISession CreateSession(User user)
+        public override ISession CreateSession(IUser user)
         {
             lock (_locking)
             {
-                if (!Sessions.Any()) throw new Exception("The environment not initialized!");
+                //if (!Sessions.Any()) throw new Exception("The environment not initialized!");
 
-                var id = Sessions.Max(x => x.Id) + 1;
+                //var id = Sessions.Max(x => x.Id) + 1;
 
-                var session = new UserSession(this, user, id);
+                var session = new UserSession(this, user, DataContextManager);
 
                 Sessions.Add(session);
 
@@ -140,7 +189,7 @@ namespace ZenPlatform.Core.Environment
         /// Убить сессию
         /// </summary>
         /// <param name="id"></param>
-        public void KillSession(int id)
+        public void KillSession(Guid id)
         {
             lock (_locking)
             {
@@ -176,7 +225,7 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         /// <param name="type">Тип Entity</param>
         /// <returns></returns>
-        public IEntityManager GetManager(Type type)
+        public override IEntityManager GetManager(Type type)
         {
             if (Managers.TryGetValue(type, out var manager))
             {
@@ -202,7 +251,7 @@ namespace ZenPlatform.Core.Environment
         /// <param name="key">Ключ типа сущности</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public EntityMetadata GetMetadata(Guid key)
+        public override EntityMetadata GetMetadata(Guid key)
         {
             if (Entityes.TryGetValue(key, out var entityDefinition))
             {
@@ -217,7 +266,7 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         /// <param name="type">Типом может быть объект DTO или объект Entity</param>
         /// <returns></returns>
-        public EntityMetadata GetMetadata(Type type)
+        public override EntityMetadata GetMetadata(Type type)
         {
             var entityDefinition = Entityes.First(x => x.Value.EntityType == type || x.Value.DtoType == type).Value;
             return entityDefinition;

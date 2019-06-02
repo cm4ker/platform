@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Data.Common;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization.Formatters;
 using ZenPlatform.Core.Helpers;
-using ZenPlatform.Core.Sessions;
+using ZenPlatform.Core.Environment;
 using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder.DML.Delete;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.QueryBuilder.DML.Update;
+using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Authentication
 {
@@ -16,8 +18,9 @@ namespace ZenPlatform.Core.Authentication
     /// Менеджер работы с пользователем
     /// Создание/Сохранение/Изменение
     /// </summary>
-    public class UserManager
+    public class UserManager : IUserManager
     {
+        /*
         private readonly ISession _session;
 
         public UserManager(ISession session)
@@ -41,6 +44,13 @@ namespace ZenPlatform.Core.Authentication
                 _session = uses;
             }
         }
+        */
+
+        private readonly IDataContextManager _dataContextManager;
+        public UserManager(IDataContextManager dataContextManager)
+        {
+            _dataContextManager = dataContextManager;
+        }
 
         public User Create()
         {
@@ -49,9 +59,8 @@ namespace ZenPlatform.Core.Authentication
 
         public void Update(User user)
         {
-            var context = _session.GetDataContext();
-
-            var cmd = context.CreateCommand();
+            
+            var cmd = _dataContextManager.GetContext().CreateCommand();
 
             var query = new UpdateQueryNode();
 
@@ -70,9 +79,9 @@ namespace ZenPlatform.Core.Authentication
 
         public void Delete(User user)
         {
-            var context = _session.GetDataContext();
 
-            var cmd = context.CreateCommand();
+
+            var cmd = _dataContextManager.GetContext().CreateCommand();
 
             var query = new DeleteQueryNode();
 
@@ -86,11 +95,10 @@ namespace ZenPlatform.Core.Authentication
             cmd.ExecuteNonQuery();
         }
 
-        public User Get(Guid id)
+        public IUser Get(Guid id)
         {
-            var context = _session.GetDataContext();
 
-            var cmd = context.CreateCommand();
+            var cmd = _dataContextManager.GetContext().CreateCommand();
 
             var query = new SelectQueryNode();
 
@@ -118,6 +126,42 @@ namespace ZenPlatform.Core.Authentication
             throw new UserNotFoundException();
         }
 
+        public IUser FindUserByName(string name)
+        {
+            using (var cmd = _dataContextManager.GetContext().CreateCommand())
+            {
+
+                var query = new SelectQueryNode();
+
+                query
+                    .From(DatabaseConstantNames.USER_TABLE_NAME)
+                    .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), "=", x => x.Parameter("p0"))
+                    .Select(DatabaseConstantNames.USER_TABLE_ID_FIELD)
+                    .Select(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
+                    .Select(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD);
+
+                cmd.AddParameterWithValue("p0", name);
+
+                cmd.CommandText = _dataContextManager.SqlCompiler.Compile(query);
+                using (var reader = cmd.ExecuteReader())
+                {
+
+                    if (reader.Read())
+                    {
+                        var user = new User
+                        {
+                            Id = reader.GetGuid(0),
+                            Name = reader.GetString(1),
+
+                        };
+
+                        return user;
+                    }
+                }
+            }
+            throw new UserNotFoundException();
+        }
+
         /// <summary>
         /// Аутентификация по пользователю и паролю
         /// </summary>
@@ -126,7 +170,28 @@ namespace ZenPlatform.Core.Authentication
         /// <returns></returns>
         public bool Authenticate(string userName, string password)
         {
-            throw new NotAuthorizedException();
+
+            using (var cmd = _dataContextManager.GetContext().CreateCommand())
+            {
+
+                var query = new SelectQueryNode();
+
+                query
+                    .From(DatabaseConstantNames.USER_TABLE_NAME)
+                    .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), "=", x => x.Parameter("p0"))
+                    .Select(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD);
+
+                cmd.AddParameterWithValue("p0", userName);
+
+                cmd.CommandText = _dataContextManager.SqlCompiler.Compile(query);
+
+                using (StreamReader reader = new StreamReader(new MemoryStream((byte[])cmd.ExecuteScalar())))
+                {
+                    var pass = reader.ReadToEnd();
+
+                    return pass.Equals(password);
+                }
+            }
         }
     }
 }
