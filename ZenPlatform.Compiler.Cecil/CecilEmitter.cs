@@ -29,13 +29,27 @@ namespace ZenPlatform.Compiler.Cecil
             return rv;
         }
 
+        MethodDefinition Import(IMethod method)
+        {
+            var md = ((CecilMethodBase) method).Definition;
+            md.ReturnType = Import(md.ReturnType);
+
+            return md;
+        }
+
+        ParameterDefinition Import(IParameter p)
+        {
+            var cecilParam = (CecilParameter) p;
+            cecilParam.ParameterDefinition.ParameterType = Import(cecilParam.ParameterDefinition.ParameterType);
+            return cecilParam.ParameterDefinition;
+        }
+
         FieldReference Import(FieldReference f)
         {
             var rv = M.ImportReference(f);
             rv.FieldType = Import(rv.FieldType);
             return rv;
         }
-
 
         private List<CecilLabel> _markedLabels = new List<CecilLabel>();
 
@@ -77,10 +91,30 @@ namespace ZenPlatform.Compiler.Cecil
 
             foreach (var ml in _markedLabels)
             {
+                var next = ml.Instruction.Next;
+
                 foreach (var instruction in _body.Instructions)
                     if (instruction.Operand == ml.Instruction)
-                        instruction.Operand = i;
-                ml.Instruction = i;
+                        instruction.Operand = next;
+
+                foreach (var handler in _body.ExceptionHandlers)
+                {
+                    if (handler.HandlerStart == ml.Instruction)
+                        handler.HandlerStart = next;
+
+                    if (handler.HandlerEnd == ml.Instruction)
+                        handler.HandlerEnd = next;
+
+                    if (handler.TryStart == ml.Instruction)
+                        handler.TryStart = next;
+
+                    if (handler.TryEnd == ml.Instruction)
+                        handler.TryEnd = next;
+                }
+
+                _body.Instructions.Remove(ml.Instruction);
+
+                ml.Instruction = next;
             }
 
             _markedLabels.Clear();
@@ -114,9 +148,7 @@ namespace ZenPlatform.Compiler.Cecil
             => Emit(Instruction.Create(Dic[code]));
 
         public IEmitter Emit(SreOpCode code, IField field)
-        {
-            return Emit(Instruction.Create(Dic[code], Import(((CecilField) field).Field)));
-        }
+            => Emit(Instruction.Create(Dic[code], Import(((CecilField) field).Field)));
 
         public IEmitter Emit(SreOpCode code, IMethod method)
             => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilMethodBase) method).Definition)));
@@ -183,33 +215,37 @@ namespace ZenPlatform.Compiler.Cecil
             {
                 _emitter = emitter;
                 _tryStart = (CecilLabel) _emitter.DefineLabel();
-
-
+                _handlerEnd = (CecilLabel) _emitter.DefineLabel();
                 _emitter.MarkLabel(_tryStart);
             }
 
             public void WithCatch(TypeReference type)
             {
                 _tryEnd = (CecilLabel) _emitter.DefineLabel();
+                _emitter.Leave(_handlerEnd);
                 _emitter.MarkLabel(_tryEnd);
-                _handlerStart = (CecilLabel) _emitter.DefineLabel();
-                _emitter.MarkLabel(_handlerStart);
+
+                //_handlerStart = (CecilLabel) _emitter.DefineLabel();
+                //_emitter.MarkLabel(_handlerStart);
                 _type = ExceptionHandlerType.Catch;
-                _catchType = type;
+                _catchType = _emitter.Import(type);
             }
 
             public ILabel Start => _tryStart;
 
             public void DefferedCreate()
             {
-                _handlerEnd = (CecilLabel) _emitter.DefineLabel();
+                _emitter.Leave(_handlerEnd);
                 _emitter.MarkLabel(_handlerEnd);
 
                 _handler = new ExceptionHandler(_type);
+
                 _handler.TryStart = _tryStart.Instruction;
                 _handler.TryEnd = _tryEnd.Instruction;
-                _handler.HandlerStart = _handlerStart.Instruction;
+
+                _handler.HandlerStart = _tryEnd.Instruction;
                 _handler.HandlerEnd = _handlerEnd.Instruction;
+
                 _handler.CatchType = _catchType;
                 _emitter._body.ExceptionHandlers.Add(_handler);
             }
@@ -219,7 +255,6 @@ namespace ZenPlatform.Compiler.Cecil
         {
             var ce = new CecilTryHandler(this);
             _exceptionStack.Push(ce);
-
             return ce.Start;
         }
 
@@ -243,7 +278,9 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IEmitter MarkLabel(ILabel label)
         {
-            _markedLabels.Add((CecilLabel) label);
+            var cl = (CecilLabel) label;
+            Emit(cl.Instruction);
+            _markedLabels.Add(cl);
             return this;
         }
 
@@ -254,7 +291,7 @@ namespace ZenPlatform.Compiler.Cecil
             => Emit(Instruction.Create(Dic[code], ((CecilLocal) local).Variable));
 
         public IEmitter Emit(SreOpCode code, IParameter parameter) =>
-            Emit(Instruction.Create(Dic[code], ((CecilParameter) parameter).ParameterDefinition));
+            Emit(Instruction.Create(Dic[code], Import(parameter)));
 
 
         public bool InitLocals { get; set; }

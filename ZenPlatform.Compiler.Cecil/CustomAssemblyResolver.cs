@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Mono.Cecil;
 
-namespace ZenPlatform.Compiler.Cecil.Backend
+namespace ZenPlatform.Compiler.Cecil
 {
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class CustomAssemblyResolver : IAssemblyResolver
@@ -71,7 +71,7 @@ namespace ZenPlatform.Compiler.Cecil.Backend
                     {
                         def = AssemblyDefinition.ReadAssembly(dllPath, new ReaderParameters()
                         {
-                            MetadataResolver = new Cecil.CustomMetadataResolver(_cts),
+                            MetadataResolver = new CustomMetadataResolver(_cts),
                             AssemblyResolver = this
                         });
                         libraries.Add(libname, def);
