@@ -17,8 +17,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             var newItem = new XCSingleEntity();
             newItem.Guid = Guid.NewGuid();
-            
-            ((IChildItem<XCComponent>)newItem).Parent = Component;
+
+            ((IChildItem<XCComponent>) newItem).Parent = Component;
             Component.Parent.RegisterType(newItem);
 
             //TODO: Обработать базовый тип
