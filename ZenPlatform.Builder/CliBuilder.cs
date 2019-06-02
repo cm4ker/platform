@@ -82,6 +82,7 @@ namespace ZenPlatform.Cli
             {
                 createCmd.HelpOption(inherited: true);
 
+                //var projectNameArg = createCmd.Option("--project_name", "Name of new project", CommandOptionType.SingleValue);
                 var projectNameArg = createCmd.Argument("project_name", "Name of new project").IsRequired();
 
                 createCmd.Command("fs", (fsCmd) =>
