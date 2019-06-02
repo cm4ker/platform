@@ -23,7 +23,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             using (var sr = new StringReader(content.RealContent))
             {
-                var rule = XCHelper.Deserialize<XCSingleEntityRule>(sr.ReadToEnd()) ?? throw new Exception("Rule not loaded");
+                var rule = XCHelper.Deserialize<XCSingleEntityRule>(sr.ReadToEnd()) ??
+                           throw new Exception("Rule not loaded");
 
                 ((IChildItem<XCDataRuleContent>) rule).Parent = content;
 
