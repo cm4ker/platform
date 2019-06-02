@@ -209,7 +209,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter LdcR8(this IEmitter emitter, double value) => emitter.Emit(OpCodes.Ldc_R8, value);
 
         public static IEmitter StArg(this IEmitter emitter, IParameter parameter) =>
-            emitter.Emit(OpCodes.Stelem_I4, parameter);
+            emitter.Emit(OpCodes.Starg_S, parameter);
 
         public static IEmitter PropGetValue(this IEmitter emitter, IProperty prop) => emitter.EmitCall(prop.Getter);
     }
