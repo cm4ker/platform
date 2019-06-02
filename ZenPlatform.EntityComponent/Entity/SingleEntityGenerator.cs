@@ -194,8 +194,6 @@ namespace ZenPlatform.EntityComponent.Entity
             var constructor = Generator.ConstructorDeclaration(null, statementsParams, Accessibility.Public,
                 statements: statementsBody, baseConstructorArguments: baseConstructorArguments.Arguments);
 
-            
-
 
             members.Insert(0, constructor);
             members.Insert(0, dtoPrivateField);
