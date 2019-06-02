@@ -10,22 +10,31 @@ namespace ZenPlatform.Data
     /// Позволяет получить доступ к данным
     /// Клиент может получить доступ к контексту
     /// </summary>
-    public class DataContextManger
+    public class DataContextManager : IDataContextManager
     {
-        private readonly SqlDatabaseType _dbType;
-        private readonly string _connectionString;
+        private SqlDatabaseType? _dbType;
+        private string _connectionString;
         private readonly Dictionary<int, DataContext> _contexts;
 
         /// <summary>
         /// Создать новый менеджер контекстов
         /// </summary>
         /// <param name="connectionString"></param>
-        public DataContextManger(SqlDatabaseType dbType, string connectionString)
+        public DataContextManager()
+        {
+            _contexts = new Dictionary<int, DataContext>();
+ 
+        }
+
+        public void Initialize(SqlDatabaseType dbType, string connectionString)
         {
             _dbType = dbType;
+            
             _connectionString = connectionString;
-            _contexts = new Dictionary<int, DataContext>();
+            SqlCompiler = SqlCompillerBase.FormEnum(dbType);
         }
+
+        public SqlCompillerBase SqlCompiler { get; private set; }
 
         /// <summary>
         /// Получить контекст данных.
@@ -35,9 +44,10 @@ namespace ZenPlatform.Data
         /// <returns></returns>
         public DataContext GetContext()
         {
+            if (_dbType == null || _connectionString == null) throw new NotSupportedException("DataContextManager not initialized!");
             if (!_contexts.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var context))
             {
-                context = new DataContext(_dbType, _connectionString);
+                context = new DataContext(_dbType.Value, _connectionString);
                 _contexts.Add(Thread.CurrentThread.ManagedThreadId, context);
             }
 

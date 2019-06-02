@@ -5,8 +5,11 @@ using Avalonia.Logging.Serilog;
 using Dock.Model;
 using Dock.Serializer;
 using ZenPlatform.ThinClient.Infrastructure;
+using ZenPlatform.ThinClient.TCP;
 using ZenPlatform.ThinClient.ViewModels;
 using ZenPlatform.ThinClient.Views;
+using System.Net;
+using ZenPlatform.ServerClientShared.RPC;
 
 namespace ZenPlatform.ThinClient
 {
@@ -59,7 +62,6 @@ namespace ZenPlatform.ThinClient
         static void Main(string[] args)
         {
             Bootstrapper.Init();
-
             BuildAvaloniaApp().Start<MainWindow>(IoC.Resolve<IMainWindow>);
         }
 

@@ -1,13 +1,20 @@
-﻿using ZenPlatform.Core.Authentication;
+﻿using System;
+using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Environment;
 using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Sessions
 {
     public interface ISession
     {
-        int Id { get; }
+        Guid Id { get; }
 
-        DataContext GetDataContext();
-        UserManager GetUserManager();
+        IUser User { get; }
+
+        DataContext DataContext { get; }
+        void SetSessionParameter(string key, object value);
+        object GetSessionParameter(string key, object value);
+
+        IEnvironment Environment { get; }
     }
 }

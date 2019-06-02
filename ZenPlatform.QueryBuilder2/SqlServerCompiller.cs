@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.QueryBuilder.DML.Insert;
 
 namespace ZenPlatform.QueryBuilder
 {
@@ -32,6 +33,21 @@ namespace ZenPlatform.QueryBuilder
 
             if (selectQueryNode.Parent != null)
                 sb.Append(CloseBracket);
+        }
+
+        protected override void VisitInsertQueryNode(InsertQueryNode insertQueryNode, StringBuilder sb)
+        {
+            IInsertQuery insert = insertQueryNode;
+
+            VisitNode(Tokens.InsertToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.IntoToken, sb);
+
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(insert.TableWithColumnsNode, sb);
+
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(insert.InsertValuesNode, sb);
         }
     }
 }
