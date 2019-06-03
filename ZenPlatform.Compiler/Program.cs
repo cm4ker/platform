@@ -6,6 +6,7 @@ using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Cecil;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
@@ -72,40 +73,21 @@ module Test
     }
 }
 ");
-            var ts = new CecilTypeSystem(new string[] { });
-            CecilAssemblyFactory af = new CecilAssemblyFactory();
-            //var ts = new SreTypeSystem();
-            //SreAssemblyFactory af = new SreAssemblyFactory();
-            
-            AntlrInputStream inputStream = new AntlrInputStream(text);
-            ZSharpLexer lexer = new ZSharpLexer(inputStream);
-            CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-            ZSharpParser parser = new ZSharpParser(commonTokenStream);
 
-            parser.AddErrorListener(new Listener());
-            ZLanguageVisitor visitor = new ZLanguageVisitor(ts);
-            var result = (CompilationUnit) visitor.VisitEntryPoint(parser.entryPoint());
-
-            AstSymbolVisitor sv = new AstSymbolVisitor();
-            result.Accept(sv);
-
-
-            BasicVisitor bv = new BasicVisitor(ts);
-            result.Accept(bv);
+            CompilationBackend cb = new CompilationBackend();
+            var b = cb.Compile(text);
 
             if (File.Exists("Debug.dll"))
                 File.Delete("Debug.dll");
-
-            
-
-            var b = af.Create(ts, "debug", new Version(1, 0));
-
-            Generator g = new Generator(result, b);
 
             b.Write("Debug.dll");
         }
     }
 
+
+    public class Option
+    {
+    }
 
     static class Test
     {

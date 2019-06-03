@@ -106,6 +106,43 @@ IDENTIFIER : ('a'..'z' | 'A'..'Z')+ ('a'..'z' | 'A'..'Z' | '0'..'9')*;
 DEC_DIGIT: '1'..'9' '0'..'9'* ('.' '0'..'9')*;
 
 
+mode DIRECTIVE_MODE;
+
+DIRECTIVE_WHITESPACES:         Whitespace+                      -> channel(HIDDEN);
+DIGITS:                        [0-9]+                           -> channel(DIRECTIVE);
+DIRECTIVE_TRUE:                'true'                           -> channel(DIRECTIVE), type(TRUE);
+DIRECTIVE_FALSE:               'false'                          -> channel(DIRECTIVE), type(FALSE);
+DEFINE:                        'define'                         -> channel(DIRECTIVE);
+UNDEF:                         'undef'                          -> channel(DIRECTIVE);
+DIRECTIVE_IF:                  'if'                             -> channel(DIRECTIVE), type(IF);
+ELIF:                          'elif'                           -> channel(DIRECTIVE);
+DIRECTIVE_ELSE:                'else'                           -> channel(DIRECTIVE), type(ELSE);
+ENDIF:                         'endif'                          -> channel(DIRECTIVE);
+LINE:                          'line'                           -> channel(DIRECTIVE);
+ERROR:                         'error' Whitespace+              -> channel(DIRECTIVE), mode(DIRECTIVE_TEXT);
+WARNING:                       'warning' Whitespace+            -> channel(DIRECTIVE), mode(DIRECTIVE_TEXT);
+REGION:                        'region' Whitespace*             -> channel(DIRECTIVE), mode(DIRECTIVE_TEXT);
+ENDREGION:                     'endregion' Whitespace*          -> channel(DIRECTIVE), mode(DIRECTIVE_TEXT);
+PRAGMA:                        'pragma' Whitespace+             -> channel(DIRECTIVE), mode(DIRECTIVE_TEXT);
+DIRECTIVE_HIDDEN:              'hidden'                         -> channel(DIRECTIVE);
+DIRECTIVE_OPEN_PARENS:         '('                              -> channel(DIRECTIVE), type(OPEN_PARENS);
+DIRECTIVE_CLOSE_PARENS:        ')'                              -> channel(DIRECTIVE), type(CLOSE_PARENS);
+DIRECTIVE_BANG:                '!'                              -> channel(DIRECTIVE), type(BANG);
+DIRECTIVE_OP_EQ:               '=='                             -> channel(DIRECTIVE), type(OP_EQ);
+DIRECTIVE_OP_NE:               '!='                             -> channel(DIRECTIVE), type(OP_NE);
+DIRECTIVE_OP_AND:              '&&'                             -> channel(DIRECTIVE), type(OP_AND);
+DIRECTIVE_OP_OR:               '||'                             -> channel(DIRECTIVE), type(OP_OR);
+DIRECTIVE_STRING:              '"' ~('"' | [\r\n\u0085\u2028\u2029])* '"' -> channel(DIRECTIVE), type(STRING);
+CONDITIONAL_SYMBOL:            IdentifierOrKeyword              -> channel(DIRECTIVE);
+DIRECTIVE_SINGLE_LINE_COMMENT: '//' ~[\r\n\u0085\u2028\u2029]*  -> channel(COMMENTS_CHANNEL), type(SINGLE_LINE_COMMENT);
+DIRECTIVE_NEW_LINE:            NewLine                          -> channel(DIRECTIVE), mode(DEFAULT_MODE);
+
+mode DIRECTIVE_TEXT;
+
+TEXT:                          ~[\r\n\u0085\u2028\u2029]+       -> channel(DIRECTIVE);
+TEXT_NEW_LINE:                 NewLine    -> channel(DIRECTIVE), type(DIRECTIVE_NEW_LINE), mode(DEFAULT_MODE);
+
+
 fragment CommonCharacter
 	: SimpleEscapeSequence
 	| HexEscapeSequence

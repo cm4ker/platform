@@ -2,9 +2,9 @@
 // Copyright (c) 2013, Christian Wulf (chwchw@gmx.de)
 // Copyright (c) 2016-2017, Ivan Kochurkin (kvanttt@gmail.com), Positive Technologies.
 
-parser grammar CSharpPreprocessorParser;
+parser grammar ZSharpPreprocessorParser;
 
-options { tokenVocab=CSharpLexer; }
+options { tokenVocab=ZSharpLexer; }
 
 @parser::header { using System.Linq; }
 
@@ -34,7 +34,7 @@ preprocessor_directive returns [bool value]
 
 	| ENDIF directive_new_line_or_sharp             { conditions.Pop(); $value = conditions.Peek(); }
 	   #preprocessorConditional
-	| LINE (DIGITS STRING? | DEFAULT | DIRECTIVE_HIDDEN) directive_new_line_or_sharp { $value = conditions.All(c => c); }
+	| LINE (DIGITS STRING? |  DIRECTIVE_HIDDEN) directive_new_line_or_sharp { $value = conditions.All(c => c); }
 	   #preprocessorLine
 
 	| ERROR TEXT directive_new_line_or_sharp       { $value = conditions.All(c => c); }   #preprocessorDiagnostic

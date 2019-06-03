@@ -1,8 +1,12 @@
+using System;
 using System.IO;
 using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Sre;
+using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler
 {
@@ -13,22 +17,59 @@ namespace ZenPlatform.Compiler
         /// </summary>
         /// <param name="input"></param>
         /// <param name="assemblyDefinition"></param>
-        public void Compile(Stream input)
+        public IAssemblyBuilder Compile(Stream input)
         {
-            var pTree = Parse(input);
-//            ZLanguageVisitor v = new ZLanguageVisitor();
-//            var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit;
+            return CompileTree(Parse(CreateInputStream(input)));
+        }
+
+        /// <summary>
+        /// Скомпилировать поток символов и записать в сборку
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="assemblyDefinition"></param>
+        public IAssemblyBuilder Compile(TextReader input)
+        {
+            return CompileTree(Parse(CreateInputStream(input)));
+        }
+
+        private IAssemblyBuilder CompileTree(ZSharpParser pTree)
+        {
+            IAssemblyPlatform ap = new SreAssemblyPlatform();
+
+            var ab = ap.AsmFactory.Create(ap.TypeSystem, "TestName", new Version(1, 0));
+
+
+            ZLanguageVisitor v = new ZLanguageVisitor(ap.TypeSystem);
+            var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
+            //Gen
+            //Перед генерацией необходимо подготовить дерево символов
+            AstSymbolVisitor sv = new AstSymbolVisitor();
+            module.Accept(sv);
+
+            Generator g = new Generator(module, ab);
+            //
+
+            return ab;
+        }
+
+        private AntlrInputStream CreateInputStream(Stream input)
+        {
+            return new AntlrInputStream(input);
+        }
+
+        private AntlrInputStream CreateInputStream(TextReader reader)
+        {
+            return new AntlrInputStream(reader);
         }
 
 
         /// <summary>
         /// Распарсить исходный текст модуля
         /// </summary>
-        /// <param name="input">Входящий поток символов</param>
+        ///  <param name="inputStream"></param>
         /// <returns></returns>
-        private ZSharpParser Parse(Stream input)
+        private ZSharpParser Parse(AntlrInputStream inputStream)
         {
-            AntlrInputStream inputStream = new AntlrInputStream(input);
             ZSharpLexer lexer = new ZSharpLexer(inputStream);
             CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
             ZSharpParser parser = new ZSharpParser(commonTokenStream);
