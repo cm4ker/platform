@@ -64,6 +64,9 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter StLoc(this IEmitter emitter, ILocal local)
             => emitter.Emit(OpCodes.Stloc, local);
 
+        public static IEmitter Leave(this IEmitter emitter, ILabel label) => 
+            emitter.Emit(OpCodes.Leave_S, label);
+
         public static IEmitter Ldnull(this IEmitter emitter) => emitter.Emit(OpCodes.Ldnull);
 
         public static IEmitter Ldstr(this IEmitter emitter, string arg)
@@ -206,7 +209,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter LdcR8(this IEmitter emitter, double value) => emitter.Emit(OpCodes.Ldc_R8, value);
 
         public static IEmitter StArg(this IEmitter emitter, IParameter parameter) =>
-            emitter.Emit(OpCodes.Stelem_I4, parameter);
+            emitter.Emit(OpCodes.Starg_S, parameter);
 
         public static IEmitter PropGetValue(this IEmitter emitter, IProperty prop) => emitter.EmitCall(prop.Getter);
     }

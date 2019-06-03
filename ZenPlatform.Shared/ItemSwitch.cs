@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace ZenPlatform.Shared
 {
@@ -49,6 +50,18 @@ namespace ZenPlatform.Shared
         {
             if (_breaked) return this;
             if (c(_item) && !_executed)
+            {
+                _executed = true;
+                action();
+            }
+
+            return this;
+        }
+
+
+        public ItemSwitch<T> Case(T c, Action action)
+        {
+            if (_item.Equals(c) && !_executed)
             {
                 _executed = true;
                 action();

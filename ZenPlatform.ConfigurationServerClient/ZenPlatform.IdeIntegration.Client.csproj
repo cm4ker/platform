@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,14 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="NetMQ, Version=4.0.0.175, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a">
-      <HintPath>..\..\..\..\..\..\.nuget\packages\netmq\4.0.0.175-pre\lib\netstandard1.6\NetMQ.dll</HintPath>
-    </Reference>
     <Reference Include="ReactiveUI, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\.nuget\packages\reactiveui\8.0.0\lib\netcoreapp2.0\ReactiveUI.dll</HintPath>
     </Reference>
     <Reference Include="ReactiveUI, Version=9.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\..\.nuget\packages\reactiveui\9.0.1\lib\netcoreapp2.0\ReactiveUI.dll</HintPath>
+      <HintPath>C:\Users\qznc\.nuget\packages\reactiveui\9.0.1\lib\netcoreapp2.0\ReactiveUI.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -11,7 +11,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             Symbol variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
             if (variable == null)
-                Error("Assignment variable " + assignment.Name + " unknown.");
+                Error( "Assignment variable " + assignment.Name + " unknown.");
 
             // Non-indexed assignment
             if (assignment.Index == null)

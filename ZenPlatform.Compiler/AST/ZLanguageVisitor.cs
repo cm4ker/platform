@@ -20,14 +20,12 @@ namespace ZenPlatform.Compiler.AST
         private ITypeSystem _ts;
         private SystemTypeBindings _sb;
 
-
-        public ZLanguageVisitor()
+        public ZLanguageVisitor(ITypeSystem typeSystem)
         {
             _syntaxStack = new SyntaxStack();
-            _ts = new SreTypeSystem();
+            _ts = typeSystem;
             _sb = new SystemTypeBindings(_ts);
         }
-
 
         public override object VisitEntryPoint(ZSharpParser.EntryPointContext context)
         {
@@ -589,6 +587,29 @@ namespace ZenPlatform.Compiler.AST
             _syntaxStack.Push(result);
 
             return result;
+        }
+
+        public override object VisitTryStatement(ZSharpParser.TryStatementContext context)
+        {
+            base.VisitTryStatement(context);
+
+            InstructionsBodyNode @catch = null, @finally = null;
+
+            if (context.finallyExp != null)
+            {
+                @finally = _syntaxStack.PopInstructionsBody();
+            }
+
+            if (context.catchExp != null)
+            {
+                @catch = _syntaxStack.PopInstructionsBody();
+            }
+
+            var tryNode = new Try(context.start.ToLineInfo(), _syntaxStack.PopInstructionsBody(), @catch, @finally);
+
+            _syntaxStack.Push(tryNode);
+
+            return tryNode;
         }
     }
 }

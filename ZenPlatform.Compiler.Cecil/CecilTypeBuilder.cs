@@ -55,14 +55,14 @@ namespace ZenPlatform.Compiler.Cecil
             if (isInterfaceImpl)
                 attrs |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
 
-            var def = new MethodDefinition(name, attrs, null);
+            var vType = TypeSystem.GetTypeReference("System.Void");
+            var def = new MethodDefinition(name, attrs, Definition.Module.ImportReference(vType));
 
             if (overrideMethod != null)
                 def.Overrides.Add(Definition.Module.ImportReference(((CecilMethod) overrideMethod).Definition));
 
-            def.Body.InitLocals = true;
             Definition.Methods.Add(def);
-            var rv = new CecilMethodBuilder(TypeSystem, def, SelfReference);
+            var rv = new CecilMethodBuilder(TypeSystem, def, SelfReference, Definition.Module);
             ((List<IMethod>) Methods).Add(rv);
             return rv;
         }
@@ -111,7 +111,8 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IType EndBuild()
         {
-            throw new System.NotImplementedException();
+            //Cecil not need bake the type
+            return this;
         }
 
         public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, GenericParameterConstraint>> args)

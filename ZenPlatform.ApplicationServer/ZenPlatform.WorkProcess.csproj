@@ -12,4 +12,7 @@
       <HintPath>..\..\..\.nuget\packages\newtonsoft.json\9.0.1\lib\netstandard1.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
+  </ItemGroup>
 </Project>

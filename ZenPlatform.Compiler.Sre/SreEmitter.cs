@@ -126,7 +126,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public IEmitter Emit(OpCode code, IParameter parameter)
         {
-            _ilg.Emit(code, ((SreParameter) parameter).ParameterInfo.Position);
+            _ilg.Emit(code, parameter.Sequence);
             return this;
         }
 

@@ -10,7 +10,7 @@ using ZenPlatform.QueryBuilder.DML.Select;
 
 namespace ZenPlatform.EntityComponent.QueryBuilders
 {
-    public class SingleEntityQueryInjector 
+    public class SingleEntityQueryInjector
     {
         private readonly XCComponent _component;
 

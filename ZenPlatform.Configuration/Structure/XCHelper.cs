@@ -62,6 +62,8 @@ namespace ZenPlatform.Configuration.Structure
             XamlObjectReader reader = new XamlObjectReader(obj, context);
             XamlXmlWriter writer = new XamlXmlWriter(ms, context);
             XamlServices.Transform(reader, writer);
+
+            ms.Seek(0, SeekOrigin.Begin);
             
             return ms;
         }

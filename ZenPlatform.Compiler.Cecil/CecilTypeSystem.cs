@@ -10,6 +10,9 @@ namespace ZenPlatform.Compiler.Cecil
     public class CecilTypeSystem : ITypeSystem, IAssemblyResolver
     {
         private List<CecilAssembly> _asms = new List<CecilAssembly>();
+
+        private CustomAssemblyResolver _asmResolver;
+
         private Dictionary<string, CecilAssembly> _assemblyCache = new Dictionary<string, CecilAssembly>();
 
         private Dictionary<TypeReference, IType> _typeReferenceCache =
@@ -20,7 +23,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         private Dictionary<string, IType> _unresolvedTypeCache = new Dictionary<string, IType>();
 
-        private CustomMetadataResolver _resolver;
+        private CustomMetadataResolver _metadataResolver;
         private CecilTypeCache _typeCache;
 
         public void Dispose()
@@ -29,20 +32,21 @@ namespace ZenPlatform.Compiler.Cecil
                 asm.Assembly.Dispose();
         }
 
-        public AssemblyDefinition Resolve(AssemblyNameReference name) => ResolveWrapped(name)?.Assembly;
+        public AssemblyDefinition Resolve(AssemblyNameReference name) => _asmResolver.Resolve(name);
+        public AssemblyDefinition Resolve(string fullName) => _asmResolver.Resolve(fullName);
 
-        CecilAssembly ResolveWrapped(AssemblyNameReference name)
-        {
-            if (_assemblyCache.TryGetValue(name.FullName, out var rv))
-                return rv;
-            foreach (var asm in _asms)
-                if (asm.Assembly.Name.Equals(name))
-                    return _assemblyCache[name.FullName] = asm;
-            foreach (var asm in _asms)
-                if (asm.Assembly.Name.Name == name.Name)
-                    return _assemblyCache[name.FullName] = asm;
-            throw new AssemblyResolutionException(name);
-        }
+//        CecilAssembly ResolveWrapped(AssemblyNameReference name)
+//        {
+//            if (_assemblyCache.TryGetValue(name.FullName, out var rv))
+//                return rv;
+//            foreach (var asm in _asms)
+//                if (asm.Assembly.Name.Equals(name))
+//                    return _assemblyCache[name.FullName] = asm;
+//            foreach (var asm in _asms)
+//                if (asm.Assembly.Name.Name == name.Name)
+//                    return _assemblyCache[name.FullName] = asm;
+//            throw new AssemblyResolutionException(name);
+//        }
 
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters) => Resolve(name);
 
@@ -50,7 +54,9 @@ namespace ZenPlatform.Compiler.Cecil
         {
             if (targetPath != null)
                 paths = paths.Concat(new[] {targetPath});
-            _resolver = new CustomMetadataResolver(this);
+
+            _asmResolver = new CustomAssemblyResolver(this);
+            _metadataResolver = new CustomMetadataResolver(this);
             _typeCache = new CecilTypeCache(this);
             foreach (var path in paths.Distinct())
             {
@@ -60,7 +66,7 @@ namespace ZenPlatform.Compiler.Cecil
                     ReadWrite = isTarget,
                     InMemory = true,
                     AssemblyResolver = this,
-                    MetadataResolver = _resolver,
+                    MetadataResolver = _metadataResolver,
                     SymbolReaderProvider = isTarget ? new DefaultSymbolReaderProvider(true) : null,
                     ReadSymbols = isTarget
                 });
@@ -75,11 +81,11 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IAssembly TargetAssembly { get; private set; }
 
-        internal MetadataResolver MetadataResolver => _resolver;
+        internal MetadataResolver MetadataResolver => _metadataResolver;
 
         public AssemblyDefinition TargetAssemblyDefinition { get; private set; }
         public IReadOnlyList<IAssembly> Assemblies => _asms.AsReadOnly();
-        public IAssembly FindAssembly(string name) => _asms.FirstOrDefault(a => a.Assembly.Name.Name == name);
+        public IAssembly FindAssembly(string name) => RegisterAssembly(Resolve(name));
 
         public IType FindType(string name)
         {
@@ -92,6 +98,8 @@ namespace ZenPlatform.Compiler.Cecil
 
             return null;
         }
+
+        public TypeReference GetTypeReference(string name) => GetTypeReference(FindType(name));
 
         public IType FindType(string name, string assembly)
             => FindAssembly(assembly)?.FindType(name);
@@ -159,7 +167,7 @@ namespace ZenPlatform.Compiler.Cecil
                 new ModuleParameters()
                 {
                     AssemblyResolver = this,
-                    MetadataResolver = this._resolver,
+                    MetadataResolver = this._metadataResolver,
                     Kind = kind
                 });
 

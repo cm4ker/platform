@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using Mono.Cecil;
 
-namespace ZenPlatform.Compiler.Cecil.Backend
+namespace ZenPlatform.Compiler.Cecil
 {
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class CustomAssemblyResolver : IAssemblyResolver
     {
+        private readonly CecilTypeSystem _cts;
         private static readonly string BaseDirectory = AppContext.BaseDirectory;
         private static readonly string RuntimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
 
@@ -19,8 +20,9 @@ namespace ZenPlatform.Compiler.Cecil.Backend
 
         Dictionary<string, AssemblyDefinition> libraries;
 
-        public CustomAssemblyResolver()
+        public CustomAssemblyResolver(CecilTypeSystem cts)
         {
+            _cts = cts;
             libraries = new Dictionary<string, AssemblyDefinition>();
         }
 
@@ -67,7 +69,11 @@ namespace ZenPlatform.Compiler.Cecil.Backend
                     var dllPath = Path.Combine(path, $"{libname}.dll");
                     if (File.Exists(dllPath))
                     {
-                        def = AssemblyDefinition.ReadAssembly(dllPath);
+                        def = AssemblyDefinition.ReadAssembly(dllPath, new ReaderParameters()
+                        {
+                            MetadataResolver = new CustomMetadataResolver(_cts),
+                            AssemblyResolver = this
+                        });
                         libraries.Add(libname, def);
 
                         return def;

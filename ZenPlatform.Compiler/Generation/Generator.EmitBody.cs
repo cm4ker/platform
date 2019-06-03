@@ -12,14 +12,14 @@ namespace ZenPlatform.Compiler.Generation
     public partial class Generator
     {
         private void EmitBody(IEmitter e, InstructionsBodyNode body, ILabel returnLabel,
-            ILocal returnVariable)
+            ILocal returnVariable, bool inTry = false)
         {
             foreach (Statement statement in body.Statements)
             {
                 //
                 // Declare local variables.
                 //
-                EmitStatement(e, statement, body, returnLabel, returnVariable);
+                EmitStatement(e, statement, body, returnLabel, returnVariable, inTry);
 
                 var isLastStatement = body.Statements.Last() == statement;
             }
@@ -27,7 +27,7 @@ namespace ZenPlatform.Compiler.Generation
 
 
         private void EmitStatement(IEmitter e, Statement statement, InstructionsBodyNode context,
-            ILabel returnLabel, ILocal returnVariable)
+            ILabel returnLabel, ILocal returnVariable, bool inTry = false)
         {
             if (statement is Variable variable)
             {
@@ -38,7 +38,7 @@ namespace ZenPlatform.Compiler.Generation
                 // Initialize  variable.
                 //
 
-                if (variable.Type.Type.IsSystem)
+                if (variable.Type.Type.IsValueType)
                 {
                     if (variable.Value != null && variable.Value is Expression)
                     {
@@ -87,8 +87,16 @@ namespace ZenPlatform.Compiler.Generation
                 if (((Return) statement).Value != null)
                     EmitExpression(e, ((Return) statement).Value, context.SymbolTable);
 
-                e.StLoc(returnVariable)
-                    .Br(returnLabel);
+                if (inTry)
+                {
+                    e.StLoc(returnVariable);
+                    e.Leave(returnLabel);
+                }
+                else
+                {
+                    e.StLoc(returnVariable)
+                        .Br(returnLabel);
+                }
             }
             else if (statement is CallStatement)
             {
@@ -244,6 +252,16 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (symbol.CodeObject is ILocal vd)
                     e.StLoc(vd);
+            }
+            else if (statement is Try ts)
+            {
+                var exLocal = e.DefineLocal(_ts.FindType("System.Exception"));
+                e.BeginExceptionBlock();
+                EmitBody(e, ts.TryBlock, returnLabel, returnVariable, true);
+                e.BeginCatchBlock(_ts.FindType("System.Exception"));
+                e.StLoc(exLocal);
+                EmitBody(e, ts.CatchBlock, returnLabel, returnVariable, true);
+                e.EndExceptionBlock();
             }
         }
     }

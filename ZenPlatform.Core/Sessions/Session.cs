@@ -2,39 +2,40 @@
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Data;
+using System.Linq;
+using System;
 
 namespace ZenPlatform.Core.Sessions
 {
     /// <summary>
     /// Абстракция сессии
     /// </summary>
-    public abstract class Session<TPlatformEnv> : ISession
-        where TPlatformEnv : PlatformEnvironment
+    public abstract class Session : ISession
     {
-        protected Session(TPlatformEnv env, int id)
+        protected Session(IEnvironment env, IDataContextManager dataContextManger)
         {
             Environment = env;
-            Id = id;
-            UserManager = new UserManager(this);
-            DataContextManger =
-                new DataContextManger(env.StartupConfig.DatabaseType, env.StartupConfig.ConnectionString);
+            Id = Guid.NewGuid();
+
+            _dataContextManger = dataContextManger;
         }
 
-        public int Id { get; }
+        public Guid Id { get; }
 
-        protected DataContextManger DataContextManger { get; }
-        internal TPlatformEnv Environment { get; }
+        protected IDataContextManager _dataContextManger;
+        public IEnvironment Environment { get; }
+        
+        public abstract IUser User { get; protected set; }
 
-        protected UserManager UserManager { get; }
 
-        public UserManager GetUserManager()
-        {
-            return UserManager;
-        }
 
-        public DataContext GetDataContext()
-        {
-            return DataContextManger.GetContext();
-        }
+        public DataContext DataContext {
+            get => _dataContextManger.GetContext();   
+            }
+        
+
+
+        public abstract void SetSessionParameter(string key, object value);
+        public abstract object GetSessionParameter(string key, object value);
     }
 }

@@ -22,8 +22,8 @@ namespace ZenPlatform.Compiler.Generation
         private readonly ITypeSystem _ts;
 
 
-//        private SymbolTable _typeSymbols;
-//        private SymbolTable _functions = new SymbolTable();
+        //        private SymbolTable _typeSymbols;
+        //        private SymbolTable _functions = new SymbolTable();
 
         private SystemTypeBindings _bindings;
 
@@ -184,25 +184,24 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Literal literal)
             {
-                if (literal.Type.Type.IsSystem)
-                    switch (literal.Type.Type.Name)
-                    {
-                        case "Int32":
-                            e.LdcI4(Int32.Parse(literal.Value));
-                            break;
-                        case "String":
-                            e.LdStr(literal.Value);
-                            break;
-                        case "Double":
-                            e.LdcR8(double.Parse(literal.Value, CultureInfo.InvariantCulture));
-                            break;
-                        case "Char":
-                            e.LdcI4(char.ConvertToUtf32(literal.Value, 0));
-                            break;
-                        case "Boolean":
-                            e.LdcI4(bool.Parse(literal.Value) ? 1 : 0);
-                            break;
-                    }
+                switch (literal.Type.Type.Name)
+                {
+                    case "Int32":
+                        e.LdcI4(Int32.Parse(literal.Value));
+                        break;
+                    case "String":
+                        e.LdStr(literal.Value);
+                        break;
+                    case "Double":
+                        e.LdcR8(double.Parse(literal.Value, CultureInfo.InvariantCulture));
+                        break;
+                    case "Char":
+                        e.LdcI4(char.ConvertToUtf32(literal.Value, 0));
+                        break;
+                    case "Boolean":
+                        e.LdcI4(bool.Parse(literal.Value) ? 1 : 0);
+                        break;
+                }
             }
             else if (expression is Name name)
             {
@@ -267,12 +266,6 @@ namespace ZenPlatform.Compiler.Generation
                     // Make child visible to sibillings
                     //function.InstructionsBody.SymbolTable = symbolTable;
 
-
-                    foreach (var parameter in function.Parameters)
-                    {
-                    }
-
-
                     var method = tb.DefineMethod(function.Name, true, true, false)
                         .WithReturnType(function.Type.Type);
 
@@ -295,16 +288,17 @@ namespace ZenPlatform.Compiler.Generation
             // Build function stub.
             //
 
-//            // Find an unique name.
-//            string functionName = function.Name;
-//            while (_functions.Find(functionName, SymbolType.Function) != null)
-//                functionName += "#";
+            //            // Find an unique name.
+            //            string functionName = function.Name;
+            //            while (_functions.Find(functionName, SymbolType.Function) != null)
+            //                functionName += "#";
 
             if (function.Parameters != null)
             {
                 foreach (var p in function.Parameters)
                 {
-                    method.WithParameter(p.Name, p.Type.Type, false, false);
+                    var codeObj = method.WithParameter(p.Name, p.Type.Type, false, false);
+                    function.InstructionsBody.SymbolTable.ConnectCodeObject(p, codeObj);
                 }
             }
 
@@ -327,7 +321,11 @@ namespace ZenPlatform.Compiler.Generation
             var resultVar = emitter.DefineLocal(function.Type.Type);
             var returnLabel = emitter.DefineLabel();
             EmitBody(emitter, function.InstructionsBody, returnLabel, resultVar);
+
+
             emitter.MarkLabel(returnLabel);
+
+            emitter.LdLoc(resultVar);
             emitter.Ret();
         }
 
@@ -384,11 +382,11 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitAddValue(IEmitter e, IType type, int value)
         {
-            if (type == _bindings.Int)
+            if (type.Equals(_bindings.Int))
                 e.LdcI4(value);
-            else if (type == _bindings.Double)
+            else if (type.Equals(_bindings.Double))
                 e.LdcR8(value);
-            else if (type == _bindings.Char)
+            else if (type.Equals(_bindings.Char))
                 e.LdcI4(value);
         }
     }
