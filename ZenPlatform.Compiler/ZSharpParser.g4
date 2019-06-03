@@ -28,7 +28,7 @@ moduleBody: (functionDeclaration)* ;
 ================START TYPE==================
 */
 
-typeDefinition: TYPE IDENTIFIER '{' '}';
+typeDefinition: attributes? TYPE IDENTIFIER '{' '}';
 
 /*
 ================END TYPE==================
@@ -205,7 +205,13 @@ forStatement:
 
 whileStatement:
     WHILE '(' expression ')' instructionsOrSingleStatement;
-
+    
+attribute:
+    '[' name ']';
+    
+attributes:
+    attribute+;   
+    
 tryStatement:
     TRY instructionsOrSingleStatement 
     (CATCH catchExp=instructionsOrSingleStatement)? 
