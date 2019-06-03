@@ -20,11 +20,6 @@ namespace ZenPlatform.Compiler.Generation
         private readonly CompilationUnit _compilationUnit;
         private readonly IAssemblyBuilder _asm;
         private readonly ITypeSystem _ts;
-
-
-        //        private SymbolTable _typeSymbols;
-        //        private SymbolTable _functions = new SymbolTable();
-
         private SystemTypeBindings _bindings;
 
         private const string ASM_NAMESPACE = "CompileNamespace";
@@ -62,10 +57,6 @@ namespace ZenPlatform.Compiler.Generation
                 SreTA.Class | SreTA.Public | SreTA.Abstract |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
 
-            //_typeSymbols = new SymbolTable();
-
-            //module.TypeBody.SymbolTable = _typeSymbols;
-
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
             foreach (var item in PrebuildFunctions(module.TypeBody, typeBuilder))
@@ -82,10 +73,6 @@ namespace ZenPlatform.Compiler.Generation
                 SreTA.Class | SreTA.NotPublic |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass,
                 _bindings.Object);
-
-            //_typeSymbols = new SymbolTable();
-
-            //@class.TypeBody.SymbolTable = _typeSymbols;
 
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
@@ -260,12 +247,6 @@ namespace ZenPlatform.Compiler.Generation
             {
                 foreach (Function function in typeBody.Functions)
                 {
-                    //Для каждого метода создаём свою таблицу символов
-                    //SymbolTable symbolTable = new SymbolTable(_typeSymbols);
-
-                    // Make child visible to sibillings
-                    //function.InstructionsBody.SymbolTable = symbolTable;
-
                     var method = tb.DefineMethod(function.Name, true, true, false)
                         .WithReturnType(function.Type.Type);
 
@@ -284,14 +265,6 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (function == null)
                 throw new ArgumentNullException();
-            //
-            // Build function stub.
-            //
-
-            //            // Find an unique name.
-            //            string functionName = function.Name;
-            //            while (_functions.Find(functionName, SymbolType.Function) != null)
-            //                functionName += "#";
 
             if (function.Parameters != null)
             {

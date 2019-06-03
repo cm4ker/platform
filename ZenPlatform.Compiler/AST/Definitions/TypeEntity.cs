@@ -5,7 +5,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
     /// <summary>
     /// Тип сущности
     /// </summary>
-    public class TypeEntity : AstNode
+    public abstract class TypeEntity : AstNode
     {
         /// <summary>
         /// Имя типа
@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
         /// </summary>
         public TypeBody TypeBody;
 
-        public TypeEntity(ILineInfo lineInfo) : base(lineInfo)
+        protected TypeEntity(ILineInfo lineInfo) : base(lineInfo)
         {
         }
 

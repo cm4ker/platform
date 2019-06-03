@@ -4,6 +4,7 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Visitor
 {
@@ -60,6 +61,14 @@ namespace ZenPlatform.Compiler.Visitor
             else
             {
                 throw new Exception("Invalid register function in scope");
+            }
+        }
+
+        public override void VisitType(TypeNode obj)
+        {
+            if (obj.Type is UnknownArrayType)
+            {
+                obj.SetType(obj.Type.ArrayElementType.MakeArrayType());
             }
         }
 
