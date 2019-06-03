@@ -48,10 +48,10 @@ namespace ZenPlatform.Compiler.AST.Definitions
 
         public TypeBody(MemberCollection members) : base(null)
         {
+            Functions = new FunctionCollection();
+
             if (members == null)
                 return;
-
-            Functions = new FunctionCollection();
 
             foreach (Member member in members)
             {

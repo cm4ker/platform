@@ -59,8 +59,6 @@ namespace ZenPlatform.EntityComponent.UIGenerations
 //
 //            return window;
 //        }
-
-        
     }
 
 

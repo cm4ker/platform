@@ -57,9 +57,12 @@ namespace ZenPlatform.Compiler.Cecil
 
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
-            return new CecilTypeBuilder(_typeSystem, this,
-                new TypeDefinition(@namespace, name, SreMapper.Convert(typeAttributes),
-                    _typeSystem.GetTypeReference(baseType)));
+            var bType = Assembly.MainModule.ImportReference(_typeSystem.GetTypeReference(baseType));
+            var typeDefinition = new TypeDefinition(@namespace, name, SreMapper.Convert(typeAttributes), bType);
+
+            Assembly.MainModule.Types.Add(typeDefinition);
+
+            return new CecilTypeBuilder(_typeSystem, this, typeDefinition);
         }
     }
 }

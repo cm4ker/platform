@@ -18,8 +18,5 @@
     <PackageReference Include="DryIoc.dll" Version="3.1.0-preview-05" />
     <PackageReference Include="NSubsys" Version="0.7.0-build20180604-0047" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DataGrid\src\Avalonia.DataGrid.Themes.Default\Avalonia.DataGrid.Themes.Default.csproj" />
-    <ProjectReference Include="..\DataGrid\src\Avalonia.DataGrid\Avalonia.DataGrid.csproj" />
-  </ItemGroup>
+
 </Project>

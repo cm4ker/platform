@@ -8,7 +8,7 @@ namespace ZenPlatform.Core.Authentication
     /// Пользователь в системе.
     /// Обязателен для работы, потому что все манипуляции с данными будут всегда выполняться в контексте данного пользователя
     /// </summary>
-    public class User
+    public class User : IUser
     {
         public User()
         {

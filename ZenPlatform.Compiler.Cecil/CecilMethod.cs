@@ -26,11 +26,13 @@ namespace ZenPlatform.Compiler.Cecil
     internal class CecilMethodBuilder : CecilMethodBase, IMethodBuilder
     {
         private readonly MethodDefinition _methodDef;
+        private readonly ModuleDefinition _md;
 
         public CecilMethodBuilder(CecilTypeSystem typeSystem, MethodDefinition methodDef,
-            TypeReference declaringType) : base(typeSystem, methodDef, declaringType)
+            TypeReference declaringType, ModuleDefinition md) : base(typeSystem, methodDef, declaringType)
         {
             _methodDef = methodDef;
+            _md = md;
         }
 
         public bool Equals(IMethod other)
@@ -41,17 +43,19 @@ namespace ZenPlatform.Compiler.Cecil
         public bool IsPublic => _methodDef.IsPublic;
         public bool IsStatic => _methodDef.IsStatic;
 
-        public IMethodBuilder WithParameter(string name, IType type, bool isOut, bool isRef)
+        public IParameter WithParameter(string name, IType type, bool isOut, bool isRef)
         {
-            _methodDef.Parameters.Add(new ParameterDefinition(name, ParameterAttributes.None,
-                TypeSystem.GetTypeReference(type)));
+            var param = new ParameterDefinition(name, ParameterAttributes.None,
+                TypeSystem.GetTypeReference(type));
 
-            return this;
+            _methodDef.Parameters.Add(param);
+
+            return new CecilParameter(TypeSystem, param);
         }
 
         public IMethodBuilder WithReturnType(IType type)
         {
-            _methodDef.ReturnType = TypeSystem.GetTypeReference(type);
+            _methodDef.ReturnType = _md.ImportReference(((ITypeReference) type).Reference);
             return this;
         }
     }

@@ -49,7 +49,7 @@ statement:
         | assigment
         | (RETURN returnExpression = expression))
         ';'+ )
-         | (ifStatement | forStatement | whileStatement)
+         | (ifStatement | forStatement | whileStatement | tryStatement)
         ; 
 
 statements: 
@@ -206,4 +206,7 @@ forStatement:
 whileStatement:
     WHILE '(' expression ')' instructionsOrSingleStatement;
 
-
+tryStatement:
+    TRY instructionsOrSingleStatement 
+    (CATCH catchExp=instructionsOrSingleStatement)? 
+    (FINALLY finallyExp=instructionsOrSingleStatement)? ;

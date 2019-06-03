@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Language\QueryLanguage\QuerySyntax.g4" />
@@ -11,16 +11,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime" Version="4.6.5" />
+    <PackageReference Include="NLog" Version="4.6.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     <ProjectReference Include="..\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.TestPlatform.CoreUtilities">
-      <HintPath>..\..\..\..\..\..\.nuget\packages\microsoft.testplatform.objectmodel\15.7.0\lib\netstandard1.5\Microsoft.TestPlatform.CoreUtilities.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
   </ItemGroup>
 </Project>

@@ -185,7 +185,6 @@ namespace ZenPlatform.Compiler.Contracts
 
         public static IEmitter DebugHatch(this IEmitter emitter, string message)
         {
-
             return emitter;
         }
     }

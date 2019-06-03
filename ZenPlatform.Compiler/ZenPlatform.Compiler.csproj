@@ -23,6 +23,7 @@
         <Content Include=".\ZSharpLexer.g4" />
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
       <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
       <ProjectReference Include="..\ZenPlatform.Compiler.Sre\ZenPlatform.Compiler.Sre.csproj" />
       <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />

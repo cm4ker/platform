@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ZenPlatform.Compiler.Contracts;
@@ -9,14 +10,15 @@ namespace ZenPlatform.Compiler.Sre
 {
     class SreMethodBuilder : SreMethodBase, IMethodBuilder, ISreMethod
     {
-        private int _parameterIndex = 1;
+        private int _parameterIndex = 0;
 
         public SreTypeSystem System { get; }
 
         public MethodInfo Method => _methodBuilder;
 
-        private List<Type> _parameters = new List<Type>() {};
+        private List<SreDefferedParameter> _parameters = new List<SreDefferedParameter>();
         private readonly MethodBuilder _methodBuilder;
+        private Type _returnType;
 
         public SreMethodBuilder(SreTypeSystem system, MethodBuilder methodBuilder) : base(system,
             methodBuilder)
@@ -28,32 +30,49 @@ namespace ZenPlatform.Compiler.Sre
 
         public IEmitter Generator { get; }
 
-        public IMethodBuilder WithParameter(IType type, bool isOut, bool isRef)
+        public IParameter WithParameter(IType type, bool isOut, bool isRef)
         {
-            return WithParameter(null, type, isOut, isRef);
+            return WithParameter($"P_{_parameterIndex}", type, isOut, isRef);
         }
 
-        public IMethodBuilder WithParameter(string name, IType type, bool isOut, bool isRef)
-        {
-            _parameters.Add(System.GetType(type));
-            UpdateParameters();
-            _methodBuilder.DefineParameter(_parameterIndex, ParameterAttributes.None, name);
-            _parameterIndex++;
 
-            return this;
-        }
 
-        private void UpdateParameters()
+        public IParameter WithParameter(string name, IType type, bool isOut, bool isRef)
         {
-            _methodBuilder.SetParameters(_parameters.ToArray());
+            var result = new SreDefferedParameter(this, name, type, _parameterIndex++);
+            _parameters.Add(result);
+            UpdateSignature();
+            return result;
         }
 
         public IMethodBuilder WithReturnType(IType type)
         {
-            
-            _methodBuilder.SetReturnType(System.GetType(type));
-            
+            _returnType = System.GetType(type);
+            UpdateSignature();
             return this;
+        }
+
+        private void UpdateSignature()
+        {
+            _methodBuilder.SetSignature(
+                _returnType,
+                null,
+                null,
+                _parameters.Select(x => System.GetType(x.Type)).ToArray(),
+                null,
+                null);
+        }
+
+        internal bool IsBaked { get; private set; }
+
+        public void Bake()
+        {
+            foreach (var p in _parameters)
+            {
+                p.Bake();
+            }
+
+            IsBaked = true;
         }
 
         public void EmitClosure(IEnumerable<IType> fields)
@@ -63,7 +82,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool Equals(IMethod other)
         {
-            return ((SreMethodBuilder) other)?._methodBuilder.Equals(_methodBuilder) == true;
+            return ((SreMethodBuilder)other)?._methodBuilder.Equals(_methodBuilder) == true;
         }
 
         public IType ReturnType => System.ResolveType(_methodBuilder.ReturnType);

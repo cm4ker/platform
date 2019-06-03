@@ -66,7 +66,7 @@ namespace ZenPlatform.Core.Language
              */
 
             var sqlNode = Evaluate();
-            var dataContext = _session.GetDataContext();
+            var dataContext = _session.Environment.DataContextManager.GetContext();
             var command = dataContext.CreateCommand(sqlNode);
 
             foreach (var parameter in _parameters)
