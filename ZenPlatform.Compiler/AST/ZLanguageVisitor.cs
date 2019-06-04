@@ -311,27 +311,13 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitExpression(context);
 
-            if (context.expression() != null)
-            {
-                BinaryOperatorType opType = BinaryOperatorType.None;
-
-                if (context.PLUS() != null) opType = BinaryOperatorType.Add;
-                if (context.MINUS() != null) opType = BinaryOperatorType.Subtract;
-
-                var result = new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
-                    _syntaxStack.PopExpression(),
-                    opType);
-
-                _syntaxStack.Push(result);
-            }
-
             return null;
         }
 
 
-        public override AstNode VisitExpressionPrimary(ZSharpParser.ExpressionPrimaryContext context)
+        public override AstNode VisitExpressionAtom(ZSharpParser.ExpressionAtomContext context)
         {
-            base.VisitExpressionPrimary(context);
+            base.VisitExpressionAtom(context);
 
             if (context.name() != null)
             {
@@ -357,6 +343,17 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
+        public override AstNode VisitExpressionPostfix(ZSharpParser.ExpressionPostfixContext context)
+        {
+            base.VisitExpressionPostfix(context);
+            var li = context.start.ToLineInfo();
+            if (context.indexerExpression != null)
+                _syntaxStack.Push(new IndexerExpression(li, _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression()));
+
+            return null;
+        }
+
         public override AstNode VisitExpressionUnary(ZSharpParser.ExpressionUnaryContext context)
         {
             base.VisitExpressionUnary(context);
@@ -372,21 +369,20 @@ namespace ZenPlatform.Compiler.AST
             if (context.BANG() != null)
                 _syntaxStack.Push(
                     new LogicalOrArithmeticExpression(li, _syntaxStack.PopExpression(), UnaryOperatorType.Not));
-            if (context.indexerExpression != null)
-                _syntaxStack.Push(new IndexerExpression(li, _syntaxStack.PopExpression(),
-                    _syntaxStack.PopExpression()));
+
 
             return null;
         }
 
-        public override AstNode VisitExpressionTerm(ZSharpParser.ExpressionTermContext context)
+        public override AstNode VisitExpressionMultiplicative(ZSharpParser.ExpressionMultiplicativeContext context)
         {
-            base.VisitExpressionTerm(context);
+            base.VisitExpressionMultiplicative(context);
 
-            if (context.expressionTerm() != null)
+            if (context.expressionUnary() != null)
             {
                 BinaryOperatorType opType = BinaryOperatorType.None;
 
+                if (context.PERCENT() != null) opType = BinaryOperatorType.Modulo;
                 if (context.DIV() != null) opType = BinaryOperatorType.Divide;
                 if (context.STAR() != null) opType = BinaryOperatorType.Multiply;
 
@@ -434,26 +430,64 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitExpressionFactor(ZSharpParser.ExpressionFactorContext context)
+        public override AstNode VisitExpressionEquality(ZSharpParser.ExpressionEqualityContext context)
         {
-            base.VisitExpressionFactor(context);
+            base.VisitExpressionEquality(context);
 
 
-            if (context.expressionFactor() != null)
+            if (context.expressionEquality() != null)
+            {
+                BinaryOperatorType opType = BinaryOperatorType.None;
+
+
+                if (context.OP_EQ() != null) opType = BinaryOperatorType.Equal;
+                if (context.OP_NE() != null) opType = BinaryOperatorType.NotEqual;
+
+                _syntaxStack.Push(new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression(),
+                    opType));
+            }
+
+            return null;
+        }
+
+        public override AstNode VisitExpressionRelational(ZSharpParser.ExpressionRelationalContext context)
+        {
+            base.VisitExpressionRelational(context);
+            if (context.expressionRelational() != null)
             {
                 BinaryOperatorType opType = BinaryOperatorType.None;
 
                 if (context.GT() != null) opType = BinaryOperatorType.GreaterThen;
                 if (context.LT() != null) opType = BinaryOperatorType.LessThen;
-                if (context.OP_EQ() != null) opType = BinaryOperatorType.Equal;
-                if (context.OP_NE() != null) opType = BinaryOperatorType.NotEqual;
-                if (context.PERCENT() != null) opType = BinaryOperatorType.Modulo;
                 if (context.OP_GT() != null) opType = BinaryOperatorType.GraterOrEqualTo;
                 if (context.OP_LE() != null) opType = BinaryOperatorType.LessOrEqualTo;
 
                 _syntaxStack.Push(new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
                     _syntaxStack.PopExpression(),
                     opType));
+            }
+
+
+            return null;
+        }
+
+        public override AstNode VisitExpressionAdditive(ZSharpParser.ExpressionAdditiveContext context)
+        {
+            base.VisitExpressionAdditive(context);
+
+            if (context.expressionAdditive() != null)
+            {
+                BinaryOperatorType opType = BinaryOperatorType.None;
+
+                if (context.PLUS() != null) opType = BinaryOperatorType.Add;
+                if (context.MINUS() != null) opType = BinaryOperatorType.Subtract;
+
+                var result = new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression(),
+                    opType);
+
+                _syntaxStack.Push(result);
             }
 
             return null;

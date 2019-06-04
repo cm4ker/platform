@@ -64,6 +64,16 @@ namespace ZenPlatform.Compiler.Visitor
             }
         }
 
+        public override void VisitFor(For obj)
+        {
+            if (obj.InstructionsBody.SymbolTable == null)
+            {
+                var parent = obj.GetParent<InstructionsBodyNode>();
+                if (parent != null)
+                    obj.InstructionsBody.SymbolTable = new SymbolTable(parent.SymbolTable);
+            }
+        }
+
         public override void VisitType(TypeNode obj)
         {
             if (obj.Type is UnknownArrayType)

@@ -19,7 +19,7 @@ CHARACTER_LITERAL:                   '\'' (~['\\\r\n\u0085\u2028\u2029] | Common
 REGULAR_STRING:                      '"'  (~["\\\r\n\u0085\u2028\u2029] | CommonCharacter)* '"';
 VERBATIUM_STRING:                    '@"' (~'"' | '""')* '"';
 
-
+SHARP:         '#'                                -> mode(DIRECTIVE_MODE);
 VAR : 'var';
 BOOL : 'bool';
 INT : 'int';

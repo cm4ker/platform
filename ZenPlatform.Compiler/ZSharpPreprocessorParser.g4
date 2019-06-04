@@ -10,7 +10,7 @@ options { tokenVocab=ZSharpLexer; }
 
 @parser::members
 {Stack<bool> conditions = new Stack<bool>(new bool[] { true });
-public HashSet<string> ConditionalSymbols = new HashSet<string>() { "DEBUG" };}
+public HashSet<string> ConditionalSymbols = new HashSet<string>() { };}
 
 preprocessor_directive returns [bool value]
 	: DEFINE CONDITIONAL_SYMBOL directive_new_line_or_sharp{ ConditionalSymbols.Add($CONDITIONAL_SYMBOL.text);

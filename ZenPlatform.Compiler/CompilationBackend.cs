@@ -5,6 +5,7 @@ using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
 
@@ -52,27 +53,25 @@ namespace ZenPlatform.Compiler
             return ab;
         }
 
-        private AntlrInputStream CreateInputStream(Stream input)
+        private ITokenStream CreateInputStream(Stream input)
         {
-            return new AntlrInputStream(input);
+            return PreProcessor.Do(new AntlrInputStream(input));
         }
 
-        private AntlrInputStream CreateInputStream(TextReader reader)
+        private ITokenStream CreateInputStream(TextReader reader)
         {
-            return new AntlrInputStream(reader);
+            return PreProcessor.Do(new AntlrInputStream(reader));
         }
 
 
         /// <summary>
         /// Распарсить исходный текст модуля
         /// </summary>
-        ///  <param name="inputStream"></param>
+        /// <param name="tokenStream"></param>
         /// <returns></returns>
-        private ZSharpParser Parse(AntlrInputStream inputStream)
+        private ZSharpParser Parse(ITokenStream tokenStream)
         {
-            ZSharpLexer lexer = new ZSharpLexer(inputStream);
-            CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-            ZSharpParser parser = new ZSharpParser(commonTokenStream);
+            ZSharpParser parser = new ZSharpParser(tokenStream);
 
             parser.AddErrorListener(new Listener());
 

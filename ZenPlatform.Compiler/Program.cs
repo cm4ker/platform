@@ -26,50 +26,74 @@ namespace ZenPlatform.Compiler
             var text = new StringReader(@"
 module Test
 {
-    double Inc(int a)
-    {
-        a++;
-        return 0.0;
-    }
+//    double Inc(int a)
+//    {
+//        #if TEST
+//        a++;
+//        #else
+//        a = a + 2;
+//        #endif
+//        return 0.0;
+//    }
+//
+//    int Add(int a, int b)
+//    {
+//        int c = 1;
+//        try
+//        {
+//            c = c + 2;
+//            //return a + b;
+//        }
+//        catch
+//        {
+//            c++;//return 0;
+//        }
+//        
+//        int i = c + a;
+//        
+//        return i;
+//    }
+//
+//    int Fibonachi(int n)
+//    {
+//        if(n == 0) return 0;
+//        if(n == 1) return 1;
+//
+//        return Fibonachi(n-2) + Fibonachi(n-1);
+//    }
+//
+//    double Average(int[] arr)
+//    {
+//        double result = 0.0;
+//
+//        for(int i = 0; i < arr.Length; i++)
+//        {
+//            result = result + (double)(arr[i]);
+//        }  
+//
+//        result = result / (double)(arr.Length);
+//        
+//        return result;
+//    }
 
-    int Add(int a, int b)
+    int Sort(int[] arr)
     {
-        int c = 1;
-        try
-        {
-            c = c + 2;
-            //return a + b;
-        }
-        catch
-        {
-            c++;//return 0;
-        }
+        int temp = 0;
+
+//        for (int write = 0; write < arr.Length; write++) 
+//        {
+//            for (int sort = 0; sort < arr.Length - 1; sort++) 
+//            {
+//                if (arr[sort] > arr[sort + 1]) 
+//                {
+//                    temp = arr[sort + 1];
+//                    arr[sort + 1] = arr[sort];
+//                    arr[sort] = temp;
+//                }
+//            }
+//        }
         
-        int i = c + a;
-        
-        return i;
-    }
-
-    int Fibonachi(int n)
-    {
-        if(n == 0) return 0;
-        if(n == 1) return 1;
-
-        return Fibonachi(n-2) + Fibonachi(n-1);
-    }
-
-    double Average(int[] arr)
-    {
-        double result = 0.0;
-
-        for(int i = 0; i < arr.Length; i++)
-        {
-            result = result + (double)(arr[i]);
-        }  
-
-        result = result / (double)(arr.Length);
-        
-        return result;
+        return 2 + 2 * 2;
     }
 }
 ");
