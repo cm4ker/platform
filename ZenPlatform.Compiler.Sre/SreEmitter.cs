@@ -164,41 +164,4 @@ namespace ZenPlatform.Compiler.Sre
 
         public abstract ILGenerator Generator { get; }
     }
-
-
-    class SreConstructorEmitterProvider : SreMethodEmitterProviderBase
-    {
-        private readonly ConstructorBuilder _cb;
-
-        public SreConstructorEmitterProvider(ConstructorBuilder cb)
-        {
-            _cb = cb;
-        }
-
-        public override bool InitLocals
-        {
-            get => _cb.InitLocals;
-            set => _cb.InitLocals = value;
-        }
-
-        public override ILGenerator Generator => _cb.GetILGenerator();
-    }
-
-    class SreMethodEmitterProvider : SreMethodEmitterProviderBase
-    {
-        private readonly MethodBuilder _mb;
-
-        public SreMethodEmitterProvider(MethodBuilder mb)
-        {
-            _mb = mb;
-        }
-
-        public override bool InitLocals
-        {
-            get => _mb.InitLocals;
-            set => _mb.InitLocals = value;
-        }
-
-        public override ILGenerator Generator => _mb.GetILGenerator();
-    }
 }

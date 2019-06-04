@@ -118,7 +118,7 @@ expression:
 ;
 
 castExpression: 
-    '(' type ')' expressionAtom
+    '(' type ')' expression
 ;
 
 expressionBinary:

@@ -3,6 +3,7 @@ using System.IO;
 using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
+using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Preprocessor;
@@ -11,7 +12,24 @@ using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler
 {
-    public class CompilationBackend
+    public interface ICompilationBackend
+    {
+        /// <summary>
+        /// Скомпилировать поток символов и записать в сборку
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="assemblyDefinition"></param>
+        IAssemblyBuilder Compile(Stream input);
+
+        /// <summary>
+        /// Скомпилировать поток символов и записать в сборку
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="assemblyDefinition"></param>
+        IAssemblyBuilder Compile(TextReader input);
+    }
+
+    public class CompilationBackend : ICompilationBackend
     {
         /// <summary>
         /// Скомпилировать поток символов и записать в сборку
@@ -35,7 +53,7 @@ namespace ZenPlatform.Compiler
 
         private IAssemblyBuilder CompileTree(ZSharpParser pTree)
         {
-            IAssemblyPlatform ap = new SreAssemblyPlatform();
+            IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
             var ab = ap.AsmFactory.Create(ap.TypeSystem, "TestName", new Version(1, 0));
 
