@@ -291,14 +291,19 @@ namespace ZenPlatform.Compiler.Generation
             IEmitter emitter = function.Builder;
             emitter.InitLocals = true;
 
-            var resultVar = emitter.DefineLocal(function.Type.Type);
+            ILocal resultVar = null;
+
+            if (!function.Type.Type.Equals(_bindings.Void))
+                resultVar = emitter.DefineLocal(function.Type.Type);
+
             var returnLabel = emitter.DefineLabel();
             EmitBody(emitter, function.InstructionsBody, returnLabel, resultVar);
 
-
             emitter.MarkLabel(returnLabel);
 
-            emitter.LdLoc(resultVar);
+            if (resultVar != null)
+                emitter.LdLoc(resultVar);
+
             emitter.Ret();
         }
 

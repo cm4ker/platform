@@ -146,8 +146,7 @@ namespace ZenPlatform.Compiler.Cecil
         private IType _arrayType;
 
         public IType ArrayElementType =>
-            _arrayType ?? (_arrayType =
-                IsArray ? TypeSystem.Resolve(Definition) : null);
+            _arrayType ??= IsArray ? TypeSystem.Resolve(Reference.GetElementType()) : null;
 
         public IType MakeArrayType() => TypeSystem.Resolve(Reference.MakeArrayType());
 

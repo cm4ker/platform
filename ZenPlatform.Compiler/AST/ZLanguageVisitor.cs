@@ -378,7 +378,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitExpressionMultiplicative(context);
 
-            if (context.expressionUnary() != null)
+            if (context.expressionMultiplicative() != null)
             {
                 BinaryOperatorType opType = BinaryOperatorType.None;
 
@@ -434,7 +434,6 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitExpressionEquality(context);
 
-
             if (context.expressionEquality() != null)
             {
                 BinaryOperatorType opType = BinaryOperatorType.None;
@@ -454,6 +453,7 @@ namespace ZenPlatform.Compiler.AST
         public override AstNode VisitExpressionRelational(ZSharpParser.ExpressionRelationalContext context)
         {
             base.VisitExpressionRelational(context);
+
             if (context.expressionRelational() != null)
             {
                 BinaryOperatorType opType = BinaryOperatorType.None;
@@ -489,6 +489,7 @@ namespace ZenPlatform.Compiler.AST
 
                 _syntaxStack.Push(result);
             }
+
 
             return null;
         }
