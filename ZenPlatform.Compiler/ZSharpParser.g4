@@ -111,53 +111,68 @@ string_literal
 
 
 
-expression:
-    expressionTerm
-    | expression PLUS expressionTerm
-    | expression MINUS expressionTerm
-;
 
-expressionUnary:
-    PLUS expressionPrimary
-    | MINUS expressionPrimary
-    | BANG expressionPrimary
-    | expressionPrimary
-    | expressionPrimary '[' indexerExpression=expression ']'
-    | castExpression 
+
+expression:
+    expressionBinary
 ;
 
 castExpression: 
-    '(' type ')' expressionPrimary
+    '(' type ')' expressionAtom
 ;
 
 expressionBinary:
+    expressionEquality
+    | expressionBinary OP_AND expressionEquality
+    | expressionBinary OP_OR expressionEquality
+;
+
+expressionEquality: 
+    expressionRelational
+    | expressionEquality OP_EQ expressionRelational
+    | expressionEquality OP_NE expressionRelational
+;
+
+expressionRelational:
+       expressionAdditive 
+       | expressionRelational GT expressionAdditive
+       | expressionRelational LT expressionAdditive
+       | expressionRelational OP_GT expressionAdditive
+       | expressionRelational OP_LE expressionAdditive 
+;
+
+expressionAdditive:
+   expressionMultiplicative
+        | expressionAdditive PLUS expressionMultiplicative
+        | expressionAdditive MINUS expressionMultiplicative
+;
+
+expressionMultiplicative:
     expressionUnary
-    | expressionBinary OP_AND expressionUnary
-    | expressionBinary OP_OR expressionUnary
+    | expressionMultiplicative STAR expressionUnary
+    | expressionMultiplicative DIV expressionUnary
+    | expressionMultiplicative  PERCENT expressionUnary
 ;
 
-expressionFactor: 
-    expressionBinary 
-    | expressionFactor PERCENT expressionBinary
-    | expressionFactor GT expressionBinary
-    | expressionFactor LT expressionBinary
-    | expressionFactor OP_GT expressionBinary
-    | expressionFactor OP_LE expressionBinary
-    | expressionFactor OP_EQ expressionBinary
-    | expressionFactor OP_NE expressionBinary
+expressionUnary:
+    expressionPostfix
+    | PLUS expressionAtom
+    | MINUS expressionAtom
+    | BANG expressionAtom
 ;
 
-expressionTerm:
-    expressionFactor
-    | expressionTerm STAR expressionFactor
-    | expressionTerm DIV expressionFactor
+expressionPostfix: 
+    expressionAtom
+    | castExpression 
+    | '(' expression ')'
+    | expressionAtom '[' indexerExpression=expression ']'
 ;
 
-expressionPrimary:
+expressionAtom:
     literal
     | functionCallExpression
     | name
-    | '(' expression ')'
+    
     
 ;
 
