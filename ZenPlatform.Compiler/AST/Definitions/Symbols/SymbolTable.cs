@@ -79,8 +79,8 @@ namespace ZenPlatform.Compiler.AST.Definitions.Symbols
         {
             if (type == SymbolType.Function)
                 return "f_";
-            if (type == SymbolType.Structure)
-                return "s_";
+            if (type == SymbolType.Type)
+                return "t_";
             if (type == SymbolType.Variable)
                 return "v_";
             return "";

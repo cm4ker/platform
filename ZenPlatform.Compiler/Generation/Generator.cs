@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Expressions;
@@ -10,6 +11,7 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.ServerClientShared.Network;
 using SreTA = System.Reflection.TypeAttributes;
 
 
@@ -20,20 +22,23 @@ namespace ZenPlatform.Compiler.Generation
         private readonly CompilationUnit _compilationUnit;
         private readonly IAssemblyBuilder _asm;
         private readonly ITypeSystem _ts;
+        private readonly CompilationMode _mode;
+
         private SystemTypeBindings _bindings;
 
         private const string ASM_NAMESPACE = "CompileNamespace";
 
 
-        public Generator(CompilationUnit compilationUnit, IAssemblyBuilder asm)
+        public Generator(GeneratorParameters parameters)
         {
-            _compilationUnit = compilationUnit;
-            _asm = asm;
-            _ts = asm.TypeSystem;
+            _compilationUnit = parameters.Unit;
+            _asm = parameters.Builder;
+            _ts = _asm.TypeSystem;
 
+            _mode = parameters.Mode;
             _bindings = new SystemTypeBindings(_ts);
 
-            foreach (var typeEntity in compilationUnit.TypeEntities)
+            foreach (var typeEntity in _compilationUnit.TypeEntities)
             {
                 switch (typeEntity)
                 {
@@ -247,6 +252,14 @@ namespace ZenPlatform.Compiler.Generation
             {
                 foreach (Function function in typeBody.Functions)
                 {
+                    //На сервере никогда не может существовать клиентских процедур
+                    if (((int) function.Flags & (int) _mode) == 0)
+                    {
+                        continue;
+                    }
+
+                    Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
+
                     var method = tb.DefineMethod(function.Name, true, true, false)
                         .WithReturnType(function.Type.Type);
 
@@ -283,10 +296,59 @@ namespace ZenPlatform.Compiler.Generation
             return method;
         }
 
+        private void EmitRemoteCall(Function function)
+        {
+            //int i = client.Invoke<int, int>(new Route("test"), 44);
+            IEmitter emitter = function.Builder;
+            var type = _ts.FindType($"{typeof(Client).Namespace}.{nameof(Client)}",
+                typeof(Client).Assembly.GetName().FullName);
+            var client = emitter.DefineLocal(type);
+
+            var route = _ts.FindType($"{typeof(Route).Namespace}.{nameof(Route)}",
+                typeof(Route).Assembly.GetName().FullName);
+
+
+            var method = type.Methods.FirstOrDefault(x => x.Name == "Invoke");
+            var genMethod = method.MakeGenericMethod(new[]
+                {_bindings.Object.MakeArrayType(), _bindings.Object.MakeArrayType()});
+
+            emitter.LdLoc(client);
+
+
+            //First parameter
+            emitter.LdStr($"{function.GetParent<TypeEntity>().Name}.{function.Name}");
+            emitter.Newobj(route.Constructors.First());
+
+            //Second parameter
+            emitter.LdcI4(function.Parameters.Count);
+            emitter.NewArr(_bindings.Object);
+
+            foreach (var p in function.Parameters)
+            {
+                emitter.Dup();
+                var iArg = function.Parameters.IndexOf(p);
+                emitter.LdcI4(iArg);
+                emitter.LdArg(iArg);
+                emitter.StElemI4();
+            }
+
+            emitter.EmitCall(genMethod);
+            emitter.LdcI4(0);
+            emitter.LdElemI4();
+
+            emitter.Ret();
+        }
+
         private void EmitFunction(Function function)
         {
             if (function == null)
                 throw new ArgumentNullException();
+
+            if (function.Flags == FunctionFlags.ServerClientCall)
+            {
+                EmitRemoteCall(function);
+                return;
+            }
 
             IEmitter emitter = function.Builder;
             emitter.InitLocals = true;

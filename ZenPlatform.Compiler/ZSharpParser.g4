@@ -40,7 +40,7 @@ instructionsBody : '{' statements '}';
 instructionsOrSingleStatement : 
     instructionsBody | statement;
 
-functionDeclaration:accessModifier? type IDENTIFIER '(' parameters? ')' instructionsBody;
+functionDeclaration:attributes? accessModifier? type IDENTIFIER '(' parameters? ')' instructionsBody;
 
 /*чертовски сложное правило*/
 statement: 
@@ -222,7 +222,7 @@ whileStatement:
     WHILE '(' expression ')' instructionsOrSingleStatement;
     
 attribute:
-    '[' name ']';
+    '[' type ('(' arguments? ')')? ']';
     
 attributes:
     attribute+;   

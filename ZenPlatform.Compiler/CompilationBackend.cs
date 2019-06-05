@@ -65,7 +65,7 @@ namespace ZenPlatform.Compiler
             AstSymbolVisitor sv = new AstSymbolVisitor();
             module.Accept(sv);
 
-            Generator g = new Generator(module, ab);
+            Generator g = new Generator(new GeneratorParameters(module, ab, CompilationMode.Client));
             //
 
             return ab;

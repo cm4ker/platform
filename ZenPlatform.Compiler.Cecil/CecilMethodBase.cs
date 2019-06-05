@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 
@@ -9,10 +10,10 @@ namespace ZenPlatform.Compiler.Cecil
     {
         private TypeReference _declaringTR;
 
-        public CecilMethodBase(CecilTypeSystem typeSystem, MethodDefinition method, TypeReference declaringType)
+        public CecilMethodBase(CecilTypeSystem typeSystem, MethodReference method, TypeReference declaringType)
         {
             TypeSystem = typeSystem;
-            Definition = method;
+            Definition = method.Resolve();
             _declaringTR = declaringType;
         }
 
@@ -28,6 +29,8 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IType ReturnType => TypeSystem.Resolve(Definition.ReturnType);
         public IType DeclaringType => TypeSystem.Resolve(_declaringTR);
+
+        protected TypeReference DeclaringTypeReference => _declaringTR;
 
         public bool IsPublic => Definition.IsPublic;
         public bool IsStatic => Definition.IsStatic;

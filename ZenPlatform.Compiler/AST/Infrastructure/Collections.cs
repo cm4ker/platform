@@ -25,6 +25,10 @@ namespace ZenPlatform.Compiler.AST.Infrastructure
     {
     }
 
+    public class AttributeCollection : List<AttributeNode>
+    {
+    }
+
     public class MemberCollection : List<Member>
     {
     }

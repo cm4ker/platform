@@ -1,3 +1,4 @@
+using System.Linq;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
@@ -12,40 +13,54 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
     public class Function : Member, IAstSymbol
     {
         /// <summary>
-        /// Function body.
+        /// Тело функции
         /// </summary>
         public InstructionsBodyNode InstructionsBody;
 
         /// <summary>
-        /// Function type.
+        /// Тип функции
         /// </summary>
         public TypeNode Type;
 
         /// <summary>
-        /// Function parameters.
+        /// Параметры функции
         /// </summary>
         public ParameterCollection Parameters;
 
         /// <summary>
-        /// IL method builder.
+        /// Аттрибуты функции
+        /// </summary>
+        public AttributeCollection Attributes;
+
+        public FunctionFlags Flags => ((IsClient) ? FunctionFlags.Client : 0)
+                                      | ((IsServer) ? FunctionFlags.Server : 0)
+                                      | ((IsClientCall) ? FunctionFlags.ServerClientCall : 0);
+
+        private bool IsServer => Attributes.Any(x => x.Type.Type.Name == "Server") || !Attributes.Any();
+        private bool IsClient => Attributes.Any(x => x.Type.Type.Name == "Client");
+        private bool IsClientCall => Attributes.Any(x => x.Type.Type.Name == "ClientCall");
+
+        /// <summary>
+        /// Билдер IL кода
         /// </summary>
         public IEmitter Builder;
 
         /// <summary>
-        /// Creates a function object.
+        /// Создать объект функции
         /// </summary>
         public Function(ILineInfo li, InstructionsBodyNode instructionsBody, ParameterCollection parameters,
-            string name, TypeNode type) : base(li)
+            string name, TypeNode type, AttributeCollection ac) : base(li)
         {
             InstructionsBody = instructionsBody;
             Parameters = parameters ?? new ParameterCollection();
             Name = name;
             Type = type;
+            Attributes = ac;
         }
 
         public string Name { get; set; }
-        public SymbolType SymbolType => SymbolType.Function;
 
+        public SymbolType SymbolType => SymbolType.Function;
 
         public override void Accept(IVisitor visitor)
         {

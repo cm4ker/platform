@@ -89,6 +89,29 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
+        public override AstNode VisitAttributes(ZSharpParser.AttributesContext context)
+        {
+            _syntaxStack.Push(new AttributeCollection());
+            base.VisitAttributes(context);
+
+            return null;
+        }
+
+        public override AstNode VisitAttribute(ZSharpParser.AttributeContext context)
+        {
+            base.VisitAttribute(context);
+
+            ArgumentCollection ac = null;
+
+            if (context.arguments() != null)
+                ac = (ArgumentCollection) _syntaxStack.Pop();
+
+            var result = new AttributeNode(context.start.ToLineInfo(), ac, _syntaxStack.PopType());
+            _syntaxStack.PeekCollection().Add(result);
+
+            return result;
+        }
+
         public override AstNode VisitName(ZSharpParser.NameContext context)
         {
             _syntaxStack.Push(context.GetText());
@@ -205,7 +228,7 @@ namespace ZenPlatform.Compiler.AST
             base.VisitFunctionDeclaration(context);
             AstNode result = null;
             ParameterCollection pc = null;
-
+            AttributeCollection ac = new AttributeCollection();
             var body = _syntaxStack.PopInstructionsBody();
 
             if (context.parameters() != null)
@@ -214,9 +237,15 @@ namespace ZenPlatform.Compiler.AST
             }
 
             var type = _syntaxStack.PopType();
+
             var funcName = context.IDENTIFIER().GetText();
 
-            result = new Function(context.start.ToLineInfo(), body, pc, funcName, type);
+            if (context.attributes() != null)
+            {
+                ac = (AttributeCollection) _syntaxStack.Pop();
+            }
+
+            result = new Function(context.start.ToLineInfo(), body, pc, funcName, type, ac);
 
             _syntaxStack.PeekCollection().Add(result);
 
