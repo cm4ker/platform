@@ -10,11 +10,22 @@ namespace ZenPlatform.Core
         public List<StartupConfig> Environments { get; set; }
     }
 
+    public enum ListenerType
+    {
+        User,
+        Admin
+    }
+
     public class AccessPointConfig
     {
-        public string Address { get; set; }
+        public List<ListenerConfig> Listeners { get; set; }
     }
     
+    public class ListenerConfig
+    {
+        public string Address { get; set; }
+        public ListenerType Type { get; set; }
+    }
 
     
 }

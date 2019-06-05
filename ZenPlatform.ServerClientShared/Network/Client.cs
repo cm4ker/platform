@@ -12,7 +12,7 @@ using ZenPlatform.ServerClientShared.Logging;
 
 namespace ZenPlatform.ServerClientShared.Network
 {
-    public class Client: IMessageHandler, IDisposable
+    public class Client: IMessageHandler, IDisposable, IConnection
     {
         private Channel _channel;
         private TcpClient _tcpClient;
@@ -25,6 +25,8 @@ namespace ZenPlatform.ServerClientShared.Network
 
         public bool Connected { get; private set; }
         public bool Authenticated { get; private set; }
+
+        public ConnectionInfo Info => throw new NotImplementedException();
 
         public Client( IMessagePackager packager, ILogger<Client> logger)
         {
@@ -44,7 +46,8 @@ namespace ZenPlatform.ServerClientShared.Network
                 _logger.Info("Connect to {0}", endPoint.Address.ToString());
                 _tcpClient.Connect(endPoint);
                 _channel = new Channel( _packager, new SimpleConsoleLogger<Channel>());
-                _channel.Start(_tcpClient.GetStream(), this);
+                _channel.SetHandler(this);
+                _channel.Start( this);
                 Connected = true;
             }
             catch (SocketException socketException)
@@ -220,6 +223,26 @@ namespace ZenPlatform.ServerClientShared.Network
         {
             Disconnect();
             _tcpClient.Dispose();
+        }
+
+        public void Close()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Stream GetStream()
+        {
+            return _tcpClient.GetStream();
+        }
+
+        public void Open(TcpClient client)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetRemover(IDisposable remover)
+        {
+            throw new NotImplementedException();
         }
     }
 }

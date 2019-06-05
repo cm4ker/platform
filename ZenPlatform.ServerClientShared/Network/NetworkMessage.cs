@@ -19,17 +19,19 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class PingNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
-        public Guid RequestId { get; private set; }
+        public Guid RequestId { get; set; }
     }
 
     public class RequestInvokeUnaryNetworkMessage : IInvokeMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
-        public Route Route { get; private set; }
-        public object Request { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+        public Route Route { get; set; }
+        public object Request { get; set; }
+
+        public RequestInvokeUnaryNetworkMessage() { }
 
         public RequestInvokeUnaryNetworkMessage(Route route, object request)
         {
@@ -42,9 +44,11 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class ResponceInvokeUnaryNetworkMessage : IInvokeMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
-        public object Result { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+        public object Result { get; set; }
+
+        public ResponceInvokeUnaryNetworkMessage() { }
 
         public ResponceInvokeUnaryNetworkMessage(Guid InvokeId, object result)
         {
@@ -56,11 +60,13 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class ErrorNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
 
-        public string ErrorMessage { get; private set; }
-        public Exception Exception { get; private set; }
+        public string ErrorMessage { get; set; }
+        public Exception Exception { get; set; }
+
+        public ErrorNetworkMessage() { }
 
         public ErrorNetworkMessage(Guid InvokeId, string errorMessage, Exception exception = null)
         {
@@ -74,8 +80,8 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class RequestEnvironmentListNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
 
         public RequestEnvironmentListNetworkMessage()
         {
@@ -87,9 +93,11 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class RequestEnvironmentUseNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
-        public string Name { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+        public string Name { get; set; }
+
+        public RequestEnvironmentUseNetworkMessage() { }
 
         public RequestEnvironmentUseNetworkMessage(string name)
         {
@@ -101,10 +109,10 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class ResponceEnvironmentUseNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
-        public string Name { get; private set; }
-
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+        public string Name { get; set; }
+        public ResponceEnvironmentUseNetworkMessage() { }
         public ResponceEnvironmentUseNetworkMessage(RequestEnvironmentUseNetworkMessage request)
         {
             Id = Guid.NewGuid();
@@ -117,10 +125,12 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class ResponceEnvironmentListNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
-        public List<string> List { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+        public List<string> List { get; set; }
 
+
+        public ResponceEnvironmentListNetworkMessage() { }
         public ResponceEnvironmentListNetworkMessage(Guid requestId, List<string> list)
         {
             Id = Guid.NewGuid();
@@ -131,9 +141,11 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class DataStreamNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
-        public byte[] Data { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+        public byte[] Data { get; set; }
+
+        public DataStreamNetworkMessage() { }
 
         public DataStreamNetworkMessage(Guid requestId, byte[] data)
         {
@@ -145,10 +157,12 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class StartInvokeStreamNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
-        public Route Route { get; private set; }
-        public object Request { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+        public Route Route { get; set; }
+        public object Request { get; set; }
+
+        public StartInvokeStreamNetworkMessage() { }
 
         public StartInvokeStreamNetworkMessage(Route route, object request)
         {
@@ -160,8 +174,10 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class EndInvokeStreamNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+
+        public EndInvokeStreamNetworkMessage() { }
 
         public EndInvokeStreamNetworkMessage(Guid requestId)
         {
@@ -172,9 +188,11 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class RequestAuthenticationNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
-        public IAuthenticationToken Token { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+        public IAuthenticationToken Token { get; set; }
+
+        public RequestAuthenticationNetworkMessage() { }
 
         public RequestAuthenticationNetworkMessage(IAuthenticationToken token)
         {
@@ -186,8 +204,10 @@ namespace ZenPlatform.ServerClientShared.Network
 
     public class ResponceAuthenticationNetworkMessage : INetworkMessage
     {
-        public Guid Id { get; private set; }
-        public Guid RequestId { get; private set; }
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+
+        public ResponceAuthenticationNetworkMessage() { }
 
         public ResponceAuthenticationNetworkMessage(RequestAuthenticationNetworkMessage request)
         {

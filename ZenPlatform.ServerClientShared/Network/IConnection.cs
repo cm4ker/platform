@@ -1,8 +1,8 @@
-﻿using System.Net.Sockets;
-using ZenPlatform.ServerClientShared.Network;
+﻿using System.IO;
+using System.Net.Sockets;
 using ZenPlatform.ServerClientShared.Tools;
 
-namespace ZenPlatform.Core.Network
+namespace ZenPlatform.ServerClientShared.Network
 {
 
     public interface IConnection<T>: IConnection
@@ -11,15 +11,24 @@ namespace ZenPlatform.Core.Network
     public interface IUserMessageHandler : IMessageHandler { };
     public interface IAdminMessageHandler : IMessageHandler { };
 
-    public interface IConnection: ISubscriber
+    public interface IConnection: IRemovable
     {
-        /// <summary>
-        /// Канал передачи данных
-        /// </summary>
-        IChannel Channel { get; }
 
-        
+        /// <summary>
+        /// Закрывает соединение
+        /// </summary>
         void Close();
+
+        /// <summary>
+        /// Возвращает поток для обмена данными
+        /// </summary>
+        /// <returns></returns>
+        Stream GetStream();
+
+        /// <summary>
+        /// Информация о подключении
+        /// </summary>
+        ConnectionInfo Info { get; }
 
         /// <summary>
         /// Открывает соединение с клиетом
