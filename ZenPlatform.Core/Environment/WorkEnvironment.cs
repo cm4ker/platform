@@ -49,12 +49,12 @@ namespace ZenPlatform.Core.Environment
          */
 
         public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger, 
-            IAuthenticationManager authenticationManager, IDependencyResolver resolver, 
+            IAuthenticationManager authenticationManager, IServiceProvider serviceProvider, 
             IDataContextManager contextManager, IUserManager userManager) : base(contextManager)
         {
 
             _locking = new object();
-            _resolver = resolver;
+            _serviceProvider = serviceProvider;
             _logger = logger;
             _userManager = userManager;
             InvokeService = invokeService;
@@ -120,7 +120,7 @@ namespace ZenPlatform.Core.Environment
 
         private ILogger _logger;
 
-        private IDependencyResolver _resolver;
+        private IServiceProvider _serviceProvider;
 
         private IUserManager _userManager;
 

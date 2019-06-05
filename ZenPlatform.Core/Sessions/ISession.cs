@@ -2,10 +2,11 @@
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Data;
+using ZenPlatform.ServerClientShared.Tools;
 
 namespace ZenPlatform.Core.Sessions
 {
-    public interface ISession
+    public interface ISession: IRemovable
     {
         Guid Id { get; }
 

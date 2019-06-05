@@ -9,7 +9,7 @@ using ZenPlatform.Core.Sessions;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.ServerClientShared.DI;
+using ZenPlatform.ServerClientShared.Tools;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -22,7 +22,7 @@ namespace ZenPlatform.Core.Environment
 
         protected PlatformEnvironment(IDataContextManager dataContextManager)
         {
-            Sessions = new List<ISession>();
+            Sessions = new RemovingList<ISession>();
             
             DataContextManager = dataContextManager;
 

@@ -4,8 +4,8 @@ using System.Text;
 
 namespace ZenPlatform.ServerClientShared.Tools
 {
-    public interface ISubscriber: IDisposable
+    public interface IRemovable: IDisposable
     {
-        void SetUnsubscriber(IDisposable unsubscriber);
+        void SetRemover(IDisposable remover);
     }
 }

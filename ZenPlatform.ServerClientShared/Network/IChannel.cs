@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using ZenPlatform.Core.Authentication;
+
 
 namespace ZenPlatform.ServerClientShared.Network
 {
@@ -10,7 +12,7 @@ namespace ZenPlatform.ServerClientShared.Network
         event Action<Exception> OnError;
 
         void Send(object message);
-        void Start(Stream stream, IMessageHandler handler);
+        void Start(IConnection connection);
         void Stop();
 
         void SetHandler(IMessageHandler handler);

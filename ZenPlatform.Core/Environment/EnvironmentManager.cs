@@ -5,18 +5,19 @@ using System.Linq;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.ServerClientShared.DI;
 using ZenPlatform.ServerClientShared.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ZenPlatform.Core.Environment
 {
     public class EnvironmentManager : IEnvironmentManager
     {
-        private readonly IDependencyResolver _dependencyResolver;
+        private readonly IServiceProvider _serviceProvider;
         private readonly List<IEnvironment> environments = new List<IEnvironment>();
         private readonly ILogger _logger;
 
-        public EnvironmentManager(IConfig<List<StartupConfig>> config, IDependencyResolver dependencyResolver, ILogger<EnvironmentManager> logger)
+        public EnvironmentManager(IConfig<List<StartupConfig>> config, IServiceProvider serviceProvider, ILogger<EnvironmentManager> logger)
         {
-            _dependencyResolver = dependencyResolver;
+            _serviceProvider = serviceProvider;
             _logger = logger;
 
             config.Value.ForEach(c => CreateEnvironment(c));
@@ -27,9 +28,9 @@ namespace ZenPlatform.Core.Environment
             _logger.Info("Creating environment, connection string: {0}", config.ConnectionString);
             try
             {
-                using (var scope = _dependencyResolver.BeginScope())
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    var env = scope.Resolver.Resolve<IEnvironment>();
+                    var env = scope.ServiceProvider.GetRequiredService<IEnvironment>();
                     env.Initialize(config);
                     environments.Add(env);
                 }

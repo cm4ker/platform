@@ -18,7 +18,7 @@ namespace ZenPlatform.ServerRPC
         static void Main(string[] args)
         {
             
-            Client client = new Client(new SimpleMessagePackager(new HyperionSerializer()), new SimpleConsoleLogger<Client>());
+            Client client = new Client(new SimpleMessagePackager(new NewtonsoftJsonSerializer()), new SimpleConsoleLogger<Client>());
 
             client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345));
             client.Use("testdb");

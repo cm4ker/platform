@@ -8,48 +8,55 @@ using ZenPlatform.Core.Environment;
 using Newtonsoft.Json;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.ServerClientShared.Logging;
-using ZenPlatform.ServerClientShared.Tools;
+using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace ZenPlatform.Core.Network
 {
     public class UserConnection<T> : IDisposable,  IConnection<T> where T: IMessageHandler
     {
-        public IChannel Channel { get; private set; }
+        private IChannel _channel;
         private TcpClient _client;
-        private IDisposable _unsubscriber;
+        private IDisposable _remover;
         
         private readonly ILogger _logger;
-        private readonly IDependencyResolver _dependencyResolver;
+        private readonly IServiceProvider _serviceProvider;
 
-        public UserConnection(ILogger<UserConnection<T>> logger, IDependencyResolver dependencyResolver)
+        public ConnectionInfo Info => throw new NotImplementedException();
+
+        public UserConnection(ILogger<UserConnection<T>> logger, IServiceProvider serviceProvider, IChannel channel)
         {
-
+            _channel = channel;
             _logger = logger;
-            _dependencyResolver = dependencyResolver;
+            _serviceProvider = serviceProvider;
             
         }
 
         public void Open(TcpClient client)
         {
-            if (client == null) throw new ArgumentNullException(nameof(client));
+            _client = client ?? throw new ArgumentNullException(nameof(client));
             if (!client.Connected) throw new InvalidOperationException("Client must be connected.");
 
-            _client = client;
-            Channel = _dependencyResolver.Resolve<IChannel>();
-            Channel.Start(client.GetStream(), _dependencyResolver.Resolve<T>());
-
-            Channel.OnError += (ex) =>
+            _channel.OnError += (ex) =>
             {
                 _logger.Info("Client '{0}' disconnected: '{1}'", client.Client.RemoteEndPoint, ex.Message);
                 Dispose();
             };
+            _channel.SetHandler(_serviceProvider.GetRequiredService<T>());
+            _channel.Start(this);
+            
+        }
+
+        public Stream GetStream()
+        {
+            return _client.GetStream();
         }
 
         public void Close()
         {
-            if (Channel != null)
+            if (_channel != null)
             {
-                Channel.Stop();
+                _channel.Stop();
             }
             
             if (_client != null)
@@ -57,19 +64,21 @@ namespace ZenPlatform.Core.Network
                 _client.Dispose();
                 
             }
+            if (_remover != null)
+                _remover.Dispose();
         }
 
 
         public void Dispose()
         {
             Close();
-            if (_unsubscriber!=null)
-                _unsubscriber.Dispose();
         }
 
-        public void SetUnsubscriber(IDisposable unsubscriber)
+        public void SetRemover(IDisposable remover)
         {
-            _unsubscriber = unsubscriber;
+            if (_remover == null)
+                _remover = remover;
+            else remover.Dispose();
         }
     }
 }

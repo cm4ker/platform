@@ -74,22 +74,29 @@ namespace ZenPlatform.ServerClientShared.Network
         {
             if (!Running) throw new InvalidOperationException("Channel must be running.");
             if (message == null) throw new ArgumentNullException(nameof(message));
+                _logger.Trace(() => string.Format("To: ''; Type: '{0}'; Message: {1}",
+                    message.GetType().Name, JsonConvert.SerializeObject(message)));
 
-            _logger.Trace(() => string.Format("To: ''; Type: '{0}'; Message: {1}",
-                message.GetType().Name, JsonConvert.SerializeObject(message)));
+                _stream.Write(_packager.PackMessage(message));
 
-            _stream.Write(_packager.PackMessage(message));
         }
 
-        public void Start(Stream stream, IMessageHandler handler)
+        public void Start(IConnection connection)
         {
-            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
 
-            _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            _stream = connection.GetStream();
 
-            Running = true;
-
-            _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, new AsyncCallback(ReceiveCallback), null);
+            try
+            {
+                Running = true;
+                _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, new AsyncCallback(ReceiveCallback), null);
+            }
+            catch (Exception ex)
+            {
+                Stop();
+                OnError?.Invoke(ex);
+            }
         }
         
         public void Stop()

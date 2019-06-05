@@ -20,6 +20,8 @@ namespace ZenPlatform.Core.Sessions
             _dataContextManger = dataContextManger;
         }
 
+        private IDisposable _remover;
+
         public Guid Id { get; }
 
         protected IDataContextManager _dataContextManger;
@@ -37,5 +39,15 @@ namespace ZenPlatform.Core.Sessions
 
         public abstract void SetSessionParameter(string key, object value);
         public abstract object GetSessionParameter(string key, object value);
+
+        public void SetRemover(IDisposable remover)
+        {
+            _remover = remover;
+        }
+
+        public void Dispose()
+        {
+            _remover.Dispose();
+        }
     }
 }
