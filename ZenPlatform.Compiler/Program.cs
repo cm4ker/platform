@@ -25,7 +25,7 @@ namespace ZenPlatform.Compiler
             string test;
             var text = new StringReader(@"
 module Test
-{
+{    
     double Inc(int a)
     {
         #if TEST
@@ -36,6 +36,7 @@ module Test
         return 0.0;
     }
 
+    [ClientCall]
     int Add(int a, int b)
     {
         int c = 1;

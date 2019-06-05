@@ -15,7 +15,6 @@ namespace ZenPlatform.Compiler.Contracts
         /// <returns></returns>
         IType FindType(string name);
 
-
         /// <summary>
         /// Lookup type
         /// </summary>

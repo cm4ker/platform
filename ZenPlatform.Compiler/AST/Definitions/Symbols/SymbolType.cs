@@ -4,7 +4,7 @@ namespace ZenPlatform.Compiler.AST.Definitions.Symbols
     {
         None,
         Function,
-        Structure,
+        Type,
         Variable
     }
 

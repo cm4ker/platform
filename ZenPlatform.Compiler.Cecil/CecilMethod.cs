@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Net.Http.Headers;
 using Mono.Cecil;
+using Mono.Cecil.Rocks;
 using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Cecil
@@ -7,19 +9,25 @@ namespace ZenPlatform.Compiler.Cecil
     [DebuggerDisplay("{" + nameof(Definition) + "}")]
     class CecilMethod : CecilMethodBase, IMethod
     {
-        private readonly MethodDefinition _methodDef;
-
-        public CecilMethod(CecilTypeSystem typeSystem, MethodDefinition methodDef,
+        public CecilMethod(CecilTypeSystem typeSystem, MethodReference methodDef,
             TypeReference declaringType) : base(typeSystem, methodDef, declaringType)
         {
-            _methodDef = methodDef;
         }
 
         public bool Equals(IMethod other) => other is CecilMethod cm
                                              && cm.Definition.Equals(Definition);
 
-        public bool IsPublic => _methodDef.IsPublic;
-        public bool IsStatic => _methodDef.IsStatic;
+        public bool IsPublic => Definition.IsPublic;
+        public bool IsStatic => Definition.IsStatic;
+
+        public IMethod MakeGenericMethod(IType[] typeArguments)
+        {
+            var md = new MethodDefinition(Definition.Name, Definition.Attributes, Definition.ReturnType);
+
+            GenericInstanceMethod gim = new GenericInstanceMethod(Definition);
+
+            return new CecilMethod(TypeSystem, gim, DeclaringTypeReference);
+        }
     }
 
 
@@ -43,10 +51,15 @@ namespace ZenPlatform.Compiler.Cecil
         public bool IsPublic => _methodDef.IsPublic;
         public bool IsStatic => _methodDef.IsStatic;
 
+        public IMethod MakeGenericMethod(IType[] typeArguments)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IParameter WithParameter(string name, IType type, bool isOut, bool isRef)
         {
             var param = new ParameterDefinition(name, ParameterAttributes.None,
-                TypeSystem.GetTypeReference(type));
+                _md.ImportReference(TypeSystem.GetTypeReference(type)));
 
             _methodDef.Parameters.Add(param);
 
