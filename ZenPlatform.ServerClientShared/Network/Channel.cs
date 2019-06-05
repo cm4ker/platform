@@ -25,11 +25,9 @@ namespace ZenPlatform.ServerClientShared.Network
 
         public Channel(IMessagePackager packager, ILogger<Channel> logger)
         {
-
             _logger = logger;
             _readBuffer = new byte[_bufferSize];
             _packager = packager;
-
         }
 
         public void SetHandler(IMessageHandler handler)
@@ -40,14 +38,13 @@ namespace ZenPlatform.ServerClientShared.Network
         private void ReceiveCallback(IAsyncResult ar)
         {
             if (!Running) return;
-            
+
             try
             {
-                
                 var bytesRead = _stream.EndRead(ar);
                 if (bytesRead > 0)
                 {
-                    var messages = _packager.UnpackMessages(_readBuffer.AsSpan(0,bytesRead).ToArray());
+                    var messages = _packager.UnpackMessages(_readBuffer.AsSpan(0, bytesRead).ToArray());
 
                     foreach (var message in messages)
                     {
@@ -55,14 +52,14 @@ namespace ZenPlatform.ServerClientShared.Network
                             message.GetType().Name, JsonConvert.SerializeObject(message)));
                         _handler.Receive(message, this);
                     }
-
                 }
 
                 if (Running)
                 {
                     _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, new AsyncCallback(ReceiveCallback), null);
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Stop();
                 OnError?.Invoke(ex);
@@ -91,12 +88,10 @@ namespace ZenPlatform.ServerClientShared.Network
 
             _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, new AsyncCallback(ReceiveCallback), null);
         }
-        
+
         public void Stop()
         {
             Running = false;
         }
-
-
     }
 }

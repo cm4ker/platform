@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using System.Threading;
 using ZenPlatform.ServerClientShared.Network;
 using System.IO;
+using System.Reflection;
+using CompileNamespace;
 using Hyperion.Internal;
+using ZenPlatform.AsmInfrastructure;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.ServerClientShared.Logging;
 
@@ -16,16 +19,29 @@ namespace ZenPlatform.ServerRPC
     {
         static void Main(string[] args)
         {
+            var test = new HyperionSerializer();
+
             Client client = new Client(new SimpleMessagePackager(new HyperionSerializer()),
                 new SimpleConsoleLogger<Client>());
 
             client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345));
-            client.Use("testdb");
+            client.Use("New");
 
             client.Authentication(new UserPasswordAuthenticationToken("admin", "admin"));
 
+            //Start hack
+            Infrastructure.Main(client);
 
-            object[] i = client.Invoke<object[], object[]>(new Route("test"), new Object[] {44});
+//            var asm = Assembly.LoadFile(AppDomain.CurrentDomain.BaseDirectory + "\\Debug.dll");
+//            var type = asm.GetType("CompileNamespace.Test");
+//            var mi = type.GetMethod("Add");
+//            mi.Invoke(null, new object[] {2, 3});
+
+            Test.Add(2, 3);
+
+            //End hack
+
+            int i = client.Invoke<int, int>(new Route("test"), 44);
 
             Console.WriteLine($"i = {i}");
 

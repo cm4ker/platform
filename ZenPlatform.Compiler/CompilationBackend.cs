@@ -53,9 +53,9 @@ namespace ZenPlatform.Compiler
 
         private IAssemblyBuilder CompileTree(ZSharpParser pTree)
         {
-            IAssemblyPlatform ap = new CecilAssemblyPlatform();
+            IAssemblyPlatform ap = new SreAssemblyPlatform();
 
-            var ab = ap.AsmFactory.Create(ap.TypeSystem, "TestName", new Version(1, 0));
+            var ab = ap.AsmFactory.Create(ap.TypeSystem, "Debug", new Version(1, 0));
 
 
             ZLanguageVisitor v = new ZLanguageVisitor(ap.TypeSystem);

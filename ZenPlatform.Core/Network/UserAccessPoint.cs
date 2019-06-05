@@ -23,7 +23,8 @@ namespace ZenPlatform.Core.Network
         private readonly IDependencyResolver _dependencyResolver;
         private readonly AccessPointConfig _config;
 
-        public UserAccessPoint(ILogger<UserAccessPoint> logger, IDependencyResolver dependencyResolver, IConfig<AccessPointConfig> config)
+        public UserAccessPoint(ILogger<UserAccessPoint> logger, IDependencyResolver dependencyResolver,
+            IConfig<AccessPointConfig> config)
         {
             _logger = logger;
             _dependencyResolver = dependencyResolver;
@@ -40,16 +41,16 @@ namespace ZenPlatform.Core.Network
 
                 _listener = new TcpListener(NetworkUtility.CreateIPEndPoint(_config.Address));
                 _listener.Start();
-                
+
 
                 _running = true;
                 _thread = new Thread(ThreadListen);
                 _thread.Start();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.Error(ex, "Error start accsess point.");
             }
-
         }
 
         public void Stop()
@@ -66,20 +67,17 @@ namespace ZenPlatform.Core.Network
         private void AddConnection(TcpClient client)
         {
             var connection = _dependencyResolver.Resolve<IConnection<IUserMessageHandler>>();
-            
+
 
             _connections.Add(connection);
 
             connection.SetUnsubscriber(new ListUnsubscriber<IConnection>(_connections, connection));
             connection.Open(client);
-
         }
 
-        
 
         private void ThreadListen()
         {
-
             while (_running)
             {
                 TcpClient client = null;
@@ -87,9 +85,6 @@ namespace ZenPlatform.Core.Network
                 {
                     client = _listener.AcceptTcpClient();
                     _logger.Info("Client connected: '{0}'", client.Client.RemoteEndPoint.ToString());
-
-
-
                 }
 
                 catch (Exception ex)
@@ -124,13 +119,11 @@ namespace ZenPlatform.Core.Network
                         AddConnection(client);
                     }
                 }
-                catch(Exception)
+                catch (Exception ex)
                 {
-
+                    throw ex;
                 }
             }
-            
-            
         }
     }
 }
