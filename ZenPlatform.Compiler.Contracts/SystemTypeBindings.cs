@@ -20,6 +20,8 @@ namespace ZenPlatform.Compiler.Contracts
             _ts = ts;
         }
 
+        public ITypeSystem TypeSystem => _ts;
+
         public IType Int => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Int32)}", MSCORLIB);
 
         public IType String => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(String)}", MSCORLIB);

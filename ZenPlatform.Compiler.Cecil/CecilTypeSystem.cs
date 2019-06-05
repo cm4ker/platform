@@ -176,7 +176,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IMethod Resolve(MethodDefinition method, TypeReference declaringType)
         {
-            return new CecilMethod(this, method, declaringType);
+            return new CecilMethod(this, method, declaringType, declaringType.Module);
         }
 
         internal CecilType GetTypeFor(TypeReference reference) => _typeCache.Get(reference);

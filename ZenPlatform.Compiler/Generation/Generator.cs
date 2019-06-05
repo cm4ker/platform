@@ -11,6 +11,7 @@ using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.ServerClientShared.Network;
 using SreTA = System.Reflection.TypeAttributes;
 
@@ -298,22 +299,19 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitRemoteCall(Function function)
         {
-            //int i = client.Invoke<int, int>(new Route("test"), 44);
             IEmitter emitter = function.Builder;
-            var type = _ts.FindType($"{typeof(Client).Namespace}.{nameof(Client)}",
-                typeof(Client).Assembly.GetName().FullName);
+            var type = _bindings.ClientType();
             var client = emitter.DefineLocal(type);
+            emitter.PropGetValue(_bindings.AIClient());
+            emitter.StLoc(client);
 
             var route = _ts.FindType($"{typeof(Route).Namespace}.{nameof(Route)}",
                 typeof(Route).Assembly.GetName().FullName);
 
-
-            var method = type.Methods.FirstOrDefault(x => x.Name == "Invoke");
-            var genMethod = method.MakeGenericMethod(new[]
-                {_bindings.Object.MakeArrayType(), _bindings.Object.MakeArrayType()});
+            var method = _bindings.ClientInvoke(new[]
+                {_bindings.Object.MakeArrayType(), function.Type.Type});
 
             emitter.LdLoc(client);
-
 
             //First parameter
             emitter.LdStr($"{function.GetParent<TypeEntity>().Name}.{function.Name}");
@@ -332,11 +330,12 @@ namespace ZenPlatform.Compiler.Generation
                 emitter.StElemI4();
             }
 
-            emitter.EmitCall(genMethod);
-            emitter.LdcI4(0);
-            emitter.LdElemI4();
+            emitter.EmitCall(method);
+//            emitter.LdcI4(0);
+//            emitter.LdElemI4();
 
-            emitter.Ret();
+            if (!function.Type.Type.Equals(_bindings.Void))
+                emitter.Ret();
         }
 
         private void EmitFunction(Function function)

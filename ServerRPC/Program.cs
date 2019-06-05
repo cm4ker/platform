@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using ZenPlatform.ServerClientShared.Network;
 using System.IO;
+using Hyperion.Internal;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.ServerClientShared.Logging;
 
@@ -24,7 +25,7 @@ namespace ZenPlatform.ServerRPC
             client.Authentication(new UserPasswordAuthenticationToken("admin", "admin"));
 
 
-            int i = client.Invoke<int, int>(new Route("test"), 44);
+            object[] i = client.Invoke<object[], object[]>(new Route("test"), new Object[] {44});
 
             Console.WriteLine($"i = {i}");
 

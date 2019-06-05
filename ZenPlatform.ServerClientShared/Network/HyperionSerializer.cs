@@ -13,7 +13,7 @@ namespace ZenPlatform.ServerClientShared.Network
 
         public HyperionSerializer()
         {
-            _serializer = new Serializer();
+            _serializer = new Serializer(new SerializerOptions());
         }
 
         public T FromBytes<T>(byte[] input)

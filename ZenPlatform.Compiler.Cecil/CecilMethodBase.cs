@@ -13,6 +13,7 @@ namespace ZenPlatform.Compiler.Cecil
         public CecilMethodBase(CecilTypeSystem typeSystem, MethodReference method, TypeReference declaringType)
         {
             TypeSystem = typeSystem;
+            Reference = method;
             Definition = method.Resolve();
             _declaringTR = declaringType;
         }
@@ -24,6 +25,8 @@ namespace ZenPlatform.Compiler.Cecil
         public CecilTypeSystem TypeSystem { get; }
 
         public MethodDefinition Definition { get; }
+
+        public MethodReference Reference { get; }
 
         public string Name => Definition.Name;
 

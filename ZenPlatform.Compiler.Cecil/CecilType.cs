@@ -54,7 +54,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IReadOnlyList<IMethod> Methods =>
             _methods ??= Definition.GetMethods().Select(m => (IMethod) new CecilMethod(TypeSystem,
-                m, Reference)).ToList();
+                m, Reference, _assembly.Assembly.MainModule)).ToList();
 
         protected IReadOnlyList<IConstructor> _constructors;
 
