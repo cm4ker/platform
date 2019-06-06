@@ -7,7 +7,6 @@ using System.Threading;
 using ZenPlatform.ServerClientShared.Network;
 using System.IO;
 using System.Reflection;
-using CompileNamespace;
 using Hyperion.Internal;
 using ZenPlatform.AsmInfrastructure;
 using ZenPlatform.Core.Authentication;
@@ -32,13 +31,10 @@ namespace ZenPlatform.ServerRPC
             //Start hack
             Infrastructure.Main(client);
 
-//            var asm = Assembly.LoadFile(AppDomain.CurrentDomain.BaseDirectory + "\\Debug.dll");
-//            var type = asm.GetType("CompileNamespace.Test");
-//            var mi = type.GetMethod("Add");
-//            mi.Invoke(null, new object[] {2, 3});
-
-            Test.Add(2, 3);
-
+            var asm = Assembly.LoadFile(AppDomain.CurrentDomain.BaseDirectory + "\\Debug.dll");
+            var type = asm.GetType("CompileNamespace.Test");
+            var mi = type.GetMethod("Add");
+            mi.Invoke(null, new object[] {2, 3});
             //End hack
 
             int i = client.Invoke<int, int>(new Route("test"), 44);

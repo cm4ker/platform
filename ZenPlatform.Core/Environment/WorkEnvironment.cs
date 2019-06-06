@@ -48,11 +48,10 @@ namespace ZenPlatform.Core.Environment
          *
          */
 
-        public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger, 
-            IAuthenticationManager authenticationManager, IDependencyResolver resolver, 
+        public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
+            IAuthenticationManager authenticationManager, IDependencyResolver resolver,
             IDataContextManager contextManager, IUserManager userManager) : base(contextManager)
         {
-
             _locking = new object();
             _resolver = resolver;
             _logger = logger;
@@ -81,17 +80,18 @@ namespace ZenPlatform.Core.Environment
             AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
 
 
-            InvokeService.Register(new Route("test"), (c, a) => (int)a[0]+1);
-
-
-            InvokeService.RegisterStream(new Route("stream"), (context, stream ,arg) =>
+            InvokeService.Register(new Route("test"), (c, a) => (int) a[0] + 1);
+            InvokeService.Register(new Route("Test.Add"), (c, a) =>
             {
+                var args = (object[]) a[0];
+                return (int) args[0] + (int) args[1];
+            });
 
-                
+            InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
+            {
                 using (StreamWriter writer = new StreamWriter(stream))
                 {
                     writer.WriteLine("dsadsdasdasdasdsadasdsadsd");
-
                 }
             });
             /*
@@ -127,7 +127,6 @@ namespace ZenPlatform.Core.Environment
         public override IInvokeService InvokeService { get; }
 
         public override IAuthenticationManager AuthenticationManager { get; }
-        
 
 
         /// <summary>

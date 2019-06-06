@@ -10,10 +10,4 @@
     <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Debug, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>bin\Debug\netcoreapp2.2\Debug.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
