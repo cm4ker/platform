@@ -169,7 +169,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter Ldelem_ref(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelem_Ref);
 
         public static IEmitter LdElemA(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelema);
-        public static IEmitter Stelem_ref(this IEmitter emitter) => emitter.Emit(OpCodes.Stelem_Ref);
+        public static IEmitter StElemRef(this IEmitter emitter) => emitter.Emit(OpCodes.Stelem_Ref);
         public static IEmitter Ldlen(this IEmitter emitter) => emitter.Emit(OpCodes.Ldlen);
 
         public static IEmitter Add(this IEmitter emitter) => emitter.Emit(OpCodes.Add);

@@ -327,7 +327,8 @@ namespace ZenPlatform.Compiler.Generation
                 var iArg = function.Parameters.IndexOf(p);
                 emitter.LdcI4(iArg);
                 emitter.LdArg(iArg);
-                emitter.StElemI4();
+                emitter.Box(p.Type.Type);
+                emitter.StElemRef();
             }
 
             emitter.EmitCall(method);
