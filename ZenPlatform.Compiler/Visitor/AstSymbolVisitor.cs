@@ -42,6 +42,18 @@ namespace ZenPlatform.Compiler.Visitor
             }
         }
 
+        public override void VisitField(Field obj)
+        {
+            if (obj.Parent is TypeBody f)
+            {
+                f.SymbolTable.Add(obj);
+            }
+            else
+            {
+                throw new Exception("Invalid register field in scope");
+            }
+        }
+
         public override void VisitTypeBody(TypeBody obj)
         {
             if (obj.SymbolTable == null)
@@ -65,6 +77,17 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 throw new Exception("Invalid register function in scope");
             }
+        }
+
+        public override void VisitProperty(Property obj)
+        {
+            if (obj.Setter.SymbolTable == null)
+            {
+                var parent = obj.GetParent<TypeBody>().SymbolTable;
+                obj.Setter.SymbolTable = new SymbolTable(parent);
+            }
+
+            obj.Setter.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByReference));
         }
 
         public override void VisitFor(For obj)

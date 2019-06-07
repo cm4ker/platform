@@ -15,8 +15,11 @@ namespace ZenPlatform.Compiler.Cecil
         }
 
         public ParameterDefinition ParameterDefinition => _pd;
+
         public string Name => ParameterDefinition.Name;
+
         public IType Type => _ts.Resolve(ParameterDefinition.ParameterType);
+
         public int Sequence => _pd.Sequence;
 
         public bool Equals(IParameter other)

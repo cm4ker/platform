@@ -77,6 +77,16 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             {
                 visitor.Visit(function);
             }
+
+            foreach (var property in Properties)
+            {
+                visitor.Visit(property);
+            }
+
+            foreach (var field in Fields)
+            {
+                visitor.Visit(field);
+            }
         }
     }
 }

@@ -99,10 +99,10 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (expression is BinaryExpression)
             {
-                EmitExpression(e, ((BinaryExpression)expression).Left, symbolTable);
-                EmitExpression(e, ((BinaryExpression)expression).Right, symbolTable);
+                EmitExpression(e, ((BinaryExpression) expression).Left, symbolTable);
+                EmitExpression(e, ((BinaryExpression) expression).Right, symbolTable);
 
-                switch (((BinaryExpression)expression).BinaryOperatorType)
+                switch (((BinaryExpression) expression).BinaryOperatorType)
                 {
                     case BinaryOperatorType.Add:
                         e.Add();
@@ -255,7 +255,7 @@ namespace ZenPlatform.Compiler.Generation
                 foreach (Function function in typeBody.Functions)
                 {
                     //На сервере никогда не может существовать клиентских процедур
-                    if (((int)function.Flags & (int)_mode) == 0 && !isClass)
+                    if (((int) function.Flags & (int) _mode) == 0 && !isClass)
                     {
                         continue;
                     }
@@ -277,30 +277,82 @@ namespace ZenPlatform.Compiler.Generation
             {
                 foreach (var field in typeBody.Fields)
                 {
-                    tb.DefineField(field.Type.Type, field.Name, false, false);
+                    var fieldCodeObj = tb.DefineField(field.Type.Type, field.Name, false, false);
+                    typeBody.SymbolTable.ConnectCodeObject(field, fieldCodeObj);
                 }
 
                 foreach (var property in typeBody.Properties)
                 {
                     var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
-                    if (property.Getter == null && property.Setter == null)
+
+                    IField backField = null;
+
+                    if (property.Setter == null && property.Getter == null)
                     {
-                        var backField = tb.DefineField(property.Type.Type, $"{property.Name}_____backingField", false,
+                        backField = tb.DefineField(property.Type.Type, $"{property.Name}_____backingField", false,
                             false);
-
-                        var getMethod = tb.DefineMethod($"get__{property.Name}", true, false, false);
-                        var setMethod = tb.DefineMethod($"set__{property.Name}", true, false, false);
-
-
-                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
-                        setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
-
-                        setMethod.WithReturnType(_bindings.Void);
-                        setMethod.WithParameter("value", property.Type.Type, false, false);
-
-                        getMethod.WithReturnType(property.Type.Type);
-                        propBuilder.WithGetter(getMethod).WithSetter(setMethod);
                     }
+
+                    var getMethod = tb.DefineMethod($"get__{property.Name}", true, false, false);
+                    var setMethod = tb.DefineMethod($"set__{property.Name}", true, false, false);
+
+                    setMethod.WithReturnType(_bindings.Void);
+                    var valueArg = setMethod.WithParameter("value", property.Type.Type, false, false);
+
+                    getMethod.WithReturnType(property.Type.Type);
+
+                    if (property.Getter != null)
+                    {
+                        IEmitter emitter = getMethod.Generator;
+                        emitter.InitLocals = true;
+
+                        ILocal resultVar = null;
+
+                        resultVar = emitter.DefineLocal(property.Type.Type);
+
+                        var returnLabel = emitter.DefineLabel();
+                        EmitBody(emitter, property.Getter, returnLabel, resultVar);
+
+                        emitter.MarkLabel(returnLabel);
+
+                        if (resultVar != null)
+                            emitter.LdLoc(resultVar);
+
+                        emitter.Ret();
+                    }
+                    else
+                    {
+                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
+                    }
+
+                    if (property.Setter != null)
+                    {
+                        IEmitter emitter = setMethod.Generator;
+                        emitter.InitLocals = true;
+
+                        ILocal resultVar = null;
+
+                        resultVar = emitter.DefineLocal(property.Type.Type);
+
+                        var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable);
+                        valueSym.CodeObject = valueArg;
+
+                        var returnLabel = emitter.DefineLabel();
+                        EmitBody(emitter, property.Setter, returnLabel, resultVar);
+
+                        emitter.MarkLabel(returnLabel);
+                        emitter.Ret();
+                    }
+                    else
+                    {
+                        if (backField != null)
+                            setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
+                        else
+                            setMethod.Generator.Ret();
+                    }
+
+
+                    propBuilder.WithGetter(getMethod).WithSetter(setMethod);
                 }
             }
 
@@ -311,7 +363,6 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (function == null)
                 throw new ArgumentNullException();
-
             if (function.Parameters != null)
             {
                 foreach (var p in function.Parameters)
@@ -324,7 +375,6 @@ namespace ZenPlatform.Compiler.Generation
             function.Builder = method.Generator;
 
             EmitFunction(function);
-
             return method;
         }
 
@@ -351,7 +401,6 @@ namespace ZenPlatform.Compiler.Generation
             //Second parameter
             emitter.LdcI4(function.Parameters.Count);
             emitter.NewArr(_bindings.Object);
-
             foreach (var p in function.Parameters)
             {
                 emitter.Dup();
@@ -374,7 +423,6 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (function == null)
                 throw new ArgumentNullException();
-
             if (function.Flags == FunctionFlags.ServerClientCall)
             {
                 EmitRemoteCall(function);
@@ -385,15 +433,11 @@ namespace ZenPlatform.Compiler.Generation
             emitter.InitLocals = true;
 
             ILocal resultVar = null;
-
             if (!function.Type.Type.Equals(_bindings.Void))
                 resultVar = emitter.DefineLocal(function.Type.Type);
-
             var returnLabel = emitter.DefineLabel();
             EmitBody(emitter, function.InstructionsBody, returnLabel, resultVar);
-
             emitter.MarkLabel(returnLabel);
-
             if (resultVar != null)
                 emitter.LdLoc(resultVar);
 
@@ -415,14 +459,12 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             var valueType = expression.Value.Type.Type;
-
             if (expression.Value is IndexerExpression && valueType.IsArray)
             {
                 valueType = valueType.ArrayElementType;
             }
 
             var convertType = expression.Type.Type;
-
             if (valueType is null || (valueType.IsValueType && convertType.IsValueType))
             {
                 EmitConvCode(e, convertType);

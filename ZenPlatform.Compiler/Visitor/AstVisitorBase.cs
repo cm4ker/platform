@@ -83,14 +83,18 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<Try>(VisitTry)
                 .CaseIs<Class>(VisitClass)
                 .CaseIs<Property>(VisitProperty)
+                .CaseIs<Field>(VisitField)
                 .BreakIfExecuted()
                 .CaseIs<Expression>(VisitExpression)
                 .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null);
         }
 
+        public virtual void VisitField(Field obj)
+        {
+        }
+
         public virtual void VisitProperty(Property obj)
         {
-            
         }
 
         public virtual void VisitClass(Class obj)

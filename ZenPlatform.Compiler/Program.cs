@@ -38,7 +38,7 @@ type HelloWorld
 
     }
 
-    public int Property {get;set;}
+    public int Property {get { return 1; } set {_someField = value;}}
 }
 
 module Test
