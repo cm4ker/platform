@@ -32,14 +32,14 @@ namespace ZenPlatform.Language.Ast.AST.Builder
             _cu = cu;
         }
 
-        ModuleBuilder WithModule(string moduleName)
+        public ModuleBuilder WithModule(string moduleName)
         {
             var mod = new Module(null, new TypeBody(new MemberCollection()), moduleName);
             _cu.TypeEntities.Add(mod);
             return new ModuleBuilder(mod);
         }
 
-        ClassBuilder WithClass(string className)
+        public ClassBuilder WithClass(string className)
         {
             var cl = new Class(null, new TypeBody(new MemberCollection()), className);
 
