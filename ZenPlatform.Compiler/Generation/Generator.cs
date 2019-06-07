@@ -6,12 +6,15 @@ using System.Linq;
 using System.Net.Http;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Expressions;
-using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
+
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
+using ZenPlatform.Language.Ast.AST.Definitions.Functions;
+using ZenPlatform.Language.Ast.AST.Infrastructure;
 using ZenPlatform.ServerClientShared.Network;
 using SreTA = System.Reflection.TypeAttributes;
 

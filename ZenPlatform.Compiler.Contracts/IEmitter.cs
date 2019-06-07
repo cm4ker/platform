@@ -1,5 +1,5 @@
 using System.Reflection.Emit;
-using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.AST.Definitions.Symbols;
 
 namespace ZenPlatform.Compiler.Contracts
 {
