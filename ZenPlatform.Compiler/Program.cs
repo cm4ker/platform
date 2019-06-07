@@ -37,6 +37,8 @@ type HelloWorld
     {
 
     }
+
+    public int Property {get;set;}
 }
 
 module Test

@@ -82,9 +82,15 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<IndexerExpression>(VisitIndexerExpression)
                 .CaseIs<Try>(VisitTry)
                 .CaseIs<Class>(VisitClass)
+                .CaseIs<Property>(VisitProperty)
                 .BreakIfExecuted()
                 .CaseIs<Expression>(VisitExpression)
                 .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null);
+        }
+
+        public virtual void VisitProperty(Property obj)
+        {
+            
         }
 
         public virtual void VisitClass(Class obj)

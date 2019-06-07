@@ -93,5 +93,42 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         public TypeNode Type { get; set; }
 
         public SymbolType SymbolType => SymbolType.Field;
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Type);
+        }
+    }
+
+    public class Property : Member, IAstSymbol
+    {
+        public Property(ILineInfo lineInfo, string name, TypeNode type, bool hasGet, bool hasSet) : base(lineInfo)
+        {
+            HasGetter = hasGet;
+            HasSetter = hasSet;
+            Type = type;
+            Name = name;
+        }
+
+        public string Name { get; set; }
+
+        public SymbolType SymbolType => SymbolType.Property;
+
+        public bool HasGetter { get; set; }
+        public bool HasSetter { get; set; }
+
+
+        public TypeNode Type { get; set; }
+
+        public InstructionsBodyNode Getter { get; set; }
+        public InstructionsBodyNode Setter { get; set; }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(Type);
+
+            if (Getter != null) visitor.Visit(Getter);
+            if (Setter != null) visitor.Visit(Setter);
+        }
     }
 }

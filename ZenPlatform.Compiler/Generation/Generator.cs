@@ -99,10 +99,10 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (expression is BinaryExpression)
             {
-                EmitExpression(e, ((BinaryExpression) expression).Left, symbolTable);
-                EmitExpression(e, ((BinaryExpression) expression).Right, symbolTable);
+                EmitExpression(e, ((BinaryExpression)expression).Left, symbolTable);
+                EmitExpression(e, ((BinaryExpression)expression).Right, symbolTable);
 
-                switch (((BinaryExpression) expression).BinaryOperatorType)
+                switch (((BinaryExpression)expression).BinaryOperatorType)
                 {
                     case BinaryOperatorType.Add:
                         e.Add();
@@ -255,7 +255,7 @@ namespace ZenPlatform.Compiler.Generation
                 foreach (Function function in typeBody.Functions)
                 {
                     //На сервере никогда не может существовать клиентских процедур
-                    if (((int) function.Flags & (int) _mode) == 0 && !isClass)
+                    if (((int)function.Flags & (int)_mode) == 0 && !isClass)
                     {
                         continue;
                     }
@@ -274,10 +274,35 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             if (isClass)
+            {
                 foreach (var field in typeBody.Fields)
                 {
                     tb.DefineField(field.Type.Type, field.Name, false, false);
                 }
+
+                foreach (var property in typeBody.Properties)
+                {
+                    var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
+                    if (property.Getter == null && property.Setter == null)
+                    {
+                        var backField = tb.DefineField(property.Type.Type, $"{property.Name}_____backingField", false,
+                            false);
+
+                        var getMethod = tb.DefineMethod($"get__{property.Name}", true, false, false);
+                        var setMethod = tb.DefineMethod($"set__{property.Name}", true, false, false);
+
+
+                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
+                        setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
+
+                        setMethod.WithReturnType(_bindings.Void);
+                        setMethod.WithParameter("value", property.Type.Type, false, false);
+
+                        getMethod.WithReturnType(property.Type.Type);
+                        propBuilder.WithGetter(getMethod).WithSetter(setMethod);
+                    }
+                }
+            }
 
             return result;
         }
@@ -297,7 +322,6 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             function.Builder = method.Generator;
-
 
             EmitFunction(function);
 
@@ -339,8 +363,8 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             emitter.EmitCall(method);
-//            emitter.LdcI4(0);
-//            emitter.LdElemI4();
+            //            emitter.LdcI4(0);
+            //            emitter.LdElemI4();
 
             if (!function.Type.Type.Equals(_bindings.Void))
                 emitter.Ret();
