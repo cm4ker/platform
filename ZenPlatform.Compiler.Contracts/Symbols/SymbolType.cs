@@ -5,9 +5,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         None,
         Function,
         Type,
-        Variable,
-        Field,
-        Property
+        Variable
     }
 
 

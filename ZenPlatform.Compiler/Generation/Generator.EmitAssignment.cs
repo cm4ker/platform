@@ -8,6 +8,16 @@ using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Generation
 {
+    public class GeneratorMethodContext
+    {
+        public bool InsideTheClass { get; set; }
+
+        public int GetParameterSequence(IParameter parameter)
+        {
+            return parameter.Sequence + (InsideTheClass ? 1 : 0);
+        }
+    }
+
     public partial class Generator
     {
         private void EmitAssignment(IEmitter il, Assignment assignment, SymbolTable symbolTable)

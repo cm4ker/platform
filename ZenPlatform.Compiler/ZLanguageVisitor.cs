@@ -104,7 +104,7 @@ namespace ZenPlatform.Compiler.AST
         public override AstNode VisitPropertyDeclaration(ZSharpParser.PropertyDeclarationContext context)
         {
             base.VisitPropertyDeclaration(context);
-            
+
             InstructionsBodyNode set = null, get = null;
             if (context.setInst != null)
             {
@@ -118,7 +118,11 @@ namespace ZenPlatform.Compiler.AST
 
             Property p =
                 new Property(context.start.ToLineInfo(), _syntaxStack.PopString(), _syntaxStack.PopType(),
-                    context.GET() != null, context.SET() != null);
+                    context.GET() != null, context.SET() != null)
+                {
+                    Getter = get,
+                    Setter = set
+                };
 
             _syntaxStack.PeekCollection().Add(p);
             return p;

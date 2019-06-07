@@ -92,7 +92,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         public string Name { get; set; }
         public TypeNode Type { get; set; }
 
-        public SymbolType SymbolType => SymbolType.Field;
+        public SymbolType SymbolType => SymbolType.Variable;
 
         public override void Accept(IVisitor visitor)
         {
@@ -112,7 +112,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
 
         public string Name { get; set; }
 
-        public SymbolType SymbolType => SymbolType.Property;
+        public SymbolType SymbolType => SymbolType.Variable;
 
         public bool HasGetter { get; set; }
         public bool HasSetter { get; set; }
