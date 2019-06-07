@@ -9,6 +9,7 @@ using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Language.Ast.AST.Definitions;
 
 namespace ZenPlatform.Compiler
 {
