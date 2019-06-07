@@ -9,5 +9,4 @@ namespace ZenPlatform.Compiler.Visitor
     {
         void Accept(IVisitor visitor);
     }
-    
 }

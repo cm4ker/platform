@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.AST.Definitions
 
         public override void Accept(IVisitor visitor)
         {
-            throw new NotImplementedException();
+            visitor.Visit(TypeBody);
         }
     }
 }

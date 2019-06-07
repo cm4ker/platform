@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
@@ -43,12 +44,14 @@ namespace ZenPlatform.Compiler.AST.Definitions
     public class TypeBody : AstNode
     {
         public FunctionCollection Functions;
+        public FieldCollection Fields;
 
         public SymbolTable SymbolTable = null;
 
         public TypeBody(MemberCollection members) : base(null)
         {
             Functions = new FunctionCollection();
+            Fields = new FieldCollection();
 
             if (members == null)
                 return;
@@ -57,6 +60,9 @@ namespace ZenPlatform.Compiler.AST.Definitions
             {
                 if (member is Function func)
                     Functions.Add(func);
+
+                if (member is Field field)
+                    Fields.Add(field);
             }
         }
 

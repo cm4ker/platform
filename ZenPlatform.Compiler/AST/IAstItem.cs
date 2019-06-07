@@ -48,10 +48,10 @@ namespace ZenPlatform.Compiler.AST
         public T GetParent<T>() where T : AstNode
         {
             if (Parent is null) return null;
-            
+
             if (Parent is T p)
                 return p;
-            
+
             return Parent.GetParent<T>();
         }
 

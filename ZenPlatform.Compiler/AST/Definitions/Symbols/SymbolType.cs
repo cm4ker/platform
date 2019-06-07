@@ -5,7 +5,8 @@ namespace ZenPlatform.Compiler.AST.Definitions.Symbols
         None,
         Function,
         Type,
-        Variable
+        Variable,
+        Field
     }
 
 

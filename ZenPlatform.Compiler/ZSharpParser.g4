@@ -5,9 +5,9 @@ options { tokenVocab = ZSharpLexer; }
 
 
 entryPoint: 
-    moduleDefinition
+    (moduleDefinition
     | typeDefinition
-    | usingDefinition;
+    | usingDefinition)*;
 
 usingDefinition : 
         USING name ';'
@@ -28,8 +28,9 @@ moduleBody: (functionDeclaration)* ;
 ================START TYPE==================
 */
 
-typeDefinition: attributes? TYPE IDENTIFIER '{' '}';
+typeDefinition: attributes? TYPE IDENTIFIER '{' typeBody '}';
 
+typeBody: (functionDeclaration | fieldDeclaration)* ;
 /*
 ================END TYPE==================
 */
@@ -41,6 +42,8 @@ instructionsOrSingleStatement :
     instructionsBody | statement;
 
 functionDeclaration:attributes? accessModifier? type IDENTIFIER '(' parameters? ')' instructionsBody;
+fieldDeclaration : type name ';';
+
 
 /*чертовски сложное правило*/
 statement: 

@@ -24,6 +24,21 @@ namespace ZenPlatform.Compiler
         {
             string test;
             var text = new StringReader(@"
+type HelloWorld
+{
+    int _someField;
+
+    public void PublicMethod()
+    {
+        
+    }
+    
+    void PrivateMethod()
+    {
+
+    }
+}
+
 module Test
 {    
     double Inc(int a)
@@ -37,7 +52,7 @@ module Test
     }
 
     [ClientCall]
-    int Add(int a, int b)
+    public int Add(int a, int b)
     {
         int c = 1;
         try

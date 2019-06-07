@@ -89,6 +89,30 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
+        public override AstNode VisitFieldDeclaration(ZSharpParser.FieldDeclarationContext context)
+        {
+            base.VisitFieldDeclaration(context);
+            Field f = new Field(context.start.ToLineInfo(), _syntaxStack.PopString(), _syntaxStack.PopType());
+            _syntaxStack.PeekCollection().Add(f);
+            return f;
+        }
+
+        public override AstNode VisitTypeBody(ZSharpParser.TypeBodyContext context)
+        {
+            _syntaxStack.Push(new MemberCollection());
+            base.VisitTypeBody(context);
+
+            TypeBody result;
+
+            if (context.ChildCount == 0)
+                result = new TypeBody(null);
+            else
+                result = new TypeBody((MemberCollection) _syntaxStack.Pop());
+
+            _syntaxStack.Push(result);
+            return result;
+        }
+
         public override AstNode VisitAttributes(ZSharpParser.AttributesContext context)
         {
             _syntaxStack.Push(new AttributeCollection());
@@ -226,7 +250,7 @@ namespace ZenPlatform.Compiler.AST
         public override AstNode VisitFunctionDeclaration(ZSharpParser.FunctionDeclarationContext context)
         {
             base.VisitFunctionDeclaration(context);
-            AstNode result = null;
+            Function result = null;
             ParameterCollection pc = null;
             AttributeCollection ac = new AttributeCollection();
             var body = _syntaxStack.PopInstructionsBody();
@@ -235,6 +259,7 @@ namespace ZenPlatform.Compiler.AST
             {
                 pc = (ParameterCollection) _syntaxStack.Pop();
             }
+
 
             var type = _syntaxStack.PopType();
 
@@ -246,6 +271,11 @@ namespace ZenPlatform.Compiler.AST
             }
 
             result = new Function(context.start.ToLineInfo(), body, pc, funcName, type, ac);
+
+            if (context.accessModifier()?.PUBLIC() != null)
+            {
+                result.IsPublic = true;
+            }
 
             _syntaxStack.PeekCollection().Add(result);
 
