@@ -38,12 +38,14 @@ namespace ZenPlatform.DataComponent.Helpers
                     {
                         if (!hasObjectGuid)
                         {
-                            result.Add(new DatabaseColumnDefinitionItem(prop, $"{prop.DatabaseColumnName}_Ref", new XCGuid()));
+                            result.Add(new DatabaseColumnDefinitionItem(prop, $"{prop.DatabaseColumnName}_Ref",
+                                new XCGuid()));
                             hasObjectGuid = true;
                         }
                         else if (!hasObjectInt)
                         {
-                            result.Add(new DatabaseColumnDefinitionItem(prop, $"{prop.DatabaseColumnName}_Type", new XCGuid()));
+                            result.Add(new DatabaseColumnDefinitionItem(prop, $"{prop.DatabaseColumnName}_Type",
+                                new XCGuid()));
                             hasObjectInt = true;
                         }
                     }
@@ -59,7 +61,8 @@ namespace ZenPlatform.DataComponent.Helpers
     /// </summary>
     public class DatabaseColumnDefinitionItem
     {
-        public DatabaseColumnDefinitionItem(XCObjectPropertyBase property, string databaseColumnName, XCPremitiveType type)
+        public DatabaseColumnDefinitionItem(XCObjectPropertyBase property, string databaseColumnName,
+            XCPremitiveType type)
         {
             Property = property;
             DatabaseColumnName = databaseColumnName;

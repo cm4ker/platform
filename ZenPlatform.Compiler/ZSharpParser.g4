@@ -7,10 +7,15 @@ options { tokenVocab = ZSharpLexer; }
 entryPoint: 
     (moduleDefinition
     | typeDefinition
-    | usingDefinition)*;
+    | usingDefinition
+    | namespaceDefinition)*;
 
 usingDefinition : 
         USING name ';'
+;
+
+namespaceDefinition : 
+    NAMESPACE name '{' (moduleDefinition | typeDefinition)* '}'
 ;
 
 /*
@@ -27,10 +32,9 @@ moduleBody: (functionDeclaration)* ;
 /*
 ================START TYPE==================
 */
-
 typeDefinition: attributes? TYPE IDENTIFIER '{' typeBody '}';
 
-typeBody: (functionDeclaration | fieldDeclaration)* ;
+typeBody: (functionDeclaration | fieldDeclaration | propertyDeclaration)* ;
 /*
 ================END TYPE==================
 */
@@ -41,9 +45,16 @@ instructionsBody : '{' statements '}';
 instructionsOrSingleStatement : 
     instructionsBody | statement;
 
-functionDeclaration:attributes? accessModifier? type IDENTIFIER '(' parameters? ')' instructionsBody;
-fieldDeclaration : type name ';';
-
+functionDeclaration:
+    attributes? accessModifier? type IDENTIFIER '(' parameters? ')' instructionsBody;
+    
+fieldDeclaration : 
+    type name ';';
+    
+propertyDeclaration:
+    accessModifier? type name 
+            ('{' (GET ';' | GET instructionsBody)? (SET ';' | SET instructionsBody)? '}') 
+;
 
 /*чертовски сложное правило*/
 statement: 

@@ -1,3 +1,5 @@
+using ZenPlatform.Compiler.Contracts.Symbols;
+
 namespace ZenPlatform.Compiler.AST.Definitions.Symbols
 {
     public class Symbol
