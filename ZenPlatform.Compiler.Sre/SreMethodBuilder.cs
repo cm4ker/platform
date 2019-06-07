@@ -67,6 +67,9 @@ namespace ZenPlatform.Compiler.Sre
 
         public void Bake()
         {
+            if (IsBaked)
+                return;
+
             foreach (var p in _parameters)
             {
                 p.Bake();
@@ -87,6 +90,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public IType ReturnType => System.ResolveType(_methodBuilder.ReturnType);
         public IType DeclaringType => System.ResolveType(_methodBuilder.DeclaringType);
+
         public IMethod MakeGenericMethod(IType[] typeArguments)
         {
             throw new NotImplementedException();

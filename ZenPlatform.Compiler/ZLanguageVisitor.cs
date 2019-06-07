@@ -101,6 +101,29 @@ namespace ZenPlatform.Compiler.AST
             return f;
         }
 
+        public override AstNode VisitPropertyDeclaration(ZSharpParser.PropertyDeclarationContext context)
+        {
+            base.VisitPropertyDeclaration(context);
+            
+            InstructionsBodyNode set = null, get = null;
+            if (context.setInst != null)
+            {
+                set = _syntaxStack.PopInstructionsBody();
+            }
+
+            if (context.getInst != null)
+            {
+                get = _syntaxStack.PopInstructionsBody();
+            }
+
+            Property p =
+                new Property(context.start.ToLineInfo(), _syntaxStack.PopString(), _syntaxStack.PopType(),
+                    context.GET() != null, context.SET() != null);
+
+            _syntaxStack.PeekCollection().Add(p);
+            return p;
+        }
+
         public override AstNode VisitTypeBody(ZSharpParser.TypeBodyContext context)
         {
             _syntaxStack.Push(new MemberCollection());

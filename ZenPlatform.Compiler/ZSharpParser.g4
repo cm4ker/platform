@@ -53,7 +53,7 @@ fieldDeclaration :
     
 propertyDeclaration:
     accessModifier? type name 
-            ('{' (GET ';' | GET instructionsBody)? (SET ';' | SET instructionsBody)? '}') 
+            ('{' (GET ';' | GET getInst= instructionsBody)? (SET ';' | SET setInst = instructionsBody)? '}') 
 ;
 
 /*чертовски сложное правило*/

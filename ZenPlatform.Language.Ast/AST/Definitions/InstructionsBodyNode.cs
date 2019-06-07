@@ -45,6 +45,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     {
         public FunctionCollection Functions;
         public FieldCollection Fields;
+        public PropertyCollection Properties;
 
         public SymbolTable SymbolTable = null;
 
@@ -52,6 +53,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         {
             Functions = new FunctionCollection();
             Fields = new FieldCollection();
+            Properties = new PropertyCollection();
 
             if (members == null)
                 return;
@@ -63,6 +65,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
                 if (member is Field field)
                     Fields.Add(field);
+
+                if (member is Property prop)
+                    Properties.Add(prop);
             }
         }
 

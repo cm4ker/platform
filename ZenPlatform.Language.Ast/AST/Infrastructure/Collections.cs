@@ -44,4 +44,8 @@ namespace ZenPlatform.Language.Ast.AST.Infrastructure
     public class FieldCollection : List<Field>
     {
     }
+
+    public class PropertyCollection : List<Property>
+    {
+    }
 }

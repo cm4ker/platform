@@ -49,7 +49,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter LdThisFld(this IEmitter emitter, IField field)
             => emitter.LdArg_0().Emit(OpCodes.Ldfld, field);
 
-        public static IEmitter Stfld(this IEmitter emitter, IField field)
+        public static IEmitter StFld(this IEmitter emitter, IField field)
             => emitter.Emit(OpCodes.Stfld, field);
 
         public static IEmitter Stsfld(this IEmitter emitter, IField field)
