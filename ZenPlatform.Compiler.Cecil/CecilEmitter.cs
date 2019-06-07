@@ -9,6 +9,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using MethodBody = Mono.Cecil.Cil.MethodBody;
 using SreOpCode = System.Reflection.Emit.OpCode;
 using SreOpCodes = System.Reflection.Emit.OpCodes;

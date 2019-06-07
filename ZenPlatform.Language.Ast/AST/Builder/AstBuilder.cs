@@ -76,6 +76,12 @@ namespace ZenPlatform.Language.Ast.AST.Builder
         {
             _cl = cl;
         }
+
+
+        public ClassBuilder WithProperty(string name, string type)
+        {
+            return this;
+        }
     }
 
     public class FunctionBuilder

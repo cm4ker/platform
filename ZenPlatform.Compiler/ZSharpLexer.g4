@@ -46,6 +46,9 @@ FALSE: 'false';
 
 USING : 'using';
 
+GET : 'get';
+SET : 'set';
+
 SEMICOLON:                ';';
 PLUS:                     '+';
 MINUS:                    '-';
