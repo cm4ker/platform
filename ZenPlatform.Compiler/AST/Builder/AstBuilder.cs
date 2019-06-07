@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Functions;
@@ -8,9 +9,20 @@ namespace ZenPlatform.Compiler.AST.Builder
 {
     public class AstBuilder
     {
-        public CompilationUnitBuilder CreateUnit()
+        private List<CompilationUnitBuilder> _units;
+
+        public AstBuilder()
         {
-            return new CompilationUnitBuilder(new CompilationUnit(null));
+            _units = new List<CompilationUnitBuilder>();
+        }
+
+
+        public CompilationUnitBuilder WithUnit()
+        {
+            var ub = new CompilationUnitBuilder(new CompilationUnit(null));
+            _units.Add(ub);
+
+            return ub;
         }
     }
 

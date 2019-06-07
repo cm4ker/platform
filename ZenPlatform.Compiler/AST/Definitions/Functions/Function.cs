@@ -45,6 +45,8 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
         /// </summary>
         public IEmitter Builder;
 
+        public bool IsPublic { get; set; }
+
         /// <summary>
         /// Создать объект функции
         /// </summary>
@@ -74,5 +76,20 @@ namespace ZenPlatform.Compiler.AST.Definitions.Functions
 
             visitor.Visit(InstructionsBody);
         }
+    }
+
+
+    public class Field : Member, IAstSymbol
+    {
+        public Field(ILineInfo lineInfo, string name, TypeNode type) : base(lineInfo)
+        {
+            Name = name;
+            Type = type;
+        }
+
+        public string Name { get; set; }
+        public TypeNode Type { get; set; }
+
+        public SymbolType SymbolType => SymbolType.Field;
     }
 }

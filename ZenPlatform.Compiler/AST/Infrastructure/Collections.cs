@@ -40,4 +40,8 @@ namespace ZenPlatform.Compiler.AST.Infrastructure
     public class ArgumentCollection : List<Argument>
     {
     }
+
+    public class FieldCollection : List<Field>
+    {
+    }
 }

@@ -20,26 +20,25 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private readonly CompilationUnit _compilationUnit;
+        private readonly CompilationUnit _cu;
         private readonly IAssemblyBuilder _asm;
         private readonly ITypeSystem _ts;
         private readonly CompilationMode _mode;
 
         private SystemTypeBindings _bindings;
 
-        private const string ASM_NAMESPACE = "CompileNamespace";
-
+        private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
 
         public Generator(GeneratorParameters parameters)
         {
-            _compilationUnit = parameters.Unit;
+            _cu = parameters.Unit;
             _asm = parameters.Builder;
             _ts = _asm.TypeSystem;
 
             _mode = parameters.Mode;
             _bindings = new SystemTypeBindings(_ts);
 
-            foreach (var typeEntity in _compilationUnit.TypeEntities)
+            foreach (var typeEntity in _cu.TypeEntities)
             {
                 switch (typeEntity)
                 {
@@ -49,23 +48,21 @@ namespace ZenPlatform.Compiler.Generation
                     case Class c:
                         EmitClass(c);
                         break;
-
                     default:
                         throw new Exception("The type entity not supproted");
                 }
             }
         }
 
-
         private void BuildModule(Module module)
         {
-            var typeBuilder = _asm.DefineType(ASM_NAMESPACE, module.Name,
+            var typeBuilder = _asm.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
                 SreTA.Class | SreTA.Public | SreTA.Abstract |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
 
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
-            foreach (var item in PrebuildFunctions(module.TypeBody, typeBuilder))
+            foreach (var item in PrebuildFunctions(module.TypeBody, typeBuilder, false))
             {
                 BuildFunction(item.Item1, item.Item2);
             }
@@ -75,17 +72,19 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitClass(Class @class)
         {
-            var tb = _asm.DefineType(ASM_NAMESPACE, @class.Name,
+            var tb = _asm.DefineType(DEFAULT_ASM_NAMESPACE, @class.Name,
                 SreTA.Class | SreTA.NotPublic |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass,
                 _bindings.Object);
 
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
-            foreach (var item in PrebuildFunctions(@class.TypeBody, tb))
+            foreach (var item in PrebuildFunctions(@class.TypeBody, tb, true))
             {
                 BuildFunction(item.Item1, item.Item2);
             }
+
+            tb.EndBuild();
         }
 
         private void Error(string message)
@@ -233,7 +232,6 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-
         /// <summary>
         /// Создание функций исходя из тела типа
         /// </summary>
@@ -241,7 +239,7 @@ namespace ZenPlatform.Compiler.Generation
         /// <param name="builder"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        private List<(Function, IMethodBuilder)> PrebuildFunctions(TypeBody typeBody, ITypeBuilder tb)
+        private List<(Function, IMethodBuilder)> PrebuildFunctions(TypeBody typeBody, ITypeBuilder tb, bool isClass)
         {
             if (typeBody == null)
                 throw new ArgumentNullException();
@@ -254,14 +252,14 @@ namespace ZenPlatform.Compiler.Generation
                 foreach (Function function in typeBody.Functions)
                 {
                     //На сервере никогда не может существовать клиентских процедур
-                    if (((int) function.Flags & (int) _mode) == 0)
+                    if (((int) function.Flags & (int) _mode) == 0 && !isClass)
                     {
                         continue;
                     }
 
                     Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
 
-                    var method = tb.DefineMethod(function.Name, true, true, false)
+                    var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
                         .WithReturnType(function.Type.Type);
 
                     result.Add((function, method));
@@ -271,6 +269,12 @@ namespace ZenPlatform.Compiler.Generation
                     //symbolTable.Add(function.Name, SymbolType.Function, function, method);
                 }
             }
+
+            if (isClass)
+                foreach (var field in typeBody.Fields)
+                {
+                    tb.DefineField(field.Type.Type, field.Name, false, false);
+                }
 
             return result;
         }
