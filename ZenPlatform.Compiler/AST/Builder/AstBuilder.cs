@@ -29,7 +29,6 @@ namespace ZenPlatform.Compiler.AST.Builder
         }
     }
 
-
     public class ModuleBuilder
     {
         private readonly Module _module;
@@ -63,12 +62,12 @@ namespace ZenPlatform.Compiler.AST.Builder
     public class FunctionBuilder
     {
         private readonly Function _function;
-        private StatementsBuilder _sb;
+        private StatementBuilder _sb;
 
         public FunctionBuilder(Function function)
         {
             _function = function;
-            _sb = new StatementsBuilder(_function.InstructionsBody);
+            _sb = new StatementBuilder(_function.InstructionsBody);
         }
 
         public ParameterBuilder WithParameter(string name, TypeBuilder tb, PassMethod pm)
@@ -77,21 +76,38 @@ namespace ZenPlatform.Compiler.AST.Builder
             return new ParameterBuilder(arg);
         }
 
-        public StatementsBuilder StatementsBuilder => _sb;
+        public StatementBuilder StatementBuilder => _sb;
     }
 
-
-    public class StatementsBuilder
+    public class StatementBuilder
     {
         private readonly InstructionsBodyNode _body;
 
-        public StatementsBuilder(InstructionsBodyNode body)
+        public StatementBuilder(InstructionsBodyNode body)
         {
             _body = body;
         }
 
-        public StatementsBuilder WithVariable(string name)
+        public VariableBuilder WithVariable(string name, TypeBuilder type)
         {
+            var variable = new Variable(null, null, name, type.TypeNode);
+            _body.Statements.Add(variable);
+            return new VariableBuilder(variable);
+        }
+
+        public object WithCall(string name)
+        {
+            return null;
+        }
+    }
+
+    public class VariableBuilder
+    {
+        private readonly Variable _variable;
+
+        public VariableBuilder(Variable variable)
+        {
+            _variable = variable;
         }
     }
 
@@ -103,6 +119,10 @@ namespace ZenPlatform.Compiler.AST.Builder
         {
             _parameter = parameter;
         }
+    }
+
+    public class ExpressionBuilder
+    {
     }
 
     public class ArgumentBuilder
