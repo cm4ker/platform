@@ -13,7 +13,7 @@ namespace ZenPlatform.Compiler.Sre
     }
 
     [DebuggerDisplay("{Method}")]
-    class SreMethod : SreMethodBase, IMethod, ISreMethod
+    internal class SreMethod : SreMethodBase, IMethod, ISreMethod
     {
         public MethodInfo Method { get; }
         readonly SreTypeSystem _system;

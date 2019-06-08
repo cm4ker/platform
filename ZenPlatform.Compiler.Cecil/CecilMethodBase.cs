@@ -39,7 +39,7 @@ namespace ZenPlatform.Compiler.Cecil
         public bool IsStatic => Definition.IsStatic;
 
         public IReadOnlyList<IParameter> Parameters => Definition.Parameters
-            .Select(p => new CecilParameter(TypeSystem, p))
+            .Select(p => new CecilParameter(TypeSystem, Definition, p))
             .ToList();
 
 

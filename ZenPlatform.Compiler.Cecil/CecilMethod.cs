@@ -20,9 +20,6 @@ namespace ZenPlatform.Compiler.Cecil
         public bool Equals(IMethod other) => other is CecilMethod cm
                                              && cm.Definition.Equals(Definition);
 
-        public bool IsPublic => Definition.IsPublic;
-        public bool IsStatic => Definition.IsStatic;
-
         public IMethod MakeGenericMethod(IType[] typeArguments)
         {
             var md = new MethodDefinition(Definition.Name, Definition.Attributes, Definition.ReturnType);
@@ -56,9 +53,6 @@ namespace ZenPlatform.Compiler.Cecil
             return ((CecilMethodBase) other).Definition.Equals(Definition);
         }
 
-        public bool IsPublic => _methodDef.IsPublic;
-        public bool IsStatic => _methodDef.IsStatic;
-
         public IMethod MakeGenericMethod(IType[] typeArguments)
         {
             throw new System.NotImplementedException();
@@ -71,7 +65,7 @@ namespace ZenPlatform.Compiler.Cecil
 
             _methodDef.Parameters.Add(param);
 
-            return new CecilParameter(TypeSystem, param);
+            return new CecilParameter(TypeSystem, _methodDef, param);
         }
 
         public IMethodBuilder WithReturnType(IType type)
