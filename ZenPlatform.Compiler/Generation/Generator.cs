@@ -216,7 +216,7 @@ namespace ZenPlatform.Compiler.Generation
                 else if (variable.CodeObject is IParameter pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
-                    e.LdArg(pd.Sequence);
+                    e.LdArg(pd.ArgIndex);
                     if (p.PassMethod == PassMethod.ByReference)
                         e.LdIndI4();
                 }
