@@ -35,6 +35,11 @@ namespace ZenPlatform.Compiler.Generation
                     if (p.PassMethod == PassMethod.ByReference)
                         il.LdArg(pd.Sequence - 1);
                 }
+                else if (variable.CodeObject is IField fl)
+                {
+                    //load "this"
+                    il.LdArg_0();
+                }
 
                 // Load value
                 EmitExpression(il, assignment.Value, symbolTable);
