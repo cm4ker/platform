@@ -16,7 +16,7 @@ namespace ZenPlatform.Core.Sessions
 
         private readonly ConcurrentDictionary<string, object> _sessionParameters;
 
-        public UserSession(WorkEnvironment env, IUser user, IDataContextManager dataContextManger) : base(env, dataContextManger)
+        public UserSession(IEnvironment env, IUser user, IDataContextManager dataContextManger) : base(env, dataContextManger)
         {
             _sessionParameters = new ConcurrentDictionary<string, object>();
             User = user;

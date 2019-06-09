@@ -80,20 +80,6 @@ namespace ZenPlatform.Core.Environment
 
             AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
 
-
-            InvokeService.Register(new Route("test"), (c, a) => (int)a[0]+1);
-
-
-            InvokeService.RegisterStream(new Route("stream"), (context, stream ,arg) =>
-            {
-
-                
-                using (StreamWriter writer = new StreamWriter(stream))
-                {
-                    writer.WriteLine("dsadsdasdasdasdsadasdsadsd");
-
-                }
-            });
             /*
             //TODO: получить библиотеку с сгенерированными сущностями dto и так далее
             Build = Assembly.LoadFile("");

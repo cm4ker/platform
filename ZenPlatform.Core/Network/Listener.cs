@@ -8,11 +8,12 @@ using ZenPlatform.ServerClientShared.DI;
 using ZenPlatform.ServerClientShared.Logging;
 using ZenPlatform.ServerClientShared.Network;
 using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Core.Network.States;
 
 namespace ZenPlatform.Core.Network
 {
 
-    public class UserListener : Listener
+    public class UserListener : Listener, IUserListener
     {
 
         public IServiceProvider _serviceProvider;
@@ -21,9 +22,9 @@ namespace ZenPlatform.Core.Network
         {
             _serviceProvider = serviceProvider;
         }
-        protected override IConnection OpenConnection(TcpClient client)
+        protected override IConnection OpenConnection()
         {
-            return _serviceProvider.GetRequiredService<IConnection<IUserMessageHandler>>();
+            return _serviceProvider.GetRequiredService<IUserConnection>();
         }
     }
     public abstract class Listener : IListener
@@ -67,7 +68,6 @@ namespace ZenPlatform.Core.Network
             {
                 _running = false;
                 _listener.Stop();
-                //_thread.Interrupt();
                 _logger.Info("Stoped listening");
             }
         }
@@ -102,7 +102,7 @@ namespace ZenPlatform.Core.Network
                 {
                     if (client != null)
                     {
-                        var connection = OpenConnection(client);
+                        var connection = OpenConnection();
                         _connectionManager.AddConnection(connection);
                         connection.Open(client);
                     }
@@ -116,7 +116,7 @@ namespace ZenPlatform.Core.Network
 
         }
 
-        protected abstract IConnection OpenConnection(TcpClient client);
+        protected abstract IConnection OpenConnection();
 
     }
 }

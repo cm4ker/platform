@@ -4,13 +4,6 @@ using ZenPlatform.ServerClientShared.Tools;
 
 namespace ZenPlatform.ServerClientShared.Network
 {
-
-    public interface IConnection<T>: IConnection
-    { }
-
-    public interface IUserMessageHandler : IMessageHandler { };
-    public interface IAdminMessageHandler : IMessageHandler { };
-
     public interface IConnection: IRemovable
     {
 
@@ -22,7 +15,7 @@ namespace ZenPlatform.ServerClientShared.Network
         /// <summary>
         /// Возвращает поток для обмена данными
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Возвращает поток связанный с соединением для обмена данными</returns>
         Stream GetStream();
 
         /// <summary>
@@ -35,5 +28,10 @@ namespace ZenPlatform.ServerClientShared.Network
         /// </summary>
         /// <param name="client">Клиен должен иметь статус Connected</param>
         void Open(TcpClient client);
+
+        /// <summary>
+        /// Возвращает True если соединение открыто
+        /// </summary>
+        bool Opened { get; }
     }
 }

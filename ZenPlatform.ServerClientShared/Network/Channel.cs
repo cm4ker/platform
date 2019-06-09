@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using ZenPlatform.ServerClientShared.Logging;
-
+using ZenPlatform.ServerClientShared.Tools;
 namespace ZenPlatform.ServerClientShared.Network
 {
     public class Channel : IChannel
@@ -14,14 +14,14 @@ namespace ZenPlatform.ServerClientShared.Network
         private byte[] _readBuffer;
         private int _bufferSize = 1024 * 4; // 4Kb
         private Stream _stream;
-        private IMessageHandler _handler;
         private readonly IMessagePackager _packager;
         private readonly ILogger _logger;
+        private readonly List<IObserver<INetworkMessage>> _observers;
 
         public bool Running { get; private set; } = false;
 
 
-        public event Action<Exception> OnError;
+        //public event Action<Exception> OnError;
 
         public Channel(IMessagePackager packager, ILogger<Channel> logger)
         {
@@ -29,12 +29,8 @@ namespace ZenPlatform.ServerClientShared.Network
             _logger = logger;
             _readBuffer = new byte[_bufferSize];
             _packager = packager;
+            _observers = new List<IObserver<INetworkMessage>>();
 
-        }
-
-        public void SetHandler(IMessageHandler handler)
-        {
-            _handler = handler;
         }
 
         private void ReceiveCallback(IAsyncResult ar)
@@ -53,9 +49,15 @@ namespace ZenPlatform.ServerClientShared.Network
                     {
                         _logger.Trace(() => string.Format("From: ''; Type: '{0}'; Message: {1}",
                             message.GetType().Name, JsonConvert.SerializeObject(message)));
-                        _handler.Receive(message, this);
+        
+                        if (message is INetworkMessage networkMessage)
+                            OnNext(networkMessage);
+                        else _logger.Warn("Received message is unknown type: {0}", message.GetType().Name);
                     }
 
+                } else
+                {
+                    Stop();
                 }
 
                 if (Running)
@@ -64,8 +66,8 @@ namespace ZenPlatform.ServerClientShared.Network
                 }
             } catch (Exception ex)
             {
+                OnError(ex);
                 Stop();
-                OnError?.Invoke(ex);
             }
         }
 
@@ -76,7 +78,7 @@ namespace ZenPlatform.ServerClientShared.Network
             if (message == null) throw new ArgumentNullException(nameof(message));
                 _logger.Trace(() => string.Format("To: ''; Type: '{0}'; Message: {1}",
                     message.GetType().Name, JsonConvert.SerializeObject(message)));
-
+            
                 _stream.Write(_packager.PackMessage(message));
 
         }
@@ -94,16 +96,43 @@ namespace ZenPlatform.ServerClientShared.Network
             }
             catch (Exception ex)
             {
+                OnError(ex);
                 Stop();
-                OnError?.Invoke(ex);
+               
             }
         }
         
         public void Stop()
         {
             Running = false;
+            OnCompleted();
         }
 
+        public IDisposable Subscribe(IObserver<INetworkMessage> observer)
+        {
+            _observers.Add(observer);
+            return new ListRemover<IObserver<INetworkMessage>>(_observers, observer);
+        }
 
+        private void OnError(Exception ex)
+        {
+            foreach (var observer in _observers.ToArray())
+                if (_observers.Contains(observer))
+                    observer.OnError(ex);
+        }
+
+        private void OnCompleted()
+        {
+            foreach (var observer in _observers.ToArray())
+                if (_observers.Contains(observer))
+                    observer.OnCompleted();
+        }
+
+        private void OnNext(INetworkMessage message)
+        {
+            foreach (var observer in _observers.ToArray())
+                if (_observers.Contains(observer))
+                    observer.OnNext(message);
+        }
     }
 }

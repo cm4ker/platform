@@ -35,7 +35,21 @@ namespace ZenPlatform.Core.Network
 
             foreach (var lisetnercfg in _config.Listeners)
             {
-                var listener = _serviceProvider.GetRequiredService<IListener>();
+                IListener listener = null;
+                switch (lisetnercfg.Type)
+                {
+                    case ListenerType.User:
+                        listener = _serviceProvider.GetRequiredService<IUserListener>();
+                        break;
+                    case ListenerType.Admin:
+                        listener = _serviceProvider.GetRequiredService<IUserListener>();
+                        break;
+                    default: 
+                        listener = _serviceProvider.GetRequiredService<IUserListener>();
+                        break;
+
+                }
+                
                 listener.Start(NetworkUtility.CreateIPEndPoint(lisetnercfg.Address));
                 _listeners.Add(listener);
             }

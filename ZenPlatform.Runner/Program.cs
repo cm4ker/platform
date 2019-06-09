@@ -12,7 +12,6 @@ using ZenPlatform.ServerClientShared.DI;
 using ZenPlatform.Core.Logging;
 using System.Configuration;
 using ZenPlatform.ServerClientShared.Logging;
-using ZenPlatform.Core.Network.Handlers;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Data;
 using DryIoc;
@@ -61,19 +60,24 @@ namespace ZenPlatform.Runner
                     services.AddTransient<IConnectionManager, ConnectionManager>();
                     services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
                     services.AddScoped<IInvokeService, InvokeService>();
-                    services.AddScoped<IListener, UserListener>();
-                    services.AddTransient(typeof(IConnection<>), typeof(UserConnection<>));
+                    services.AddScoped<IUserListener, UserListener>();
+                    services.AddTransient<IUserConnection, UserConnection>();
                     services.AddTransient<IChannel, Channel>();
                     services.AddSingleton<IAccessPoint, UserAccessPoint>();
                     services.AddSingleton<ITaskManager, TaskManager>();
                     services.AddTransient<IMessagePackager, SimpleMessagePackager>();
-                    //services.AddTransient<ISerializer, HyperionSerializer>();
-                    services.AddTransient<ISerializer, NewtonsoftJsonSerializer>();
+                    services.AddTransient<ISerializer, HyperionSerializer>();
+                    //services.AddTransient<ISerializer, NewtonsoftJsonSerializer>();
                     
                     services.AddSingleton<IEnvironmentManager, EnvironmentManager>();
+
+#if (DEBUG)
+                    services.AddScoped<IEnvironment, TestEnvironment>();
+#else
                     services.AddScoped<IEnvironment, WorkEnvironment>();
+#endif
+
                     //services.AddTransient<IUserMessageHandler, UserMessageHandler>();
-                    services.AddTransient<IUserMessageHandler, UserConnectedMessageHandler>();
                     services.AddScoped<IAuthenticationManager, AuthenticationManager>();
                     services.AddScoped<IDataContextManager, DataContextManager>();
                     services.AddScoped<IUserManager, UserManager>();
