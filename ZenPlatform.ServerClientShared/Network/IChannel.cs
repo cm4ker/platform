@@ -5,16 +5,16 @@ using ZenPlatform.Core.Authentication;
 
 namespace ZenPlatform.ServerClientShared.Network
 {
-    public interface IChannel
+    public interface IChannel: IObservable<INetworkMessage>
     {
         bool Running { get; }
 
-        event Action<Exception> OnError;
+        //event Action<Exception> OnError;
 
         void Send(object message);
         void Start(IConnection connection);
         void Stop();
 
-        void SetHandler(IMessageHandler handler);
+        //void SetHandler(IMessageHandler handler);
     }
 }
