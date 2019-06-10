@@ -19,7 +19,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool Equals(IProperty other)
         {
-            var otherProp = ((SreProperty) other)?.Member;
+            var otherProp = ((SreProperty)other)?.Member;
             if (otherProp == null)
                 return false;
             return otherProp?.DeclaringType?.Equals(Member.DeclaringType) == true
@@ -47,7 +47,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool Equals(IProperty other)
         {
-            var otherProp = ((SreProperty) other)?.Member;
+            var otherProp = ((SreProperty)other)?.Member;
             if (otherProp == null)
                 return false;
             return otherProp?.DeclaringType?.Equals(Member.DeclaringType) == true
@@ -65,7 +65,11 @@ namespace ZenPlatform.Compiler.Sre
                     throw new ArgumentNullException("value");
 
                 _setter = value;
-                Member.SetSetMethod((MethodBuilder) ((SreMethodBuilder) _setter).Method);
+
+                //Bake the method before we are set it to the member
+                ((SreMethodBuilder)_getter).Bake();
+
+                Member.SetSetMethod((MethodBuilder)((SreMethodBuilder)_setter).Method);
             }
         }
 
@@ -78,7 +82,11 @@ namespace ZenPlatform.Compiler.Sre
                     throw new ArgumentNullException("value");
 
                 _getter = value;
-                Member.SetGetMethod((MethodBuilder) ((SreMethodBuilder) _getter).Method);
+
+                //Bake the method before we are set it to the member
+                ((SreMethodBuilder)_getter).Bake();
+
+                Member.SetGetMethod((MethodBuilder)((SreMethodBuilder)_getter).Method);
             }
         }
 

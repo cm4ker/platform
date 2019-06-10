@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -29,6 +30,19 @@ namespace ZenPlatform.Compiler.Sre
                 {
                     //
                 }
+
+            var files = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
+
+            foreach (var dllFile in files)
+            {
+                try
+                {
+                    ResolveAssembly(Assembly.LoadFile(dllFile));
+                }
+                catch
+                {
+                }
+            }
         }
 
         public IAssembly FindAssembly(string name)
@@ -63,7 +77,10 @@ namespace ZenPlatform.Compiler.Sre
                 name += ", " + asm;
             var found = Type.GetType(name);
             if (found == null)
+            {
                 return null;
+            }
+
             return ResolveType(found);
         }
 

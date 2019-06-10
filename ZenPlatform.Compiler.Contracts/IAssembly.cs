@@ -14,16 +14,4 @@ namespace ZenPlatform.Compiler.Contracts
 
         ITypeSystem TypeSystem { get; }
     }
-
-    public interface IAssemblyFactory
-    {
-        IAssemblyBuilder Create(ITypeSystem ts, string assemblyName, Version assemblyVersion);
-    }
-
-
-    public interface ICompiler
-    {
-        IAssemblyFactory AsmFactory { get; }
-        ITypeSystem TypeSystem { get; }
-    }
 }

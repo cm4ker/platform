@@ -10,5 +10,7 @@ namespace ZenPlatform.Compiler.Contracts
         IType ReturnType { get; }
         IReadOnlyList<IParameter> Parameters { get; }
         IType DeclaringType { get; }
+
+        IMethod MakeGenericMethod(IType[] typeArguments);
     }
 }
