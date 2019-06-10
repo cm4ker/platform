@@ -36,7 +36,6 @@ namespace ZenPlatform.Compiler.Sre
         }
 
 
-
         public IParameter WithParameter(string name, IType type, bool isOut, bool isRef)
         {
             var result = new SreDefferedParameter(this, name, type, _parameterIndex++);
@@ -48,6 +47,7 @@ namespace ZenPlatform.Compiler.Sre
         public IMethodBuilder WithReturnType(IType type)
         {
             _returnType = System.GetType(type);
+
             UpdateSignature();
             return this;
         }
@@ -67,6 +67,9 @@ namespace ZenPlatform.Compiler.Sre
 
         public void Bake()
         {
+            if (IsBaked)
+                return;
+
             foreach (var p in _parameters)
             {
                 p.Bake();
@@ -82,10 +85,15 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool Equals(IMethod other)
         {
-            return ((SreMethodBuilder)other)?._methodBuilder.Equals(_methodBuilder) == true;
+            return ((SreMethodBuilder) other)?._methodBuilder.Equals(_methodBuilder) == true;
         }
 
         public IType ReturnType => System.ResolveType(_methodBuilder.ReturnType);
         public IType DeclaringType => System.ResolveType(_methodBuilder.DeclaringType);
+
+        public IMethod MakeGenericMethod(IType[] typeArguments)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -22,6 +22,6 @@ namespace ZenPlatform.Compiler.Sre
         public bool IsStatic => _method.IsStatic;
 
         public IReadOnlyList<IParameter> Parameters => _parameters ??= _method.GetParameters()
-            .Select(p => new SreParameter(System, p)).ToList();
+            .Select(p => new SreParameter(System, this, p)).ToList();
     }
 }

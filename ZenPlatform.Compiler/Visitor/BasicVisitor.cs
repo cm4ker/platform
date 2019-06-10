@@ -2,6 +2,7 @@ using System;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Sre;
+using ZenPlatform.Language.Ast.AST.Definitions;
 
 namespace ZenPlatform.Compiler.Visitor
 {

@@ -14,9 +14,6 @@ namespace ZenPlatform.Compiler.Cecil
         public override TypeDefinition Resolve(TypeReference type)
         {
             type = type.GetElementType();
-            
-            
-            
             var resolved = base.Resolve(type);
             return resolved;
         }

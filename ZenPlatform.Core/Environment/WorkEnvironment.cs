@@ -52,7 +52,6 @@ namespace ZenPlatform.Core.Environment
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider, 
             IDataContextManager contextManager, IUserManager userManager) : base(contextManager)
         {
-
             _locking = new object();
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -113,7 +112,6 @@ namespace ZenPlatform.Core.Environment
         public override IInvokeService InvokeService { get; }
 
         public override IAuthenticationManager AuthenticationManager { get; }
-        
 
 
         /// <summary>
