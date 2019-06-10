@@ -22,17 +22,11 @@ namespace ZenPlatform.Runner
     {
         public static async Task Main(string[] args)
         {
-
             var builder = new HostBuilder()
-
                 .ConfigureAppConfiguration((hostContext, config) =>
                 {
-                   
-                    
                     //config.AddEnvironmentVariables();
                     config.AddXmlFile("App.config", false, true);
-                    
-
                 })
                 /*
                 .ConfigureLogging((hostContext, loggingBuilder) =>
@@ -42,14 +36,11 @@ namespace ZenPlatform.Runner
                     loggingBuilder.AddNLog(hostContext.Configuration);
                 })
                 */
-
-                
                 .ConfigureServices((hostContext, services) =>
                 {
-                    
                     AppConfig config = new AppConfig();
                     hostContext.Configuration.GetSection("Runner").Bind(config);
-                    
+
                     services.AddConfig(config.AccessPoint);
                     services.AddConfig(config.Environments);
 
@@ -71,13 +62,11 @@ namespace ZenPlatform.Runner
                     services.AddScoped<IAuthenticationManager, AuthenticationManager>();
                     services.AddScoped<IDataContextManager, DataContextManager>();
                     services.AddScoped<IUserManager, UserManager>();
-                    
+
                     services.AddSingleton<IHostedService, RunnerService>();
                 });
-            
+
             await builder.RunConsoleAsync();
         }
-
-        
     }
 }

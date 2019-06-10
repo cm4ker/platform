@@ -1,5 +1,6 @@
-using System;
 using System.Collections;
+using ZenPlatform.Compiler.AST.Definitions.Symbols;
+using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Contracts.Symbols
 {
@@ -17,19 +18,19 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             _parent = parent;
         }
 
-        public Symbol Add(IAstSymbol astSymbol, object codeObject = null)
+        public Symbol Add(IAstSymbol astSymbol)
         {
-            return Add(astSymbol.Name, astSymbol, codeObject);
+            return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol, null);
         }
 
-        public Symbol Add(string name, IAstSymbol syntaxObject, object codeObject)
+        public Symbol Add(string name, SymbolType type, IAstSymbol syntaxObject, object codeObject)
         {
-            string prefix = PrefixFromType(syntaxObject);
+            string prefix = PrefixFromType(type);
 
             if (_hashtable.Contains(prefix + name))
-                throw new Exception("Symbol already exists in symbol table.");
+                throw new SymbolException("Symbol already exists in symbol table.");
 
-            Symbol symbol = new Symbol(name, syntaxObject, codeObject);
+            Symbol symbol = new Symbol(name, type, syntaxObject, codeObject);
             _hashtable.Add(prefix + name, symbol);
 
             return symbol;
@@ -37,10 +38,10 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
 
         public Symbol ConnectCodeObject(IAstSymbol v, object codeObject)
         {
-            var result = Find(v);
+            var result = Find(v.Name, v.SymbolType);
             if (result == null)
             {
-                return Add(v, codeObject);
+                return Add(v.Name, v.SymbolType, v, codeObject);
             }
             else
             {
@@ -50,20 +51,20 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return result;
         }
 
-        public bool Contains(IAstSymbol symbol)
+        public bool Contains(string name, SymbolType type)
         {
-            return Find(symbol) != null;
+            return Find(name, type) != null;
         }
 
-        public Symbol Find(IAstSymbol symbol)
+        public Symbol Find(string name, SymbolType type)
         {
-            string prefix = PrefixFromType(symbol);
+            string prefix = PrefixFromType(type);
 
-            if (_hashtable.Contains(prefix + symbol.Name))
-                return (Symbol) _hashtable[prefix + symbol.Name];
+            if (_hashtable.Contains(prefix + name))
+                return (Symbol) _hashtable[prefix + name];
             if (_parent != null)
             {
-                return _parent.Find(symbol);
+                return _parent.Find(name, type);
             }
 
             return null;
@@ -74,21 +75,15 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             _hashtable.Clear();
         }
 
-        private string PrefixFromType(IAstSymbol symbol)
+        private string PrefixFromType(SymbolType type)
         {
-            TypeCode colorBand = 0;
-            var a = colorBand switch
-                {
-                TypeCode.Boolean => new object(),
-                };
-
-
-            return symbol switch {
-                ILocal l => "_v",
-                IMethod m => "_m",
-                IType t => "_t",
-                _ => throw new Exception("This symbol not sypported")
-                };
+            if (type == SymbolType.Function)
+                return "f_";
+            if (type == SymbolType.Type)
+                return "t_";
+            if (type == SymbolType.Variable)
+                return "v_";
+            return "";
         }
     }
 }

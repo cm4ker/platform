@@ -5,11 +5,10 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Data.Contracts
 {
-
     /// <summary>
     /// Интерфейс комопнента данных
     /// </summary>
-    public interface IDataComponent 
+    public interface IDataComponent
     {
         /// <summary>
         /// Событие, вызываемое перед инициализацией компонента
@@ -30,6 +29,8 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// Генератор сущностей необходимо на стадии сборки проекта
         /// </summary>
         IEntityGenerator Generator { get; }
+
+        IAstGenerator AstGenerator { get; }
 
         /// <summary>
         /// Генератор объектов базы данных

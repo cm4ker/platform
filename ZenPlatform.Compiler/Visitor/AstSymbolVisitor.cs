@@ -1,9 +1,13 @@
 using System;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Functions;
-using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.AST.Definitions.Functions;
+using ZenPlatform.Language.Ast.AST.Definitions.Statements;
+using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Visitor
 {
@@ -38,6 +42,18 @@ namespace ZenPlatform.Compiler.Visitor
             }
         }
 
+        public override void VisitField(Field obj)
+        {
+            if (obj.Parent is TypeBody f)
+            {
+                f.SymbolTable.Add(obj);
+            }
+            else
+            {
+                throw new Exception("Invalid register field in scope");
+            }
+        }
+
         public override void VisitTypeBody(TypeBody obj)
         {
             if (obj.SymbolTable == null)
@@ -60,6 +76,35 @@ namespace ZenPlatform.Compiler.Visitor
             else
             {
                 throw new Exception("Invalid register function in scope");
+            }
+        }
+
+        public override void VisitProperty(Property obj)
+        {
+            if (obj.Setter.SymbolTable == null)
+            {
+                var parent = obj.GetParent<TypeBody>().SymbolTable;
+                obj.Setter.SymbolTable = new SymbolTable(parent);
+            }
+
+            obj.Setter.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByReference));
+        }
+
+        public override void VisitFor(For obj)
+        {
+            if (obj.InstructionsBody.SymbolTable == null)
+            {
+                var parent = obj.GetParent<InstructionsBodyNode>();
+                if (parent != null)
+                    obj.InstructionsBody.SymbolTable = new SymbolTable(parent.SymbolTable);
+            }
+        }
+
+        public override void VisitType(TypeNode obj)
+        {
+            if (obj.Type is UnknownArrayType)
+            {
+                obj.SetType(obj.Type.ArrayElementType.MakeArrayType());
             }
         }
 

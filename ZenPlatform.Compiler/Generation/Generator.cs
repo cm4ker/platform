@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Expressions;
-using ZenPlatform.Compiler.AST.Definitions.Functions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
+using ZenPlatform.Language.Ast.AST.Definitions.Functions;
+using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.ServerClientShared.Network;
 using SreTA = System.Reflection.TypeAttributes;
 
 
@@ -17,28 +23,25 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private readonly CompilationUnit _compilationUnit;
+        private readonly CompilationUnit _cu;
         private readonly IAssemblyBuilder _asm;
         private readonly ITypeSystem _ts;
-
-
-        //        private SymbolTable _typeSymbols;
-        //        private SymbolTable _functions = new SymbolTable();
+        private readonly CompilationMode _mode;
 
         private SystemTypeBindings _bindings;
 
-        private const string ASM_NAMESPACE = "CompileNamespace";
+        private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
 
-
-        public Generator(CompilationUnit compilationUnit, IAssemblyBuilder asm)
+        public Generator(GeneratorParameters parameters)
         {
-            _compilationUnit = compilationUnit;
-            _asm = asm;
-            _ts = asm.TypeSystem;
+            _cu = parameters.Unit;
+            _asm = parameters.Builder;
+            _ts = _asm.TypeSystem;
 
+            _mode = parameters.Mode;
             _bindings = new SystemTypeBindings(_ts);
 
-            foreach (var typeEntity in compilationUnit.TypeEntities)
+            foreach (var typeEntity in _cu.TypeEntities)
             {
                 switch (typeEntity)
                 {
@@ -48,27 +51,21 @@ namespace ZenPlatform.Compiler.Generation
                     case Class c:
                         EmitClass(c);
                         break;
-
                     default:
                         throw new Exception("The type entity not supproted");
                 }
             }
         }
 
-
         private void BuildModule(Module module)
         {
-            var typeBuilder = _asm.DefineType(ASM_NAMESPACE, module.Name,
+            var typeBuilder = _asm.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
                 SreTA.Class | SreTA.Public | SreTA.Abstract |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
 
-            //_typeSymbols = new SymbolTable();
-
-            //module.TypeBody.SymbolTable = _typeSymbols;
-
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
-            foreach (var item in PrebuildFunctions(module.TypeBody, typeBuilder))
+            foreach (var item in PrebuildFunctions(module.TypeBody, typeBuilder, false))
             {
                 BuildFunction(item.Item1, item.Item2);
             }
@@ -78,21 +75,19 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitClass(Class @class)
         {
-            var tb = _asm.DefineType(ASM_NAMESPACE, @class.Name,
+            var tb = _asm.DefineType(DEFAULT_ASM_NAMESPACE, @class.Name,
                 SreTA.Class | SreTA.NotPublic |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass,
                 _bindings.Object);
 
-            //_typeSymbols = new SymbolTable();
-
-            //@class.TypeBody.SymbolTable = _typeSymbols;
-
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
-            foreach (var item in PrebuildFunctions(@class.TypeBody, tb))
+            foreach (var item in PrebuildFunctions(@class.TypeBody, tb, true))
             {
                 BuildFunction(item.Item1, item.Item2);
             }
+
+            tb.EndBuild();
         }
 
         private void Error(string message)
@@ -221,7 +216,7 @@ namespace ZenPlatform.Compiler.Generation
                 else if (variable.CodeObject is IParameter pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
-                    e.LdArg(pd.Sequence);
+                    e.LdArg(pd.ArgIndex);
                     if (p.PassMethod == PassMethod.ByReference)
                         e.LdIndI4();
                 }
@@ -240,7 +235,6 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-
         /// <summary>
         /// Создание функций исходя из тела типа
         /// </summary>
@@ -248,7 +242,7 @@ namespace ZenPlatform.Compiler.Generation
         /// <param name="builder"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        private List<(Function, IMethodBuilder)> PrebuildFunctions(TypeBody typeBody, ITypeBuilder tb)
+        private List<(Function, IMethodBuilder)> PrebuildFunctions(TypeBody typeBody, ITypeBuilder tb, bool isClass)
         {
             if (typeBody == null)
                 throw new ArgumentNullException();
@@ -260,13 +254,15 @@ namespace ZenPlatform.Compiler.Generation
             {
                 foreach (Function function in typeBody.Functions)
                 {
-                    //Для каждого метода создаём свою таблицу символов
-                    //SymbolTable symbolTable = new SymbolTable(_typeSymbols);
+                    //На сервере никогда не может существовать клиентских процедур
+                    if (((int) function.Flags & (int) _mode) == 0 && !isClass)
+                    {
+                        continue;
+                    }
 
-                    // Make child visible to sibillings
-                    //function.InstructionsBody.SymbolTable = symbolTable;
+                    Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
 
-                    var method = tb.DefineMethod(function.Name, true, true, false)
+                    var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
                         .WithReturnType(function.Type.Type);
 
                     result.Add((function, method));
@@ -277,6 +273,89 @@ namespace ZenPlatform.Compiler.Generation
                 }
             }
 
+            if (isClass)
+            {
+                foreach (var field in typeBody.Fields)
+                {
+                    var fieldCodeObj = tb.DefineField(field.Type.Type, field.Name, false, false);
+                    typeBody.SymbolTable.ConnectCodeObject(field, fieldCodeObj);
+                }
+
+                foreach (var property in typeBody.Properties)
+                {
+                    var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
+
+                    IField backField = null;
+
+                    if (property.Setter == null && property.Getter == null)
+                    {
+                        backField = tb.DefineField(property.Type.Type, $"{property.Name}_____backingField", false,
+                            false);
+                    }
+
+                    var getMethod = tb.DefineMethod($"get__{property.Name}", true, false, false);
+                    var setMethod = tb.DefineMethod($"set__{property.Name}", true, false, false);
+
+                    setMethod.WithReturnType(_bindings.Void);
+                    var valueArg = setMethod.WithParameter("value", property.Type.Type, false, false);
+
+                    getMethod.WithReturnType(property.Type.Type);
+
+                    if (property.Getter != null)
+                    {
+                        IEmitter emitter = getMethod.Generator;
+                        emitter.InitLocals = true;
+
+                        ILocal resultVar = null;
+
+                        resultVar = emitter.DefineLocal(property.Type.Type);
+
+                        var returnLabel = emitter.DefineLabel();
+                        EmitBody(emitter, property.Getter, returnLabel, resultVar);
+
+                        emitter.MarkLabel(returnLabel);
+
+                        if (resultVar != null)
+                            emitter.LdLoc(resultVar);
+
+                        emitter.Ret();
+                    }
+                    else
+                    {
+                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
+                    }
+
+                    if (property.Setter != null)
+                    {
+                        IEmitter emitter = setMethod.Generator;
+                        emitter.InitLocals = true;
+
+                        ILocal resultVar = null;
+
+                        resultVar = emitter.DefineLocal(property.Type.Type);
+
+                        var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable);
+                        valueSym.CodeObject = valueArg;
+
+                        var returnLabel = emitter.DefineLabel();
+                        EmitBody(emitter, property.Setter, returnLabel, resultVar);
+
+                        emitter.MarkLabel(returnLabel);
+                        emitter.Ret();
+                    }
+                    else
+                    {
+                        if (backField != null)
+                            setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
+                        else
+                            setMethod.Generator.Ret();
+                    }
+
+
+                    propBuilder.WithGetter(getMethod).WithSetter(setMethod);
+                }
+            }
+
             return result;
         }
 
@@ -284,15 +363,6 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (function == null)
                 throw new ArgumentNullException();
-            //
-            // Build function stub.
-            //
-
-            //            // Find an unique name.
-            //            string functionName = function.Name;
-            //            while (_functions.Find(functionName, SymbolType.Function) != null)
-            //                functionName += "#";
-
             if (function.Parameters != null)
             {
                 foreach (var p in function.Parameters)
@@ -304,28 +374,73 @@ namespace ZenPlatform.Compiler.Generation
 
             function.Builder = method.Generator;
 
-
             EmitFunction(function);
-
             return method;
+        }
+
+        private void EmitRemoteCall(Function function)
+        {
+            IEmitter emitter = function.Builder;
+            var type = _bindings.ClientType();
+            var client = emitter.DefineLocal(type);
+            emitter.PropGetValue(_bindings.AIClient());
+            emitter.StLoc(client);
+
+            var route = _ts.FindType($"{typeof(Route).Namespace}.{nameof(Route)}",
+                typeof(Route).Assembly.GetName().FullName);
+
+            var method = _bindings.ClientInvoke(new[]
+                {_bindings.Object.MakeArrayType(), function.Type.Type});
+
+            emitter.LdLoc(client);
+
+            //First parameter
+            emitter.LdStr($"{function.GetParent<TypeEntity>().Name}.{function.Name}");
+            emitter.Newobj(route.Constructors.First());
+
+            //Second parameter
+            emitter.LdcI4(function.Parameters.Count);
+            emitter.NewArr(_bindings.Object);
+            foreach (var p in function.Parameters)
+            {
+                emitter.Dup();
+                var iArg = function.Parameters.IndexOf(p);
+                emitter.LdcI4(iArg);
+                emitter.LdArg(iArg);
+                emitter.Box(p.Type.Type);
+                emitter.StElemRef();
+            }
+
+            emitter.EmitCall(method);
+            //            emitter.LdcI4(0);
+            //            emitter.LdElemI4();
+
+            if (!function.Type.Type.Equals(_bindings.Void))
+                emitter.Ret();
         }
 
         private void EmitFunction(Function function)
         {
             if (function == null)
                 throw new ArgumentNullException();
+            if (function.Flags == FunctionFlags.ServerClientCall)
+            {
+                EmitRemoteCall(function);
+                return;
+            }
 
             IEmitter emitter = function.Builder;
             emitter.InitLocals = true;
 
-            var resultVar = emitter.DefineLocal(function.Type.Type);
+            ILocal resultVar = null;
+            if (!function.Type.Type.Equals(_bindings.Void))
+                resultVar = emitter.DefineLocal(function.Type.Type);
             var returnLabel = emitter.DefineLabel();
             EmitBody(emitter, function.InstructionsBody, returnLabel, resultVar);
-
-
             emitter.MarkLabel(returnLabel);
+            if (resultVar != null)
+                emitter.LdLoc(resultVar);
 
-            emitter.LdLoc(resultVar);
             emitter.Ret();
         }
 
@@ -344,14 +459,12 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             var valueType = expression.Value.Type.Type;
-
             if (expression.Value is IndexerExpression && valueType.IsArray)
             {
                 valueType = valueType.ArrayElementType;
             }
 
             var convertType = expression.Type.Type;
-
             if (valueType is null || (valueType.IsValueType && convertType.IsValueType))
             {
                 EmitConvCode(e, convertType);

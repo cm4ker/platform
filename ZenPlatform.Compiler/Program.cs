@@ -6,6 +6,7 @@ using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Cecil;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
@@ -23,24 +24,52 @@ namespace ZenPlatform.Compiler
         {
             string test;
             var text = new StringReader(@"
-module Test
+type HelloWorld
 {
-    int Inc(int a)
+    int _someField;
+
+    public void PublicMethod()
     {
-        a++;
-        return 0;
+        
+    }
+    
+    void PrivateMethod()
+    {
+
     }
 
-    int Add(int a, int b)
+    public int Property {get { return 1; } set {_someField = value;}}
+}
+
+module Test
+{    
+    double Inc(int a)
     {
+        #if TEST
+        a++;
+        #else
+        a = a + 2;
+        #endif
+        return 0.0;
+    }
+
+    [ClientCall]
+    public int Add(int a, int b)
+    {
+        int c = 1;
         try
         {
-            return a + b;
+            c = c + 2;
+            //return a + b;
         }
         catch
         {
-            return 0;
+            c++;//return 0;
         }
+        
+        int i = c + a;
+        
+        return i;
     }
 
     int Fibonachi(int n)
@@ -57,80 +86,47 @@ module Test
 
         for(int i = 0; i < arr.Length; i++)
         {
-            result = result + (double)(arr[i]);
+            result = result + (double)arr[i];
         }  
 
         result = result / (double)(arr.Length);
         
         return result;
     }
+
+    int Sort(int[] arr)
+    {
+        int temp = 0;
+
+        for (int write = 0; write < arr.Length; write++) 
+        {
+            for (int sort = 0; sort < arr.Length - 1; sort++) 
+            {
+                if (arr[sort] > arr[sort + 1]) 
+                {
+                    temp = arr[sort + 1];
+                    arr[sort + 1] = arr[sort];
+                    arr[sort] = temp;
+                }
+            }
+        }
+        return 2 + 2 * 2;
+    }
+
+    void VoidFunction()
+    {
+        int a = 1;
+    }
 }
 ");
-            var ts = new CecilTypeSystem(new string[] { });
 
-            AntlrInputStream inputStream = new AntlrInputStream(text);
-            ZSharpLexer lexer = new ZSharpLexer(inputStream);
-            CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-            ZSharpParser parser = new ZSharpParser(commonTokenStream);
-
-            parser.AddErrorListener(new Listener());
-            ZLanguageVisitor visitor = new ZLanguageVisitor(ts);
-            var result = (CompilationUnit) visitor.VisitEntryPoint(parser.entryPoint());
-
-            AstSymbolVisitor sv = new AstSymbolVisitor();
-            result.Accept(sv);
-
-
-            BasicVisitor bv = new BasicVisitor(ts);
-            result.Accept(bv);
+            CompilationBackend cb = new CompilationBackend();
+            var b = cb.Compile(text);
 
             if (File.Exists("Debug.dll"))
                 File.Delete("Debug.dll");
 
-            CecilAssemblyFactory af = new CecilAssemblyFactory();
-
-            var b = af.Create(ts, "debug", new Version(1, 0));
-
-            Generator g = new Generator(result, b);
-
             b.Write("Debug.dll");
-        }
-    }
-
-
-    static class Test
-    {
-        public static double M(int a, int b)
-        {
-            if (a > b)
-            {
-                a = a + 2;
-            }
-            else
-            {
-                a = a + 1;
-            }
-
-            ;
-
-
-            return a;
-        }
-
-        static double Average(int[] arr)
-        {
-            double result = 0;
-
-            for (int i = 0; i < arr.Length; i++)
-            {
-                result = result + arr[i];
-            }
-
-            ;
-
-            result = result / arr.Length;
-
-            return result;
         }
     }
 }
