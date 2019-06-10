@@ -55,13 +55,14 @@ namespace ZenPlatform.Compiler.Cecil
             if (isInterfaceImpl)
                 attrs |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
 
-            var def = new MethodDefinition(name, attrs, TypeSystem.GetTypeReference("System.Void"));
+            var vType = TypeSystem.GetTypeReference("System.Void");
+            var def = new MethodDefinition(name, attrs, Definition.Module.ImportReference(vType));
 
             if (overrideMethod != null)
                 def.Overrides.Add(Definition.Module.ImportReference(((CecilMethod) overrideMethod).Definition));
 
             Definition.Methods.Add(def);
-            var rv = new CecilMethodBuilder(TypeSystem, def, SelfReference);
+            var rv = new CecilMethodBuilder(TypeSystem, def, SelfReference, Definition.Module);
             ((List<IMethod>) Methods).Add(rv);
             return rv;
         }

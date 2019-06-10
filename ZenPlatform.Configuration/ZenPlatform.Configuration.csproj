@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -9,6 +9,7 @@
     <Folder Include="Scheduler\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
   </ItemGroup>

@@ -1,37 +1,96 @@
+using System;
 using System.IO;
 using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
+using ZenPlatform.Compiler.Cecil;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Preprocessor;
+using ZenPlatform.Compiler.Sre;
+using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Language.Ast.AST.Definitions;
 
 namespace ZenPlatform.Compiler
 {
-    public class CompilationBackend
+    public interface ICompilationBackend
     {
         /// <summary>
         /// Скомпилировать поток символов и записать в сборку
         /// </summary>
         /// <param name="input"></param>
         /// <param name="assemblyDefinition"></param>
-        public void Compile(Stream input)
+        IAssemblyBuilder Compile(Stream input);
+
+        /// <summary>
+        /// Скомпилировать поток символов и записать в сборку
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="assemblyDefinition"></param>
+        IAssemblyBuilder Compile(TextReader input);
+    }
+
+    public class CompilationBackend : ICompilationBackend
+    {
+        /// <summary>
+        /// Скомпилировать поток символов и записать в сборку
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="assemblyDefinition"></param>
+        public IAssemblyBuilder Compile(Stream input)
         {
-            var pTree = Parse(input);
-//            ZLanguageVisitor v = new ZLanguageVisitor();
-//            var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit;
+            return CompileTree(Parse(CreateInputStream(input)));
+        }
+
+        /// <summary>
+        /// Скомпилировать поток символов и записать в сборку
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="assemblyDefinition"></param>
+        public IAssemblyBuilder Compile(TextReader input)
+        {
+            return CompileTree(Parse(CreateInputStream(input)));
+        }
+
+        private IAssemblyBuilder CompileTree(ZSharpParser pTree)
+        {
+            IAssemblyPlatform ap = new SreAssemblyPlatform();
+
+            var ab = ap.AsmFactory.Create(ap.TypeSystem, "Debug", new Version(1, 0));
+
+
+            ZLanguageVisitor v = new ZLanguageVisitor(ap.TypeSystem);
+            var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
+            //Gen
+            //Перед генерацией необходимо подготовить дерево символов
+            AstSymbolVisitor sv = new AstSymbolVisitor();
+            module.Accept(sv);
+
+            Generator g = new Generator(new GeneratorParameters(module, ab, CompilationMode.Client));
+            //
+
+            return ab;
+        }
+
+        private ITokenStream CreateInputStream(Stream input)
+        {
+            return PreProcessor.Do(new AntlrInputStream(input));
+        }
+
+        private ITokenStream CreateInputStream(TextReader reader)
+        {
+            return PreProcessor.Do(new AntlrInputStream(reader));
         }
 
 
         /// <summary>
         /// Распарсить исходный текст модуля
         /// </summary>
-        /// <param name="input">Входящий поток символов</param>
+        /// <param name="tokenStream"></param>
         /// <returns></returns>
-        private ZSharpParser Parse(Stream input)
+        private ZSharpParser Parse(ITokenStream tokenStream)
         {
-            AntlrInputStream inputStream = new AntlrInputStream(input);
-            ZSharpLexer lexer = new ZSharpLexer(inputStream);
-            CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-            ZSharpParser parser = new ZSharpParser(commonTokenStream);
+            ZSharpParser parser = new ZSharpParser(tokenStream);
 
             parser.AddErrorListener(new Listener());
 

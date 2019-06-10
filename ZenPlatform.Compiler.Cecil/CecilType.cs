@@ -54,7 +54,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IReadOnlyList<IMethod> Methods =>
             _methods ??= Definition.GetMethods().Select(m => (IMethod) new CecilMethod(TypeSystem,
-                m, Reference)).ToList();
+                m, Reference, _assembly.Assembly.MainModule)).ToList();
 
         protected IReadOnlyList<IConstructor> _constructors;
 
@@ -146,8 +146,7 @@ namespace ZenPlatform.Compiler.Cecil
         private IType _arrayType;
 
         public IType ArrayElementType =>
-            _arrayType ?? (_arrayType =
-                IsArray ? TypeSystem.Resolve(Definition) : null);
+            _arrayType ??= IsArray ? TypeSystem.Resolve(Reference.GetElementType()) : null;
 
         public IType MakeArrayType() => TypeSystem.Resolve(Reference.MakeArrayType());
 

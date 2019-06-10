@@ -18,5 +18,7 @@ namespace ZenPlatform.Compiler.Contracts
         IType Type { get; }
 
         int Sequence { get; }
+
+        int ArgIndex { get; }
     }
 }

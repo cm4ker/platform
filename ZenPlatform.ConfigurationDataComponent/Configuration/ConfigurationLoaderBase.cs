@@ -14,8 +14,8 @@ namespace ZenPlatform.DataComponent.Configuration
     public abstract class ConfigurationLoaderBase<TObjectType> : IXComponentLoader
         where TObjectType : XCObjectTypeBase
     {
-
         #region Events
+
         /// <summary>
         /// Вызывается после загрузки объекта
         /// </summary>
@@ -66,7 +66,8 @@ namespace ZenPlatform.DataComponent.Configuration
             TObjectType conf;
             using (var stream = component.Root.Storage.GetBlob(blob.Name, $"Data/{component.Info.ComponentName}"))
             {
-                conf = XCHelper.DeserializeFromStream<TObjectType>(stream) ?? throw new InvalidLoadConfigurationException(blob.Name);
+                conf = XCHelper.DeserializeFromStream<TObjectType>(stream) ??
+                       throw new InvalidLoadConfigurationException(blob.Name);
             }
 
             if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
@@ -75,7 +76,7 @@ namespace ZenPlatform.DataComponent.Configuration
             AfterObjectLoad(conf);
 
             //Сразу же указываем родителя
-            ((IChildItem<XCComponent>)conf).Parent = component;
+            ((IChildItem<XCComponent>) conf).Parent = component;
 
             component.Parent.RegisterType(conf);
 
@@ -84,7 +85,6 @@ namespace ZenPlatform.DataComponent.Configuration
             AfterInitialize(conf);
 
             return conf;
-
         }
 
         /// <summary>

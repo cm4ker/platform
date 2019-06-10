@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Expressions;
-using ZenPlatform.Compiler.AST.Definitions.Functions;
-using ZenPlatform.Compiler.AST.Definitions.Statements;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Language.Ast.AST;
+using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
+using ZenPlatform.Language.Ast.AST.Definitions.Functions;
+using ZenPlatform.Language.Ast.AST.Definitions.Statements;
+using ZenPlatform.Language.Ast.AST.Infrastructure;
 using ZenPlatform.Shared;
 
 namespace ZenPlatform.Compiler.Visitor
@@ -78,14 +81,28 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<Literal>(VisitLiteral)
                 .CaseIs<IndexerExpression>(VisitIndexerExpression)
                 .CaseIs<Try>(VisitTry)
+                .CaseIs<Class>(VisitClass)
+                .CaseIs<Property>(VisitProperty)
+                .CaseIs<Field>(VisitField)
                 .BreakIfExecuted()
                 .CaseIs<Expression>(VisitExpression)
                 .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null);
         }
 
+        public virtual void VisitField(Field obj)
+        {
+        }
+
+        public virtual void VisitProperty(Property obj)
+        {
+        }
+
+        public virtual void VisitClass(Class obj)
+        {
+        }
+
         public virtual void VisitTry(Try obj)
         {
-            
         }
 
         public virtual void VisitIndexerExpression(IndexerExpression obj)

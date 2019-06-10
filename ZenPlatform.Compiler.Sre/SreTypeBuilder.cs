@@ -40,6 +40,7 @@ namespace ZenPlatform.Compiler.Sre
                 (isPublic ? MethodAttributes.Public : MethodAttributes.Private)
                 | (isStatic ? MethodAttributes.Static : default(MethodAttributes))
                 | (isInterfaceImpl ? MethodAttributes.Virtual | MethodAttributes.NewSlot : default(MethodAttributes)));
+
             if (overrideMethod != null)
                 _tb.DefineMethodOverride(m, ((SreMethod)overrideMethod).Method);
 
