@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 using ZenPlatform.ServerClientShared.Network;
 
-namespace ZenPlatform.AsmInfrastructure
+namespace ZenPlatform.AsmClientInfrastructure
 {
     /// <summary>
     /// Оснавная точка входа в программу

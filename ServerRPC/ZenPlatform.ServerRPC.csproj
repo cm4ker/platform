@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.AsmInfrastructure\ZenPlatform.AsmInfrastructure.csproj" />
+    <ProjectReference Include="..\ZenPlatform.AsmClientInfrastructure\ZenPlatform.AsmClientInfrastructure.csproj" />
     <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
   </ItemGroup>
 

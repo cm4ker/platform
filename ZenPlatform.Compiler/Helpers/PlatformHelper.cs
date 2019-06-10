@@ -3,7 +3,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Mono.Cecil;
-using ZenPlatform.AsmInfrastructure;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Language.Ast.AST;
@@ -41,6 +40,9 @@ namespace ZenPlatform.Compiler.Helpers
         {
             return b.AsmInf().Properties.First(x => x.Name == nameof(GlobalScope.Client));
         }
+        
+        
+        public static 
     }
 
     public static class Helper
