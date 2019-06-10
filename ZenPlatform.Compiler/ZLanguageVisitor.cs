@@ -101,6 +101,16 @@ namespace ZenPlatform.Compiler.AST
             return f;
         }
 
+        public override AstNode VisitMultitype(ZSharpParser.MultitypeContext context)
+        {
+            var marker = new object();
+            _syntaxStack.Push(marker);
+            base.VisitMultitype(context);
+            var tc = new TypeCollection();
+            _syntaxStack.PopUntil(marker, tc);
+            return null;
+        }
+
         public override AstNode VisitPropertyDeclaration(ZSharpParser.PropertyDeclarationContext context)
         {
             base.VisitPropertyDeclaration(context);
@@ -176,7 +186,7 @@ namespace ZenPlatform.Compiler.AST
 
         public override AstNode VisitStructureType(ZSharpParser.StructureTypeContext context)
         {
-            var result = new TypeNode(context.start.ToLineInfo(), context.GetText());
+            var result = new SingleTypeNode(context.start.ToLineInfo(), context.GetText());
 
             _syntaxStack.Push(result);
             return result;
@@ -194,7 +204,7 @@ namespace ZenPlatform.Compiler.AST
 
             if (t == null)
                 throw new Exception("Unknown primitive type");
-            var result = new TypeNode(context.start.ToLineInfo(), t);
+            var result = new SingleTypeNode(context.start.ToLineInfo(), t);
 
             _syntaxStack.Push(result);
 
@@ -205,7 +215,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitArrayType(context);
 
-            var result = new TypeNode(context.start.ToLineInfo(),
+            var result = new SingleTypeNode(context.start.ToLineInfo(),
                 new UnknownArrayType(context.GetText(), _syntaxStack.PopType().Type));
 
             _syntaxStack.Push(result);
@@ -227,18 +237,18 @@ namespace ZenPlatform.Compiler.AST
                 text = Regex.Unescape(text ?? throw new NullReferenceException());
 
                 if (context.string_literal().REGULAR_STRING() != null)
-                    result = new Literal(li, text.Substring(1, text.Length - 2), new TypeNode(li, _sb.String));
+                    result = new Literal(li, text.Substring(1, text.Length - 2), new SingleTypeNode(li, _sb.String));
                 else
-                    result = new Literal(li, text.Substring(2, text.Length - 3), new TypeNode(li, _sb.String));
+                    result = new Literal(li, text.Substring(2, text.Length - 3), new SingleTypeNode(li, _sb.String));
             }
             else if (context.boolean_literal() != null)
-                result = new Literal(li, context.GetText(), new TypeNode(li, _sb.Bool));
+                result = new Literal(li, context.GetText(), new SingleTypeNode(li, _sb.Bool));
             else if (context.INTEGER_LITERAL() != null)
-                result = new Literal(li, context.GetText(), new TypeNode(li, _sb.Int));
+                result = new Literal(li, context.GetText(), new SingleTypeNode(li, _sb.Int));
             else if (context.REAL_LITERAL() != null)
-                result = new Literal(li, context.GetText(), new TypeNode(li, _sb.Double));
+                result = new Literal(li, context.GetText(), new SingleTypeNode(li, _sb.Double));
             else if (context.CHARACTER_LITERAL() != null)
-                result = new Literal(li, context.GetText().Substring(1, 1), new TypeNode(li, _sb.Char));
+                result = new Literal(li, context.GetText().Substring(1, 1), new SingleTypeNode(li, _sb.Char));
 
             //TODO: Не обработанным остался HEX INTEGER LITERAL его необходимо доделать
 

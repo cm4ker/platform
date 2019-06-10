@@ -1,5 +1,6 @@
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast.AST.Builder;
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -18,11 +19,22 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             _builder = builder;
 
-            foreach (var type in _component.Types)
+            foreach (var xcObjectTypeBase in _component.Types)
             {
-                //На кадый класс - отдельный модуль
-                var unit = _builder.WithUnit();
-                var cl = unit.WithClass(type.Name);
+                var type = (XCSingleEntity) xcObjectTypeBase;
+                BuildClass(builder, type);
+            }
+        }
+
+        private void BuildClass(AstBuilder builder, XCSingleEntity type)
+        {
+            //На кадый класс - отдельный модуль
+            var unit = _builder.WithUnit();
+            var cl = unit.WithClass(type.Name);
+
+            foreach (var property in type.Properties)
+            {
+                //cl.WithProperty();
             }
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -37,5 +38,8 @@ namespace ZenPlatform.Compiler.Contracts
         public IType Void => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Void)}", MSCORLIB);
 
         public IType Object => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Object)}", MSCORLIB);
+
+        public IType Client => _ts.FindType($"{typeof(Client).Namespace}.{nameof(Client)}",
+            typeof(Client).Assembly.GetName().FullName);
     }
 }

@@ -67,6 +67,8 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<Function>(VisitFunction)
                 .CaseIs<TypeBody>(VisitTypeBody)
                 .CaseIs<TypeNode>(VisitType)
+                .CaseIs<SingleTypeNode>(VisitSingleType)
+                .CaseIs<MultiTypeNode>(VisitMultiType)
                 .CaseIs<InstructionsBodyNode>(VisitInstructionsBody)
                 .CaseIs<Variable>(VisitVariable)
                 .CaseIs<Assignment>(VisitAssigment)
@@ -87,6 +89,14 @@ namespace ZenPlatform.Compiler.Visitor
                 .BreakIfExecuted()
                 .CaseIs<Expression>(VisitExpression)
                 .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null);
+        }
+
+        public virtual void VisitMultiType(MultiTypeNode obj)
+        {
+        }
+
+        public virtual void VisitSingleType(SingleTypeNode obj)
+        {
         }
 
         public virtual void VisitField(Field obj)

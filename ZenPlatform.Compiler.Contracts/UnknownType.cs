@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.AsmInfrastructure;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -54,6 +55,12 @@ namespace ZenPlatform.Compiler.Contracts
         public static readonly IType Unknown = new UnknownType("{Unknown type}");
     }
 
+    public class UnknownMultiType : UnknownType
+    {
+        public UnknownMultiType() : base(nameof(MultiType))
+        {
+        }
+    }
 
     public class UnknownArrayType : UnknownType
     {

@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using ZenPlatform.Language.Ast.AST.Definitions.Statements;
@@ -21,6 +23,24 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public object Pop()
         {
             return internalStack.Pop();
+        }
+
+        public void PopUntil(object marker, IList reciver)
+        {
+            object element = internalStack.Pop();
+
+            while (element != marker)
+            {
+                reciver.Add(element);
+                element = internalStack.Pop();
+            }
+        }
+
+        public List<object> PopUntil(object marker)
+        {
+            List<object> result = new List<object>();
+            PopUntil(marker, result);
+            return result;
         }
 
         public object Peek()
@@ -73,6 +93,11 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public TypeNode PopType()
         {
             return (TypeNode) internalStack.Pop();
+        }
+
+        public SingleTypeNode PopSingleType()
+        {
+            return (SingleTypeNode) internalStack.Pop();
         }
 
         public InstructionsBodyNode PopInstructionsBody()

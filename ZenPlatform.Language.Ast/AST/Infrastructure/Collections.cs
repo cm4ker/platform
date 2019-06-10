@@ -48,4 +48,8 @@ namespace ZenPlatform.Language.Ast.AST.Infrastructure
     public class PropertyCollection : List<Property>
     {
     }
+
+    public class TypeCollection : List<TypeNode>
+    {
+    }
 }
