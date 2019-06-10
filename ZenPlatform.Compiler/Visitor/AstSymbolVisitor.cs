@@ -87,7 +87,7 @@ namespace ZenPlatform.Compiler.Visitor
                 obj.Setter.SymbolTable = new SymbolTable(parent);
             }
 
-            obj.Setter.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByReference));
+            obj.Setter.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByValue));
         }
 
         public override void VisitFor(For obj)
