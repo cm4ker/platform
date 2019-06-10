@@ -1,5 +1,7 @@
 using System;
 using System.Reflection;
+using ZenPlatform.AsmClientInfrastructure;
+using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Compiler.Contracts
@@ -21,6 +23,21 @@ namespace ZenPlatform.Compiler.Contracts
             _ts = ts;
         }
 
+
+        private IType FindType<T>()
+        {
+            return FindType(typeof(T));
+        }
+
+        private IType FindType(Type type)
+        {
+            var name = type.Name;
+            var @namespace = type.Namespace;
+            var assembly = type.Assembly.GetName().FullName;
+
+            return _ts.FindType($"{@namespace}.{name}", assembly);
+        }
+
         public ITypeSystem TypeSystem => _ts;
 
         public IType Int => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Int32)}", MSCORLIB);
@@ -39,7 +56,10 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType Object => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Object)}", MSCORLIB);
 
-        public IType Client => _ts.FindType($"{typeof(Client).Namespace}.{nameof(Client)}",
-            typeof(Client).Assembly.GetName().FullName);
+        public IType Client => FindType<Client>();
+
+        public IType MultiType => FindType<MultiType>();
+
+        public IType MultiTypeDataStorage => FindType<MultiTypeDataStorage>();
     }
 }

@@ -8,7 +8,7 @@ using ZenPlatform.ServerClientShared.Network;
 using System.IO;
 using System.Reflection;
 using Hyperion.Internal;
-using ZenPlatform.AsmInfrastructure;
+using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.ServerClientShared.Logging;
 
