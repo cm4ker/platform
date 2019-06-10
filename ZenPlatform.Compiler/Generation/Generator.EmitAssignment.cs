@@ -48,7 +48,7 @@ namespace ZenPlatform.Compiler.Generation
                 if (variable.CodeObject is ILocal vd)
                     il.StLoc(vd);
                 else if (variable.CodeObject is IField fd)
-                    il.LdsFld(fd);
+                    il.StFld(fd);
                 else if (variable.CodeObject is IParameter ppd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
