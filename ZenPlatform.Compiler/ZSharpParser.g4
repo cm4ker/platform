@@ -34,7 +34,7 @@ moduleBody: (functionDeclaration)* ;
 */
 typeDefinition: attributes? TYPE IDENTIFIER '{' typeBody '}';
 
-typeBody: (functionDeclaration | fieldDeclaration | propertyDeclaration)* ;
+typeBody: (functionDeclaration | fieldDeclaration | propertyDeclaration)*;
 /*
 ================END TYPE==================
 */
@@ -196,7 +196,14 @@ variableType:
     
 
 type:
-    structureType | primitiveType | arrayType;
+    structureType | primitiveType | arrayType | multitype;
+
+multitype : 
+    '<' typeList '>';
+
+typeList: 
+    type (',' type)*
+;
 
 structureType:
     IDENTIFIER;

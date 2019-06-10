@@ -15,7 +15,7 @@ namespace ZenPlatform.Compiler.Visitor
             _ts = ts;
         }
 
-        public override void VisitType(TypeNode obj)
+        public override void VisitSingleType(SingleTypeNode obj)
         {
             Console.Write($"We found type:{obj.Type.Name}, at {obj.Line}:{obj.Position} type: {obj.GetType()}");
             Console.WriteLine();

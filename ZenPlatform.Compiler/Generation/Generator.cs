@@ -52,7 +52,7 @@ namespace ZenPlatform.Compiler.Generation
                         EmitClass(c);
                         break;
                     default:
-                        throw new Exception("The type entity not supproted");
+                        throw new Exception("The type entity not supported");
                 }
             }
         }
@@ -230,7 +230,7 @@ namespace ZenPlatform.Compiler.Generation
                 EmitExpression(e, fe.Expression, symbolTable);
                 var expType = fe.Expression.Type.Type;
                 var expProp = expType.Properties.First(x => x.Name == fe.Name);
-                fe.Type = new TypeNode(null, expProp.PropertyType);
+                fe.Type = new SingleTypeNode(null, expProp.PropertyType);
                 e.PropGetValue(expProp);
             }
         }
@@ -381,7 +381,7 @@ namespace ZenPlatform.Compiler.Generation
         private void EmitRemoteCall(Function function)
         {
             IEmitter emitter = function.Builder;
-            var type = _bindings.ClientType();
+            var type = _bindings.Client;
             var client = emitter.DefineLocal(type);
             emitter.PropGetValue(_bindings.AIClient());
             emitter.StLoc(client);

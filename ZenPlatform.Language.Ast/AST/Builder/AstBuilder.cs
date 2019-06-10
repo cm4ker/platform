@@ -61,9 +61,19 @@ namespace ZenPlatform.Language.Ast.AST.Builder
         public FunctionBuilder WithFunction(string name, string type)
         {
             var f = new Function(null, new InstructionsBodyNode(new StatementCollection()),
-                new ParameterCollection(), name, new TypeNode(null, type), new AttributeCollection());
+                new ParameterCollection(), name, new SingleTypeNode(null, type), new AttributeCollection());
             _module.TypeBody.Functions.Add(f);
             return new FunctionBuilder(f);
+        }
+    }
+
+    public class TypeBuilder
+    {
+        private MultiTypeNode _mtn;
+
+        public TypeBuilder()
+        {
+            _mtn = new MultiTypeNode(null, new TypeCollection());
         }
     }
 
@@ -97,7 +107,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public ParameterBuilder WithParameter(string name, string type, PassMethod pm)
         {
-            var arg = new Parameter(null, name, new TypeNode(null, type), pm);
+            var arg = new Parameter(null, name, new SingleTypeNode(null, type), pm);
             return new ParameterBuilder(arg);
         }
 
@@ -115,7 +125,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public VariableBuilder WithVariable(string name, string type)
         {
-            var variable = new Variable(null, null, name, new TypeNode(null, type));
+            var variable = new Variable(null, null, name, new SingleTypeNode(null, type));
             _body.Statements.Add(variable);
             return new VariableBuilder(variable);
         }

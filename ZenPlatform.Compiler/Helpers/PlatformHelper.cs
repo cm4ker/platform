@@ -13,21 +13,16 @@ namespace ZenPlatform.Compiler.Helpers
 {
     public static class PlatformHelper
     {
-        public static IType ClientType(this SystemTypeBindings b)
-        {
-            return b.TypeSystem.FindType($"{typeof(Client).Namespace}.{nameof(Client)}",
-                typeof(Client).Assembly.GetName().FullName);
-        }
 
         public static IMethod ClientInvoke(this SystemTypeBindings b)
         {
-            return b.ClientType().Methods.FirstOrDefault(x => x.Name == nameof(Client.Invoke)) ??
+            return b.Client.Methods.FirstOrDefault(x => x.Name == nameof(Client.Invoke)) ??
                    throw new NotSupportedException();
         }
 
         public static IMethod ClientInvoke(this SystemTypeBindings b, params IType[] genParams)
         {
-            return b.ClientType().Methods.FirstOrDefault(x => x.Name == "Invoke")?.MakeGenericMethod(genParams) ??
+            return b.Client.Methods.FirstOrDefault(x => x.Name == "Invoke")?.MakeGenericMethod(genParams) ??
                    throw new NotSupportedException();
         }
 

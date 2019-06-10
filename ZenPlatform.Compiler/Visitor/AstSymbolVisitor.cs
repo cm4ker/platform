@@ -100,7 +100,7 @@ namespace ZenPlatform.Compiler.Visitor
             }
         }
 
-        public override void VisitType(TypeNode obj)
+        public override void VisitSingleType(SingleTypeNode obj)
         {
             if (obj.Type is UnknownArrayType)
             {
