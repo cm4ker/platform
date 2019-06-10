@@ -55,13 +55,6 @@ namespace ZenPlatform.Compiler.Contracts
         public static readonly IType Unknown = new UnknownType("{Unknown type}");
     }
 
-    public class UnknownMultiType : UnknownType
-    {
-        public UnknownMultiType() : base(nameof(MultiType))
-        {
-        }
-    }
-
     public class UnknownArrayType : UnknownType
     {
         public UnknownArrayType(string name, IType arrayElemType) : base(name)

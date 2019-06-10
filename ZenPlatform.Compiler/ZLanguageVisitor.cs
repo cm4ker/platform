@@ -108,7 +108,9 @@ namespace ZenPlatform.Compiler.AST
             base.VisitMultitype(context);
             var tc = new TypeCollection();
             _syntaxStack.PopUntil(marker, tc);
-            return null;
+            var result = new MultiTypeNode(context.start.ToLineInfo(), tc);
+            _syntaxStack.Push(result);
+            return result;
         }
 
         public override AstNode VisitPropertyDeclaration(ZSharpParser.PropertyDeclarationContext context)
