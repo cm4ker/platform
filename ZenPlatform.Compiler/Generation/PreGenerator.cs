@@ -18,7 +18,11 @@ namespace ZenPlatform.Compiler.Generation
 
         ILabel ReturnLabel { get; set; }
         ILocal Result { get; set; }
+
         AstNode AstNode { get; set; }
+
+        SymbolTable SymbolTable { get; set; }
+
         CompilationMode Mode { get; set; }
 
         bool IsClass { get; set; }
@@ -55,6 +59,8 @@ namespace ZenPlatform.Compiler.Generation
             _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
                 SreTA.Class | SreTA.Public | SreTA.Abstract |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
+
+            module.GetParent<IScoped>().SymbolTable.ConnectCodeObject(module, _context.Type);
         }
 
         public override void VisitFunction(Function function)
@@ -70,6 +76,16 @@ namespace ZenPlatform.Compiler.Generation
 
             var symTable = function.GetParent<IScoped>().SymbolTable;
             symTable.ConnectCodeObject(function, method);
+
+            Break();
+        }
+
+        public override void VisitParameter(Parameter obj)
+        {
+            var codeObj = _context.Method.WithParameter(obj.Name, obj.Type.Type, false, false);
+            _context.SymbolTable.ConnectCodeObject(obj, codeObj);
+
+            Break();
         }
 
         public override void VisitField(Field obj)
@@ -78,6 +94,8 @@ namespace ZenPlatform.Compiler.Generation
 
             var fld = _context.Type.DefineField(obj.Type.Type, obj.Name, false, false);
             obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, fld);
+
+            Break();
         }
 
         public override void VisitProperty(Property property)
@@ -106,6 +124,42 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             propBuilder.WithGetter(getMethod).WithSetter(setMethod);
+            Break();
+        }
+    }
+
+    public class AstGenerator : AstVisitorBase
+    {
+        private ISyntaxContext _context;
+        private SystemTypeBindings _bindings;
+
+        public AstGenerator(GeneratorParameters parameters)
+        {
+            _context.Assembly = parameters.Builder;
+            _context.Mode = parameters.Mode;
+        }
+
+        public override void VisitClass(Class obj)
+        {
+            var tb = (ITypeBuilder) (_context.SymbolTable.Find(obj).CodeObject);
+            _context.Type = tb;
+            _context.SymbolTable = obj.TypeBody.SymbolTable;
+        }
+
+        public override void VisitFunction(Function obj)
+        {
+            obj.InstructionsBody.Accept(this);
+
+            Break();
+        }
+
+        public override void VisitParameter(Parameter obj)
+        {
+            Break();
+        }
+
+        public override void VisitInstructionsBody(InstructionsBodyNode obj)
+        {
         }
     }
 }

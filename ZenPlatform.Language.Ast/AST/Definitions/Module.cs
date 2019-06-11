@@ -1,3 +1,4 @@
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Language.Ast.AST.Definitions
