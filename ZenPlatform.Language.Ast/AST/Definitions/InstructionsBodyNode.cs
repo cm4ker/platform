@@ -1,4 +1,3 @@
-using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
@@ -41,13 +40,14 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Описывает тело типа (методы, поля, события, конструкторы и т.д.)
     /// </summary>
-    public class TypeBody : AstNode
+    public class TypeBody : AstNode, IScoped
     {
         public FunctionCollection Functions;
         public FieldCollection Fields;
         public PropertyCollection Properties;
 
-        public SymbolTable SymbolTable = null;
+        public SymbolTable SymbolTable { get; set; }
+
 
         public TypeBody(MemberCollection members) : base(null)
         {
@@ -88,5 +88,10 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
                 visitor.Visit(field);
             }
         }
+    }
+
+    public interface IScoped : IAstNode
+    {
+        SymbolTable SymbolTable { get; set; }
     }
 }

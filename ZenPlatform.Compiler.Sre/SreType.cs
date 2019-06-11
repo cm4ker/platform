@@ -40,18 +40,18 @@ namespace ZenPlatform.Compiler.Sre
                                BindingFlags.NonPublic)
                 .Select(p => new SreProperty(System, p)).ToList();
 
-        public IReadOnlyList<IField> Fields =>
+        public virtual IReadOnlyList<IField> Fields =>
             _fields ??= Type.GetFields(
                     BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic)
                 .Select(f => new SreField(System, f)).ToList();
 
-        public IReadOnlyList<IMethod> Methods =>
+        public virtual IReadOnlyList<IMethod> Methods =>
             _methods ??= Type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
                                          BindingFlags.Static |
                                          BindingFlags.Instance)
                 .Select(m => new SreMethod(System, m)).ToList();
 
-        public IReadOnlyList<IConstructor> Constructors =>
+        public virtual IReadOnlyList<IConstructor> Constructors =>
             _constructors ??= Type.GetConstructors(
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
                 .Select(c => new SreConstructor(System, c)).ToList();
@@ -85,13 +85,13 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool IsAssignableFrom(IType type)
         {
-            return Type.IsAssignableFrom(((SreType)type).Type);
+            return Type.IsAssignableFrom(((SreType) type).Type);
         }
 
         public IType MakeGenericType(IReadOnlyList<IType> typeArguments)
         {
             return System.ResolveType(
-                Type.MakeGenericType(typeArguments.Select(t => ((SreType)t).Type).ToArray()));
+                Type.MakeGenericType(typeArguments.Select(t => ((SreType) t).Type).ToArray()));
         }
 
         public IType GenericTypeDefinition => Type.IsConstructedGenericType

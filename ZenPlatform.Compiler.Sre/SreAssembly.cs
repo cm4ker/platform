@@ -61,6 +61,8 @@ namespace ZenPlatform.Compiler.Sre
         public ModuleBuilder MainModule { get; }
         public ITypeSystem TypeSystem => _system;
 
+        private List<ITypeBuilder> _definedTypes = new List<ITypeBuilder>();
+
 
         public SreAssemblyBuilder(SreTypeSystem system, AssemblyBuilder asm)
         {
@@ -75,12 +77,13 @@ namespace ZenPlatform.Compiler.Sre
         public string Name => Assembly.GetName().Name;
 
         public IReadOnlyList<IType> Types { get; private set; }
+
+
         private Dictionary<string, SreType> _typeDic = new Dictionary<string, SreType>();
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes
-            => _customAttributes ??
-               (_customAttributes = Assembly.GetCustomAttributesData().Select(a => new SreCustomAttribute(
-                   _system, a, _system.ResolveType(a.AttributeType))).ToList());
+            => _customAttributes ??= Assembly.GetCustomAttributesData().Select(a => new SreCustomAttribute(
+                _system, a, _system.ResolveType(a.AttributeType))).ToList();
 
         public IType FindType(string fullName)
         {
@@ -94,6 +97,8 @@ namespace ZenPlatform.Compiler.Sre
             generator.GenerateAssembly(Assembly, fileName);
         }
 
+        public IReadOnlyList<IType> DefinedTypes => _definedTypes;
+
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
             var typeName = $"{@namespace}.{name}";
@@ -101,15 +106,9 @@ namespace ZenPlatform.Compiler.Sre
                 MainModule.DefineType(typeName, typeAttributes, _system.GetType(baseType)));
 
             _typeDic.Add(typeName, type);
+            _definedTypes.Add(type);
 
             return type;
-        }
-
-        public void Init()
-        {
-            var types = Assembly.GetExportedTypes().Select(t => _system.ResolveType(t)).ToList();
-            Types = types;
-            _typeDic = types.ToDictionary(t => t.Type.FullName);
         }
     }
 }

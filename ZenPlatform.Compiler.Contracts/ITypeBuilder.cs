@@ -9,6 +9,8 @@ namespace ZenPlatform.Compiler.Contracts
 
         void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, GenericParameterConstraint>> names);
 
+        IReadOnlyList<IMethodBuilder> DefinedMethods { get; }
+
         IField DefineField(IType type, string name, bool isPublic, bool isStatic);
 
         IMethodBuilder DefineMethod(string name,
@@ -27,6 +29,8 @@ namespace ZenPlatform.Compiler.Contracts
 
     public interface IAssemblyBuilder : IAssembly
     {
+        IReadOnlyList<IType> DefinedTypes { get; }
+
         ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType);
     }
 }

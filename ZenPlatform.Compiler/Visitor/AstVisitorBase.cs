@@ -13,9 +13,14 @@ using ZenPlatform.Shared;
 
 namespace ZenPlatform.Compiler.Visitor
 {
+    public class BreakException : Exception
+    {
+    }
+
     public abstract class AstVisitorBase : IVisitor
     {
         private Stack<AstNode> _visitStack;
+        private bool _break;
 
         protected Stack<AstNode> VisitStack => _visitStack;
 
@@ -46,10 +51,31 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (visitable is null) return;
 
-            BeforeVisitNode(visitable as AstNode);
-            Visit(visitable as AstNode);
-            visitable.Accept(this);
+            _break = false;
+
+            try
+            {
+                BeforeVisitNode(visitable as AstNode);
+                Visit(visitable as AstNode);
+            }
+            catch (BreakException e)
+            {
+                //ignored
+            }
+
+            if (!_break)
+                visitable.Accept(this);
             AfterVisitNode(visitable as AstNode);
+        }
+
+
+        /// <summary>
+        /// Прервать текущее хождение по текущей ветке дерева. Визитор продолжит идти по следующей
+        /// </summary>
+        protected void Break()
+        {
+            _break = true;
+            throw new BreakException();
         }
 
         public virtual void Visit(AstNode node)
@@ -63,7 +89,7 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<Parameter>(VisitParameter)
                 .CaseIs<Call>(VisitCall)
                 .CaseIs<CallStatement>(VisitCallStatement)
-                .CaseIs<Module>(VisitModuleStatement)
+                .CaseIs<Module>(VisitModule)
                 .CaseIs<Function>(VisitFunction)
                 .CaseIs<TypeBody>(VisitTypeBody)
                 .CaseIs<TypeNode>(VisitType)
@@ -180,7 +206,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
         }
 
-        public virtual void VisitModuleStatement(Module obj)
+        public virtual void VisitModule(Module obj)
         {
         }
 

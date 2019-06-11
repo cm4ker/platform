@@ -1,8 +1,7 @@
 using ZenPlatform.Compiler.Visitor;
-using ZenPlatform.Language.Ast.AST.Definitions.Statements;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 
-namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
+namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
 {
     public class Assignment : Statement
     {
@@ -19,8 +18,8 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
 
         public override void Accept(IVisitor visitor)
         {
-            visitor.Visit(Index);
             visitor.Visit(Value);
+            visitor.Visit(Index);
         }
     }
 
