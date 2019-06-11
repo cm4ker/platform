@@ -30,7 +30,8 @@ type HelloWorld
 
     public void PublicMethod()
     {
-        
+        <int, string> a = 1;
+        <int, string> b = a;
     }
     
     void PrivateMethod()

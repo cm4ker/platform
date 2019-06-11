@@ -210,7 +210,12 @@ namespace ZenPlatform.Compiler.Generation
                         name.Type = tn.Type;
 
                 if (variable.CodeObject is ILocal vd)
-                    e.LdLoc(vd);
+                {
+                    if (name.Type is MultiTypeNode)
+                        e.LdLocA(vd);
+                    else
+                        e.LdLoc(vd);
+                }
                 else if (variable.CodeObject is IField fd)
                     e.LdsFld(fd);
                 else if (variable.CodeObject is IParameter pd)
@@ -289,12 +294,12 @@ namespace ZenPlatform.Compiler.Generation
 
                     if (property.Setter == null && property.Getter == null)
                     {
-                        backField = tb.DefineField(property.Type.Type, $"{property.Name}_____backingField", false,
+                        backField = tb.DefineField(property.Type.Type, $"{property.Name}_backingField", false,
                             false);
                     }
 
-                    var getMethod = tb.DefineMethod($"get__{property.Name}", true, false, false);
-                    var setMethod = tb.DefineMethod($"set__{property.Name}", true, false, false);
+                    var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
+                    var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
 
                     setMethod.WithReturnType(_bindings.Void);
                     var valueArg = setMethod.WithParameter("value", property.Type.Type, false, false);

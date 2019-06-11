@@ -6,8 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.AsmClientInfrastructure\ZenPlatform.AsmClientInfrastructure.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Compiler.Infrastructure\ZenPlatform.Compiler.Infrastructure.csproj" />
+      <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />
+      <ProjectReference Include="..\ZenPlatform.Language.Infrastructure\ZenPlatform.Language.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

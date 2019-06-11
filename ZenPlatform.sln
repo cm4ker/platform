@@ -88,13 +88,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ServerRPC", "Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Runner", "ZenPlatform.Runner\ZenPlatform.Runner.csproj", "{5BA8A224-81EF-49B6-9B4A-D918CAB0B614}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.AsmClientInfrastructure", "ZenPlatform.AsmClientInfrastructure\ZenPlatform.AsmClientInfrastructure.csproj", "{CDB9FAD5-5752-4F3A-8391-A46C8F8A6532}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ClientRuntime", "ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj", "{CDB9FAD5-5752-4F3A-8391-A46C8F8A6532}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ServerClientShared", "ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj", "{F85C3AAA-8E92-4DF2-B17E-F64386A4983D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Language.Ast", "ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj", "{D653F822-166F-4B02-A603-5027DA84A9EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Compiler.Infrastructure", "ZenPlatform.Compiler.Infrastructure\ZenPlatform.Compiler.Infrastructure.csproj", "{8F7FABBF-99E0-42C0-8C30-1626E3BEFFF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Language.Infrastructure", "ZenPlatform.Language.Infrastructure\ZenPlatform.Language.Infrastructure.csproj", "{8F7FABBF-99E0-42C0-8C30-1626E3BEFFF3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runtime", "Runtime", "{4D6CFB8C-0BA5-4668-9100-BF7974AC4CCA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1489,6 +1491,7 @@ Global
 		{BA8D8CFB-0F4D-483B-BEB0-5B77F8DA9FD8} = {A81AD719-77EB-4159-9DE9-8E8C2C0229AA}
 		{D653F822-166F-4B02-A603-5027DA84A9EA} = {D720452A-AC33-4FB7-B641-159F44FC5D06}
 		{8F7FABBF-99E0-42C0-8C30-1626E3BEFFF3} = {D720452A-AC33-4FB7-B641-159F44FC5D06}
+		{CDB9FAD5-5752-4F3A-8391-A46C8F8A6532} = {4D6CFB8C-0BA5-4668-9100-BF7974AC4CCA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87366D66-1391-4D90-8999-95A620AD786A}

@@ -109,6 +109,11 @@ namespace ZenPlatform.Compiler.Contracts
             return null;
         }
 
+        public static IConstructor FindConstructor(this IType type, params IType[] args)
+        {
+            return FindConstructor(type, args.ToList());
+        }
+
         public static bool IsNullable(this IType type)
         {
             var def = type.GenericTypeDefinition;
@@ -134,6 +139,13 @@ namespace ZenPlatform.Compiler.Contracts
             return emitter;
         }
 
+        public static IEmitter EmitCall(this IEmitter emitter, IConstructor method,
+            bool swallowResult = false)
+        {
+            emitter.Emit(OpCodes.Call, method);
+            return emitter;
+        }
+
         public static IType MakeGenericType(this IType type, params IType[] typeArguments)
             => type.MakeGenericType(typeArguments);
 
@@ -153,6 +165,26 @@ namespace ZenPlatform.Compiler.Contracts
             if (t.BaseType != null)
                 foreach (var p in t.BaseType.GetAllProperties())
                     yield return p;
+        }
+
+        public static IProperty FindProperty(this IType t, string name)
+        {
+            return FindProperty(t, (x => x.Name == name));
+        }
+
+        public static IProperty FindProperty(this IType t, Func<IProperty, bool> criteria)
+        {
+            return t.Properties.FirstOrDefault(criteria);
+        }
+
+        public static IField FindField(this IType t, string name)
+        {
+            return FindField(t, (x => x.Name == name));
+        }
+
+        public static IField FindField(this IType t, Func<IField, bool> criteria)
+        {
+            return t.Fields.FirstOrDefault(criteria);
         }
 
         public static IEnumerable<IField> GetAllFields(this IType t)

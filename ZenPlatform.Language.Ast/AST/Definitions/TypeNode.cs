@@ -73,6 +73,11 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
         public IReadOnlyCollection<SingleTypeNode> TypeList => _sTypes ??= UnwrapSingleTypeNodes().ToList();
 
+        /// <summary>
+        /// Задекларированное имя свойства, где лежит описание
+        /// </summary>
+        public string DeclName { get; set; }
+
         public override IType Type => throw new NotImplementedException();
 
         public override void Accept(IVisitor visitor)

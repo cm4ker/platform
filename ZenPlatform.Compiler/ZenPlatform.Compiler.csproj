@@ -24,7 +24,7 @@
         <Content Include=".\ZSharpPreprocessorParser.g4" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\ZenPlatform.AsmClientInfrastructure\ZenPlatform.AsmClientInfrastructure.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler.Sre\ZenPlatform.Compiler.Sre.csproj" />
