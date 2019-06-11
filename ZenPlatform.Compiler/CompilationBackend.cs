@@ -66,6 +66,11 @@ namespace ZenPlatform.Compiler
             AstSymbolVisitor sv = new AstSymbolVisitor();
             module.Accept(sv);
 
+            AstCreateMultitype cm = new AstCreateMultitype(ab);
+            module.Accept(cm);
+            cm.Bake();
+
+
             Generator g = new Generator(new GeneratorParameters(module, ab, CompilationMode.Client));
             //
 

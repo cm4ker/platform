@@ -66,7 +66,7 @@ namespace ZenPlatform.Compiler.Sre
         {
             _system = system;
             Assembly = asm;
-            Assembly.GetName().Version = new Version(1,0 );
+            Assembly.GetName().Version = new Version(1, 0);
             MainModule = Assembly.DefineDynamicModule("SomeModule");
         }
 
@@ -96,8 +96,13 @@ namespace ZenPlatform.Compiler.Sre
 
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
-            return new SreTypeBuilder(_system,
-                MainModule.DefineType($"{@namespace}.{name}", typeAttributes, _system.GetType(baseType)));
+            var typeName = $"{@namespace}.{name}";
+            var type = new SreTypeBuilder(_system,
+                MainModule.DefineType(typeName, typeAttributes, _system.GetType(baseType)));
+
+            _typeDic.Add(typeName, type);
+
+            return type;
         }
 
         public void Init()
