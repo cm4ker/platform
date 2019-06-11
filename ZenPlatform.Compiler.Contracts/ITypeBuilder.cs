@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.Contracts
 
     public interface IAssemblyBuilder : IAssembly
     {
-        IReadOnlyList<IType> DefinedTypes { get; }
+        IReadOnlyList<ITypeBuilder> DefinedTypes { get; }
 
         ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType);
     }

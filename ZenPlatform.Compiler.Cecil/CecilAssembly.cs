@@ -55,6 +55,8 @@ namespace ZenPlatform.Compiler.Cecil
             Assembly.Write(fileName);
         }
 
+        public IReadOnlyList<ITypeBuilder> DefinedTypes => null;
+
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
             var bType = Assembly.MainModule.ImportReference(_typeSystem.GetTypeReference(baseType));

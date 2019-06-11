@@ -1,3 +1,4 @@
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Language.Ast.AST.Definitions
@@ -5,12 +6,12 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Тип сущности
     /// </summary>
-    public abstract class TypeEntity : AstNode
+    public abstract class TypeEntity : AstNode, IAstSymbol
     {
         /// <summary>
         /// Имя типа
         /// </summary>
-        public string Name;
+        public string Name { get; set; }
 
         /// <summary>
         /// Тело типа
@@ -25,5 +26,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         {
             throw new System.NotImplementedException();
         }
+
+        public SymbolType SymbolType => SymbolType.Type;
     }
 }

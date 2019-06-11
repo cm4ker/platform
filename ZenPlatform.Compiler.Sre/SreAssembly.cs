@@ -97,7 +97,7 @@ namespace ZenPlatform.Compiler.Sre
             generator.GenerateAssembly(Assembly, fileName);
         }
 
-        public IReadOnlyList<IType> DefinedTypes => _definedTypes;
+        public IReadOnlyList<ITypeBuilder> DefinedTypes => _definedTypes;
 
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
