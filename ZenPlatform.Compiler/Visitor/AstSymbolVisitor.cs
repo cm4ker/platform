@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
@@ -56,10 +57,24 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override void VisitTypeBody(TypeBody obj)
         {
+            var st = obj.GetParent<IScoped>().SymbolTable;
+
             if (obj.SymbolTable == null)
-                obj.SymbolTable = new SymbolTable();
+                obj.SymbolTable = new SymbolTable(st);
 
             obj.SymbolTable.Clear();
+        }
+
+        public override void VisitModule(Module obj)
+        {
+            var st = obj.GetParent<IScoped>().SymbolTable;
+            st.Add(obj);
+        }
+
+        public override void VisitClass(Class obj)
+        {
+            var st = obj.GetParent<IScoped>().SymbolTable;
+            st.Add(obj);
         }
 
         public override void VisitFunction(Function obj)
@@ -118,6 +133,14 @@ namespace ZenPlatform.Compiler.Visitor
                     obj.TryBlock.SymbolTable = new SymbolTable(parent.SymbolTable);
                 if (obj.CatchBlock != null)
                     obj.CatchBlock.SymbolTable = new SymbolTable(parent.SymbolTable);
+            }
+        }
+
+        public override void VisitRoot(Root root)
+        {
+            if (root.SymbolTable == null)
+            {
+                root.SymbolTable = new SymbolTable();
             }
         }
     }

@@ -61,6 +61,11 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return Find(symbol.Name, symbol.SymbolType);
         }
 
+        public T FindCodeObject<T>(IAstSymbol symbol)
+        {
+            return (T) Find(symbol)?.CodeObject;
+        }
+
         public Symbol Find(string name, SymbolType type)
         {
             string prefix = PrefixFromType(type);

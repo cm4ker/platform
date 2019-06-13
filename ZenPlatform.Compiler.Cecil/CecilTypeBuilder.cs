@@ -131,5 +131,7 @@ namespace ZenPlatform.Compiler.Cecil
             SelfReference = Definition.MakeGenericInstanceType(Definition.GenericParameters.Cast<TypeReference>()
                 .ToArray());
         }
+
+        public IReadOnlyList<IMethodBuilder> DefinedMethods => Methods.Cast<IMethodBuilder>().ToList();
     }
 }

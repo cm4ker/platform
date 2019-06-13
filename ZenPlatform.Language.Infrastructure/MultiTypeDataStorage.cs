@@ -50,7 +50,7 @@ namespace ZenPlatform.Compiler.Infrastructure
      *     | default => {statements block} // Мы не поняли что в выражении
      *     
      */
-    
+
     /// <summary>
     /// Структура для мультитипового хранения данных
     /// </summary>
@@ -65,6 +65,10 @@ namespace ZenPlatform.Compiler.Infrastructure
                 _value = value;
             else
                 throw new Exception("Can't assign this value to this type");
+        }
+
+        public MultiTypeDataStorage(MultiType multiType) : this(multiType, null)
+        {
         }
 
         private object _value;

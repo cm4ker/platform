@@ -28,6 +28,11 @@ namespace ZenPlatform.Compiler.Contracts
             return emitter;
         }
 
+        public static IEmitter LdArg(this IEmitter emitter, IParameter parameter)
+        {
+            return LdArg(emitter, parameter.ArgIndex);
+        }
+
         public static IEmitter LdArg_0(this IEmitter emitter)
             => emitter.Emit(OpCodes.Ldarg_0);
 
@@ -44,7 +49,7 @@ namespace ZenPlatform.Compiler.Contracts
             => emitter.Emit(OpCodes.Ldsflda, field);
 
         public static IEmitter LdArgA(this IEmitter emitter, IParameter parameter)
-            => emitter.Emit(OpCodes.Ldarga, parameter.Sequence - 1);
+            => emitter.Emit(OpCodes.Ldarga, parameter.ArgIndex);
 
         public static IEmitter LdThisFld(this IEmitter emitter, IField field)
             => emitter.LdArg_0().Emit(OpCodes.Ldfld, field);
@@ -67,10 +72,10 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter Leave(this IEmitter emitter, ILabel label) =>
             emitter.Emit(OpCodes.Leave_S, label);
 
-        public static IEmitter Ldnull(this IEmitter emitter) => emitter.Emit(OpCodes.Ldnull);
+        public static IEmitter LdNull(this IEmitter emitter) => emitter.Emit(OpCodes.Ldnull);
 
         public static IEmitter Ldstr(this IEmitter emitter, string arg)
-            => arg == null ? emitter.Ldnull() : emitter.Emit(OpCodes.Ldstr, arg);
+            => arg == null ? emitter.LdNull() : emitter.Emit(OpCodes.Ldstr, arg);
 
         public static IEmitter Throw(this IEmitter emitter)
             => emitter.Emit(OpCodes.Throw);
