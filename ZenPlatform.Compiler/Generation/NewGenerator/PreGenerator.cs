@@ -1,66 +1,52 @@
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Visitor;
-using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using SreTA = System.Reflection.TypeAttributes;
 
-namespace ZenPlatform.Compiler.Generation
+namespace ZenPlatform.Compiler.Generation.NewGenerator
 {
-    public interface ISyntaxContext
-    {
-        IAssemblyBuilder Assembly { get; set; }
-        ITypeBuilder Type { get; set; }
-        IMethodBuilder Method { get; set; }
-        IConstructorBuilder Constructor { get; set; }
-        IEmitter Emitter { get; set; }
-
-        ILabel ReturnLabel { get; set; }
-        ILocal Result { get; set; }
-
-        AstNode AstNode { get; set; }
-
-        SymbolTable SymbolTable { get; set; }
-
-        CompilationMode Mode { get; set; }
-
-        bool IsClass { get; set; }
-
-        ISyntaxContext Copy(ISyntaxContext context);
-    }
-
-    public interface ITransform
-    {
-        void Transform(ISyntaxContext context);
-    }
-
+    /// <summary>
+    /// Создание структуры типов
+    /// </summary>
     public class PreGenerator : AstVisitorBase
     {
-        private ISyntaxContext _context;
+        private IAstNodeContext _context;
         private SystemTypeBindings _bindings;
 
         private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
 
         public PreGenerator(GeneratorParameters parameters)
         {
+            _context = new AstNodeContext();
             _context.Assembly = parameters.Builder;
             _context.Mode = parameters.Mode;
+            _bindings = new SystemTypeBindings(_context.Assembly.TypeSystem);
         }
 
         public override void VisitCompilationUnit(CompilationUnit cu)
         {
             _context.AstNode = cu;
-            base.VisitCompilationUnit(cu);
+        }
+
+        public override void VisitClass(Class obj)
+        {
+            _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, obj.Name,
+                SreTA.Class | SreTA.Public | SreTA.Abstract |
+                SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
+
+            obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, _context.Type);
+            _context.IsClass = true;
         }
 
         public override void VisitModule(Module module)
         {
             _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
-                SreTA.Class | SreTA.Public | SreTA.Abstract |
+                SreTA.Class | SreTA.NotPublic |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
 
             module.GetParent<IScoped>().SymbolTable.ConnectCodeObject(module, _context.Type);
+            _context.IsClass = false;
         }
 
         public override void VisitFunction(Function function)
@@ -76,6 +62,8 @@ namespace ZenPlatform.Compiler.Generation
 
             var symTable = function.GetParent<IScoped>().SymbolTable;
             symTable.ConnectCodeObject(function, method);
+
+            function.Builder = method.Generator;
 
             Break();
         }
@@ -125,41 +113,6 @@ namespace ZenPlatform.Compiler.Generation
 
             propBuilder.WithGetter(getMethod).WithSetter(setMethod);
             Break();
-        }
-    }
-
-    public class AstGenerator : AstVisitorBase
-    {
-        private ISyntaxContext _context;
-        private SystemTypeBindings _bindings;
-
-        public AstGenerator(GeneratorParameters parameters)
-        {
-            _context.Assembly = parameters.Builder;
-            _context.Mode = parameters.Mode;
-        }
-
-        public override void VisitClass(Class obj)
-        {
-            var tb = (ITypeBuilder) (_context.SymbolTable.Find(obj).CodeObject);
-            _context.Type = tb;
-            _context.SymbolTable = obj.TypeBody.SymbolTable;
-        }
-
-        public override void VisitFunction(Function obj)
-        {
-            obj.InstructionsBody.Accept(this);
-
-            Break();
-        }
-
-        public override void VisitParameter(Parameter obj)
-        {
-            Break();
-        }
-
-        public override void VisitInstructionsBody(InstructionsBodyNode obj)
-        {
         }
     }
 }

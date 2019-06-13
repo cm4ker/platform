@@ -1,3 +1,5 @@
+using System;
+using Hyperion.Internal;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.AST.Definitions.Statements;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
@@ -17,14 +19,14 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         /// <summary>
         /// Function arguments to pass.
         /// </summary>
-        public ArgumentCollection Arguments;
+        public ArgumentCollection Arguments { get; }
 
         /// <summary>
         /// Creates a function call object.
         /// </summary>
         public CallStatement(ILineInfo li, ArgumentCollection arguments, string name) : base(li)
         {
-            Arguments = arguments;
+            Arguments = arguments ?? throw new ArgumentNullException(nameof(Arguments));
             Name = name;
         }
 

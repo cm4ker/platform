@@ -66,5 +66,10 @@ namespace ZenPlatform.Compiler.Cecil
 
             return new CecilTypeBuilder(_typeSystem, this, typeDefinition);
         }
+
+        public IAssembly EndBuild()
+        {
+            return this;
+        }
     }
 }

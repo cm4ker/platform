@@ -78,10 +78,11 @@ namespace ZenPlatform.Compiler.Visitor
             throw new BreakException();
         }
 
-        public virtual void Visit(AstNode node)
+        private void Visit(AstNode node)
         {
             ItemSwitch<AstNode>
                 .Switch(node)
+                .CaseIs<Root>(VisitRoot)
                 .CaseIs<CompilationUnit>(VisitCompilationUnit)
                 .CaseIs<Name>(VisitName)
                 .CaseIs<For>(VisitFor)
@@ -115,6 +116,10 @@ namespace ZenPlatform.Compiler.Visitor
                 .BreakIfExecuted()
                 .CaseIs<Expression>(VisitExpression)
                 .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null);
+        }
+
+        public virtual void VisitRoot(Root obj)
+        {
         }
 
         public virtual void VisitMultiType(MultiTypeNode obj)

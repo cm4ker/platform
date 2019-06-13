@@ -78,21 +78,17 @@ namespace ZenPlatform.Compiler.Generation
                 // Eval condition
                 EmitExpression(e, ifStatement.Condition, context.SymbolTable);
 
+                var exit = e.DefineLabel();
                 if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody == null)
                 {
-                    ifStatement.IfInstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
-                    var exit = e.DefineLabel();
                     e.BrFalse(exit);
                     EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, returnVariable);
-                    e.MarkLabel(exit);
                 }
                 else if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody != null)
                 {
                     ifStatement.IfInstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
                     ifStatement.ElseInstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
 
-
-                    ILabel exit = e.DefineLabel();
                     ILabel elseLabel = e.DefineLabel();
 
                     e.BrFalse(elseLabel);
@@ -100,8 +96,9 @@ namespace ZenPlatform.Compiler.Generation
                     e.Br(exit);
                     e.MarkLabel(elseLabel);
                     EmitBody(e, ifStatement.ElseInstructionsBody, returnLabel, returnVariable);
-                    e.MarkLabel(exit);
                 }
+
+                e.MarkLabel(exit);
             }
 
             else if (statement is While)
@@ -222,6 +219,5 @@ namespace ZenPlatform.Compiler.Generation
                 e.EndExceptionBlock();
             }
         }
-
     }
 }

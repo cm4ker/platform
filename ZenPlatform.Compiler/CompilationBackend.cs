@@ -6,6 +6,7 @@ using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
@@ -61,18 +62,22 @@ namespace ZenPlatform.Compiler
 
             ZLanguageVisitor v = new ZLanguageVisitor(ap.TypeSystem);
             var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
+
+            var glob = new Root();
+            glob.CompilationUnits.Add(module);
+
             //Gen
             //Перед генерацией необходимо подготовить дерево символов
             AstSymbolVisitor sv = new AstSymbolVisitor();
-            module.Accept(sv);
+            sv.Visit(glob);
 
             AstCreateMultitype cm = new AstCreateMultitype(ab);
-            module.Accept(cm);
+            glob.Accept(cm);
             cm.Bake();
 
+            var prm = new GeneratorParameters(module, ab, CompilationMode.Client);
 
-            Generator g = new Generator(new GeneratorParameters(module, ab, CompilationMode.Client));
-            //
+            Generator g = new Generator(prm);
 
             return ab;
         }

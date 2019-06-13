@@ -32,6 +32,7 @@ type HelloWorld
     {
         <int, string> a = 1;
         <int, string> b = a;
+        a = 1;
     }
     
     void PrivateMethod()
@@ -39,7 +40,7 @@ type HelloWorld
 
     }
 
-    public int Property {get { return 1; } set {_someField = value;}}
+   // public int Property {get { return 1; } set {_someField = value;}}
 }
 
 module Test
@@ -54,7 +55,7 @@ module Test
         return 0.0;
     }
 
-    [ClientCall]
+   // [ClientCall]
     public int Add(int a, int b)
     {
         int c = 1;
