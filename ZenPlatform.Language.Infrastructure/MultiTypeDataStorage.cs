@@ -58,7 +58,7 @@ namespace ZenPlatform.Compiler.Infrastructure
     {
         private readonly MultiType _multiType;
 
-        public MultiTypeDataStorage(MultiType multiType, object value)
+        public MultiTypeDataStorage(object value, MultiType multiType)
         {
             _multiType = multiType;
             if (_multiType.Check(value.GetType()))
@@ -67,7 +67,7 @@ namespace ZenPlatform.Compiler.Infrastructure
                 throw new Exception("Can't assign this value to this type");
         }
 
-        public MultiTypeDataStorage(MultiType multiType) : this(multiType, null)
+        public MultiTypeDataStorage(MultiType multiType) : this(null, multiType)
         {
         }
 

@@ -142,7 +142,7 @@ namespace ZenPlatform.Compiler.Sre
         {
         }
 
-        public SymbolTable SymbolTable { get; }
+        public ISymbolTable SymbolTable { get; }
 
         public IEmitter Emit(OpCode code, IType type)
         {

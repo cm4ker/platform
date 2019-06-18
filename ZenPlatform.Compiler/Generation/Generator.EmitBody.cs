@@ -15,14 +15,14 @@ namespace ZenPlatform.Compiler.Generation
     public partial class Generator
     {
         private void EmitBody(IEmitter e, InstructionsBodyNode body, ILabel returnLabel,
-            ILocal returnVariable, bool inTry = false)
+            ref ILocal returnVariable, bool inTry = false)
         {
             foreach (Statement statement in body.Statements)
             {
                 //
                 // Declare local variables.
                 //
-                EmitStatement(e, statement, body, returnLabel, returnVariable, inTry);
+                EmitStatement(e, statement, body, returnLabel, ref returnVariable, inTry);
 
                 var isLastStatement = body.Statements.Last() == statement;
             }
@@ -30,7 +30,7 @@ namespace ZenPlatform.Compiler.Generation
 
 
         private void EmitStatement(IEmitter e, Statement statement, InstructionsBodyNode context,
-            ILabel returnLabel, ILocal returnVariable, bool inTry = false)
+            ILabel returnLabel, ref ILocal returnVariable, bool inTry = false)
         {
             if (statement is Variable variable)
             {
@@ -40,10 +40,19 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitAssignment(e, statement as Assignment, context.SymbolTable);
             }
-            else if (statement is Return)
+            else if (statement is Return ret)
             {
-                if (((Return) statement).Value != null)
-                    EmitExpression(e, ((Return) statement).Value, context.SymbolTable);
+                if (ret.Value != null)
+                {
+                    EmitExpression(e, ret.Value, context.SymbolTable);
+                }
+
+                if (ret.GetParent<Function>().Type is MultiTypeNode mtn)
+                {
+                    var exp = e.DefineLocal(ret.Value.Type.Type);
+                    e.StLoc(exp);
+                    WrapMultitypeStackValue(e, mtn, returnVariable, exp);
+                }
 
                 if (inTry)
                 {
@@ -59,7 +68,7 @@ namespace ZenPlatform.Compiler.Generation
             else if (statement is CallStatement)
             {
                 CallStatement call = statement as CallStatement;
-                Symbol symbol = context.SymbolTable.Find(call.Name, SymbolType.Function);
+                ISymbol symbol = context.SymbolTable.Find(call.Name, SymbolType.Function);
                 EmitCallStatement(e, statement as CallStatement, context.SymbolTable);
 
                 if (symbol != null)
@@ -82,7 +91,7 @@ namespace ZenPlatform.Compiler.Generation
                 if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody == null)
                 {
                     e.BrFalse(exit);
-                    EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, returnVariable);
+                    EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, ref returnVariable);
                 }
                 else if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody != null)
                 {
@@ -92,10 +101,10 @@ namespace ZenPlatform.Compiler.Generation
                     ILabel elseLabel = e.DefineLabel();
 
                     e.BrFalse(elseLabel);
-                    EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, returnVariable);
+                    EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, ref returnVariable);
                     e.Br(exit);
                     e.MarkLabel(elseLabel);
-                    EmitBody(e, ifStatement.ElseInstructionsBody, returnLabel, returnVariable);
+                    EmitBody(e, ifStatement.ElseInstructionsBody, returnLabel, ref returnVariable);
                 }
 
                 e.MarkLabel(exit);
@@ -116,7 +125,7 @@ namespace ZenPlatform.Compiler.Generation
                 // Eval condition
                 EmitExpression(e, whileStatement.Condition, context.SymbolTable);
                 e.BrFalse(exit);
-                EmitBody(e, whileStatement.InstructionsBody, returnLabel, returnVariable);
+                EmitBody(e, whileStatement.InstructionsBody, returnLabel, ref returnVariable);
 
                 e.Br(begin)
                     .MarkLabel(exit);
@@ -132,7 +141,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 ILabel loop = e.DefineLabel();
                 e.MarkLabel(loop);
-                EmitBody(e, doStatement.InstructionsBody, returnLabel, returnVariable);
+                EmitBody(e, doStatement.InstructionsBody, returnLabel, ref returnVariable);
                 EmitExpression(e, doStatement.Condition, context.SymbolTable);
                 e.BrTrue(loop);
             }
@@ -149,15 +158,15 @@ namespace ZenPlatform.Compiler.Generation
                 ILabel exit = e.DefineLabel();
 
                 // Emit initializer
-                EmitStatement(e, forStatement.Initializer, context, returnLabel, returnVariable);
+                EmitStatement(e, forStatement.Initializer, context, returnLabel, ref returnVariable);
                 e.MarkLabel(loop);
                 // Emit condition
                 EmitExpression(e, forStatement.Condition, context.SymbolTable);
                 e.BrFalse(exit);
                 // Emit body
-                EmitBody(e, forStatement.InstructionsBody, returnLabel, returnVariable);
+                EmitBody(e, forStatement.InstructionsBody, returnLabel, ref returnVariable);
                 // Emit counter
-                EmitStatement(e, forStatement.Counter, context, returnLabel, returnVariable);
+                EmitStatement(e, forStatement.Counter, context, returnLabel, ref returnVariable);
                 //EmitAssignment(il, forStatement.Counter, context.SymbolTable);
                 e.Br(loop);
                 e.MarkLabel(exit);
@@ -212,10 +221,10 @@ namespace ZenPlatform.Compiler.Generation
             {
                 var exLocal = e.DefineLocal(_ts.FindType("System.Exception"));
                 e.BeginExceptionBlock();
-                EmitBody(e, ts.TryBlock, returnLabel, returnVariable, true);
+                EmitBody(e, ts.TryBlock, returnLabel, ref returnVariable, true);
                 e.BeginCatchBlock(_ts.FindType("System.Exception"));
                 e.StLoc(exLocal);
-                EmitBody(e, ts.CatchBlock, returnLabel, returnVariable, true);
+                EmitBody(e, ts.CatchBlock, returnLabel, ref returnVariable, true);
                 e.EndExceptionBlock();
             }
         }

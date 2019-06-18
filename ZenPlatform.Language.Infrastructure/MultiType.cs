@@ -14,7 +14,12 @@ namespace ZenPlatform.Compiler.Infrastructure
             Types = types;
         }
 
-        private readonly IEnumerable<Type> Types;
+        public MultiType(Type[] types)
+        {
+            Types = types;
+        }
+
+        public readonly IEnumerable<Type> Types;
 
         public bool Check(Type type)
         {

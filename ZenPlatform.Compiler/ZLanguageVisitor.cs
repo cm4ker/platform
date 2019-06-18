@@ -6,6 +6,7 @@ using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Language.Ast.AST;
@@ -109,6 +110,7 @@ namespace ZenPlatform.Compiler.AST
             var tc = new TypeCollection();
             _syntaxStack.PopUntil(marker, tc);
             var result = new MultiTypeNode(context.start.ToLineInfo(), tc);
+            result.SetType(_sb.MultiTypeDataStorage);
             _syntaxStack.Push(result);
             return result;
         }

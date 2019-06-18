@@ -1,4 +1,4 @@
-using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.AST.Definitions.Functions

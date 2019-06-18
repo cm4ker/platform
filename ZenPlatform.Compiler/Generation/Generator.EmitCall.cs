@@ -14,7 +14,7 @@ namespace ZenPlatform.Compiler.Generation
     {
         private void EmitCall(IEmitter e, Call call, SymbolTable symbolTable)
         {
-            Symbol symbol = symbolTable.Find(call.Name, SymbolType.Function);
+            var symbol = symbolTable.Find(call.Name, SymbolType.Function);
 
             if (symbol != null)
             {
@@ -58,7 +58,7 @@ namespace ZenPlatform.Compiler.Generation
                             // Regular value
                             if (argument.Value is Name)
                             {
-                                Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
+                                var variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
                                 if (variable.CodeObject is ILocal vd)
                                 {
                                     e.LdLocA(vd);
@@ -74,28 +74,32 @@ namespace ZenPlatform.Compiler.Generation
                             }
                             else if (argument.Value is IndexerExpression ue)
                             {
-                                Symbol variable = symbolTable.Find(((Name) ue.Value).Value, SymbolType.Variable);
-                                if (variable.CodeObject is ILocal codeObject)
+                                if (ue.Value is Name uen)
                                 {
-                                    if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
-                                        Error("ref cannot be applied to arrays");
-                                    e.LdLocA(codeObject);
-                                }
-                                else if (variable.CodeObject is IField definition)
-                                {
-                                    if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
-                                        Error("ref cannot be applied to arrays");
-                                    e.LdsFldA(definition);
-                                }
-                                else if (variable.CodeObject is IParameter pd)
-                                {
-                                    if (((Parameter) variable.SyntaxObject).Type.Type.IsArray)
-                                        Error("ref cannot be applied to arrays");
-                                    e.LdArgA(pd);
-                                }
+                                    var variable = symbolTable.Find(uen.Value, SymbolType.Variable);
+                                    
+                                    if (variable.CodeObject is ILocal codeObject)
+                                    {
+                                        if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
+                                            Error("ref cannot be applied to arrays");
+                                        e.LdLocA(codeObject);
+                                    }
+                                    else if (variable.CodeObject is IField definition)
+                                    {
+                                        if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
+                                            Error("ref cannot be applied to arrays");
+                                        e.LdsFldA(definition);
+                                    }
+                                    else if (variable.CodeObject is IParameter pd)
+                                    {
+                                        if (((Parameter) variable.SyntaxObject).Type.Type.IsArray)
+                                            Error("ref cannot be applied to arrays");
+                                        e.LdArgA(pd);
+                                    }
 
-                                EmitExpression(e, ue.Indexer, symbolTable);
-                                e.LdElemA();
+                                    EmitExpression(e, ue.Indexer, symbolTable);
+                                    e.LdElemA();
+                                }
                             }
                             else
                             {

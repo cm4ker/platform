@@ -10,6 +10,7 @@ using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
@@ -200,7 +201,7 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Name name)
             {
-                Symbol variable = symbolTable.Find(name.Value, SymbolType.Variable);
+                var variable = symbolTable.Find(name.Value, SymbolType.Variable);
 
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
@@ -212,7 +213,10 @@ namespace ZenPlatform.Compiler.Generation
                 if (variable.CodeObject is ILocal vd)
                 {
                     if (name.Type is MultiTypeNode)
+                    {
                         e.LdLocA(vd);
+                        e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Getter);
+                    }
                     else
                         e.LdLoc(vd);
                 }
@@ -221,7 +225,15 @@ namespace ZenPlatform.Compiler.Generation
                 else if (variable.CodeObject is IParameter pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
-                    e.LdArg(pd.ArgIndex);
+
+                    if (name.Type is MultiTypeNode)
+                    {
+                        e.LdArgA(pd);
+                        e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Getter);
+                    }
+                    else
+                        e.LdArg(pd.ArgIndex);
+
                     if (p.PassMethod == PassMethod.ByReference)
                         e.LdIndI4();
                 }
@@ -316,7 +328,7 @@ namespace ZenPlatform.Compiler.Generation
                         resultVar = emitter.DefineLocal(property.Type.Type);
 
                         var returnLabel = emitter.DefineLabel();
-                        EmitBody(emitter, property.Getter, returnLabel, resultVar);
+                        EmitBody(emitter, property.Getter, returnLabel, ref resultVar);
 
                         emitter.MarkLabel(returnLabel);
 
@@ -343,7 +355,7 @@ namespace ZenPlatform.Compiler.Generation
                         valueSym.CodeObject = valueArg;
 
                         var returnLabel = emitter.DefineLabel();
-                        EmitBody(emitter, property.Setter, returnLabel, resultVar);
+                        EmitBody(emitter, property.Setter, returnLabel, ref resultVar);
 
                         emitter.MarkLabel(returnLabel);
                         emitter.Ret();
@@ -401,7 +413,7 @@ namespace ZenPlatform.Compiler.Generation
 
             //First parameter
             emitter.LdStr($"{function.GetParent<TypeEntity>().Name}.{function.Name}");
-            emitter.Newobj(route.Constructors.First());
+            emitter.NewObj(route.Constructors.First());
 
             //Second parameter
             emitter.LdcI4(function.Parameters.Count);
@@ -441,8 +453,9 @@ namespace ZenPlatform.Compiler.Generation
             if (!function.Type.Type.Equals(_bindings.Void))
                 resultVar = emitter.DefineLocal(function.Type.Type);
             var returnLabel = emitter.DefineLabel();
-            EmitBody(emitter, function.InstructionsBody, returnLabel, resultVar);
+            EmitBody(emitter, function.InstructionsBody, returnLabel, ref resultVar);
             emitter.MarkLabel(returnLabel);
+
             if (resultVar != null)
                 emitter.LdLoc(resultVar);
 
@@ -453,7 +466,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (expression.Value is Name name)
             {
-                Symbol variable = symbolTable.Find(name.Value, SymbolType.Variable);
+                var variable = symbolTable.Find(name.Value, SymbolType.Variable);
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
 
@@ -468,6 +481,7 @@ namespace ZenPlatform.Compiler.Generation
             {
                 valueType = valueType.ArrayElementType;
             }
+
 
             var convertType = expression.Type.Type;
             if (valueType is null || (valueType.IsValueType && convertType.IsValueType))

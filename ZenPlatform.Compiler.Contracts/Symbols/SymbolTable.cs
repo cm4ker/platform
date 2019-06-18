@@ -4,26 +4,38 @@ using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Contracts.Symbols
 {
-    public class SymbolTable
+    public interface ISymbolTable
     {
-        private SymbolTable _parent;
+        ISymbol Add(IAstSymbol astSymbol);
+        ISymbol Add(string name, SymbolType type, IAstSymbol syntaxObject, object codeObject);
+        ISymbol ConnectCodeObject(IAstSymbol v, object codeObject);
+        bool Contains(string name, SymbolType type);
+        ISymbol Find(IAstSymbol symbol);
+        T FindCodeObject<T>(IAstSymbol symbol);
+        ISymbol Find(string name, SymbolType type);
+        void Clear();
+    }
+
+    public class SymbolTable : ISymbolTable
+    {
+        private ISymbolTable _parent;
         private Hashtable _hashtable = new Hashtable();
 
         public SymbolTable()
         {
         }
 
-        public SymbolTable(SymbolTable parent)
+        public SymbolTable(ISymbolTable parent)
         {
             _parent = parent;
         }
 
-        public Symbol Add(IAstSymbol astSymbol)
+        public ISymbol Add(IAstSymbol astSymbol)
         {
             return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol, null);
         }
 
-        public Symbol Add(string name, SymbolType type, IAstSymbol syntaxObject, object codeObject)
+        public ISymbol Add(string name, SymbolType type, IAstSymbol syntaxObject, object codeObject)
         {
             string prefix = PrefixFromType(type);
 
@@ -36,7 +48,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return symbol;
         }
 
-        public Symbol ConnectCodeObject(IAstSymbol v, object codeObject)
+        public ISymbol ConnectCodeObject(IAstSymbol v, object codeObject)
         {
             var result = Find(v.Name, v.SymbolType);
             if (result == null)
@@ -56,7 +68,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return Find(name, type) != null;
         }
 
-        public Symbol Find(IAstSymbol symbol)
+        public ISymbol Find(IAstSymbol symbol)
         {
             return Find(symbol.Name, symbol.SymbolType);
         }
@@ -66,7 +78,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return (T) Find(symbol)?.CodeObject;
         }
 
-        public Symbol Find(string name, SymbolType type)
+        public ISymbol Find(string name, SymbolType type)
         {
             string prefix = PrefixFromType(type);
 

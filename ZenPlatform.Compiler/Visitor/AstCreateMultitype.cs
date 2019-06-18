@@ -1,7 +1,11 @@
 using System.Reflection;
+using System.Runtime.Serialization;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
+using ZenPlatform.Language.Ast.AST.Definitions.Functions;
+using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Visitor
 {
@@ -14,6 +18,7 @@ namespace ZenPlatform.Compiler.Visitor
         private readonly ITypeBuilder _defMT;
         private int _mtIndex;
         private SystemTypeBindings _tsb;
+        private IConstructorBuilder _ctor;
 
 
         public AstCreateMultitype(IAssemblyBuilder asm)
@@ -26,6 +31,8 @@ namespace ZenPlatform.Compiler.Visitor
                 TypeAttributes.Class | TypeAttributes.Public |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass
                 | TypeAttributes.Abstract | TypeAttributes.Sealed, _tsb.Object);
+
+            _ctor = _defMT.DefineConstructor(true);
 
             _mtIndex = 0;
         }
@@ -41,10 +48,58 @@ namespace ZenPlatform.Compiler.Visitor
             var name = GetFieldName();
             obj.DeclName = name;
             var field = _defMT.DefineField(_tsb.MultiType, name, true, true);
+
+            var e = _ctor.Generator;
+
+            e.LdcI4(obj.TypeList.Count);
+            e.NewArr(_tsb.Type);
+
+            var typeIndex = 0;
+
+            foreach (var sType in obj.TypeList)
+            {
+                e.Dup();
+                e.LdcI4(typeIndex++);
+                e.LdType(sType.Type);
+                e.StElemRef();
+            }
+
+            e.NewObj(_tsb.MultiType.FindConstructor(_tsb.Type.MakeArrayType()));
+            e.StSFld(field);
         }
 
+        private Expression GetValue(Name name)
+        {
+            return new FieldExpression(name, "Value");
+        }
+
+        private void Transform(MultiTypeNode mtn)
+        {
+            var parent = mtn.Parent;
+
+            if (parent is Name n)
+            {
+                var pp = n.Parent;
+
+                switch (true)
+                {
+                    case true when pp is CastExpression ce:
+                        ce.Value = GetValue(n);
+                        break;
+                    case true when pp is IndexerExpression ie:
+                    {
+                                                
+                        break;
+                    }
+                        
+
+                }
+            }
+        }
+        
         public void Bake()
         {
+            _ctor.Generator.Ret();
             _defMT.EndBuild();
         }
     }

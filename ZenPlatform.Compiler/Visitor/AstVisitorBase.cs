@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Expressions;

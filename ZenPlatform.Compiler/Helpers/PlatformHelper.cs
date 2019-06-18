@@ -6,6 +6,7 @@ using Mono.Cecil;
 using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.ServerClientShared.Network;
 

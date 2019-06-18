@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.AST.Definitions
@@ -54,6 +54,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public MultiTypeNode(ILineInfo lineInfo, TypeCollection types) : base(lineInfo)
         {
             _types = types;
+            _type = new UnknownType("Object");
         }
 
         private IEnumerable<SingleTypeNode> UnwrapSingleTypeNodes()
@@ -78,7 +79,14 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// </summary>
         public string DeclName { get; set; }
 
-        public override IType Type => throw new NotImplementedException();
+        public override IType Type => _type;
+
+        private IType _type;
+
+        public void SetType(IType type)
+        {
+            _type = type;
+        }
 
         public override void Accept(IVisitor visitor)
         {
