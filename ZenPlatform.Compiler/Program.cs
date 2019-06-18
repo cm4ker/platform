@@ -28,11 +28,14 @@ type HelloWorld
 {
     int _someField;
 
-    public void PublicMethod()
+    public <string, int> PublicMethod(<string, int> arg)
     {
-        <int, string> a = 1;
-        <int, string> b = a;
-        a = 1;
+        //<int, string> a = 1;
+        //<int, string> b = ""Hello epta""; 
+        //a = arg;        
+        //b = a;
+
+        return 2 + 2 * 3 + (int)arg;//b; //result 1;
     }
     
     void PrivateMethod()
@@ -55,7 +58,7 @@ module Test
         return 0.0;
     }
 
-   // [ClientCall]
+    [ClientCall]
     public int Add(int a, int b)
     {
         int c = 1;
@@ -125,10 +128,12 @@ module Test
             CompilationBackend cb = new CompilationBackend();
             var b = cb.Compile(text);
 
-            if (File.Exists("Debug.dll"))
-                File.Delete("Debug.dll");
+            //var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Debug.dll");
+            var path = "Debug.dll";
+            if (File.Exists(path))
+                File.Delete(path);
 
-            b.Write("Debug.dll");
+            b.Write(path);
         }
     }
 }

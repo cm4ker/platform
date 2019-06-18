@@ -408,6 +408,6 @@ namespace ZenPlatform.Compiler.Cecil
             }
         }
 
-        public SymbolTable SymbolTable { get; }
+        public ISymbolTable SymbolTable { get; }
     }
 }

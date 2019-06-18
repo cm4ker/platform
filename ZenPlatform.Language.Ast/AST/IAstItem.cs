@@ -1,15 +1,10 @@
-using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Compiler.Contracts.Symbols;
+
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Language.Ast.AST
 {
-    public interface ILineInfo
-    {
-        int Line { get; set; }
-        int Position { get; set; }
-    }
-
     public class LineInfo : ILineInfo
     {
         public int Line { get; set; }
@@ -18,15 +13,6 @@ namespace ZenPlatform.Language.Ast.AST
 
     public class UnknownLineInfo : LineInfo
     {
-    }
-
-    public interface IAstNode : ILineInfo, IChildItem<AstNode>, IVisitable
-    {
-        int Line { get; set; }
-        int Position { get; set; }
-        AstNode Parent { get; set; }
-        T GetParent<T>() where T : IAstNode;
-        void Accept(IVisitor visitor);
     }
 
     public abstract class AstNode : IAstNode
@@ -44,7 +30,7 @@ namespace ZenPlatform.Language.Ast.AST
 
         public int Position { get; set; }
 
-        public AstNode Parent { get; set; }
+        public IAstNode Parent { get; set; }
 
         public T GetParent<T>() where T : IAstNode
         {

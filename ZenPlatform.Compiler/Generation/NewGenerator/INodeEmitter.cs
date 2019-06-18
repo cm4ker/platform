@@ -79,7 +79,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             if (Check<Assignment>(context, out var asg))
             {
-                Symbol variable = st.Find(asg.Name, SymbolType.Variable);
+                ISymbol variable = st.Find(asg.Name, SymbolType.Variable);
 
                 //Preload context
                 if (asg.Index == null)
@@ -105,12 +105,12 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                         // Regular value
                         if (arg.Value is Name n)
                         {
-                            Symbol variable = st.Find(n.Value, SymbolType.Variable);
+                            var variable = st.Find(n.Value, SymbolType.Variable);
                             LoadVariableReference(variable, il);
                         }
                         else if (arg.Value is IndexerExpression ue)
                         {
-                            Symbol variable = st.Find(((Name) ue.Value).Value, SymbolType.Variable);
+                            var variable = st.Find(((Name) ue.Value).Value, SymbolType.Variable);
                             LoadVariable(variable, il);
                         }
                         else
@@ -123,7 +123,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             return false;
         }
 
-        private void LoadVariable(Symbol variable, IEmitter il)
+        private void LoadVariable(ISymbol variable, IEmitter il)
         {
             if (variable.CodeObject is ILocal vd)
                 il.LdLoc(vd);
@@ -136,7 +136,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 il.LdArg(pd);
         }
 
-        private void LoadVariableReference(Symbol variable, IEmitter il)
+        private void LoadVariableReference(ISymbol variable, IEmitter il)
         {
             if (variable.CodeObject is ILocal vd)
                 il.LdLocA(vd);
@@ -158,7 +158,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             var symbolTable = context.SymbolTable;
 
-            Symbol variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
+            ISymbol variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
             var il = context.Emitter;
 
 
@@ -220,7 +220,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             var st = context.SymbolTable;
 
-            Symbol symbol = st.Find(call.Name, SymbolType.Function);
+            var symbol = st.Find(call.Name, SymbolType.Function);
 
             if (symbol is null) throw new NullReferenceException();
 

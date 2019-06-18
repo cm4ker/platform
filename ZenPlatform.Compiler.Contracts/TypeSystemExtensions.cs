@@ -57,7 +57,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter StFld(this IEmitter emitter, IField field)
             => emitter.Emit(OpCodes.Stfld, field);
 
-        public static IEmitter Stsfld(this IEmitter emitter, IField field)
+        public static IEmitter StSFld(this IEmitter emitter, IField field)
             => emitter.Emit(OpCodes.Stsfld, field);
 
         public static IEmitter LdLoc(this IEmitter emitter, ILocal local)
@@ -130,24 +130,24 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter Pop(this IEmitter emitter)
             => emitter.Emit(OpCodes.Pop);
 
-        public static IEmitter Ldtoken(this IEmitter emitter, IType type)
+        public static IEmitter LdToken(this IEmitter emitter, IType type)
             => emitter.Emit(OpCodes.Ldtoken, type);
 
-        public static IEmitter Ldtoken(this IEmitter emitter, IMethod method)
+        public static IEmitter LdToken(this IEmitter emitter, IMethod method)
             => emitter.Emit(OpCodes.Ldtoken, method);
 
-        public static IEmitter Ldtype(this IEmitter emitter, IType type)
+        public static IEmitter LdType(this IEmitter emitter, IType type)
         {
             var conv = emitter.TypeSystem.GetType("System.Type")
                 .FindMethod(m => m.IsStatic && m.IsPublic && m.Name == "GetTypeFromHandle");
-            return emitter.Ldtoken(type).EmitCall(conv);
+            return emitter.LdToken(type).EmitCall(conv);
         }
 
         public static IEmitter LdMethodInfo(this IEmitter emitter, IMethod method)
         {
             var conv = emitter.TypeSystem.GetType("System.Reflection.MethodInfo")
                 .FindMethod(m => m.IsStatic && m.IsPublic && m.Name == "GetMethodFromHandle");
-            return emitter.Ldtoken(method).EmitCall(conv);
+            return emitter.LdToken(method).EmitCall(conv);
         }
 
         public static IEmitter Ldftn(this IEmitter emitter, IMethod method)
@@ -165,13 +165,11 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter Unbox_Any(this IEmitter emitter, IType type)
             => emitter.Emit(OpCodes.Unbox_Any, type);
 
-        public static IEmitter Newobj(this IEmitter emitter, IConstructor ctor)
+        public static IEmitter NewObj(this IEmitter emitter, IConstructor ctor)
             => emitter.Emit(OpCodes.Newobj, ctor);
 
-        public static IEmitter Newarr(this IEmitter emitter, IType type)
-            => emitter.Emit(OpCodes.Newarr, type);
 
-        public static IEmitter Ldelem_ref(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelem_Ref);
+        public static IEmitter LdElemRef(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelem_Ref);
 
         public static IEmitter LdElemA(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelema);
         public static IEmitter StElemRef(this IEmitter emitter) => emitter.Emit(OpCodes.Stelem_Ref);
@@ -202,6 +200,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter LdElemI4(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelem_I4);
 
         public static IEmitter LdIndI4(this IEmitter emitter) => emitter.Emit(OpCodes.Ldind_I4);
+        public static IEmitter LdIndRef(this IEmitter emitter) => emitter.Emit(OpCodes.Ldind_Ref);
         public static IEmitter StIndI4(this IEmitter emitter) => emitter.Emit(OpCodes.Stind_I4);
         public static IEmitter StIndRef(this IEmitter emitter) => emitter.Emit(OpCodes.Stind_Ref);
 

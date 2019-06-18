@@ -2,6 +2,8 @@ using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Infrastructure;
+using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using ZenPlatform.Language.Ast.AST.Definitions.Statements;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
@@ -13,13 +15,15 @@ namespace ZenPlatform.Compiler.Generation
     {
         private void EmitAssignment(IEmitter il, Assignment assignment, SymbolTable symbolTable)
         {
-            Symbol variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
+            var variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
             if (variable == null)
                 Error("Assignment variable " + assignment.Name + " unknown.");
 
             // Non-indexed assignment
             if (assignment.Index == null)
             {
+                bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is MultiTypeNode;
+
                 if (variable.CodeObject is IParameter pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
@@ -31,9 +35,30 @@ namespace ZenPlatform.Compiler.Generation
                     //load "this"
                     il.LdArg_0();
                 }
+                else if (variable.CodeObject is IProperty p)
+                {
+                    //load "this"
+                    il.LdArg_0();
+                }
+                else if (variable.CodeObject is ILocal l && mtNode)
+                    il.LdLocA(l);
+
 
                 // Load value
                 EmitExpression(il, assignment.Value, symbolTable);
+
+
+                if (mtNode)
+                {
+                    if (!(assignment.Value.Type.Type.Equals(_bindings.Object)
+                          || assignment.Value.Type.Type.Equals(_bindings.MultiTypeDataStorage)))
+                    {
+                        il.Box(assignment.Value.Type.Type);
+                    }
+
+                    il.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
+                    return;
+                }
 
                 // Store
                 if (variable.CodeObject is ILocal vd)

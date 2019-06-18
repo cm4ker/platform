@@ -1,3 +1,5 @@
+using ZenPlatform.Compiler.Contracts.Symbols;
+
 namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
 {
     /// <summary>

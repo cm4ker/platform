@@ -1,6 +1,6 @@
 using System;
 using Hyperion.Internal;
-using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Definitions.Statements;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 

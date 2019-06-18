@@ -19,9 +19,10 @@ namespace ZenPlatform.Compiler.Generation
             if (variable.Value is Expression expr)
             {
                 EmitExpression(e, expr, context.SymbolTable);
-                if (expr.Type is MultiTypeNode)
+
+                if (variable.Type.Type.Equals(_bindings.Object))
                 {
-                    e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Getter);
+                    e.Box(expr.Type.Type);
                 }
             }
             else if (variable.Value is ElementCollection ec)
@@ -79,16 +80,35 @@ namespace ZenPlatform.Compiler.Generation
 
             if (variable.Type is MultiTypeNode mtn)
             {
-                //e.LdLoc(local);
-                var localWrap = e.DefineLocal(_bindings.MultiTypeDataStorage);
-                var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
-                e.LdLocA(localWrap).LdsFld(mt.FindField(mtn.DeclName));
-                e.LdLoc(local);
-                e.EmitCall(_bindings.MultiTypeDataStorage.FindConstructor(_bindings.MultiType, _bindings.Object));
-                local = localWrap;
+                WrapMultitypeNode(e, mtn, ref local);
             }
-            
+
             context.SymbolTable.ConnectCodeObject(variable, local);
+        }
+
+        private void WrapMultitypeStackValue(IEmitter e, MultiTypeNode mtn, ILocal local, ILocal exp)
+        {
+            var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
+            e.LdLocA(local);
+            e.Dup();
+            e.LdsFld(mt.FindField(mtn.DeclName));
+            e.EmitCall(_bindings.MultiTypeDataStorage.FindConstructor(_bindings.MultiType));
+            e.LdLoc(local);
+            e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
+            e.LdLoc(local);
+        }
+
+        private void WrapMultitypeNode(IEmitter e, MultiTypeNode mtn, ref ILocal local)
+        {
+            var localWrap = e.DefineLocal(_bindings.MultiTypeDataStorage);
+            var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
+            e.LdLocA(localWrap);
+            e.Dup();
+            e.LdsFld(mt.FindField(mtn.DeclName));
+            e.EmitCall(_bindings.MultiTypeDataStorage.FindConstructor(_bindings.MultiType));
+            e.LdLoc(local);
+            e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
+            local = localWrap;
         }
     }
 }

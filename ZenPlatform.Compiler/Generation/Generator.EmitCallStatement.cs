@@ -14,7 +14,7 @@ namespace ZenPlatform.Compiler.Generation
     {
         private void EmitCallStatement(IEmitter il, CallStatement call, SymbolTable symbolTable)
         {
-            Symbol symbol = symbolTable.Find(call.Name, SymbolType.Function);
+            var symbol = symbolTable.Find(call.Name, SymbolType.Function);
 
             if (symbol != null)
             {
@@ -57,7 +57,7 @@ namespace ZenPlatform.Compiler.Generation
                             // Regular value
                             if (argument.Value is Name)
                             {
-                                Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
+                                var variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
                                 if (variable.CodeObject is ILocal definition)
                                 {
                                     if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
@@ -79,7 +79,7 @@ namespace ZenPlatform.Compiler.Generation
                             }
                             else if (argument.Value is IndexerExpression ue)
                             {
-                                Symbol variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
+                                var variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
                                 if (variable.CodeObject is ILocal vd)
                                 {
                                     il.LdLoc(vd);
