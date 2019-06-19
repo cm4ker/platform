@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Antlr4.Runtime;
+using Microsoft.CodeAnalysis;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Cecil;
@@ -65,6 +66,13 @@ namespace ZenPlatform.Compiler
 
             var glob = new Root();
             glob.CompilationUnits.Add(module);
+
+            VRoslyn r = new VRoslyn();
+
+            var t = r.Visit(module);
+            Console.WriteLine(t.NormalizeWhitespace().ToFullString());
+
+            return ab;
 
             //Gen
             //Перед генерацией необходимо подготовить дерево символов

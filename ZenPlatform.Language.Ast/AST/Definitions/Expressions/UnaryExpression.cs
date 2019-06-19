@@ -1,5 +1,4 @@
 using ZenPlatform.Compiler.Contracts.Symbols;
-
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
@@ -28,7 +27,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
 
         public override TypeNode Type => CastType;
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Value);
         }
@@ -44,7 +43,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
             Indexer = indexer;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Indexer);
             visitor.Visit(Value);
@@ -61,7 +60,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
             Type = type;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Value);
         }

@@ -6,7 +6,7 @@ using ZenPlatform.Language.Ast.AST.Definitions;
 
 namespace ZenPlatform.Compiler.Visitor
 {
-    public class BasicVisitor : AstVisitorBase
+    public class BasicVisitor : AstVisitorBase<object>
     {
         private ITypeSystem _ts;
 
@@ -15,7 +15,7 @@ namespace ZenPlatform.Compiler.Visitor
             _ts = ts;
         }
 
-        public override void VisitSingleType(SingleTypeNode obj)
+        public override object VisitSingleType(SingleTypeNode obj)
         {
             Console.Write($"We found type:{obj.Type.Name}, at {obj.Line}:{obj.Position} type: {obj.GetType()}");
             Console.WriteLine();
@@ -24,6 +24,8 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 obj.SetType(obj.Type.ArrayElementType.MakeArrayType());
             }
+
+            return null;
         }
     }
 }

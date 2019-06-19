@@ -40,7 +40,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             _type = type;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             //Nothing to do
         }
@@ -88,9 +88,10 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             _type = type;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
-            _types.ForEach(visitor.Visit);
+            foreach (var type in _types)
+                visitor.Visit(type);
         }
     }
 }

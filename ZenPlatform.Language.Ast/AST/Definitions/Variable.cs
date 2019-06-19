@@ -35,7 +35,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// </summary>
         public object Value;
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             if (Value is AstNode an)
                 visitor.Visit(an);

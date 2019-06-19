@@ -18,10 +18,11 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public ArgumentCollection Arguments { get; }
 
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Type);
-            Arguments.ForEach(visitor.Visit);
+            foreach (var argument in Arguments) 
+                visitor.Visit(argument);
         }
     }
 }

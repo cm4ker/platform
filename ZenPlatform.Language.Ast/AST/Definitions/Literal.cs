@@ -24,7 +24,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// </summary>
         public string Value;
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Type);
         }

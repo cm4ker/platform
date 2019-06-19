@@ -1,7 +1,7 @@
 namespace ZenPlatform.Compiler.Contracts.Symbols
 {
-    public interface IVisitor
+    public interface IVisitor<T>
     {
-        void Visit(IVisitable visitable);
+        T Visit(IVisitable visitable);
     }
 }

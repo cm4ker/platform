@@ -15,7 +15,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Condition = condition;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             throw new System.NotImplementedException();
         }

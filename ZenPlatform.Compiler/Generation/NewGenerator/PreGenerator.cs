@@ -3,13 +3,14 @@ using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using SreTA = System.Reflection.TypeAttributes;
+using Class = ZenPlatform.Language.Ast.AST.Definitions.Class;
 
 namespace ZenPlatform.Compiler.Generation.NewGenerator
 {
     /// <summary>
     /// Создание структуры типов
     /// </summary>
-    public class PreGenerator : AstVisitorBase
+    public class PreGenerator : AstVisitorBase<object>
     {
         private IAstNodeContext _context;
         private SystemTypeBindings _bindings;
@@ -24,12 +25,13 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             _bindings = new SystemTypeBindings(_context.Assembly.TypeSystem);
         }
 
-        public override void VisitCompilationUnit(CompilationUnit cu)
+        public override object VisitCompilationUnit(CompilationUnit cu)
         {
             _context.AstNode = cu;
+            return null;
         }
 
-        public override void VisitClass(Class obj)
+        public object VisitClass(ZenPlatform.Language.Ast.AST.Definitions.Class obj)
         {
             _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, obj.Name,
                 SreTA.Class | SreTA.Public | SreTA.Abstract |
@@ -37,9 +39,11 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, _context.Type);
             _context.IsClass = true;
+
+            return null;
         }
 
-        public override void VisitModule(Module module)
+        public override object VisitModule(Module module)
         {
             _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
                 SreTA.Class | SreTA.NotPublic |
@@ -47,14 +51,16 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             module.GetParent<IScoped>().SymbolTable.ConnectCodeObject(module, _context.Type);
             _context.IsClass = false;
+
+            return null;
         }
 
-        public override void VisitFunction(Function function)
+        public override object VisitFunction(Function function)
         {
             //На сервере никогда не может существовать клиентских процедур
             if (((int) function.Flags & (int) _context.Mode) == 0 && !_context.IsClass)
             {
-                Break();
+                Stop();
             }
 
             var method = _context.Type.DefineMethod(function.Name, function.IsPublic, !_context.IsClass, false)
@@ -65,32 +71,35 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             function.Builder = method.Generator;
 
-            Break();
+            Stop();
+            return null;
         }
 
-        public override void VisitParameter(Parameter obj)
+        public override object VisitParameter(Parameter obj)
         {
-            var codeObj = _context.Method.WithParameter(obj.Name, obj.Type.Type, false, false);
-            _context.SymbolTable.ConnectCodeObject(obj, codeObj);
-
-            Break();
+//            var codeObj = _context.Method.WithParameter(obj.Name, obj.Type.Type, false, false);
+//            _context.SymbolTable.ConnectCodeObject(obj, codeObj);
+//
+//            Stop();
+            return null;
         }
 
-        public override void VisitField(Field obj)
+        public override object VisitField(Field obj)
         {
-            if (!_context.IsClass) Break();
+            if (!_context.IsClass) Stop();
 
             var fld = _context.Type.DefineField(obj.Type.Type, obj.Name, false, false);
             obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, fld);
 
-            Break();
+            Stop();
+            return null;
         }
 
-        public override void VisitProperty(Property property)
+        public override object VisitProperty(Property property)
         {
             var tb = _context.Type;
 
-            if (!_context.IsClass) Break();
+            if (!_context.IsClass) Stop();
 
             var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
 
@@ -112,7 +121,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             }
 
             propBuilder.WithGetter(getMethod).WithSetter(setMethod);
-            Break();
+            Stop();
+            return null;
         }
     }
 }

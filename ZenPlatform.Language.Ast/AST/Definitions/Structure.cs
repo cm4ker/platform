@@ -29,7 +29,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public SymbolType SymbolType { get; }
 
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             throw new System.NotImplementedException();
         }

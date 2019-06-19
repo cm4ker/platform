@@ -14,11 +14,10 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Condition = condition;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             throw new System.NotImplementedException();
         }
-
     }
 
     public class Try : Statement
@@ -36,7 +35,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
         public InstructionsBodyNode CatchBlock { get; set; }
         public InstructionsBodyNode FinallyBlock { get; set; }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(TryBlock);
             visitor.Visit(CatchBlock);

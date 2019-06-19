@@ -1,5 +1,4 @@
 using ZenPlatform.Compiler.Contracts.Symbols;
-
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -43,6 +42,6 @@ namespace ZenPlatform.Language.Ast.AST
         }
 
 
-        public abstract void Accept(IVisitor visitor);
+        public abstract void Accept<T>(IVisitor<T> visitor);
     }
 }

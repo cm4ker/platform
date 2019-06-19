@@ -76,7 +76,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public ILocal DefineLocal(IType type)
         {
-            return new SreLocal(_ilg.DeclareLocal(((SreType) type).Type));
+            return new SreLocal((SreTypeSystem) TypeSystem, _ilg.DeclareLocal(((SreType) type).Type));
         }
 
         public ILabel DefineLabel()

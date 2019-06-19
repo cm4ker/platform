@@ -1,5 +1,4 @@
 using ZenPlatform.Compiler.Contracts.Symbols;
-
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
@@ -28,9 +27,10 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
             Name = name;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
-            Arguments.ForEach(visitor.Visit);
+            foreach (var argument in Arguments)
+                visitor.Visit(argument);
         }
     }
 }

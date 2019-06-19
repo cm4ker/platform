@@ -18,7 +18,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
         public List<TypeEntity> TypeEntities { get; }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             foreach (var entity in TypeEntities)
             {
@@ -37,7 +37,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public List<CompilationUnit> CompilationUnits { get; }
 
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             foreach (var cu in CompilationUnits)
             {
