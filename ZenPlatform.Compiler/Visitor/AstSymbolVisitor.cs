@@ -5,6 +5,7 @@ using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using ZenPlatform.Language.Ast.AST.Definitions.Statements;
@@ -44,6 +45,16 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 throw new Exception("Invalid register parameter in scope");
             }
+
+            return null;
+        }
+
+        public override object VisitName(Name obj)
+        {
+            var v = obj.GetParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable);
+
+            if (v is Variable vv) obj.Type = vv.Type;
+            if (v is Parameter p) obj.Type = p.Type;
 
             return null;
         }

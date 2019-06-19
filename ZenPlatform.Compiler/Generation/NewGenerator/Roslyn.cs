@@ -132,6 +132,13 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             return new SyntaxList<StatementSyntax>(node.Statements.Select(x => Visit(x)).Cast<StatementSyntax>());
         }
 
+        public override SyntaxNode VisitVariable(Variable obj)
+        {
+            return SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(GetTypeSyntax(obj.Type))
+                .AddVariables(SyntaxFactory.VariableDeclarator(obj.Name)
+                    .WithInitializer(SyntaxFactory.EqualsValueClause((ExpressionSyntax) Visit(obj.Value)))));
+        }
+
         private TypeSyntax GetTypeSyntax(TypeNode tn)
         {
             return SyntaxFactory.ParseTypeName(tn.Type.Name);
@@ -161,6 +168,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override SyntaxNode VisitName(Name obj)
         {
+            if(obj.Type is MultiTypeNode)
+                Console.WriteLine("BANG!");
             return SyntaxFactory.IdentifierName(obj.Value);
         }
 

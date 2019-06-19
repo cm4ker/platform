@@ -67,6 +67,9 @@ namespace ZenPlatform.Compiler
             var glob = new Root();
             glob.CompilationUnits.Add(module);
 
+            AstSymbolVisitor sv = new AstSymbolVisitor();
+            sv.Visit(glob);
+            
             VRoslyn r = new VRoslyn();
 
             var t = r.Visit(module);
@@ -76,8 +79,7 @@ namespace ZenPlatform.Compiler
 
             //Gen
             //Перед генерацией необходимо подготовить дерево символов
-            AstSymbolVisitor sv = new AstSymbolVisitor();
-            sv.Visit(glob);
+           
 
             AstCreateMultitype cm = new AstCreateMultitype(ab);
             glob.Accept(cm);
