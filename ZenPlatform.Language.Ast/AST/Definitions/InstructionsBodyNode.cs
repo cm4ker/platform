@@ -30,9 +30,10 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             }
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
-            Statements.ForEach(visitor.Visit);
+            foreach (var statement in Statements) 
+                visitor.Visit(statement);
         }
     }
 
@@ -70,7 +71,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             }
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             foreach (var function in Functions)
             {

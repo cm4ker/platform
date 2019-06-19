@@ -16,7 +16,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Index = index;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Value);
             visitor.Visit(Index);
@@ -39,7 +39,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Name = name;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Name);
         }
@@ -59,7 +59,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Name = name;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Name);
         }

@@ -12,13 +12,14 @@ using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Visitor
 {
-    public class AstSymbolVisitor : AstVisitorBase
+    public class AstSymbolVisitor : AstVisitorBase<object>
     {
-        public override void VisitExpression(Expression e)
+        public override object VisitExpression(Expression e)
         {
+            return null;
         }
 
-        public override void VisitVariable(Variable obj)
+        public override object VisitVariable(Variable obj)
         {
             var ibn = obj.GetParent<InstructionsBodyNode>();
             if (ibn != null)
@@ -29,9 +30,11 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 throw new Exception($"Invalid register variable in scope {obj.Name}");
             }
+
+            return null;
         }
 
-        public override void VisitParameter(Parameter obj)
+        public override object VisitParameter(Parameter obj)
         {
             if (obj.Parent is Function f)
             {
@@ -41,9 +44,11 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 throw new Exception("Invalid register parameter in scope");
             }
+
+            return null;
         }
 
-        public override void VisitField(Field obj)
+        public override object VisitField(Field obj)
         {
             if (obj.Parent is TypeBody f)
             {
@@ -53,9 +58,11 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 throw new Exception("Invalid register field in scope");
             }
+
+            return null;
         }
 
-        public override void VisitTypeBody(TypeBody obj)
+        public override object VisitTypeBody(TypeBody obj)
         {
             var st = obj.GetParent<IScoped>().SymbolTable;
 
@@ -63,21 +70,24 @@ namespace ZenPlatform.Compiler.Visitor
                 obj.SymbolTable = new SymbolTable(st);
 
             obj.SymbolTable.Clear();
+            return null;
         }
 
-        public override void VisitModule(Module obj)
+        public override object VisitModule(Module obj)
         {
             var st = obj.GetParent<IScoped>().SymbolTable;
             st.Add(obj);
+            return null;
         }
 
-        public override void VisitClass(Class obj)
+        public override object VisitClass(Class obj)
         {
             var st = obj.GetParent<IScoped>().SymbolTable;
             st.Add(obj);
+            return null;
         }
 
-        public override void VisitFunction(Function obj)
+        public override object VisitFunction(Function obj)
         {
             if (obj.Parent is TypeBody te)
             {
@@ -92,9 +102,11 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 throw new Exception("Invalid register function in scope");
             }
+
+            return null;
         }
 
-        public override void VisitProperty(Property obj)
+        public override object VisitProperty(Property obj)
         {
             if (obj.Setter.SymbolTable == null)
             {
@@ -103,9 +115,10 @@ namespace ZenPlatform.Compiler.Visitor
             }
 
             obj.Setter.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByValue));
+            return null;
         }
 
-        public override void VisitFor(For obj)
+        public override object VisitFor(For obj)
         {
             if (obj.InstructionsBody.SymbolTable == null)
             {
@@ -113,17 +126,21 @@ namespace ZenPlatform.Compiler.Visitor
                 if (parent != null)
                     obj.InstructionsBody.SymbolTable = new SymbolTable(parent.SymbolTable);
             }
+
+            return null;
         }
 
-        public override void VisitSingleType(SingleTypeNode obj)
+        public override object VisitSingleType(SingleTypeNode obj)
         {
             if (obj.Type is UnknownArrayType)
             {
                 obj.SetType(obj.Type.ArrayElementType.MakeArrayType());
             }
+
+            return null;
         }
 
-        public override void VisitTry(Try obj)
+        public override object VisitTry(Try obj)
         {
             if (obj.TryBlock.SymbolTable == null)
             {
@@ -134,14 +151,18 @@ namespace ZenPlatform.Compiler.Visitor
                 if (obj.CatchBlock != null)
                     obj.CatchBlock.SymbolTable = new SymbolTable(parent.SymbolTable);
             }
+
+            return null;
         }
 
-        public override void VisitRoot(Root root)
+        public override object VisitRoot(Root root)
         {
             if (root.SymbolTable == null)
             {
                 root.SymbolTable = new SymbolTable();
             }
+
+            return null;
         }
     }
 }

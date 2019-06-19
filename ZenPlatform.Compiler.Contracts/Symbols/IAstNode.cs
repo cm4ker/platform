@@ -8,6 +8,5 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         int Position { get; set; }
         IAstNode Parent { get; set; }
         T GetParent<T>() where T : IAstNode;
-        void Accept(IVisitor visitor);
     }
 }

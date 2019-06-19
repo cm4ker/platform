@@ -65,7 +65,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
 
         public SymbolType SymbolType => SymbolType.Function;
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Type);
 
@@ -93,7 +93,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
 
         public SymbolType SymbolType => SymbolType.Variable;
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Type);
         }
@@ -122,7 +122,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         public InstructionsBodyNode Getter { get; set; }
         public InstructionsBodyNode Setter { get; set; }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Type);
 

@@ -15,7 +15,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             Value = value;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             //Nothing to do
         }
@@ -34,7 +34,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             Position = expression.Position;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Expression);
         }

@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Infrastructure;
+using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
@@ -12,7 +13,7 @@ namespace ZenPlatform.Compiler.Visitor
     /// <summary>
     /// Визитор для вычисления типа
     /// </summary>
-    public class AstCreateMultitype : AstVisitorBase
+    public class AstCreateMultitype : AstVisitorBase<object>
     {
         private readonly IAssemblyBuilder _asm;
         private readonly ITypeBuilder _defMT;
@@ -43,7 +44,7 @@ namespace ZenPlatform.Compiler.Visitor
             return $"MT_{_mtIndex++}";
         }
 
-        public override void VisitMultiType(MultiTypeNode obj)
+        public override object VisitMultiType(MultiTypeNode obj)
         {
             var name = GetFieldName();
             obj.DeclName = name;
@@ -66,6 +67,8 @@ namespace ZenPlatform.Compiler.Visitor
 
             e.NewObj(_tsb.MultiType.FindConstructor(_tsb.Type.MakeArrayType()));
             e.StSFld(field);
+
+            return null;
         }
 
         private Expression GetValue(Name name)
@@ -88,15 +91,12 @@ namespace ZenPlatform.Compiler.Visitor
                         break;
                     case true when pp is IndexerExpression ie:
                     {
-                                                
                         break;
                     }
-                        
-
                 }
             }
         }
-        
+
         public void Bake()
         {
             _ctor.Generator.Ret();

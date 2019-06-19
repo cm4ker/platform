@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.XPath;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Infrastructure;
@@ -18,7 +19,17 @@ namespace ZenPlatform.Compiler.Visitor
     {
     }
 
-    public abstract class AstVisitorBase : IVisitor
+    public class BreakWithResultException : Exception
+    {
+        public BreakWithResultException(object result)
+        {
+            Result = result;
+        }
+
+        public object Result { get; }
+    }
+
+    public abstract class AstVisitorBase<T> : IVisitor<T>
     {
         private Stack<AstNode> _visitStack;
         private bool _break;
@@ -48,40 +59,58 @@ namespace ZenPlatform.Compiler.Visitor
         }
 
 
-        public void Visit(IVisitable visitable)
+        public T Visit(IVisitable visitable)
         {
-            if (visitable is null) return;
+            if (visitable is null) return default;
 
             _break = false;
+
+            T result = default;
 
             try
             {
                 BeforeVisitNode(visitable as AstNode);
-                Visit(visitable as AstNode);
+                result = VisitInternal(visitable as AstNode);
             }
             catch (BreakException e)
             {
                 //ignored
             }
+            catch (BreakWithResultException e)
+            {
+                result = (T) e.Result;
+            }
 
             if (!_break)
                 visitable.Accept(this);
             AfterVisitNode(visitable as AstNode);
+
+            return result;
         }
 
 
         /// <summary>
-        /// Прервать текущее хождение по текущей ветке дерева. Визитор продолжит идти по следующей
+        /// Прервать текущее хождение по текущей ветке дерева. Визитор продолжит идти по следующей ветке
         /// </summary>
-        protected void Break()
+        protected void Stop()
         {
             _break = true;
             throw new BreakException();
         }
 
-        private void Visit(AstNode node)
+        /// <summary>
+        /// Прервать текущее хождение по текущей ветке дерева. Визитор продолжит идти по следующей ветке
+        /// </summary>
+        protected void StopWithResult(T result)
         {
-            ItemSwitch<AstNode>
+            _break = true;
+            throw new BreakWithResultException(result);
+        }
+
+
+        private T VisitInternal(AstNode node)
+        {
+            return ItemSwitchWithResult<AstNode, T>
                 .Switch(node)
                 .CaseIs<Root>(VisitRoot)
                 .CaseIs<CompilationUnit>(VisitCompilationUnit)
@@ -107,6 +136,7 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<BinaryExpression>(VisitBinaryExpression)
                 .CaseIs<CastExpression>(VisitCastExpression)
                 .CaseIs<FieldExpression>(VisitFieldExpression)
+                .CaseIs<LogicalOrArithmeticExpression>(VisitLogicalOrArithmeticExpression)
                 .CaseIs<If>(VisitIf)
                 .CaseIs<Literal>(VisitLiteral)
                 .CaseIs<IndexerExpression>(VisitIndexerExpression)
@@ -114,139 +144,175 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<Class>(VisitClass)
                 .CaseIs<Property>(VisitProperty)
                 .CaseIs<Field>(VisitField)
-                .BreakIfExecuted()
                 .CaseIs<Expression>(VisitExpression)
-                .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null);
+                .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null)
+                .Result();
         }
 
-        public virtual void VisitRoot(Root obj)
+        public virtual T VisitLogicalOrArithmeticExpression(LogicalOrArithmeticExpression arg)
         {
+            return default;
         }
 
-        public virtual void VisitMultiType(MultiTypeNode obj)
+        public virtual T VisitRoot(Root obj)
         {
+            return default;
         }
 
-        public virtual void VisitSingleType(SingleTypeNode obj)
+        public virtual T VisitMultiType(MultiTypeNode obj)
         {
+            return default;
         }
 
-        public virtual void VisitField(Field obj)
+        public virtual T VisitSingleType(SingleTypeNode obj)
         {
+            return default;
         }
 
-        public virtual void VisitProperty(Property obj)
+        public virtual T VisitField(Field obj)
         {
+            return default;
         }
 
-        public virtual void VisitClass(Class obj)
+        public virtual T VisitProperty(Property obj)
         {
+            return default;
         }
 
-        public virtual void VisitTry(Try obj)
+        public virtual T VisitClass(Class obj)
         {
+            return default;
         }
 
-        public virtual void VisitIndexerExpression(IndexerExpression obj)
+        public virtual T VisitTry(Try obj)
         {
+            return default;
         }
 
-        public virtual void VisitPostDecrementStatement(PostDecrementStatement obj)
+        public virtual T VisitIndexerExpression(IndexerExpression obj)
         {
+            return default;
         }
 
-        public virtual void VisitPostIncrementStatement(PostIncrementStatement obj)
+        public virtual T VisitPostDecrementStatement(PostDecrementStatement obj)
         {
+            return default;
         }
 
-        public virtual void VisitArgument(Argument obj)
+        public virtual T VisitPostIncrementStatement(PostIncrementStatement obj)
         {
+            return default;
         }
 
-        public virtual void VisitLiteral(Literal obj)
+        public virtual T VisitArgument(Argument obj)
         {
+            return default;
         }
 
-        public virtual void VisitIf(If obj)
+        public virtual T VisitLiteral(Literal obj)
         {
+            return default;
         }
 
-        public virtual void VisitFieldExpression(FieldExpression obj)
+        public virtual T VisitIf(If obj)
         {
+            return default;
         }
 
-        public virtual void VisitCastExpression(CastExpression obj)
+        public virtual T VisitFieldExpression(FieldExpression obj)
         {
+            return default;
         }
 
-        public virtual void VisitBinaryExpression(BinaryExpression obj)
+        public virtual T VisitCastExpression(CastExpression obj)
         {
+            return default;
         }
 
-        public virtual void VisitReturn(Return obj)
+        public virtual T VisitBinaryExpression(BinaryExpression obj)
         {
+            return default;
         }
 
-        public virtual void VisitAssigment(Assignment obj)
+        public virtual T VisitReturn(Return obj)
         {
+            return default;
         }
 
-        public virtual void VisitVariable(Variable obj)
+        public virtual T VisitAssigment(Assignment obj)
+        {
+            return default;
+        }
+
+        public virtual T VisitVariable(Variable obj)
         {
             //Do nothing
+            return default;
         }
 
-        public virtual void VisitInstructionsBody(InstructionsBodyNode obj)
+        public virtual T VisitInstructionsBody(InstructionsBodyNode obj)
         {
+            return default;
         }
 
-        public virtual void VisitType(TypeNode obj)
+        public virtual T VisitType(TypeNode obj)
         {
+            return default;
         }
 
-        public virtual void VisitFunction(Function obj)
+        public virtual T VisitFunction(Function obj)
         {
+            return default;
         }
 
-        public virtual void VisitTypeBody(TypeBody obj)
+        public virtual T VisitTypeBody(TypeBody obj)
         {
+            return default;
         }
 
-        public virtual void VisitModule(Module obj)
+        public virtual T VisitModule(Module obj)
         {
+            return default;
         }
 
-        public virtual void VisitCallStatement(CallStatement obj)
+        public virtual T VisitCallStatement(CallStatement obj)
         {
+            return default;
         }
 
-        public virtual void VisitCall(Call obj)
+        public virtual T VisitCall(Call obj)
         {
+            return default;
         }
 
-        public virtual void VisitParameter(Parameter obj)
+        public virtual T VisitParameter(Parameter obj)
         {
+            return default;
         }
 
-        public virtual void VisitWhile(While obj)
+        public virtual T VisitWhile(While obj)
         {
+            return default;
         }
 
-        public virtual void VisitFor(For obj)
+        public virtual T VisitFor(For obj)
         {
+            return default;
         }
 
-        public virtual void VisitName(Name obj)
+        public virtual T VisitName(Name obj)
         {
+            return default;
         }
 
-        public virtual void VisitExpression(Expression e)
+        public virtual T VisitExpression(Expression e)
         {
             throw new Exception("Unknown expression: " + e.GetType());
         }
 
-        public virtual void VisitCompilationUnit(CompilationUnit cu)
+        public virtual T VisitCompilationUnit(CompilationUnit cu)
         {
+            return default;
         }
     }
 }

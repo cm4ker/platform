@@ -32,7 +32,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         public string Name { get; set; }
         public SymbolType SymbolType => SymbolType.Variable;
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Type);
         }

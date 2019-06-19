@@ -13,7 +13,7 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitAssignment(IEmitter il, Assignment assignment, SymbolTable symbolTable)
+        private void EmitAssignment(IEmitter e, Assignment assignment, SymbolTable symbolTable)
         {
             var variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
             if (variable == null)
@@ -28,24 +28,22 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
-                        il.LdArg(pd);
+                        e.LdArg(pd);
                 }
                 else if (variable.CodeObject is IField fl)
                 {
-                    //load "this"
-                    il.LdArg_0();
+                    EmitLoadThis(e);
                 }
                 else if (variable.CodeObject is IProperty p)
                 {
-                    //load "this"
-                    il.LdArg_0();
+                    EmitLoadThis(e);
                 }
                 else if (variable.CodeObject is ILocal l && mtNode)
-                    il.LdLocA(l);
+                    e.LdLocA(l);
 
 
                 // Load value
-                EmitExpression(il, assignment.Value, symbolTable);
+                EmitExpression(e, assignment.Value, symbolTable);
 
 
                 if (mtNode)
@@ -53,43 +51,60 @@ namespace ZenPlatform.Compiler.Generation
                     if (!(assignment.Value.Type.Type.Equals(_bindings.Object)
                           || assignment.Value.Type.Type.Equals(_bindings.MultiTypeDataStorage)))
                     {
-                        il.Box(assignment.Value.Type.Type);
+                        e.Box(assignment.Value.Type.Type);
                     }
 
-                    il.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
+                    e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
                     return;
                 }
 
                 // Store
                 if (variable.CodeObject is ILocal vd)
-                    il.StLoc(vd);
+                    e.StLoc(vd);
                 else if (variable.CodeObject is IField fd)
-                    il.StFld(fd);
+                    e.StFld(fd);
                 else if (variable.CodeObject is IParameter ppd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
-                        il.StIndI4();
+                        e.StIndI4();
                     else
-                        il.StArg(ppd);
+                        e.StArg(ppd);
                 }
             }
             else
             {
                 // Load array.
                 if (variable.CodeObject is ILocal vd)
-                    il.LdLoc(vd);
+                    e.LdLoc(vd);
                 else if (variable.CodeObject is IField fd)
-                    il.LdsFld(fd);
+                    e.LdsFld(fd);
                 else if (variable.CodeObject is IParameter pd)
-                    il.LdArg(pd.Sequence);
+                    e.LdArg(pd.Sequence);
                 // Load index.
-                EmitExpression(il, assignment.Index, symbolTable);
+                EmitExpression(e, assignment.Index, symbolTable);
                 // Load value.
-                EmitExpression(il, assignment.Value, symbolTable);
+                EmitExpression(e, assignment.Value, symbolTable);
                 // Set
-                il.StElemI4();
+                e.StElemI4();
             }
+        }
+
+        private void EmitLoadThis(IEmitter il)
+        {
+            il.LdArg_0();
+        }
+
+        private void EmitLoad(IEmitter e, object codeObject, bool stat, bool addr)
+        {
+            if (stat)
+                if (!addr)
+                    if (codeObject is IField f)
+                        e.LdFld(f);
+                    else if (codeObject is ILocal l)
+                        e.LdLoc(l);
+                    else if (codeObject is IParameter p)
+                        e.LdArg(p);
         }
     }
 }

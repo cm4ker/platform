@@ -1,5 +1,4 @@
 using ZenPlatform.Compiler.Contracts.Symbols;
-
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
@@ -19,7 +18,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Condition = condition;
         }
 
-        public override void Accept(IVisitor visitor)
+        public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Condition);
             visitor.Visit(IfInstructionsBody);
