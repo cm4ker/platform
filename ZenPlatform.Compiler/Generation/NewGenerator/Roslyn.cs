@@ -17,6 +17,7 @@ using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
+using ZenPlatform.Language.Ast.AST.Definitions.Statements;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Generation.NewGenerator
@@ -135,9 +136,16 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         public override SyntaxNode VisitVariable(Variable obj)
         {
             return SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(GetTypeSyntax(obj.Type))
-                .AddVariables(SyntaxFactory.VariableDeclarator(obj.Name)
-                    .WithInitializer(SyntaxFactory.EqualsValueClause((ExpressionSyntax) Visit(obj.Value)))));
+                .AddVariables(GetVariabbleWithInit(obj.Name, obj.Value)));
         }
+
+
+        private VariableDeclaratorSyntax GetVariabbleWithInit(string vName, AstNode exp)
+        {
+            return SyntaxFactory.VariableDeclarator(vName)
+                .WithInitializer(SyntaxFactory.EqualsValueClause((ExpressionSyntax) Visit(exp)));
+        }
+
 
         private TypeSyntax GetTypeSyntax(TypeNode tn)
         {
@@ -166,10 +174,48 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             return SyntaxFactory.ClassDeclaration(obj.Name);
         }
 
+        private SeparatedSyntaxList<ExpressionSyntax> EmptyList = new SeparatedSyntaxList<ExpressionSyntax>();
+
+        public override SyntaxNode VisitAssigment(Assignment obj)
+        {
+            return SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
+                SyntaxKind.SimpleAssignmentExpression, ParseName(obj.Name),
+                (ExpressionSyntax) Visit(obj.Value)));
+        }
+
+        public override SyntaxNode VisitFor(For obj)
+        {
+            VariableDeclarationSyntax vTypeSyntax = null;
+            List<ExpressionSyntax> initializers;
+
+            if (obj.Initializer is Variable v)
+            {
+                vTypeSyntax = SyntaxFactory.VariableDeclaration(GetTypeSyntax(v.Type))
+                    .AddVariables(GetVariabbleWithInit(v.Name, v.Value));
+            }
+
+            return SyntaxFactory.ForStatement(vTypeSyntax,
+                EmptyList,
+                (ExpressionSyntax) Visit(obj.Condition),
+                new SeparatedSyntaxList<ExpressionSyntax> {(ExpressionSyntax) Visit(obj.Counter)},
+                (BlockSyntax) Visit(obj.InstructionsBody));
+        }
+
+        public override SyntaxNode VisitPostIncrementStatement(PostIncrementStatement obj)
+        {
+            return SyntaxFactory.PostfixUnaryExpression(SyntaxKind.PostIncrementExpression,
+                (ExpressionSyntax) Visit(obj.Name));
+        }
+
         public override SyntaxNode VisitName(Name obj)
         {
-            if(obj.Type is MultiTypeNode)
-                Console.WriteLine("BANG!");
+            if (obj.Type is MultiTypeNode)
+            {
+                return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                    ParseName(obj.Value), SyntaxFactory.IdentifierName("Value"));
+            }
+
+
             return SyntaxFactory.IdentifierName(obj.Value);
         }
 
@@ -185,6 +231,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 BinaryOperatorType.Divide => SyntaxKind.DivideExpression,
                 BinaryOperatorType.Multiply => SyntaxKind.MultiplyExpression,
                 BinaryOperatorType.Or => SyntaxKind.LogicalOrExpression,
+                BinaryOperatorType.LessThen => SyntaxKind.LessThanExpression,
                 _ => throw new Exception("Can't")
                 };
             return SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryExpression(kind, left, right));

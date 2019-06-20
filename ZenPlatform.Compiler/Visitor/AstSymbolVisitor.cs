@@ -22,7 +22,7 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitVariable(Variable obj)
         {
-            var ibn = obj.GetParent<InstructionsBodyNode>();
+            var ibn = obj.GetParent<IScoped>();
             if (ibn != null)
             {
                 ibn.SymbolTable.Add(obj);
@@ -53,8 +53,8 @@ namespace ZenPlatform.Compiler.Visitor
         {
             var v = obj.GetParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable);
 
-            if (v is Variable vv) obj.Type = vv.Type;
-            if (v is Parameter p) obj.Type = p.Type;
+            if (v?.SyntaxObject is Variable vv) obj.Type = vv.Type;
+            if (v?.SyntaxObject is Parameter p) obj.Type = p.Type;
 
             return null;
         }

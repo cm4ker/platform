@@ -273,7 +273,8 @@ namespace ZenPlatform.Compiler.AST
                 result = new Variable(context.start.ToLineInfo(), null, context.IDENTIFIER().GetText(),
                     _syntaxStack.PopType());
             else
-                result = new Variable(context.start.ToLineInfo(), _syntaxStack.Pop(), context.IDENTIFIER().GetText(),
+                result = new Variable(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                    context.IDENTIFIER().GetText(),
                     _syntaxStack.PopType());
 
             _syntaxStack.Push(result);
