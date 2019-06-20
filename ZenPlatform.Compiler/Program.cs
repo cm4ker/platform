@@ -10,6 +10,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 
 namespace ZenPlatform.Compiler
 {
@@ -35,6 +36,11 @@ type HelloWorld
         //a = arg;        
         //b = a;
 
+        for(int i = 1; i < 10; i++)
+        {
+            a = 3;
+        } 
+
         return (2 + 2) * 3 + 1;//b; //result 1;
     }
     
@@ -45,10 +51,10 @@ type HelloWorld
 
    // public int Property {get { return 1; } set {_someField = value;}}
 }");
-
+           
             CompilationBackend cb = new CompilationBackend();
             var b = cb.Compile(text);
-
+            
             //var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Debug.dll");
             var path = "Debug.dll";
             if (File.Exists(path))
