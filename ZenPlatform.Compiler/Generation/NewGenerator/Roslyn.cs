@@ -194,10 +194,12 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                     .AddVariables(GetVariabbleWithInit(v.Name, v.Value));
             }
 
+            var inc = SyntaxFactory.SeparatedList<ExpressionSyntax>().Add((ExpressionSyntax) Visit(obj.Counter));
+
             return SyntaxFactory.ForStatement(vTypeSyntax,
                 EmptyList,
                 (ExpressionSyntax) Visit(obj.Condition),
-                new SeparatedSyntaxList<ExpressionSyntax> {(ExpressionSyntax) Visit(obj.Counter)},
+                inc,
                 (BlockSyntax) Visit(obj.InstructionsBody));
         }
 
