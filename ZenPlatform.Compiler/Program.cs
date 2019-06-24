@@ -31,10 +31,12 @@ type HelloWorld
 
     public <int> PublicMethod(<string, int> arg)
     {
-        <int, string> a =  (2 + 2) * a;
-        //<int, string> b = ""Hello epta""; 
+        <int, string> a =  (2 + 2) * 3;
+        <int, string> b = ""Hello epta""; 
         //a = arg;        
         //b = a;
+
+        a++;
 
         for(int i = 1; i < 10; i++)
         {
