@@ -24,6 +24,11 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// </summary>
         public string Value;
 
+        /// <summary>
+        /// Действительное значение
+        /// </summary>
+        public object ObjectiveValue { get; set; }
+
         public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Type);

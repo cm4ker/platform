@@ -228,7 +228,7 @@ namespace ZenPlatform.Compiler.AST
 
         public override AstNode VisitLiteral(ZSharpParser.LiteralContext context)
         {
-            AstNode result = null;
+            Literal result = null;
             ILineInfo li = context.start.ToLineInfo();
             if (context.string_literal() != null)
             {
@@ -244,15 +244,29 @@ namespace ZenPlatform.Compiler.AST
                     result = new Literal(li, text.Substring(1, text.Length - 2), new SingleTypeNode(li, _sb.String));
                 else
                     result = new Literal(li, text.Substring(2, text.Length - 3), new SingleTypeNode(li, _sb.String));
+
+                result.ObjectiveValue = result.Value;
             }
             else if (context.boolean_literal() != null)
+            {
                 result = new Literal(li, context.GetText(), new SingleTypeNode(li, _sb.Bool));
+                result.ObjectiveValue = bool.Parse(result.Value);
+            }
             else if (context.INTEGER_LITERAL() != null)
+            {
                 result = new Literal(li, context.GetText(), new SingleTypeNode(li, _sb.Int));
+                result.ObjectiveValue = int.Parse(result.Value);
+            }
             else if (context.REAL_LITERAL() != null)
+            {
                 result = new Literal(li, context.GetText(), new SingleTypeNode(li, _sb.Double));
+                result.ObjectiveValue = double.Parse(result.Value);
+            }
             else if (context.CHARACTER_LITERAL() != null)
+            {
                 result = new Literal(li, context.GetText().Substring(1, 1), new SingleTypeNode(li, _sb.Char));
+                result.ObjectiveValue = result.Value[0];
+            }
 
             //TODO: Не обработанным остался HEX INTEGER LITERAL его необходимо доделать
 

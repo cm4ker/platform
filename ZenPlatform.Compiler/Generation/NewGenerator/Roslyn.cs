@@ -125,12 +125,21 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         private SyntaxList<SyntaxNode> NormolizeTypeBody(TypeBody tb)
         {
-            return new SyntaxList<SyntaxNode>(tb.Functions.Select(Visit).Cast<MemberDeclarationSyntax>());
+            return new SyntaxList<SyntaxNode>()
+                .AddRange(tb.Fields.Select(Visit).Cast<MemberDeclarationSyntax>())
+                .AddRange(tb.Functions.Select(Visit).Cast<MemberDeclarationSyntax>());
         }
 
         private SyntaxList<StatementSyntax> GetStatements(InstructionsBodyNode node)
         {
-            return new SyntaxList<StatementSyntax>(node.Statements.Select(x => Visit(x)).Cast<StatementSyntax>());
+            return new SyntaxList<StatementSyntax>(node.Statements.Select(x =>
+            {
+                var r = Visit(x);
+
+                if (r is ExpressionSyntax es)
+                    r = SyntaxFactory.ExpressionStatement(es);
+                return r;
+            }).Cast<StatementSyntax>());
         }
 
         public override SyntaxNode VisitVariable(Variable obj)
@@ -149,19 +158,82 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         private TypeSyntax GetTypeSyntax(TypeNode tn)
         {
-            return SyntaxFactory.ParseTypeName(tn.Type.Name);
+            return GetStandardType(tn) ?? SyntaxFactory.ParseTypeName(tn.Type.Name);
         }
 
         public override SyntaxNode VisitLiteral(Literal obj)
         {
-            return SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression,
-                SyntaxFactory.Literal(obj.Value));
+            return SyntaxFactory.LiteralExpression(GetLiteralKind(obj),
+                GetLiteralSyntaxToken(obj));
+        }
+
+        private TypeSyntax GetStandardType(TypeNode node)
+        {
+    
+            switch (node.Type.Name)
+            {
+                case "String": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
+                case "Int32": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword));
+                case "Double": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.DoubleKeyword));
+                case "Bool": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
+                case "Char": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.CharKeyword));
+                case "Void": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
+            }
+
+            return null;
+        }
+
+        private SyntaxToken GetLiteralSyntaxToken(Literal node)
+        {
+            switch (node.Type.Type.Name)
+            {
+                case "String": return SyntaxFactory.Literal(node.Value);
+                case "Int32": return SyntaxFactory.Literal((int) node.ObjectiveValue);
+                case "Double": return SyntaxFactory.Literal((double) node.ObjectiveValue);
+                case "Bool" when (bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.TrueKeyword);
+                case "Bool" when !(bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.FalseKeyword);
+                case "Char": return SyntaxFactory.Literal((char) node.ObjectiveValue);
+            }
+
+            throw new Exception($"We can't process this literal kind {node.Type.Type.Name}");
+        }
+
+        private SyntaxKind GetLiteralKind(Literal node)
+        {
+            switch (node.Type.Type.Name)
+            {
+                case "String": return SyntaxKind.StringLiteralExpression;
+                case "Int32":
+                case "Double": return SyntaxKind.NumericLiteralExpression;
+                case "Bool" when (bool) node.ObjectiveValue: return SyntaxKind.TrueLiteralExpression;
+                case "Bool" when !(bool) node.ObjectiveValue: return SyntaxKind.FalseLiteralExpression;
+                case "Char": return SyntaxKind.CharacterLiteralExpression;
+            }
+
+
+            throw new Exception($"We can't process this literal kind {node.Type.Type.Name}");
+        }
+
+
+        public override SyntaxNode VisitField(Field obj)
+        {
+            return SyntaxFactory.FieldDeclaration(
+                SyntaxFactory.VariableDeclaration(GetTypeSyntax(obj.Type))
+                    .AddVariables(SyntaxFactory.VariableDeclarator(obj.Name)));
         }
 
         public override SyntaxNode VisitFunction(Function obj)
         {
+            ParameterListSyntax pl = SyntaxFactory.ParameterList();
+
+            foreach (var p in obj.Parameters)
+            {
+                pl = pl.AddParameters((ParameterSyntax) VisitParameter(p));
+            }
+
             return SyntaxFactory.MethodDeclaration(GetTypeSyntax(obj.Type), obj.Name)
-                .WithBody((BlockSyntax) Visit(obj.InstructionsBody));
+                .WithBody((BlockSyntax) Visit(obj.InstructionsBody))
+                .WithParameterList(pl);
         }
 
         public override SyntaxNode VisitInstructionsBody(InstructionsBodyNode obj)
@@ -181,6 +253,11 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             return SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression, ParseName(obj.Name),
                 (ExpressionSyntax) Visit(obj.Value)));
+        }
+
+        public override SyntaxNode VisitParameter(Parameter obj)
+        {
+            return SyntaxFactory.Parameter(SyntaxFactory.Identifier(obj.Name)).WithType(GetTypeSyntax(obj.Type));
         }
 
         public override SyntaxNode VisitFor(For obj)
