@@ -119,6 +119,7 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitProperty(Property obj)
         {
+            if (obj.Setter == null) return null;
             if (obj.Setter.SymbolTable == null)
             {
                 var parent = obj.GetParent<TypeBody>().SymbolTable;

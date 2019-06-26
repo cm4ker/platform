@@ -29,6 +29,7 @@ type HelloWorld
 {
     int _someField;
 
+
     public <int> PublicMethod(<string, int> arg)
     {
         <int, string> a =  (2 + 2) * 3;
@@ -36,7 +37,9 @@ type HelloWorld
         //a = arg;        
         //b = a;
 
-        a++;
+        string u = ""test"";
+
+        int varint = (int)a;
 
         for(int i = 1; i < 10; i++)
         {
@@ -46,12 +49,13 @@ type HelloWorld
         return (2 + 2) * 3 + 1;//b; //result 1;
     }
     
+    [ClientCall]
     void PrivateMethod()
     {
 
     }
 
-   // public int Property {get { return 1; } set {_someField = value;}}
+    public int Property {get; set;}
 }");
            
             CompilationBackend cb = new CompilationBackend();
