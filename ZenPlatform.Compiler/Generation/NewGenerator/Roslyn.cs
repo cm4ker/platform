@@ -107,7 +107,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override SyntaxNode VisitReturn(Return obj)
         {
-            if (obj.GetParent<Function>().Type is MultiTypeNode mt)
+            if (obj.GetParent<Function>()?.Type is MultiTypeNode mt)
                 return SyntaxFactory.ReturnStatement(WrapMultitype(obj.Value, mt));
             return SyntaxFactory.ReturnStatement((ExpressionSyntax) Visit(obj.Value));
         }
@@ -127,7 +127,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         {
             return new SyntaxList<SyntaxNode>()
                 .AddRange(tb.Fields.Select(Visit).Cast<MemberDeclarationSyntax>())
-                .AddRange(tb.Functions.Select(Visit).Cast<MemberDeclarationSyntax>());
+                .AddRange(tb.Functions.Select(Visit).Cast<MemberDeclarationSyntax>())
+                .AddRange(tb.Properties.Select(Visit).Cast<MemberDeclarationSyntax>());
         }
 
         private SyntaxList<StatementSyntax> GetStatements(InstructionsBodyNode node)
@@ -144,17 +145,44 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override SyntaxNode VisitVariable(Variable obj)
         {
-            return SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(GetTypeSyntax(obj.Type))
+            if (obj.Type is MultiTypeNode mt)
+            {
+                //мы должны обернуть все
+                return SyntaxFactory.LocalDeclarationStatement(SyntaxFactory
+                    .VariableDeclaration(GetTypeSyntax(obj.Type))
+                    .AddVariables(GetVariabbleWithInit(obj.Name, obj.Value, true, mt.DeclName)));
+            }
+
+            return SyntaxFactory.LocalDeclarationStatement(SyntaxFactory
+                .VariableDeclaration(GetTypeSyntax(obj.Type))
                 .AddVariables(GetVariabbleWithInit(obj.Name, obj.Value)));
         }
 
-
-        private VariableDeclaratorSyntax GetVariabbleWithInit(string vName, AstNode exp)
+        private VariableDeclaratorSyntax GetVariabbleWithInit(string vName, AstNode exp, bool mt = false,
+            string varInit = null)
         {
+            if (mt)
+            {
+                var mtType = SyntaxFactory.IdentifierName("MultiTypeDataStorage");
+                var init = SyntaxFactory.ObjectCreationExpression(mtType)
+                    .WithArgumentList(SyntaxFactory.ArgumentList()
+                        .AddArguments(
+                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("MT_1"))
+                            , SyntaxFactory.Argument((ExpressionSyntax) Visit(exp))));
+
+                return SyntaxFactory.VariableDeclarator(vName)
+                    .WithInitializer(SyntaxFactory.EqualsValueClause(init));
+            }
+
+
             return SyntaxFactory.VariableDeclarator(vName)
                 .WithInitializer(SyntaxFactory.EqualsValueClause((ExpressionSyntax) Visit(exp)));
         }
 
+        public override SyntaxNode VisitCastExpression(CastExpression obj)
+        {
+            return SyntaxFactory.CastExpression(GetTypeSyntax(obj.Type), (ExpressionSyntax) Visit(obj.Value));
+        }
 
         private TypeSyntax GetTypeSyntax(TypeNode tn)
         {
@@ -167,9 +195,33 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 GetLiteralSyntaxToken(obj));
         }
 
+
+        public override SyntaxNode VisitProperty(Property obj)
+        {
+            AccessorDeclarationSyntax getAccessor, setAccessor;
+
+            if (obj.Getter != null)
+                getAccessor = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration,
+                    (BlockSyntax) Visit(obj.Getter));
+            else
+                getAccessor = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+
+
+            if (obj.Setter != null)
+                setAccessor = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration,
+                    (BlockSyntax) Visit(obj.Setter));
+            else
+                setAccessor = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+
+            return SyntaxFactory.PropertyDeclaration(GetTypeSyntax(obj.Type), obj.Name)
+                .AddAccessorListAccessors(getAccessor)
+                .AddAccessorListAccessors(setAccessor);
+        }
+
         private TypeSyntax GetStandardType(TypeNode node)
         {
-    
             switch (node.Type.Name)
             {
                 case "String": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
