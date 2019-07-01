@@ -61,11 +61,18 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         }
     }
 
+    public class CompilationOptions
+    {
+        public CompilationMode Mode { get; set; }
+    }
 
     public class VRoslyn : AstVisitorBase<SyntaxNode>
     {
-        public VRoslyn()
+        private readonly CompilationOptions _opts;
+
+        public VRoslyn(CompilationOptions opts)
         {
+            _opts = opts;
         }
 
         public override SyntaxNode VisitLogicalOrArithmeticExpression(LogicalOrArithmeticExpression arg)
@@ -283,10 +290,42 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 pl = pl.AddParameters((ParameterSyntax) VisitParameter(p));
             }
 
+
+            //Если мы компилируем для клиента, то на все вызывные функции необходимо вставить метод заглушку, котоырй будет дёргать клиента
+            if (((obj.Flags | FunctionFlags.ServerClientCall) > 0) && _opts.Mode == CompilationMode.Client)
+            {
+                var invokeExpr = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.ParseName("GlobalScope"), SyntaxFactory.IdentifierName("Client"));
+
+                var block = SyntaxFactory.Block()
+                    .AddStatements(
+                        SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                    invokeExpr, SyntaxFactory.GenericName(
+                                        SyntaxFactory.Identifier("Invoke"),
+                                        SyntaxFactory.TypeArgumentList()
+                                            .AddArguments(GetTypeSyntax(obj.Type))
+                                            .AddArguments(SyntaxFactory.ParseTypeName("object[]"))))
+                            ).AddArgumentListArguments(
+                                obj.Parameters.Select(x => SyntaxFactory.Argument(SyntaxFactory.IdentifierName(x.Name)))
+                                    .ToArray()
+                            )));
+
+                if (obj.Type.Type.Name != "Void")
+                    block = block.ReplaceNode(block.Statements[0], SyntaxFactory.ReturnStatement(
+                        ((ExpressionStatementSyntax) block.Statements[0]).Expression));
+
+                return SyntaxFactory.MethodDeclaration(GetTypeSyntax(obj.Type), obj.Name)
+                    .WithBody(block)
+                    .WithParameterList(pl);
+            }
+
             return SyntaxFactory.MethodDeclaration(GetTypeSyntax(obj.Type), obj.Name)
                 .WithBody((BlockSyntax) Visit(obj.InstructionsBody))
                 .WithParameterList(pl);
         }
+
 
         public override SyntaxNode VisitInstructionsBody(InstructionsBodyNode obj)
         {

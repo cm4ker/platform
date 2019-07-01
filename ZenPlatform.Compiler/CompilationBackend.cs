@@ -12,6 +12,7 @@ using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.AST.Definitions;
+using CompilationOptions = ZenPlatform.Compiler.Generation.NewGenerator.CompilationOptions;
 
 namespace ZenPlatform.Compiler
 {
@@ -69,8 +70,8 @@ namespace ZenPlatform.Compiler
 
             AstSymbolVisitor sv = new AstSymbolVisitor();
             sv.Visit(glob);
-            
-            VRoslyn r = new VRoslyn();
+
+            VRoslyn r = new VRoslyn(new CompilationOptions() {Mode = CompilationMode.Client});
 
             var t = r.Visit(module);
             Console.WriteLine(t.NormalizeWhitespace().ToFullString());
@@ -79,7 +80,7 @@ namespace ZenPlatform.Compiler
 
             //Gen
             //Перед генерацией необходимо подготовить дерево символов
-           
+
 
             AstCreateMultitype cm = new AstCreateMultitype(ab);
             glob.Accept(cm);
