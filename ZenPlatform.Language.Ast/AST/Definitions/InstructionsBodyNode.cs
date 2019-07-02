@@ -8,11 +8,11 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Блок инструкций
     /// </summary>
-    public class InstructionsBodyNode : AstNode
+    public class InstructionsBodyNode : AstNode, IScoped
     {
         public StatementCollection Statements;
 
-        public SymbolTable SymbolTable = null;
+        public SymbolTable SymbolTable { get; set; }
 
         /// <summary>
         /// Создать блок из коллекции инструкций
@@ -32,7 +32,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
         public override void Accept<T>(IVisitor<T> visitor)
         {
-            foreach (var statement in Statements) 
+            foreach (var statement in Statements)
                 visitor.Visit(statement);
         }
     }
