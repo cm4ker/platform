@@ -33,7 +33,6 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         public string Name { get; set; }
     }
 
-
     public class Infrastructure
     {
         private AdhocWorkspace _workspace;
@@ -146,6 +145,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
                 if (r is ExpressionSyntax es)
                     r = SyntaxFactory.ExpressionStatement(es);
+
                 return r;
             }).Cast<StatementSyntax>());
         }
@@ -202,6 +202,15 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 GetLiteralSyntaxToken(obj));
         }
 
+        public override SyntaxNode VisitIf(If obj)
+        {
+            var @if = SyntaxFactory.IfStatement((ExpressionSyntax) Visit(obj.Condition),
+                (BlockSyntax) Visit(obj.IfInstructionsBody));
+
+            if (obj.ElseInstructionsBody != null)
+                return @if.WithElse(SyntaxFactory.ElseClause((BlockSyntax) Visit(obj.ElseInstructionsBody)));
+            return @if;
+        }
 
         public override SyntaxNode VisitProperty(Property obj)
         {
@@ -234,7 +243,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 case "String": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
                 case "Int32": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword));
                 case "Double": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.DoubleKeyword));
-                case "Bool": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
+                case "Boolean": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
                 case "Char": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.CharKeyword));
                 case "Void": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
             }
@@ -249,8 +258,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 case "String": return SyntaxFactory.Literal(node.Value);
                 case "Int32": return SyntaxFactory.Literal((int) node.ObjectiveValue);
                 case "Double": return SyntaxFactory.Literal((double) node.ObjectiveValue);
-                case "Bool" when (bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.TrueKeyword);
-                case "Bool" when !(bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.FalseKeyword);
+                case "Boolean" when (bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.TrueKeyword);
+                case "Boolean" when !(bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.FalseKeyword);
                 case "Char": return SyntaxFactory.Literal((char) node.ObjectiveValue);
             }
 
@@ -264,8 +273,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 case "String": return SyntaxKind.StringLiteralExpression;
                 case "Int32":
                 case "Double": return SyntaxKind.NumericLiteralExpression;
-                case "Bool" when (bool) node.ObjectiveValue: return SyntaxKind.TrueLiteralExpression;
-                case "Bool" when !(bool) node.ObjectiveValue: return SyntaxKind.FalseLiteralExpression;
+                case "Boolean" when (bool) node.ObjectiveValue: return SyntaxKind.TrueLiteralExpression;
+                case "Boolean" when !(bool) node.ObjectiveValue: return SyntaxKind.FalseLiteralExpression;
                 case "Char": return SyntaxKind.CharacterLiteralExpression;
             }
 
@@ -290,9 +299,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 pl = pl.AddParameters((ParameterSyntax) VisitParameter(p));
             }
 
-
             //Если мы компилируем для клиента, то на все вызывные функции необходимо вставить метод заглушку, котоырй будет дёргать клиента
-            if (((obj.Flags | FunctionFlags.ServerClientCall) > 0) && _opts.Mode == CompilationMode.Client)
+            if (obj.Flags == FunctionFlags.ServerClientCall && _opts.Mode == CompilationMode.Client)
             {
                 var invokeExpr = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.ParseName("GlobalScope"), SyntaxFactory.IdentifierName("Client"));
@@ -334,7 +342,10 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override SyntaxNode VisitModule(Module obj)
         {
-            return SyntaxFactory.ClassDeclaration(obj.Name);
+            return SyntaxFactory.ClassDeclaration(obj.Name)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                .WithMembers(NormolizeTypeBody(obj.TypeBody));
         }
 
         private SeparatedSyntaxList<ExpressionSyntax> EmptyList = new SeparatedSyntaxList<ExpressionSyntax>();
@@ -402,6 +413,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 BinaryOperatorType.Multiply => SyntaxKind.MultiplyExpression,
                 BinaryOperatorType.Or => SyntaxKind.LogicalOrExpression,
                 BinaryOperatorType.LessThen => SyntaxKind.LessThanExpression,
+                BinaryOperatorType.GreaterThen => SyntaxKind.GreaterThanExpression,
                 _ => throw new Exception("Can't")
                 };
             return SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryExpression(kind, left, right));

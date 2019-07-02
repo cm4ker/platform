@@ -46,7 +46,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType Char => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Char)}", MSCORLIB);
 
-        public IType Bool => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Bool)}", MSCORLIB);
+        public IType Bool => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Boolean)}", MSCORLIB);
 
         public IType Double => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Double)}", MSCORLIB);
 

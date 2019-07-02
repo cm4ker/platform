@@ -1,13 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Compiler\ZenPlatform.Compiler.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Language.Infrastructure\ZenPlatform.Language.Infrastructure.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Compiler\ZenPlatform.Compiler.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Language.Infrastructure\ZenPlatform.Language.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+
     </ItemGroup>
 
 </Project>
