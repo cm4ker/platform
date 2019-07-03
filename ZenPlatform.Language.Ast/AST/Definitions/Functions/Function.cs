@@ -16,7 +16,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         /// <summary>
         /// Тело функции
         /// </summary>
-        public InstructionsBodyNode InstructionsBody;
+        public BlockNode Block;
 
         /// <summary>
         /// Тип функции
@@ -51,10 +51,10 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         /// <summary>
         /// Создать объект функции
         /// </summary>
-        public Function(ILineInfo li, InstructionsBodyNode instructionsBody, ParameterCollection parameters,
+        public Function(ILineInfo li, BlockNode block, ParameterCollection parameters,
             string name, TypeNode type, AttributeCollection ac) : base(li)
         {
-            InstructionsBody = instructionsBody;
+            Block = block;
             Parameters = parameters ?? new ParameterCollection();
             Name = name;
             Type = type;
@@ -75,7 +75,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
                     visitor.Visit(parameter);
                 }
 
-            visitor.Visit(InstructionsBody);
+            visitor.Visit(Block);
         }
     }
 
@@ -119,8 +119,8 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
 
         public TypeNode Type { get; set; }
 
-        public InstructionsBodyNode Getter { get; set; }
-        public InstructionsBodyNode Setter { get; set; }
+        public BlockNode Getter { get; set; }
+        public BlockNode Setter { get; set; }
 
         public override void Accept<T>(IVisitor<T> visitor)
         {

@@ -60,8 +60,8 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType Client => FindType<Client>();
 
-        public IType MultiType => FindType<MultiType>();
+        public IType MultiType => FindType<UnionType>();
 
-        public IType MultiTypeDataStorage => FindType<MultiTypeDataStorage>();
+        public IType UnionTypeStorage => FindType<UnionTypeStorage>();
     }
 }

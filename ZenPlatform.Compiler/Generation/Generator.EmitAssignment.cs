@@ -49,12 +49,12 @@ namespace ZenPlatform.Compiler.Generation
                 if (mtNode)
                 {
                     if (!(assignment.Value.Type.Type.Equals(_bindings.Object)
-                          || assignment.Value.Type.Type.Equals(_bindings.MultiTypeDataStorage)))
+                          || assignment.Value.Type.Type.Equals(_bindings.UnionTypeStorage)))
                     {
                         e.Box(assignment.Value.Type.Type);
                     }
 
-                    e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
+                    e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
                     return;
                 }
 

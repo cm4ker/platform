@@ -60,7 +60,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public FunctionBuilder WithFunction(string name, string type)
         {
-            var f = new Function(null, new InstructionsBodyNode(new StatementCollection()),
+            var f = new Function(null, new BlockNode(new StatementCollection()),
                 new ParameterCollection(), name, new SingleTypeNode(null, type), new AttributeCollection());
             _module.TypeBody.Functions.Add(f);
             return new FunctionBuilder(f);
@@ -102,7 +102,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
         public FunctionBuilder(Function function)
         {
             _function = function;
-            _sb = new StatementBuilder(_function.InstructionsBody);
+            _sb = new StatementBuilder(_function.Block);
         }
 
         public ParameterBuilder WithParameter(string name, string type, PassMethod pm)
@@ -116,9 +116,9 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
     public class StatementBuilder
     {
-        private readonly InstructionsBodyNode _body;
+        private readonly BlockNode _body;
 
-        public StatementBuilder(InstructionsBodyNode body)
+        public StatementBuilder(BlockNode body)
         {
             _body = body;
         }

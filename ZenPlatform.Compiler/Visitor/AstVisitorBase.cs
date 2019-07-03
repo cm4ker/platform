@@ -126,7 +126,7 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<TypeNode>(VisitType)
                 .CaseIs<SingleTypeNode>(VisitSingleType)
                 .CaseIs<MultiTypeNode>(VisitMultiType)
-                .CaseIs<InstructionsBodyNode>(VisitInstructionsBody)
+                .CaseIs<BlockNode>(VisitInstructionsBody)
                 .CaseIs<Variable>(VisitVariable)
                 .CaseIs<Assignment>(VisitAssigment)
                 .CaseIs<PostIncrementStatement>(VisitPostIncrementStatement)
@@ -250,7 +250,7 @@ namespace ZenPlatform.Compiler.Visitor
             return default;
         }
 
-        public virtual T VisitInstructionsBody(InstructionsBodyNode obj)
+        public virtual T VisitInstructionsBody(BlockNode obj)
         {
             return default;
         }

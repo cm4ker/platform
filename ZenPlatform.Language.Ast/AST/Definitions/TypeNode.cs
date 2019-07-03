@@ -46,6 +46,15 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         }
     }
 
+    /*
+     *     Мультитипы.
+     *     Очень спорная технология.
+     *
+     *     1) Преимущества: мы можем 
+     *
+     *
+     * 
+     */
     public class MultiTypeNode : TypeNode
     {
         private readonly TypeCollection _types;

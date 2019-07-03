@@ -8,7 +8,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Блок инструкций
     /// </summary>
-    public class InstructionsBodyNode : AstNode, IScoped
+    public class BlockNode : AstNode, IScoped
     {
         public StatementCollection Statements;
 
@@ -17,7 +17,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// <summary>
         /// Создать блок из коллекции инструкций
         /// </summary>
-        public InstructionsBodyNode(StatementCollection statements) : base(null)
+        public BlockNode(StatementCollection statements) : base(null)
         {
             if (statements == null)
                 return;

@@ -110,7 +110,7 @@ namespace ZenPlatform.Compiler.AST
             var tc = new TypeCollection();
             _syntaxStack.PopUntil(marker, tc);
             var result = new MultiTypeNode(context.start.ToLineInfo(), tc);
-            result.SetType(_sb.MultiTypeDataStorage);
+            result.SetType(_sb.UnionTypeStorage);
             _syntaxStack.Push(result);
             return result;
         }
@@ -119,7 +119,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitPropertyDeclaration(context);
 
-            InstructionsBodyNode set = null, get = null;
+            BlockNode set = null, get = null;
             if (context.setInst != null)
             {
                 set = _syntaxStack.PopInstructionsBody();
@@ -346,7 +346,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitInstructionsBody(context);
             var sc = (StatementCollection) _syntaxStack.Pop();
-            _syntaxStack.Push(new InstructionsBodyNode(sc));
+            _syntaxStack.Push(new BlockNode(sc));
             return null;
         }
 
@@ -518,11 +518,11 @@ namespace ZenPlatform.Compiler.AST
             Extension result;
 
             var extensionObj = _syntaxStack.Pop();
-            if (extensionObj is InstructionsBodyNode ib)
+            if (extensionObj is BlockNode ib)
             {
                 result = new Extension(context.start.ToLineInfo(), _syntaxStack.PopString(),
                     ExtensionKind.Instructions);
-                result.InstructionsBody = ib;
+                result.Block = ib;
             }
             else
             {
@@ -696,7 +696,7 @@ namespace ZenPlatform.Compiler.AST
             if (context.statement() != null)
             {
                 _syntaxStack.Pop();
-                _syntaxStack.Push(new InstructionsBodyNode(sc));
+                _syntaxStack.Push(new BlockNode(sc));
             }
 
             return null;
@@ -706,7 +706,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitIfStatement(context);
 
-            InstructionsBodyNode @else = null;
+            BlockNode @else = null;
 
             if (context.ELSE() != null)
             {
@@ -749,7 +749,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitTryStatement(context);
 
-            InstructionsBodyNode @catch = null, @finally = null;
+            BlockNode @catch = null, @finally = null;
 
             if (context.finallyExp != null)
             {

@@ -6,11 +6,11 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
     public class Do : Statement
     {
         public Expression Condition;
-        public InstructionsBodyNode InstructionsBody;
+        public BlockNode Block;
 
-        public Do(ILineInfo li, Expression condition, InstructionsBodyNode instructionsBody) : base(li)
+        public Do(ILineInfo li, Expression condition, BlockNode block) : base(li)
         {
-            InstructionsBody = instructionsBody;
+            Block = block;
             Condition = condition;
         }
 
@@ -22,8 +22,8 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
 
     public class Try : Statement
     {
-        public Try(ILineInfo lineInfo, InstructionsBodyNode tryBlock, InstructionsBodyNode catchBlock,
-            InstructionsBodyNode finallyBlock) : base(lineInfo)
+        public Try(ILineInfo lineInfo, BlockNode tryBlock, BlockNode catchBlock,
+            BlockNode finallyBlock) : base(lineInfo)
         {
             TryBlock = tryBlock;
             CatchBlock = catchBlock;
@@ -31,9 +31,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
         }
 
 
-        public InstructionsBodyNode TryBlock { get; set; }
-        public InstructionsBodyNode CatchBlock { get; set; }
-        public InstructionsBodyNode FinallyBlock { get; set; }
+        public BlockNode TryBlock { get; set; }
+        public BlockNode CatchBlock { get; set; }
+        public BlockNode FinallyBlock { get; set; }
 
         public override void Accept<T>(IVisitor<T> visitor)
         {

@@ -64,7 +64,7 @@ static public class Test
                 @"
 static public class Test
 {
-    int Sum(MultiTypeDataStorage a, int b)
+    int Sum(UnionTypeStorage a, int b)
     {
         return ((int)a.Value + b);
     }

@@ -50,7 +50,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             var bindings = context.Bindings;
 
-            ILocal local = e.DefineLocal(context.Bindings.MultiTypeDataStorage);
+            ILocal local = e.DefineLocal(context.Bindings.UnionTypeStorage);
             var mt = context.Assembly.FindType("PlatformCustom.DefinedMultitypes");
 
             e.LdLocA(local)
@@ -63,7 +63,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 e.LdNull();
             }
 
-            e.EmitCall(context.Bindings.MultiTypeDataStorage.FindConstructor(bindings.MultiType,
+            e.EmitCall(context.Bindings.UnionTypeStorage.FindConstructor(bindings.MultiType,
                 bindings.Object));
 
             return true;

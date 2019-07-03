@@ -8,11 +8,11 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void LoadValue(IEmitter e, InstructionsBodyNode context)
+        private void LoadValue(IEmitter e, BlockNode context)
         {
         }
 
-        private void EmitVariable(IEmitter e, InstructionsBodyNode context, Variable variable)
+        private void EmitVariable(IEmitter e, BlockNode context, Variable variable)
         {
             //load phase 
 
@@ -92,22 +92,22 @@ namespace ZenPlatform.Compiler.Generation
             e.LdLocA(local);
             e.Dup();
             e.LdsFld(mt.FindField(mtn.DeclName));
-            e.EmitCall(_bindings.MultiTypeDataStorage.FindConstructor(_bindings.MultiType));
+            e.EmitCall(_bindings.UnionTypeStorage.FindConstructor(_bindings.MultiType));
             e.LdLoc(local);
-            e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
+            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
             e.LdLoc(local);
         }
 
         private void WrapMultitypeNode(IEmitter e, MultiTypeNode mtn, ref ILocal local)
         {
-            var localWrap = e.DefineLocal(_bindings.MultiTypeDataStorage);
+            var localWrap = e.DefineLocal(_bindings.UnionTypeStorage);
             var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
             e.LdLocA(localWrap);
             e.Dup();
             e.LdsFld(mt.FindField(mtn.DeclName));
-            e.EmitCall(_bindings.MultiTypeDataStorage.FindConstructor(_bindings.MultiType));
+            e.EmitCall(_bindings.UnionTypeStorage.FindConstructor(_bindings.MultiType));
             e.LdLoc(local);
-            e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
+            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
             local = localWrap;
         }
     }

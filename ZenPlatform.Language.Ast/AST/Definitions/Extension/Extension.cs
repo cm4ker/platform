@@ -12,7 +12,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Extension
 
         public string Path;
 
-        public InstructionsBodyNode InstructionsBody { get; set; }
+        public BlockNode Block { get; set; }
 
         public ExtensionKind Kind;
 

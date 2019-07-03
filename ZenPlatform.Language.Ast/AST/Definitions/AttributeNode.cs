@@ -21,7 +21,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Type);
-            foreach (var argument in Arguments) 
+            foreach (var argument in Arguments)
                 visitor.Visit(argument);
         }
     }
