@@ -29,7 +29,6 @@ type HelloWorld
 {
     int _someField;
 
-
     public <int> PublicMethod(<string, int> arg)
     {
         <int, string> a =  (2 + 2) * 3;
@@ -56,11 +55,20 @@ type HelloWorld
     }
 
     public int Property {get; set;}
-}");
-           
+}
+
+module TestModule
+{
+    int Test()
+    {
+        string Privet = ""test"";
+    }
+}
+");
+
             CompilationBackend cb = new CompilationBackend();
             var b = cb.Compile(text);
-            
+
             //var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Debug.dll");
             var path = "Debug.dll";
             if (File.Exists(path))

@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.Generation
             if (!function.Type.Type.Equals(_bindings.Void))
                 resultVar = emitter.DefineLocal(function.Type.Type);
             var returnLabel = emitter.DefineLabel();
-            EmitBody(emitter, function.InstructionsBody, returnLabel, ref resultVar);
+            EmitBody(emitter, function.Block, returnLabel, ref resultVar);
             emitter.MarkLabel(returnLabel);
 
             if (resultVar != null)

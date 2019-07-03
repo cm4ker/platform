@@ -214,7 +214,7 @@ namespace ZenPlatform.Compiler.Generation
                     if (name.Type is MultiTypeNode)
                     {
                         e.LdLocA(vd);
-                        e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Getter);
+                        e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
                     }
                     else
                         e.LdLoc(vd);
@@ -228,7 +228,7 @@ namespace ZenPlatform.Compiler.Generation
                     if (name.Type is MultiTypeNode)
                     {
                         e.LdArgA(pd);
-                        e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Getter);
+                        e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
                     }
                     else
                         e.LdArg(pd.ArgIndex);
@@ -384,7 +384,7 @@ namespace ZenPlatform.Compiler.Generation
                 foreach (var p in function.Parameters)
                 {
                     var codeObj = method.WithParameter(p.Name, p.Type.Type, false, false);
-                    function.InstructionsBody.SymbolTable.ConnectCodeObject(p, codeObj);
+                    function.Block.SymbolTable.ConnectCodeObject(p, codeObj);
                 }
             }
 

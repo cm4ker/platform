@@ -6,23 +6,23 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
     public class If : Statement
     {
         public Expression Condition;
-        public InstructionsBodyNode IfInstructionsBody;
-        public InstructionsBodyNode ElseInstructionsBody;
+        public BlockNode IfBlock;
+        public BlockNode ElseBlock;
 
-        public If(ILineInfo li, InstructionsBodyNode elseInstructionsBody, InstructionsBodyNode ifInstructionsBody,
+        public If(ILineInfo li, BlockNode elseBlock, BlockNode ifBlock,
             Expression condition)
             : base(li)
         {
-            ElseInstructionsBody = elseInstructionsBody;
-            IfInstructionsBody = ifInstructionsBody;
+            ElseBlock = elseBlock;
+            IfBlock = ifBlock;
             Condition = condition;
         }
 
         public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Condition);
-            visitor.Visit(IfInstructionsBody);
-            visitor.Visit(ElseInstructionsBody);
+            visitor.Visit(IfBlock);
+            visitor.Visit(ElseBlock);
         }
     }
 }

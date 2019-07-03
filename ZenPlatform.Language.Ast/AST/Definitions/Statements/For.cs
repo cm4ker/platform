@@ -9,12 +9,12 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
         public Expression Condition;
         public Statement Counter;
 
-        public InstructionsBodyNode InstructionsBody;
+        public BlockNode Block;
 
-        public For(ILineInfo li, InstructionsBodyNode instructionsBody, Statement counter, Expression condition,
+        public For(ILineInfo li, BlockNode block, Statement counter, Expression condition,
             Statement initializer) : base(li)
         {
-            InstructionsBody = instructionsBody;
+            Block = block;
             Counter = counter;
             Condition = condition;
             Initializer = initializer;
@@ -25,7 +25,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             visitor.Visit(Counter);
             visitor.Visit(Condition);
             visitor.Visit(Initializer);
-            visitor.Visit(InstructionsBody);
+            visitor.Visit(Block);
         }
     }
 }
