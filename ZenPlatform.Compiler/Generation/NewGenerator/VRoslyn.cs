@@ -49,7 +49,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             return SyntaxFactory.ParseName(name);
         }
 
-        private ExpressionSyntax WrapUnionType(Expression exp, MultiTypeNode mtn)
+        private ExpressionSyntax WrapUnionType(Expression exp, UnionTypeNode mtn)
         {
             var args = SyntaxFactory.ArgumentList().AddArguments(
                 SyntaxFactory.Argument(ParseName("a")),
@@ -62,7 +62,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override SyntaxNode VisitReturn(Return obj)
         {
-            if (obj.GetParent<Function>()?.Type is MultiTypeNode mt)
+            if (obj.GetParent<Function>()?.Type is UnionTypeNode mt)
                 return SyntaxFactory.ReturnStatement(WrapUnionType(obj.Value, mt));
             return SyntaxFactory.ReturnStatement((ExpressionSyntax) Visit(obj.Value));
         }
@@ -101,7 +101,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override SyntaxNode VisitVariable(Variable obj)
         {
-            if (obj.Type is MultiTypeNode mt)
+            if (obj.Type is UnionTypeNode mt)
             {
                 //мы должны обернуть все
                 return SyntaxFactory.LocalDeclarationStatement(SyntaxFactory
@@ -339,7 +339,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override SyntaxNode VisitName(Name obj)
         {
-            if (obj.Type is MultiTypeNode)
+            if (obj.Type is UnionTypeNode)
             {
                 return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                     ParseName(obj.Value), SyntaxFactory.IdentifierName("Value"));

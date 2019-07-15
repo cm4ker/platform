@@ -8,12 +8,12 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// </summary>
     public class AttributeNode : AstNode
     {
-        public AttributeNode(ILineInfo lineInfo, ArgumentCollection collection, TypeNode type) : base(lineInfo)
+        public AttributeNode(ILineInfo lineInfo, ArgumentCollection collection, SingleTypeNode type) : base(lineInfo)
         {
             Type = type;
         }
 
-        public TypeNode Type { get; set; }
+        public SingleTypeNode Type { get; set; }
 
         public ArgumentCollection Arguments { get; }
 
