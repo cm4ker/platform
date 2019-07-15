@@ -37,9 +37,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
                                       | ((IsServer) ? FunctionFlags.Server : 0)
                                       | ((IsClientCall) ? FunctionFlags.ServerClientCall : 0);
 
-        private bool IsServer => Attributes.Any(x => x.Type.Type.Name == "Server") || !Attributes.Any();
-        private bool IsClient => Attributes.Any(x => x.Type.Type.Name == "Client");
-        private bool IsClientCall => Attributes.Any(x => x.Type.Type.Name == "ClientCall");
+        private bool IsServer => Attributes.Any(x => x.Type.TypeName == "Server") || !Attributes.Any();
+        private bool IsClient => Attributes.Any(x => x.Type.TypeName == "Client");
+        private bool IsClientCall => Attributes.Any(x => x.Type.TypeName == "ClientCall");
 
         /// <summary>
         /// Билдер IL кода

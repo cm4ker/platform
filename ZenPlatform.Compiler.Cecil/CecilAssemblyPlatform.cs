@@ -11,6 +11,7 @@ namespace ZenPlatform.Compiler.Cecil
         }
 
         public IAssemblyFactory AsmFactory { get; }
+
         public ITypeSystem TypeSystem { get; }
     }
 }

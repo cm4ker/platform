@@ -47,7 +47,7 @@ namespace ZenPlatform.Compiler.Generation
                     EmitExpression(e, ret.Value, context.SymbolTable);
                 }
 
-                if (ret.GetParent<Function>().Type is MultiTypeNode mtn)
+                if (ret.GetParent<Function>().Type is UnionTypeNode mtn)
                 {
                     var exp = e.DefineLocal(ret.Value.Type.Type);
                     e.StLoc(exp);
