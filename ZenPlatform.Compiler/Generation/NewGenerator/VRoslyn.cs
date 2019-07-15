@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.AST.Definitions;
@@ -62,8 +63,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override SyntaxNode VisitReturn(Return obj)
         {
-            if (obj.GetParent<Function>()?.Type is MultiTypeNode mt)
-                return SyntaxFactory.ReturnStatement(WrapUnionType(obj.Value, mt));
+//            if (obj.GetParent<Function>()?.Type is MultiTypeNode mt)
+//                return SyntaxFactory.ReturnStatement(WrapUnionType(obj.Value, mt));
             return SyntaxFactory.ReturnStatement((ExpressionSyntax) Visit(obj.Value));
         }
 
@@ -119,12 +120,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         {
             if (mt)
             {
-                var mtType = SyntaxFactory.IdentifierName("MultiTypeDataStorage");
-                var init = SyntaxFactory.ObjectCreationExpression(mtType)
-                    .WithArgumentList(SyntaxFactory.ArgumentList()
-                        .AddArguments(
-                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("MT_1"))
-                            , SyntaxFactory.Argument((ExpressionSyntax) Visit(exp))));
+                var mtType = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ObjectKeyword));
+                var init = ((ExpressionSyntax) Visit(exp));
 
                 return SyntaxFactory.VariableDeclarator(vName)
                     .WithInitializer(SyntaxFactory.EqualsValueClause(init));
@@ -195,6 +192,10 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 case "Boolean": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
                 case "Char": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.CharKeyword));
                 case "Void": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
+                case "Object":
+                case nameof(UnionTypeStorage):
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ObjectKeyword));
+                    ;
             }
 
             return null;
@@ -345,9 +346,10 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                     ParseName(obj.Value), SyntaxFactory.IdentifierName("Value"));
             }
 
-
+            SyntaxFactory.ExpressionStatement()
             return SyntaxFactory.IdentifierName(obj.Value);
         }
+
 
         public override SyntaxNode VisitBinaryExpression(BinaryExpression obj)
         {
@@ -363,7 +365,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 BinaryOperatorType.Or => SyntaxKind.LogicalOrExpression,
                 BinaryOperatorType.LessThen => SyntaxKind.LessThanExpression,
                 BinaryOperatorType.GreaterThen => SyntaxKind.GreaterThanExpression,
-                _ => throw new Exception("Can't")
+                _ => throw new Exception("This syntax kind not supported")
                 };
             return SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryExpression(kind, left, right));
         }
