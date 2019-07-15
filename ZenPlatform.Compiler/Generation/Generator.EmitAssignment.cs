@@ -22,7 +22,7 @@ namespace ZenPlatform.Compiler.Generation
             // Non-indexed assignment
             if (assignment.Index == null)
             {
-                bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is MultiTypeNode;
+                bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is UnionTypeNode;
 
                 if (variable.CodeObject is IParameter pd)
                 {

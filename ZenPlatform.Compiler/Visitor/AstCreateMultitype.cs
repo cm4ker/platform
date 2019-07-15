@@ -44,7 +44,7 @@ namespace ZenPlatform.Compiler.Visitor
             return $"MT_{_mtIndex++}";
         }
 
-        public override object VisitMultiType(MultiTypeNode obj)
+        public override object VisitMultiType(UnionTypeNode obj)
         {
             var name = GetFieldName();
             obj.DeclName = name;
@@ -61,7 +61,7 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 e.Dup();
                 e.LdcI4(typeIndex++);
-                e.LdType(sType.Type);
+                //e.LdType(sType.Type);
                 e.StElemRef();
             }
 
@@ -76,7 +76,7 @@ namespace ZenPlatform.Compiler.Visitor
             return new FieldExpression(name, "Value");
         }
 
-        private void Transform(MultiTypeNode mtn)
+        private void Transform(UnionTypeNode mtn)
         {
             var parent = mtn.Parent;
 

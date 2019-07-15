@@ -56,7 +56,7 @@ namespace ZenPlatform.Compiler.Generation
 
             //store phase
             ILocal local;
-            if (variable.Type is MultiTypeNode)
+            if (variable.Type is UnionTypeNode)
             {
                 local = e.DefineLocal(_bindings.Object);
             }
@@ -68,7 +68,7 @@ namespace ZenPlatform.Compiler.Generation
             {
                 if (variable.Value != null)
                 {
-                    if (variable.Type is MultiTypeNode && !(ex.Type is MultiTypeNode))
+                    if (variable.Type is UnionTypeNode && !(ex.Type is UnionTypeNode))
                         e.Box(ex.Type.Type);
                     e.StLoc(local);
                 }
@@ -78,7 +78,7 @@ namespace ZenPlatform.Compiler.Generation
 //                e.StLoc(local);
 //            }
 
-            if (variable.Type is MultiTypeNode mtn)
+            if (variable.Type is UnionTypeNode mtn)
             {
                 WrapMultitypeNode(e, mtn, ref local);
             }
@@ -86,7 +86,7 @@ namespace ZenPlatform.Compiler.Generation
             context.SymbolTable.ConnectCodeObject(variable, local);
         }
 
-        private void WrapMultitypeStackValue(IEmitter e, MultiTypeNode mtn, ILocal local, ILocal exp)
+        private void WrapMultitypeStackValue(IEmitter e, UnionTypeNode mtn, ILocal local, ILocal exp)
         {
             var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
             e.LdLocA(local);
@@ -98,7 +98,7 @@ namespace ZenPlatform.Compiler.Generation
             e.LdLoc(local);
         }
 
-        private void WrapMultitypeNode(IEmitter e, MultiTypeNode mtn, ref ILocal local)
+        private void WrapMultitypeNode(IEmitter e, UnionTypeNode mtn, ref ILocal local)
         {
             var localWrap = e.DefineLocal(_bindings.UnionTypeStorage);
             var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
