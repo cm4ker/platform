@@ -251,4 +251,4 @@ attributes:
 tryStatement:
     TRY instructionsOrSingleStatement 
     (CATCH catchExp=instructionsOrSingleStatement)? 
-    (FINALLY finallyExp=instructionsOrSingleStatement)? ;
+    (FINALLY finallyExp=instructionsOrSingleStatement)?;

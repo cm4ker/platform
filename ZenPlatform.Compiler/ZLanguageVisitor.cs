@@ -110,7 +110,7 @@ namespace ZenPlatform.Compiler.AST
             var tc = new TypeCollection();
             _syntaxStack.PopUntil(marker, tc);
             var result = new MultiTypeNode(context.start.ToLineInfo(), tc);
-            result.SetType(_sb.UnionTypeStorage);
+            result.SetType(_sb.Object);
             _syntaxStack.Push(result);
             return result;
         }
