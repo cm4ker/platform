@@ -144,11 +144,6 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitSingleType(SingleTypeNode obj)
         {
-            if (obj.Type is UnknownArrayType)
-            {
-                obj.SetType(obj.Type.ArrayElementType.MakeArrayType());
-            }
-
             return null;
         }
 

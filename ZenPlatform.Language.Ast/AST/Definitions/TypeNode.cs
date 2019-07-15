@@ -7,6 +7,21 @@ using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.AST.Definitions
 {
+    public enum TypeNodeKind
+    {
+        Unknown,
+        String,
+        Void,
+        Int,
+        Double,
+        Char,
+        Boolean,
+        Object,
+        Array,
+        Type,
+        UnionType,
+    }
+
     /// <summary>
     /// Тип
     /// </summary>
@@ -16,29 +31,37 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         {
         }
 
-        public virtual IType Type { get; }
+        public TypeNodeKind Kind { get; protected set; }
+    }
+
+
+    public class PrimitiveTypeNode : TypeNode
+    {
+        public PrimitiveTypeNode(ILineInfo lineInfo, TypeNodeKind kind) : base(lineInfo)
+        {
+            //TODO: Check if kind is not primitive
+
+            Kind = kind;
+        }
+
+        public override void Accept<T>(IVisitor<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class SingleTypeNode : TypeNode
     {
-        private IType _type;
-
-        public SingleTypeNode(ILineInfo lineInfo, string typeName) : base(lineInfo)
+        public SingleTypeNode(ILineInfo lineInfo, string typeName, TypeNodeKind kind) : base(lineInfo)
         {
-            _type = new UnknownType(typeName);
+            TypeName = typeName;
+
+            if (kind == TypeNodeKind.UnionType) throw new Exception("Single type can't be a union type");
+
+            Kind = kind;
         }
 
-        public SingleTypeNode(ILineInfo lineInfo, IType type) : base(lineInfo)
-        {
-            _type = type;
-        }
-
-        public override IType Type => _type;
-
-        public void SetType(IType type)
-        {
-            _type = type;
-        }
+        public string TypeName { get; }
 
         public override void Accept<T>(IVisitor<T> visitor)
         {
@@ -46,31 +69,22 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         }
     }
 
-    /*
-     *     Мультитипы.
-     *     Очень спорная технология.
-     *
-     *     1) Преимущества: мы можем 
-     *
-     *
-     * 
-     */
-    public class MultiTypeNode : TypeNode
+    public class UnionTypeNode : TypeNode
     {
         private readonly TypeCollection _types;
         private List<SingleTypeNode> _sTypes;
 
-        public MultiTypeNode(ILineInfo lineInfo, TypeCollection types) : base(lineInfo)
+        public UnionTypeNode(ILineInfo lineInfo, TypeCollection types) : base(lineInfo)
         {
             _types = types;
-            _type = new UnknownType("Object");
+            Kind = TypeNodeKind.UnionType;
         }
 
         private IEnumerable<SingleTypeNode> UnwrapSingleTypeNodes()
         {
             foreach (var type in _types)
             {
-                if (type is MultiTypeNode mtn)
+                if (type is UnionTypeNode mtn)
                     foreach (var internalNode in mtn.UnwrapSingleTypeNodes())
                     {
                         yield return internalNode;
@@ -88,19 +102,27 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// </summary>
         public string DeclName { get; set; }
 
-        public override IType Type => _type;
-
-        private IType _type;
-
-        public void SetType(IType type)
-        {
-            _type = type;
-        }
-
         public override void Accept<T>(IVisitor<T> visitor)
         {
             foreach (var type in _types)
                 visitor.Visit(type);
+        }
+    }
+
+    public class ArrayTypeNode : TypeNode
+    {
+        public ArrayTypeNode(ILineInfo lineInfo, TypeNode elementType) : base(lineInfo)
+        {
+            Kind = TypeNodeKind.Array;
+
+            ElementType = elementType;
+        }
+
+        public TypeNode ElementType { get; }
+
+        public override void Accept<T>(IVisitor<T> visitor)
+        {
+            throw new NotImplementedException();
         }
     }
 }

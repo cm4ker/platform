@@ -26,8 +26,9 @@ namespace ZenPlatform.Compiler.Generation
             emitter.InitLocals = true;
 
             ILocal resultVar = null;
-            if (!function.Type.Type.Equals(_bindings.Void))
-                resultVar = emitter.DefineLocal(function.Type.Type);
+            if (function.Type.Kind != TypeNodeKind.Void)
+                resultVar = emitter.DefineLocal(function.Type.);
+
             var returnLabel = emitter.DefineLabel();
             EmitBody(emitter, function.Block, returnLabel, ref resultVar);
             emitter.MarkLabel(returnLabel);
