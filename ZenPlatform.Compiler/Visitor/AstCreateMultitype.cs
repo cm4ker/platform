@@ -26,7 +26,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             _asm = asm;
 
-            _tsb = new SystemTypeBindings(_asm.TypeSystem);
+            _tsb = _asm.TypeSystem.GetSystemBindings();
 
             _defMT = _asm.DefineType("PlatformCustom", "DefinedMultitypes",
                 TypeAttributes.Class | TypeAttributes.Public |

@@ -20,10 +20,10 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitExpression(e, expr, context.SymbolTable);
 
-                if (variable.Type.Type.Equals(_bindings.Object))
-                {
-                    e.Box(expr.Type.Type);
-                }
+//                if (variable.Type.Type.Equals(_bindings.Object))
+//                {
+//                    e.Box(expr.Type.Type);
+//                }
             }
 //            else if (variable.Value is ElementCollection ec)
 //            {
@@ -56,34 +56,34 @@ namespace ZenPlatform.Compiler.Generation
 
             //store phase
             ILocal local;
-            if (variable.Type is UnionTypeNode)
-            {
-                local = e.DefineLocal(_bindings.Object);
-            }
-            else
-                local = e.DefineLocal(variable.Type.Type);
-
-
-            if (variable.Value is Expression ex)
-            {
-                if (variable.Value != null)
-                {
-                    if (variable.Type is UnionTypeNode && !(ex.Type is UnionTypeNode))
-                        e.Box(ex.Type.Type);
-                    e.StLoc(local);
-                }
-            }
+//            if (variable.Type is UnionTypeNode)
+//            {
+//                local = e.DefineLocal(_bindings.Object);
+//            }
+//            else
+//                local = e.DefineLocal(variable.Type.Type);
+//
+//
+//            if (variable.Value is Expression ex)
+//            {
+//                if (variable.Value != null)
+//                {
+//                    if (variable.Type is UnionTypeNode && !(ex.Type is UnionTypeNode))
+//                        e.Box(ex.Type.Type);
+//                    e.StLoc(local);
+//                }
+//            }
 //            else if (variable.Value is ElementCollection ec)
 //            {
 //                e.StLoc(local);
 //            }
 
-            if (variable.Type is UnionTypeNode mtn)
-            {
-                WrapMultitypeNode(e, mtn, ref local);
-            }
-
-            context.SymbolTable.ConnectCodeObject(variable, local);
+//            if (variable.Type is UnionTypeNode mtn)
+//            {
+//                WrapMultitypeNode(e, mtn, ref local);
+//            }
+//
+//            context.SymbolTable.ConnectCodeObject(variable, local);
         }
 
         private void WrapMultitypeStackValue(IEmitter e, UnionTypeNode mtn, ILocal local, ILocal exp)

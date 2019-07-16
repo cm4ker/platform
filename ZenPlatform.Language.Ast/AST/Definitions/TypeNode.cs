@@ -34,7 +34,6 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public TypeNodeKind Kind { get; protected set; }
     }
 
-
     public class PrimitiveTypeNode : TypeNode
     {
         public PrimitiveTypeNode(ILineInfo lineInfo, TypeNodeKind kind) : base(lineInfo)
@@ -46,7 +45,6 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
         public override void Accept<T>(IVisitor<T> visitor)
         {
-            throw new NotImplementedException();
         }
     }
 
@@ -69,6 +67,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         }
     }
 
+    [Obsolete]
     public class UnionTypeNode : TypeNode
     {
         private readonly TypeCollection _types;
@@ -122,7 +121,6 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
         public override void Accept<T>(IVisitor<T> visitor)
         {
-            throw new NotImplementedException();
         }
     }
 }

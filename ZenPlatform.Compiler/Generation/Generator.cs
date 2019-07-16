@@ -39,7 +39,7 @@ namespace ZenPlatform.Compiler.Generation
             _ts = _asm.TypeSystem;
 
             _mode = parameters.Mode;
-            _bindings = new SystemTypeBindings(_ts);
+            _bindings = _ts.GetSystemBindings();
 
             foreach (var typeEntity in _cu.TypeEntities)
             {

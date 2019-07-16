@@ -9,7 +9,7 @@ namespace ZenPlatform.Compiler.Generation
         public CompilationUnit Unit;
         public IAssemblyBuilder Builder;
         public CompilationMode Mode;
-
+    
         public GeneratorParameters(CompilationUnit unit, IAssemblyBuilder builder, CompilationMode mode)
         {
             Unit = unit;

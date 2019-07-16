@@ -23,14 +23,11 @@ namespace ZenPlatform.Compiler.AST
     public class ZLanguageVisitor : ZSharpParserBaseVisitor<AstNode>
     {
         private SyntaxStack _syntaxStack;
-        private ITypeSystem _ts;
-        private SystemTypeBindings _sb;
 
         public ZLanguageVisitor(ITypeSystem typeSystem)
         {
             _syntaxStack = new SyntaxStack();
-            _ts = typeSystem;
-            _sb = new SystemTypeBindings(_ts);
+
         }
 
         public override AstNode VisitEntryPoint(ZSharpParser.EntryPointContext context)
@@ -219,7 +216,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitArrayType(context);
 
-            var result = new SingleTypeNode(context.start.ToLineInfo(), context.GetText(),);
+            var result = new ArrayTypeNode(context.start.ToLineInfo(), _syntaxStack.PopType());
 
             _syntaxStack.Push(result);
             return result;

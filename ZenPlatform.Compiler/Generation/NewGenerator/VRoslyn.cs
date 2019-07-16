@@ -50,16 +50,6 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             return SyntaxFactory.ParseName(name);
         }
 
-        private ExpressionSyntax WrapUnionType(Expression exp, UnionTypeNode mtn)
-        {
-            var args = SyntaxFactory.ArgumentList().AddArguments(
-                SyntaxFactory.Argument(ParseName("a")),
-                SyntaxFactory.Argument((ExpressionSyntax) Visit(exp)),
-                SyntaxFactory.Argument(ParseName("c"))
-            );
-
-            return SyntaxFactory.ObjectCreationExpression(ParseName(mtn.Type.Name), args, null);
-        }
 
         public override SyntaxNode VisitReturn(Return obj)
         {
@@ -139,7 +129,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         private TypeSyntax GetTypeSyntax(TypeNode tn)
         {
-            return GetStandardType(tn) ?? SyntaxFactory.ParseTypeName(tn.Type.Name);
+            return GetStandardType(tn) ?? SyntaxFactory.ParseTypeName(((SingleTypeNode) tn).TypeName);
         }
 
         public override SyntaxNode VisitLiteral(Literal obj)
@@ -184,16 +174,21 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         private TypeSyntax GetStandardType(TypeNode node)
         {
-            switch (node.Type.Name)
+            switch (node.Kind)
             {
-                case "String": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
-                case "Int32": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword));
-                case "Double": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.DoubleKeyword));
-                case "Boolean": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
-                case "Char": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.CharKeyword));
-                case "Void": return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
-                case "Object":
-                case nameof(UnionTypeStorage):
+                case TypeNodeKind.String:
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
+                case TypeNodeKind.Int: return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword));
+                case TypeNodeKind.Double:
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.DoubleKeyword));
+                case TypeNodeKind.Boolean:
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
+                case TypeNodeKind.Char:
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.CharKeyword));
+                case TypeNodeKind.Void:
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
+                case TypeNodeKind.Object:
+                case TypeNodeKind.UnionType:
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ObjectKeyword));
                     ;
             }
@@ -203,33 +198,35 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         private SyntaxToken GetLiteralSyntaxToken(Literal node)
         {
-            switch (node.Type.Type.Name)
+            switch (node.Type.Kind)
             {
-                case "String": return SyntaxFactory.Literal(node.Value);
-                case "Int32": return SyntaxFactory.Literal((int) node.ObjectiveValue);
-                case "Double": return SyntaxFactory.Literal((double) node.ObjectiveValue);
-                case "Boolean" when (bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.TrueKeyword);
-                case "Boolean" when !(bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.FalseKeyword);
-                case "Char": return SyntaxFactory.Literal((char) node.ObjectiveValue);
+                case TypeNodeKind.String: return SyntaxFactory.Literal(node.Value);
+                case TypeNodeKind.Int: return SyntaxFactory.Literal((int) node.ObjectiveValue);
+                case TypeNodeKind.Double: return SyntaxFactory.Literal((double) node.ObjectiveValue);
+                case TypeNodeKind.Boolean
+                    when (bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.TrueKeyword);
+                case TypeNodeKind.Boolean
+                    when !(bool) node.ObjectiveValue: return SyntaxFactory.Token(SyntaxKind.FalseKeyword);
+                case TypeNodeKind.Char: return SyntaxFactory.Literal((char) node.ObjectiveValue);
             }
 
-            throw new Exception($"We can't process this literal kind {node.Type.Type.Name}");
+            throw new Exception($"We can't process this literal kind {node.Type.Kind}");
         }
 
         private SyntaxKind GetLiteralKind(Literal node)
         {
-            switch (node.Type.Type.Name)
+            switch (node.Type.Kind)
             {
-                case "String": return SyntaxKind.StringLiteralExpression;
-                case "Int32":
-                case "Double": return SyntaxKind.NumericLiteralExpression;
-                case "Boolean" when (bool) node.ObjectiveValue: return SyntaxKind.TrueLiteralExpression;
-                case "Boolean" when !(bool) node.ObjectiveValue: return SyntaxKind.FalseLiteralExpression;
-                case "Char": return SyntaxKind.CharacterLiteralExpression;
+                case TypeNodeKind.String: return SyntaxKind.StringLiteralExpression;
+                case TypeNodeKind.Int:
+                case TypeNodeKind.Double: return SyntaxKind.NumericLiteralExpression;
+                case TypeNodeKind.Boolean when (bool) node.ObjectiveValue: return SyntaxKind.TrueLiteralExpression;
+                case TypeNodeKind.Boolean when !(bool) node.ObjectiveValue: return SyntaxKind.FalseLiteralExpression;
+                case TypeNodeKind.Char: return SyntaxKind.CharacterLiteralExpression;
             }
 
 
-            throw new Exception($"We can't process this literal kind {node.Type.Type.Name}");
+            throw new Exception($"We can't process this literal kind {node.Type.Kind}");
         }
 
 
@@ -270,7 +267,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                                     .ToArray()
                             )));
 
-                if (obj.Type.Type.Name != "Void")
+                if (obj.Type.Kind != TypeNodeKind.Void)
                     block = block.ReplaceNode(block.Statements[0], SyntaxFactory.ReturnStatement(
                         ((ExpressionStatementSyntax) block.Statements[0]).Expression));
 
@@ -346,7 +343,6 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                     ParseName(obj.Value), SyntaxFactory.IdentifierName("Value"));
             }
 
-            SyntaxFactory.ExpressionStatement()
             return SyntaxFactory.IdentifierName(obj.Value);
         }
 

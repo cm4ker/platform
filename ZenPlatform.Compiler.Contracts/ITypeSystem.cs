@@ -23,4 +23,12 @@ namespace ZenPlatform.Compiler.Contracts
         /// <returns></returns>
         IType FindType(string name, string assembly);
     }
+
+    public static class TypeSystemExtensinos
+    {
+        public static SystemTypeBindings GetSystemBindings(this ITypeSystem ts)
+        {
+            return new SystemTypeBindings(ts);
+        }
+    }
 }

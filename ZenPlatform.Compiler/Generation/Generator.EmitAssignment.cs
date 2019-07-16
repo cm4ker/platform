@@ -46,17 +46,17 @@ namespace ZenPlatform.Compiler.Generation
                 EmitExpression(e, assignment.Value, symbolTable);
 
 
-                if (mtNode)
-                {
-                    if (!(assignment.Value.Type.Type.Equals(_bindings.Object)
-                          || assignment.Value.Type.Type.Equals(_bindings.UnionTypeStorage)))
-                    {
-                        e.Box(assignment.Value.Type.Type);
-                    }
-
-                    e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
-                    return;
-                }
+//                if (mtNode)
+//                {
+//                    if (!(assignment.Value.Type.Type.Equals(_bindings.Object)
+//                          || assignment.Value.Type.Type.Equals(_bindings.UnionTypeStorage)))
+//                    {
+//                        e.Box(assignment.Value.Type.Type);
+//                    }
+//
+//                    e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
+//                    return;
+//                }
 
                 // Store
                 if (variable.CodeObject is ILocal vd)

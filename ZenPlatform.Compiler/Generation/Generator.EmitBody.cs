@@ -47,12 +47,12 @@ namespace ZenPlatform.Compiler.Generation
                     EmitExpression(e, ret.Value, context.SymbolTable);
                 }
 
-                if (ret.GetParent<Function>().Type is UnionTypeNode mtn)
-                {
-                    var exp = e.DefineLocal(ret.Value.Type.Type);
-                    e.StLoc(exp);
-                    WrapMultitypeStackValue(e, mtn, returnVariable, exp);
-                }
+//                if (ret.GetParent<Function>().Type is UnionTypeNode mtn)
+//                {
+//                    var exp = e.DefineLocal(ret.Value.Type.Type);
+//                    e.StLoc(exp);
+//                    WrapMultitypeStackValue(e, mtn, returnVariable, exp);
+//                }
 
                 if (inTry)
                 {
@@ -177,10 +177,10 @@ namespace ZenPlatform.Compiler.Generation
                              throw new Exception($"Variable {pis.Name} not found");
 
                 IType opType = null;
-                if (symbol.SyntaxObject is Parameter p)
-                    opType = p.Type.Type;
-                else if (symbol.SyntaxObject is Variable v)
-                    opType = v.Type.Type;
+//                if (symbol.SyntaxObject is Parameter p)
+//                    opType = p.Type.Type;
+//                else if (symbol.SyntaxObject is Variable v)
+//                    opType = v.Type.Type;
 
 
                 EmitExpression(e, pis.Name, context.SymbolTable);
@@ -200,10 +200,10 @@ namespace ZenPlatform.Compiler.Generation
                              throw new Exception($"Variable {pds.Name} not found");
 
                 IType opType = null;
-                if (symbol.SyntaxObject is Parameter p)
-                    opType = p.Type.Type;
-                else if (symbol.SyntaxObject is Variable v)
-                    opType = v.Type.Type;
+//                if (symbol.SyntaxObject is Parameter p)
+//                    opType = p.Type.Type;
+//                else if (symbol.SyntaxObject is Variable v)
+//                    opType = v.Type.Type;
 
 
                 EmitExpression(e, pds.Name, context.SymbolTable);

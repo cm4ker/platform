@@ -2,7 +2,7 @@ using System.Reflection.Emit;
 
 namespace ZenPlatform.Compiler.Contracts
 {
-    public static class TypeSystemExtensions
+    public static class EmitterExtensions
     {
         public static IEmitter LdArg(this IEmitter emitter, int arg)
         {
