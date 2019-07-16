@@ -18,12 +18,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
         public List<TypeEntity> TypeEntities { get; }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            foreach (var entity in TypeEntities)
-            {
-                visitor.Visit(entity);
-            }
+            return visitor.VisitCompilationUnit(this);
         }
     }
 
@@ -37,12 +34,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public List<CompilationUnit> CompilationUnits { get; }
 
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            foreach (var cu in CompilationUnits)
-            {
-                visitor.Visit(cu);
-            }
+            return visitor.VisitRoot(this);
         }
 
         public SymbolTable SymbolTable { get; set; }

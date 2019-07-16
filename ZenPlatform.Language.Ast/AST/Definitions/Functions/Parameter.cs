@@ -1,3 +1,4 @@
+using System;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
@@ -5,10 +6,12 @@ using ZenPlatform.Language.Ast.AST.Infrastructure;
 namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
 {
     /// <summary>
-    /// Describes a parameter.
+    /// Описывает параметр
     /// </summary>
     public class Parameter : AstNode, ITypedNode, IAstSymbol
     {
+        private string _name;
+
         /// <summary>
         /// Parameter type.
         /// </summary>
@@ -17,29 +20,28 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         /// <summary>
         /// Parameter pass method.
         /// </summary>
-        public PassMethod PassMethod = PassMethod.ByValue;
+        public PassMethod PassMethod { get; set; }
 
         /// <summary>
         /// Create parameter object.
         /// </summary>
         public Parameter(ILineInfo li, string name, TypeNode type, PassMethod passMethod) : base(li)
         {
-            Name = name;
+            _name = name;
             Type = type;
             PassMethod = passMethod;
         }
 
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+        }
+
         public SymbolType SymbolType => SymbolType.Variable;
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Type);
+            return visitor.VisitParameter(this);
         }
-    }
-
-    public interface ITypedNode
-    {
-        TypeNode Type { get; set; }
     }
 }

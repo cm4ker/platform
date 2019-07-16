@@ -14,7 +14,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Condition = condition;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             throw new System.NotImplementedException();
         }
@@ -30,16 +30,13 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             FinallyBlock = finallyBlock;
         }
 
-
         public BlockNode TryBlock { get; set; }
         public BlockNode CatchBlock { get; set; }
         public BlockNode FinallyBlock { get; set; }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(TryBlock);
-            visitor.Visit(CatchBlock);
-            visitor.Visit(FinallyBlock);
+            throw new System.NotImplementedException();
         }
     }
 }

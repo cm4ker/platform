@@ -29,9 +29,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// </summary>
         public object ObjectiveValue { get; set; }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Type);
+            return visitor.VisitLiteral(this);
         }
     }
 }

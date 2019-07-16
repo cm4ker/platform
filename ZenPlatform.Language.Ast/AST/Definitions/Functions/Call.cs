@@ -27,10 +27,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
             Name = name;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            foreach (var argument in Arguments)
-                visitor.Visit(argument);
+            return visitor.VisitCall(this);
         }
     }
 }

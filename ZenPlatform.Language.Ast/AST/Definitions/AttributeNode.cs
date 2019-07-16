@@ -1,3 +1,4 @@
+using System;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 
@@ -18,11 +19,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public ArgumentCollection Arguments { get; }
 
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Type);
-            foreach (var argument in Arguments)
-                visitor.Visit(argument);
+            throw new NotImplementedException();
         }
     }
 }

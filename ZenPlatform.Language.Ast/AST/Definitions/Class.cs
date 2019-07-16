@@ -17,9 +17,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         }
 
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(TypeBody);
+            return visitor.VisitClass(this);
         }
     }
 }

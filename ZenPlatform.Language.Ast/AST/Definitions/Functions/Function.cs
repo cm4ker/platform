@@ -65,17 +65,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
 
         public SymbolType SymbolType => SymbolType.Function;
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Type);
-
-            if (Parameters != null)
-                foreach (var parameter in Parameters)
-                {
-                    visitor.Visit(parameter);
-                }
-
-            visitor.Visit(Block);
+            return visitor.VisitFunction(this);
         }
     }
 
@@ -93,9 +85,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
 
         public SymbolType SymbolType => SymbolType.Variable;
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Type);
+            return visitor.VisitField(this);
         }
     }
 
@@ -122,12 +114,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         public BlockNode Getter { get; set; }
         public BlockNode Setter { get; set; }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Type);
-
-            if (Getter != null) visitor.Visit(Getter);
-            if (Setter != null) visitor.Visit(Setter);
+            return visitor.VisitProperty(this);
         }
     }
 }

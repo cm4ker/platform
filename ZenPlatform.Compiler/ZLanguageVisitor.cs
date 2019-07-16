@@ -27,7 +27,6 @@ namespace ZenPlatform.Compiler.AST
         public ZLanguageVisitor(ITypeSystem typeSystem)
         {
             _syntaxStack = new SyntaxStack();
-
         }
 
         public override AstNode VisitEntryPoint(ZSharpParser.EntryPointContext context)
@@ -396,9 +395,8 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitFunctionCall(context);
 
-            var result = new CallStatement(context.start.ToLineInfo(), (ArgumentCollection) _syntaxStack.Pop(),
+            var result = new Call(context.start.ToLineInfo(), (ArgumentCollection) _syntaxStack.Pop(),
                 _syntaxStack.PopString());
-
 
             _syntaxStack.Push(result);
 
@@ -408,14 +406,7 @@ namespace ZenPlatform.Compiler.AST
 
         public override AstNode VisitFunctionCallExpression(ZSharpParser.FunctionCallExpressionContext context)
         {
-            base.VisitFunctionCallExpression(context);
-
-            var callStatement = (CallStatement) _syntaxStack.Pop();
-
-            var result = new Call(context.start.ToLineInfo(), callStatement.Arguments, callStatement.Name);
-
-            _syntaxStack.Push(result);
-            return null;
+            return base.VisitFunctionCallExpression(context);
         }
 
         public override AstNode VisitStatements(ZSharpParser.StatementsContext context)
@@ -635,12 +626,12 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitAssigment(context);
 
-            Statement result;
+            Expression result;
 
             if (context.indexExpression != null)
                 result = new Assignment(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
                     _syntaxStack.PopExpression(),
-                    _syntaxStack.PopString());
+                    new Name(null, _syntaxStack.PopString()));
             else if (context.OP_INC() != null)
             {
                 result = new PostIncrementStatement(context.start.ToLineInfo(), _syntaxStack.PopString());
@@ -651,7 +642,7 @@ namespace ZenPlatform.Compiler.AST
             }
             else
                 result = new Assignment(context.start.ToLineInfo(), _syntaxStack.PopExpression(), null,
-                    _syntaxStack.PopString());
+                    new Name(null, _syntaxStack.PopString()));
 
             _syntaxStack.Push(result);
 
@@ -675,8 +666,13 @@ namespace ZenPlatform.Compiler.AST
             }
             else
             {
-                _syntaxStack.PeekType<IList>().Add(_syntaxStack.PopStatement());
-                //_syntaxStack.PeekType<IList>().Add(new Return(null));
+                var node = _syntaxStack.Pop();
+
+                // По умолчанию все операции могут являться выражениями.
+                //перед тем как мы будем добавлять их в инструкции нужно обернуть их в инструкцию
+                if (node is Expression exp) node = new ExpressionStatement(exp);
+
+                _syntaxStack.PeekType<IList>().Add(node);
             }
 
             return result;

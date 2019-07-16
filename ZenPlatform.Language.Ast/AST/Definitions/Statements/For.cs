@@ -20,12 +20,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Initializer = initializer;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Counter);
-            visitor.Visit(Condition);
-            visitor.Visit(Initializer);
-            visitor.Visit(Block);
+            return visitor.VisitFor(this);
         }
     }
 }

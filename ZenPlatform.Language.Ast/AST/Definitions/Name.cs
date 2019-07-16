@@ -15,28 +15,34 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             Value = value;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            //Nothing to do
+            return visitor.VisitName(this);
         }
     }
 
     public class FieldExpression : Expression
     {
-        public Expression Expression { get; }
+        private const int EXPRESSION_SLOT = 0;
+
+
+        private Expression _expression;
+
+        public Expression Expression => _expression ?? Children.GetSlot(out _expression, EXPRESSION_SLOT);
+
         public string Name { get; }
 
         public FieldExpression(Expression expression, string name) : base(null)
         {
-            Expression = expression;
+            _expression = Children.SetSlot(expression, EXPRESSION_SLOT);
             Name = name;
             Line = expression.Line;
             Position = expression.Position;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Expression);
+            return visitor.VisitFieldExpression(this);
         }
     }
 }

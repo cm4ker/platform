@@ -30,7 +30,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             Expression = expression;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             throw new System.NotImplementedException();
         }

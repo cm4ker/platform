@@ -43,8 +43,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             Kind = kind;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
+            throw new NotImplementedException();
         }
     }
 
@@ -61,9 +62,10 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
         public string TypeName { get; }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             //Nothing to do
+            throw new NotImplementedException();
         }
     }
 
@@ -101,10 +103,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// </summary>
         public string DeclName { get; set; }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            foreach (var type in _types)
-                visitor.Visit(type);
+            throw new NotImplementedException();
         }
     }
 
@@ -119,8 +120,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
         public TypeNode ElementType { get; }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
+            throw new NotImplementedException();
         }
     }
 }

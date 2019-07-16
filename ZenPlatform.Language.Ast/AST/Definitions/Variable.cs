@@ -20,7 +20,6 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             Value = value;
         }
 
-
         public string Name { get; set; }
 
         public SymbolType SymbolType => SymbolType.Variable;
@@ -35,11 +34,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// </summary>
         public AstNode Value;
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            if (Value is AstNode an)
-                visitor.Visit(an);
-            visitor.Visit(Type);
+            return visitor.VisitVariable(this);
         }
     }
 }
