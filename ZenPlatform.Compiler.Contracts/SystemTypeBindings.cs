@@ -9,7 +9,7 @@ namespace ZenPlatform.Compiler.Contracts
     /// <summary>
     /// Биндинги на системные типы платформы
     /// </summary>
-    public class SystemTypeBindings
+    public sealed class SystemTypeBindings
     {
         private readonly ITypeSystem _ts;
 
@@ -18,7 +18,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         private const string SYSTEM_NAMESPACE = "System";
 
-        public SystemTypeBindings(ITypeSystem ts)
+        internal SystemTypeBindings(ITypeSystem ts)
         {
             _ts = ts;
         }
@@ -46,7 +46,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType Char => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Char)}", MSCORLIB);
 
-        public IType Bool => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Boolean)}", MSCORLIB);
+        public IType Boolean => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Boolean)}", MSCORLIB);
 
         public IType Double => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Double)}", MSCORLIB);
 

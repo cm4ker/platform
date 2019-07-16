@@ -27,9 +27,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
 
         public override TypeNode Type => CastType;
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Value);
+            return visitor.VisitCastExpression(this);
         }
     }
 
@@ -43,10 +43,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
             Indexer = indexer;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Indexer);
-            visitor.Visit(Value);
+            return visitor.VisitIndexerExpression(this);
         }
     }
 
@@ -60,9 +59,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
             Type = type;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Value);
+            return visitor.VisitLogicalOrArithmeticExpression(this);
         }
     }
 }
