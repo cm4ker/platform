@@ -100,6 +100,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runtime", "Runtime", "{4D6C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Compiler.Tests", "ZenPlatform.Compiler.Tests\ZenPlatform.Compiler.Tests.csproj", "{BA867BBC-2CBB-4848-8108-0EDA4DC9FAD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Compiler.ComputingEngine", "ZenPlatform.Compiler.ComputingEngine\ZenPlatform.Compiler.ComputingEngine.csproj", "{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Compiler.Platform", "ZenPlatform.Compiler.Platform\ZenPlatform.Compiler.Platform.csproj", "{77F0D330-0C1F-4D8D-B05C-7BEF402749E7}"
 EndProject
 Global
@@ -1530,6 +1532,38 @@ Global
 		{77F0D330-0C1F-4D8D-B05C-7BEF402749E7}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{77F0D330-0C1F-4D8D-B05C-7BEF402749E7}.Release|x86.ActiveCfg = Release|Any CPU
 		{77F0D330-0C1F-4D8D-B05C-7BEF402749E7}.Release|x86.Build.0 = Release|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.AppStore|x86.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.AppStore|x86.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Debug|x86.Build.0 = Debug|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Release|iPhone.Build.0 = Release|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Release|x86.ActiveCfg = Release|Any CPU
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1561,6 +1595,7 @@ Global
 		{8F7FABBF-99E0-42C0-8C30-1626E3BEFFF3} = {D720452A-AC33-4FB7-B641-159F44FC5D06}
 		{CDB9FAD5-5752-4F3A-8391-A46C8F8A6532} = {4D6CFB8C-0BA5-4668-9100-BF7974AC4CCA}
 		{BA867BBC-2CBB-4848-8108-0EDA4DC9FAD7} = {D720452A-AC33-4FB7-B641-159F44FC5D06}
+		{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC} = {D720452A-AC33-4FB7-B641-159F44FC5D06}
 		{77F0D330-0C1F-4D8D-B05C-7BEF402749E7} = {D720452A-AC33-4FB7-B641-159F44FC5D06}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

@@ -20,10 +20,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
             BinaryOperatorType = binaryOperatorType;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Right);
-            visitor.Visit(Left);
+            return visitor.VisitBinaryExpression(this);
         }
 
         public override TypeNode Type

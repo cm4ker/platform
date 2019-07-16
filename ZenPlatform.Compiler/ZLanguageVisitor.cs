@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
+using Microsoft.CodeAnalysis.CSharp;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
@@ -22,14 +23,11 @@ namespace ZenPlatform.Compiler.AST
     public class ZLanguageVisitor : ZSharpParserBaseVisitor<AstNode>
     {
         private SyntaxStack _syntaxStack;
-        private ITypeSystem _ts;
-        private SystemTypeBindings _sb;
 
         public ZLanguageVisitor(ITypeSystem typeSystem)
         {
             _syntaxStack = new SyntaxStack();
-            _ts = typeSystem;
-            _sb = new SystemTypeBindings(_ts);
+
         }
 
         public override AstNode VisitEntryPoint(ZSharpParser.EntryPointContext context)
@@ -109,8 +107,7 @@ namespace ZenPlatform.Compiler.AST
             base.VisitMultitype(context);
             var tc = new TypeCollection();
             _syntaxStack.PopUntil(marker, tc);
-            var result = new MultiTypeNode(context.start.ToLineInfo(), tc);
-            result.SetType(_sb.MultiTypeDataStorage);
+            var result = new UnionTypeNode(context.start.ToLineInfo(), tc);
             _syntaxStack.Push(result);
             return result;
         }
@@ -119,7 +116,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitPropertyDeclaration(context);
 
-            InstructionsBodyNode set = null, get = null;
+            BlockNode set = null, get = null;
             if (context.setInst != null)
             {
                 set = _syntaxStack.PopInstructionsBody();
@@ -175,7 +172,7 @@ namespace ZenPlatform.Compiler.AST
             if (context.arguments() != null)
                 ac = (ArgumentCollection) _syntaxStack.Pop();
 
-            var result = new AttributeNode(context.start.ToLineInfo(), ac, _syntaxStack.PopType());
+            var result = new AttributeNode(context.start.ToLineInfo(), ac, _syntaxStack.PopType() as SingleTypeNode);
             _syntaxStack.PeekCollection().Add(result);
 
             return result;
@@ -190,7 +187,7 @@ namespace ZenPlatform.Compiler.AST
 
         public override AstNode VisitStructureType(ZSharpParser.StructureTypeContext context)
         {
-            var result = new SingleTypeNode(context.start.ToLineInfo(), context.GetText());
+            var result = new SingleTypeNode(context.start.ToLineInfo(), context.GetText(), TypeNodeKind.Type);
 
             _syntaxStack.Push(result);
             return result;
@@ -198,17 +195,17 @@ namespace ZenPlatform.Compiler.AST
 
         public override AstNode VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
         {
-            IType t = null;
-            if (context.STRING() != null) t = _sb.String;
-            else if (context.INT() != null) t = _sb.Int;
-            else if (context.BOOL() != null) t = _sb.Bool;
-            else if (context.DOUBLE() != null) t = _sb.Double;
-            else if (context.CHAR() != null) t = _sb.Char;
-            else if (context.VOID() != null) t = _sb.Void;
+            TypeNodeKind t = TypeNodeKind.Unknown;
+            if (context.STRING() != null) t = TypeNodeKind.String;
+            else if (context.INT() != null) t = TypeNodeKind.Int;
+            else if (context.BOOL() != null) t = TypeNodeKind.Boolean;
+            else if (context.DOUBLE() != null) t = TypeNodeKind.Double;
+            else if (context.CHAR() != null) t = TypeNodeKind.Char;
+            else if (context.VOID() != null) t = TypeNodeKind.Void;
 
-            if (t == null)
+            if (t == TypeNodeKind.Unknown)
                 throw new Exception("Unknown primitive type");
-            var result = new SingleTypeNode(context.start.ToLineInfo(), t);
+            var result = new SingleTypeNode(context.start.ToLineInfo(), context.GetText(), t);
 
             _syntaxStack.Push(result);
 
@@ -219,8 +216,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitArrayType(context);
 
-            var result = new SingleTypeNode(context.start.ToLineInfo(),
-                new UnknownArrayType(context.GetText(), _syntaxStack.PopType().Type));
+            var result = new ArrayTypeNode(context.start.ToLineInfo(), _syntaxStack.PopType());
 
             _syntaxStack.Push(result);
             return result;
@@ -241,30 +237,33 @@ namespace ZenPlatform.Compiler.AST
                 text = Regex.Unescape(text ?? throw new NullReferenceException());
 
                 if (context.string_literal().REGULAR_STRING() != null)
-                    result = new Literal(li, text.Substring(1, text.Length - 2), new SingleTypeNode(li, _sb.String));
+                    result = new Literal(li, text.Substring(1, text.Length - 2),
+                        new PrimitiveTypeNode(li, TypeNodeKind.String));
                 else
-                    result = new Literal(li, text.Substring(2, text.Length - 3), new SingleTypeNode(li, _sb.String));
+                    result = new Literal(li, text.Substring(2, text.Length - 3),
+                        new PrimitiveTypeNode(li, TypeNodeKind.String));
 
                 result.ObjectiveValue = result.Value;
             }
             else if (context.boolean_literal() != null)
             {
-                result = new Literal(li, context.GetText(), new SingleTypeNode(li, _sb.Bool));
+                result = new Literal(li, context.GetText(), new PrimitiveTypeNode(li, TypeNodeKind.Boolean));
                 result.ObjectiveValue = bool.Parse(result.Value);
             }
             else if (context.INTEGER_LITERAL() != null)
             {
-                result = new Literal(li, context.GetText(), new SingleTypeNode(li, _sb.Int));
+                result = new Literal(li, context.GetText(), new PrimitiveTypeNode(li, TypeNodeKind.Int));
                 result.ObjectiveValue = int.Parse(result.Value);
             }
             else if (context.REAL_LITERAL() != null)
             {
-                result = new Literal(li, context.GetText(), new SingleTypeNode(li, _sb.Double));
+                result = new Literal(li, context.GetText(), new PrimitiveTypeNode(li, TypeNodeKind.Double));
                 result.ObjectiveValue = double.Parse(result.Value);
             }
             else if (context.CHARACTER_LITERAL() != null)
             {
-                result = new Literal(li, context.GetText().Substring(1, 1), new SingleTypeNode(li, _sb.Char));
+                result = new Literal(li, context.GetText().Substring(1, 1),
+                    new PrimitiveTypeNode(li, TypeNodeKind.Char));
                 result.ObjectiveValue = result.Value[0];
             }
 
@@ -346,7 +345,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitInstructionsBody(context);
             var sc = (StatementCollection) _syntaxStack.Pop();
-            _syntaxStack.Push(new InstructionsBodyNode(sc));
+            _syntaxStack.Push(new BlockNode(sc));
             return null;
         }
 
@@ -518,11 +517,11 @@ namespace ZenPlatform.Compiler.AST
             Extension result;
 
             var extensionObj = _syntaxStack.Pop();
-            if (extensionObj is InstructionsBodyNode ib)
+            if (extensionObj is BlockNode ib)
             {
                 result = new Extension(context.start.ToLineInfo(), _syntaxStack.PopString(),
                     ExtensionKind.Instructions);
-                result.InstructionsBody = ib;
+                result.Block = ib;
             }
             else
             {
@@ -696,7 +695,7 @@ namespace ZenPlatform.Compiler.AST
             if (context.statement() != null)
             {
                 _syntaxStack.Pop();
-                _syntaxStack.Push(new InstructionsBodyNode(sc));
+                _syntaxStack.Push(new BlockNode(sc));
             }
 
             return null;
@@ -706,7 +705,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitIfStatement(context);
 
-            InstructionsBodyNode @else = null;
+            BlockNode @else = null;
 
             if (context.ELSE() != null)
             {
@@ -749,7 +748,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitTryStatement(context);
 
-            InstructionsBodyNode @catch = null, @finally = null;
+            BlockNode @catch = null, @finally = null;
 
             if (context.finallyExp != null)
             {

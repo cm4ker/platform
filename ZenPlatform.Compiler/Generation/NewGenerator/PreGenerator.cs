@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
@@ -10,48 +11,24 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
     /// <summary>
     /// Создание структуры типов
     /// </summary>
-    public class PreGenerator : AstVisitorBase<object>
+    public class TypeBodyGenerator : AstVisitorBase<object>
     {
         private IAstNodeContext _context;
         private SystemTypeBindings _bindings;
 
         private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
 
-        public PreGenerator(GeneratorParameters parameters)
+        public TypeBodyGenerator(GeneratorParameters parameters)
         {
             _context = new AstNodeContext();
             _context.Assembly = parameters.Builder;
             _context.Mode = parameters.Mode;
-            _bindings = new SystemTypeBindings(_context.Assembly.TypeSystem);
+            _bindings = _context.Assembly.TypeSystem.GetSystemBindings();
         }
 
         public override object VisitCompilationUnit(CompilationUnit cu)
         {
             _context.AstNode = cu;
-            return null;
-        }
-
-        public object VisitClass(ZenPlatform.Language.Ast.AST.Definitions.Class obj)
-        {
-            _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, obj.Name,
-                SreTA.Class | SreTA.Public | SreTA.Abstract |
-                SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
-
-            obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, _context.Type);
-            _context.IsClass = true;
-
-            return null;
-        }
-
-        public override object VisitModule(Module module)
-        {
-            _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
-                SreTA.Class | SreTA.NotPublic |
-                SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
-
-            module.GetParent<IScoped>().SymbolTable.ConnectCodeObject(module, _context.Type);
-            _context.IsClass = false;
-
             return null;
         }
 
@@ -64,7 +41,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             }
 
             var method = _context.Type.DefineMethod(function.Name, function.IsPublic, !_context.IsClass, false)
-                .WithReturnType(function.Type.Type);
+                .WithReturnType(function.Type.ToClrType(_context.Assembly));
 
             var symTable = function.GetParent<IScoped>().SymbolTable;
             symTable.ConnectCodeObject(function, method);
@@ -77,10 +54,10 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override object VisitParameter(Parameter obj)
         {
-//            var codeObj = _context.Method.WithParameter(obj.Name, obj.Type.Type, false, false);
-//            _context.SymbolTable.ConnectCodeObject(obj, codeObj);
-//
-//            Stop();
+            var codeObj = _context.Method.WithParameter(obj.Name, obj.Type.ToClrType(_context.Assembly), false, false);
+            _context.SymbolTable.ConnectCodeObject(obj, codeObj);
+
+            Stop();
             return null;
         }
 
@@ -88,7 +65,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         {
             if (!_context.IsClass) Stop();
 
-            var fld = _context.Type.DefineField(obj.Type.Type, obj.Name, false, false);
+            var fld = _context.Type.DefineField(obj.Type.ToClrType(_context.Assembly), obj.Name, false, false);
             obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, fld);
 
             Stop();
@@ -101,28 +78,48 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             if (!_context.IsClass) Stop();
 
-            var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
+            tb.DefineProperty(property.Type.ToClrType(_context.Assembly), property.Name);
 
-            IField backField = null;
-
-            var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
-            var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
-
-            setMethod.WithReturnType(_bindings.Void);
-            getMethod.WithReturnType(property.Type.Type);
-
-            if (property.Setter == null && property.Getter == null)
-            {
-                backField = tb.DefineField(property.Type.Type, $"{property.Name}_backingField", false,
-                    false);
-
-                getMethod.Generator.LdArg_0().LdFld(backField).Ret();
-                setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
-            }
-
-            propBuilder.WithGetter(getMethod).WithSetter(setMethod);
-            Stop();
             return null;
+        }
+    }
+
+    /// <summary>
+    /// Создаём типы
+    /// </summary>
+    public class TypeGenerator : AstVisitorBase<object>
+    {
+        private IAstNodeContext _context;
+        private SystemTypeBindings _bindings;
+
+        private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
+
+        public TypeGenerator(GeneratorParameters parameters)
+        {
+            _context = new AstNodeContext();
+            _context.Assembly = parameters.Builder;
+            _context.Mode = parameters.Mode;
+            _bindings = _context.Assembly.TypeSystem.GetSystemBindings();
+        }
+
+        public override object VisitClass(ZenPlatform.Language.Ast.AST.Definitions.Class obj)
+        {
+            _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, obj.Name,
+                SreTA.Class | SreTA.Public | SreTA.Abstract |
+                SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
+
+            obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, _context.Type);
+            return default;
+        }
+
+        public override object VisitModule(Module module)
+        {
+            _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
+                SreTA.Class | SreTA.NotPublic |
+                SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
+
+            module.GetParent<IScoped>().SymbolTable.ConnectCodeObject(module, _context.Type);
+            return default;
         }
     }
 }

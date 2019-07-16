@@ -44,30 +44,58 @@ namespace ZenPlatform.Compiler.Infrastructure
      *
      *     <string, int, char> t1;
      *
-     *     match t1:
+     *     match t1.Type:
      *     | string & char => {Statements block} // Это строка или символ
      *     | int => {Statements block} // это число
      *     | default => {statements block} // Мы не поняли что в выражении
+     *
+     *
+     * По идее у нас есть право на объявление вот такого вот свойства
+     *
+     * Property: <Invoice, CashOrder, NomenclatureReference> SomeProperty { get; set; } 
+     *
+     * в компилированном коде это должно выглядить
+     *
+     * UnionTypeStorage SomeProperty { get; set; }
+     *
+     * На самом деле может быть такая штука
+     *
+     * public class UnionType0001
+     * {
+     *    Invoice _Invoice;
+     *    CashOrder _CashOrder;
+     *    NomenclatureReference _NomenclatureReference;
+     *
+     *    public object Get()
+     *    {
+     *        return _Invoice ?? _CashOrder ?? _NomenclatureReference;
+     *    }
+     *
+     *    public Set(object type)
+     *    {
+     *        
+     *    }
+     * }
      *     
      */
 
     /// <summary>
     /// Структура для мультитипового хранения данных
     /// </summary>
-    public struct MultiTypeDataStorage : IEquatable<MultiTypeDataStorage>
+    public struct UnionTypeStorage : IEquatable<UnionTypeStorage>
     {
-        private readonly MultiType _multiType;
+        private readonly UnionType _unionType;
 
-        public MultiTypeDataStorage(object value, MultiType multiType)
+        public UnionTypeStorage(object value, UnionType unionType)
         {
-            _multiType = multiType;
-            if (_multiType.Check(value.GetType()))
+            _unionType = unionType;
+            if (_unionType.Check(value.GetType()))
                 _value = value;
             else
                 throw new Exception("Can't assign this value to this type");
         }
 
-        public MultiTypeDataStorage(MultiType multiType) : this(null, multiType)
+        public UnionTypeStorage(UnionType unionType) : this(null, unionType)
         {
         }
 
@@ -93,20 +121,20 @@ namespace ZenPlatform.Compiler.Infrastructure
 
         public T GetValue<T>()
         {
-            if (!_multiType.Check<T>()) throw new Exception("Not allowed type here");
+            if (!_unionType.Check<T>()) throw new Exception("Not allowed type here");
 
             return (T) Value;
         }
 
 
-        public bool Equals(MultiTypeDataStorage other)
+        public bool Equals(UnionTypeStorage other)
         {
             return Value == other.Value;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is MultiTypeDataStorage other && Equals(other);
+            return obj is UnionTypeStorage other && Equals(other);
         }
 
         public override int GetHashCode()

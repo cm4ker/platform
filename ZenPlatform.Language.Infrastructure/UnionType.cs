@@ -7,14 +7,14 @@ namespace ZenPlatform.Compiler.Infrastructure
     /// <summary>
     /// Мультитип
     /// </summary>
-    public struct MultiType : IEquatable<MultiType>
+    public struct UnionType : IEquatable<UnionType>
     {
-        public MultiType(IEnumerable<Type> types)
+        public UnionType(IEnumerable<Type> types)
         {
             Types = types;
         }
 
-        public MultiType(Type[] types)
+        public UnionType(Type[] types)
         {
             Types = types;
         }
@@ -31,14 +31,14 @@ namespace ZenPlatform.Compiler.Infrastructure
             return Check(typeof(T));
         }
 
-        public bool Equals(MultiType other)
+        public bool Equals(UnionType other)
         {
             return Equals(Types, other.Types);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is MultiType other && Equals(other);
+            return obj is UnionType other && Equals(other);
         }
 
         public override int GetHashCode()

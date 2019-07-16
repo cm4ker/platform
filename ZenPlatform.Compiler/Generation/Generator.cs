@@ -39,7 +39,7 @@ namespace ZenPlatform.Compiler.Generation
             _ts = _asm.TypeSystem;
 
             _mode = parameters.Mode;
-            _bindings = new SystemTypeBindings(_ts);
+            _bindings = _ts.GetSystemBindings();
 
             foreach (var typeEntity in _cu.TypeEntities)
             {
@@ -179,21 +179,21 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Literal literal)
             {
-                switch (literal.Type.Type.Name)
+                switch (literal.Type.Kind)
                 {
-                    case "Int32":
+                    case TypeNodeKind.Int:
                         e.LdcI4(Int32.Parse(literal.Value));
                         break;
-                    case "String":
+                    case TypeNodeKind.String:
                         e.LdStr(literal.Value);
                         break;
-                    case "Double":
+                    case TypeNodeKind.Double:
                         e.LdcR8(double.Parse(literal.Value, CultureInfo.InvariantCulture));
                         break;
-                    case "Char":
+                    case TypeNodeKind.Char:
                         e.LdcI4(char.ConvertToUtf32(literal.Value, 0));
                         break;
-                    case "Boolean":
+                    case TypeNodeKind.Boolean:
                         e.LdcI4(bool.Parse(literal.Value) ? 1 : 0);
                         break;
                 }
@@ -211,10 +211,10 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (variable.CodeObject is ILocal vd)
                 {
-                    if (name.Type is MultiTypeNode)
+                    if (name.Type is UnionTypeNode)
                     {
                         e.LdLocA(vd);
-                        e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Getter);
+                        e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
                     }
                     else
                         e.LdLoc(vd);
@@ -225,10 +225,10 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
 
-                    if (name.Type is MultiTypeNode)
+                    if (name.Type is UnionTypeNode)
                     {
                         e.LdArgA(pd);
-                        e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Getter);
+                        e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
                     }
                     else
                         e.LdArg(pd.ArgIndex);
@@ -244,9 +244,13 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is FieldExpression fe)
             {
                 EmitExpression(e, fe.Expression, symbolTable);
-                var expType = fe.Expression.Type.Type;
-                var expProp = expType.Properties.First(x => x.Name == fe.Name);
-                fe.Type = new SingleTypeNode(null, expProp.PropertyType);
+                var expType = fe.Expression.Type;
+
+                IType extTypeScan = null;
+
+                var expProp = extTypeScan.Properties.First(x => x.Name == fe.Name);
+                fe.Type = new SingleTypeNode(null, expProp.PropertyType.Name, TypeNodeKind.Unknown);
+
                 e.PropGetValue(expProp);
             }
         }
@@ -279,7 +283,7 @@ namespace ZenPlatform.Compiler.Generation
                     Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
 
                     var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
-                        .WithReturnType(function.Type.Type);
+                        .WithReturnType(null);
 
                     result.Add((function, method));
 
@@ -289,88 +293,88 @@ namespace ZenPlatform.Compiler.Generation
                 }
             }
 
-            if (isClass)
-            {
-                foreach (var field in typeBody.Fields)
-                {
-                    var fieldCodeObj = tb.DefineField(field.Type.Type, field.Name, false, false);
-                    typeBody.SymbolTable.ConnectCodeObject(field, fieldCodeObj);
-                }
-
-                foreach (var property in typeBody.Properties)
-                {
-                    var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
-
-                    IField backField = null;
-
-                    if (property.Setter == null && property.Getter == null)
-                    {
-                        backField = tb.DefineField(property.Type.Type, $"{property.Name}_backingField", false,
-                            false);
-                    }
-
-                    var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
-                    var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
-
-                    setMethod.WithReturnType(_bindings.Void);
-                    var valueArg = setMethod.WithParameter("value", property.Type.Type, false, false);
-
-                    getMethod.WithReturnType(property.Type.Type);
-
-                    if (property.Getter != null)
-                    {
-                        IEmitter emitter = getMethod.Generator;
-                        emitter.InitLocals = true;
-
-                        ILocal resultVar = null;
-
-                        resultVar = emitter.DefineLocal(property.Type.Type);
-
-                        var returnLabel = emitter.DefineLabel();
-                        EmitBody(emitter, property.Getter, returnLabel, ref resultVar);
-
-                        emitter.MarkLabel(returnLabel);
-
-                        if (resultVar != null)
-                            emitter.LdLoc(resultVar);
-
-                        emitter.Ret();
-                    }
-                    else
-                    {
-                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
-                    }
-
-                    if (property.Setter != null)
-                    {
-                        IEmitter emitter = setMethod.Generator;
-                        emitter.InitLocals = true;
-
-                        ILocal resultVar = null;
-
-                        resultVar = emitter.DefineLocal(property.Type.Type);
-
-                        var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable);
-                        valueSym.CodeObject = valueArg;
-
-                        var returnLabel = emitter.DefineLabel();
-                        EmitBody(emitter, property.Setter, returnLabel, ref resultVar);
-
-                        emitter.MarkLabel(returnLabel);
-                        emitter.Ret();
-                    }
-                    else
-                    {
-                        if (backField != null)
-                            setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
-                        else
-                            setMethod.Generator.Ret();
-                    }
-
-
-                    propBuilder.WithGetter(getMethod).WithSetter(setMethod);
-                }
-            }
+//            if (isClass)
+//            {
+//                foreach (var field in typeBody.Fields)
+//                {
+//                    var fieldCodeObj = tb.DefineField(field.Type.Type, field.Name, false, false);
+//                    typeBody.SymbolTable.ConnectCodeObject(field, fieldCodeObj);
+//                }
+//
+//                foreach (var property in typeBody.Properties)
+//                {
+//                    var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
+//
+//                    IField backField = null;
+//
+//                    if (property.Setter == null && property.Getter == null)
+//                    {
+//                        backField = tb.DefineField(property.Type.Type, $"{property.Name}_backingField", false,
+//                            false);
+//                    }
+//
+//                    var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
+//                    var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
+//
+//                    setMethod.WithReturnType(_bindings.Void);
+//                    var valueArg = setMethod.WithParameter("value", property.Type.Type, false, false);
+//
+//                    getMethod.WithReturnType(property.Type.Type);
+//
+//                    if (property.Getter != null)
+//                    {
+//                        IEmitter emitter = getMethod.Generator;
+//                        emitter.InitLocals = true;
+//
+//                        ILocal resultVar = null;
+//
+//                        resultVar = emitter.DefineLocal(property.Type.Type);
+//
+//                        var returnLabel = emitter.DefineLabel();
+//                        EmitBody(emitter, property.Getter, returnLabel, ref resultVar);
+//
+//                        emitter.MarkLabel(returnLabel);
+//
+//                        if (resultVar != null)
+//                            emitter.LdLoc(resultVar);
+//
+//                        emitter.Ret();
+//                    }
+//                    else
+//                    {
+//                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
+//                    }
+//
+//                    if (property.Setter != null)
+//                    {
+//                        IEmitter emitter = setMethod.Generator;
+//                        emitter.InitLocals = true;
+//
+//                        ILocal resultVar = null;
+//
+//                        resultVar = emitter.DefineLocal(property.Type.Type);
+//
+//                        var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable);
+//                        valueSym.CodeObject = valueArg;
+//
+//                        var returnLabel = emitter.DefineLabel();
+//                        EmitBody(emitter, property.Setter, returnLabel, ref resultVar);
+//
+//                        emitter.MarkLabel(returnLabel);
+//                        emitter.Ret();
+//                    }
+//                    else
+//                    {
+//                        if (backField != null)
+//                            setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
+//                        else
+//                            setMethod.Generator.Ret();
+//                    }
+//
+//
+//                    propBuilder.WithGetter(getMethod).WithSetter(setMethod);
+//                }
+//            }
 
             return result;
         }
@@ -383,8 +387,8 @@ namespace ZenPlatform.Compiler.Generation
             {
                 foreach (var p in function.Parameters)
                 {
-                    var codeObj = method.WithParameter(p.Name, p.Type.Type, false, false);
-                    function.InstructionsBody.SymbolTable.ConnectCodeObject(p, codeObj);
+                    var codeObj = method.WithParameter(p.Name, null, false, false);
+                    function.Block.SymbolTable.ConnectCodeObject(p, codeObj);
                 }
             }
 

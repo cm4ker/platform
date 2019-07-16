@@ -8,11 +8,11 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void LoadValue(IEmitter e, InstructionsBodyNode context)
+        private void LoadValue(IEmitter e, BlockNode context)
         {
         }
 
-        private void EmitVariable(IEmitter e, InstructionsBodyNode context, Variable variable)
+        private void EmitVariable(IEmitter e, BlockNode context, Variable variable)
         {
             //load phase 
 
@@ -20,10 +20,10 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitExpression(e, expr, context.SymbolTable);
 
-                if (variable.Type.Type.Equals(_bindings.Object))
-                {
-                    e.Box(expr.Type.Type);
-                }
+//                if (variable.Type.Type.Equals(_bindings.Object))
+//                {
+//                    e.Box(expr.Type.Type);
+//                }
             }
 //            else if (variable.Value is ElementCollection ec)
 //            {
@@ -56,58 +56,58 @@ namespace ZenPlatform.Compiler.Generation
 
             //store phase
             ILocal local;
-            if (variable.Type is MultiTypeNode)
-            {
-                local = e.DefineLocal(_bindings.Object);
-            }
-            else
-                local = e.DefineLocal(variable.Type.Type);
-
-
-            if (variable.Value is Expression ex)
-            {
-                if (variable.Value != null)
-                {
-                    if (variable.Type is MultiTypeNode && !(ex.Type is MultiTypeNode))
-                        e.Box(ex.Type.Type);
-                    e.StLoc(local);
-                }
-            }
+//            if (variable.Type is UnionTypeNode)
+//            {
+//                local = e.DefineLocal(_bindings.Object);
+//            }
+//            else
+//                local = e.DefineLocal(variable.Type.Type);
+//
+//
+//            if (variable.Value is Expression ex)
+//            {
+//                if (variable.Value != null)
+//                {
+//                    if (variable.Type is UnionTypeNode && !(ex.Type is UnionTypeNode))
+//                        e.Box(ex.Type.Type);
+//                    e.StLoc(local);
+//                }
+//            }
 //            else if (variable.Value is ElementCollection ec)
 //            {
 //                e.StLoc(local);
 //            }
 
-            if (variable.Type is MultiTypeNode mtn)
-            {
-                WrapMultitypeNode(e, mtn, ref local);
-            }
-
-            context.SymbolTable.ConnectCodeObject(variable, local);
+//            if (variable.Type is UnionTypeNode mtn)
+//            {
+//                WrapMultitypeNode(e, mtn, ref local);
+//            }
+//
+//            context.SymbolTable.ConnectCodeObject(variable, local);
         }
 
-        private void WrapMultitypeStackValue(IEmitter e, MultiTypeNode mtn, ILocal local, ILocal exp)
+        private void WrapMultitypeStackValue(IEmitter e, UnionTypeNode mtn, ILocal local, ILocal exp)
         {
             var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
             e.LdLocA(local);
             e.Dup();
             e.LdsFld(mt.FindField(mtn.DeclName));
-            e.EmitCall(_bindings.MultiTypeDataStorage.FindConstructor(_bindings.MultiType));
+            e.EmitCall(_bindings.UnionTypeStorage.FindConstructor(_bindings.MultiType));
             e.LdLoc(local);
-            e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
+            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
             e.LdLoc(local);
         }
 
-        private void WrapMultitypeNode(IEmitter e, MultiTypeNode mtn, ref ILocal local)
+        private void WrapMultitypeNode(IEmitter e, UnionTypeNode mtn, ref ILocal local)
         {
-            var localWrap = e.DefineLocal(_bindings.MultiTypeDataStorage);
+            var localWrap = e.DefineLocal(_bindings.UnionTypeStorage);
             var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
             e.LdLocA(localWrap);
             e.Dup();
             e.LdsFld(mt.FindField(mtn.DeclName));
-            e.EmitCall(_bindings.MultiTypeDataStorage.FindConstructor(_bindings.MultiType));
+            e.EmitCall(_bindings.UnionTypeStorage.FindConstructor(_bindings.MultiType));
             e.LdLoc(local);
-            e.EmitCall(_bindings.MultiTypeDataStorage.FindProperty("Value").Setter);
+            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
             local = localWrap;
         }
     }

@@ -100,9 +100,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             return (SingleTypeNode) internalStack.Pop();
         }
 
-        public InstructionsBodyNode PopInstructionsBody()
+        public BlockNode PopInstructionsBody()
         {
-            return (InstructionsBodyNode) internalStack.Pop();
+            return (BlockNode) internalStack.Pop();
         }
 
 

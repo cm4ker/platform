@@ -12,7 +12,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Extension
 
         public string Path;
 
-        public InstructionsBodyNode InstructionsBody { get; set; }
+        public BlockNode Block { get; set; }
 
         public ExtensionKind Kind;
 
@@ -23,7 +23,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Extension
             Kind = kind;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             throw new System.NotImplementedException();
         }
