@@ -22,11 +22,11 @@ namespace ZenPlatform.EntityComponent.Entity
             foreach (var xcObjectTypeBase in _component.Types)
             {
                 var type = (XCSingleEntity) xcObjectTypeBase;
-                BuildClass(builder, type);
+                BuildClass(type);
             }
         }
 
-        private void BuildClass(AstBuilder builder, XCSingleEntity type)
+        private void BuildClass(XCSingleEntity type)
         {
             //На кадый класс - отдельный модуль
             var unit = _builder.WithUnit();
@@ -34,7 +34,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             foreach (var property in type.Properties)
             {
-                //cl.WithProperty();
+                cl.WithProperty();
             }
         }
     }
