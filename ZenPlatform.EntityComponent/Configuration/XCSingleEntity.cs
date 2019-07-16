@@ -20,6 +20,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             Properties = new XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty>(this);
             Properties.CollectionChanged += Properties_CollectionChanged;
+
+            Modules = new XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>(this);
         }
 
         private void Properties_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -52,7 +54,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             }
         }
 
-
         /// <summary>
         /// Коллекция свойств сущности
         /// </summary>
@@ -65,7 +66,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// </summary>
         [XmlArray]
         [XmlArrayItem(ElementName = "Modules", Type = typeof(XCSingleEntityModule))]
-        public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; set; }
+        public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; }
 
         /// <summary>
         /// Имя связанной таблицы документа
@@ -119,6 +120,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             return Properties;
         }
 
+        /// <inheritdoc />
         public override IEnumerable<XCProgramModuleBase> GetProgramModules()
         {
             return Modules;

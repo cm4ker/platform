@@ -61,8 +61,8 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public FunctionBuilder WithFunction(string name, string type)
         {
-            var f = new Function(null, new InstructionsBodyNode(new StatementCollection()),
-                new ParameterCollection(), name, new SingleTypeNode(null, type), new AttributeCollection());
+            var f = new Function(null, new BlockNode(new StatementCollection()),
+                new ParameterCollection(), name, new SingleTypeNode(null, type, 0), new AttributeCollection());
             _module.TypeBody.Functions.Add(f);
             return new FunctionBuilder(f);
         }
@@ -70,11 +70,11 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
     public class TypeBuilder
     {
-        private MultiTypeNode _mtn;
+        private UnionTypeNode _mtn;
 
         public TypeBuilder()
         {
-            _mtn = new MultiTypeNode(null, new TypeCollection());
+            _mtn = new UnionTypeNode(null, new TypeCollection());
         }
     }
 
@@ -110,12 +110,12 @@ namespace ZenPlatform.Language.Ast.AST.Builder
         public FunctionBuilder(Function function)
         {
             _function = function;
-            _sb = new StatementBuilder(_function.InstructionsBody);
+            _sb = new StatementBuilder(_function.Block);
         }
 
         public ParameterBuilder WithParameter(string name, string type, PassMethod pm)
         {
-            var arg = new Parameter(null, name, new SingleTypeNode(null, type), pm);
+            var arg = new Parameter(null, name, new SingleTypeNode(null, type, 0), pm);
             return new ParameterBuilder(arg);
         }
 
@@ -124,16 +124,16 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
     public class StatementBuilder
     {
-        private readonly InstructionsBodyNode _body;
+        private readonly BlockNode _body;
 
-        public StatementBuilder(InstructionsBodyNode body)
+        public StatementBuilder(BlockNode body)
         {
             _body = body;
         }
 
         public VariableBuilder WithVariable(string name, string type)
         {
-            var variable = new Variable(null, null, name, new SingleTypeNode(null, type));
+            var variable = new Variable(null, null, name, new SingleTypeNode(null, type, 0));
             _body.Statements.Add(variable);
             return new VariableBuilder(variable);
         }

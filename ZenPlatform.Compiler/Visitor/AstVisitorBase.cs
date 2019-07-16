@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Xml.XPath;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
@@ -125,8 +126,8 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<TypeBody>(VisitTypeBody)
                 .CaseIs<TypeNode>(VisitType)
                 .CaseIs<SingleTypeNode>(VisitSingleType)
-                .CaseIs<MultiTypeNode>(VisitMultiType)
-                .CaseIs<InstructionsBodyNode>(VisitInstructionsBody)
+                .CaseIs<UnionTypeNode>(VisitMultiType)
+                .CaseIs<BlockNode>(VisitInstructionsBody)
                 .CaseIs<Variable>(VisitVariable)
                 .CaseIs<Assignment>(VisitAssigment)
                 .CaseIs<PostIncrementStatement>(VisitPostIncrementStatement)
@@ -145,8 +146,14 @@ namespace ZenPlatform.Compiler.Visitor
                 .CaseIs<Property>(VisitProperty)
                 .CaseIs<Field>(VisitField)
                 .CaseIs<Expression>(VisitExpression)
+                .CaseIs<ArrayTypeNode>(VisitArrayTypeNode)
                 .Case(x => throw new Exception($"Unknown ast construction {x.GetType()}"), null)
                 .Result();
+        }
+
+        public T VisitArrayTypeNode(ArrayTypeNode arg)
+        {
+            return default;
         }
 
         public virtual T VisitLogicalOrArithmeticExpression(LogicalOrArithmeticExpression arg)
@@ -159,7 +166,7 @@ namespace ZenPlatform.Compiler.Visitor
             return default;
         }
 
-        public virtual T VisitMultiType(MultiTypeNode obj)
+        public virtual T VisitMultiType(UnionTypeNode obj)
         {
             return default;
         }
@@ -250,7 +257,7 @@ namespace ZenPlatform.Compiler.Visitor
             return default;
         }
 
-        public virtual T VisitInstructionsBody(InstructionsBodyNode obj)
+        public virtual T VisitInstructionsBody(BlockNode obj)
         {
             return default;
         }

@@ -8,12 +8,12 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// </summary>
     public class AttributeNode : AstNode
     {
-        public AttributeNode(ILineInfo lineInfo, ArgumentCollection collection, TypeNode type) : base(lineInfo)
+        public AttributeNode(ILineInfo lineInfo, ArgumentCollection collection, SingleTypeNode type) : base(lineInfo)
         {
             Type = type;
         }
 
-        public TypeNode Type { get; set; }
+        public SingleTypeNode Type { get; set; }
 
         public ArgumentCollection Arguments { get; }
 
@@ -21,7 +21,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         public override void Accept<T>(IVisitor<T> visitor)
         {
             visitor.Visit(Type);
-            foreach (var argument in Arguments) 
+            foreach (var argument in Arguments)
                 visitor.Visit(argument);
         }
     }

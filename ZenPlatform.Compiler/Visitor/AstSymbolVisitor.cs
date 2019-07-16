@@ -39,7 +39,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj.Parent is Function f)
             {
-                f.InstructionsBody.SymbolTable.Add(obj);
+                f.Block.SymbolTable.Add(obj);
             }
             else
             {
@@ -102,10 +102,10 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj.Parent is TypeBody te)
             {
-                if (obj.InstructionsBody.SymbolTable == null)
-                    obj.InstructionsBody.SymbolTable = new SymbolTable(te.SymbolTable);
+                if (obj.Block.SymbolTable == null)
+                    obj.Block.SymbolTable = new SymbolTable(te.SymbolTable);
 
-                obj.InstructionsBody.SymbolTable.Clear();
+                obj.Block.SymbolTable.Clear();
 
                 te.SymbolTable.Add(obj);
             }
@@ -132,11 +132,11 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitFor(For obj)
         {
-            if (obj.InstructionsBody.SymbolTable == null)
+            if (obj.Block.SymbolTable == null)
             {
-                var parent = obj.GetParent<InstructionsBodyNode>();
+                var parent = obj.GetParent<BlockNode>();
                 if (parent != null)
-                    obj.InstructionsBody.SymbolTable = new SymbolTable(parent.SymbolTable);
+                    obj.Block.SymbolTable = new SymbolTable(parent.SymbolTable);
             }
 
             return null;
@@ -144,11 +144,6 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitSingleType(SingleTypeNode obj)
         {
-            if (obj.Type is UnknownArrayType)
-            {
-                obj.SetType(obj.Type.ArrayElementType.MakeArrayType());
-            }
-
             return null;
         }
 
@@ -156,7 +151,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj.TryBlock.SymbolTable == null)
             {
-                var parent = obj.GetParent<InstructionsBodyNode>();
+                var parent = obj.GetParent<BlockNode>();
 
                 if (obj.TryBlock != null)
                     obj.TryBlock.SymbolTable = new SymbolTable(parent.SymbolTable);

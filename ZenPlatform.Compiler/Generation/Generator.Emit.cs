@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Mono.CompilerServices.SymbolWriter;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
@@ -26,10 +27,11 @@ namespace ZenPlatform.Compiler.Generation
             emitter.InitLocals = true;
 
             ILocal resultVar = null;
-            if (!function.Type.Type.Equals(_bindings.Void))
-                resultVar = emitter.DefineLocal(function.Type.Type);
+            if (function.Type.Kind != TypeNodeKind.Void)
+                resultVar = emitter.DefineLocal(null);
+
             var returnLabel = emitter.DefineLabel();
-            EmitBody(emitter, function.InstructionsBody, returnLabel, ref resultVar);
+            EmitBody(emitter, function.Block, returnLabel, ref resultVar);
             emitter.MarkLabel(returnLabel);
 
             if (resultVar != null)
@@ -52,18 +54,21 @@ namespace ZenPlatform.Compiler.Generation
                     expression.Value.Type = p.Type;
             }
 
-            var valueType = expression.Value.Type.Type;
-            if (expression.Value is IndexerExpression && valueType.IsArray)
-            {
-                valueType = valueType.ArrayElementType;
-            }
 
-
-            var convertType = expression.Type.Type;
-            if (valueType is null || (valueType.IsValueType && convertType.IsValueType))
-            {
-                EmitConvCode(e, convertType);
-            }
+            //TODO: Нужно доделать ComputingEngine
+//            TypeNode valueType;
+//
+//            if (expression.Value is IndexerExpression ie && ie.Type is ArrayTypeNode atn)
+//            {
+//                valueType = atn.ElementType;
+//            }
+//
+//
+//            var convertType = expression.Type.Type;
+//            if (valueType is null || (valueType.IsValueType && convertType.IsValueType))
+//            {
+//                EmitConvCode(e, convertType);
+//            }
         }
 
         private void EmitConvCode(IEmitter e, IType type)

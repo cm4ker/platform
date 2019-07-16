@@ -20,11 +20,11 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
     {
         public bool Emit(IAstNodeContext context)
         {
-            if (!Check<Variable>(context, (a) => !(a.Type is MultiTypeNode), out var variable)) return false;
+            if (!Check<Variable>(context, (a) => !(a.Type is UnionTypeNode), out var variable)) return false;
 
             var e = context.Emitter;
 
-            ILocal local = e.DefineLocal(variable.Type.Type);
+            ILocal local = e.DefineLocal(null);
 
             context.SymbolTable.ConnectCodeObject(variable, local);
 
@@ -44,13 +44,13 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
     {
         public bool Emit(IAstNodeContext context)
         {
-            if (!(context.AstNode is Variable variable && variable.Type is MultiTypeNode mtn)) return false;
+            if (!(context.AstNode is Variable variable && variable.Type is UnionTypeNode mtn)) return false;
 
             var e = context.Emitter;
 
             var bindings = context.Bindings;
 
-            ILocal local = e.DefineLocal(context.Bindings.MultiTypeDataStorage);
+            ILocal local = e.DefineLocal(context.Bindings.UnionTypeStorage);
             var mt = context.Assembly.FindType("PlatformCustom.DefinedMultitypes");
 
             e.LdLocA(local)
@@ -63,7 +63,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 e.LdNull();
             }
 
-            e.EmitCall(context.Bindings.MultiTypeDataStorage.FindConstructor(bindings.MultiType,
+            e.EmitCall(context.Bindings.UnionTypeStorage.FindConstructor(bindings.MultiType,
                 bindings.Object));
 
             return true;

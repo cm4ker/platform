@@ -14,7 +14,7 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitBody(IEmitter e, InstructionsBodyNode body, ILabel returnLabel,
+        private void EmitBody(IEmitter e, BlockNode body, ILabel returnLabel,
             ref ILocal returnVariable, bool inTry = false)
         {
             foreach (Statement statement in body.Statements)
@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.Generation
         }
 
 
-        private void EmitStatement(IEmitter e, Statement statement, InstructionsBodyNode context,
+        private void EmitStatement(IEmitter e, Statement statement, BlockNode context,
             ILabel returnLabel, ref ILocal returnVariable, bool inTry = false)
         {
             if (statement is Variable variable)
@@ -47,12 +47,12 @@ namespace ZenPlatform.Compiler.Generation
                     EmitExpression(e, ret.Value, context.SymbolTable);
                 }
 
-                if (ret.GetParent<Function>().Type is MultiTypeNode mtn)
-                {
-                    var exp = e.DefineLocal(ret.Value.Type.Type);
-                    e.StLoc(exp);
-                    WrapMultitypeStackValue(e, mtn, returnVariable, exp);
-                }
+//                if (ret.GetParent<Function>().Type is UnionTypeNode mtn)
+//                {
+//                    var exp = e.DefineLocal(ret.Value.Type.Type);
+//                    e.StLoc(exp);
+//                    WrapMultitypeStackValue(e, mtn, returnVariable, exp);
+//                }
 
                 if (inTry)
                 {
@@ -88,23 +88,23 @@ namespace ZenPlatform.Compiler.Generation
                 EmitExpression(e, ifStatement.Condition, context.SymbolTable);
 
                 var exit = e.DefineLabel();
-                if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody == null)
+                if (ifStatement.IfBlock != null && ifStatement.ElseBlock == null)
                 {
                     e.BrFalse(exit);
-                    EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, ref returnVariable);
+                    EmitBody(e, ifStatement.IfBlock, returnLabel, ref returnVariable);
                 }
-                else if (ifStatement.IfInstructionsBody != null && ifStatement.ElseInstructionsBody != null)
+                else if (ifStatement.IfBlock != null && ifStatement.ElseBlock != null)
                 {
-                    ifStatement.IfInstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
-                    ifStatement.ElseInstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
+                    ifStatement.IfBlock.SymbolTable = new SymbolTable(context.SymbolTable);
+                    ifStatement.ElseBlock.SymbolTable = new SymbolTable(context.SymbolTable);
 
                     ILabel elseLabel = e.DefineLabel();
 
                     e.BrFalse(elseLabel);
-                    EmitBody(e, ifStatement.IfInstructionsBody, returnLabel, ref returnVariable);
+                    EmitBody(e, ifStatement.IfBlock, returnLabel, ref returnVariable);
                     e.Br(exit);
                     e.MarkLabel(elseLabel);
-                    EmitBody(e, ifStatement.ElseInstructionsBody, returnLabel, ref returnVariable);
+                    EmitBody(e, ifStatement.ElseBlock, returnLabel, ref returnVariable);
                 }
 
                 e.MarkLabel(exit);
@@ -117,7 +117,7 @@ namespace ZenPlatform.Compiler.Generation
                 //
 
                 While whileStatement = statement as While;
-                whileStatement.InstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
+                whileStatement.Block.SymbolTable = new SymbolTable(context.SymbolTable);
                 ILabel begin = e.DefineLabel();
                 ILabel exit = e.DefineLabel();
 
@@ -125,7 +125,7 @@ namespace ZenPlatform.Compiler.Generation
                 // Eval condition
                 EmitExpression(e, whileStatement.Condition, context.SymbolTable);
                 e.BrFalse(exit);
-                EmitBody(e, whileStatement.InstructionsBody, returnLabel, ref returnVariable);
+                EmitBody(e, whileStatement.Block, returnLabel, ref returnVariable);
 
                 e.Br(begin)
                     .MarkLabel(exit);
@@ -137,11 +137,11 @@ namespace ZenPlatform.Compiler.Generation
                 //
 
                 Do doStatement = statement as Do;
-                doStatement.InstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
+                doStatement.Block.SymbolTable = new SymbolTable(context.SymbolTable);
 
                 ILabel loop = e.DefineLabel();
                 e.MarkLabel(loop);
-                EmitBody(e, doStatement.InstructionsBody, returnLabel, ref returnVariable);
+                EmitBody(e, doStatement.Block, returnLabel, ref returnVariable);
                 EmitExpression(e, doStatement.Condition, context.SymbolTable);
                 e.BrTrue(loop);
             }
@@ -152,7 +152,7 @@ namespace ZenPlatform.Compiler.Generation
                 //
 
                 For forStatement = statement as For;
-                forStatement.InstructionsBody.SymbolTable = new SymbolTable(context.SymbolTable);
+                forStatement.Block.SymbolTable = new SymbolTable(context.SymbolTable);
 
                 ILabel loop = e.DefineLabel();
                 ILabel exit = e.DefineLabel();
@@ -164,7 +164,7 @@ namespace ZenPlatform.Compiler.Generation
                 EmitExpression(e, forStatement.Condition, context.SymbolTable);
                 e.BrFalse(exit);
                 // Emit body
-                EmitBody(e, forStatement.InstructionsBody, returnLabel, ref returnVariable);
+                EmitBody(e, forStatement.Block, returnLabel, ref returnVariable);
                 // Emit counter
                 EmitStatement(e, forStatement.Counter, context, returnLabel, ref returnVariable);
                 //EmitAssignment(il, forStatement.Counter, context.SymbolTable);
@@ -177,10 +177,10 @@ namespace ZenPlatform.Compiler.Generation
                              throw new Exception($"Variable {pis.Name} not found");
 
                 IType opType = null;
-                if (symbol.SyntaxObject is Parameter p)
-                    opType = p.Type.Type;
-                else if (symbol.SyntaxObject is Variable v)
-                    opType = v.Type.Type;
+//                if (symbol.SyntaxObject is Parameter p)
+//                    opType = p.Type.Type;
+//                else if (symbol.SyntaxObject is Variable v)
+//                    opType = v.Type.Type;
 
 
                 EmitExpression(e, pis.Name, context.SymbolTable);
@@ -200,10 +200,10 @@ namespace ZenPlatform.Compiler.Generation
                              throw new Exception($"Variable {pds.Name} not found");
 
                 IType opType = null;
-                if (symbol.SyntaxObject is Parameter p)
-                    opType = p.Type.Type;
-                else if (symbol.SyntaxObject is Variable v)
-                    opType = v.Type.Type;
+//                if (symbol.SyntaxObject is Parameter p)
+//                    opType = p.Type.Type;
+//                else if (symbol.SyntaxObject is Variable v)
+//                    opType = v.Type.Type;
 
 
                 EmitExpression(e, pds.Name, context.SymbolTable);
