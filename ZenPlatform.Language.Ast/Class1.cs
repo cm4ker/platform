@@ -197,12 +197,6 @@ namespace ZenPlatform.Language.Ast
             ;
         }
 
-        public virtual T VisitCallStatement(CallStatement obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
         public virtual T VisitCall(Call obj)
         {
             return DefaultVisit(obj);

@@ -1,3 +1,4 @@
+using System;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using ZenPlatform.Language.Ast.AST.Definitions.Statements;
@@ -30,10 +31,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             }
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            foreach (var statement in Statements)
-                visitor.Visit(statement);
+            throw new NotImplementedException();
         }
     }
 
@@ -71,22 +71,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             }
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            foreach (var function in Functions)
-            {
-                visitor.Visit(function);
-            }
-
-            foreach (var property in Properties)
-            {
-                visitor.Visit(property);
-            }
-
-            foreach (var field in Fields)
-            {
-                visitor.Visit(field);
-            }
+            return visitor.VisitTypeBody(this);
         }
     }
 

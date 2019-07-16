@@ -17,10 +17,6 @@ namespace ZenPlatform.Language.Ast.AST.Infrastructure
     {
     }
 
-    public class StructureCollection : List<Structure>
-    {
-    }
-
     public class ParameterCollection : List<Parameter>
     {
     }

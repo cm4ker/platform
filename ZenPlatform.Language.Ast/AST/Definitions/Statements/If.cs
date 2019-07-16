@@ -18,11 +18,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Condition = condition;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            visitor.Visit(Condition);
-            visitor.Visit(IfBlock);
-            visitor.Visit(ElseBlock);
+            return visitor.VisitIf(this);
         }
     }
 }

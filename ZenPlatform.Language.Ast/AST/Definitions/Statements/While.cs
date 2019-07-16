@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
@@ -16,7 +17,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Condition = condition;
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             throw new System.NotImplementedException();
         }
@@ -36,8 +37,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
             Cases = new List<MatchCondition>();
         }
 
-        public override void Accept<T>(IVisitor<T> visitor)
+        public override T Accept<T>(AstVisitorBase<T> visitor)
         {
+            throw new NotImplementedException();
         }
 
         public Expression MatchExpression { get; set; }

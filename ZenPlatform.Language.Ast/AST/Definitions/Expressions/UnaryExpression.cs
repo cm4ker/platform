@@ -5,6 +5,8 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
 {
     public abstract class UnaryExpression : Expression
     {
+        
+        
         protected UnaryExpression(ILineInfo li, Expression value) : base(li)
         {
             Value = value;
