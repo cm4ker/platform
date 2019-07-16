@@ -50,7 +50,6 @@ namespace ZenPlatform.Cli
                     {
                         sw.WriteLine(file.Value);
                     }
-
                 }
 
                 references.Add(MetadataReference.CreateFromFile(c.ComponentAssembly.Location));

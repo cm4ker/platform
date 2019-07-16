@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
@@ -87,9 +88,16 @@ namespace ZenPlatform.Language.Ast.AST.Builder
             _cl = cl;
         }
 
-
-        public ClassBuilder WithProperty(string name, string type)
+        public ClassBuilder WithProperty(string name, XCTypeBase type)
         {
+            return this;
+        }
+
+        public ClassBuilder WithProperty(string name, IEnumerable<XCTypeBase> types)
+        {
+            var propTypes = new TypeCollection();
+
+            _cl.TypeBody.Properties.Add(new Property(null, name, new MultiTypeNode(null,),));
             return this;
         }
     }
