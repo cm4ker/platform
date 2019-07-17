@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ZenPlatform.Compiler.Contracts.Symbols;
 
 namespace ZenPlatform.Language.Ast.AST.Definitions
@@ -8,15 +9,22 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// </summary>
     public class CompilationUnit : AstNode
     {
-        public CompilationUnit(ILineInfo li) : base(li)
+        public CompilationUnit(ILineInfo li, List<string> namespaces, ImmutableList<TypeEntity> entityes) : base(li)
         {
-            TypeEntities = new List<TypeEntity>();
-            Namespaces = new HashSet<string>();
+            TypeEntities = entityes;
+            Namespaces = new HashSet<string>(namespaces);
+
+
+            var slot = 0;
+            foreach (var ent in TypeEntities)
+            {
+                Children.SetSlot(ent, slot++);
+            }
         }
 
         public HashSet<string> Namespaces { get; }
 
-        public List<TypeEntity> TypeEntities { get; }
+        public IReadOnlyCollection<TypeEntity> TypeEntities { get; }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {

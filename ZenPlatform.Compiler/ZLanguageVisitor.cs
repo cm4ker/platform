@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
@@ -33,11 +35,13 @@ namespace ZenPlatform.Compiler.AST
         {
             _syntaxStack.Clear();
 
-            var cu = new CompilationUnit(context.start.ToLineInfo());
-            _syntaxStack.Push(cu);
+            var typeList = new List<TypeEntity>();
 
+            _syntaxStack.Push(typeList);
 
             base.VisitEntryPoint(context);
+
+            var cu = new CompilationUnit(context.start.ToLineInfo(), new List<string>(), typeList.ToImmutableList());
 
             return cu;
         }
@@ -45,7 +49,7 @@ namespace ZenPlatform.Compiler.AST
         public override AstNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
         {
             base.VisitUsingDefinition(context);
-            _syntaxStack.PeekType<CompilationUnit>().Namespaces.Add(_syntaxStack.PopString());
+//            _syntaxStack.PeekType<CompilationUnit>().Namespaces.Add(_syntaxStack.PopString());
 
             return null;
         }
@@ -57,7 +61,7 @@ namespace ZenPlatform.Compiler.AST
             Module result = new Module(context.start.ToLineInfo(), _syntaxStack.PopTypeBody(),
                 context.IDENTIFIER().GetText());
 
-            _syntaxStack.PeekType<CompilationUnit>().TypeEntities.Add(result);
+            _syntaxStack.PeekCollection().Add(result);
 
             return result;
         }
@@ -69,7 +73,7 @@ namespace ZenPlatform.Compiler.AST
             var result = new Class(context.start.ToLineInfo(), _syntaxStack.PopTypeBody(),
                 context.IDENTIFIER().GetText());
 
-            _syntaxStack.PeekType<CompilationUnit>().TypeEntities.Add(result);
+            _syntaxStack.PeekCollection().Add(result);
 
             return result;
         }
@@ -85,7 +89,7 @@ namespace ZenPlatform.Compiler.AST
             if (context.ChildCount == 0)
                 result = new TypeBody(null);
             else
-                result = new TypeBody((MemberCollection) _syntaxStack.Pop());
+                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList());
 
             _syntaxStack.Push(result);
             return result;
@@ -148,7 +152,7 @@ namespace ZenPlatform.Compiler.AST
             if (context.ChildCount == 0)
                 result = new TypeBody(null);
             else
-                result = new TypeBody((MemberCollection) _syntaxStack.Pop());
+                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList());
 
             _syntaxStack.Push(result);
             return result;
@@ -309,7 +313,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitFunctionDeclaration(context);
             Function result = null;
-            ParameterCollection pc = null;
+            ParameterCollection pc = new ParameterCollection();
             AttributeCollection ac = new AttributeCollection();
             var body = _syntaxStack.PopInstructionsBody();
 
@@ -328,7 +332,8 @@ namespace ZenPlatform.Compiler.AST
                 ac = (AttributeCollection) _syntaxStack.Pop();
             }
 
-            result = new Function(context.start.ToLineInfo(), body, pc, funcName, type, ac);
+            result = new Function(context.start.ToLineInfo(), body, pc.ToImmutableList(), funcName, type,
+                ac.ToImmutableList());
 
             if (context.accessModifier()?.PUBLIC() != null)
             {
@@ -344,7 +349,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitInstructionsBody(context);
             var sc = (StatementCollection) _syntaxStack.Pop();
-            _syntaxStack.Push(new BlockNode(sc));
+            _syntaxStack.Push(new BlockNode(sc.ToImmutableList()));
             return null;
         }
 
@@ -395,7 +400,7 @@ namespace ZenPlatform.Compiler.AST
         {
             base.VisitFunctionCall(context);
 
-            var result = new Call(context.start.ToLineInfo(), (ArgumentCollection) _syntaxStack.Pop(),
+            var result = new Call(context.start.ToLineInfo(), _syntaxStack.PopList<Argument>().ToImmutableList(),
                 _syntaxStack.PopString());
 
             _syntaxStack.Push(result);
@@ -691,7 +696,7 @@ namespace ZenPlatform.Compiler.AST
             if (context.statement() != null)
             {
                 _syntaxStack.Pop();
-                _syntaxStack.Push(new BlockNode(sc));
+                _syntaxStack.Push(new BlockNode(sc.ToImmutableList()));
             }
 
             return null;
@@ -721,8 +726,8 @@ namespace ZenPlatform.Compiler.AST
             base.VisitForStatement(context);
 
             var result = new For(context.start.ToLineInfo(), _syntaxStack.PopInstructionsBody(),
-                _syntaxStack.PopStatement(),
-                _syntaxStack.PopExpression(), _syntaxStack.PopStatement());
+                _syntaxStack.PopExpression(),
+                _syntaxStack.PopExpression(), _syntaxStack.PopExpression());
 
             _syntaxStack.Push(result);
 

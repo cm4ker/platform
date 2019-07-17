@@ -5,19 +5,23 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
 {
     public class For : Statement
     {
-        public Statement Initializer;
-        public Expression Condition;
-        public Statement Counter;
+        private const int INI_SLOT = 0;
+        private const int CONDITION_SLOT = 1;
+        private const int COUNTER_SLOT = 2;
+        private const int BLOCK_SLOT = 3;
 
-        public BlockNode Block;
+        public Expression Initializer { get; }
+        public Expression Condition { get; }
+        public Expression Counter { get; }
+        public BlockNode Block { get; }
 
-        public For(ILineInfo li, BlockNode block, Statement counter, Expression condition,
-            Statement initializer) : base(li)
+        public For(ILineInfo li, BlockNode block, Expression counter, Expression condition,
+            Expression initializer) : base(li)
         {
-            Block = block;
-            Counter = counter;
-            Condition = condition;
-            Initializer = initializer;
+            Block = Children.SetSlot(block, BLOCK_SLOT);
+            Counter = Children.SetSlot(counter, COUNTER_SLOT);
+            Condition = Children.SetSlot(condition, CONDITION_SLOT);
+            Initializer = Children.SetSlot(initializer, INI_SLOT);
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)

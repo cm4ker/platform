@@ -1,12 +1,12 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ZenPlatform.IDE.ViewModels;assembly=ZenPlatform.IDE"
+        xmlns:AvalonEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
         Icon="resm:ZenPlatform.IDE.Assets.avalonia-logo.ico"
         Title="ZenPlatform.IDE"
         Height="500" Width="800"
         Design.Height="200" Design.Width="300">
-
-  <Design.DataContext>
+<Design.DataContext>
     <vm:MainWindowViewModel/>
   </Design.DataContext>
   <Grid Background="LightBlue" RowDefinitions="20,30,*,*,*" ColumnDefinitions="200,*,*">
@@ -24,8 +24,23 @@
 
       </TreeView>
     </Grid>
-    <Grid Grid.Row="2" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Background="DarkBlue">
-      <TextBlock Grid.Column="1" Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid Grid.Row="2" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Background="LightBlue">
+      <DockPanel>
+        <StackPanel Orientation="Horizontal"
+                    DockPanel.Dock="Top"
+                    Spacing="5"
+                    Margin="3">
+          <Button Content="Copy" />
+          <Button Name="addControlBtn" Content="Add Button" />
+          <Button Name="clearControlBtn" Content="Clear Buttons" />
+        </StackPanel>
+        <AvalonEdit:TextEditor Name="Editor"
+                               Margin="30"
+                               SyntaxHighlighting="XML"
+                               HorizontalScrollBarVisibility="Auto"
+                               VerticalScrollBarVisibility="Visible"
+                               TextBlock.FontSize="30" />
+      </DockPanel>
     </Grid>
   </Grid>
 </Window>

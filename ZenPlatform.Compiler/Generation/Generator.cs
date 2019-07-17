@@ -299,6 +299,10 @@ namespace ZenPlatform.Compiler.Generation
                 if (symbol.CodeObject is ILocal vd)
                     e.StLoc(vd);
             }
+            else if (expression is Variable variable)
+            {
+                EmitVariable(e, symbolTable, variable);
+            }
         }
 
         /// <summary>

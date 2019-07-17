@@ -131,9 +131,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public VariableBuilder WithVariable(string name, string type)
         {
-            var variable = new Variable(null, null, name, new SingleTypeNode(null, type, 0));
-            _body.Statements.Add(variable);
-            return new VariableBuilder(variable);
+            return new VariableBuilder();
         }
 
         public object WithCall(string name)

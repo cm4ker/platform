@@ -56,7 +56,6 @@ propertyDeclaration:
             ('{' (GET ';' | GET getInst= instructionsBody)? (SET ';' | SET setInst = instructionsBody)? '}') 
 ;
 
-/*чертовски сложное правило*/
 statement: 
         ((variableDeclaration 
         | functionCall

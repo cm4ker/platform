@@ -74,7 +74,7 @@ namespace ZenPlatform.Language.Ast.AST.Infrastructure
     {
     }
 
-    public class ArgumentCollection : ImmutableList<Argument>
+    public class ArgumentCollection : List<Argument>
     {
     }
 
