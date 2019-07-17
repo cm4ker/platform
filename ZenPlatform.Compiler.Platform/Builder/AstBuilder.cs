@@ -96,8 +96,6 @@ namespace ZenPlatform.Language.Ast.AST.Builder
         public ClassBuilder WithProperty(string name, IEnumerable<XCTypeBase> types)
         {
             var propTypes = new TypeCollection();
-
-            _cl.TypeBody.Properties.Add(new Property(null, name, new MultiTypeNode(null,),));
             return this;
         }
     }

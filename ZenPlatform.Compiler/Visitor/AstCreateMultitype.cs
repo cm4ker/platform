@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Infrastructure;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Expressions;

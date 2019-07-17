@@ -73,8 +73,6 @@ namespace ZenPlatform.Compiler
 
             VRoslyn r = new VRoslyn(new CompilationOptions() {Mode = CompilationMode.Client});
 
-            var t = r.Visit(module);
-            Console.WriteLine(t.NormalizeWhitespace().ToFullString());
 
             return ab;
 

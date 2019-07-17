@@ -4,6 +4,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using ZenPlatform.Language.Ast.AST.Definitions.Statements;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
@@ -15,7 +16,7 @@ namespace ZenPlatform.Compiler.Generation
     {
         private void EmitAssignment(IEmitter e, Assignment assignment, SymbolTable symbolTable)
         {
-            var variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
+            var variable = symbolTable.Find(assignment.Name.Value, SymbolType.Variable);
             if (variable == null)
                 Error("Assignment variable " + assignment.Name + " unknown.");
 

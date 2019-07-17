@@ -1,14 +1,13 @@
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
 
-namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
+namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
 {
     public class Assignment : Expression
     {
         private const int NAME_SLOT = 0;
         private const int INDEX_SLOT = 1;
         private const int VALUE_SLOT = 2;
-
 
         private Name _name;
         private Expression _value;
@@ -49,7 +48,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
     /// <summary>
     /// Выражение для постинкрементирования
     /// </summary>
-    public class PostIncrementStatement : Expression
+    public class PostIncrementExpression : Expression
     {
         private const int NAME_SLOT = 0;
 
@@ -57,11 +56,11 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
 
         public Name Name => _name ?? Children.GetSlot(out _name, NAME_SLOT);
 
-        public PostIncrementStatement(ILineInfo li, string name) : this(li, new Name(li, name))
+        public PostIncrementExpression(ILineInfo li, string name) : this(li, new Name(li, name))
         {
         }
 
-        public PostIncrementStatement(ILineInfo lineInfo, Name name) : base(lineInfo)
+        public PostIncrementExpression(ILineInfo lineInfo, Name name) : base(lineInfo)
         {
             _name = Children.SetSlot(name, NAME_SLOT);
         }
@@ -72,7 +71,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
         }
     }
 
-    public class PostDecrementStatement : Expression
+    public class PostDecrementExpression : Expression
     {
         private const int NAME_SLOT = 0;
 
@@ -80,12 +79,12 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
 
         public Name Name => _name ?? Children.GetSlot(out _name, NAME_SLOT);
 
-        public PostDecrementStatement(ILineInfo li, string name) : this(li, new Name(li, name))
+        public PostDecrementExpression(ILineInfo li, string name) : this(li, new Name(li, name))
         {
         }
 
 
-        public PostDecrementStatement(ILineInfo lineInfo, Name name) : base(lineInfo)
+        public PostDecrementExpression(ILineInfo lineInfo, Name name) : base(lineInfo)
         {
             _name = Children.SetSlot(name, NAME_SLOT);
         }

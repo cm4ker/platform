@@ -79,7 +79,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             if (Check<Assignment>(context, out var asg))
             {
-                ISymbol variable = st.Find(asg.Name, SymbolType.Variable);
+                ISymbol variable = st.Find(asg.Name.Value, SymbolType.Variable);
 
                 //Preload context
                 if (asg.Index == null)
@@ -96,7 +96,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                     LoadVariable(variable, il);
                 }
             }
-            else if (Check<CallStatement>(context, out var call))
+            else if (Check<Call>(context, out var call))
             {
                 if (call.Arguments != null)
                 {
@@ -158,7 +158,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             var symbolTable = context.SymbolTable;
 
-            ISymbol variable = symbolTable.Find(assignment.Name, SymbolType.Variable);
+            ISymbol variable = symbolTable.Find(assignment.Name.Value, SymbolType.Variable);
             var il = context.Emitter;
 
 
@@ -216,7 +216,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
     {
         public override bool Emit(IAstNodeContext context)
         {
-            if (!Check<CallStatement>(context, out var call)) return false;
+            if (!Check<Call>(context, out var call)) return false;
 
             var st = context.SymbolTable;
 
