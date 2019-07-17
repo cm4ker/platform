@@ -8,22 +8,27 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
     /// </summary>
     public class Argument : AstNode
     {
+        private const int VALUE_SLOT = 0;
+
+        private readonly Expression _value;
+
         /// <summary>
         /// Argument expression.
         /// </summary>
-        public Expression Value;
+        public Expression Value => _value;
 
         /// <summary>
         /// Argument pass method.
         /// </summary>
-        public PassMethod PassMethod = PassMethod.ByValue;
+        public PassMethod PassMethod { get; }
 
         /// <summary>
         /// Create argument object.
         /// </summary>
-        public Argument(ILineInfo lineInfo, Expression value, PassMethod passMethod) : base(lineInfo)
+        public Argument(ILineInfo lineInfo, Expression value, PassMethod passMethod = PassMethod.ByValue) :
+            base(lineInfo)
         {
-            Value = value;
+            _value = Children.SetSlot(value, VALUE_SLOT);
             PassMethod = passMethod;
         }
 

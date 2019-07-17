@@ -36,7 +36,7 @@ namespace ZenPlatform.Compiler.Visitor
             return null;
         }
 
-        public override object VisitParameter(Parameter obj)
+        public override object VisitParameter(ParameterNode obj)
         {
             if (obj.Parent is Function f)
             {
@@ -55,7 +55,7 @@ namespace ZenPlatform.Compiler.Visitor
             var v = obj.GetParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable);
 
             if (v?.SyntaxObject is Variable vv) obj.Type = vv.Type;
-            if (v?.SyntaxObject is Parameter p) obj.Type = p.Type;
+            if (v?.SyntaxObject is ParameterNode p) obj.Type = p.Type;
 
             return null;
         }
@@ -127,7 +127,7 @@ namespace ZenPlatform.Compiler.Visitor
                 obj.Setter.SymbolTable = new SymbolTable(parent);
             }
 
-            obj.Setter.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByValue));
+            obj.Setter.SymbolTable.Add(new ParameterNode(null, "value", obj.Type, PassMethod.ByValue));
             return null;
         }
 

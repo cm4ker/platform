@@ -203,7 +203,7 @@ namespace ZenPlatform.Language.Ast
             ;
         }
 
-        public virtual T VisitParameter(Parameter obj)
+        public virtual T VisitParameter(ParameterNode obj)
         {
             return DefaultVisit(obj);
             ;

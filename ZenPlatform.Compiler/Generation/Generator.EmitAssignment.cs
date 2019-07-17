@@ -27,7 +27,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (variable.CodeObject is IParameter pd)
                 {
-                    Parameter p = variable.SyntaxObject as Parameter;
+                    ParameterNode p = variable.SyntaxObject as ParameterNode;
                     if (p.PassMethod == PassMethod.ByReference)
                         e.LdArg(pd);
                 }
@@ -66,7 +66,7 @@ namespace ZenPlatform.Compiler.Generation
                     e.StFld(fd);
                 else if (variable.CodeObject is IParameter ppd)
                 {
-                    Parameter p = variable.SyntaxObject as Parameter;
+                    ParameterNode p = variable.SyntaxObject as ParameterNode;
                     if (p.PassMethod == PassMethod.ByReference)
                         e.StIndI4();
                     else

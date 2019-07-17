@@ -5,14 +5,19 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
 {
     public abstract class UnaryExpression : Expression
     {
-        
-        
+        private const int VALUE_SLOT = 0;
+
+        private Expression _value;
+
         protected UnaryExpression(ILineInfo li, Expression value) : base(li)
         {
-            Value = value;
+            _value = Children.SetSlot(value, VALUE_SLOT);
         }
 
-        public Expression Value { get; set; }
+        public Expression Value
+        {
+            get => _value;
+        }
 
         public override TypeNode Type => Value.Type;
     }
@@ -37,12 +42,14 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
 
     public class IndexerExpression : UnaryExpression
     {
-        public Expression Indexer { get; }
+        //Unary expression has already exp on slot = 0
+        private const int INDEXER_SLOT = 1;
 
+        public Expression Indexer { get; }
 
         public IndexerExpression(ILineInfo token, Expression indexer, Expression value) : base(token, value)
         {
-            Indexer = indexer;
+            Indexer = Children.SetSlot(indexer, INDEXER_SLOT);
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -53,12 +60,12 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Expressions
 
     public class LogicalOrArithmeticExpression : UnaryExpression
     {
-        public UnaryOperatorType Type { get; }
+        public UnaryOperatorType OperaotrType { get; }
 
-        public LogicalOrArithmeticExpression(ILineInfo token, Expression value, UnaryOperatorType type) :
+        public LogicalOrArithmeticExpression(ILineInfo token, Expression value, UnaryOperatorType operaotrType) :
             base(token, value)
         {
-            Type = type;
+            OperaotrType = operaotrType;
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)

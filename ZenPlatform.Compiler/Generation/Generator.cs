@@ -156,7 +156,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (ue is LogicalOrArithmeticExpression lae)
 
-                    switch (lae.Type)
+                    switch (lae.OperaotrType)
                     {
                         case UnaryOperatorType.Indexer:
 
@@ -223,7 +223,7 @@ namespace ZenPlatform.Compiler.Generation
                     e.LdsFld(fd);
                 else if (variable.CodeObject is IParameter pd)
                 {
-                    Parameter p = variable.SyntaxObject as Parameter;
+                    ParameterNode p = variable.SyntaxObject as ParameterNode;
 
                     if (name.Type is UnionTypeNode)
                     {

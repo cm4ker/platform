@@ -52,7 +52,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             return null;
         }
 
-        public override object VisitParameter(Parameter obj)
+        public override object VisitParameter(ParameterNode obj)
         {
             var codeObj = _context.Method.WithParameter(obj.Name, obj.Type.ToClrType(_context.Assembly), false, false);
             _context.SymbolTable.ConnectCodeObject(obj, codeObj);

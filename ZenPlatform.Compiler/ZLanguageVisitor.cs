@@ -363,7 +363,7 @@ namespace ZenPlatform.Compiler.AST
 
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
 
-            var parameter = new Parameter(context.start.ToLineInfo(), context.IDENTIFIER().GetText(),
+            var parameter = new ParameterNode(context.start.ToLineInfo(), context.IDENTIFIER().GetText(),
                 _syntaxStack.PopType(), passMethod);
 
             paramList.Add(parameter);

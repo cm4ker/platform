@@ -8,7 +8,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
     /// <summary>
     /// Описывает параметр
     /// </summary>
-    public class Parameter : AstNode, ITypedNode, IAstSymbol
+    public class ParameterNode : AstNode, ITypedNode, IAstSymbol
     {
         private string _name;
 
@@ -25,7 +25,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         /// <summary>
         /// Create parameter object.
         /// </summary>
-        public Parameter(ILineInfo li, string name, TypeNode type, PassMethod passMethod) : base(li)
+        public ParameterNode(ILineInfo li, string name, TypeNode type, PassMethod passMethod) : base(li)
         {
             _name = name;
             Type = type;

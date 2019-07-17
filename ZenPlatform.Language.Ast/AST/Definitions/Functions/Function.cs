@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
@@ -13,26 +16,31 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
     /// </summary>
     public class Function : Member, IAstSymbol
     {
+        private const int BLOCK_SLOT = 0;
+
         /// <summary>
         /// Тело функции
         /// </summary>
-        public BlockNode Block;
+        public BlockNode Block => _block;
 
         /// <summary>
         /// Тип функции
         /// </summary>
-        public TypeNode Type;
+        public TypeNode Type { get; }
 
         /// <summary>
         /// Параметры функции
         /// </summary>
-        public ParameterCollection Parameters;
+        public IReadOnlyList<ParameterNode> Parameters { get; }
 
         /// <summary>
         /// Аттрибуты функции
         /// </summary>
-        public AttributeCollection Attributes;
+        public IReadOnlyList<AttributeNode> Attributes { get; }
 
+        /// <summary>
+        /// Флаги функции
+        /// </summary>
         public FunctionFlags Flags => ((IsClient) ? FunctionFlags.Client : 0)
                                       | ((IsServer) ? FunctionFlags.Server : 0)
                                       | ((IsClientCall) ? FunctionFlags.ServerClientCall : 0);
@@ -46,19 +54,36 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         /// </summary>
         public IEmitter Builder;
 
+        private readonly BlockNode _block;
+
         public bool IsPublic { get; set; }
 
         /// <summary>
         /// Создать объект функции
         /// </summary>
-        public Function(ILineInfo li, BlockNode block, ParameterCollection parameters,
-            string name, TypeNode type, AttributeCollection ac) : base(li)
+        public Function(ILineInfo li, BlockNode block, ImmutableList<ParameterNode> parameters,
+            string name, TypeNode type, ImmutableList<AttributeNode> attributes) : base(li)
         {
-            Block = block;
-            Parameters = parameters ?? new ParameterCollection();
+            _block = block;
+            Parameters = parameters ?? ImmutableList<ParameterNode>.Empty;
+            Attributes = attributes ?? ImmutableList<AttributeNode>.Empty;
             Name = name;
             Type = type;
-            Attributes = ac;
+
+
+            Children.SetSlot(block, BLOCK_SLOT);
+
+            var slot = BLOCK_SLOT + 1;
+
+            foreach (var parameter in Parameters)
+            {
+                Children.SetSlot(parameter, slot++);
+            }
+
+            foreach (var parameter in Attributes)
+            {
+                Children.SetSlot(parameter, slot++);
+            }
         }
 
         public string Name { get; set; }

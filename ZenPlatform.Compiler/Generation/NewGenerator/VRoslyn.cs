@@ -27,7 +27,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override SyntaxNode VisitLogicalOrArithmeticExpression(LogicalOrArithmeticExpression arg)
         {
-            return arg.Type switch
+            return arg.OperaotrType switch
                 {
                 UnaryOperatorType.Positive => SyntaxFactory.PrefixUnaryExpression(SyntaxKind.UnaryPlusExpression,
                     (ExpressionSyntax) Visit(arg.Value)),
@@ -305,7 +305,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 (ExpressionSyntax) Visit(obj.Value)));
         }
 
-        public override SyntaxNode VisitParameter(Parameter obj)
+        public override SyntaxNode VisitParameter(ParameterNode obj)
         {
             return SyntaxFactory.Parameter(SyntaxFactory.Identifier(obj.Name)).WithType(GetTypeSyntax(obj.Type));
         }
