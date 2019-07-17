@@ -24,6 +24,11 @@ namespace ZenPlatform.Language.Ast.AST
     {
         private Dictionary<int, AstNode> _nodes;
 
+        public AstNodeCollection()
+        {
+            _nodes = new Dictionary<int, AstNode>();
+        }
+
         public T SetSlot<T>(T astNode, int index) where T : AstNode
         {
             if (!_nodes.ContainsKey(index))

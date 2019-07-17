@@ -50,7 +50,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (variable.SyntaxObject is Variable v)
                     expression.Value.Type = v.Type;
-                else if (variable.SyntaxObject is Parameter p)
+                else if (variable.SyntaxObject is ParameterNode p)
                     expression.Value.Type = p.Type;
             }
 

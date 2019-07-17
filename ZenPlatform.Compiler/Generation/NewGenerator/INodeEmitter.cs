@@ -85,7 +85,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 if (asg.Index == null)
                 {
                     //not array
-                    if (variable.CodeObject is IParameter p && variable.SyntaxObject is Parameter ps
+                    if (variable.CodeObject is IParameter p && variable.SyntaxObject is ParameterNode ps
                                                             && ps.PassMethod == PassMethod.ByReference)
                         il.LdArg(p.ArgIndex);
                     if (variable.CodeObject is IField)
@@ -172,7 +172,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                     il.StFld(fd);
                 else if (variable.CodeObject is IParameter ppd)
                 {
-                    Parameter p = variable.SyntaxObject as Parameter;
+                    ParameterNode p = variable.SyntaxObject as ParameterNode;
                     if (p.PassMethod == PassMethod.ByReference)
                         il.StIndI4();
                     else

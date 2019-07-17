@@ -113,7 +113,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public ParameterBuilder WithParameter(string name, string type, PassMethod pm)
         {
-            var arg = new Parameter(null, name, new SingleTypeNode(null, type, 0), pm);
+            var arg = new ParameterNode(null, name, new SingleTypeNode(null, type, 0), pm);
             return new ParameterBuilder(arg);
         }
 
@@ -154,9 +154,9 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
     public class ParameterBuilder
     {
-        private readonly Parameter _parameter;
+        private readonly ParameterNode _parameter;
 
-        public ParameterBuilder(Parameter parameter)
+        public ParameterBuilder(ParameterNode parameter)
         {
             _parameter = parameter;
         }
