@@ -253,6 +253,52 @@ namespace ZenPlatform.Compiler.Generation
 
                 e.PropGetValue(expProp);
             }
+            else if (expression is PostIncrementExpression pis)
+            {
+                var symbol = symbolTable.Find(pis.Name.Value, SymbolType.Variable) ??
+                             throw new Exception($"Variable {pis.Name} not found");
+
+                IType opType = null;
+//                if (symbol.SyntaxObject is Parameter p)
+//                    opType = p.Type.Type;
+//                else if (symbol.SyntaxObject is Variable v)
+//                    opType = v.Type.Type;
+
+
+                EmitExpression(e, pis.Name, symbolTable);
+
+                EmitIncrement(e, opType);
+                e.Add();
+
+                if (symbol.CodeObject is IParameter pd)
+                    e.StArg(pd);
+
+                if (symbol.CodeObject is ILocal vd)
+                    e.StLoc(vd);
+            }
+            else if (expression is PostDecrementExpression pds)
+            {
+                var symbol = symbolTable.Find(pds.Name.Value, SymbolType.Variable) ??
+                             throw new Exception($"Variable {pds.Name} not found");
+
+                IType opType = null;
+//                if (symbol.SyntaxObject is Parameter p)
+//                    opType = p.Type.Type;
+//                else if (symbol.SyntaxObject is Variable v)
+//                    opType = v.Type.Type;
+
+
+                EmitExpression(e, pds.Name, symbolTable);
+
+                EmitDecrement(e, opType);
+                e.Add();
+
+                if (symbol.CodeObject is IParameter pd)
+                    e.StArg(pd);
+
+                if (symbol.CodeObject is ILocal vd)
+                    e.StLoc(vd);
+            }
         }
 
         /// <summary>

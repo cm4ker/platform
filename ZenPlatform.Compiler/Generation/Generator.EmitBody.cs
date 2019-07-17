@@ -6,6 +6,7 @@ using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using ZenPlatform.Language.Ast.AST.Definitions.Statements;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
@@ -36,9 +37,9 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitVariable(e, context, variable);
             }
-            else if (statement is Assignment)
+            else if (statement is ExpressionStatement es)
             {
-                EmitAssignment(e, statement as Assignment, context.SymbolTable);
+                EmitExpression(e, es.Expression, context.SymbolTable);
             }
             else if (statement is Return ret)
             {
@@ -63,23 +64,6 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     e.StLoc(returnVariable)
                         .Br(returnLabel);
-                }
-            }
-            else if (statement is CallStatement)
-            {
-                CallStatement call = statement as CallStatement;
-                ISymbol symbol = context.SymbolTable.Find(call.Name, SymbolType.Function);
-                EmitCallStatement(e, statement as CallStatement, context.SymbolTable);
-
-                if (symbol != null)
-                {
-                    if (((IMethod) symbol.CodeObject).ReturnType != _bindings.Void)
-                        e.Pop();
-                }
-                else
-                {
-                    if (call.Name == "Read")
-                        e.Pop();
                 }
             }
             else if (statement is If ifStatement)
@@ -171,52 +155,7 @@ namespace ZenPlatform.Compiler.Generation
                 e.Br(loop);
                 e.MarkLabel(exit);
             }
-            else if (statement is PostIncrementStatement pis)
-            {
-                var symbol = context.SymbolTable.Find(pis.Name.Value, SymbolType.Variable) ??
-                             throw new Exception($"Variable {pis.Name} not found");
 
-                IType opType = null;
-//                if (symbol.SyntaxObject is Parameter p)
-//                    opType = p.Type.Type;
-//                else if (symbol.SyntaxObject is Variable v)
-//                    opType = v.Type.Type;
-
-
-                EmitExpression(e, pis.Name, context.SymbolTable);
-
-                EmitIncrement(e, opType);
-                e.Add();
-
-                if (symbol.CodeObject is IParameter pd)
-                    e.StArg(pd);
-
-                if (symbol.CodeObject is ILocal vd)
-                    e.StLoc(vd);
-            }
-            else if (statement is PostDecrementStatement pds)
-            {
-                var symbol = context.SymbolTable.Find(pds.Name.Value, SymbolType.Variable) ??
-                             throw new Exception($"Variable {pds.Name} not found");
-
-                IType opType = null;
-//                if (symbol.SyntaxObject is Parameter p)
-//                    opType = p.Type.Type;
-//                else if (symbol.SyntaxObject is Variable v)
-//                    opType = v.Type.Type;
-
-
-                EmitExpression(e, pds.Name, context.SymbolTable);
-
-                EmitDecrement(e, opType);
-                e.Add();
-
-                if (symbol.CodeObject is IParameter pd)
-                    e.StArg(pd);
-
-                if (symbol.CodeObject is ILocal vd)
-                    e.StLoc(vd);
-            }
             else if (statement is Try ts)
             {
                 var exLocal = e.DefineLocal(_ts.FindType("System.Exception"));

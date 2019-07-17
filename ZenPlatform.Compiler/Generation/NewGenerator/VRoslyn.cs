@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
@@ -300,7 +301,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         public override SyntaxNode VisitAssigment(Assignment obj)
         {
             return SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                SyntaxKind.SimpleAssignmentExpression, ParseName(obj.Name),
+                SyntaxKind.SimpleAssignmentExpression, ParseName(obj.Name.Value),
                 (ExpressionSyntax) Visit(obj.Value)));
         }
 
@@ -329,7 +330,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 (BlockSyntax) Visit(obj.Block));
         }
 
-        public override SyntaxNode VisitPostIncrementStatement(PostIncrementStatement obj)
+        public override SyntaxNode VisitPostIncrementStatement(PostIncrementExpression obj)
         {
             return SyntaxFactory.PostfixUnaryExpression(SyntaxKind.PostIncrementExpression,
                 (ExpressionSyntax) Visit(obj.Name));

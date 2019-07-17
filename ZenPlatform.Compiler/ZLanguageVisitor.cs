@@ -634,11 +634,11 @@ namespace ZenPlatform.Compiler.AST
                     new Name(null, _syntaxStack.PopString()));
             else if (context.OP_INC() != null)
             {
-                result = new PostIncrementStatement(context.start.ToLineInfo(), _syntaxStack.PopString());
+                result = new PostIncrementExpression(context.start.ToLineInfo(), _syntaxStack.PopString());
             }
             else if (context.OP_DEC() != null)
             {
-                result = new PostDecrementStatement(context.start.ToLineInfo(), _syntaxStack.PopString());
+                result = new PostDecrementExpression(context.start.ToLineInfo(), _syntaxStack.PopString());
             }
             else
                 result = new Assignment(context.start.ToLineInfo(), _syntaxStack.PopExpression(), null,

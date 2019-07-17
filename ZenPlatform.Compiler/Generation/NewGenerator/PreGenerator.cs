@@ -1,6 +1,7 @@
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using SreTA = System.Reflection.TypeAttributes;
@@ -37,7 +38,6 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             //На сервере никогда не может существовать клиентских процедур
             if (((int) function.Flags & (int) _context.Mode) == 0 && !_context.IsClass)
             {
-                Stop();
             }
 
             var method = _context.Type.DefineMethod(function.Name, function.IsPublic, !_context.IsClass, false)
@@ -48,7 +48,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             function.Builder = method.Generator;
 
-            Stop();
+
             return null;
         }
 
@@ -57,18 +57,18 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             var codeObj = _context.Method.WithParameter(obj.Name, obj.Type.ToClrType(_context.Assembly), false, false);
             _context.SymbolTable.ConnectCodeObject(obj, codeObj);
 
-            Stop();
+
             return null;
         }
 
         public override object VisitField(Field obj)
         {
-            if (!_context.IsClass) Stop();
+            //if (!_context.IsClass) Stop();
 
             var fld = _context.Type.DefineField(obj.Type.ToClrType(_context.Assembly), obj.Name, false, false);
             obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, fld);
 
-            Stop();
+
             return null;
         }
 
@@ -76,7 +76,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         {
             var tb = _context.Type;
 
-            if (!_context.IsClass) Stop();
+            //if (!_context.IsClass) Stop();
 
             tb.DefineProperty(property.Type.ToClrType(_context.Assembly), property.Name);
 

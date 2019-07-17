@@ -102,13 +102,13 @@ namespace ZenPlatform.Language.Ast
             ;
         }
 
-        public virtual T VisitPostDecrementStatement(PostDecrementStatement obj)
+        public virtual T VisitPostDecrementStatement(PostDecrementExpression obj)
         {
             return DefaultVisit(obj);
             ;
         }
 
-        public virtual T VisitPostIncrementStatement(PostIncrementStatement obj)
+        public virtual T VisitPostIncrementStatement(PostIncrementExpression obj)
         {
             return DefaultVisit(obj);
             ;
