@@ -77,27 +77,6 @@ namespace ZenPlatform.Compiler.Visitor
             return new FieldExpression(name, "Value");
         }
 
-        private void Transform(UnionTypeNode mtn)
-        {
-            var parent = mtn.Parent;
-
-            if (parent is Name n)
-            {
-                var pp = n.Parent;
-
-                switch (true)
-                {
-                    case true when pp is CastExpression ce:
-                        ce.Value = GetValue(n);
-                        break;
-                    case true when pp is IndexerExpression ie:
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
         public void Bake()
         {
             _ctor.Generator.Ret();

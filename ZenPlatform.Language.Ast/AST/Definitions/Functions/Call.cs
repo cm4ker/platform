@@ -20,7 +20,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
         /// <summary>
         /// Передаваемые аргументы функции
         /// </summary>
-        public IEnumerable<Argument> Arguments { get; }
+        public IReadOnlyList<Argument> Arguments { get; }
 
         /// <summary>
         /// Creates a function call object.

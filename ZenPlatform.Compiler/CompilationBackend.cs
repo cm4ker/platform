@@ -11,6 +11,7 @@ using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using CompilationOptions = ZenPlatform.Compiler.Generation.NewGenerator.CompilationOptions;
 
@@ -65,13 +66,18 @@ namespace ZenPlatform.Compiler
             ZLanguageVisitor v = new ZLanguageVisitor(ap.TypeSystem);
             var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
 
-            var glob = new Root();
-            glob.CompilationUnits.Add(module);
+            module.PrintPretty("", true);
 
-            AstSymbolVisitor sv = new AstSymbolVisitor();
-            sv.Visit(glob);
+            AstWalker aw = new AstWalker();
+            aw.Visit(module);
 
-            VRoslyn r = new VRoslyn(new CompilationOptions() {Mode = CompilationMode.Client});
+//            var glob = new Root();
+//            glob.CompilationUnits.Add(module);
+//
+//            AstSymbolVisitor sv = new AstSymbolVisitor();
+//            sv.Visit(glob);
+//
+//            VRoslyn r = new VRoslyn(new CompilationOptions() {Mode = CompilationMode.Client});
 
 
             return ab;
@@ -80,15 +86,15 @@ namespace ZenPlatform.Compiler
             //Перед генерацией необходимо подготовить дерево символов
 
 
-            AstCreateMultitype cm = new AstCreateMultitype(ab);
-            glob.Accept(cm);
-            cm.Bake();
-
-            var prm = new GeneratorParameters(module, ab, CompilationMode.Client);
-
-            Generator g = new Generator(prm);
-
-            return ab;
+//            AstCreateMultitype cm = new AstCreateMultitype(ab);
+//            glob.Accept(cm);
+//            cm.Bake();
+//
+//            var prm = new GeneratorParameters(module, ab, CompilationMode.Client);
+//
+//            Generator g = new Generator(prm);
+//
+//            return ab;
         }
 
         private ITokenStream CreateInputStream(Stream input)

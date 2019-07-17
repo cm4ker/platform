@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 using ZenPlatform.Language.Ast.AST.Definitions.Statements;
@@ -11,29 +13,30 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// </summary>
     public class BlockNode : AstNode, IScoped
     {
-        public StatementCollection Statements;
+        public IReadOnlyList<Statement> Statements { get; }
 
         public SymbolTable SymbolTable { get; set; }
 
         /// <summary>
         /// Создать блок из коллекции инструкций
         /// </summary>
-        public BlockNode(StatementCollection statements) : base(null)
+        public BlockNode(ImmutableList<Statement> statements) : base(null)
         {
             if (statements == null)
                 return;
 
-            Statements = new StatementCollection();
+            Statements = statements;
 
-            foreach (Statement statement in statements)
+            var slot = 0;
+            foreach (var statement in Statements)
             {
-                Statements.Add(statement);
+                Children.SetSlot(statement, slot++);
             }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            throw new NotImplementedException();
+            return visitor.VisitBlock(this);
         }
     }
 
@@ -42,32 +45,42 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// </summary>
     public class TypeBody : AstNode, IScoped
     {
-        public FunctionCollection Functions;
-        public FieldCollection Fields;
-        public PropertyCollection Properties;
+        private readonly List<Function> _functions;
+        private readonly List<Field> _fields;
+        private readonly List<Property> _properties;
+
+        public IReadOnlyList<Function> Functions => _functions;
+
+        public IReadOnlyList<Field> Fields => _fields;
+
+        public IReadOnlyList<Property> Properties => _properties;
 
         public SymbolTable SymbolTable { get; set; }
 
 
-        public TypeBody(MemberCollection members) : base(null)
+        public TypeBody(ImmutableList<Member> members) : base(null)
         {
-            Functions = new FunctionCollection();
-            Fields = new FieldCollection();
-            Properties = new PropertyCollection();
+            _functions = new FunctionCollection();
+            _fields = new FieldCollection();
+            _properties = new PropertyCollection();
 
             if (members == null)
                 return;
 
+            var slot = 0;
+
             foreach (Member member in members)
             {
                 if (member is Function func)
-                    Functions.Add(func);
+                    _functions.Add(func);
 
                 if (member is Field field)
-                    Fields.Add(field);
+                    _fields.Add(field);
 
                 if (member is Property prop)
-                    Properties.Add(prop);
+                    _properties.Add(prop);
+
+                Children.SetSlot(member, slot++);
             }
         }
 

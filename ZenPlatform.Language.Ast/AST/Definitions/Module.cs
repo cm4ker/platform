@@ -11,9 +11,8 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// <summary>
         /// Create a module object.
         /// </summary>
-        public Module(ILineInfo li, TypeBody typeBody, string name) : base(li)
+        public Module(ILineInfo li, TypeBody typeBody, string name) : base(li, typeBody)
         {
-            TypeBody = typeBody;
             Name = name;
         }
 

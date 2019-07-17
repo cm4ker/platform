@@ -15,10 +15,11 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// <summary>
         /// Тело типа
         /// </summary>
-        public TypeBody TypeBody;
+        public TypeBody TypeBody { get; }
 
-        protected TypeEntity(ILineInfo lineInfo) : base(lineInfo)
+        protected TypeEntity(ILineInfo lineInfo, TypeBody tb) : base(lineInfo)
         {
+            TypeBody = Children.SetSlot(tb, 0);
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)

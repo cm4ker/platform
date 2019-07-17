@@ -1,5 +1,6 @@
 using System;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Infrastructure;
@@ -12,13 +13,13 @@ namespace ZenPlatform.Compiler.Generation
         {
         }
 
-        private void EmitVariable(IEmitter e, BlockNode context, Variable variable)
+        private void EmitVariable(IEmitter e, SymbolTable symTable, Variable variable)
         {
             //load phase 
 
             if (variable.Value is Expression expr)
             {
-                EmitExpression(e, expr, context.SymbolTable);
+                EmitExpression(e, expr, symTable);
 
 //                if (variable.Type.Type.Equals(_bindings.Object))
 //                {

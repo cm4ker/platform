@@ -29,23 +29,12 @@ type HelloWorld
 {
     int _someField;
 
-    public <int> PublicMethod(<string, int> arg)
+    public int PublicMethod(object arg)
     {
-        <int, string> a =  (2 + 2) * 3;
-        <int, string> b = ""Hello epta""; 
-        //a = arg;        
-        //b = a;
-
-        string u = ""test"";
-
-        int varint = (int)a;
-
-        for(int i = 1; i < 10; i++)
-        {
-            a = 3;
-        } 
-
-        return (2 + 2) * 3 + 1;//b; //result 1;
+        object a =  (2 + 2) * 3;
+        object b = ""Hello epta""; 
+        
+        return (2 + 2) * 3 + 1;
     }
     
     [ClientCall]

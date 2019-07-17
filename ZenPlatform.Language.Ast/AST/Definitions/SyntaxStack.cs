@@ -26,6 +26,11 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             return internalStack.Pop();
         }
 
+        public List<T> PopList<T>()
+        {
+            return (List<T>) internalStack.Pop();
+        }
+
         public void PopUntil(object marker, IList reciver)
         {
             object element = internalStack.Pop();

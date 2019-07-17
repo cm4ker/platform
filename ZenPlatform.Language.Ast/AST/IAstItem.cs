@@ -32,9 +32,18 @@ namespace ZenPlatform.Language.Ast.AST
         public T SetSlot<T>(T astNode, int index) where T : AstNode
         {
             if (!_nodes.ContainsKey(index))
+            {
+                if (astNode is null) return null;
+
                 _nodes.Add(index, astNode);
+            }
             else
-                _nodes[index] = astNode;
+            {
+                if (astNode is null)
+                    _nodes.Remove(index);
+                else
+                    _nodes[index] = astNode;
+            }
 
             return astNode;
         }

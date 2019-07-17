@@ -33,11 +33,7 @@ namespace ZenPlatform.Compiler.Generation
         private void EmitStatement(IEmitter e, Statement statement, BlockNode context,
             ILabel returnLabel, ref ILocal returnVariable, bool inTry = false)
         {
-            if (statement is Variable variable)
-            {
-                EmitVariable(e, context, variable);
-            }
-            else if (statement is ExpressionStatement es)
+            if (statement is ExpressionStatement es)
             {
                 EmitExpression(e, es.Expression, context.SymbolTable);
             }
@@ -142,7 +138,7 @@ namespace ZenPlatform.Compiler.Generation
                 ILabel exit = e.DefineLabel();
 
                 // Emit initializer
-                EmitStatement(e, forStatement.Initializer, context, returnLabel, ref returnVariable);
+                EmitExpression(e, forStatement.Initializer, context.SymbolTable);
                 e.MarkLabel(loop);
                 // Emit condition
                 EmitExpression(e, forStatement.Condition, context.SymbolTable);
@@ -150,7 +146,7 @@ namespace ZenPlatform.Compiler.Generation
                 // Emit body
                 EmitBody(e, forStatement.Block, returnLabel, ref returnVariable);
                 // Emit counter
-                EmitStatement(e, forStatement.Counter, context, returnLabel, ref returnVariable);
+                EmitExpression(e, forStatement.Counter, context.SymbolTable);
                 //EmitAssignment(il, forStatement.Counter, context.SymbolTable);
                 e.Br(loop);
                 e.MarkLabel(exit);

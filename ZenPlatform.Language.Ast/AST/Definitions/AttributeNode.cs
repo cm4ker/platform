@@ -21,7 +21,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            throw new NotImplementedException();
+            return visitor.VisitAttribute(this);
         }
     }
 }
