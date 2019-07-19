@@ -7,6 +7,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
 using ZenPlatform.Shared.ParenChildCollection;
+using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Language.Ast.AST
 {
@@ -78,7 +79,7 @@ namespace ZenPlatform.Language.Ast.AST
         }
     }
 
-    public abstract class AstNode : IAstNode
+    public abstract class AstNode : Node, IAstNode
     {
         public AstNode(ILineInfo lineInfo)
         {
@@ -95,19 +96,8 @@ namespace ZenPlatform.Language.Ast.AST
 
         public int Position { get; set; }
 
-        public IAstNode Parent { get; set; }
-
         public AstNodeCollection Children { get; }
 
-        public T GetParent<T>() where T : IAstNode
-        {
-            if (Parent is null) return default(T);
-
-            if (Parent is T p)
-                return p;
-
-            return Parent.GetParent<T>();
-        }
 
         public abstract T Accept<T>(AstVisitorBase<T> visitor);
     }

@@ -208,7 +208,7 @@ namespace ZenPlatform.Compiler.AST
 
             if (t == TypeNodeKind.Unknown)
                 throw new Exception("Unknown primitive type");
-            var result = new SingleTypeNode(context.start.ToLineInfo(), context.GetText(), t);
+            var result = new PrimitiveTypeNode(context.start.ToLineInfo(), t);
 
             _syntaxStack.Push(result);
 

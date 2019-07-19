@@ -58,43 +58,22 @@ namespace ZenPlatform.Compiler
 
         private IAssemblyBuilder CompileTree(ZSharpParser pTree)
         {
-            IAssemblyPlatform ap = new SreAssemblyPlatform();
+            IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
             var ab = ap.AsmFactory.Create(ap.TypeSystem, "Debug", new Version(1, 0));
-
 
             ZLanguageVisitor v = new ZLanguageVisitor(ap.TypeSystem);
             var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
 
             module.PrintPretty("", true);
 
-            AstWalker aw = new AstWalker();
-            aw.Visit(module);
+            AstSymbolPreparator.Prepare(module);
 
-//            var glob = new Root();
-//            glob.CompilationUnits.Add(module);
-//
-//            AstSymbolVisitor sv = new AstSymbolVisitor();
-//            sv.Visit(glob);
-//
-//            VRoslyn r = new VRoslyn(new CompilationOptions() {Mode = CompilationMode.Client});
+            var prm = new GeneratorParameters(module, ab, CompilationMode.Client);
 
+            Generator g = new Generator(prm);
 
             return ab;
-
-            //Gen
-            //Перед генерацией необходимо подготовить дерево символов
-
-
-//            AstCreateMultitype cm = new AstCreateMultitype(ab);
-//            glob.Accept(cm);
-//            cm.Bake();
-//
-//            var prm = new GeneratorParameters(module, ab, CompilationMode.Client);
-//
-//            Generator g = new Generator(prm);
-//
-//            return ab;
         }
 
         private ITokenStream CreateInputStream(Stream input)

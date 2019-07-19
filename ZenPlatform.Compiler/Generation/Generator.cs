@@ -11,6 +11,7 @@ using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation.NewGenerator;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.AST.Definitions;
 using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
 using ZenPlatform.Language.Ast.AST.Definitions.Functions;
@@ -333,7 +334,7 @@ namespace ZenPlatform.Compiler.Generation
                     Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
 
                     var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
-                        .WithReturnType(null);
+                        .WithReturnType(function.Type.ToClrType(_asm));
 
                     result.Add((function, method));
 
