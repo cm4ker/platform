@@ -57,9 +57,8 @@ module TestModule
 
             CompilationBackend cb = new CompilationBackend();
             var b = cb.Compile(text);
-
-            //var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Debug.dll");
-            var path = "Debug.dll";
+            
+            var path = "AsmPlatform.dll";
             if (File.Exists(path))
                 File.Delete(path);
 

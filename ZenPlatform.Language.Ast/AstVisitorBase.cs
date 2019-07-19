@@ -265,9 +265,9 @@ namespace ZenPlatform.Language.Ast
         }
     }
 
-    public sealed class AstWalker : AstVisitorBase<AstNode>
+    public class AstWalker<T> : AstVisitorBase<T>
     {
-        public override AstNode DefaultVisit(AstNode node)
+        public override T DefaultVisit(AstNode node)
         {
             Console.WriteLine($"We are visit: {node}");
 

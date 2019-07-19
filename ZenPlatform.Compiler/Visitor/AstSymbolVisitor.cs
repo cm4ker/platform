@@ -14,11 +14,27 @@ using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Visitor
 {
-    public class AstSymbolVisitor : AstVisitorBase<object>
+    public class AstSymbolPreparator : AstVisitorBase<object>
     {
-        public override object VisitExpression(Expression e)
+        public static void Prepare(AstNode node)
         {
-            return null;
+            var p = new AstSymbolPreparator();
+            p.Visit(node);
+        }
+
+
+        public override object DefaultVisit(AstNode node)
+        {
+            foreach (var child in node.Children)
+            {
+                Visit(child);
+            }
+
+            return base.DefaultVisit(node);
+        }
+
+        private AstSymbolPreparator()
+        {
         }
 
         public override object VisitVariable(Variable obj)
@@ -115,7 +131,7 @@ namespace ZenPlatform.Compiler.Visitor
                 throw new Exception("Invalid register function in scope");
             }
 
-            return null;
+            return base.VisitFunction(obj);
         }
 
         public override object VisitProperty(Property obj)
@@ -143,11 +159,6 @@ namespace ZenPlatform.Compiler.Visitor
             return null;
         }
 
-        public override object VisitSingleType(SingleTypeNode obj)
-        {
-            return null;
-        }
-
         public override object VisitTry(Try obj)
         {
             if (obj.TryBlock.SymbolTable == null)
@@ -170,7 +181,7 @@ namespace ZenPlatform.Compiler.Visitor
                 root.SymbolTable = new SymbolTable();
             }
 
-            return null;
+            return base.VisitRoot(root);
         }
     }
 }
