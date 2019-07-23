@@ -14,7 +14,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// <summary>
         /// Create a variable object.
         /// </summary>
-        public Variable(ILineInfo li, AstNode value, string name, TypeNode type) : base(li)
+        public Variable(ILineInfo li, SyntaxNode value, string name, TypeNode type) : base(li)
         {
             Name = name;
             Type = type;
@@ -33,7 +33,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         /// <summary>
         /// Variable initial value;
         /// </summary>
-        public AstNode Value;
+        public SyntaxNode Value;
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {

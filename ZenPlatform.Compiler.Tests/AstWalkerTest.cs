@@ -7,7 +7,7 @@ namespace ZenPlatform.Compiler.Tests
 {
     public class AstWalkerTest
     {
-        public class SimpleAstWalker : AstVisitorBase<AstNode>
+        public class SimpleAstWalker : AstVisitorBase<SyntaxNode>
         {
             public SimpleAstWalker()
             {
@@ -16,7 +16,7 @@ namespace ZenPlatform.Compiler.Tests
 
             public List<string> FoundedLiterals { get; }
 
-            public override AstNode VisitLiteral(Literal obj)
+            public override SyntaxNode VisitLiteral(Literal obj)
             {
                 FoundedLiterals.Add(obj.Value);
                 return base.VisitLiteral(obj);

@@ -6,7 +6,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
     /// <summary>
     /// Describes a statement.
     /// </summary>
-    public abstract class Statement : AstNode
+    public abstract class Statement : SyntaxNode
     {
         public Statement(ILineInfo lineInfo) : base(lineInfo)
         {

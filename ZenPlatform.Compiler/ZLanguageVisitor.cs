@@ -22,7 +22,7 @@ using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.AST
 {
-    public class ZLanguageVisitor : ZSharpParserBaseVisitor<AstNode>
+    public class ZLanguageVisitor : ZSharpParserBaseVisitor<SyntaxNode>
     {
         private SyntaxStack _syntaxStack;
 
@@ -31,7 +31,7 @@ namespace ZenPlatform.Compiler.AST
             _syntaxStack = new SyntaxStack();
         }
 
-        public override AstNode VisitEntryPoint(ZSharpParser.EntryPointContext context)
+        public override SyntaxNode VisitEntryPoint(ZSharpParser.EntryPointContext context)
         {
             _syntaxStack.Clear();
 
@@ -46,7 +46,7 @@ namespace ZenPlatform.Compiler.AST
             return cu;
         }
 
-        public override AstNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
+        public override SyntaxNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
         {
             base.VisitUsingDefinition(context);
 //            _syntaxStack.PeekType<CompilationUnit>().Namespaces.Add(_syntaxStack.PopString());
@@ -54,7 +54,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitModuleDefinition(ZSharpParser.ModuleDefinitionContext context)
+        public override SyntaxNode VisitModuleDefinition(ZSharpParser.ModuleDefinitionContext context)
         {
             base.VisitModuleDefinition(context);
 
@@ -66,7 +66,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitTypeDefinition(ZSharpParser.TypeDefinitionContext context)
+        public override SyntaxNode VisitTypeDefinition(ZSharpParser.TypeDefinitionContext context)
         {
             base.VisitTypeDefinition(context);
 
@@ -79,7 +79,7 @@ namespace ZenPlatform.Compiler.AST
         }
 
 
-        public override AstNode VisitModuleBody(ZSharpParser.ModuleBodyContext context)
+        public override SyntaxNode VisitModuleBody(ZSharpParser.ModuleBodyContext context)
         {
             _syntaxStack.Push(new MemberCollection());
             base.VisitModuleBody(context);
@@ -95,7 +95,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitFieldDeclaration(ZSharpParser.FieldDeclarationContext context)
+        public override SyntaxNode VisitFieldDeclaration(ZSharpParser.FieldDeclarationContext context)
         {
             base.VisitFieldDeclaration(context);
             Field f = new Field(context.start.ToLineInfo(), _syntaxStack.PopString(), _syntaxStack.PopType());
@@ -103,7 +103,7 @@ namespace ZenPlatform.Compiler.AST
             return f;
         }
 
-        public override AstNode VisitMultitype(ZSharpParser.MultitypeContext context)
+        public override SyntaxNode VisitMultitype(ZSharpParser.MultitypeContext context)
         {
             var marker = new object();
             _syntaxStack.Push(marker);
@@ -115,7 +115,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitPropertyDeclaration(ZSharpParser.PropertyDeclarationContext context)
+        public override SyntaxNode VisitPropertyDeclaration(ZSharpParser.PropertyDeclarationContext context)
         {
             base.VisitPropertyDeclaration(context);
 
@@ -142,7 +142,7 @@ namespace ZenPlatform.Compiler.AST
             return p;
         }
 
-        public override AstNode VisitTypeBody(ZSharpParser.TypeBodyContext context)
+        public override SyntaxNode VisitTypeBody(ZSharpParser.TypeBodyContext context)
         {
             _syntaxStack.Push(new MemberCollection());
             base.VisitTypeBody(context);
@@ -158,7 +158,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitAttributes(ZSharpParser.AttributesContext context)
+        public override SyntaxNode VisitAttributes(ZSharpParser.AttributesContext context)
         {
             _syntaxStack.Push(new AttributeCollection());
             base.VisitAttributes(context);
@@ -166,7 +166,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitAttribute(ZSharpParser.AttributeContext context)
+        public override SyntaxNode VisitAttribute(ZSharpParser.AttributeContext context)
         {
             base.VisitAttribute(context);
 
@@ -181,14 +181,14 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitName(ZSharpParser.NameContext context)
+        public override SyntaxNode VisitName(ZSharpParser.NameContext context)
         {
             _syntaxStack.Push(context.GetText());
 
             return null;
         }
 
-        public override AstNode VisitStructureType(ZSharpParser.StructureTypeContext context)
+        public override SyntaxNode VisitStructureType(ZSharpParser.StructureTypeContext context)
         {
             var result = new SingleTypeNode(context.start.ToLineInfo(), context.GetText(), TypeNodeKind.Type);
 
@@ -196,7 +196,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
+        public override SyntaxNode VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
         {
             TypeNodeKind t = TypeNodeKind.Unknown;
             if (context.STRING() != null) t = TypeNodeKind.String;
@@ -215,7 +215,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitArrayType(ZSharpParser.ArrayTypeContext context)
+        public override SyntaxNode VisitArrayType(ZSharpParser.ArrayTypeContext context)
         {
             base.VisitArrayType(context);
 
@@ -225,7 +225,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitLiteral(ZSharpParser.LiteralContext context)
+        public override SyntaxNode VisitLiteral(ZSharpParser.LiteralContext context)
         {
             Literal result = null;
             ILineInfo li = context.start.ToLineInfo();
@@ -280,11 +280,11 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitVariableDeclaration(ZSharpParser.VariableDeclarationContext context)
+        public override SyntaxNode VisitVariableDeclaration(ZSharpParser.VariableDeclarationContext context)
         {
             base.VisitVariableDeclaration(context);
 
-            AstNode result;
+            SyntaxNode result;
             if (context.expression() == null)
                 result = new Variable(context.start.ToLineInfo(), null, context.IDENTIFIER().GetText(),
                     _syntaxStack.PopType());
@@ -297,7 +297,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitCastExpression(ZSharpParser.CastExpressionContext context)
+        public override SyntaxNode VisitCastExpression(ZSharpParser.CastExpressionContext context)
         {
             base.VisitCastExpression(context);
 
@@ -309,7 +309,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitFunctionDeclaration(ZSharpParser.FunctionDeclarationContext context)
+        public override SyntaxNode VisitFunctionDeclaration(ZSharpParser.FunctionDeclarationContext context)
         {
             base.VisitFunctionDeclaration(context);
             Function result = null;
@@ -345,7 +345,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitInstructionsBody(ZSharpParser.InstructionsBodyContext context)
+        public override SyntaxNode VisitInstructionsBody(ZSharpParser.InstructionsBodyContext context)
         {
             base.VisitInstructionsBody(context);
             var sc = (StatementCollection) _syntaxStack.Pop();
@@ -353,14 +353,14 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitParameters(ZSharpParser.ParametersContext context)
+        public override SyntaxNode VisitParameters(ZSharpParser.ParametersContext context)
         {
             _syntaxStack.Push(new ParameterCollection());
             return base.VisitParameters(context);
         }
 
 
-        public override AstNode VisitParameter(ZSharpParser.ParameterContext context)
+        public override SyntaxNode VisitParameter(ZSharpParser.ParameterContext context)
         {
             var paramList = _syntaxStack.PeekCollection();
 
@@ -377,7 +377,7 @@ namespace ZenPlatform.Compiler.AST
         }
 
 
-        public override AstNode VisitArguments(ZSharpParser.ArgumentsContext context)
+        public override SyntaxNode VisitArguments(ZSharpParser.ArgumentsContext context)
         {
             _syntaxStack.Push(new ArgumentCollection());
 
@@ -386,7 +386,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitArgument(ZSharpParser.ArgumentContext context)
+        public override SyntaxNode VisitArgument(ZSharpParser.ArgumentContext context)
         {
             base.VisitArgument(context);
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
@@ -396,7 +396,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitFunctionCall(ZSharpParser.FunctionCallContext context)
+        public override SyntaxNode VisitFunctionCall(ZSharpParser.FunctionCallContext context)
         {
             base.VisitFunctionCall(context);
 
@@ -409,19 +409,19 @@ namespace ZenPlatform.Compiler.AST
         }
 
 
-        public override AstNode VisitFunctionCallExpression(ZSharpParser.FunctionCallExpressionContext context)
+        public override SyntaxNode VisitFunctionCallExpression(ZSharpParser.FunctionCallExpressionContext context)
         {
             return base.VisitFunctionCallExpression(context);
         }
 
-        public override AstNode VisitStatements(ZSharpParser.StatementsContext context)
+        public override SyntaxNode VisitStatements(ZSharpParser.StatementsContext context)
         {
             _syntaxStack.Push(new StatementCollection());
             base.VisitStatements(context);
             return null;
         }
 
-        public override AstNode VisitExpression(ZSharpParser.ExpressionContext context)
+        public override SyntaxNode VisitExpression(ZSharpParser.ExpressionContext context)
         {
             base.VisitExpression(context);
 
@@ -429,7 +429,7 @@ namespace ZenPlatform.Compiler.AST
         }
 
 
-        public override AstNode VisitExpressionAtom(ZSharpParser.ExpressionAtomContext context)
+        public override SyntaxNode VisitExpressionAtom(ZSharpParser.ExpressionAtomContext context)
         {
             base.VisitExpressionAtom(context);
 
@@ -457,7 +457,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitExpressionPostfix(ZSharpParser.ExpressionPostfixContext context)
+        public override SyntaxNode VisitExpressionPostfix(ZSharpParser.ExpressionPostfixContext context)
         {
             base.VisitExpressionPostfix(context);
             var li = context.start.ToLineInfo();
@@ -468,7 +468,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitExpressionUnary(ZSharpParser.ExpressionUnaryContext context)
+        public override SyntaxNode VisitExpressionUnary(ZSharpParser.ExpressionUnaryContext context)
         {
             base.VisitExpressionUnary(context);
 
@@ -488,7 +488,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitExpressionMultiplicative(ZSharpParser.ExpressionMultiplicativeContext context)
+        public override SyntaxNode VisitExpressionMultiplicative(ZSharpParser.ExpressionMultiplicativeContext context)
         {
             base.VisitExpressionMultiplicative(context);
 
@@ -507,7 +507,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitExtensionExpression(ZSharpParser.ExtensionExpressionContext context)
+        public override SyntaxNode VisitExtensionExpression(ZSharpParser.ExtensionExpressionContext context)
         {
             base.VisitExtensionExpression(context);
             Extension result;
@@ -544,7 +544,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitExpressionEquality(ZSharpParser.ExpressionEqualityContext context)
+        public override SyntaxNode VisitExpressionEquality(ZSharpParser.ExpressionEqualityContext context)
         {
             base.VisitExpressionEquality(context);
 
@@ -564,7 +564,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitExpressionRelational(ZSharpParser.ExpressionRelationalContext context)
+        public override SyntaxNode VisitExpressionRelational(ZSharpParser.ExpressionRelationalContext context)
         {
             base.VisitExpressionRelational(context);
 
@@ -586,7 +586,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitExpressionAdditive(ZSharpParser.ExpressionAdditiveContext context)
+        public override SyntaxNode VisitExpressionAdditive(ZSharpParser.ExpressionAdditiveContext context)
         {
             base.VisitExpressionAdditive(context);
 
@@ -608,7 +608,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitExpressionBinary(ZSharpParser.ExpressionBinaryContext context)
+        public override SyntaxNode VisitExpressionBinary(ZSharpParser.ExpressionBinaryContext context)
         {
             base.VisitExpressionBinary(context);
 
@@ -627,7 +627,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitAssigment(ZSharpParser.AssigmentContext context)
+        public override SyntaxNode VisitAssigment(ZSharpParser.AssigmentContext context)
         {
             base.VisitAssigment(context);
 
@@ -654,11 +654,11 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitStatement(ZSharpParser.StatementContext context)
+        public override SyntaxNode VisitStatement(ZSharpParser.StatementContext context)
         {
             base.VisitStatement(context);
 
-            AstNode result = null;
+            SyntaxNode result = null;
 
             if (context.RETURN() != null)
             {
@@ -683,7 +683,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitInstructionsOrSingleStatement(
+        public override SyntaxNode VisitInstructionsOrSingleStatement(
             ZSharpParser.InstructionsOrSingleStatementContext context)
         {
             var sc = new StatementCollection();
@@ -702,7 +702,7 @@ namespace ZenPlatform.Compiler.AST
             return null;
         }
 
-        public override AstNode VisitIfStatement(ZSharpParser.IfStatementContext context)
+        public override SyntaxNode VisitIfStatement(ZSharpParser.IfStatementContext context)
         {
             base.VisitIfStatement(context);
 
@@ -721,7 +721,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitForStatement(ZSharpParser.ForStatementContext context)
+        public override SyntaxNode VisitForStatement(ZSharpParser.ForStatementContext context)
         {
             base.VisitForStatement(context);
 
@@ -734,7 +734,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitWhileStatement(ZSharpParser.WhileStatementContext context)
+        public override SyntaxNode VisitWhileStatement(ZSharpParser.WhileStatementContext context)
         {
             base.VisitWhileStatement(context);
 
@@ -745,7 +745,7 @@ namespace ZenPlatform.Compiler.AST
             return result;
         }
 
-        public override AstNode VisitTryStatement(ZSharpParser.TryStatementContext context)
+        public override SyntaxNode VisitTryStatement(ZSharpParser.TryStatementContext context)
         {
             base.VisitTryStatement(context);
 

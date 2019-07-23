@@ -7,7 +7,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Описывает  аттрибут
     /// </summary>
-    public class AttributeNode : AstNode
+    public class AttributeNode : SyntaxNode
     {
         public AttributeNode(ILineInfo lineInfo, ArgumentCollection collection, SingleTypeNode type) : base(lineInfo)
         {

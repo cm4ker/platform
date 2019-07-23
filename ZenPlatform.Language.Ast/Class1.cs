@@ -6,7 +6,7 @@ namespace ZenPlatform.Language.Ast
 {
     public static class AstNodeExtensions
     {
-        public static void PrintPretty(this AstNode node, string indent, bool last)
+        public static void PrintPretty(this SyntaxNode node, string indent, bool last)
         {
             Console.Write(indent);
             if (last)

@@ -9,15 +9,15 @@ using ZenPlatform.Language.Ast.AST.Definitions.Statements;
 
 namespace ZenPlatform.Language.Ast.AST.Infrastructure
 {
-    public class SyntaxCollection<T> : IEnumerable<T> where T : AstNode
+    public class SyntaxCollection<T> : IEnumerable<T> where T : SyntaxNode
     {
-        private readonly AstNode _owner;
+        private readonly SyntaxNode _owner;
         private List<T> _collection;
 
         private int _currSlot;
 
 
-        public SyntaxCollection(AstNode owner, int startSlotPlacement)
+        public SyntaxCollection(SyntaxNode owner, int startSlotPlacement)
         {
             _owner = owner;
             _collection = new List<T>();

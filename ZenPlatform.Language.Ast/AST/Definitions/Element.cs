@@ -6,7 +6,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Describes an array or structure initialization element.
     /// </summary>
-    public class Element : AstNode
+    public class Element : SyntaxNode
     {
         public ElementType ElementType;
         public ElementCollection Elements;

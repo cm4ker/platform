@@ -16,14 +16,14 @@ namespace ZenPlatform.Compiler.Visitor
 {
     public class AstSymbolPreparator : AstVisitorBase<object>
     {
-        public static void Prepare(AstNode node)
+        public static void Prepare(SyntaxNode node)
         {
             var p = new AstSymbolPreparator();
             p.Visit(node);
         }
 
 
-        public override object DefaultVisit(AstNode node)
+        public override object DefaultVisit(SyntaxNode node)
         {
             foreach (var child in node.Children)
             {
@@ -39,7 +39,7 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitVariable(Variable obj)
         {
-            var ibn = obj.GetParent<IScoped>();
+            var ibn = obj.FirstParent<IScoped>();
             if (ibn != null)
             {
                 ibn.SymbolTable.Add(obj);
@@ -68,7 +68,7 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitName(Name obj)
         {
-            var v = obj.GetParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable);
+            var v = obj.FirstParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable);
 
             if (v?.SyntaxObject is Variable vv) obj.Type = vv.Type;
             if (v?.SyntaxObject is ParameterNode p) obj.Type = p.Type;
@@ -92,7 +92,7 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitTypeBody(TypeBody obj)
         {
-            var st = obj.GetParent<IScoped>().SymbolTable;
+            var st = obj.FirstParent<IScoped>().SymbolTable;
 
             if (obj.SymbolTable == null)
                 obj.SymbolTable = new SymbolTable(st);
@@ -103,14 +103,14 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitModule(Module obj)
         {
-            var st = obj.GetParent<IScoped>().SymbolTable;
+            var st = obj.FirstParent<IScoped>().SymbolTable;
             st.Add(obj);
             return null;
         }
 
         public override object VisitClass(Class obj)
         {
-            var st = obj.GetParent<IScoped>().SymbolTable;
+            var st = obj.FirstParent<IScoped>().SymbolTable;
             st.Add(obj);
             return null;
         }
@@ -139,7 +139,7 @@ namespace ZenPlatform.Compiler.Visitor
             if (obj.Setter == null) return null;
             if (obj.Setter.SymbolTable == null)
             {
-                var parent = obj.GetParent<TypeBody>().SymbolTable;
+                var parent = obj.FirstParent<TypeBody>().SymbolTable;
                 obj.Setter.SymbolTable = new SymbolTable(parent);
             }
 
@@ -151,7 +151,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj.Block.SymbolTable == null)
             {
-                var parent = obj.GetParent<BlockNode>();
+                var parent = obj.FirstParent<BlockNode>();
                 if (parent != null)
                     obj.Block.SymbolTable = new SymbolTable(parent.SymbolTable);
             }
@@ -163,7 +163,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj.TryBlock.SymbolTable == null)
             {
-                var parent = obj.GetParent<BlockNode>();
+                var parent = obj.FirstParent<BlockNode>();
 
                 if (obj.TryBlock != null)
                     obj.TryBlock.SymbolTable = new SymbolTable(parent.SymbolTable);

@@ -8,7 +8,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
     /// <summary>
     /// Описывает параметр
     /// </summary>
-    public class ParameterNode : AstNode, ITypedNode, IAstSymbol
+    public class ParameterNode : SyntaxNode, ITypedNode, IAstSymbol
     {
         private string _name;
 

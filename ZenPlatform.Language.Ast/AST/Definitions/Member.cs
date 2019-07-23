@@ -6,7 +6,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Statements
     /// <summary>
     /// Описывает член класса/структуры и т.д.
     /// </summary>
-    public abstract class Member : AstNode
+    public abstract class Member : SyntaxNode
     {
         public Member(ILineInfo lineInfo) : base(lineInfo)
         {
