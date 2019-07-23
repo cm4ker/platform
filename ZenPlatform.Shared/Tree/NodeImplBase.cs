@@ -7,7 +7,6 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Shared.Tree
 {
-
     /// <summary>
     /// Класс ноды иерархического дерева 
     /// </summary>
@@ -85,9 +84,9 @@ namespace ZenPlatform.Shared.Tree
         /// </summary>
         /// <typeparam name="T">Тип получаемого родителя</typeparam>
         /// <returns></returns>
-        public virtual Node FirstParent<T>()
+        public virtual T FirstParent<T>() where T : class
         {
-            return _parent is T ? _parent : _parent?.FirstParent<T>();
+            return _parent is T p ? p : _parent?.FirstParent<T>();
         }
 
 

@@ -11,29 +11,17 @@ namespace ZenPlatform.Language.Ast
 {
     public abstract class AstVisitorBase<T>
     {
-        private Stack<AstNode> _visitStack;
+        private Stack<SyntaxNode> _visitStack;
         private bool _break;
 
-        protected Stack<AstNode> VisitStack => _visitStack;
+        protected Stack<SyntaxNode> VisitStack => _visitStack;
 
         public AstVisitorBase()
         {
-            _visitStack = new Stack<AstNode>();
+            _visitStack = new Stack<SyntaxNode>();
         }
 
-        public virtual void BeforeVisitNode(AstNode node)
-        {
-            if (node is null) return;
-
-            if (_visitStack.TryPeek(out var parent))
-            {
-                node.Parent = parent;
-            }
-
-            _visitStack.Push(node);
-        }
-
-        public virtual T Visit(AstNode visitable)
+        public virtual T Visit(SyntaxNode visitable)
         {
             if (visitable is null) return default;
             ;
@@ -244,7 +232,7 @@ namespace ZenPlatform.Language.Ast
             ;
         }
 
-        public virtual T DefaultVisit(AstNode node)
+        public virtual T DefaultVisit(SyntaxNode node)
         {
             return default;
         }
@@ -267,7 +255,7 @@ namespace ZenPlatform.Language.Ast
 
     public class AstWalker<T> : AstVisitorBase<T>
     {
-        public override T DefaultVisit(AstNode node)
+        public override T DefaultVisit(SyntaxNode node)
         {
             Console.WriteLine($"We are visit: {node}");
 

@@ -11,7 +11,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Блок инструкций
     /// </summary>
-    public class BlockNode : AstNode, IScoped
+    public class BlockNode : SyntaxNode, IScoped
     {
         public IReadOnlyList<Statement> Statements { get; }
 
@@ -43,7 +43,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Описывает тело типа (методы, поля, события, конструкторы и т.д.)
     /// </summary>
-    public class TypeBody : AstNode, IScoped
+    public class TypeBody : SyntaxNode, IScoped
     {
         private readonly List<Function> _functions;
         private readonly List<Field> _fields;

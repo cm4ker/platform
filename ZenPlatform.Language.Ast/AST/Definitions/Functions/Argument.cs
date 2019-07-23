@@ -6,7 +6,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions.Functions
     /// <summary>
     /// Describes an argument.
     /// </summary>
-    public class Argument : AstNode
+    public class Argument : SyntaxNode
     {
         private const int VALUE_SLOT = 0;
 

@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override object VisitCompilationUnit(CompilationUnit cu)
         {
-            _context.AstNode = cu;
+            _context.SyntaxNode = cu;
             return null;
         }
 

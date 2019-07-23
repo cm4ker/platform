@@ -25,7 +25,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Тип
     /// </summary>
-    public abstract class TypeNode : AstNode
+    public abstract class TypeNode : SyntaxNode
     {
         protected TypeNode(ILineInfo lineInfo) : base(lineInfo)
         {

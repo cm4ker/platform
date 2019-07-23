@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         ILocal Result { get; set; }
         bool InTry { get; set; }
 
-        AstNode AstNode { get; set; }
+        SyntaxNode SyntaxNode { get; set; }
 
         SymbolTable SymbolTable { get; set; }
 
@@ -43,7 +43,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         public ILabel ReturnLabel { get; set; }
         public ILocal Result { get; set; }
         public bool InTry { get; set; }
-        public AstNode AstNode { get; set; }
+        public SyntaxNode SyntaxNode { get; set; }
         public SymbolTable SymbolTable { get; set; }
         public CompilationMode Mode { get; set; }
         public SystemTypeBindings Bindings { get; set; }

@@ -54,9 +54,9 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
             return internalStack.Peek();
         }
 
-        public AstNode PeekAst()
+        public SyntaxNode PeekAst()
         {
-            return internalStack.Peek() as AstNode;
+            return internalStack.Peek() as SyntaxNode;
         }
 
         public void Push(object value)

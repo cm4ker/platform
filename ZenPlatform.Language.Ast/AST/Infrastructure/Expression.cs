@@ -7,7 +7,7 @@ namespace ZenPlatform.Language.Ast.AST.Infrastructure
     /// <summary>
     /// Выражение
     /// </summary>
-    public abstract class Expression : AstNode, ITypedNode
+    public abstract class Expression : SyntaxNode, ITypedNode
     {
         public virtual TypeNode Type { get; set; }
 

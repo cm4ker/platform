@@ -21,16 +21,16 @@ namespace ZenPlatform.Language.Ast.AST
     {
     }
 
-    public class AstNodeCollection : IEnumerable<AstNode>
+    public class AstNodeCollection : IEnumerable<SyntaxNode>
     {
-        private Dictionary<int, AstNode> _nodes;
+        private Dictionary<int, SyntaxNode> _nodes;
 
         public AstNodeCollection()
         {
-            _nodes = new Dictionary<int, AstNode>();
+            _nodes = new Dictionary<int, SyntaxNode>();
         }
 
-        public T SetSlot<T>(T astNode, int index) where T : AstNode
+        public T SetSlot<T>(T astNode, int index) where T : SyntaxNode
         {
             if (!_nodes.ContainsKey(index))
             {
@@ -49,7 +49,7 @@ namespace ZenPlatform.Language.Ast.AST
             return astNode;
         }
 
-        public T GetSlot<T>(int index) where T : AstNode
+        public T GetSlot<T>(int index) where T : SyntaxNode
         {
             if (_nodes.TryGetValue(index, out var value))
                 return value as T;
@@ -57,18 +57,18 @@ namespace ZenPlatform.Language.Ast.AST
             return null;
         }
 
-        public T GetSlot<T>(out T field, int index) where T : AstNode
+        public T GetSlot<T>(out T field, int index) where T : SyntaxNode
         {
             field = GetSlot<T>(index);
             return field;
         }
 
-        public IReadOnlyList<AstNode> ToImmutable()
+        public IReadOnlyList<SyntaxNode> ToImmutable()
         {
             return _nodes.Select(x => x.Value).ToImmutableList();
         }
 
-        public IEnumerator<AstNode> GetEnumerator()
+        public IEnumerator<SyntaxNode> GetEnumerator()
         {
             return _nodes.OrderBy(x => x.Key).Select(x => x.Value).GetEnumerator();
         }
@@ -79,9 +79,9 @@ namespace ZenPlatform.Language.Ast.AST
         }
     }
 
-    public abstract class AstNode : Node, IAstNode
+    public abstract class SyntaxNode : Node, IAstNode
     {
-        public AstNode(ILineInfo lineInfo)
+        public SyntaxNode(ILineInfo lineInfo)
         {
             if (lineInfo != null)
             {

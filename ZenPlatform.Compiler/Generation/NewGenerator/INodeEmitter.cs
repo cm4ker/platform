@@ -44,7 +44,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
     {
         public bool Emit(IAstNodeContext context)
         {
-            if (!(context.AstNode is Variable variable && variable.Type is UnionTypeNode mtn)) return false;
+            if (!(context.SyntaxNode is Variable variable && variable.Type is UnionTypeNode mtn)) return false;
 
             var e = context.Emitter;
 
@@ -271,7 +271,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public bool Check<T>(IAstNodeContext context, Func<T, bool> criteria, out T node)
         {
-            if (context.AstNode is T n)
+            if (context.SyntaxNode is T n)
             {
                 node = n;
                 return criteria(n);
@@ -289,7 +289,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public bool Check<T>(IAstNodeContext context, Func<T, bool> criteria)
         {
-            return context.AstNode is T n && criteria(n);
+            return context.SyntaxNode is T n && criteria(n);
         }
 
         public bool Check<T>(IAstNodeContext context)

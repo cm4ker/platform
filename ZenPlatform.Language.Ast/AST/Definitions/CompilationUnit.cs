@@ -7,7 +7,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Единица компиляции
     /// </summary>
-    public class CompilationUnit : AstNode
+    public class CompilationUnit : SyntaxNode
     {
         public CompilationUnit(ILineInfo li, List<string> namespaces, ImmutableList<TypeEntity> entityes) : base(li)
         {
@@ -32,7 +32,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
         }
     }
 
-    public class Root : AstNode, IScoped
+    public class Root : SyntaxNode, IScoped
     {
         public Root() : base(null)
         {

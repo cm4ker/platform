@@ -5,7 +5,7 @@ namespace ZenPlatform.Language.Ast.AST.Definitions
     /// <summary>
     /// Тип сущности
     /// </summary>
-    public abstract class TypeEntity : AstNode, IAstSymbol
+    public abstract class TypeEntity : SyntaxNode, IAstSymbol
     {
         /// <summary>
         /// Имя типа
