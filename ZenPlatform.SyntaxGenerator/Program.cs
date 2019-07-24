@@ -4,6 +4,9 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ZenPlatform.SyntaxGenerator
 {
@@ -28,80 +31,102 @@ namespace ZenPlatform.SyntaxGenerator
 
                 foreach (var syntax in root.Syntaxes)
                 {
-                    sb.Append($"public partial class {syntax.Name}");
+                    List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
-                    if (syntax.Base != null)
-                        sb.Append($" : {syntax.Base}");
+                    var slot = SyntaxFactory.ParseStatement("var slot = 0;");
 
-                    sb.AppendLine();
-                    sb.AppendLine("{");
+                    var publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
 
+                    var constructor = SyntaxFactory.ConstructorDeclaration(syntax.Name)
+                        .WithParameterList(SyntaxFactory.ParameterList()
+                            .AddParameters(SyntaxFactory.Parameter(
+                                SyntaxFactory.Identifier("lineInfo")).WithType(SyntaxFactory.ParseName("ILineInfo"))))
+                        .WithBody(SyntaxFactory.Block())
+                        .WithModifiers(SyntaxTokenList.Create(publicToken));
+
+                    var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,
+                        SyntaxFactory.ArgumentList()
+                            .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseName("lineInfo"))));
+
+                    constructor = constructor.WithInitializer(initializer);
+
+
+                    if (syntax.Arguments.Count > 0)
                     {
-                        //constructor
-                        sb.Append($"\tpublic {syntax.Name}(ILineInfo lineInfo");
+                        constructor = constructor.AddBodyStatements(slot);
+                    }
+
+                    foreach (var argument in syntax.Arguments)
+                    {
+                        constructor = constructor.AddParameterListParameters(SyntaxFactory
+                            .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
+                            .WithType(SyntaxFactory.ParseName(argument.Type)));
+
+
+                        var ae = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                            SyntaxFactory.ParseName(argument.Name),
+                            SyntaxFactory.ParseName(argument.Name.ToCamelCase()));
+
+                        constructor = constructor.AddBodyStatements(SyntaxFactory.ExpressionStatement(ae));
+
+                        members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
+                                argument.Name).AddModifiers(publicToken)
+                            .WithAccessorList(SyntaxFactory.AccessorList()
+                                .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
+
+                        if (!argument.DenyChildrenFill)
                         {
-                            //Build arguments
-                            foreach (var arg in syntax.Arguments)
+                            StatementSyntax fillStmt;
+                            // fill childrens
+                            if (argument is SyntaxArgumentList)
+                                fillStmt =
+                                    SyntaxFactory.ParseStatement(
+                                        $"foreach(var item in {argument.Name}) {{Children.Add(item);}}");
+                            else if (argument is SyntaxArgumentSingle)
                             {
-                                sb.Append(", ");
-                                sb.Append($"{arg.Type} {arg.Name.ToLower()}");
+                                fillStmt =
+                                    SyntaxFactory.ParseStatement(
+                                        $"Children.Add({argument.Name});");
                             }
+                            else
+                            {
+                                throw new Exception();
+                            }
+
+                            constructor = constructor.AddBodyStatements(fillStmt);
                         }
-
-                        sb.Append(")");
-
-                        if (syntax.Base != null)
-                            sb.Append(" : base(lineInfo)");
-
-                        sb.AppendLine();
-
-                        sb.AppendLine("\t{");
-
-                        sb.AppendLine("\t}");
                     }
 
-                    if (syntax.Base == null)
+                    var cls = SyntaxFactory.ClassDeclaration(syntax.Name)
+                        .WithModifiers(SyntaxTokenList.Create(publicToken)
+                            .Add(SyntaxFactory.Token(SyntaxKind.PartialKeyword)))
+                        .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
+                            .SimpleBaseType(SyntaxFactory.ParseTypeName(syntax.Base))))
+                        .AddMembers(constructor)
+                        .AddMembers(members.ToArray());
+
+
+                    if (syntax.IsScoped)
                     {
-                        //line info
-                        sb.AppendLine();
-                        sb.AppendLine("\tpublic LineInfo LineInfo { get; }");
+                        cls = cls.AddBaseListTypes(
+                            SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("IScoped")));
+
+                        cls = cls.AddMembers(SyntaxFactory.PropertyDeclaration(
+                                SyntaxFactory.ParseTypeName("SymbolTable"),
+                                "SymbolTable").AddModifiers(publicToken)
+                            .WithAccessorList(SyntaxFactory.AccessorList()
+                                .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))
+                                .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
                     }
 
-
-                    {
-                        sb.AppendLine();
-                        sb.Append($"\tpublic ");
-
-                        if (syntax.Base != null)
-                            sb.Append("override ");
-
-                        sb.Append("T Accept<T>(AstVisitorBase<T> visitor)");
-
-                        sb.AppendLine();
-
-                        sb.AppendLine("\t{");
-
-                        if (syntax.Base == null && syntax.IsAbstract)
-                            sb.AppendLine($"\t\tthrow new NotImplementedException();");
-                        else
-                        {
-                            sb.AppendLine($"\t\treturn visitor.Visit{syntax.Name}(this);");
-                        }
-
-                        sb.AppendLine("\t}");
-                    }
-
-
-                    sb.AppendLine("}");
-                    sb.AppendLine();
+                    Console.WriteLine(cls.NormalizeWhitespace());
                 }
-
-
-                Console.WriteLine(sb);
             }
         }
     }
-
 
     public class Config
     {
@@ -112,11 +137,21 @@ namespace ZenPlatform.SyntaxGenerator
         public List<Syntax> Syntaxes { get; set; }
     }
 
+    public static class StringExt
+    {
+        public static string ToCamelCase(this string str)
+        {
+            return char.ToLower(str[0]) + str[1..];
+        }
+    }
+
 
     public abstract class SyntaxArgument
     {
         [XmlAttribute] public string Name { get; set; }
         [XmlAttribute] public string Type { get; set; }
+
+        [XmlAttribute] public bool DenyChildrenFill { get; set; }
     }
 
     public sealed class SyntaxArgumentList : SyntaxArgument
@@ -148,6 +183,7 @@ namespace ZenPlatform.SyntaxGenerator
         public string Base { get; set; }
 
         [XmlArrayItem("List", typeof(SyntaxArgumentList))]
+        [XmlArrayItem("Single", typeof(SyntaxArgumentSingle))]
         public List<SyntaxArgument> Arguments { get; set; }
 
         /// <summary>
@@ -155,5 +191,11 @@ namespace ZenPlatform.SyntaxGenerator
         /// </summary>
         [XmlAttribute]
         public bool IsAbstract { get; set; }
+
+        /// <summary>
+        /// Indicate that the syntax has scope
+        /// </summary>
+        [XmlAttribute]
+        public bool IsScoped { get; set; }
     }
 }
