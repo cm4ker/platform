@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config>
-    <Syntax Name="Root">
-
+    <Syntax Name="Root" IsScoped="true">
         <Arguments>
-            <List Name="Units" Type="CompilationUnit" />
+            <List Name="Units" Type="CompilationUnit"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="CompilationUnit"/>
+    <Syntax Name="CompilationUnit">
+        <Arguments>
+            <List DenyChildrenFill="true" Name="Namespaces" Type="List&lt;string&gt;"/>
+            <List Name="Entityes" Type="TypeEntity"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="TypeBody"/>
+
+    <Syntax Name="TypeEntity" IsAbstract="true">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
 
     <Syntax Name="Expression" IsAbstract="true"/>
     <Syntax Name="BinaryOperation" Base="Expression"/>
-
+    <Syntax Name="BinaryOperation" Base="Expression"/>
 </Config>
     
