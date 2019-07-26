@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using ZenPlatform.Language.Ast.AST;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Definitions.Statements;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
+using Attribute = ZenPlatform.Language.Ast.Definitions.Attribute;
 
 namespace ZenPlatform.Language.Ast
 {
@@ -30,7 +30,7 @@ namespace ZenPlatform.Language.Ast
         }
 
 
-        public T VisitArrayTypeNode(ArrayTypeNode arg)
+        public T VisitArrayTypeNode(ArrayTypeSyntax arg)
         {
             return DefaultVisit(arg);
             ;
@@ -48,13 +48,13 @@ namespace ZenPlatform.Language.Ast
             ;
         }
 
-        public virtual T VisitMultiType(UnionTypeNode obj)
+        public virtual T VisitMultiType(UnionTypeSyntax obj)
         {
             return DefaultVisit(obj);
             ;
         }
 
-        public virtual T VisitSingleType(SingleTypeNode obj)
+        public virtual T VisitSingleType(SingleTypeSyntax obj)
         {
             return DefaultVisit(obj);
             ;
@@ -90,13 +90,13 @@ namespace ZenPlatform.Language.Ast
             ;
         }
 
-        public virtual T VisitPostDecrementStatement(PostDecrementExpression obj)
+        public virtual T VisitPostDecrementExpression(PostDecrementExpression obj)
         {
             return DefaultVisit(obj);
             ;
         }
 
-        public virtual T VisitPostIncrementStatement(PostIncrementExpression obj)
+        public virtual T VisitPostIncrementExpression(PostIncrementExpression obj)
         {
             return DefaultVisit(obj);
             ;
@@ -144,7 +144,7 @@ namespace ZenPlatform.Language.Ast
             ;
         }
 
-        public virtual T VisitAssigment(Assignment obj)
+        public virtual T VisitAssignment(Assignment obj)
         {
             return DefaultVisit(obj);
             ;
@@ -155,13 +155,13 @@ namespace ZenPlatform.Language.Ast
             return DefaultVisit(obj);
         }
 
-        public virtual T VisitInstructionsBody(BlockNode obj)
+        public virtual T VisitInstructionsBody(Block obj)
         {
             return DefaultVisit(obj);
             ;
         }
 
-        public virtual T VisitType(TypeNode obj)
+        public virtual T VisitType(TypeSyntax obj)
         {
             return DefaultVisit(obj);
             ;
@@ -191,7 +191,7 @@ namespace ZenPlatform.Language.Ast
             ;
         }
 
-        public virtual T VisitParameter(ParameterNode obj)
+        public virtual T VisitParameter(Parameter obj)
         {
             return DefaultVisit(obj);
             ;
@@ -237,17 +237,42 @@ namespace ZenPlatform.Language.Ast
             return default;
         }
 
-        public virtual T VisitAttribute(AttributeNode obj)
+        public virtual T VisitAttribute(Attribute obj)
         {
             return DefaultVisit(obj);
         }
 
-        public virtual T VisitDoStatement(Do obj)
+        public virtual T VisitDoStatement(DoWhile obj)
         {
             return DefaultVisit(obj);
         }
 
-        public virtual T VisitBlock(BlockNode obj)
+        public virtual T VisitBlock(Block obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public virtual T VisitPrimitiveTypeSyntax(PrimitiveTypeSyntax obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public virtual T VisitSingleTypeSyntax(SingleTypeSyntax obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public virtual T VisitArrayTypeSyntax(ArrayTypeSyntax obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public virtual T VisitUnionTypeSyntax(UnionTypeSyntax obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public virtual T VisitDoWhile(DoWhile obj)
         {
             return DefaultVisit(obj);
         }
@@ -259,9 +284,9 @@ namespace ZenPlatform.Language.Ast
         {
             Console.WriteLine($"We are visit: {node}");
 
-            foreach (var child in node.Children)
+            foreach (var child in node.Childs)
             {
-                Visit(child);
+                Visit(child as SyntaxNode);
             }
 
             return base.DefaultVisit(node);

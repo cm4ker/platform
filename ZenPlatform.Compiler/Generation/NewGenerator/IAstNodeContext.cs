@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
 
 namespace ZenPlatform.Compiler.Generation.NewGenerator

@@ -3,8 +3,6 @@ using System.Runtime.CompilerServices;
 using Xunit;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Compiler.Sre;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Tests
 {

@@ -3,8 +3,6 @@ using Newtonsoft.Json.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.AST;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 
 namespace ZenPlatform.Compiler.Generation.NewGenerator
 {

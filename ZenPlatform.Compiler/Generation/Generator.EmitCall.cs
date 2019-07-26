@@ -3,10 +3,10 @@ using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Compiler.Generation
 {

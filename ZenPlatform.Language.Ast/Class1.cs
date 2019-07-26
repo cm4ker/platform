@@ -22,10 +22,10 @@ namespace ZenPlatform.Language.Ast
 
             Console.WriteLine(node.GetType().Name);
 
-            var childs = node.Children.ToArray();
+            var childs = node.Childs.ToArray();
 
             for (int i = 0; i < childs.Length; i++)
-                childs[i].PrintPretty(indent, i == childs.Length - 1);
+                (childs[i] as SyntaxNode).PrintPretty(indent, i == childs.Length - 1);
         }
     }
 }

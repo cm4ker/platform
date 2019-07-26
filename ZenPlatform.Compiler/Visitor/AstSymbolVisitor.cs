@@ -7,10 +7,18 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Definitions.Statements;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
+using ZenPlatform.Language.Ast.Infrastructure;
+using Class = ZenPlatform.Language.Ast.Class;
+using Field = ZenPlatform.Language.Ast.Field;
+using Function = ZenPlatform.Language.Ast.Function;
+using Module = ZenPlatform.Language.Ast.Module;
+using Property = ZenPlatform.Language.Ast.Property;
+using Root = ZenPlatform.Language.Ast.Root;
+using TypeBody = ZenPlatform.Language.Ast.TypeBody;
+using Variable = ZenPlatform.Language.Ast.Variable;
 
 namespace ZenPlatform.Compiler.Visitor
 {
@@ -52,7 +60,7 @@ namespace ZenPlatform.Compiler.Visitor
             return null;
         }
 
-        public override object VisitParameter(ParameterNode obj)
+        public override object VisitParameter(Parameter obj)
         {
             if (obj.Parent is Function f)
             {
@@ -71,7 +79,7 @@ namespace ZenPlatform.Compiler.Visitor
             var v = obj.FirstParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable);
 
             if (v?.SyntaxObject is Variable vv) obj.Type = vv.Type;
-            if (v?.SyntaxObject is ParameterNode p) obj.Type = p.Type;
+            if (v?.SyntaxObject is Parameter p) obj.Type = p.Type;
 
             return null;
         }
@@ -143,7 +151,7 @@ namespace ZenPlatform.Compiler.Visitor
                 obj.Setter.SymbolTable = new SymbolTable(parent);
             }
 
-            obj.Setter.SymbolTable.Add(new ParameterNode(null, "value", obj.Type, PassMethod.ByValue));
+            obj.Setter.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByValue));
             return null;
         }
 
@@ -151,7 +159,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj.Block.SymbolTable == null)
             {
-                var parent = obj.FirstParent<BlockNode>();
+                var parent = obj.FirstParent<Block>();
                 if (parent != null)
                     obj.Block.SymbolTable = new SymbolTable(parent.SymbolTable);
             }
@@ -163,7 +171,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj.TryBlock.SymbolTable == null)
             {
-                var parent = obj.FirstParent<BlockNode>();
+                var parent = obj.FirstParent<Block>();
 
                 if (obj.TryBlock != null)
                     obj.TryBlock.SymbolTable = new SymbolTable(parent.SymbolTable);

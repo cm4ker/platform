@@ -4,7 +4,7 @@ using System.Threading;
 using Microsoft.VisualBasic.CompilerServices;
 using Microsoft.VisualBasic.Devices;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Compiler.ComputingEngine
 {
@@ -26,9 +26,9 @@ namespace ZenPlatform.Compiler.ComputingEngine
             _cached = new Dictionary<string, IType>();
         }
 
-        public IType Compute(TypeNode typeNode)
+        public IType Compute(TypeNode typeSyntax)
         {
-            if (typeNode is SingleTypeNode stn)
+            if (typeSyntax is SingleTypeSyntax stn)
             {
                 if (_cached.TryGetValue(stn.TypeName, out var type))
                 {
@@ -36,7 +36,7 @@ namespace ZenPlatform.Compiler.ComputingEngine
                 }
             }
 
-            else if (typeNode is PrimitiveTypeNode ptn)
+            else if (typeSyntax is PrimitiveTypeSyntax ptn)
             {
                 return ptn.Kind switch
                     {
@@ -48,12 +48,12 @@ namespace ZenPlatform.Compiler.ComputingEngine
                     };
             }
 
-            else if (typeNode is ArrayTypeNode atn)
+            else if (typeSyntax is ArrayTypeSyntax atn)
             {
                 return Compute(atn.ElementType).MakeArrayType();
             }
 
-            else if (typeNode is UnionTypeNode utn)
+            else if (typeSyntax is UnionTypeSyntax utn)
             {
                 throw new NotImplementedException();
             }
@@ -61,9 +61,9 @@ namespace ZenPlatform.Compiler.ComputingEngine
             return null;
         }
 
-        public void Register(TypeNode typeNode, IType type)
+        public void Register(TypeNode typeSyntax, IType type)
         {
-            if (typeNode is SingleTypeNode stn)
+            if (typeSyntax is SingleTypeSyntax stn)
                 if (!_cached.ContainsKey(stn.TypeName))
                 {
                     _cached.Add(stn.TypeName, type);

@@ -8,12 +8,21 @@ using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Definitions.Statements;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
-using SyntaxNode = ZenPlatform.Language.Ast.AST.SyntaxNode;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
+using ZenPlatform.Language.Ast.Infrastructure;
+using Class = ZenPlatform.Language.Ast.Definitions.Class;
+using CompilationUnit = ZenPlatform.Language.Ast.CompilationUnit;
+using Field = ZenPlatform.Language.Ast.Field;
+using Function = ZenPlatform.Language.Ast.Function;
+using Module = ZenPlatform.Language.Ast.Module;
+using Property = ZenPlatform.Language.Ast.Property;
+using Return = ZenPlatform.Language.Ast.Return;
+using SyntaxNode = ZenPlatform.Language.Ast.SyntaxNode;
+using TypeBody = ZenPlatform.Language.Ast.TypeBody;
+using Variable = ZenPlatform.Language.Ast.Variable;
 
 namespace ZenPlatform.Compiler.Generation.NewGenerator
 {
@@ -65,7 +74,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             return SyntaxFactory.UsingDirective(ParseName(name));
         }
 
-        public override Microsoft.CodeAnalysis.SyntaxNode VisitClass(Language.Ast.AST.Definitions.Class obj)
+        public override Microsoft.CodeAnalysis.SyntaxNode VisitClass(Class obj)
         {
             return SyntaxFactory.ClassDeclaration(obj.Name)
                 .WithMembers(NormolizeTypeBody(obj.TypeBody));
@@ -79,7 +88,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 .AddRange(tb.Properties.Select(Visit).Cast<MemberDeclarationSyntax>());
         }
 
-        private SyntaxList<StatementSyntax> GetStatements(BlockNode node)
+        private SyntaxList<StatementSyntax> GetStatements(Block node)
         {
             return new SyntaxList<StatementSyntax>(node.Statements.Select(x =>
             {
@@ -94,7 +103,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override Microsoft.CodeAnalysis.SyntaxNode VisitVariable(Variable obj)
         {
-            if (obj.Type is UnionTypeNode mt)
+            if (obj.Type is UnionTypeSyntax mt)
             {
                 //мы должны обернуть все
                 return SyntaxFactory.LocalDeclarationStatement(SyntaxFactory
@@ -131,7 +140,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         private TypeSyntax GetTypeSyntax(TypeNode tn)
         {
-            return GetStandardType(tn) ?? SyntaxFactory.ParseTypeName(((SingleTypeNode) tn).TypeName);
+            return GetStandardType(tn) ?? SyntaxFactory.ParseTypeName(((SingleTypeSyntax) tn).TypeName);
         }
 
         public override Microsoft.CodeAnalysis.SyntaxNode VisitLiteral(Literal obj)
@@ -174,9 +183,9 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 .AddAccessorListAccessors(setAccessor);
         }
 
-        private TypeSyntax GetStandardType(TypeNode node)
+        private TypeSyntax GetStandardType(TypeNode syntax)
         {
-            switch (node.Kind)
+            switch (syntax.Kind)
             {
                 case TypeNodeKind.String:
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
@@ -284,7 +293,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         }
 
 
-        public override Microsoft.CodeAnalysis.SyntaxNode VisitInstructionsBody(BlockNode obj)
+        public override Microsoft.CodeAnalysis.SyntaxNode VisitInstructionsBody(Block obj)
         {
             return SyntaxFactory.Block(GetStatements(obj));
         }
@@ -306,7 +315,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 (ExpressionSyntax) Visit(obj.Value)));
         }
 
-        public override Microsoft.CodeAnalysis.SyntaxNode VisitParameter(ParameterNode obj)
+        public override Microsoft.CodeAnalysis.SyntaxNode VisitParameter(Parameter obj)
         {
             return SyntaxFactory.Parameter(SyntaxFactory.Identifier(obj.Name)).WithType(GetTypeSyntax(obj.Type));
         }
@@ -339,7 +348,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override Microsoft.CodeAnalysis.SyntaxNode VisitName(Name obj)
         {
-            if (obj.Type is UnionTypeNode)
+            if (obj.Type is UnionTypeSyntax)
             {
                 return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                     ParseName(obj.Value), SyntaxFactory.IdentifierName("Value"));

@@ -12,13 +12,14 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Infrastructure;
 using IMethodBuilder = ZenPlatform.Compiler.Contracts.IMethodBuilder;
 using SreTA = System.Reflection.TypeAttributes;
-using Class = ZenPlatform.Language.Ast.AST.Definitions.Class;
+using Class = ZenPlatform.Language.Ast.Definitions.Class;
+using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -42,7 +43,7 @@ namespace ZenPlatform.Compiler.Generation
             _mode = parameters.Mode;
             _bindings = _ts.GetSystemBindings();
 
-            foreach (var typeEntity in _cu.TypeEntities)
+            foreach (var typeEntity in _cu.Entityes)
             {
                 switch (typeEntity)
                 {
@@ -150,7 +151,7 @@ namespace ZenPlatform.Compiler.Generation
             {
                 if (ue is IndexerExpression ie)
                 {
-                    EmitExpression(e, ie.Value, symbolTable);
+                    EmitExpression(e, ie.Expression, symbolTable);
                     EmitExpression(e, ie.Indexer, symbolTable);
                     e.LdElemI4();
                 }
@@ -163,18 +164,18 @@ namespace ZenPlatform.Compiler.Generation
 
                             break;
                         case UnaryOperatorType.Negative:
-                            EmitExpression(e, lae.Value, symbolTable);
+                            EmitExpression(e, lae.Expression, symbolTable);
                             e.Neg();
                             break;
                         case UnaryOperatorType.Not:
-                            EmitExpression(e, lae.Value, symbolTable);
+                            EmitExpression(e, lae.Expression, symbolTable);
                             e.Not();
                             break;
                     }
 
                 if (ue is CastExpression ce)
                 {
-                    EmitExpression(e, ce.Value, symbolTable);
+                    EmitExpression(e, ce.Expression, symbolTable);
                     EmitConvert(e, ce, symbolTable);
                 }
             }
@@ -212,7 +213,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (variable.CodeObject is ILocal vd)
                 {
-                    if (name.Type is UnionTypeNode)
+                    if (name.Type is UnionTypeSyntax)
                     {
                         e.LdLocA(vd);
                         e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
@@ -224,9 +225,9 @@ namespace ZenPlatform.Compiler.Generation
                     e.LdsFld(fd);
                 else if (variable.CodeObject is IParameter pd)
                 {
-                    ParameterNode p = variable.SyntaxObject as ParameterNode;
+                    Parameter p = variable.SyntaxObject as Parameter;
 
-                    if (name.Type is UnionTypeNode)
+                    if (name.Type is UnionTypeSyntax)
                     {
                         e.LdArgA(pd);
                         e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
@@ -249,8 +250,8 @@ namespace ZenPlatform.Compiler.Generation
 
                 IType extTypeScan = null;
 
-                var expProp = extTypeScan.Properties.First(x => x.Name == fe.Name);
-                fe.Type = new SingleTypeNode(null, expProp.PropertyType.Name, TypeNodeKind.Unknown);
+                var expProp = extTypeScan.Properties.First(x => x.Name == fe.FieldName);
+                fe.Type = new SingleTypeSyntax(null, expProp.PropertyType.Name, TypeNodeKind.Unknown);
 
                 e.PropGetValue(expProp);
             }

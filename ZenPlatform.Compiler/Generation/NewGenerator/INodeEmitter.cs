@@ -3,11 +3,11 @@ using System.Xml;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Definitions.Statements;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Infrastructure;
+using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
 namespace ZenPlatform.Compiler.Generation.NewGenerator
 {
@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
     {
         public bool Emit(IAstNodeContext context)
         {
-            if (!Check<Variable>(context, (a) => !(a.Type is UnionTypeNode), out var variable)) return false;
+            if (!Check<Variable>(context, (a) => !(a.Type is UnionTypeSyntax), out var variable)) return false;
 
             var e = context.Emitter;
 
@@ -44,7 +44,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
     {
         public bool Emit(IAstNodeContext context)
         {
-            if (!(context.SyntaxNode is Variable variable && variable.Type is UnionTypeNode mtn)) return false;
+            if (!(context.SyntaxNode is Variable variable && variable.Type is UnionTypeSyntax mtn)) return false;
 
             var e = context.Emitter;
 
@@ -85,7 +85,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 if (asg.Index == null)
                 {
                     //not array
-                    if (variable.CodeObject is IParameter p && variable.SyntaxObject is ParameterNode ps
+                    if (variable.CodeObject is IParameter p && variable.SyntaxObject is Parameter ps
                                                             && ps.PassMethod == PassMethod.ByReference)
                         il.LdArg(p.ArgIndex);
                     if (variable.CodeObject is IField)
@@ -172,7 +172,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                     il.StFld(fd);
                 else if (variable.CodeObject is IParameter ppd)
                 {
-                    ParameterNode p = variable.SyntaxObject as ParameterNode;
+                    Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
                         il.StIndI4();
                     else

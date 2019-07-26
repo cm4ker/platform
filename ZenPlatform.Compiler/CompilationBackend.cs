@@ -12,7 +12,7 @@ using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast;
-using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.Definitions;
 using CompilationOptions = ZenPlatform.Compiler.Generation.NewGenerator.CompilationOptions;
 
 namespace ZenPlatform.Compiler

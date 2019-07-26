@@ -5,17 +5,15 @@ using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Definitions.Statements;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitBody(IEmitter e, BlockNode body, ILabel returnLabel,
+        private void EmitBody(IEmitter e, Block body, ILabel returnLabel,
             ref ILocal returnVariable, bool inTry = false)
         {
             foreach (Statement statement in body.Statements)
@@ -30,7 +28,7 @@ namespace ZenPlatform.Compiler.Generation
         }
 
 
-        private void EmitStatement(IEmitter e, Statement statement, BlockNode context,
+        private void EmitStatement(IEmitter e, Statement statement, Block context,
             ILabel returnLabel, ref ILocal returnVariable, bool inTry = false)
         {
             if (statement is ExpressionStatement es)
@@ -110,19 +108,19 @@ namespace ZenPlatform.Compiler.Generation
                 e.Br(begin)
                     .MarkLabel(exit);
             }
-            else if (statement is Do)
+            else if (statement is DoWhile)
             {
                 //
                 // Generate do statement.
                 //
 
-                Do doStatement = statement as Do;
-                doStatement.Block.SymbolTable = new SymbolTable(context.SymbolTable);
+                DoWhile doWhileStatement = statement as DoWhile;
+                doWhileStatement.Block.SymbolTable = new SymbolTable(context.SymbolTable);
 
                 ILabel loop = e.DefineLabel();
                 e.MarkLabel(loop);
-                EmitBody(e, doStatement.Block, returnLabel, ref returnVariable);
-                EmitExpression(e, doStatement.Condition, context.SymbolTable);
+                EmitBody(e, doWhileStatement.Block, returnLabel, ref returnVariable);
+                EmitExpression(e, doWhileStatement.Condition, context.SymbolTable);
                 e.BrTrue(loop);
             }
             else if (statement is For)
