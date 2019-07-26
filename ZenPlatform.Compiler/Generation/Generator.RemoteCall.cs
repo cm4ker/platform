@@ -1,8 +1,7 @@
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Compiler.Generation

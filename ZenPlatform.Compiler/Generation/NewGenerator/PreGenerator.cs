@@ -2,10 +2,15 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
 using SreTA = System.Reflection.TypeAttributes;
-using Class = ZenPlatform.Language.Ast.AST.Definitions.Class;
+using Class = ZenPlatform.Language.Ast.Definitions.Class;
+using CompilationUnit = ZenPlatform.Language.Ast.CompilationUnit;
+using Field = ZenPlatform.Language.Ast.Field;
+using Function = ZenPlatform.Language.Ast.Function;
+using Module = ZenPlatform.Language.Ast.Module;
+using Property = ZenPlatform.Language.Ast.Property;
 
 namespace ZenPlatform.Compiler.Generation.NewGenerator
 {
@@ -52,7 +57,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             return null;
         }
 
-        public override object VisitParameter(ParameterNode obj)
+        public override object VisitParameter(Parameter obj)
         {
             var codeObj = _context.Method.WithParameter(obj.Name, obj.Type.ToClrType(_context.Assembly), false, false);
             _context.SymbolTable.ConnectCodeObject(obj, codeObj);
@@ -102,7 +107,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             _bindings = _context.Assembly.TypeSystem.GetSystemBindings();
         }
 
-        public override object VisitClass(ZenPlatform.Language.Ast.AST.Definitions.Class obj)
+        public override object VisitClass(Class obj)
         {
             _context.Type = _context.Assembly.DefineType(DEFAULT_ASM_NAMESPACE, obj.Name,
                 SreTA.Class | SreTA.Public | SreTA.Abstract |

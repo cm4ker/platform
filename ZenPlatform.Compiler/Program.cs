@@ -10,7 +10,6 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
 
 namespace ZenPlatform.Compiler
 {

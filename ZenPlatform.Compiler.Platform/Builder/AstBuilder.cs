@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.AST.Builder
 {
@@ -61,8 +61,8 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public FunctionBuilder WithFunction(string name, string type)
         {
-            var f = new Function(null, new BlockNode(new StatementCollection()),
-                new ParameterCollection(), name, new SingleTypeNode(null, type, 0), new AttributeCollection());
+            var f = new Function(null, new Block(new StatementCollection()),
+                new ParameterCollection(), name, new SingleTypeSyntax(null, type, 0), new AttributeCollection());
             _module.TypeBody.Functions.Add(f);
             return new FunctionBuilder(f);
         }
@@ -70,11 +70,11 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
     public class TypeBuilder
     {
-        private UnionTypeNode _mtn;
+        private UnionTypeSyntax _mtn;
 
         public TypeBuilder()
         {
-            _mtn = new UnionTypeNode(null, new TypeCollection());
+            _mtn = new UnionTypeSyntax(null, new TypeCollection());
         }
     }
 
@@ -113,7 +113,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public ParameterBuilder WithParameter(string name, string type, PassMethod pm)
         {
-            var arg = new ParameterNode(null, name, new SingleTypeNode(null, type, 0), pm);
+            var arg = new Parameter(null, name, new SingleTypeSyntax(null, type, 0), pm);
             return new ParameterBuilder(arg);
         }
 
@@ -122,9 +122,9 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
     public class StatementBuilder
     {
-        private readonly BlockNode _body;
+        private readonly Block _body;
 
-        public StatementBuilder(BlockNode body)
+        public StatementBuilder(Block body)
         {
             _body = body;
         }
@@ -152,9 +152,9 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
     public class ParameterBuilder
     {
-        private readonly ParameterNode _parameter;
+        private readonly Parameter _parameter;
 
-        public ParameterBuilder(ParameterNode parameter)
+        public ParameterBuilder(Parameter parameter)
         {
             _parameter = parameter;
         }

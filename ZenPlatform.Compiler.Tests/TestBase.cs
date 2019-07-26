@@ -6,7 +6,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Visitor;
-using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.Definitions;
 using SyntaxNodeExtensions = Microsoft.CodeAnalysis.SyntaxNodeExtensions;
 
 namespace ZenPlatform.Compiler.Tests

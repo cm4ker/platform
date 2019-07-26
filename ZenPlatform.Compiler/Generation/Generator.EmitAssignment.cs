@@ -3,11 +3,10 @@ using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Infrastructure;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Definitions.Statements;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Infrastructure;
 
 
 namespace ZenPlatform.Compiler.Generation
@@ -23,11 +22,11 @@ namespace ZenPlatform.Compiler.Generation
             // Non-indexed assignment
             if (assignment.Index == null)
             {
-                bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is UnionTypeNode;
+                bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is UnionTypeSyntax;
 
                 if (variable.CodeObject is IParameter pd)
                 {
-                    ParameterNode p = variable.SyntaxObject as ParameterNode;
+                    Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
                         e.LdArg(pd);
                 }
@@ -66,7 +65,7 @@ namespace ZenPlatform.Compiler.Generation
                     e.StFld(fd);
                 else if (variable.CodeObject is IParameter ppd)
                 {
-                    ParameterNode p = variable.SyntaxObject as ParameterNode;
+                    Parameter p = variable.SyntaxObject as Parameter;
                     if (p.PassMethod == PassMethod.ByReference)
                         e.StIndI4();
                     else

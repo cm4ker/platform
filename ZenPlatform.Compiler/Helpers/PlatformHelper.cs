@@ -7,8 +7,9 @@ using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
-using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Compiler.Helpers
@@ -43,33 +44,33 @@ namespace ZenPlatform.Compiler.Helpers
             return b.AsmInf().Properties.First(x => x.Name == nameof(GlobalScope.Client));
         }
 
-        public static IType ToClrType(this TypeNode typeNode, IAssembly context)
+        public static IType ToClrType(this TypeSyntax typeSyntax, IAssembly context)
         {
             var _stb = context.TypeSystem.GetSystemBindings();
 
-            if (typeNode is SingleTypeNode stn)
+            if (typeSyntax is SingleTypeSyntax stn)
             {
                 return context.FindType(stn.TypeName);
             }
 
-            else if (typeNode is PrimitiveTypeNode ptn)
+            else if (typeSyntax is PrimitiveTypeSyntax ptn)
             {
                 return ptn.Kind switch
-                    {
+                {
                     TypeNodeKind.Boolean => _stb.Boolean,
                     TypeNodeKind.Int => _stb.Int,
                     TypeNodeKind.Char => _stb.Char,
                     TypeNodeKind.Double => _stb.Double,
                     TypeNodeKind.String => _stb.String,
-                    };
+                };
             }
 
-            else if (typeNode is ArrayTypeNode atn)
+            else if (typeSyntax is ArrayTypeSyntax atn)
             {
                 return ToClrType(atn.ElementType, context).MakeArrayType();
             }
 
-            else if (typeNode is UnionTypeNode utn)
+            else if (typeSyntax is UnionTypeSyntax utn)
             {
                 throw new NotImplementedException();
             }

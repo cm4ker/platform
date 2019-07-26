@@ -2,14 +2,13 @@ using System;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void LoadValue(IEmitter e, BlockNode context)
+        private void LoadValue(IEmitter e, Block context)
         {
         }
 
@@ -87,7 +86,7 @@ namespace ZenPlatform.Compiler.Generation
 //            context.SymbolTable.ConnectCodeObject(variable, local);
         }
 
-        private void WrapMultitypeStackValue(IEmitter e, UnionTypeNode mtn, ILocal local, ILocal exp)
+        private void WrapMultitypeStackValue(IEmitter e, UnionTypeSyntax mtn, ILocal local, ILocal exp)
         {
             var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
             e.LdLocA(local);
@@ -99,7 +98,7 @@ namespace ZenPlatform.Compiler.Generation
             e.LdLoc(local);
         }
 
-        private void WrapMultitypeNode(IEmitter e, UnionTypeNode mtn, ref ILocal local)
+        private void WrapMultitypeNode(IEmitter e, UnionTypeSyntax mtn, ref ILocal local)
         {
             var localWrap = e.DefineLocal(_bindings.UnionTypeStorage);
             var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");

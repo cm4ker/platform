@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
-using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Compiler.Tests
 {

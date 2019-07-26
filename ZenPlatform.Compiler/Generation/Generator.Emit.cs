@@ -4,9 +4,9 @@ using Mono.CompilerServices.SymbolWriter;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Compiler.Generation
@@ -42,16 +42,16 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitConvert(IEmitter e, CastExpression expression, SymbolTable symbolTable)
         {
-            if (expression.Value is Name name)
+            if (expression.Expression is Name name)
             {
                 var variable = symbolTable.Find(name.Value, SymbolType.Variable);
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
 
                 if (variable.SyntaxObject is Variable v)
-                    expression.Value.Type = v.Type;
-                else if (variable.SyntaxObject is ParameterNode p)
-                    expression.Value.Type = p.Type;
+                    expression.Expression.Type = v.Type;
+                else if (variable.SyntaxObject is Parameter p)
+                    expression.Expression.Type = p.Type;
             }
 
 

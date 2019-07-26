@@ -4,10 +4,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Compiler.Visitor
 {
@@ -45,7 +42,7 @@ namespace ZenPlatform.Compiler.Visitor
             return $"MT_{_mtIndex++}";
         }
 
-        public override object VisitMultiType(UnionTypeNode obj)
+        public override object VisitMultiType(UnionTypeSyntax obj)
         {
             var name = GetFieldName();
             obj.DeclName = name;

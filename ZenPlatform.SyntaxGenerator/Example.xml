@@ -2,18 +2,24 @@
 <Config>
     <Syntax Name="Root" IsScoped="true">
         <Arguments>
-            <List Name="Units" Type="CompilationUnit"/>
+            <List Name="Units" Type="List&lt;CompilationUnit&gt;"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="CompilationUnit">
         <Arguments>
             <List DenyChildrenFill="true" Name="Namespaces" Type="List&lt;string&gt;"/>
-            <List Name="Entityes" Type="TypeEntity"/>
+            <List Name="Entityes" Type="List&lt;TypeEntity&gt;"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="TypeBody"/>
+    <Syntax Name="TypeBody" IsScoped="true">
+        <Arguments>
+            <List Name="Functions" Type="List&lt;Function&gt;"/>
+            <List Name="Fields" Type="List&lt;Field&gt;"/>
+            <List Name="Properties" Type="List&lt;Property&gt;"/>
+        </Arguments>
+    </Syntax>
 
     <Syntax Name="TypeEntity" IsAbstract="true">
         <Arguments>
@@ -21,9 +27,206 @@
         </Arguments>
     </Syntax>
 
-
     <Syntax Name="Expression" IsAbstract="true"/>
-    <Syntax Name="BinaryOperation" Base="Expression"/>
-    <Syntax Name="BinaryOperation" Base="Expression"/>
+
+    <Syntax Name="Statement" IsAbstract="true" NS="Statements"/>
+
+    <Syntax Name="BinaryExpression" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Left" Type="Expression"/>
+            <Single Name="Right" Type="Expression"/>
+            <Single Name="BinaryOperatorType" Type="BinaryOperatorType" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="UnaryExpression" Base="Expression" IsAbstract="true" NS="Expressions">
+        <Arguments>
+            <Single Name="Expression" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="CastExpression" Base="UnaryExpression" NS="Expressions">
+        <Arguments>
+            <Single Name="Expression" Type="Expression" PassBase="true"/>
+            <Single Name="CastType" Type="TypeSyntax"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="IndexerExpression" Base="UnaryExpression" NS="Expressions">
+        <Arguments>
+            <Single Name="Indexer" Type="Expression"/>
+            <Single Name="Expression" Type="Expression" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="LogicalOrArithmeticExpression" Base="UnaryExpression" NS="Expressions">
+        <Arguments>
+            <Single Name="Expression" Type="Expression" PassBase="true"/>
+            <Single Name="OperaotrType" Type="UnaryOperatorType"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Assignment" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Value" Type="Expression"/>
+            <Single Name="Index" Type="Expression"/>
+            <Single Name="Name" Type="Name"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="TypeSyntax" IsAbstract="true"/>
+    <Syntax Name="PrimitiveTypeSyntax" Base="TypeSyntax"/>
+    <Syntax Name="SingleTypeSyntax" Base="TypeSyntax"/>
+    <Syntax Name="ArrayTypeSyntax" Base="TypeSyntax"/>
+    <Syntax Name="UnionTypeSyntax" Base="TypeSyntax"/>
+
+
+    <Syntax Name="Block" IsScoped="true">
+        <Arguments>
+            <List Name="Statements" Type="List&lt;Statement&gt;"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Parameter" NS="Functions" IsSymbol="true">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="PassMethod" Type="PassMethod" DenyChildrenFill="true" Default="PassMethod.ByValue"/>
+
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Attribute"/>
+
+    <Syntax Name="Member" IsAbstract="true"/>
+
+    <Syntax Name="Function" Base="Member" IsScoped="true" IsSymbol="true" NS="Functions">
+        <Arguments>
+            <Single Name="Block" Type="Block"/>
+            <List Name="Parameters" Type="List&lt;Parameter&gt;"/>
+            <List Name="Attributes" Type="List&lt;Attribute&gt;"/>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="TypeSyntax" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Field" Base="Member" IsSymbol="true">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="TypeSyntax"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Property" Base="Member" IsSymbol="true">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="TypeSyntax"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Argument" NS="Functions">
+        <Arguments>
+            <Single Name="Expression" Type="Expression"/>
+            <Single Name="PassMethod" Type="PassMethod" DenyChildrenFill="true" Default="PassMethod.ByValue"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Call" Base="Expression">
+        <Arguments>
+            <List Name="Arguments" Type="IList&lt;Argument&gt;"/>
+            <Single Name="Name" Type="String"/>
+        </Arguments>
+    </Syntax>
+    <!--Test comment-->
+    <Syntax Name="Return" Base="Statement" NS="Statements">
+        <Arguments>
+            <Single Name="Expression" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Class" Base="TypeEntity">
+        <Arguments>
+            <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true" />
+            <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="Module" Base="TypeEntity">
+        <Arguments>
+            <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true" />
+            <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="Variable" Base="Expression" IsSymbol="true">
+        <Arguments>
+            <Single Name="Value" Type="Expression"/>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="TypeSyntax"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Literal" Base="Expression"/>
+
+
+    <Syntax Name="Name" Base="Expression">
+        <Arguments>
+            <Single Name="Value" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+
+    </Syntax>
+
+    <Syntax Name="FieldExpression" Base="Expression">
+        <Arguments>
+            <Single Name="Expression" Type="Expression"/>
+            <Single Name="FieldName" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="DoWhile" Base="Statement" NS="Statements">
+        <Arguments>
+            <Single Name="Condition" Type="Expression"/>
+            <Single Name="Block" Type="Block"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Try" Base="Statement" NS="Statements">
+        <Arguments>
+            <Single Name="TryBlock" Type="Block"/>
+            <Single Name="CatchBlock" Type="Block"/>
+            <Single Name="FinallyBlock" Type="Block"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ExpressionStatement" Base="Statement" NS="Statements">
+        <Arguments>
+            <Single Name="Expression" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="For" Base="Statement" NS="Statements">
+        <Arguments>
+            <Single Name="Block" Type="Block"/>
+            <Single Name="Counter" Type="Expression"/>
+            <Single Name="Condition" Type="Expression"/>
+            <Single Name="Initializer" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="If" Base="Statement" NS="Statements">
+        <Arguments>
+            <Single Name="ElseBlock" Type="Block"/>
+            <Single Name="IfBlock" Type="Block"/>
+            <Single Name="Condition" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="PostIncrementExpression" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Name" Type="Name"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="PostDecrementExpression" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Name" Type="Name"/>
+        </Arguments>
+    </Syntax>
 </Config>
     
