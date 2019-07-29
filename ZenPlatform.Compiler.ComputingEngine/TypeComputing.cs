@@ -26,7 +26,7 @@ namespace ZenPlatform.Compiler.ComputingEngine
             _cached = new Dictionary<string, IType>();
         }
 
-        public IType Compute(TypeNode typeSyntax)
+        public IType Compute(TypeSyntax typeSyntax)
         {
             if (typeSyntax is SingleTypeSyntax stn)
             {
@@ -39,13 +39,13 @@ namespace ZenPlatform.Compiler.ComputingEngine
             else if (typeSyntax is PrimitiveTypeSyntax ptn)
             {
                 return ptn.Kind switch
-                    {
+                {
                     TypeNodeKind.Boolean => _stb.Boolean,
                     TypeNodeKind.Int => _stb.Int,
                     TypeNodeKind.Char => _stb.Char,
                     TypeNodeKind.Double => _stb.Double,
                     TypeNodeKind.String => _stb.String,
-                    };
+                };
             }
 
             else if (typeSyntax is ArrayTypeSyntax atn)
@@ -61,7 +61,7 @@ namespace ZenPlatform.Compiler.ComputingEngine
             return null;
         }
 
-        public void Register(TypeNode typeSyntax, IType type)
+        public void Register(TypeSyntax typeSyntax, IType type)
         {
             if (typeSyntax is SingleTypeSyntax stn)
                 if (!_cached.ContainsKey(stn.TypeName))

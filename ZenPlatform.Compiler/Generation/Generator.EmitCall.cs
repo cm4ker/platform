@@ -56,9 +56,9 @@ namespace ZenPlatform.Compiler.Generation
                         if (argument.PassMethod == PassMethod.ByReference)
                         {
                             // Regular value
-                            if (argument.Value is Name)
+                            if (argument.Expression is Name arg)
                             {
-                                var variable = symbolTable.Find(((Name) argument.Value).Value, SymbolType.Variable);
+                                var variable = symbolTable.Find(arg.Value, SymbolType.Variable);
                                 if (variable.CodeObject is ILocal vd)
                                 {
                                     e.LdLocA(vd);
@@ -72,9 +72,9 @@ namespace ZenPlatform.Compiler.Generation
                                     e.LdArgA(pb);
                                 }
                             }
-                            else if (argument.Value is IndexerExpression ue)
+                            else if (argument.Expression is IndexerExpression ue)
                             {
-                                if (ue.Value is Name uen)
+                                if (ue.Expression is Name uen)
                                 {
                                     var variable = symbolTable.Find(uen.Value, SymbolType.Variable);
 //                                    
@@ -108,7 +108,7 @@ namespace ZenPlatform.Compiler.Generation
                         }
                         else
                         {
-                            EmitExpression(e, argument.Value, symbolTable);
+                            EmitExpression(e, argument.Expression, symbolTable);
                         }
                     }
                 }
@@ -118,30 +118,7 @@ namespace ZenPlatform.Compiler.Generation
             }
             else
             {
-                if (call.Name == "Read")
-                {
-//                    il.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, "Input > ");
-//                    MethodInfo write = System.Type.GetType("System.Console")
-//                        .GetMethod("Write", new System.Type[] {typeof(string)});
-//                    il.Emit(Mono.Cecil.Cil.OpCodes.Call, write, null);
-//
-//                    MethodInfo read = System.Type.GetType("System.Console").GetMethod("ReadLine");
-//                    MethodInfo parse = System.Type.GetType("System.Int32")
-//                        .GetMethod("Parse", new System.Type[] {typeof(string)});
-//                    il.Emit(Mono.Cecil.Cil.OpCodes.Call, read, null);
-//                    il.Emit(Mono.Cecil.Cil.OpCodes.Call, parse, null);
-                }
-                else if (call.Name == "Write")
-                {
-//                    EmitExpression(il, call.Arguments[0].Value, symbolTable);
-//                    MethodInfo write = System.Type.GetType("System.Console")
-//                        .GetMethod("WriteLine", new System.Type[] {typeof(int)});
-//                    il.EmitCall(OpCodes.Call, write, null);
-                }
-                else
-                {
-                    Error("Unknown function name. [" + call.Name + "]");
-                }
+                Error("Unknown function name. [" + call.Name + "]");
             }
         }
     }

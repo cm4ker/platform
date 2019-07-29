@@ -6,11 +6,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using SreTA = System.Reflection.TypeAttributes;
 using Class = ZenPlatform.Language.Ast.Definitions.Class;
-using CompilationUnit = ZenPlatform.Language.Ast.CompilationUnit;
-using Field = ZenPlatform.Language.Ast.Field;
-using Function = ZenPlatform.Language.Ast.Function;
-using Module = ZenPlatform.Language.Ast.Module;
-using Property = ZenPlatform.Language.Ast.Property;
+
 
 namespace ZenPlatform.Compiler.Generation.NewGenerator
 {
@@ -48,7 +44,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             var method = _context.Type.DefineMethod(function.Name, function.IsPublic, !_context.IsClass, false)
                 .WithReturnType(function.Type.ToClrType(_context.Assembly));
 
-            var symTable = function.GetParent<IScoped>().SymbolTable;
+            var symTable = function.FirstParent<IScoped>().SymbolTable;
             symTable.ConnectCodeObject(function, method);
 
             function.Builder = method.Generator;
@@ -71,7 +67,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             //if (!_context.IsClass) Stop();
 
             var fld = _context.Type.DefineField(obj.Type.ToClrType(_context.Assembly), obj.Name, false, false);
-            obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, fld);
+            obj.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(obj, fld);
 
 
             return null;
@@ -113,7 +109,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 SreTA.Class | SreTA.Public | SreTA.Abstract |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
 
-            obj.GetParent<IScoped>().SymbolTable.ConnectCodeObject(obj, _context.Type);
+            obj.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(obj, _context.Type);
             return default;
         }
 
@@ -123,7 +119,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 SreTA.Class | SreTA.NotPublic |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
 
-            module.GetParent<IScoped>().SymbolTable.ConnectCodeObject(module, _context.Type);
+            module.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(module, _context.Type);
             return default;
         }
     }
