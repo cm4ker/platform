@@ -15,7 +15,6 @@ namespace ZenPlatform.Compiler.Platform
             _units = new List<CompilationUnitBuilder>();
         }
 
-
         public CompilationUnitBuilder WithUnit()
         {
             var ub = new CompilationUnitBuilder(new CompilationUnit(null, new List<string>(), new List<TypeEntity>()));

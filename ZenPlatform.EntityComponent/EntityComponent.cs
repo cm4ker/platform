@@ -44,7 +44,6 @@ namespace ZenPlatform.EntityComponent
             Component.RegisterCodeRule(Generator.GetInForeignPropertyGetActionRule());
             Component.RegisterCodeRule(Generator.GetEntityClassPostfixRule());
             Component.RegisterCodeRule(Generator.GetEntityClassPrefixRule());
-
             Component.RegisterCodeRule(Generator.GetNamespaceRule());
         }
 

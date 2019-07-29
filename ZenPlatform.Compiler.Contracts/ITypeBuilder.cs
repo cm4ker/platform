@@ -33,6 +33,8 @@ namespace ZenPlatform.Compiler.Contracts
 
         ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType);
 
+        //ITypeBuilder DefineType(string @namespace, string name, IType baseType);
+
         IAssembly EndBuild();
     }
 }
