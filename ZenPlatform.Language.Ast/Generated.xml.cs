@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
 
@@ -737,7 +738,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class Class : TypeEntity
+    public partial class Class : TypeEntity, IAstSymbol
     {
         public Class(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, name)
         {
@@ -765,7 +766,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class Module : TypeEntity
+    public partial class Module : TypeEntity, IAstSymbol
     {
         public Module(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, name)
         {

@@ -37,6 +37,7 @@ namespace ZenPlatform.SyntaxGenerator
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Compiler.Contracts.Symbols")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions")),
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Statements")),
                         SyntaxFactory.UsingDirective(
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Functions")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Infrastructure"))

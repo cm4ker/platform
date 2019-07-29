@@ -37,9 +37,9 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (statement is Return ret)
             {
-                if (ret.Value != null)
+                if (ret.Expression != null)
                 {
-                    EmitExpression(e, ret.Value, context.SymbolTable);
+                    EmitExpression(e, ret.Expression, context.SymbolTable);
                 }
 
 //                if (ret.GetParent<Function>().Type is UnionTypeNode mtn)

@@ -142,13 +142,13 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="Class" Base="TypeEntity">
+    <Syntax Name="Class" Base="TypeEntity" IsSymbol="true">
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true" />
             <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>
         </Arguments>
     </Syntax>
-    <Syntax Name="Module" Base="TypeEntity">
+    <Syntax Name="Module" Base="TypeEntity" IsSymbol="true">
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true" />
             <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>

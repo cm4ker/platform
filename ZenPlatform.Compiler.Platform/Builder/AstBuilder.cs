@@ -18,7 +18,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public CompilationUnitBuilder WithUnit()
         {
-            var ub = new CompilationUnitBuilder(new CompilationUnit(null));
+            var ub = new CompilationUnitBuilder(new CompilationUnit(null, new List<string>(), new List<TypeEntity>()));
             _units.Add(ub);
             return ub;
         }
@@ -36,7 +36,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
         public ModuleBuilder WithModule(string moduleName)
         {
             var mod = new Module(null, new TypeBody(new MemberCollection()), moduleName);
-            _cu.TypeEntities.Add(mod);
+            _cu.Entityes.Add(mod);
             return new ModuleBuilder(mod);
         }
 
@@ -44,7 +44,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
         {
             var cl = new Class(null, new TypeBody(new MemberCollection()), className);
 
-            _cu.TypeEntities.Add(cl);
+            _cu.Entityes.Add(cl);
 
             return new ClassBuilder(cl);
         }
@@ -62,7 +62,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
         public FunctionBuilder WithFunction(string name, string type)
         {
             var f = new Function(null, new Block(new StatementCollection()),
-                new ParameterCollection(), name, new SingleTypeSyntax(null, type, 0), new AttributeCollection());
+                new ParameterCollection(), new AttributeCollection(), name, new SingleTypeSyntax(null, type, 0));
             _module.TypeBody.Functions.Add(f);
             return new FunctionBuilder(f);
         }
@@ -131,7 +131,7 @@ namespace ZenPlatform.Language.Ast.AST.Builder
 
         public VariableBuilder WithVariable(string name, string type)
         {
-            return new VariableBuilder();
+            return null;
         }
 
         public object WithCall(string name)

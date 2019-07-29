@@ -6,6 +6,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
@@ -103,14 +104,14 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                     foreach (var arg in call.Arguments)
                     {
                         // Regular value
-                        if (arg.Value is Name n)
+                        if (arg.Expression is Name n)
                         {
                             var variable = st.Find(n.Value, SymbolType.Variable);
                             LoadVariableReference(variable, il);
                         }
-                        else if (arg.Value is IndexerExpression ue)
+                        else if (arg.Expression is IndexerExpression ue)
                         {
-                            var variable = st.Find(((Name) ue.Value).Value, SymbolType.Variable);
+                            var variable = st.Find(((Name) ue.Expression).Value, SymbolType.Variable);
                             LoadVariable(variable, il);
                         }
                         else

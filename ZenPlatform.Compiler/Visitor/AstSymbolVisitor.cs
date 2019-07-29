@@ -11,14 +11,6 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
-using Class = ZenPlatform.Language.Ast.Class;
-using Field = ZenPlatform.Language.Ast.Field;
-using Function = ZenPlatform.Language.Ast.Function;
-using Module = ZenPlatform.Language.Ast.Module;
-using Property = ZenPlatform.Language.Ast.Property;
-using Root = ZenPlatform.Language.Ast.Root;
-using TypeBody = ZenPlatform.Language.Ast.TypeBody;
-using Variable = ZenPlatform.Language.Ast.Variable;
 
 namespace ZenPlatform.Compiler.Visitor
 {
@@ -33,8 +25,9 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object DefaultVisit(SyntaxNode node)
         {
-            foreach (var child in node.Children)
+            foreach (var node1 in node.Childs)
             {
+                var child = (SyntaxNode) node1;
                 Visit(child);
             }
 
