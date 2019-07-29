@@ -99,53 +99,64 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitExpression(IEmitter e, Expression expression, SymbolTable symbolTable)
         {
-            if (expression is BinaryExpression)
+            if (expression is BinaryExpression be)
             {
                 EmitExpression(e, ((BinaryExpression) expression).Left, symbolTable);
                 EmitExpression(e, ((BinaryExpression) expression).Right, symbolTable);
 
-                switch (((BinaryExpression) expression).BinaryOperatorType)
-                {
-                    case BinaryOperatorType.Add:
-                        e.Add();
-                        break;
-                    case BinaryOperatorType.Subtract:
-                        e.Sub();
-                        break;
-                    case BinaryOperatorType.Multiply:
-                        e.Mul();
-                        break;
-                    case BinaryOperatorType.Divide:
-                        e.Div();
-                        break;
-                    case BinaryOperatorType.Modulo:
-                        e.Rem();
-                        break;
-                    case BinaryOperatorType.Equal:
-                        e.Ceq();
-                        break;
-                    case BinaryOperatorType.NotEqual:
-                        e.NotEqual();
-                        break;
-                    case BinaryOperatorType.GreaterThen:
-                        e.Cgt();
-                        break;
-                    case BinaryOperatorType.LessThen:
-                        e.Clt();
-                        break;
-                    case BinaryOperatorType.GraterOrEqualTo:
-                        e.GreaterOrEqual();
-                        break;
-                    case BinaryOperatorType.LessOrEqualTo:
-                        e.LessOrEqual();
-                        break;
-                    case BinaryOperatorType.And:
-                        e.Add();
-                        break;
-                    case BinaryOperatorType.Or:
-                        e.Or();
-                        break;
-                }
+                if (be.Type.IsNumeric())
+                    switch (be.BinaryOperatorType)
+                    {
+                        case BinaryOperatorType.Add:
+                            e.Add();
+                            break;
+                        case BinaryOperatorType.Subtract:
+                            e.Sub();
+                            break;
+                        case BinaryOperatorType.Multiply:
+                            e.Mul();
+                            break;
+                        case BinaryOperatorType.Divide:
+                            e.Div();
+                            break;
+                        case BinaryOperatorType.Modulo:
+                            e.Rem();
+                            break;
+                        case BinaryOperatorType.Equal:
+                            e.Ceq();
+                            break;
+                        case BinaryOperatorType.NotEqual:
+                            e.NotEqual();
+                            break;
+                        case BinaryOperatorType.GreaterThen:
+                            e.Cgt();
+                            break;
+                        case BinaryOperatorType.LessThen:
+                            e.Clt();
+                            break;
+                        case BinaryOperatorType.GraterOrEqualTo:
+                            e.GreaterOrEqual();
+                            break;
+                        case BinaryOperatorType.LessOrEqualTo:
+                            e.LessOrEqual();
+                            break;
+                        case BinaryOperatorType.And:
+                            e.Add();
+                            break;
+                        case BinaryOperatorType.Or:
+                            e.Or();
+                            break;
+                    }
+
+                if (be.Type.IsString())
+                    switch (be.BinaryOperatorType)
+                    {
+                        case BinaryOperatorType.Add:
+                            e.EmitCall(_bindings.Methods.Concat);
+                            //e.EmitCall(_bindings.String.FindMethod(x => x.Name == "Concat" && x.Parameters.Count == 2));
+                            break;
+                        default: throw new NotSupportedException();
+                    }
             }
             else if (expression is UnaryExpression ue)
             {

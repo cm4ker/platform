@@ -182,22 +182,22 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class BinaryExpression : Expression
     {
-        public BinaryExpression(ILineInfo lineInfo, Expression left, Expression right, BinaryOperatorType binaryOperatorType): base(lineInfo)
+        public BinaryExpression(ILineInfo lineInfo, Expression right, Expression left, BinaryOperatorType binaryOperatorType): base(lineInfo)
         {
             var slot = 0;
-            Left = left;
-            Childs.Add(Left);
             Right = right;
             Childs.Add(Right);
+            Left = left;
+            Childs.Add(Left);
             BinaryOperatorType = binaryOperatorType;
         }
 
-        public Expression Left
+        public Expression Right
         {
             get;
         }
 
-        public Expression Right
+        public Expression Left
         {
             get;
         }
@@ -772,6 +772,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             var slot = 0;
             TypeBody = typeBody;
+            Childs.Add(TypeBody);
             Name = name;
         }
 

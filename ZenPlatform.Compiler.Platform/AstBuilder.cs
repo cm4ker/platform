@@ -4,7 +4,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
 
-namespace ZenPlatform.Language.Ast.AST.Builder
+namespace ZenPlatform.Compiler.Platform
 {
     public class AstBuilder
     {

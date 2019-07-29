@@ -21,6 +21,8 @@ namespace ZenPlatform.Compiler.Contracts
         internal SystemTypeBindings(ITypeSystem ts)
         {
             _ts = ts;
+
+            Methods = new SystemMethods(ts, this);
         }
 
 
@@ -63,5 +65,27 @@ namespace ZenPlatform.Compiler.Contracts
         public IType MultiType => FindType<UnionType>();
 
         public IType UnionTypeStorage => FindType<UnionTypeStorage>();
+
+
+        public SystemMethods Methods { get; }
+
+
+        public class SystemMethods
+        {
+            private readonly ITypeSystem _ts;
+            private readonly SystemTypeBindings _stb;
+
+            internal SystemMethods(ITypeSystem ts, SystemTypeBindings stb)
+            {
+                _ts = ts;
+                _stb = stb;
+            }
+
+
+            public IMethod Concat => _stb.String.FindMethod(x =>
+                x.Name == nameof(string.Concat) && x.Parameters.Count == 2
+                                                && x.Parameters[0].Type == _stb.String &&
+                                                x.Parameters[1].Type == _stb.String);
+        }
     }
 }
