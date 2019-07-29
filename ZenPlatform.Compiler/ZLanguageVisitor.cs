@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.AST
     {
         private SyntaxStack _syntaxStack;
 
-        public ZLanguageVisitor(ITypeSystem typeSystem)
+        public ZLanguageVisitor()
         {
             _syntaxStack = new SyntaxStack();
         }
@@ -342,7 +342,19 @@ namespace ZenPlatform.Compiler.AST
                 result.IsPublic = true;
             }
 
-            _syntaxStack.PeekCollection().Add(result);
+            try
+            {
+                _syntaxStack.PeekCollection().Add(result);
+            }
+            catch (InvalidOperationException ioe)
+            {
+                if (ioe.Message == "Stack empty.")
+                {
+                    //ignore
+                }
+                else
+                    throw;
+            }
 
             return result;
         }

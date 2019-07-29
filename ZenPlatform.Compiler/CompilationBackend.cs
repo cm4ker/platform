@@ -62,7 +62,7 @@ namespace ZenPlatform.Compiler
 
             var ab = ap.AsmFactory.Create(ap.TypeSystem, "Debug", new Version(1, 0));
 
-            ZLanguageVisitor v = new ZLanguageVisitor(ap.TypeSystem);
+            ZLanguageVisitor v = new ZLanguageVisitor();
             var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
 
             module.PrintPretty("", true);

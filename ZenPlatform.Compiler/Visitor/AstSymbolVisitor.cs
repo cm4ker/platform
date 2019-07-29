@@ -14,24 +14,12 @@ using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Compiler.Visitor
 {
-    public class AstSymbolPreparator : AstVisitorBase<object>
+    public class AstSymbolPreparator : AstWalker<object>
     {
         public static void Prepare(SyntaxNode node)
         {
             var p = new AstSymbolPreparator();
             p.Visit(node);
-        }
-
-
-        public override object DefaultVisit(SyntaxNode node)
-        {
-            foreach (var node1 in node.Childs)
-            {
-                var child = (SyntaxNode) node1;
-                Visit(child);
-            }
-
-            return base.DefaultVisit(node);
         }
 
         private AstSymbolPreparator()
@@ -93,27 +81,28 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitTypeBody(TypeBody obj)
         {
-            var st = obj.FirstParent<IScoped>().SymbolTable;
+            var st = obj.FirstParent<IScoped>()?.SymbolTable;
 
             if (obj.SymbolTable == null)
                 obj.SymbolTable = new SymbolTable(st);
 
             obj.SymbolTable.Clear();
-            return null;
+            return base.VisitTypeBody(obj);
         }
 
         public override object VisitModule(Module obj)
         {
-            var st = obj.FirstParent<IScoped>().SymbolTable;
-            st.Add(obj);
-            return null;
+            var st = obj.FirstParent<IScoped>()?.SymbolTable;
+            st?.Add(obj);
+
+            return base.VisitModule(obj);
         }
 
         public override object VisitClass(Class obj)
         {
             var st = obj.FirstParent<IScoped>().SymbolTable;
             st.Add(obj);
-            return null;
+            return base.VisitClass(obj);
         }
 
         public override object VisitFunction(Function obj)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.Definitions
@@ -20,6 +21,22 @@ namespace ZenPlatform.Language.Ast.Definitions
         Array,
         Type,
         UnionType,
+    }
+
+    public static class TypeNodeKindExtension
+    {
+        public static bool IsNumeric(this TypeNodeKind tnk)
+        {
+            return tnk == TypeNodeKind.Int || tnk == TypeNodeKind.Double;
+        }
+
+        public static bool IsString(this TypeNodeKind tnk)
+        {
+            return tnk == TypeNodeKind.String;
+        }
+
+        public static bool IsNumeric(this TypeSyntax ts) => ts.Kind.IsNumeric();
+        public static bool IsString(this TypeSyntax ts) => ts.Kind.IsString();
     }
 
     /// <summary>
