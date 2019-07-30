@@ -109,7 +109,6 @@ namespace ZenPlatform.Language.Ast.Definitions
             return (Block) internalStack.Pop();
         }
 
-
         public TypeBody PopTypeBody()
         {
             return (TypeBody) internalStack.Pop();

@@ -219,5 +219,22 @@ namespace ZenPlatform.Compiler.Contracts
         {
             return emitter;
         }
+
+        public static IPropertyBuilder DefineProperty(this ITypeBuilder tb, IType type, string name,
+            IField backingField)
+        {
+            var getMethod = tb.DefineMethod($"{name}_get", false, false, false).WithReturnType(type);
+
+            getMethod.Generator
+                .LdArg_0()
+                .LdFld(backingField)
+                .Ret();
+
+            var setMethod = tb.DefineMethod($"{name}_set", false, false, false);
+            setMethod.WithParameter("value", type, false, false);
+            setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField);
+
+            return tb.DefineProperty(type, name).WithGetter(getMethod).WithSetter(setMethod);
+        }
     }
 }
