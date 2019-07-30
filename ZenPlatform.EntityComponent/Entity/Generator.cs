@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using dnlib.DotNet;
 using dnlib.DotNet.Resources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
@@ -19,6 +19,8 @@ using ZenPlatform.Contracts;
 using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast.Definitions;
+using IType = ZenPlatform.Compiler.Contracts.IType;
+using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
@@ -110,7 +112,9 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var constructor = builder.DefineConstructor(false, dto);
 
-            constructor.Generator.LdArg_0().StFld(dtoField);
+            constructor.Generator
+                .LdArg_0()
+                .StFld(dtoField);
 
             foreach (var prop in set.Properties)
             {
@@ -132,6 +136,74 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
                 else
                 {
+                    var clrProperty =
+                        builder.DefineProperty(asmBuilder.TypeSystem.GetSystemBindings().Object, prop.Name);
+
+                    var getter = builder.DefineMethod($"{prop.Name}_get", true, false, false);
+
+
+                    var gen = getter.Generator;
+
+                    ILabel ni = gen.DefineLabel();
+
+                    foreach (var propType in prop.Types)
+                    {
+                        IType primitiveType = null;
+
+                        var typeField = dto.Fields.FirstOrDefault(x => x.Name == $"{prop.Name}_Type");
+
+
+                        gen
+                            .LdArg_0()
+                            .LdFld(dtoField)
+                            .LdFld(typeField)
+                            .LdcI4((int) propType.Id)
+                            .BneUn(ni);
+
+                        if (propType is XCPremitiveType)
+                        {
+                            var dataField = dto.Fields.FirstOrDefault(x => x.Name == $"{prop.Name}_{propType.Name}") ??
+                                            throw new Exception("Field not found");
+
+                            gen
+                                .LdArg_0()
+                                .LdFld(dtoField)
+                                .LdFld(dataField)
+                                .Box(dataField.FieldType)
+                                .Ret();
+                        }
+                        else if (propType is XCObjectTypeBase ot)
+                        {
+                            //TODO: Нужно обратиться к серверу кэша
+                        }
+
+                        gen.MarkLabel(ni);
+
+                        gen.Ret();
+                    }
+
+                    /*
+                     * public object Document
+                     * {
+                     *      get
+                     *      {
+                     *             if(_dto.Prop1_type = 1_dto.Prop1_guid is not default) reutrn _dto.Prop1_guid;
+                     *             if(_dto.Prop1_int is not default) reutrn _dto.Prop1_int;
+                     *
+                     *             if(_dto.Prop1_type is not default) reutrn _cacheService.Return(_dto.Prop1_type, _dto.Prop1_ref);
+                     *      }
+                     *
+                     *      set
+                     *      {
+                     *            if(value is guid) {_dto.Prop1_guid = value; _dto.Prop1_int = default; _dto.Prop1_type = 0; _dto.Prop1_ref = null;}
+                     *            if(value is int) {_dto.Prop1_guid = deafult; _dto.Prop1_int = value; _dto.Prop1_type = 0; _dto.Prop1_ref = null;}
+                     *            if(value is Invoice i) {_dto.Prop1_guid = deafult; _dto.Prop1_int = default; _dto.Prop1_type = 1; _dto.Prop1_ref = i.GetRef();}
+                     *      }
+                     * }
+                     * 
+                     */
+
+                    //TODO: Сделать генерацию управляющего кода выбора типа свойства
                 }
             }
         }

@@ -121,6 +121,10 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter BrTrue(this IEmitter emitter, ILabel label)
             => emitter.Emit(OpCodes.Brtrue, label);
 
+        public static IEmitter BneUn(this IEmitter emitter, ILabel label)
+            => emitter.Emit(OpCodes.Bne_Un, label);
+
+
         public static IEmitter Ret(this IEmitter emitter)
             => emitter.Emit(OpCodes.Ret);
 
