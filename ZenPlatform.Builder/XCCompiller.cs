@@ -41,18 +41,18 @@ namespace ZenPlatform.Cli
 
             foreach (var c in _root.Data.Components)
             {
-                var files = c.ComponentImpl.Generator.GenerateSourceFiles();
-
-                foreach (var file in files)
-                {
-                    sources.Add(SyntaxFactory.ParseSyntaxTree(file.Value, new CSharpParseOptions()));
-                    using (var sw = new StreamWriter(file.Key))
-                    {
-                        sw.WriteLine(file.Value);
-                    }
-                }
-
-                references.Add(MetadataReference.CreateFromFile(c.ComponentAssembly.Location));
+//                var files = c.ComponentImpl.Generator.GenerateSourceFiles();
+//
+//                foreach (var file in files)
+//                {
+//                    sources.Add(SyntaxFactory.ParseSyntaxTree(file.Value, new CSharpParseOptions()));
+//                    using (var sw = new StreamWriter(file.Key))
+//                    {
+//                        sw.WriteLine(file.Value);
+//                    }
+//                }
+//
+//                references.Add(MetadataReference.CreateFromFile(c.ComponentAssembly.Location));
             }
 
 

@@ -24,17 +24,31 @@ using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
-    public class Generator : IPlatformStagedAssemblyGenerator
+    public class StagedGenerator : IPlatformStagedAssemblyGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
         private readonly XCComponent _component;
         private GeneratorRules _rules;
 
-        public Generator(XCComponent component)
+        public StagedGenerator(XCComponent component)
         {
             _component = component;
             _rules = new GeneratorRules(component);
             _dtoCollections = new Dictionary<XCSingleEntity, IType>();
+        }
+
+        private IType GetTypeFromPlatformType(XCPremitiveType pt, ITypeSystem ts)
+        {
+            return pt switch
+            {
+                XCBinary b => ts.GetSystemBindings().Byte.MakeArrayType(),
+                XCInt b => ts.GetSystemBindings().Int,
+                XCString b => ts.GetSystemBindings().String,
+                XCNumeric b => ts.GetSystemBindings().Double,
+                XCBoolean b => ts.GetSystemBindings().Boolean,
+                XCDateTime b => ts.GetSystemBindings().DateTime,
+                XCGuid b => ts.GetSystemBindings().Guid,
+            };
         }
 
         public void Stage0(XCObjectTypeBase type, IAssemblyBuilder builder)
@@ -42,43 +56,50 @@ namespace ZenPlatform.EntityComponent.Entity
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
                                        $"This component only can serve {nameof(XCSingleEntity)} objects");
             var dtoClassName =
-                $"{_component.GetCodeRule(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRule(CodeGenRuleType.DtoPostfixRule)}";
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             //Create dto class
             var dtoClass = builder.DefineType(@namespace, dtoClassName,
-                TypeAttributes.Public | TypeAttributes.Class, null);
+                TypeAttributes.Public | TypeAttributes.Class);
 
             _dtoCollections.Add(singleEntityType, dtoClass);
 
             foreach (var prop in singleEntityType.Properties)
             {
-                bool hasManyObjectTypes = false;
                 bool propertyGenerated = false;
+
+                if (prop.Types.Count > 1)
+                {
+                    dtoClass.DefineField(builder.TypeSystem.GetSystemBindings().Int, prop.Name + "_Type", true,
+                        false);
+                }
 
                 foreach (var ctype in prop.Types)
                 {
                     if (ctype is XCPremitiveType pt)
                     {
-                        var propType = builder.FindType(pt.CLRType.FullName);
-                        dtoClass.DefineProperty(propType, prop.Name);
+                        var propType = pt switch
+                        {
+                            XCBinary b => builder.TypeSystem.GetSystemBindings().Byte.MakeArrayType(),
+                            XCInt b => builder.TypeSystem.GetSystemBindings().Int,
+                            XCString b => builder.TypeSystem.GetSystemBindings().String,
+                            XCNumeric b => builder.TypeSystem.GetSystemBindings().Double,
+                            XCBoolean b => builder.TypeSystem.GetSystemBindings().Boolean,
+                            XCDateTime b => builder.TypeSystem.GetSystemBindings().DateTime,
+                            XCGuid b => builder.TypeSystem.GetSystemBindings().Guid,
+                        };
+
+                        //var propType = builder.FindType(pt.CLRType.FullName);
+                        dtoClass.DefineField(propType, $"{prop.Name}_{pt.Name}", true, false);
                     }
                     else if (ctype is XCObjectTypeBase ot)
                     {
-                        if (hasManyObjectTypes) continue;
-
-                        if (propertyGenerated)
-                            hasManyObjectTypes = true;
                         if (!propertyGenerated)
                         {
                             propertyGenerated = true;
-                            dtoClass.DefineProperty(builder.TypeSystem.GetSystemBindings().Guid, prop.Name);
-                        }
-
-                        if (hasManyObjectTypes)
-                        {
-                            dtoClass.DefineProperty(builder.TypeSystem.GetSystemBindings().Int, prop.Name + "_Type");
+                            dtoClass.DefineField(builder.TypeSystem.GetSystemBindings().Guid, prop.Name, true, false);
                         }
                     }
                 }
@@ -97,7 +118,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = _component.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule);
 
             //Create entity class
-            return builder.DefineType(@namespace, className, TypeAttributes.Public | TypeAttributes.Class, null);
+            return builder.DefineType(@namespace, className, TypeAttributes.Public | TypeAttributes.Class);
         }
 
         public void Stage2(XCObjectTypeBase type, ITypeBuilder builder,
@@ -114,7 +135,11 @@ namespace ZenPlatform.EntityComponent.Entity
 
             constructor.Generator
                 .LdArg_0()
-                .StFld(dtoField);
+                .EmitCall(asmBuilder.TypeSystem.GetSystemBindings().Object.Constructors[0])
+                .LdArg_0()
+                .LdArg(1)
+                .StFld(dtoField)
+                .Ret();
 
             foreach (var prop in set.Properties)
             {
@@ -125,7 +150,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 {
                     if (prop.Types[0] is XCPremitiveType pt)
                     {
-                        var clrPropertyType = asmBuilder.FindType(pt.CLRType.FullName);
+                        var clrPropertyType = GetTypeFromPlatformType(pt, asmBuilder.TypeSystem);
                         builder.DefineProperty(clrPropertyType, pt.Name, dtoField);
                     }
                     else if (prop.Types[0] is XCObjectTypeBase ot)
@@ -136,18 +161,19 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
                 else
                 {
+                    var objectClrType = asmBuilder.TypeSystem.GetSystemBindings().Object;
                     var clrProperty =
-                        builder.DefineProperty(asmBuilder.TypeSystem.GetSystemBindings().Object, prop.Name);
+                        builder.DefineProperty(objectClrType, prop.Name);
 
-                    var getter = builder.DefineMethod($"{prop.Name}_get", true, false, false);
-
+                    var getter = builder.DefineMethod($"{prop.Name}_get", true, false, false)
+                        .WithReturnType(objectClrType);
 
                     var gen = getter.Generator;
 
-                    ILabel ni = gen.DefineLabel();
 
                     foreach (var propType in prop.Types)
                     {
+                        ILabel ni = gen.DefineLabel();
                         IType primitiveType = null;
 
                         var typeField = dto.Fields.FirstOrDefault(x => x.Name == $"{prop.Name}_Type");
@@ -179,18 +205,38 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         gen.MarkLabel(ni);
 
-                        gen.Ret();
+                        //gen.Ret();
                     }
+
+                    clrProperty.WithGetter(getter);
+
 
                     /*
                      * public object Document
                      * {
                      *      get
                      *      {
-                     *             if(_dto.Prop1_type = 1_dto.Prop1_guid is not default) reutrn _dto.Prop1_guid;
-                     *             if(_dto.Prop1_int is not default) reutrn _dto.Prop1_int;
-                     *
-                     *             if(_dto.Prop1_type is not default) reutrn _cacheService.Return(_dto.Prop1_type, _dto.Prop1_ref);
+                     *          if (_dto.CompositeProperty_Type == 1)
+	                            {
+		                            return _dto.CompositeProperty_Binary;
+	                            }
+	                            if (_dto.CompositeProperty_Type == 2)
+	                            {
+		                            return _dto.CompositeProperty_Boolean;
+	                            }
+	                            if (_dto.CompositeProperty_Type == 6)
+	                            {
+		                            return _dto.CompositeProperty_String;
+	                            }
+	                            if (_dto.CompositeProperty_Type == 3)
+	                            {
+		                            return _dto.CompositeProperty_DateTime;
+	                            }
+	                            if (_dto.CompositeProperty_Type == 100)
+	                            {
+	                                reutrn _cacheService.Return(_dto.CompositeProperty_Type, _dto.CompositeProperty_Ref);
+	                            }
+                     
                      *      }
                      *
                      *      set

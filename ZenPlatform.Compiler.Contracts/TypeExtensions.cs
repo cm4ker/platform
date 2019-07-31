@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace ZenPlatform.Compiler.Contracts
@@ -235,6 +236,12 @@ namespace ZenPlatform.Compiler.Contracts
             setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField);
 
             return tb.DefineProperty(type, name).WithGetter(getMethod).WithSetter(setMethod);
+        }
+
+        public static ITypeBuilder DefineType(this IAssemblyBuilder ab, string @namespace, string name,
+            TypeAttributes attrs)
+        {
+            return ab.DefineType(@namespace, name, attrs, ab.TypeSystem.GetSystemBindings().Object);
         }
     }
 }
