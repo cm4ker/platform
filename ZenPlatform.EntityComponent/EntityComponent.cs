@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
 using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Contracts;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.EntityComponent.Configuration;
@@ -17,7 +18,7 @@ namespace ZenPlatform.EntityComponent
 
         public override void OnInitializing()
         {
-            Generator = new SingleEntityGenerator(Component);
+            Generator = new StagedGenerator(Component);
             Manager = new SingleEntityManager();
             ComponentManager = new SingleEntityConfigurationManager(Component);
 
@@ -40,11 +41,11 @@ namespace ZenPlatform.EntityComponent
 
         private void RegisterCodeRules()
         {
-            Component.RegisterCodeRule(Generator.GetInForeignPropertySetActionRule());
-            Component.RegisterCodeRule(Generator.GetInForeignPropertyGetActionRule());
-            Component.RegisterCodeRule(Generator.GetEntityClassPostfixRule());
-            Component.RegisterCodeRule(Generator.GetEntityClassPrefixRule());
-            Component.RegisterCodeRule(Generator.GetNamespaceRule());
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.DtoPostfixRule, ""));
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.DtoPreffixRule, "_"));
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.EntityClassPostfixRule, ""));
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.EntityClassPrefixRule, ""));
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.NamespaceRule, "Documents"));
         }
 
         /*

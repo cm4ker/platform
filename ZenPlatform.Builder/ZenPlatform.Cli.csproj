@@ -21,6 +21,7 @@
         <Folder Include="Syntax" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
         <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
         <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
         <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />

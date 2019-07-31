@@ -29,7 +29,9 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// </summary>
         /// <param name="type">Тип платформы</param>
         /// <param name="builder">Билдер типа CLR</param>
+        /// <param name="platformTypes">Все пробилженные типы платформы</param>
+        /// <param name="asmBuilderd">Билдер сборки</param>
         void Stage2(XCObjectTypeBase type, ITypeBuilder builder,
-            ImmutableDictionary<XCObjectTypeBase, IType> platformTypes);
+            ImmutableDictionary<XCObjectTypeBase, IType> platformTypes, IAssemblyBuilder asmBuilderd);
     }
 }

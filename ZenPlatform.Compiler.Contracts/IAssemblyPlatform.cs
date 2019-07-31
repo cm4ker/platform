@@ -15,5 +15,10 @@ namespace ZenPlatform.Compiler.Contracts
         {
             return ap.AsmFactory.Create(ap.TypeSystem, name, assemblyVersion);
         }
+
+        public static IAssemblyBuilder CreateAssembly(this IAssemblyPlatform ap, string name)
+        {
+            return ap.AsmFactory.Create(ap.TypeSystem, name, Version.Parse("1.0.0.0"));
+        }
     }
 }

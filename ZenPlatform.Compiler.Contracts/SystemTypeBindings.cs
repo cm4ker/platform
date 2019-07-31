@@ -60,6 +60,10 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType Type => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Type)}", MSCORLIB);
 
+        public IType Byte => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Byte)}", MSCORLIB);
+
+        public IType DateTime => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.DateTime)}", MSCORLIB);
+
         public IType Client => FindType<Client>();
 
         public IType MultiType => FindType<UnionType>();
