@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Transactions;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
 using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 using IField = ZenPlatform.Compiler.Contracts.IField;
@@ -94,5 +96,119 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IReadOnlyList<IType> GenericParameters { get; }
+    }
+
+    public class DnlibEmitter : IEmitter
+    {
+        public ITypeSystem TypeSystem { get; }
+
+        public IEmitter Emit(OpCode code)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, IField field)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, IMethod method)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, IConstructor ctor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, string arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, int arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, long arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, IType type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, float arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, double arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ILocal DefineLocal(IType type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ILabel DefineLabel()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ILabel BeginExceptionBlock()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter BeginCatchBlock(IType exceptionType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter ThrowException(IType exceptionType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter EndExceptionBlock()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter MarkLabel(ILabel label)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, ILabel label)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, ILocal local)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Emit(OpCode code, IParameter parameter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool InitLocals { get; set; }
+
+        public void InsertSequencePoint(IFileSource file, int line, int position)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISymbolTable SymbolTable { get; }
     }
 }
