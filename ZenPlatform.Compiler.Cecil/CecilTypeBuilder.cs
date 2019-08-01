@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
@@ -9,15 +10,17 @@ namespace ZenPlatform.Compiler.Cecil
     class CecilTypeBuilder : CecilType, ITypeBuilder
     {
         protected TypeReference SelfReference;
+        private CecilContextResolver _cr;
 
         public CecilTypeBuilder(CecilTypeSystem typeSystem, CecilAssembly assembly, TypeDefinition definition)
             : base(typeSystem, assembly, definition)
         {
             SelfReference = definition;
+
+            _cr = new CecilContextResolver(typeSystem, Definition.Module);
         }
 
-        TypeReference GetReference(IType type) =>
-            Definition.Module.ImportReference(((ITypeReference) type).Reference);
+        TypeReference GetReference(IType type) => _cr.GetReference((ITypeReference) type);
 
         public IField DefineField(IType type, string name, bool isPublic, bool isStatic)
         {
@@ -133,5 +136,24 @@ namespace ZenPlatform.Compiler.Cecil
         }
 
         public IReadOnlyList<IMethodBuilder> DefinedMethods => Methods.Cast<IMethodBuilder>().ToList();
+    }
+
+    class CecilContextResolver
+    {
+        private readonly CecilTypeSystem _ts;
+        private readonly ModuleDefinition _moduleDef;
+
+        public CecilContextResolver(CecilTypeSystem ts, ModuleDefinition moduleDef)
+        {
+            _ts = ts;
+            _moduleDef = moduleDef;
+        }
+
+        public TypeReference GetReference(ITypeReference type)
+        {
+            return _moduleDef.ImportReference(type.Reference);
+        }
+
+        public IType GetType(TypeReference tr) => _ts.Resolve(tr);
     }
 }

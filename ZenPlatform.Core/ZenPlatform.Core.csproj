@@ -12,6 +12,7 @@
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime" Version="4.6.5" />
     <PackageReference Include="NLog" Version="4.6.1" />
+    <PackageReference Include="ServiceStack.Redis.Core" Version="5.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />

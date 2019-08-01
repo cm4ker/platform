@@ -10,7 +10,7 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibTypeBuilder : DnlibType, ITypeBuilder
     {
-        public DnlibTypeBuilder(TypeDef typeDefinition, DnlibAssembly assembly) : base(typeDefinition, assembly)
+        public DnlibTypeBuilder(TypeDef typeDef, DnlibAssembly assembly) : base(typeDef, assembly)
         {
         }
 
@@ -60,11 +60,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
     public class DnlibField : IField
     {
-        private readonly FieldDef _field;
+        public FieldDef FieldDef { get; }
 
-        public DnlibField(FieldDef field)
+        public DnlibField(FieldDef fieldDef)
         {
-            _field = field;
+            FieldDef = fieldDef;
         }
 
         public bool Equals(IField other)

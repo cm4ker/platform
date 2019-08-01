@@ -26,20 +26,6 @@ namespace ZenPlatform.Compiler.Contracts
         }
 
 
-        private IType FindType<T>()
-        {
-            return FindType(typeof(T));
-        }
-
-        private IType FindType(Type type)
-        {
-            var name = type.Name;
-            var @namespace = type.Namespace;
-            var assembly = type.Assembly.GetName().FullName;
-
-            return _ts.FindType($"{@namespace}.{name}", assembly);
-        }
-
         public ITypeSystem TypeSystem => _ts;
 
         public IType Int => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Int32)}", MSCORLIB);
@@ -64,11 +50,11 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType DateTime => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.DateTime)}", MSCORLIB);
 
-        public IType Client => FindType<Client>();
+        public IType Client => _ts.FindType<Client>();
 
-        public IType MultiType => FindType<UnionType>();
+        public IType MultiType => _ts.FindType<UnionType>();
 
-        public IType UnionTypeStorage => FindType<UnionTypeStorage>();
+        public IType UnionTypeStorage => _ts.FindType<UnionTypeStorage>();
 
 
         public SystemMethods Methods { get; }

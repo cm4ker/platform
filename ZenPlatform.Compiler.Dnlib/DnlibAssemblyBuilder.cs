@@ -24,7 +24,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             var dnlibBaseType = (DnlibType) baseType;
 
-            var type = new TypeDefUser(@namespace, name, dnlibBaseType.TypeDefinition);
+            var type = new TypeDefUser(@namespace, name, dnlibBaseType.TypeDef);
 
             _assembly.ManifestModule.Types.Add(type);
 

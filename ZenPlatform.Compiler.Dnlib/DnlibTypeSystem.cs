@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
+using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
+using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
@@ -19,6 +22,11 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IType FindType(string name, string assembly)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IType Resolve(TypeDef type)
         {
             throw new NotImplementedException();
         }
