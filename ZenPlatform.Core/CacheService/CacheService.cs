@@ -1,5 +1,6 @@
 using System;
 using ServiceStack.Redis;
+using ServiceStack.Text;
 
 namespace ZenPlatform.Core.CacheService
 {
@@ -7,6 +8,8 @@ namespace ZenPlatform.Core.CacheService
     {
         void Set(int databaseId, int typeId, Guid entityId, object value);
         T Get<T>(int databaseId, int typeId, Guid entityId);
+
+        object Get(Type type, int databaseId, int typeId, Guid entityId);
     }
 
     public class CacheService : ICacheService, IDisposable
@@ -31,6 +34,12 @@ namespace ZenPlatform.Core.CacheService
         {
             var key = GetKey(databaseId, typeId, entityId);
             return _client.Get<T>(key);
+        }
+
+        public object Get(Type type, int databaseId, int typeId, Guid entityId)
+        {
+            var key = GetKey(databaseId, typeId, entityId);
+            return JsonSerializer.DeserializeFromString(_client.GetValue(key), type);
         }
 
         private string GetKey(int databaseId, int typeId, Guid entityId)
