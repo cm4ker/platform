@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using dnlib.DotNet;
 using dnlib.DotNet.Resources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
@@ -17,6 +16,7 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Contracts;
 using ZenPlatform.Core.Language.QueryLanguage;
+using ZenPlatform.Core.Sessions;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast.Definitions;
 using IType = ZenPlatform.Compiler.Contracts.IType;
@@ -40,7 +40,7 @@ namespace ZenPlatform.EntityComponent.Entity
         private IType GetTypeFromPlatformType(XCPremitiveType pt, ITypeSystem ts)
         {
             return pt switch
-            {
+                {
                 XCBinary b => ts.GetSystemBindings().Byte.MakeArrayType(),
                 XCInt b => ts.GetSystemBindings().Int,
                 XCString b => ts.GetSystemBindings().String,
@@ -48,7 +48,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 XCBoolean b => ts.GetSystemBindings().Boolean,
                 XCDateTime b => ts.GetSystemBindings().DateTime,
                 XCGuid b => ts.GetSystemBindings().Guid,
-            };
+                };
         }
 
         public void Stage0(XCObjectTypeBase type, IAssemblyBuilder builder)
@@ -72,8 +72,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 if (prop.Types.Count > 1)
                 {
-                    dtoClass.DefineField(builder.TypeSystem.GetSystemBindings().Int, prop.Name + "_Type", true,
-                        false);
+                    dtoClass.DefinePropertyWithBackingField(builder.TypeSystem.GetSystemBindings().Int,
+                        prop.Name + "_Type");
                 }
 
                 foreach (var ctype in prop.Types)
@@ -81,7 +81,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     if (ctype is XCPremitiveType pt)
                     {
                         var propType = pt switch
-                        {
+                            {
                             XCBinary b => builder.TypeSystem.GetSystemBindings().Byte.MakeArrayType(),
                             XCInt b => builder.TypeSystem.GetSystemBindings().Int,
                             XCString b => builder.TypeSystem.GetSystemBindings().String,
@@ -89,17 +89,18 @@ namespace ZenPlatform.EntityComponent.Entity
                             XCBoolean b => builder.TypeSystem.GetSystemBindings().Boolean,
                             XCDateTime b => builder.TypeSystem.GetSystemBindings().DateTime,
                             XCGuid b => builder.TypeSystem.GetSystemBindings().Guid,
-                        };
+                            };
 
                         //var propType = builder.FindType(pt.CLRType.FullName);
-                        dtoClass.DefineField(propType, $"{prop.Name}_{pt.Name}", true, false);
+                        dtoClass.DefinePropertyWithBackingField(propType, $"{prop.Name}_{pt.Name}");
                     }
                     else if (ctype is XCObjectTypeBase ot)
                     {
                         if (!propertyGenerated)
                         {
                             propertyGenerated = true;
-                            dtoClass.DefineField(builder.TypeSystem.GetSystemBindings().Guid, prop.Name, true, false);
+                            dtoClass.DefinePropertyWithBackingField(builder.TypeSystem.GetSystemBindings().Guid,
+                                $"{prop.Name}_{ot.Name}");
                         }
                     }
                 }
@@ -133,18 +134,28 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var constructor = builder.DefineConstructor(false, dto);
 
-            constructor.Generator
+            var g = constructor.Generator
                 .LdArg_0()
                 .EmitCall(asmBuilder.TypeSystem.GetSystemBindings().Object.Constructors[0])
                 .LdArg_0()
                 .LdArg(1)
-                .StFld(dtoField)
-                .Ret();
+                .StFld(dtoField);
 
+            builder.AddSessionSupport(constructor);
+
+            g.Ret();
+
+            Stage2GeneragteProperties(set, dtoField, dto, builder, asmBuilder, platformTypes);
+        }
+
+
+        private void Stage2GeneragteProperties(XCSingleEntity set, IField dtoField, IType dto, ITypeBuilder builder,
+            IAssemblyBuilder asmBuilder, ImmutableDictionary<XCObjectTypeBase, IType> platformTypes)
+        {
             foreach (var prop in set.Properties)
             {
                 if (prop.Types.Count == 0)
-                    throw new Exception($"Panic: property {prop.Name} from type {type.Name} has no types!");
+                    throw new Exception($"Panic: property {prop.Name} from type {set.Name} has no types!");
 
                 if (prop.Types.Count == 1)
                 {
@@ -176,26 +187,27 @@ namespace ZenPlatform.EntityComponent.Entity
                         ILabel ni = gen.DefineLabel();
                         IType primitiveType = null;
 
-                        var typeField = dto.Fields.FirstOrDefault(x => x.Name == $"{prop.Name}_Type");
+                        var typeProp = dto.Properties.FirstOrDefault(x => x.Name == $"{prop.Name}_Type");
 
 
                         gen
                             .LdArg_0()
                             .LdFld(dtoField)
-                            .LdFld(typeField)
+                            .EmitCall(typeProp.Getter)
                             .LdcI4((int) propType.Id)
                             .BneUn(ni);
 
                         if (propType is XCPremitiveType)
                         {
-                            var dataField = dto.Fields.FirstOrDefault(x => x.Name == $"{prop.Name}_{propType.Name}") ??
-                                            throw new Exception("Field not found");
+                            var dataField =
+                                dto.Properties.FirstOrDefault(x => x.Name == $"{prop.Name}_{propType.Name}") ??
+                                throw new Exception("Field not found");
 
                             gen
                                 .LdArg_0()
                                 .LdFld(dtoField)
-                                .LdFld(dataField)
-                                .Box(dataField.FieldType)
+                                .EmitCall(dataField.Getter)
+                                .Box(dataField.PropertyType)
                                 .Ret();
                         }
                         else if (propType is XCObjectTypeBase ot)
@@ -252,6 +264,35 @@ namespace ZenPlatform.EntityComponent.Entity
                     //TODO: Сделать генерацию управляющего кода выбора типа свойства
                 }
             }
+        }
+
+
+        private void Stage2GenerageSaveMethod(XCSingleEntity set, ITypeBuilder builder, IType dto, IField dtoField)
+        {
+            var save = builder.DefineMethod("Save", true, false, false);
+        }
+    }
+
+
+    public static class GenHelper
+    {
+        public static void AddSessionSupport(this ITypeBuilder builder, IConstructorBuilder constructor)
+        {
+            var sessionType = builder.Assembly.TypeSystem.FindType<Session>();
+            var field = builder.DefineField(sessionType, "_session", false, false);
+            var param = constructor.DefineParameter(sessionType);
+
+            var g = constructor.Generator;
+
+            g
+                .LdArg_0()
+                .LdArg(param.ArgIndex)
+                .StFld(field);
+        }
+
+        public static IField GetSessionField(this IType type)
+        {
+            return type.FindField("_session");
         }
     }
 }

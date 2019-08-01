@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -224,18 +225,24 @@ namespace ZenPlatform.Compiler.Contracts
         public static IPropertyBuilder DefineProperty(this ITypeBuilder tb, IType type, string name,
             IField backingField)
         {
-            var getMethod = tb.DefineMethod($"{name}_get", false, false, false).WithReturnType(type);
+            var getMethod = tb.DefineMethod($"{name}_get", true, false, false).WithReturnType(type);
 
             getMethod.Generator
                 .LdArg_0()
                 .LdFld(backingField)
                 .Ret();
 
-            var setMethod = tb.DefineMethod($"{name}_set", false, false, false);
+            var setMethod = tb.DefineMethod($"{name}_set", true, false, false);
             setMethod.WithParameter("value", type, false, false);
-            setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField);
+            setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField).Ret();
 
             return tb.DefineProperty(type, name).WithGetter(getMethod).WithSetter(setMethod);
+        }
+
+        public static IPropertyBuilder DefinePropertyWithBackingField(this ITypeBuilder tb, IType type, string name)
+        {
+            var backingField = tb.DefineField(type, $"<{name}>k__BackingField", false, false);
+            return tb.DefineProperty(type, name, backingField);
         }
 
         public static ITypeBuilder DefineType(this IAssemblyBuilder ab, string @namespace, string name,

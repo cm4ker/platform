@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
-using CecilOpCode = dnlib.DotNet.Emit.OpCode;
-using CecilOpCodes = dnlib.DotNet.Emit.OpCodes;
-using CecilTypeAttr = dnlib.DotNet.TypeAttributes;
+using DblibOpCode = dnlib.DotNet.Emit.OpCode;
+using DnlibOpCodes = dnlib.DotNet.Emit.OpCodes;
+using DnlibTypeAttr = dnlib.DotNet.TypeAttributes;
 using SreOpCode = System.Reflection.Emit.OpCode;
 using SreOpCodes = System.Reflection.Emit.OpCodes;
 using SreTypeAttr = System.Reflection.TypeAttributes;
@@ -24,21 +24,21 @@ namespace ZenPlatform.Compiler.Dnlib
 
             {
                 var sre = (SreOpCode) sreField.GetValue(null);
-                var cecilField = typeof(CecilOpCodes).GetField(sreField.Name);
+                var cecilField = typeof(DnlibOpCodes).GetField(sreField.Name);
                 if (cecilField == null)
                     continue;
-                var cecil = (CecilOpCode) cecilField.GetValue(null);
+                var cecil = (DblibOpCode) cecilField.GetValue(null);
                 OpCodeDic[sre] = cecil;
             }
 
             var sreType = typeof(SreTypeAttr);
-            var cecilType = typeof(CecilTypeAttr);
+            var cecilType = typeof(DnlibTypeAttr);
 
             foreach (SreTypeAttr sEnumValue in sreType.GetEnumValues())
             {
                 var sName = sreType.GetEnumName(sEnumValue);
 
-                foreach (CecilTypeAttr cEnumValue in cecilType.GetEnumValues())
+                foreach (DnlibTypeAttr cEnumValue in cecilType.GetEnumValues())
                 {
                     try
                     {
@@ -56,11 +56,11 @@ namespace ZenPlatform.Compiler.Dnlib
             }
 
             //Custom
-            TypeAttrDic.Add(SreTypeAttr.NotPublic, CecilTypeAttr.NotPublic);
+            TypeAttrDic.Add(SreTypeAttr.NotPublic, DnlibTypeAttr.NotPublic);
         }
 
-        public static Dictionary<SreOpCode, CecilOpCode> OpCodeDic = new Dictionary<SreOpCode, CecilOpCode>();
-        public static Dictionary<SreTypeAttr, CecilTypeAttr> TypeAttrDic = new Dictionary<SreTypeAttr, CecilTypeAttr>();
+        public static Dictionary<SreOpCode, DblibOpCode> OpCodeDic = new Dictionary<SreOpCode, DblibOpCode>();
+        public static Dictionary<SreTypeAttr, DnlibTypeAttr> TypeAttrDic = new Dictionary<SreTypeAttr, DnlibTypeAttr>();
 
         static IEnumerable<Enum> GetFlags(Enum input)
         {
@@ -69,9 +69,9 @@ namespace ZenPlatform.Compiler.Dnlib
                     yield return value;
         }
 
-        public static CecilTypeAttr Convert(this SreTypeAttr val)
+        public static DnlibTypeAttr Convert(this SreTypeAttr val)
         {
-            CecilTypeAttr result = 0;
+            DnlibTypeAttr result = 0;
 
             foreach (var @enum in GetFlags(val))
             {

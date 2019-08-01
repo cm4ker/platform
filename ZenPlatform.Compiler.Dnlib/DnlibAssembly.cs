@@ -38,7 +38,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public void Write(string fileName)
         {
-            throw new NotImplementedException();
+            Assembly.Write(fileName);
         }
 
         public ITypeSystem TypeSystem { get; }
