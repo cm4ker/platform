@@ -233,7 +233,7 @@ namespace ZenPlatform.Compiler.Contracts
                 .Ret();
 
             var setMethod = tb.DefineMethod($"{name}_set", true, false, false);
-            setMethod.WithParameter("value", type, false, false);
+            setMethod.DefineParameter("value", type, false, false);
             setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField).Ret();
 
             return tb.DefineProperty(type, name).WithGetter(getMethod).WithSetter(setMethod);

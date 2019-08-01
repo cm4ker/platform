@@ -450,7 +450,7 @@ namespace ZenPlatform.Compiler.Generation
             {
                 foreach (var p in function.Parameters)
                 {
-                    var codeObj = method.WithParameter(p.Name, null, false, false);
+                    var codeObj = method.DefineParameter(p.Name, null, false, false);
                     function.Block.SymbolTable.ConnectCodeObject(p, codeObj);
                 }
             }

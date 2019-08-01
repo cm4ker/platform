@@ -29,6 +29,17 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return !Unique;
         }
+
+        public string GetFullPropertyName(XCTypeBase type)
+        {
+            if (Types.Count == 0) throw new InvalidOperationException();
+
+            if (type is null) return Name;
+
+            if (Types.Count == 1) return Name;
+
+            if (type is)
+        }
     }
 
     internal static class StandardEntityPropertyHelper

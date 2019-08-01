@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data.Common;
 using System.Linq;
+using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using dnlib.DotNet.Resources;
@@ -63,6 +65,13 @@ namespace ZenPlatform.EntityComponent.Entity
             //Create dto class
             var dtoClass = builder.DefineType(@namespace, dtoClassName,
                 TypeAttributes.Public | TypeAttributes.Class);
+
+            dtoClass.AddInterfaceImplementation(builder.TypeSystem.FindType<IMappedDto>());
+            var readerMethod = dtoClass.DefineMethod("Map", true, false, true);
+
+            var readerParam =
+                readerMethod.DefineParameter("reader", builder.TypeSystem.FindType<DbDataReader>(), false, false);
+
 
             _dtoCollections.Add(singleEntityType, dtoClass);
 
@@ -146,6 +155,11 @@ namespace ZenPlatform.EntityComponent.Entity
             g.Ret();
 
             Stage2GeneragteProperties(set, dtoField, dto, builder, asmBuilder, platformTypes);
+        }
+
+        public void Stage3(XCObjectTypeBase type, ITypeBuilder builder,
+            ImmutableDictionary<XCObjectTypeBase, IType> platformTypes, IAssemblyBuilder asmBuilderd)
+        {
         }
 
 
@@ -295,4 +309,25 @@ namespace ZenPlatform.EntityComponent.Entity
             return type.FindField("_session");
         }
     }
+
+    /*
+     * MAPPER
+     *
+     *  void Map(DbReader reader, _Invoice dto)
+     *  {
+     *     dto.FirstProp = reader["FirstProp"];
+     *     dto.SecondProp = reader["SecondProp"];
+     *
+     *     dto.ThirdProp = reader["ThirdProp"];
+     *
+     *  }
+     *
+     *  SQL_BUILDER
+     *
+     *  void BuildSql()
+     *  {
+     *     Select FisrtProp, SecondProp, ThirdProp from Tbl_231 WHERE Id = "1231234-2341-2341-3434-3123455612"; 
+     *  }
+     * 
+     */
 }
