@@ -28,105 +28,40 @@ type HelloWorld
 {
     int _someField;
 
-    public void PublicMethod()
+    public int PublicMethod(object arg)
     {
+        object a =  (2 + 2) * 3;
+        object b = ""Hello epta""; 
         
+        return (2 + 2) * 3 + 1;
     }
     
+    [ClientCall]
     void PrivateMethod()
     {
 
     }
 
-    public int Property {get { return 1; } set {_someField = value;}}
+    public int Property {get; set;}
 }
 
-module Test
-{    
-    double Inc(int a)
+module TestModule
+{
+    int Test()
     {
-        #if TEST
-        a++;
-        #else
-        a = a + 2;
-        #endif
-        return 0.0;
-    }
-
-    [ClientCall]
-    public int Add(int a, int b)
-    {
-        int c = 1;
-        try
-        {
-            c = c + 2;
-            //return a + b;
-        }
-        catch
-        {
-            c++;//return 0;
-        }
-        
-        int i = c + a;
-        
-        return i;
-    }
-
-    int Fibonachi(int n)
-    {
-        if(n == 0) return 0;
-        if(n == 1) return 1;
-
-        return Fibonachi(n-2) + Fibonachi(n-1);
-    }
-
-    double Average(int[] arr)
-    {
-        double result = 0.0;
-
-        for(int i = 0; i < arr.Length; i++)
-        {
-            result = result + (double)arr[i];
-        }  
-
-        result = result / (double)(arr.Length);
-        
-        return result;
-    }
-
-    int Sort(int[] arr)
-    {
-        int temp = 0;
-
-        for (int write = 0; write < arr.Length; write++) 
-        {
-            for (int sort = 0; sort < arr.Length - 1; sort++) 
-            {
-                if (arr[sort] > arr[sort + 1]) 
-                {
-                    temp = arr[sort + 1];
-                    arr[sort + 1] = arr[sort];
-                    arr[sort] = temp;
-                }
-            }
-        }
-        return 2 + 2 * 2;
-    }
-
-    void VoidFunction()
-    {
-        int a = 1;
+        string Privet = ""test"";
     }
 }
 ");
 
             CompilationBackend cb = new CompilationBackend();
             var b = cb.Compile(text);
+            
+            var path = "AsmPlatform.dll";
+            if (File.Exists(path))
+                File.Delete(path);
 
-            if (File.Exists("Debug.dll"))
-                File.Delete("Debug.dll");
-
-            b.Write("Debug.dll");
+            b.Write(path);
         }
     }
 }

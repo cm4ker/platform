@@ -32,11 +32,13 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         /// <summary>
         /// Тип базы данных
         /// </summary>
-        [XmlIgnore] public abstract DbType DBType { get; }
+        [XmlIgnore]
+        public abstract DbType DBType { get; }
 
         /// <summary>
         /// Соответствующий тип CLR
         /// </summary>
-        [XmlIgnore] public abstract Type CLRType { get; }
+        [XmlIgnore]
+        public abstract Type CLRType { get; }
     }
 }

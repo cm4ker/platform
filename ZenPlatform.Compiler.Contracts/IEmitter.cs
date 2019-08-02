@@ -33,6 +33,6 @@ namespace ZenPlatform.Compiler.Contracts
         bool InitLocals { get; set; }
 
         void InsertSequencePoint(IFileSource file, int line, int position);
-        SymbolTable SymbolTable { get; }
+        ISymbolTable SymbolTable { get; }
     }
 }

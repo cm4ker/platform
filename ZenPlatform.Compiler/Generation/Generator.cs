@@ -10,14 +10,16 @@ using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Expressions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
-using ZenPlatform.ServerClientShared.Network;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Infrastructure;
+using IMethodBuilder = ZenPlatform.Compiler.Contracts.IMethodBuilder;
 using SreTA = System.Reflection.TypeAttributes;
-
+using Class = ZenPlatform.Language.Ast.Definitions.Class;
+using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -39,9 +41,9 @@ namespace ZenPlatform.Compiler.Generation
             _ts = _asm.TypeSystem;
 
             _mode = parameters.Mode;
-            _bindings = new SystemTypeBindings(_ts);
+            _bindings = _ts.GetSystemBindings();
 
-            foreach (var typeEntity in _cu.TypeEntities)
+            foreach (var typeEntity in _cu.Entityes)
             {
                 switch (typeEntity)
                 {
@@ -52,7 +54,7 @@ namespace ZenPlatform.Compiler.Generation
                         EmitClass(c);
                         break;
                     default:
-                        throw new Exception("The type entity not supproted");
+                        throw new Exception("The type entity not supported");
                 }
             }
         }
@@ -97,110 +99,121 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitExpression(IEmitter e, Expression expression, SymbolTable symbolTable)
         {
-            if (expression is BinaryExpression)
+            if (expression is BinaryExpression be)
             {
                 EmitExpression(e, ((BinaryExpression) expression).Left, symbolTable);
                 EmitExpression(e, ((BinaryExpression) expression).Right, symbolTable);
 
-                switch (((BinaryExpression) expression).BinaryOperatorType)
-                {
-                    case BinaryOperatorType.Add:
-                        e.Add();
-                        break;
-                    case BinaryOperatorType.Subtract:
-                        e.Sub();
-                        break;
-                    case BinaryOperatorType.Multiply:
-                        e.Mul();
-                        break;
-                    case BinaryOperatorType.Divide:
-                        e.Div();
-                        break;
-                    case BinaryOperatorType.Modulo:
-                        e.Rem();
-                        break;
-                    case BinaryOperatorType.Equal:
-                        e.Ceq();
-                        break;
-                    case BinaryOperatorType.NotEqual:
-                        e.NotEqual();
-                        break;
-                    case BinaryOperatorType.GreaterThen:
-                        e.Cgt();
-                        break;
-                    case BinaryOperatorType.LessThen:
-                        e.Clt();
-                        break;
-                    case BinaryOperatorType.GraterOrEqualTo:
-                        e.GreaterOrEqual();
-                        break;
-                    case BinaryOperatorType.LessOrEqualTo:
-                        e.LessOrEqual();
-                        break;
-                    case BinaryOperatorType.And:
-                        e.Add();
-                        break;
-                    case BinaryOperatorType.Or:
-                        e.Or();
-                        break;
-                }
+                if (be.Type.IsNumeric())
+                    switch (be.BinaryOperatorType)
+                    {
+                        case BinaryOperatorType.Add:
+                            e.Add();
+                            break;
+                        case BinaryOperatorType.Subtract:
+                            e.Sub();
+                            break;
+                        case BinaryOperatorType.Multiply:
+                            e.Mul();
+                            break;
+                        case BinaryOperatorType.Divide:
+                            e.Div();
+                            break;
+                        case BinaryOperatorType.Modulo:
+                            e.Rem();
+                            break;
+                        case BinaryOperatorType.Equal:
+                            e.Ceq();
+                            break;
+                        case BinaryOperatorType.NotEqual:
+                            e.NotEqual();
+                            break;
+                        case BinaryOperatorType.GreaterThen:
+                            e.Cgt();
+                            break;
+                        case BinaryOperatorType.LessThen:
+                            e.Clt();
+                            break;
+                        case BinaryOperatorType.GraterOrEqualTo:
+                            e.GreaterOrEqual();
+                            break;
+                        case BinaryOperatorType.LessOrEqualTo:
+                            e.LessOrEqual();
+                            break;
+                        case BinaryOperatorType.And:
+                            e.Add();
+                            break;
+                        case BinaryOperatorType.Or:
+                            e.Or();
+                            break;
+                    }
+
+                if (be.Type.IsString())
+                    switch (be.BinaryOperatorType)
+                    {
+                        case BinaryOperatorType.Add:
+                            e.EmitCall(_bindings.Methods.Concat);
+                            //e.EmitCall(_bindings.String.FindMethod(x => x.Name == "Concat" && x.Parameters.Count == 2));
+                            break;
+                        default: throw new NotSupportedException();
+                    }
             }
             else if (expression is UnaryExpression ue)
             {
                 if (ue is IndexerExpression ie)
                 {
-                    EmitExpression(e, ie.Value, symbolTable);
+                    EmitExpression(e, ie.Expression, symbolTable);
                     EmitExpression(e, ie.Indexer, symbolTable);
                     e.LdElemI4();
                 }
 
                 if (ue is LogicalOrArithmeticExpression lae)
 
-                    switch (lae.Type)
+                    switch (lae.OperaotrType)
                     {
                         case UnaryOperatorType.Indexer:
 
                             break;
                         case UnaryOperatorType.Negative:
-                            EmitExpression(e, lae.Value, symbolTable);
+                            EmitExpression(e, lae.Expression, symbolTable);
                             e.Neg();
                             break;
                         case UnaryOperatorType.Not:
-                            EmitExpression(e, lae.Value, symbolTable);
+                            EmitExpression(e, lae.Expression, symbolTable);
                             e.Not();
                             break;
                     }
 
                 if (ue is CastExpression ce)
                 {
-                    EmitExpression(e, ce.Value, symbolTable);
+                    EmitExpression(e, ce.Expression, symbolTable);
                     EmitConvert(e, ce, symbolTable);
                 }
             }
             else if (expression is Literal literal)
             {
-                switch (literal.Type.Type.Name)
+                switch (literal.Type.Kind)
                 {
-                    case "Int32":
+                    case TypeNodeKind.Int:
                         e.LdcI4(Int32.Parse(literal.Value));
                         break;
-                    case "String":
+                    case TypeNodeKind.String:
                         e.LdStr(literal.Value);
                         break;
-                    case "Double":
+                    case TypeNodeKind.Double:
                         e.LdcR8(double.Parse(literal.Value, CultureInfo.InvariantCulture));
                         break;
-                    case "Char":
+                    case TypeNodeKind.Char:
                         e.LdcI4(char.ConvertToUtf32(literal.Value, 0));
                         break;
-                    case "Boolean":
+                    case TypeNodeKind.Boolean:
                         e.LdcI4(bool.Parse(literal.Value) ? 1 : 0);
                         break;
                 }
             }
             else if (expression is Name name)
             {
-                Symbol variable = symbolTable.Find(name.Value, SymbolType.Variable);
+                var variable = symbolTable.Find(name.Value, SymbolType.Variable);
 
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
@@ -210,13 +223,29 @@ namespace ZenPlatform.Compiler.Generation
                         name.Type = tn.Type;
 
                 if (variable.CodeObject is ILocal vd)
-                    e.LdLoc(vd);
+                {
+                    if (name.Type is UnionTypeSyntax)
+                    {
+                        e.LdLocA(vd);
+                        e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
+                    }
+                    else
+                        e.LdLoc(vd);
+                }
                 else if (variable.CodeObject is IField fd)
                     e.LdsFld(fd);
                 else if (variable.CodeObject is IParameter pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
-                    e.LdArg(pd.ArgIndex);
+
+                    if (name.Type is UnionTypeSyntax)
+                    {
+                        e.LdArgA(pd);
+                        e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
+                    }
+                    else
+                        e.LdArg(pd.ArgIndex);
+
                     if (p.PassMethod == PassMethod.ByReference)
                         e.LdIndI4();
                 }
@@ -228,10 +257,64 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is FieldExpression fe)
             {
                 EmitExpression(e, fe.Expression, symbolTable);
-                var expType = fe.Expression.Type.Type;
-                var expProp = expType.Properties.First(x => x.Name == fe.Name);
-                fe.Type = new TypeNode(null, expProp.PropertyType);
+                var expType = fe.Expression.Type;
+
+                IType extTypeScan = null;
+
+                var expProp = extTypeScan.Properties.First(x => x.Name == fe.FieldName);
+                fe.Type = new SingleTypeSyntax(null, expProp.PropertyType.Name, TypeNodeKind.Unknown);
+
                 e.PropGetValue(expProp);
+            }
+            else if (expression is PostIncrementExpression pis)
+            {
+                var symbol = symbolTable.Find(pis.Name.Value, SymbolType.Variable) ??
+                             throw new Exception($"Variable {pis.Name} not found");
+
+                IType opType = null;
+//                if (symbol.SyntaxObject is Parameter p)
+//                    opType = p.Type.Type;
+//                else if (symbol.SyntaxObject is Variable v)
+//                    opType = v.Type.Type;
+
+
+                EmitExpression(e, pis.Name, symbolTable);
+
+                EmitIncrement(e, opType);
+                e.Add();
+
+                if (symbol.CodeObject is IParameter pd)
+                    e.StArg(pd);
+
+                if (symbol.CodeObject is ILocal vd)
+                    e.StLoc(vd);
+            }
+            else if (expression is PostDecrementExpression pds)
+            {
+                var symbol = symbolTable.Find(pds.Name.Value, SymbolType.Variable) ??
+                             throw new Exception($"Variable {pds.Name} not found");
+
+                IType opType = null;
+//                if (symbol.SyntaxObject is Parameter p)
+//                    opType = p.Type.Type;
+//                else if (symbol.SyntaxObject is Variable v)
+//                    opType = v.Type.Type;
+
+
+                EmitExpression(e, pds.Name, symbolTable);
+
+                EmitDecrement(e, opType);
+                e.Add();
+
+                if (symbol.CodeObject is IParameter pd)
+                    e.StArg(pd);
+
+                if (symbol.CodeObject is ILocal vd)
+                    e.StLoc(vd);
+            }
+            else if (expression is Variable variable)
+            {
+                EmitVariable(e, symbolTable, variable);
             }
         }
 
@@ -263,7 +346,7 @@ namespace ZenPlatform.Compiler.Generation
                     Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
 
                     var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
-                        .WithReturnType(function.Type.Type);
+                        .WithReturnType(function.Type.ToClrType(_asm));
 
                     result.Add((function, method));
 
@@ -273,88 +356,88 @@ namespace ZenPlatform.Compiler.Generation
                 }
             }
 
-            if (isClass)
-            {
-                foreach (var field in typeBody.Fields)
-                {
-                    var fieldCodeObj = tb.DefineField(field.Type.Type, field.Name, false, false);
-                    typeBody.SymbolTable.ConnectCodeObject(field, fieldCodeObj);
-                }
-
-                foreach (var property in typeBody.Properties)
-                {
-                    var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
-
-                    IField backField = null;
-
-                    if (property.Setter == null && property.Getter == null)
-                    {
-                        backField = tb.DefineField(property.Type.Type, $"{property.Name}_____backingField", false,
-                            false);
-                    }
-
-                    var getMethod = tb.DefineMethod($"get__{property.Name}", true, false, false);
-                    var setMethod = tb.DefineMethod($"set__{property.Name}", true, false, false);
-
-                    setMethod.WithReturnType(_bindings.Void);
-                    var valueArg = setMethod.WithParameter("value", property.Type.Type, false, false);
-
-                    getMethod.WithReturnType(property.Type.Type);
-
-                    if (property.Getter != null)
-                    {
-                        IEmitter emitter = getMethod.Generator;
-                        emitter.InitLocals = true;
-
-                        ILocal resultVar = null;
-
-                        resultVar = emitter.DefineLocal(property.Type.Type);
-
-                        var returnLabel = emitter.DefineLabel();
-                        EmitBody(emitter, property.Getter, returnLabel, resultVar);
-
-                        emitter.MarkLabel(returnLabel);
-
-                        if (resultVar != null)
-                            emitter.LdLoc(resultVar);
-
-                        emitter.Ret();
-                    }
-                    else
-                    {
-                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
-                    }
-
-                    if (property.Setter != null)
-                    {
-                        IEmitter emitter = setMethod.Generator;
-                        emitter.InitLocals = true;
-
-                        ILocal resultVar = null;
-
-                        resultVar = emitter.DefineLocal(property.Type.Type);
-
-                        var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable);
-                        valueSym.CodeObject = valueArg;
-
-                        var returnLabel = emitter.DefineLabel();
-                        EmitBody(emitter, property.Setter, returnLabel, resultVar);
-
-                        emitter.MarkLabel(returnLabel);
-                        emitter.Ret();
-                    }
-                    else
-                    {
-                        if (backField != null)
-                            setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
-                        else
-                            setMethod.Generator.Ret();
-                    }
-
-
-                    propBuilder.WithGetter(getMethod).WithSetter(setMethod);
-                }
-            }
+//            if (isClass)
+//            {
+//                foreach (var field in typeBody.Fields)
+//                {
+//                    var fieldCodeObj = tb.DefineField(field.Type.Type, field.Name, false, false);
+//                    typeBody.SymbolTable.ConnectCodeObject(field, fieldCodeObj);
+//                }
+//
+//                foreach (var property in typeBody.Properties)
+//                {
+//                    var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
+//
+//                    IField backField = null;
+//
+//                    if (property.Setter == null && property.Getter == null)
+//                    {
+//                        backField = tb.DefineField(property.Type.Type, $"{property.Name}_backingField", false,
+//                            false);
+//                    }
+//
+//                    var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
+//                    var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
+//
+//                    setMethod.WithReturnType(_bindings.Void);
+//                    var valueArg = setMethod.WithParameter("value", property.Type.Type, false, false);
+//
+//                    getMethod.WithReturnType(property.Type.Type);
+//
+//                    if (property.Getter != null)
+//                    {
+//                        IEmitter emitter = getMethod.Generator;
+//                        emitter.InitLocals = true;
+//
+//                        ILocal resultVar = null;
+//
+//                        resultVar = emitter.DefineLocal(property.Type.Type);
+//
+//                        var returnLabel = emitter.DefineLabel();
+//                        EmitBody(emitter, property.Getter, returnLabel, ref resultVar);
+//
+//                        emitter.MarkLabel(returnLabel);
+//
+//                        if (resultVar != null)
+//                            emitter.LdLoc(resultVar);
+//
+//                        emitter.Ret();
+//                    }
+//                    else
+//                    {
+//                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
+//                    }
+//
+//                    if (property.Setter != null)
+//                    {
+//                        IEmitter emitter = setMethod.Generator;
+//                        emitter.InitLocals = true;
+//
+//                        ILocal resultVar = null;
+//
+//                        resultVar = emitter.DefineLocal(property.Type.Type);
+//
+//                        var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable);
+//                        valueSym.CodeObject = valueArg;
+//
+//                        var returnLabel = emitter.DefineLabel();
+//                        EmitBody(emitter, property.Setter, returnLabel, ref resultVar);
+//
+//                        emitter.MarkLabel(returnLabel);
+//                        emitter.Ret();
+//                    }
+//                    else
+//                    {
+//                        if (backField != null)
+//                            setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
+//                        else
+//                            setMethod.Generator.Ret();
+//                    }
+//
+//
+//                    propBuilder.WithGetter(getMethod).WithSetter(setMethod);
+//                }
+//            }
 
             return result;
         }
@@ -367,8 +450,8 @@ namespace ZenPlatform.Compiler.Generation
             {
                 foreach (var p in function.Parameters)
                 {
-                    var codeObj = method.WithParameter(p.Name, p.Type.Type, false, false);
-                    function.InstructionsBody.SymbolTable.ConnectCodeObject(p, codeObj);
+                    var codeObj = method.DefineParameter(p.Name, null, false, false);
+                    function.Block.SymbolTable.ConnectCodeObject(p, codeObj);
                 }
             }
 
@@ -376,131 +459,6 @@ namespace ZenPlatform.Compiler.Generation
 
             EmitFunction(function);
             return method;
-        }
-
-        private void EmitRemoteCall(Function function)
-        {
-            IEmitter emitter = function.Builder;
-            var type = _bindings.ClientType();
-            var client = emitter.DefineLocal(type);
-            emitter.PropGetValue(_bindings.AIClient());
-            emitter.StLoc(client);
-
-            var route = _ts.FindType($"{typeof(Route).Namespace}.{nameof(Route)}",
-                typeof(Route).Assembly.GetName().FullName);
-
-            var method = _bindings.ClientInvoke(new[]
-                {_bindings.Object.MakeArrayType(), function.Type.Type});
-
-            emitter.LdLoc(client);
-
-            //First parameter
-            emitter.LdStr($"{function.GetParent<TypeEntity>().Name}.{function.Name}");
-            emitter.Newobj(route.Constructors.First());
-
-            //Second parameter
-            emitter.LdcI4(function.Parameters.Count);
-            emitter.NewArr(_bindings.Object);
-            foreach (var p in function.Parameters)
-            {
-                emitter.Dup();
-                var iArg = function.Parameters.IndexOf(p);
-                emitter.LdcI4(iArg);
-                emitter.LdArg(iArg);
-                emitter.Box(p.Type.Type);
-                emitter.StElemRef();
-            }
-
-            emitter.EmitCall(method);
-            //            emitter.LdcI4(0);
-            //            emitter.LdElemI4();
-
-            if (!function.Type.Type.Equals(_bindings.Void))
-                emitter.Ret();
-        }
-
-        private void EmitFunction(Function function)
-        {
-            if (function == null)
-                throw new ArgumentNullException();
-            if (function.Flags == FunctionFlags.ServerClientCall)
-            {
-                EmitRemoteCall(function);
-                return;
-            }
-
-            IEmitter emitter = function.Builder;
-            emitter.InitLocals = true;
-
-            ILocal resultVar = null;
-            if (!function.Type.Type.Equals(_bindings.Void))
-                resultVar = emitter.DefineLocal(function.Type.Type);
-            var returnLabel = emitter.DefineLabel();
-            EmitBody(emitter, function.InstructionsBody, returnLabel, resultVar);
-            emitter.MarkLabel(returnLabel);
-            if (resultVar != null)
-                emitter.LdLoc(resultVar);
-
-            emitter.Ret();
-        }
-
-        private void EmitConvert(IEmitter e, CastExpression expression, SymbolTable symbolTable)
-        {
-            if (expression.Value is Name name)
-            {
-                Symbol variable = symbolTable.Find(name.Value, SymbolType.Variable);
-                if (variable == null)
-                    Error("Assignment variable " + name.Value + " unknown.");
-
-                if (variable.SyntaxObject is Variable v)
-                    expression.Value.Type = v.Type;
-                else if (variable.SyntaxObject is Parameter p)
-                    expression.Value.Type = p.Type;
-            }
-
-            var valueType = expression.Value.Type.Type;
-            if (expression.Value is IndexerExpression && valueType.IsArray)
-            {
-                valueType = valueType.ArrayElementType;
-            }
-
-            var convertType = expression.Type.Type;
-            if (valueType is null || (valueType.IsValueType && convertType.IsValueType))
-            {
-                EmitConvCode(e, convertType);
-            }
-        }
-
-        private void EmitConvCode(IEmitter e, IType type)
-        {
-            if (type.Equals(_bindings.Int))
-                e.ConvI4();
-            else if (type.Equals(_bindings.Double))
-                e.ConvR8();
-            else if (type.Equals(_bindings.Char))
-                e.ConvU2();
-            else
-                throw new Exception("Converting to this value not supported");
-        }
-
-        private void EmitIncrement(IEmitter e, IType type)
-        {
-            EmitAddValue(e, type, 1);
-        }
-
-        private void EmitDecrement(IEmitter e, IType type)
-        {
-            EmitAddValue(e, type, -1);
-        }
-
-        private void EmitAddValue(IEmitter e, IType type, int value)
-        {
-            if (type.Equals(_bindings.Int))
-                e.LdcI4(value);
-            else if (type.Equals(_bindings.Double))
-                e.LdcR8(value);
-            else if (type.Equals(_bindings.Char))
-                e.LdcI4(value);
         }
     }
 }

@@ -1,25 +1,34 @@
 using System;
+using System.Runtime.CompilerServices;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Language.Ast.AST.Definitions;
-using ZenPlatform.Language.Ast.AST.Definitions.Functions;
-using ZenPlatform.Language.Ast.AST.Definitions.Statements;
-using ZenPlatform.Language.Ast.AST.Infrastructure;
+using ZenPlatform.Language.Ast;
+using ZenPlatform.Language.Ast.AST;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
+using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Compiler.Visitor
 {
-    public class AstSymbolVisitor : AstVisitorBase
+    public class AstSymbolPreparator : AstWalker<object>
     {
-        public override void VisitExpression(Expression e)
+        public static void Prepare(SyntaxNode node)
+        {
+            var p = new AstSymbolPreparator();
+            p.Visit(node);
+        }
+
+        private AstSymbolPreparator()
         {
         }
 
-        public override void VisitVariable(Variable obj)
+        public override object VisitVariable(Variable obj)
         {
-            var ibn = obj.GetParent<InstructionsBodyNode>();
+            var ibn = obj.FirstParent<IScoped>();
             if (ibn != null)
             {
                 ibn.SymbolTable.Add(obj);
@@ -28,21 +37,35 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 throw new Exception($"Invalid register variable in scope {obj.Name}");
             }
+
+            return null;
         }
 
-        public override void VisitParameter(Parameter obj)
+        public override object VisitParameter(Parameter obj)
         {
             if (obj.Parent is Function f)
             {
-                f.InstructionsBody.SymbolTable.Add(obj);
+                f.Block.SymbolTable.Add(obj);
             }
             else
             {
                 throw new Exception("Invalid register parameter in scope");
             }
+
+            return null;
         }
 
-        public override void VisitField(Field obj)
+        public override object VisitName(Name obj)
+        {
+            var v = obj.FirstParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable);
+
+            if (v?.SyntaxObject is Variable vv) obj.Type = vv.Type;
+            if (v?.SyntaxObject is Parameter p) obj.Type = p.Type;
+
+            return null;
+        }
+
+        public override object VisitField(Field obj)
         {
             if (obj.Parent is TypeBody f)
             {
@@ -52,24 +75,44 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 throw new Exception("Invalid register field in scope");
             }
+
+            return null;
         }
 
-        public override void VisitTypeBody(TypeBody obj)
+        public override object VisitTypeBody(TypeBody obj)
         {
+            var st = obj.FirstParent<IScoped>()?.SymbolTable;
+
             if (obj.SymbolTable == null)
-                obj.SymbolTable = new SymbolTable();
+                obj.SymbolTable = new SymbolTable(st);
 
             obj.SymbolTable.Clear();
+            return base.VisitTypeBody(obj);
         }
 
-        public override void VisitFunction(Function obj)
+        public override object VisitModule(Module obj)
+        {
+            var st = obj.FirstParent<IScoped>()?.SymbolTable;
+            st?.Add(obj);
+
+            return base.VisitModule(obj);
+        }
+
+        public override object VisitClass(Class obj)
+        {
+            var st = obj.FirstParent<IScoped>().SymbolTable;
+            st.Add(obj);
+            return base.VisitClass(obj);
+        }
+
+        public override object VisitFunction(Function obj)
         {
             if (obj.Parent is TypeBody te)
             {
-                if (obj.InstructionsBody.SymbolTable == null)
-                    obj.InstructionsBody.SymbolTable = new SymbolTable(te.SymbolTable);
+                if (obj.Block.SymbolTable == null)
+                    obj.Block.SymbolTable = new SymbolTable(te.SymbolTable);
 
-                obj.InstructionsBody.SymbolTable.Clear();
+                obj.Block.SymbolTable.Clear();
 
                 te.SymbolTable.Add(obj);
             }
@@ -77,48 +120,58 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 throw new Exception("Invalid register function in scope");
             }
+
+            return base.VisitFunction(obj);
         }
 
-        public override void VisitProperty(Property obj)
+        public override object VisitProperty(Property obj)
         {
+            if (obj.Setter == null) return null;
             if (obj.Setter.SymbolTable == null)
             {
-                var parent = obj.GetParent<TypeBody>().SymbolTable;
+                var parent = obj.FirstParent<TypeBody>().SymbolTable;
                 obj.Setter.SymbolTable = new SymbolTable(parent);
             }
 
             obj.Setter.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByValue));
+            return null;
         }
 
-        public override void VisitFor(For obj)
+        public override object VisitFor(For obj)
         {
-            if (obj.InstructionsBody.SymbolTable == null)
+            if (obj.Block.SymbolTable == null)
             {
-                var parent = obj.GetParent<InstructionsBodyNode>();
+                var parent = obj.FirstParent<Block>();
                 if (parent != null)
-                    obj.InstructionsBody.SymbolTable = new SymbolTable(parent.SymbolTable);
+                    obj.Block.SymbolTable = new SymbolTable(parent.SymbolTable);
             }
+
+            return null;
         }
 
-        public override void VisitType(TypeNode obj)
-        {
-            if (obj.Type is UnknownArrayType)
-            {
-                obj.SetType(obj.Type.ArrayElementType.MakeArrayType());
-            }
-        }
-
-        public override void VisitTry(Try obj)
+        public override object VisitTry(Try obj)
         {
             if (obj.TryBlock.SymbolTable == null)
             {
-                var parent = obj.GetParent<InstructionsBodyNode>();
+                var parent = obj.FirstParent<Block>();
 
                 if (obj.TryBlock != null)
                     obj.TryBlock.SymbolTable = new SymbolTable(parent.SymbolTable);
                 if (obj.CatchBlock != null)
                     obj.CatchBlock.SymbolTable = new SymbolTable(parent.SymbolTable);
             }
+
+            return null;
+        }
+
+        public override object VisitRoot(Root root)
+        {
+            if (root.SymbolTable == null)
+            {
+                root.SymbolTable = new SymbolTable();
+            }
+
+            return base.VisitRoot(root);
         }
     }
 }

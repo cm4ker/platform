@@ -129,5 +129,85 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
          *      В таком случае на каждый тип отводится своя колонка. Биндинг должен осуществляться таким
          *      не хитрым мапированием: Свойство, Тип -> Колонка
          */
+
+        public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName)
+        {
+            var done = false;
+
+            if (Types.Count == 1)
+                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, Types[0], propName);
+            if (Types.Count > 1)
+            {
+                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, null, $"{propName}_Type");
+
+                foreach (var type in _types)
+                {
+                    if (type is XCPremitiveType)
+                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
+                            $"{propName}_{type.Name}");
+
+                    if (type is XCObjectTypeBase && !done)
+                    {
+                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, type, $"{propName}_Ref");
+                        done = true;
+                    }
+                }
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Описывает тип и название колонки
+    /// </summary>
+    public struct XCColumnSchemaDefinition
+    {
+        public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, XCTypeBase platformType, string name)
+        {
+            SchemaType = schemaType;
+            Name = name;
+            PlatformType = platformType;
+        }
+
+        /// <summary>
+        /// Тип колонки
+        /// </summary>
+        public XCColumnSchemaType SchemaType { get; set; }
+
+        /// <summary>
+        /// Название
+        /// </summary>
+        public string Name { get; set; }
+
+
+        public XCTypeBase PlatformType { get; set; }
+    }
+
+    /// <summary>
+    /// Детерминированный тип колонки реквизита конфигурации
+    /// Реквизит может быть нескольких типов одновременно
+    /// Это перечисление представляет все типы колонок которые могут быть 
+    /// </summary>
+    public enum XCColumnSchemaType
+    {
+        /// <summary>
+        /// Не специализированная колонка. Говорит о том, что значение одно
+        /// </summary>
+        NoSpecial,
+
+        /// <summary>
+        /// Колонка значения (строка, число, дата и т.д.)
+        /// </summary>
+        Value,
+
+        /// <summary>
+        /// Колонка ссылки
+        /// </summary>
+        Ref,
+
+        /// <summary>
+        /// Колонка хранящая тип
+        /// </summary>
+        Type
     }
 }
