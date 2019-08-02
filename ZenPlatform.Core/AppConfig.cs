@@ -14,12 +14,13 @@ namespace ZenPlatform.Core
     public enum ListenerType
     {
         User,
-        Admin
+        Admin,
+        Test
     }
 
     public class AccessPointConfig
     {
-        public List<ListenerConfig> Listeners { get; set; }
+        public List<ListenerConfig> Listener { get; set; }
     }
     
     public class ListenerConfig

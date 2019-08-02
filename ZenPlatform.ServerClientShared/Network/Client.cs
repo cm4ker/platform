@@ -8,18 +8,17 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
-using ZenPlatform.ServerClientShared.Logging;
+using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Tools;
 
-namespace ZenPlatform.ServerClientShared.Network
+namespace ZenPlatform.Core.Network
 {
-    public class Client: IDisposable, IConnection, IObserver<INetworkMessage>
+    public class Client: IConnectionObserver<IConnectionContext>
     {
-        private Channel _channel;
-        private readonly IMessagePackager _packager;
         private ConcurrentDictionary<Guid, Action<INetworkMessage>> _resultCallbacks;
         private readonly ILogger _logger;
         private TcpClient _tcpClient;
-        private IDisposable _remover;
+        private ClientConnection _connection;
         private IDisposable _unsubscriber;
 
         public string Database { get; private set; }
@@ -28,50 +27,34 @@ namespace ZenPlatform.ServerClientShared.Network
 
         public ConnectionInfo Info => throw new NotImplementedException();
 
-        public bool Opened { get; private set; }
+        public bool Connected { get; private set; }
 
-        public Client( IMessagePackager packager, ILogger<Client> logger)
+        public Client(ILogger<Client> logger)
+
         {
             
-            _packager = packager;
             _logger = logger;
             _resultCallbacks = new ConcurrentDictionary<Guid, Action<INetworkMessage>>();
-            _channel = new Channel(_packager, new SimpleConsoleLogger<Channel>());
 
         }
 
-        public void Open(TcpClient client)
-        {
-            
-            try
-            {
-               
-                _tcpClient = client;
-                _unsubscriber = _channel.Subscribe(this);
-                _channel.Start(this);
-                Opened = true;
-            }
-            catch (SocketException socketException)
-            {
-                Opened = false;
-
-                _logger.Error(socketException, "Connection error: ");
-
-            }
-        }
-
-        public void Open(IPEndPoint endPoint)
+        public void Connect(IPEndPoint endPoint)
         {
             _logger.Info("Connect to {0}", endPoint.Address.ToString());
             try
             {
                 var tcpClient = new TcpClient();
                 tcpClient.Connect(endPoint);
-                Open(tcpClient);
+                _connection = new ClientConnection(new SimpleConsoleLogger<ClientConnection>(), 
+                    tcpClient, new ClientChannelFactory());
+                _unsubscriber = _connection.Subscribe(this);
+                _connection.Open();
+
+                Connected = true;
             }
             catch (SocketException socketException)
             {
-                Opened = false;
+                Connected = false;
 
                 _logger.Error(socketException, "Connection error: ");
 
@@ -84,54 +67,53 @@ namespace ZenPlatform.ServerClientShared.Network
         {
             AutoResetEvent restEvent = new AutoResetEvent(false);
             _resultCallbacks.TryAdd(message.Id, (m) => { CallBack(m); _resultCallbacks.TryRemove(message.Id, out _); restEvent.Set(); }) ;
-            _channel.Send(message);
+            _connection.Channel.Send(message);
 
             return restEvent;
 
 
         }
 
-        public void Authentication(IAuthenticationToken token)
+        public bool Authentication(IAuthenticationToken token)
         {
             var req = new RequestAuthenticationNetworkMessage(token);
+
             var wait = RequestAsync(req, msg =>
             {
                 switch (msg)
                 {
                     case ResponceAuthenticationNetworkMessage res:
                         Authenticated = true;
+
                         break;
                     case ErrorNetworkMessage res:
                         Authenticated = false;
+
                         break;
                 }
                 
             });
             wait.WaitOne();
+            return Authenticated;
         }
 
-
-        public async Task<TResponce> InvokeAsync<TResponce>(Route route, params object[] args)
-        {
-            return await InvokeAsync<object[], TResponce> (route, args);
-        }
 
         public Stream InvokeStream(Route route, params object[] args)
         {
-            if (!Opened && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
+            if (!Connected && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
 
             var message = new StartInvokeStreamNetworkMessage(route, args);
-            var stream = new DataStream(message.Id, _channel);
+            var stream = new DataStream(message.Id, _connection);
 
-            _channel.Send(message);
+            _connection.Channel.Send(message);
 
             return stream;
         }
 
-        public void Use(string name)
+        public bool Use(string name)
         {
-            if (!Opened) throw new NotSupportedException("Client is disconnected.");
-            if (IsUse) return;
+            if (!Connected) throw new NotSupportedException("Client is disconnected.");
+            if (IsUse) return IsUse; //todo
 
             var req = new RequestEnvironmentUseNetworkMessage(name);
             var wait = RequestAsync(req, msg =>
@@ -141,24 +123,25 @@ namespace ZenPlatform.ServerClientShared.Network
                      case ResponceEnvironmentUseNetworkMessage res:
                          IsUse = true;
                          Database = res.Name;
+ 
                          break;
                      case ErrorNetworkMessage res:
-
+                         IsUse = false;
                          break;
                  }
              });
             wait.WaitOne();
-            
+            return IsUse;
         }
 
-        public TResponce Invoke<TRequest, TResponce>(Route route, TRequest request)
+        public TResponce Invoke<TResponce>(Route route, params object[] args)
         {
-            if (!Opened && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
+            if (!Connected && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
             if (!IsUse) throw new NotSupportedException("First need to choose a database. Need call method Use.");
 
             TResponce responce = default;
             Exception exception = null;
-            var message = new RequestInvokeUnaryNetworkMessage(route, request);
+            var message = new RequestInvokeUnaryNetworkMessage(route, args);
 
             AutoResetEvent restEvent = new AutoResetEvent(false);
 
@@ -190,41 +173,47 @@ namespace ZenPlatform.ServerClientShared.Network
 
         }
 
-        public async Task<TResponce> InvokeAsync<TRequest, TResponce>(Route route, TRequest request)
+        public async Task<TResponce> InvokeAsync<TResponce>(Route route, params object[] args)
         {
 
-            return await Task.Factory.StartNew(() => Invoke<TRequest, TResponce>(route, request)
+            return await Task.Factory.StartNew(() => Invoke<TResponce>(route, args)
             , TaskCreationOptions.LongRunning);
         }
 
 
-        public void Dispose()
+        public void Close()
+        {
+            if (Connected)
+            {
+                _logger.Info("Close connection.");
+
+                _unsubscriber?.Dispose();
+                Connected = false;
+                _connection?.Close();
+            }
+        }
+        public T GetService<T>()
+        {
+            var factory = new NetworkProxyFactory();
+
+            return factory.Create<T>(_connection);
+        }
+
+
+        public void OnCompleted(IConnectionContext sender)
         {
             Close();
         }
 
-        
-
-        public void SetRemover(IDisposable remover)
+        public void OnError(IConnectionContext sender, Exception error)
         {
-            _remover = remover;
-        }
-
-        public void OnCompleted()
-        {
-            //throw new NotImplementedException();
-        }
-
-        public void OnError(Exception error)
-        {
-            _logger.Error(error, "Channal error: ");
             Close();
         }
 
-        public void OnNext(INetworkMessage value)
+        public void OnNext(IConnectionContext context, INetworkMessage value)
         {
             if (value is ErrorNetworkMessage error)
-                _logger.Debug( "Error message: ", error.Exception);
+                _logger.Debug("Error message: ", error.Exception);
 
             if (_resultCallbacks.ContainsKey(value.RequestId))
             {
@@ -232,30 +221,9 @@ namespace ZenPlatform.ServerClientShared.Network
             }
         }
 
-        public void Close()
+        public bool CanObserve(Type type)
         {
-            if (Opened)
-            {
-                _logger.Info("Close connection.");
-
-                
-                Opened = false;
-                _channel.Stop();
-                if (_tcpClient?.Connected == true)
-                {
-                    _tcpClient.GetStream().Close();
-
-                    _tcpClient.Close();
-                }
-                _tcpClient?.Dispose();
-                _remover?.Dispose();
-                _unsubscriber?.Dispose();
-            }
-        }
-
-        public Stream GetStream()
-        {
-            return _tcpClient?.GetStream();
+            return true;
         }
     }
 }

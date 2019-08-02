@@ -1,55 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using ZenPlatform.ServerClientShared.DI;
-using ZenPlatform.ServerClientShared.Logging;
-using ZenPlatform.ServerClientShared.Network;
-using Microsoft.Extensions.DependencyInjection;
-using ZenPlatform.Core.Network.States;
+using ZenPlatform.Core.Logging;
 
 namespace ZenPlatform.Core.Network
 {
 
-    public class UserListener : Listener, IUserListener
-    {
 
-        public IServiceProvider _serviceProvider;
-        public UserListener(IServiceProvider serviceProvider, ILogger<UserListener> logger, IConnectionManager connectionManager) 
-            :base(logger, connectionManager)
-        {
-            _serviceProvider = serviceProvider;
-        }
-        protected override IConnection OpenConnection()
-        {
-            return _serviceProvider.GetRequiredService<IUserConnection>();
-        }
-    }
-    public abstract class Listener : IListener
+    public class TCPListener : ITCPListener
     {
         private readonly ILogger _logger;
         private readonly IConnectionManager _connectionManager;
         private TcpListener _listener;
         private bool _running;
         private Thread _thread;
+        private TCPConnectionFactory _connectionFactory;
 
-        public Listener(ILogger logger, IConnectionManager connectionManager)
+        public TCPListener(ILogger<TCPListener> logger, IConnectionManager connectionManager)
         {
             _logger = logger;
             _connectionManager = connectionManager;
+           
         }
 
-        public void Start(IPEndPoint endPoint)
+        public void Start(IPEndPoint endPoint, TCPConnectionFactory connectionFactory)
         {
             try
             {
-                _logger.Info("Started listening: {0}", endPoint.Address);
+                _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
 
-                _listener = new TcpListener(endPoint);
+                _logger.Info("Started listening: {0}:{1}", endPoint.Address, endPoint.Port);
+                
+
+                _listener = new TcpListener(endPoint ?? throw new ArgumentNullException(nameof(endPoint)));
                 _listener.Start();
-
+                
 
                 _running = true;
                 _thread = new Thread(ThreadListen);
@@ -102,9 +89,9 @@ namespace ZenPlatform.Core.Network
                 {
                     if (client != null)
                     {
-                        var connection = OpenConnection();
+                        var connection = _connectionFactory.CreateConnection(client);
                         _connectionManager.AddConnection(connection);
-                        connection.Open(client);
+                        connection.Open();
                     }
                 }
                 catch (Exception ex)
@@ -116,7 +103,6 @@ namespace ZenPlatform.Core.Network
 
         }
 
-        protected abstract IConnection OpenConnection();
 
     }
 }

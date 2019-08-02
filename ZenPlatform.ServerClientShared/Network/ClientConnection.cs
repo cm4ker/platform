@@ -3,43 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using ZenPlatform.Core.Logging;
 
-namespace ZenPlatform.ServerClientShared.Network
+namespace ZenPlatform.Core.Network
 {
-    public class ClientConnection : IConnection
+    public class ClientConnection : TCPConnection
     {
-        private TcpClient _tcpClient;
-        private IDisposable _remover;
-
-        public ConnectionInfo Info => throw new NotImplementedException();
-
-        public bool Opened => _tcpClient == null ? false : _tcpClient.Connected;
-
-        public void Close()
+        private Action<IChannel, INetworkMessage> _handler;
+        public ClientConnection(ILogger logger, TcpClient client, IChannelFactory channelFactory) 
+            : base(logger, client, channelFactory)
         {
-            _remover?.Dispose();
-            _tcpClient.Close();
-            _tcpClient.Dispose();
+          
         }
 
-        public void Dispose()
+        public override void OnNext(IChannel sender, INetworkMessage value)
         {
-            Close();
-        }
-
-        public Stream GetStream()
-        {
-            return _tcpClient.GetStream();
-        }
-
-        public void Open(TcpClient client)
-        {
-            _tcpClient = client;
-        }
-
-        public void SetRemover(IDisposable remover)
-        {
-            _remover = remover;
+            foreach (var observer in _connectionObservers.ToArray())
+                if (_connectionObservers.Contains(observer) && observer.CanObserve(value.GetType()))
+                {
+                    observer.OnNext(new ClientConnectionContext() { Connection = this }, value); ;
+                }
         }
     }
 }

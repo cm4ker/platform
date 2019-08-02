@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Tools;
 
-
-namespace ZenPlatform.ServerClientShared.Network
+namespace ZenPlatform.Core.Network
 {
     public interface IChannel: IObservable<INetworkMessage>
     {
@@ -12,7 +12,7 @@ namespace ZenPlatform.ServerClientShared.Network
         //event Action<Exception> OnError;
 
         void Send(object message);
-        void Start(IConnection connection);
+        void Start(Stream stream);
         void Stop();
 
         //void SetHandler(IMessageHandler handler);

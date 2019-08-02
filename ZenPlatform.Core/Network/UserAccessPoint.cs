@@ -5,10 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using ZenPlatform.Core.Logging;
-using ZenPlatform.ServerClientShared;
-using ZenPlatform.ServerClientShared.DI;
-using ZenPlatform.ServerClientShared.Logging;
-using ZenPlatform.ServerClientShared.Network;
+using ZenPlatform.Core.DI;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ZenPlatform.Core.Network
@@ -16,11 +13,9 @@ namespace ZenPlatform.Core.Network
     public class UserAccessPoint : IAccessPoint
     {
         private readonly ILogger _logger;
-        private bool _running;
-        private Thread _thread;
         private readonly IServiceProvider _serviceProvider;
         private readonly AccessPointConfig _config;
-        private readonly IList<IListener> _listeners = new List<IListener>();
+        private readonly IList<ITCPListener> _listeners = new List<ITCPListener>();
 
 
         public UserAccessPoint(ILogger<UserAccessPoint> logger, IServiceProvider serviceProvider, IConfig<AccessPointConfig> config)
@@ -33,24 +28,27 @@ namespace ZenPlatform.Core.Network
         public void Start()
         {
 
-            foreach (var lisetnercfg in _config.Listeners)
+            foreach (var lisetnercfg in _config.Listener)
             {
-                IListener listener = null;
+                ITCPListener listener = _serviceProvider.GetRequiredService<ITCPListener>();
+                TCPConnectionFactory connectionFactory = null;
                 switch (lisetnercfg.Type)
                 {
                     case ListenerType.User:
-                        listener = _serviceProvider.GetRequiredService<IUserListener>();
+                        connectionFactory = _serviceProvider.GetRequiredService<UserTCPConnectionFactory>();
                         break;
                     case ListenerType.Admin:
-                        listener = _serviceProvider.GetRequiredService<IUserListener>();
+                        connectionFactory = _serviceProvider.GetRequiredService<TCPConnectionFactory>();
                         break;
-                    default: 
-                        listener = _serviceProvider.GetRequiredService<IUserListener>();
+                    case ListenerType.Test:
+                        connectionFactory = _serviceProvider.GetRequiredService<TCPConnectionFactory>();
                         break;
+                    default:
+                        throw new InvalidOperationException();
 
                 }
                 
-                listener.Start(NetworkUtility.CreateIPEndPoint(lisetnercfg.Address));
+                listener.Start(NetworkUtility.CreateIPEndPoint(lisetnercfg.Address), connectionFactory);
                 _listeners.Add(listener);
             }
         }

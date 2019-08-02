@@ -5,9 +5,10 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using ZenPlatform.ServerClientShared.Logging;
-using ZenPlatform.ServerClientShared.Tools;
-namespace ZenPlatform.ServerClientShared.Network
+using ZenPlatform.Core.Tools;
+using ZenPlatform.Core.Logging;
+
+namespace ZenPlatform.Core.Network
 {
     public class Channel : IChannel
     {
@@ -61,6 +62,7 @@ namespace ZenPlatform.ServerClientShared.Network
                 if (Running)
                 {
                     _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, new AsyncCallback(ReceiveCallback), null);
+                    
                 }
             }
             catch (Exception ex)
@@ -82,11 +84,11 @@ namespace ZenPlatform.ServerClientShared.Network
 
         }
 
-        public void Start(IConnection connection)
+        public void Start(Stream stream)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            _stream = connection.GetStream();
+            _stream = stream;
 
             try
             {

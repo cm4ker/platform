@@ -9,7 +9,7 @@ using ZenPlatform.Core.Sessions;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.ServerClientShared.Tools;
+using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -47,10 +47,6 @@ namespace ZenPlatform.Core.Environment
 
             Configuration = XCRoot.Load(storage);
         }
-
-        public abstract EntityMetadata GetMetadata(Guid key);
-        public abstract EntityMetadata GetMetadata(Type type);
-        public abstract IEntityManager GetManager(Type type);
         public abstract ISession CreateSession(IUser user);
 
         /// <summary>
@@ -68,10 +64,13 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         public StartupConfig StartupConfig { get; private set; }
 
-        public virtual IInvokeService InvokeService => throw new System.NotImplementedException();
-
-        public virtual IAuthenticationManager AuthenticationManager => throw new System.NotImplementedException();
 
         public IDataContextManager DataContextManager { get; private set; }
+
+        public abstract IInvokeService InvokeService { get; }
+
+        public abstract IAuthenticationManager AuthenticationManager { get; }
+
+        public string Name => Configuration.ProjectName;
     }
 }

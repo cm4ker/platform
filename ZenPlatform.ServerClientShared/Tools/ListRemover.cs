@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ZenPlatform.ServerClientShared.Tools
+namespace ZenPlatform.Core.Tools
 {
     public class ListRemover<T> : IDisposable
     {

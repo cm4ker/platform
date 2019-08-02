@@ -3,8 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Core.Logging;
-using ZenPlatform.ServerClientShared.DI;
-using ZenPlatform.ServerClientShared.Logging;
+using ZenPlatform.Core.DI;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ZenPlatform.Core.Environment
@@ -20,34 +19,48 @@ namespace ZenPlatform.Core.Environment
             _serviceProvider = serviceProvider;
             _logger = logger;
 
-            config.Value.ForEach(c => CreateEnvironment(c));
+            Initialize(config.Value);
         }
 
-        public void CreateEnvironment(StartupConfig config)
+        private void Initialize(List<StartupConfig> list)
         {
-            _logger.Info("Creating environment, connection string: {0}", config.ConnectionString);
+            list.ForEach(c => environments.Add(CreateEnvironment<IWorkEnvironment>(c)));
+
+            environments.Add(CreateEnvironment<IAdminEnvironment>(new StartupConfig() { ConnectionString = ""}));
+
+#if DEBUG
+            environments.Add(CreateEnvironment<ITestEnvironment>(new StartupConfig() { ConnectionString = "" }));
+#endif
+        }
+
+        protected IEnvironment CreateEnvironment<T>(StartupConfig config) where T: IEnvironment
+        {
+            
             try
             {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var env = scope.ServiceProvider.GetRequiredService<IEnvironment>();
+                _logger.Info("Creating environment, connection string: {0}", config.ConnectionString);
+                var scope = _serviceProvider.CreateScope();
+                
+                    var env = scope.ServiceProvider.GetRequiredService<T>();
                     env.Initialize(config);
-                    environments.Add(env);
-                }
+                    return env;
+                
             } catch (Exception ex)
             {
                 _logger.Error(ex, "Create environment error, connection string: {0}", config.ConnectionString);
             }
+            return null;
         }
 
         public IEnvironment GetEnvironment(string name)
         {
-            return environments.First(m => m.Configuration.ProjectName.Equals(name));
+            return environments.First(m => m.Name.Equals(name));
         }
 
-        public List<string> GetEnvironmentList()
+        public List<IEnvironment> GetEnvironmentList()
         {
-            return environments.Select(e => e.Configuration.ProjectName).ToList();
+            return environments;
         }
+
     }
 }

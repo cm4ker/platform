@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ZenPlatform.ServerClientShared.Network;
+using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.AsmInfrastructure
 {
