@@ -10,19 +10,19 @@ using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Environment
 {
+
+    public interface IAdminEnvironment : IEnvironment { }
+    public interface ITestEnvironment : IEnvironment { }
+    public interface IWorkEnvironment : IEnvironment { }
     public interface IEnvironment
     {
-        XCRoot Configuration { get; }
+        string Name { get; }
         IList<ISession> Sessions { get; }
         IInvokeService InvokeService { get; }
         void Initialize(StartupConfig config);
         IAuthenticationManager AuthenticationManager { get; }
 
-        EntityMetadata GetMetadata(Guid key);
-        EntityMetadata GetMetadata(Type type);
-        IEntityManager GetManager(Type type);
         ISession CreateSession(IUser user);
 
-        IDataContextManager DataContextManager { get; }
     }
 }

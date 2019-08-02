@@ -7,7 +7,7 @@ using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Sessions
 {
-    public class TestSession : ISession
+    public class SimpleSession : ISession
     {
         private readonly Dictionary<string, object> _sessionParameters;
         private IDisposable _remover;
@@ -15,11 +15,10 @@ namespace ZenPlatform.Core.Sessions
 
         public IUser User { get; }
 
-        public DataContext DataContext => throw new NotImplementedException();
-
         public IEnvironment Environment { get; }
 
-        public TestSession(IEnvironment env, IUser user)
+
+        public SimpleSession(IEnvironment env, IUser user)
         {
             Id = Guid.NewGuid();
             User = user;
@@ -27,9 +26,14 @@ namespace ZenPlatform.Core.Sessions
             _sessionParameters = new Dictionary<string, object>();
         }
 
+        public SimpleSession(IUser user) : this(null, user)
+        {
+
+        }
+
         public void Dispose()
         {
-            _remover.Dispose();
+            Close();
         }
 
         public object GetSessionParameter(string key, object value)
@@ -48,6 +52,11 @@ namespace ZenPlatform.Core.Sessions
         public void SetSessionParameter(string key, object value)
         {
             _sessionParameters[key] = value;
+        }
+
+        public void Close()
+        {
+            _remover?.Dispose();
         }
     }
 }

@@ -1,37 +1,31 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Sockets;
-using ZenPlatform.ServerClientShared.Tools;
+using ZenPlatform.Core.Tools;
 
-namespace ZenPlatform.ServerClientShared.Network
+namespace ZenPlatform.Core.Network
 {
-    public interface IConnection: IRemovable
+    public interface IConnection
     {
-
+        IChannel Channel { get; }
         /// <summary>
         /// Закрывает соединение
         /// </summary>
         void Close();
 
         /// <summary>
-        /// Возвращает поток для обмена данными
-        /// </summary>
-        /// <returns>Возвращает поток связанный с соединением для обмена данными</returns>
-        Stream GetStream();
-
-        /// <summary>
         /// Информация о подключении
         /// </summary>
         ConnectionInfo Info { get; }
 
-        /// <summary>
-        /// Открывает соединение с клиетом
-        /// </summary>
-        /// <param name="client">Клиен должен иметь статус Connected</param>
-        void Open(TcpClient client);
+
+        void Open();
 
         /// <summary>
         /// Возвращает True если соединение открыто
         /// </summary>
         bool Opened { get; }
+
+        IDisposable Subscribe(IConnectionObserver<IConnectionContext> observer);
     }
 }

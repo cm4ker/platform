@@ -7,10 +7,11 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Annotations;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Configuration;
+using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
-using ZenPlatform.ServerClientShared.DI;
+using ZenPlatform.Core.DI;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -39,6 +40,10 @@ namespace ZenPlatform.Core.Environment
         /// Причем при этом за кулисами происходит генерирование скрипта миграции
         /// </summary>
         public XCRoot SavedConfiguration { get; private set; }
+
+        public override IInvokeService InvokeService => throw new NotImplementedException();
+
+        public override IAuthenticationManager AuthenticationManager => throw new NotImplementedException();
 
 
         // Совершить миграцию базы данных
@@ -76,21 +81,6 @@ namespace ZenPlatform.Core.Environment
             }
 
             //TODO: подменить код сборки и инвалидировать её, чтобы все участники обновили сборку.
-        }
-
-        public override EntityMetadata GetMetadata(Guid key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override EntityMetadata GetMetadata(Type type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEntityManager GetManager(Type type)
-        {
-            throw new NotImplementedException();
         }
 
         public override ISession CreateSession(IUser user)

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ZenPlatform.ServerClientShared.Network;
+using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Network.States
 {
-    public interface IState
+    public interface IState: IConnectionObserver<IConnectionContext>
     {
-        void OnNext(INetworkMessage message, ConnectionContext context);
+       // void OnNext(IChannel channel, INetworkMessage message, TCPServerConnection context);
     }
 }

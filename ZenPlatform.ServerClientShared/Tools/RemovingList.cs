@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZenPlatform.ServerClientShared.Tools
+namespace ZenPlatform.Core.Tools
 {
     public class RemovingList<T>: IList<T> where T: IRemovable
     {

@@ -5,10 +5,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Network;
-using ZenPlatform.ServerClientShared.DI;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Logging;
-using ZenPlatform.ServerClientShared.Logging;
 using Microsoft.Extensions.DependencyInjection;
 namespace ZenPlatform.Runner
 {

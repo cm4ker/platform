@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Sessions;
-using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Core.Network
 {
@@ -16,7 +15,7 @@ namespace ZenPlatform.Core.Network
             try
             {
                 
-                return new ResponceInvokeUnaryNetworkMessage(request.Id, await service.Invoke(request.Route, session, request.Request));
+                return new ResponceInvokeUnaryNetworkMessage(request.Id, await service.Invoke(request.Route, session, request.Args));
             }
             catch (Exception ex)
             {
@@ -29,8 +28,8 @@ namespace ZenPlatform.Core.Network
             try
             {
                 
-                var stream = new DataStream(request.Id, channel);
-                await service.InvokeStream(request.Route, session, stream, request.Request);
+               // var stream = new DataStream(request.Id, channel);
+               // await service.InvokeStream(request.Route, session, stream, request.Request);
                 return new OkNetworkMessage(request.Id);
             }
             catch (Exception ex)
@@ -57,7 +56,7 @@ namespace ZenPlatform.Core.Network
         {
             try
             {
-                return new ResponceEnvironmentListNetworkMessage(request.Id, manager.GetEnvironmentList());
+                return new ResponceEnvironmentListNetworkMessage(request.Id, manager.GetEnvironmentList().Select(env => env.Name).ToList());
             }
             catch(Exception ex)
             {

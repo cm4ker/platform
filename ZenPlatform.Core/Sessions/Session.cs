@@ -47,7 +47,12 @@ namespace ZenPlatform.Core.Sessions
 
         public void Dispose()
         {
-            _remover.Dispose();
+            Close();
+        }
+
+        public void Close()
+        {
+            _remover?.Dispose();
         }
     }
 }

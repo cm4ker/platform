@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZenPlatform.ServerClientShared.DI
+namespace ZenPlatform.Core.DI
 {
     public class SimpleConfig<T> : IConfig<T> where T : class
     {
