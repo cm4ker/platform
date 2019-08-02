@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace ZenPlatform.Core.Network
 {
-    public class InvokeService : IInvokeService, IConnectionObserver<IConnectionContext>
+    public class InvokeService : IInvokeService //, IConnectionObserver<IConnectionContext>
     {
         private readonly Dictionary<Route, ParametricMethod> methods = new Dictionary<Route, ParametricMethod>();
         private readonly Dictionary<Route, StreamMethod> streamMethods = new Dictionary<Route, StreamMethod>();
@@ -36,35 +36,6 @@ namespace ZenPlatform.Core.Network
 
             if (!methods.ContainsKey(route))
                 throw new InvokeException($"Method not found, route = {route.ToString()}");
-            /*
-            var canceller = new CancellationTokenSource();
-
-            Task<object> task = null;
-
-            task = Task.Factory.StartNew(() =>
-            {
-
-                using (canceller.Token.Register(Thread.CurrentThread.Interrupt))
-                {
-
-
-
-                    var invokeContext = new InvokeContext(task, canceller, session);
-                    try
-                    {
-                        _taskManager.StartTask(invokeContext);
-                        var result = methods[route](invokeContext, arg);
-                        return result;
-                    }
-
-                    finally
-                    {
-                        //_taskManager.FinishTask(invokeContext);
-                    }
-
-                }
-            }, canceller.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
-            */
 
             var task = _taskManager.RunTask(session, ic =>
             {
@@ -94,35 +65,6 @@ namespace ZenPlatform.Core.Network
         {
             if (!streamMethods.ContainsKey(route))
                 throw new InvokeException($"Method not found, route = {route.ToString()}");
-            /*
-            var canceller = new CancellationTokenSource();
-
-            Task task = null;
-
-            task = Task.Factory.StartNew(() =>
-            {
-
-                using (canceller.Token.Register(Thread.CurrentThread.Interrupt))
-                {
-
-
-
-                    var invokeContext = new InvokeContext(task, canceller, session);
-                    try
-                    {
-                        _taskManager.StartTask(invokeContext);
-                        streamMethods[route](invokeContext, stream, arg);
-
-                    }
-
-                    finally
-                    {
-                       // _taskManager.FinishTask(invokeContext);
-                    }
-
-                }
-            }, canceller.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
-            */
 
             var task = _taskManager.RunTask(session, ic =>
             {
@@ -132,6 +74,18 @@ namespace ZenPlatform.Core.Network
             });
 
             return task;
+        }
+
+        public Task<object> InvokeProxy(ISession session, object instanceObject, string methodName, object[] args)
+        {
+            return _taskManager.RunTask(session, ic =>
+            {
+                
+
+                MethodInfo methodInfo = instanceObject.GetType().GetMethod(methodName);
+
+                return methodInfo.Invoke(instanceObject, args);
+            });
         }
 
         public void RegisterStream(Route route, StreamMethod method)
@@ -148,7 +102,12 @@ namespace ZenPlatform.Core.Network
             }
         }
 
+        public object GetRequiredService(Type type)
+        {
+            return _serviceProvider.GetRequiredService(type);
+        }
 
+        /*
         public void Subscribe(IConnection connection)
         {
             _unsbscribers.Add(connection, connection.Subscribe(this));
@@ -156,9 +115,10 @@ namespace ZenPlatform.Core.Network
 
         public bool CanObserve(Type type)
         {
-            return type.Equals(typeof(RequestInvokeInstanceProxy)) || type.Equals(typeof(RequestInvokeMethodProxy))
-                || type.Equals(typeof(RequestInvokeUnaryNetworkMessage)) || type.Equals(typeof(StartInvokeStreamNetworkMessage))
-                || type.Equals(typeof(RequestInvokeDisposeProxy));
+            return false;
+                //type.Equals(typeof(RequestInvokeUnaryNetworkMessage)) || type.Equals(typeof(StartInvokeStreamNetworkMessage));
+               //  || type.Equals(typeof(RequestInvokeInstanceProxy)) || type.Equals(typeof(RequestInvokeMethodProxy)) 
+               //  || type.Equals(typeof(RequestInvokeDisposeProxy));
                 
         }
 
@@ -179,6 +139,8 @@ namespace ZenPlatform.Core.Network
                 _unsbscribers.Remove(context.Connection);
             }
         }
+
+        
 
         public async  void OnNext(IConnectionContext context, INetworkMessage value)
         {
@@ -205,13 +167,7 @@ namespace ZenPlatform.Core.Network
 
                             return methodInfo.Invoke(invokeService, methodProxy.Args);
                         });
-                        /*
-                        var invokeService = services[methodProxy.RequestId];
-
-                        MethodInfo methodInfo = invokeService.GetType().GetMethod(methodProxy.MethodName);
-                        
-                        var result = methodInfo.Invoke(invokeService, methodProxy.Args);
-                        */
+        
                         context.Connection.Channel.Send(new ResponceInvokeMethodProxy(methodProxy.Id, await task));
                     }
                     break;
@@ -235,6 +191,7 @@ namespace ZenPlatform.Core.Network
                     break;
             }
         }
+        */
     }
 
 }
