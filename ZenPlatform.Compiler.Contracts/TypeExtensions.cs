@@ -60,6 +60,28 @@ namespace ZenPlatform.Compiler.Contracts
             return null;
         }
 
+        public static IMethod FindMethod(this IType type, string name, params IType[] args)
+        {
+            return type.FindMethod(m =>
+            {
+                if (m.Name == name && m.Parameters.Count == args.Length)
+                {
+                    var mismatch = false;
+                    for (var c = 0; c < args.Length; c++)
+                    {
+                        mismatch = !m.Parameters[c].Type.Equals(args[c]);
+                        if (mismatch)
+                            break;
+                    }
+
+                    if (!mismatch)
+                        return true;
+                }
+
+                return false;
+            });
+        }
+
         public static IMethod FindMethod(this IType type, string name, IType returnType,
             bool allowDowncast, params IType[] args)
         {
