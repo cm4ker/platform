@@ -2,12 +2,21 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 
 namespace ZenPlatform.Compiler.AST.Definitions.Symbols
 {
-    public class Symbol
+    public interface ISymbol
     {
-        public string Name;
-        public SymbolType Type;
-        public IAstSymbol SyntaxObject;
-        public object CodeObject;
+        string Name { get; set; }
+        SymbolType Type { get; set; }
+        IAstSymbol SyntaxObject { get; set; }
+        object CodeObject { get; set; }
+        T GetSyntaxObject<T>() where T : IAstNode;
+    }
+
+    public class Symbol : ISymbol
+    {
+        public string Name { get; set; }
+        public SymbolType Type { get; set; }
+        public IAstSymbol SyntaxObject { get; set; }
+        public object CodeObject { get; set; }
 
         /// <summary>
         /// 
@@ -22,6 +31,12 @@ namespace ZenPlatform.Compiler.AST.Definitions.Symbols
             Type = type;
             SyntaxObject = syntaxObject;
             CodeObject = codeObject;
+        }
+
+
+        public T GetSyntaxObject<T>() where T : IAstNode
+        {
+            return (T) SyntaxObject;
         }
     }
 }

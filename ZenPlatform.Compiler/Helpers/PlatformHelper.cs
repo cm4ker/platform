@@ -3,31 +3,28 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Mono.Cecil;
-using ZenPlatform.AsmInfrastructure;
+using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
+using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Compiler.Helpers
 {
     public static class PlatformHelper
     {
-        public static IType ClientType(this SystemTypeBindings b)
-        {
-            return b.TypeSystem.FindType($"{typeof(Client).Namespace}.{nameof(Client)}",
-                typeof(Client).Assembly.GetName().FullName);
-        }
-
         public static IMethod ClientInvoke(this SystemTypeBindings b)
         {
-            return b.ClientType().Methods.FirstOrDefault(x => x.Name == nameof(Client.Invoke)) ??
+            return b.Client.Methods.FirstOrDefault(x => x.Name == nameof(Client.Invoke)) ??
                    throw new NotSupportedException();
         }
 
         public static IMethod ClientInvoke(this SystemTypeBindings b, params IType[] genParams)
         {
-            return b.ClientType().Methods.FirstOrDefault(x => x.Name == "Invoke")?.MakeGenericMethod(genParams) ??
+            return b.Client.Methods.FirstOrDefault(x => x.Name == "Invoke")?.MakeGenericMethod(genParams) ??
                    throw new NotSupportedException();
         }
 
@@ -45,6 +42,40 @@ namespace ZenPlatform.Compiler.Helpers
         public static IProperty? AIClient(this SystemTypeBindings b)
         {
             return b.AsmInf().Properties.First(x => x.Name == nameof(GlobalScope.Client));
+        }
+
+        public static IType ToClrType(this TypeSyntax typeSyntax, IAssembly context)
+        {
+            var _stb = context.TypeSystem.GetSystemBindings();
+
+            if (typeSyntax is SingleTypeSyntax stn)
+            {
+                return context.FindType(stn.TypeName);
+            }
+
+            else if (typeSyntax is PrimitiveTypeSyntax ptn)
+            {
+                return ptn.Kind switch
+                {
+                    TypeNodeKind.Boolean => _stb.Boolean,
+                    TypeNodeKind.Int => _stb.Int,
+                    TypeNodeKind.Char => _stb.Char,
+                    TypeNodeKind.Double => _stb.Double,
+                    TypeNodeKind.String => _stb.String,
+                };
+            }
+
+            else if (typeSyntax is ArrayTypeSyntax atn)
+            {
+                return ToClrType(atn.ElementType, context).MakeArrayType();
+            }
+
+            else if (typeSyntax is UnionTypeSyntax utn)
+            {
+                throw new NotImplementedException();
+            }
+
+            return null;
         }
     }
 

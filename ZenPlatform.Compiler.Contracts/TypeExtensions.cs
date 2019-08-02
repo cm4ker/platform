@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -109,6 +111,11 @@ namespace ZenPlatform.Compiler.Contracts
             return null;
         }
 
+        public static IConstructor FindConstructor(this IType type, params IType[] args)
+        {
+            return FindConstructor(type, args.ToList());
+        }
+
         public static bool IsNullable(this IType type)
         {
             var def = type.GenericTypeDefinition;
@@ -134,6 +141,13 @@ namespace ZenPlatform.Compiler.Contracts
             return emitter;
         }
 
+        public static IEmitter EmitCall(this IEmitter emitter, IConstructor method,
+            bool swallowResult = false)
+        {
+            emitter.Emit(OpCodes.Call, method);
+            return emitter;
+        }
+
         public static IType MakeGenericType(this IType type, params IType[] typeArguments)
             => type.MakeGenericType(typeArguments);
 
@@ -153,6 +167,26 @@ namespace ZenPlatform.Compiler.Contracts
             if (t.BaseType != null)
                 foreach (var p in t.BaseType.GetAllProperties())
                     yield return p;
+        }
+
+        public static IProperty FindProperty(this IType t, string name)
+        {
+            return FindProperty(t, (x => x.Name == name));
+        }
+
+        public static IProperty FindProperty(this IType t, Func<IProperty, bool> criteria)
+        {
+            return t.Properties.FirstOrDefault(criteria);
+        }
+
+        public static IField FindField(this IType t, string name)
+        {
+            return FindField(t, (x => x.Name == name));
+        }
+
+        public static IField FindField(this IType t, Func<IField, bool> criteria)
+        {
+            return t.Fields.FirstOrDefault(criteria);
         }
 
         public static IEnumerable<IField> GetAllFields(this IType t)
@@ -186,6 +220,35 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter DebugHatch(this IEmitter emitter, string message)
         {
             return emitter;
+        }
+
+        public static IPropertyBuilder DefineProperty(this ITypeBuilder tb, IType type, string name,
+            IField backingField)
+        {
+            var getMethod = tb.DefineMethod($"{name}_get", true, false, false).WithReturnType(type);
+
+            getMethod.Generator
+                .LdArg_0()
+                .LdFld(backingField)
+                .Ret();
+
+            var setMethod = tb.DefineMethod($"{name}_set", true, false, false);
+            setMethod.DefineParameter("value", type, false, false);
+            setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField).Ret();
+
+            return tb.DefineProperty(type, name).WithGetter(getMethod).WithSetter(setMethod);
+        }
+
+        public static IPropertyBuilder DefinePropertyWithBackingField(this ITypeBuilder tb, IType type, string name)
+        {
+            var backingField = tb.DefineField(type, $"<{name}>k__BackingField", false, false);
+            return tb.DefineProperty(type, name, backingField);
+        }
+
+        public static ITypeBuilder DefineType(this IAssemblyBuilder ab, string @namespace, string name,
+            TypeAttributes attrs)
+        {
+            return ab.DefineType(@namespace, name, attrs, ab.TypeSystem.GetSystemBindings().Object);
         }
     }
 }

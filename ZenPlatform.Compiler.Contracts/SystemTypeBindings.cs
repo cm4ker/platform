@@ -1,12 +1,15 @@
 using System;
 using System.Reflection;
+using ZenPlatform.AsmClientInfrastructure;
+using ZenPlatform.Compiler.Infrastructure;
+using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Compiler.Contracts
 {
     /// <summary>
     /// Биндинги на системные типы платформы
     /// </summary>
-    public class SystemTypeBindings
+    public sealed class SystemTypeBindings
     {
         private readonly ITypeSystem _ts;
 
@@ -15,10 +18,13 @@ namespace ZenPlatform.Compiler.Contracts
 
         private const string SYSTEM_NAMESPACE = "System";
 
-        public SystemTypeBindings(ITypeSystem ts)
+        internal SystemTypeBindings(ITypeSystem ts)
         {
             _ts = ts;
+
+            Methods = new SystemMethods(ts, this);
         }
+
 
         public ITypeSystem TypeSystem => _ts;
 
@@ -28,7 +34,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType Char => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Char)}", MSCORLIB);
 
-        public IType Bool => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Bool)}", MSCORLIB);
+        public IType Boolean => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Boolean)}", MSCORLIB);
 
         public IType Double => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Double)}", MSCORLIB);
 
@@ -37,5 +43,39 @@ namespace ZenPlatform.Compiler.Contracts
         public IType Void => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Void)}", MSCORLIB);
 
         public IType Object => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Object)}", MSCORLIB);
+
+        public IType Type => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Type)}", MSCORLIB);
+
+        public IType Byte => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Byte)}", MSCORLIB);
+
+        public IType DateTime => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.DateTime)}", MSCORLIB);
+
+        public IType Client => _ts.FindType<Client>();
+
+        public IType MultiType => _ts.FindType<UnionType>();
+
+        public IType UnionTypeStorage => _ts.FindType<UnionTypeStorage>();
+
+
+        public SystemMethods Methods { get; }
+
+
+        public class SystemMethods
+        {
+            private readonly ITypeSystem _ts;
+            private readonly SystemTypeBindings _stb;
+
+            internal SystemMethods(ITypeSystem ts, SystemTypeBindings stb)
+            {
+                _ts = ts;
+                _stb = stb;
+            }
+
+
+            public IMethod Concat => _stb.String.FindMethod(x =>
+                x.Name == nameof(string.Concat) && x.Parameters.Count == 2
+                                                && x.Parameters[0].Type == _stb.String &&
+                                                x.Parameters[1].Type == _stb.String);
+        }
     }
 }

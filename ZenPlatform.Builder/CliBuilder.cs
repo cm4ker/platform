@@ -73,7 +73,6 @@ namespace ZenPlatform.Cli
 
                     XCCompiller compiller = new XCCompiller(root, buildPathArgument.Value);
                     compiller.Build();
-
                 });
             });
 
@@ -120,7 +119,8 @@ namespace ZenPlatform.Cli
                                 portOpt.ParsedValue, databaseOpt.Value(), userNameOpt.Value(), passwordOpt.Value(),
                                 createOpt.HasValue());
                         else
-                            OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue, connectionString.Value(), createOpt.HasValue());
+                            OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue,
+                                connectionString.Value(), createOpt.HasValue());
                     });
                 });
             });
@@ -188,9 +188,12 @@ namespace ZenPlatform.Cli
             Console.WriteLine($"Done!");
         }
 
-        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string connectionString, bool createIfNotExists)
+        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string connectionString,
+            bool createIfNotExists)
         {
-            OnCreateDbCommand(projectName, databaseType, UniversalConnectionStringBuilder.FromConnectionString(databaseType, connectionString), createIfNotExists);
+            OnCreateDbCommand(projectName, databaseType,
+                UniversalConnectionStringBuilder.FromConnectionString(databaseType, connectionString),
+                createIfNotExists);
         }
 
         private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port,

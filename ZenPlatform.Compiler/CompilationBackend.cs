@@ -1,15 +1,19 @@
 using System;
 using System.IO;
 using Antlr4.Runtime;
+using Microsoft.CodeAnalysis;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
-using ZenPlatform.Language.Ast.AST.Definitions;
+using ZenPlatform.Language.Ast;
+using ZenPlatform.Language.Ast.Definitions;
+using CompilationOptions = ZenPlatform.Compiler.Generation.NewGenerator.CompilationOptions;
 
 namespace ZenPlatform.Compiler
 {
@@ -54,20 +58,20 @@ namespace ZenPlatform.Compiler
 
         private IAssemblyBuilder CompileTree(ZSharpParser pTree)
         {
-            IAssemblyPlatform ap = new SreAssemblyPlatform();
+            IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
             var ab = ap.AsmFactory.Create(ap.TypeSystem, "Debug", new Version(1, 0));
 
-
-            ZLanguageVisitor v = new ZLanguageVisitor(ap.TypeSystem);
+            ZLanguageVisitor v = new ZLanguageVisitor();
             var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
-            //Gen
-            //Перед генерацией необходимо подготовить дерево символов
-            AstSymbolVisitor sv = new AstSymbolVisitor();
-            module.Accept(sv);
 
-            Generator g = new Generator(new GeneratorParameters(module, ab, CompilationMode.Client));
-            //
+            module.PrintPretty("", true);
+
+            AstSymbolPreparator.Prepare(module);
+
+            var prm = new GeneratorParameters(module, ab, CompilationMode.Client);
+
+            Generator g = new Generator(prm);
 
             return ab;
         }

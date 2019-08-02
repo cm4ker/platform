@@ -111,6 +111,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         public string DatabaseColumnName { get; set; }
 
+
         /*
          * Ниже представлен алгоритм, как будет колонка разворачиваться в базу данных:
          *
