@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
@@ -50,7 +51,8 @@ namespace ZenPlatform.Core.Environment
 
         public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
             IAuthenticationManager authenticationManager, IDependencyResolver resolver,
-            IDataContextManager contextManager, IUserManager userManager) : base(contextManager)
+            IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService) :
+            base(contextManager, cacheService)
         {
             _locking = new object();
             _resolver = resolver;
@@ -164,7 +166,7 @@ namespace ZenPlatform.Core.Environment
 
                 //var id = Sessions.Max(x => x.Id) + 1;
 
-                var session = new UserSession(this, user, DataContextManager);
+                var session = new UserSession(this, user, DataContextManager, CacheService);
 
                 Sessions.Add(session);
 

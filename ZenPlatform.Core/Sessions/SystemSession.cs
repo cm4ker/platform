@@ -1,4 +1,5 @@
 ﻿using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Data;
 
@@ -10,7 +11,8 @@ namespace ZenPlatform.Core.Sessions
     /// </summary>
     public class SystemSession : Session
     {
-        public SystemSession(IEnvironment env, IDataContextManager dataContextManger) : base(env, dataContextManger)
+        public SystemSession(IEnvironment env, IDataContextManager dataContextManger, ICacheService cacheService)
+            : base(env, dataContextManger, cacheService)
         {
             User = new SystemUser();
         }
