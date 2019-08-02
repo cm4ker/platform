@@ -8,7 +8,6 @@ using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
-using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Compiler.Visitor;
 
 namespace ZenPlatform.Compiler

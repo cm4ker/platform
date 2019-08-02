@@ -9,10 +9,10 @@ namespace ZenPlatform.Core.Authentication
         public string Name { get; }
         public object Credential { get; }
 
-        public UserPasswordAuthenticationToken(string name, string password)
+        public UserPasswordAuthenticationToken(string name, string credential)
         {
             Name = name;
-            Credential = password;
+            Credential = credential;
         }
     }
 }

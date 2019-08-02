@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZenPlatform.ServerClientShared.Logging
+namespace ZenPlatform.Core.Logging
 {
     public class SimpleConsoleLogger<T> : AbstractLogger, ILogger<T>
     {
