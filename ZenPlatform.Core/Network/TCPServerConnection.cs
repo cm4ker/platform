@@ -26,17 +26,13 @@ namespace ZenPlatform.Core.Network
             TcpClient tcpClient, IEnvironmentManager environmentManager) 
             : base(logger, tcpClient, channelFactory)
         {
-
-            var state = new ConnectedState(environmentManager);
-            state.Subscribe(this);
- 
             _connectionContext = new ServerConnectionContext()
             {
                 Connection = this
             };
 
-            
-
+            var state = new EnvironmentManagerObserver(environmentManager);
+            state.Subscribe(this);
 
         }
 

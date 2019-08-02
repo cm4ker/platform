@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Network.States
 {
-    public class ConnectedState : IState
+    public class EnvironmentManagerObserver : IConnectionObserver<IConnectionContext>
     {
         private IEnvironmentManager _environmentManager;
         private IDisposable _unsbscriber;
-        public ConnectedState(IEnvironmentManager environmentManager)
+        public EnvironmentManagerObserver(IEnvironmentManager environmentManager)
         {
             _environmentManager = environmentManager;
         }
@@ -43,7 +44,7 @@ namespace ZenPlatform.Core.Network.States
                     {
                         _unsbscriber?.Dispose();
 
-                        var state = new EnvironmentState(env);
+                        var state = new AuthenticationObserver(env);
                         state.Subscribe(context.Connection);
 
                     }).PipeTo(msg.Id, context.Connection.Channel);

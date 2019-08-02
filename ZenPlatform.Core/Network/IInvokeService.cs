@@ -49,6 +49,8 @@ namespace ZenPlatform.Core.Network
 
         Task InvokeStream(Route route, ISession session, Stream stream, params object[] arg);
 
+        object GetRequiredService(Type type);
 
+        Task<object> InvokeProxy(ISession session, object instanceObject, string methodName, object[] args);
     }
 }
