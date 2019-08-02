@@ -34,7 +34,7 @@ moduleBody: (functionDeclaration)* ;
 */
 typeDefinition: attributes? TYPE IDENTIFIER '{' typeBody '}';
 
-typeBody: (functionDeclaration | fieldDeclaration | propertyDeclaration)* ;
+typeBody: (functionDeclaration | fieldDeclaration | propertyDeclaration)*;
 /*
 ================END TYPE==================
 */
@@ -56,7 +56,6 @@ propertyDeclaration:
             ('{' (GET ';' | GET getInst= instructionsBody)? (SET ';' | SET setInst = instructionsBody)? '}') 
 ;
 
-/*чертовски сложное правило*/
 statement: 
         ((variableDeclaration 
         | functionCall
@@ -196,7 +195,14 @@ variableType:
     
 
 type:
-    structureType | primitiveType | arrayType;
+    structureType | primitiveType | arrayType | multitype;
+
+multitype : 
+    '<' typeList '>';
+
+typeList: 
+    type (',' type)*
+;
 
 structureType:
     IDENTIFIER;
@@ -244,4 +250,4 @@ attributes:
 tryStatement:
     TRY instructionsOrSingleStatement 
     (CATCH catchExp=instructionsOrSingleStatement)? 
-    (FINALLY finallyExp=instructionsOrSingleStatement)? ;
+    (FINALLY finallyExp=instructionsOrSingleStatement)?;

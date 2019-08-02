@@ -98,7 +98,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             throw new NotSupportedException();
         }
 
-        
+
         /// <summary>
         /// Получить доступные программные модули объекта
         /// </summary>

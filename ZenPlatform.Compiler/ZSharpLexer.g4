@@ -105,7 +105,7 @@ PRIVATE : 'private';
 
 MODULE : 'module';
 
-IDENTIFIER : ('a'..'z' | 'A'..'Z')+ ('a'..'z' | 'A'..'Z' | '0'..'9')*;
+IDENTIFIER : ('a'..'z' | 'A'..'Z' | '_')+ ('a'..'z' | 'A'..'Z' | '0'..'9' | '_' )*;
 DEC_DIGIT: '1'..'9' '0'..'9'* ('.' '0'..'9')*;
 
 

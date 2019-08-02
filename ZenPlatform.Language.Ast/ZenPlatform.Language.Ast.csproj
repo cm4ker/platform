@@ -2,11 +2,12 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
+        <LangVersion>8</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
     </ItemGroup>
 
 </Project>

@@ -178,7 +178,17 @@ namespace ZenPlatform.Compiler.Cecil
 
         class CecilLocal : ILocal
         {
-            public VariableDefinition Variable { get; set; }
+            private readonly CecilTypeSystem _ts;
+
+            public CecilLocal(CecilTypeSystem ts, VariableDefinition vd)
+            {
+                _ts = ts;
+                Variable = vd;
+            }
+
+            public VariableDefinition Variable { get; }
+            public int Index => Variable.Index;
+            public IType Type => _ts.Resolve(Variable.VariableType);
         }
 
         class CecilLabel : ILabel
@@ -191,7 +201,7 @@ namespace ZenPlatform.Compiler.Cecil
             var r = Import(((ITypeReference) type).Reference);
             var def = new VariableDefinition(r);
             _body.Variables.Add(def);
-            return new CecilLocal {Variable = def};
+            return new CecilLocal((CecilTypeSystem) TypeSystem, def);
         }
 
         public ILabel DefineLabel() => new CecilLabel();
@@ -408,6 +418,6 @@ namespace ZenPlatform.Compiler.Cecil
             }
         }
 
-        public SymbolTable SymbolTable { get; }
+        public ISymbolTable SymbolTable { get; }
     }
 }

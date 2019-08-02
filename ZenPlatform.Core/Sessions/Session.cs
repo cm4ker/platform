@@ -4,6 +4,7 @@ using ZenPlatform.Core.Environment;
 using ZenPlatform.Data;
 using System.Linq;
 using System;
+using ZenPlatform.Core.CacheService;
 
 namespace ZenPlatform.Core.Sessions
 {
@@ -12,11 +13,11 @@ namespace ZenPlatform.Core.Sessions
     /// </summary>
     public abstract class Session : ISession
     {
-        protected Session(IEnvironment env, IDataContextManager dataContextManger)
+        protected Session(IEnvironment env, IDataContextManager dataContextManger, ICacheService cacheService)
         {
             Environment = env;
             Id = Guid.NewGuid();
-
+            CacheService = cacheService;
             _dataContextManger = dataContextManger;
         }
 
@@ -25,16 +26,17 @@ namespace ZenPlatform.Core.Sessions
         public Guid Id { get; }
 
         protected IDataContextManager _dataContextManger;
+
         public IEnvironment Environment { get; }
-        
+
         public abstract IUser User { get; protected set; }
 
+        public ICacheService CacheService { get; }
 
-
-        public DataContext DataContext {
-            get => _dataContextManger.GetContext();   
-            }
-        
+        public DataContext DataContext
+        {
+            get => _dataContextManger.GetContext();
+        }
 
 
         public abstract void SetSessionParameter(string key, object value);

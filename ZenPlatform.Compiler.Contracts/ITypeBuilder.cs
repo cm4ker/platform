@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -8,6 +7,8 @@ namespace ZenPlatform.Compiler.Contracts
         void AddInterfaceImplementation(IType type);
 
         void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, GenericParameterConstraint>> names);
+
+        IReadOnlyList<IMethodBuilder> DefinedMethods { get; }
 
         IField DefineField(IType type, string name, bool isPublic, bool isStatic);
 
@@ -23,10 +24,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         IType EndBuild();
     }
-
-
-    public interface IAssemblyBuilder : IAssembly
-    {
-        ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType);
-    }
+    
+    
+    
 }

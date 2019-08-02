@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.AsmClientInfrastructure;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -53,7 +54,6 @@ namespace ZenPlatform.Compiler.Contracts
 
         public static readonly IType Unknown = new UnknownType("{Unknown type}");
     }
-
 
     public class UnknownArrayType : UnknownType
     {

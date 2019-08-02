@@ -28,9 +28,9 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// <summary>
         /// Генератор сущностей необходимо на стадии сборки проекта
         /// </summary>
-        IEntityGenerator Generator { get; }
+        //IEntityGenerator Generator { get; }
 
-        IAstGenerator AstGenerator { get; }
+        IPlatformStagedAssemblyGenerator Generator { get; }
 
         /// <summary>
         /// Генератор объектов базы данных

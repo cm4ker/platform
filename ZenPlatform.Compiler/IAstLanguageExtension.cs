@@ -1,3 +1,5 @@
+using ZenPlatform.Compiler.Contracts.Symbols;
+
 namespace ZenPlatform.Compiler
 {
     /// <summary>
@@ -11,9 +13,5 @@ namespace ZenPlatform.Compiler
         /// <param name="node">Трансформируемое дерево</param>
         /// <returns></returns>
         IAstNode Transform(IAstNode node);
-    }
-
-    public interface IAstNode
-    {
     }
 }
