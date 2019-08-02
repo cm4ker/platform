@@ -2,7 +2,7 @@ using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions.Functions;
-using ZenPlatform.ServerClientShared.Network;
+using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Compiler.Generation
 {

@@ -10,7 +10,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.ServerClientShared.Network;
+using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Compiler.Helpers
 {
