@@ -59,16 +59,16 @@ namespace ZenPlatform.EntityComponent
             var document = Activator.CreateInstance(entityType, session, dto) as SingleEntity;
             return document;
         }
+//
+//        public SingleEntity Load(UserSession session, int typeId, object key)
+//        {
+//        }
 
-        public SingleEntity Load(UserSession session, int typeId, object key)
-        {
-        }
-
-        public SingleEntity Load(UserSession session, Type entityType, object key)
+        public SingleEntity Load(UserSession session, Type entityType, Guid key)
         {
             var def = session.GetMetadata(entityType);
 
-            var dto = LoadDtoObject(session, def.DtoType, key);
+            var dto = LoadDtoObject(session, def.DtoType, def.EntityConfig.Id, key);
 
             return CreateEntityFromDto(session, entityType, dto);
         }
@@ -80,11 +80,11 @@ namespace ZenPlatform.EntityComponent
         /// <param name="dtoType">Тип Entity от DTO, которого хотим загрузить</param>
         /// <param name="key">Ключ</param>
         /// <returns></returns>
-        public object LoadDtoObject(UserSession session, Type dtoType, int typeId, Guid key)
+        public object LoadDtoObject(UserSession session, Type dtoType, uint typeId, Guid key)
         {
             //Проверим кэш
 
-            var dto = session.CacheService.Get(dtoType, 1, typeId, key);
+            var dto = session.CacheService.Get(dtoType, 1, (int) typeId, key);
 
             if (dto != null) return dto;
 
@@ -155,7 +155,7 @@ namespace ZenPlatform.EntityComponent
             _session = session;
         }
 
-        public T Load(object key)
+        public T Load(Guid key)
         {
             return _singleEntityManager.Load(_session, typeof(T), key) as T;
         }

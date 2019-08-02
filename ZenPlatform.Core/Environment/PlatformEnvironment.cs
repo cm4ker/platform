@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
@@ -18,31 +19,31 @@ namespace ZenPlatform.Core.Environment
     /// </summary>
     public abstract class PlatformEnvironment : IEnvironment
     {
-        
+        protected ICacheService CacheService;
 
-        protected PlatformEnvironment(IDataContextManager dataContextManager)
+        protected PlatformEnvironment(IDataContextManager dataContextManager, ICacheService cacheService)
         {
             Sessions = new List<ISession>();
-            
-            DataContextManager = dataContextManager;
 
+            DataContextManager = dataContextManager;
+            CacheService = cacheService;
         }
 
         protected SystemSession SystemSession { get; private set; }
 
         public virtual void Initialize(StartupConfig config)
         {
-
             StartupConfig = config;
 
             DataContextManager.Initialize(config.DatabaseType, config.ConnectionString);
 
-            SystemSession = new SystemSession(this, DataContextManager);
+            SystemSession = new SystemSession(this, DataContextManager, CacheService);
             Sessions.Add(SystemSession);
 
             //TODO: Дать возможность выбрать, какую конфигурацию загружать, с базы данных или из файловой системы
 
-            var storage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, DataContextManager.GetContext(),
+            var storage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
+                DataContextManager.GetContext(),
                 DataContextManager.SqlCompiler);
 
             Configuration = XCRoot.Load(storage);

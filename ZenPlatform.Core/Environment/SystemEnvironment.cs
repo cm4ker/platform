@@ -6,6 +6,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Annotations;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.Data;
@@ -19,7 +20,8 @@ namespace ZenPlatform.Core.Environment
     /// </summary>
     public class SystemEnvironment : PlatformEnvironment
     {
-        public SystemEnvironment(IDataContextManager dataContextManager) : base(dataContextManager)
+        public SystemEnvironment(IDataContextManager dataContextManager, ICacheService cacheService) :
+            base(dataContextManager, cacheService)
         {
         }
 
@@ -58,9 +60,9 @@ namespace ZenPlatform.Core.Environment
             var dbTypes = Configuration.Data.ComponentTypes;
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
-                x => new { component = x.Parent, old = x, actual = default(XCObjectTypeBase) },
-                x => new { component = x.Parent, old = default(XCObjectTypeBase), actual = x },
-                (x, y) => new { component = x.Parent, old = x, actual = y });
+                x => new {component = x.Parent, old = x, actual = default(XCObjectTypeBase)},
+                x => new {component = x.Parent, old = default(XCObjectTypeBase), actual = x},
+                (x, y) => new {component = x.Parent, old = x, actual = y});
 
             foreach (var type in types)
             {

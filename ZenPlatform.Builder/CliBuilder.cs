@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using FluentMigrator.Runner.Initialization;
 using McMaster.Extensions.CommandLineUtils;
+using ZenPlatform.Cli.Builder;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Configuration;
@@ -70,6 +71,7 @@ namespace ZenPlatform.Cli
 
                     Console.WriteLine($"Success load project {projectFilePath}");
                     Console.WriteLine($"Start building");
+
 
                     XCCompiller compiller = new XCCompiller(root, buildPathArgument.Value);
                     compiller.Build();

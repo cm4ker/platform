@@ -23,7 +23,7 @@ namespace ZenPlatform.Compiler.Cecil
         public IType Type => _ts.Resolve(ParameterDefinition.ParameterType);
 
         public int Sequence => _pd.Sequence;
-        public int ArgIndex => _pd.Sequence - 1;
+        public int ArgIndex => _pd.Sequence;
 
         public bool Equals(IParameter other)
         {
