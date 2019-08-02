@@ -58,7 +58,7 @@ namespace ZenPlatform.Compiler.Cecil
             throw new System.NotImplementedException();
         }
 
-        public IParameter WithParameter(string name, IType type, bool isOut, bool isRef)
+        public IParameter DefineParameter(string name, IType type, bool isOut, bool isRef)
         {
             var param = new ParameterDefinition(name, ParameterAttributes.None,
                 _md.ImportReference(TypeSystem.GetTypeReference(type)));

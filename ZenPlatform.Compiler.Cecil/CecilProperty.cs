@@ -47,13 +47,13 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IPropertyBuilder WithSetter(IMethod method)
         {
-            Property.SetMethod = ((CecilMethod) method).Definition;
+            Property.SetMethod = ((CecilMethodBase) method).Definition;
             return this;
         }
 
         public IPropertyBuilder WithGetter(IMethod method)
         {
-            Property.GetMethod = ((CecilMethod) method).Definition;
+            Property.GetMethod = ((CecilMethodBase) method).Definition;
             return this;
         }
     }

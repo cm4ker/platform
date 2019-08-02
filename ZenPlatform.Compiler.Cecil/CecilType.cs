@@ -59,33 +59,30 @@ namespace ZenPlatform.Compiler.Cecil
         protected IReadOnlyList<IConstructor> _constructors;
 
         public IReadOnlyList<IConstructor> Constructors =>
-            _constructors ?? (_constructors = Definition.GetConstructors()
-                .Select(c => new CecilConstructor(TypeSystem, c, Reference)).ToList());
+            _constructors ??= Definition.GetConstructors().Select(c => new CecilConstructor(TypeSystem, c, Reference))
+                .ToList();
 
         protected IReadOnlyList<IField> _fields;
 
         public IReadOnlyList<IField> Fields =>
-            _fields ?? (_fields = Definition.Fields
-                .Select(f => new CecilField(TypeSystem, f, Reference)).ToList());
+            _fields ??= Definition.Fields.Select(f => new CecilField(TypeSystem, f, Reference)).ToList();
 
         protected IReadOnlyList<IProperty> _properties;
 
         public IReadOnlyList<IProperty> Properties =>
-            _properties ?? (_properties =
-                Definition.Properties.Select(p => new CecilProperty(TypeSystem, p, Reference)).ToList());
+            _properties ??= Definition.Properties.Select(p => new CecilProperty(TypeSystem, p, Reference)).ToList();
 
         protected IReadOnlyList<IEventInfo> _events;
 
         public IReadOnlyList<IEventInfo> Events =>
-            _events ?? (_events =
-                Definition.Events.Select(p => new CecilEvent(TypeSystem, p, Reference)).ToList());
+            _events ??= Definition.Events.Select(p => new CecilEvent(TypeSystem, p, Reference)).ToList();
 
         private IReadOnlyList<IType> _genericArguments;
 
         public IReadOnlyList<IType> GenericArguments =>
-            _genericArguments ?? (_genericArguments = Reference is GenericInstanceType gi
+            _genericArguments ??= Reference is GenericInstanceType gi
                 ? gi.GenericArguments.Select(ga => TypeSystem.Resolve(ga)).ToList()
-                : null);
+                : null;
 
         private IReadOnlyList<IType> _genericParameters;
 

@@ -7,7 +7,6 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Shared.Tree
 {
-
     /// <summary>
     /// Класс ноды иерархического дерева 
     /// </summary>
@@ -46,11 +45,11 @@ namespace ZenPlatform.Shared.Tree
         /// <summary>
         /// Добавить подчинённую ноду
         /// </summary>
-        /// <param name="sqlNode"></param>
-        public virtual void Add(Node sqlNode)
+        /// <param name="node"></param>
+        public virtual void Add(Node node)
         {
-            if (sqlNode == this) throw new Exception("Recursial dependency not allowed");
-            Childs.Add(sqlNode);
+            if (node == this) throw new Exception("Recursial dependency not allowed");
+            Childs.Add(node);
         }
 
         /// <summary>
@@ -85,9 +84,9 @@ namespace ZenPlatform.Shared.Tree
         /// </summary>
         /// <typeparam name="T">Тип получаемого родителя</typeparam>
         /// <returns></returns>
-        public virtual Node FirstParent<T>()
+        public virtual T FirstParent<T>() where T : class
         {
-            return _parent is T ? _parent : _parent?.FirstParent<T>();
+            return _parent is T p ? p : _parent?.FirstParent<T>();
         }
 
 

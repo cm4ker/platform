@@ -7,11 +7,4 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         Type,
         Variable
     }
-
-
-    public interface IAstSymbol
-    {
-        string Name { get; set; }
-        SymbolType SymbolType { get; }
-    }
 }

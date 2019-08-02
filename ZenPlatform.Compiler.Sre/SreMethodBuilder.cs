@@ -32,11 +32,11 @@ namespace ZenPlatform.Compiler.Sre
 
         public IParameter WithParameter(IType type, bool isOut, bool isRef)
         {
-            return WithParameter($"P_{_parameterIndex}", type, isOut, isRef);
+            return DefineParameter($"P_{_parameterIndex}", type, isOut, isRef);
         }
 
 
-        public IParameter WithParameter(string name, IType type, bool isOut, bool isRef)
+        public IParameter DefineParameter(string name, IType type, bool isOut, bool isRef)
         {
             var result = new SreDefferedParameter(this, name, type, _parameterIndex++);
             _parameters.Add(result);

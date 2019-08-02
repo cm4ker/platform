@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
@@ -59,6 +60,10 @@ namespace ZenPlatform.EntityComponent
             return document;
         }
 
+        public SingleEntity Load(UserSession session, int typeId, object key)
+        {
+        }
+
         public SingleEntity Load(UserSession session, Type entityType, object key)
         {
             var def = session.GetMetadata(entityType);
@@ -72,15 +77,21 @@ namespace ZenPlatform.EntityComponent
         /// Загрузить DTO сущность объекта
         /// </summary>
         /// <param name="session">Сессия в которой загружаем</param>
-        /// <param name="type">Тип Entity от DTO, которого хотим загрузить</param>
+        /// <param name="dtoType">Тип Entity от DTO, которого хотим загрузить</param>
         /// <param name="key">Ключ</param>
         /// <returns></returns>
-        public object LoadDtoObject(UserSession session, Type type, object key)
+        public object LoadDtoObject(UserSession session, Type dtoType, int typeId, Guid key)
         {
+            //Проверим кэш
+
+            var dto = session.CacheService.Get(dtoType, 1, typeId, key);
+
+            if (dto != null) return dto;
+
             // Получить контекс данных 
             var context = session.DataContext;
 
-            var def = session.GetMetadata(type);
+            var def = session.GetMetadata(dtoType);
 
             var conf = def.EntityConfig as XCSingleEntity;
 
@@ -110,14 +121,10 @@ namespace ZenPlatform.EntityComponent
 
             if (reader.Read())
             {
-                var dto = Activator.CreateInstance(def.DtoType);
+                var mappedDto = (IMappedDto) Activator.CreateInstance(def.DtoType);
 
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    var propInfo = def.DtoType.GetProperty(reader.GetName(i));
-                    propInfo.SetValue(dto, reader.GetValue(i));
-                }
-
+                //Вместо рефлексии нужно использовать статический маппер
+                mappedDto.Map(reader);
                 return dto;
             }
             else
