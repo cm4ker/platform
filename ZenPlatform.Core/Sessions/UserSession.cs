@@ -64,7 +64,8 @@ namespace ZenPlatform.Core.Sessions
         /// <returns></returns>
         public EntityMetadata GetMetadata(Type type)
         {
-            return Environment.GetMetadata(type);
+            //    return Environment.GetMetadata(type);
+            return null;
         }
 
         /// <summary>
@@ -74,7 +75,8 @@ namespace ZenPlatform.Core.Sessions
         /// <returns></returns>
         public EntityMetadata GetMetadata(Guid typeId)
         {
-            return Environment.GetMetadata(typeId);
+            //    return Environment.GetMetadata(typeId);
+            return null;
         }
 
         /// <summary>
@@ -84,7 +86,8 @@ namespace ZenPlatform.Core.Sessions
         /// <returns></returns>
         public IEntityManager GetManager(Type type)
         {
-            return Environment.GetManager(type);
+            //return Environment.GetManager(type);
+            return null;
         }
     }
 }

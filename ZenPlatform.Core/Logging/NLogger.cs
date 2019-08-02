@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using NLog;
-using ZenPlatform.ServerClientShared.Logging;
+using ZenPlatform.Core.Logging;
 
 namespace ZenPlatform.Core.Logging
 {

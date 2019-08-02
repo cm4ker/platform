@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
+using ZenPlatform.Core.Tools;
 
-namespace ZenPlatform.ServerClientShared.Network
+namespace ZenPlatform.Core.Network
 {
-    public class DataStream : Stream, IMessageHandler
+    public class DataStream : Stream,  IConnectionObserver<IConnectionContext>
     {
-        private IChannel _channel;
+        private IConnection _connection;
         private Guid _id;
         private MemoryStream _memoryStream;
         private AutoResetEvent _waitReceive;
@@ -16,15 +17,17 @@ namespace ZenPlatform.ServerClientShared.Network
         private bool _canRead = true;
         private bool _canWrite = true;
         private bool _end = false;
+        private IDisposable _unsubscriber;
+        private const int MAX_PACKAGE_SIZE = 4 * 1024;
 
-        public DataStream(Guid id, IChannel channel)
+        public DataStream(Guid id, IConnection connection)
         {
-            _channel = channel;
+            _connection = connection;
             _id = id;
             _memoryStream = new MemoryStream();
             _waitReceive = new AutoResetEvent(false);
             _readLock = new object();
-            _channel.OnError += channel_OnError;
+            Subscribe(connection);
         }
 
         private void channel_OnError(Exception obj)
@@ -55,7 +58,7 @@ namespace ZenPlatform.ServerClientShared.Network
         {
             if (_canWrite)
             {
-                _channel.Send(new EndInvokeStreamNetworkMessage(_id));
+                _connection.Channel.Send(new EndInvokeStreamNetworkMessage(_id));
                 _canWrite = false;
             }
         }
@@ -110,9 +113,64 @@ namespace ZenPlatform.ServerClientShared.Network
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            //todo packege split by 4Kb 
+
             if (_canWrite)
-                _channel.Send(new DataStreamNetworkMessage(_id, buffer.AsSpan(offset, count).ToArray()));
+            {
+                _connection.Channel.Send(new DataStreamNetworkMessage(_id, buffer.AsSpan(offset, count).ToArray()));
+            }
+        }
+
+
+        public void Subscribe(IConnection observable)
+        {
+            _unsubscriber = observable.Subscribe(this);
+        }
+
+        private void Unsubscribe()
+        {
+            _unsubscriber?.Dispose();
+        }
+
+        public void OnCompleted(IConnectionContext sender)
+        {
+            Unsubscribe();
+        }
+
+        public void OnError(IConnectionContext sender, Exception error)
+        {
+            _end = true;
+            _canWrite = false;
+            _waitReceive.Set();
+            Unsubscribe();
+        }
+
+        public void OnNext(IConnectionContext context, INetworkMessage value)
+        {
+            lock (_readLock)
+            {
+                if (value is DataStreamNetworkMessage data && data.RequestId == _id)
+                {
+                    var pos = _memoryStream.Position;
+                    _memoryStream.Seek(0, SeekOrigin.End);
+                    _memoryStream.Write(data.Data);
+                    _memoryStream.Position = pos;
+                    _waitReceive.Set();
+                }
+                if (value is EndInvokeStreamNetworkMessage end && end.RequestId == _id)
+                {
+                    Unsubscribe();
+                    _end = true;
+                    _waitReceive.Set();
+
+                }
+
+
+            }
+        }
+
+        public bool CanObserve(Type type)
+        {
+            return type.Equals(typeof(DataStreamNetworkMessage)) || type.Equals(typeof(EndInvokeStreamNetworkMessage));
         }
     }
 }

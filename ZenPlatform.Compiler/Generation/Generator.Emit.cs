@@ -7,7 +7,7 @@ using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
-using ZenPlatform.ServerClientShared.Network;
+using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Compiler.Generation
 {

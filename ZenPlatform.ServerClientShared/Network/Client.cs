@@ -8,28 +8,31 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
-using ZenPlatform.ServerClientShared.Logging;
+using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Tools;
 
-namespace ZenPlatform.ServerClientShared.Network
+namespace ZenPlatform.Core.Network
 {
-    public class Client: IMessageHandler, IDisposable
+    public class Client: IConnectionObserver<IConnectionContext>
     {
-        private Channel _channel;
-        private TcpClient _tcpClient;
-        private readonly IMessagePackager _packager;
         private ConcurrentDictionary<Guid, Action<INetworkMessage>> _resultCallbacks;
         private readonly ILogger _logger;
+        private TcpClient _tcpClient;
+        private ClientConnection _connection;
+        private IDisposable _unsubscriber;
 
         public string Database { get; private set; }
         public bool IsUse { get; private set; }
-
-        public bool Connected { get; private set; }
         public bool Authenticated { get; private set; }
 
-        public Client( IMessagePackager packager, ILogger<Client> logger)
+        public ConnectionInfo Info => throw new NotImplementedException();
+
+        public bool Connected { get; private set; }
+
+        public Client(ILogger<Client> logger)
+
         {
-            _tcpClient = new TcpClient();
-            _packager = packager;
+            
             _logger = logger;
             _resultCallbacks = new ConcurrentDictionary<Guid, Action<INetworkMessage>>();
 
@@ -37,14 +40,16 @@ namespace ZenPlatform.ServerClientShared.Network
 
         public void Connect(IPEndPoint endPoint)
         {
-
-            
+            _logger.Info("Connect to {0}", endPoint.Address.ToString());
             try
             {
-                _logger.Info("Connect to {0}", endPoint.Address.ToString());
-                _tcpClient.Connect(endPoint);
-                _channel = new Channel( _packager, new SimpleConsoleLogger<Channel>());
-                _channel.Start(_tcpClient.GetStream(), this);
+                var tcpClient = new TcpClient();
+                tcpClient.Connect(endPoint);
+                _connection = new ClientConnection(new SimpleConsoleLogger<ClientConnection>(), 
+                    tcpClient, new ClientChannelFactory());
+                _unsubscriber = _connection.Subscribe(this);
+                _connection.Open();
+
                 Connected = true;
             }
             catch (SocketException socketException)
@@ -54,122 +59,93 @@ namespace ZenPlatform.ServerClientShared.Network
                 _logger.Error(socketException, "Connection error: ");
 
                 throw socketException;
-            } 
-        }
-
-        public void Receive(object message, IChannel channel)
-        {
-            switch (message)
-            {
-                
-                case ErrorNetworkMessage res:
-                    _logger.Trace(res.Exception.Message);
-                    break;
-                    
-                case INetworkMessage res:
-                    if (_resultCallbacks.ContainsKey(res.RequestId))
-                    {
-                        _resultCallbacks[res.RequestId](res);
-                    }
-                    break;
             }
-            
+
         }
 
-        public void Authentication(IAuthenticationToken token)
+        private WaitHandle RequestAsync(INetworkMessage message, Action<INetworkMessage> CallBack)
+        {
+            AutoResetEvent restEvent = new AutoResetEvent(false);
+            _resultCallbacks.TryAdd(message.Id, (m) => { CallBack(m); _resultCallbacks.TryRemove(message.Id, out _); restEvent.Set(); }) ;
+            _connection.Channel.Send(message);
+
+            return restEvent;
+
+
+        }
+
+        public bool Authentication(IAuthenticationToken token)
         {
             var req = new RequestAuthenticationNetworkMessage(token);
-            AutoResetEvent restEvent = new AutoResetEvent(false);
-            
-            _resultCallbacks.TryAdd(req.Id, msg =>
+
+            var wait = RequestAsync(req, msg =>
             {
                 switch (msg)
                 {
                     case ResponceAuthenticationNetworkMessage res:
                         Authenticated = true;
+
                         break;
                     case ErrorNetworkMessage res:
                         Authenticated = false;
+
                         break;
                 }
-                _resultCallbacks.TryRemove(req.Id, out _);
-                restEvent.Set();
+                
             });
-            _channel.Send(req);
-            restEvent.WaitOne();
+            wait.WaitOne();
+            return Authenticated;
         }
 
-
-
-        public async Task<TResponce> InvokeAsync<TResponce>(Route route, params object[] args)
-        {
-            return await InvokeAsync<object[], TResponce> (route, args);
-        }
 
         public Stream InvokeStream(Route route, params object[] args)
         {
             if (!Connected && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
 
             var message = new StartInvokeStreamNetworkMessage(route, args);
-            var stream = new DataStream(message.Id, _channel);
-            
-            _resultCallbacks.TryAdd(message.Id, msg =>
-            {
-                switch (msg)
-                {
-                    case DataStreamNetworkMessage data:
-                        (stream as IMessageHandler).Receive(data, _channel);
-                        break;
-                    case EndInvokeStreamNetworkMessage end:
-                        (stream as IMessageHandler).Receive(end, _channel);
-                        _resultCallbacks.TryRemove(message.Id, out _);
-                        break;
-                }
-            });
-            _channel.Send(message);
+            var stream = new DataStream(message.Id, _connection);
+
+            _connection.Channel.Send(message);
 
             return stream;
         }
 
-        public void Use(string name)
+        public bool Use(string name)
         {
             if (!Connected) throw new NotSupportedException("Client is disconnected.");
-            if (IsUse) return;
+            if (IsUse) return IsUse; //todo
 
             var req = new RequestEnvironmentUseNetworkMessage(name);
-            AutoResetEvent restEvent = new AutoResetEvent(false);
-            _resultCallbacks.TryAdd(req.Id, msg =>
+            var wait = RequestAsync(req, msg =>
              {
                  switch (msg)
                  {
                      case ResponceEnvironmentUseNetworkMessage res:
                          IsUse = true;
                          Database = res.Name;
+ 
                          break;
                      case ErrorNetworkMessage res:
-
+                         IsUse = false;
                          break;
                  }
-                 _resultCallbacks.TryRemove(req.Id, out _);
-                 restEvent.Set();
              });
-            _channel.Send(req);
-            restEvent.WaitOne();
-            
+            wait.WaitOne();
+            return IsUse;
         }
 
-        public TResponce Invoke<TRequest, TResponce>(Route route, TRequest request)
+        public TResponce Invoke<TResponce>(Route route, params object[] args)
         {
             if (!Connected && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
             if (!IsUse) throw new NotSupportedException("First need to choose a database. Need call method Use.");
 
-            TResponce responce = default(TResponce);
+            TResponce responce = default;
             Exception exception = null;
-            var message = new RequestInvokeUnaryNetworkMessage(route, request);
+            var message = new RequestInvokeUnaryNetworkMessage(route, args);
 
             AutoResetEvent restEvent = new AutoResetEvent(false);
 
-            _resultCallbacks.TryAdd(message.Id, (msg) =>
+            var wait = RequestAsync(message, (msg) =>
             {
                 switch (msg)
                 {
@@ -188,38 +164,66 @@ namespace ZenPlatform.ServerClientShared.Network
                         break;
                 }
 
-                _resultCallbacks.TryRemove(message.Id, out _);
-                restEvent.Set();
             });
-            _channel.Send(message);
 
-            restEvent.WaitOne();
+            wait.WaitOne();
             if (exception != null) throw exception;
 
             return responce;
 
         }
 
-        public async Task<TResponce> InvokeAsync<TRequest, TResponce>(Route route, TRequest request)
+        public async Task<TResponce> InvokeAsync<TResponce>(Route route, params object[] args)
         {
 
-            return await Task.Factory.StartNew(() => Invoke<TRequest, TResponce>(route, request)
+            return await Task.Factory.StartNew(() => Invoke<TResponce>(route, args)
             , TaskCreationOptions.LongRunning);
         }
 
 
-
-      
-        public void Disconnect()
+        public void Close()
         {
-            Connected = false;
-            _channel.Stop();
+            if (Connected)
+            {
+                _logger.Info("Close connection.");
+
+                _unsubscriber?.Dispose();
+                Connected = false;
+                _connection?.Close();
+            }
+        }
+        public T GetService<T>()
+        {
+            var factory = new NetworkProxyFactory();
+
+            return factory.Create<T>(_connection);
         }
 
-        public void Dispose()
+
+        public void OnCompleted(IConnectionContext sender)
         {
-            Disconnect();
-            _tcpClient.Dispose();
+            Close();
+        }
+
+        public void OnError(IConnectionContext sender, Exception error)
+        {
+            Close();
+        }
+
+        public void OnNext(IConnectionContext context, INetworkMessage value)
+        {
+            if (value is ErrorNetworkMessage error)
+                _logger.Debug("Error message: ", error.Exception);
+
+            if (_resultCallbacks.ContainsKey(value.RequestId))
+            {
+                _resultCallbacks[value.RequestId](value);
+            }
+        }
+
+        public bool CanObserve(Type type)
+        {
+            return true;
         }
     }
 }
