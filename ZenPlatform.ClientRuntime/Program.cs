@@ -1,5 +1,5 @@
 ﻿using System;
-using ZenPlatform.ServerClientShared.Network;
+using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.AsmClientInfrastructure
 {

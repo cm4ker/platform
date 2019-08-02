@@ -16,7 +16,7 @@ namespace ZenPlatform.Core.Network
           
         }
 
-        public override void OnNext(IChannel sender, INetworkMessage value)
+        public override void OnNext(INetworkMessage value)
         {
             foreach (var observer in _connectionObservers.ToArray())
                 if (_connectionObservers.Contains(observer) && observer.CanObserve(value.GetType()))
