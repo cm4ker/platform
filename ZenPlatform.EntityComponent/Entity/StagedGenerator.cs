@@ -10,10 +10,12 @@ using dnlib.DotNet.Resources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using Npgsql.TypeHandlers;
+using ServiceStack;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Contracts;
@@ -53,6 +55,19 @@ namespace ZenPlatform.EntityComponent.Entity
                 };
         }
 
+
+        private void Stage0EmitMap(IEmitter rg, IParameter readerParam, IType readerType, IType propertyType,
+            SystemTypeBindings ts, IMethod setter, string propName)
+        {
+            rg
+                .LdArg_0()
+                .LdArg(readerParam.ArgIndex)
+                .Ldstr(propName)
+                .EmitCall(readerType.FindMethod("get_Item", ts.String))
+                .Unbox_Any(propertyType)
+                .EmitCall(setter);
+        }
+
         public void Stage0(XCObjectTypeBase type, IAssemblyBuilder builder)
         {
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
@@ -68,9 +83,12 @@ namespace ZenPlatform.EntityComponent.Entity
 
             dtoClass.AddInterfaceImplementation(builder.TypeSystem.FindType<IMappedDto>());
             var readerMethod = dtoClass.DefineMethod("Map", true, false, true);
+            var rg = readerMethod.Generator;
+
+            var readerType = builder.TypeSystem.FindType<DbDataReader>();
 
             var readerParam =
-                readerMethod.DefineParameter("reader", builder.TypeSystem.FindType<DbDataReader>(), false, false);
+                readerMethod.DefineParameter("reader", readerType, false, false);
 
 
             _dtoCollections.Add(singleEntityType, dtoClass);
@@ -79,42 +97,72 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 bool propertyGenerated = false;
 
+                if (prop.DatabaseColumnName.IsNullOrEmpty())
+                {
+                    throw new Exception(
+                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {singleEntityType.Name}. Database column is empty!");
+                }
+
+                var ts = builder.TypeSystem.GetSystemBindings();
                 if (prop.Types.Count > 1)
                 {
-                    dtoClass.DefinePropertyWithBackingField(builder.TypeSystem.GetSystemBindings().Int,
-                        prop.Name + "_Type");
+                    {
+                        var tProperty = dtoClass.DefinePropertyWithBackingField(
+                            ts.Int,
+                            prop.Name + "_Type");
+
+                        Stage0EmitMap(rg, readerParam, readerType, ts.Int, ts, tProperty.Setter, prop
+                            .GetPropertySchemas(prop.DatabaseColumnName)
+                            .First(x => x.SchemaType == XCColumnSchemaType.Type).Name);
+                    }
                 }
 
                 foreach (var ctype in prop.Types)
                 {
+                    var propName = $"{prop.Name}_{ctype.Name}";
+                    var propRef = $"{prop.Name}_Ref";
+
                     if (ctype is XCPremitiveType pt)
                     {
                         var propType = pt switch
                             {
-                            XCBinary b => builder.TypeSystem.GetSystemBindings().Byte.MakeArrayType(),
-                            XCInt b => builder.TypeSystem.GetSystemBindings().Int,
-                            XCString b => builder.TypeSystem.GetSystemBindings().String,
-                            XCNumeric b => builder.TypeSystem.GetSystemBindings().Double,
-                            XCBoolean b => builder.TypeSystem.GetSystemBindings().Boolean,
-                            XCDateTime b => builder.TypeSystem.GetSystemBindings().DateTime,
-                            XCGuid b => builder.TypeSystem.GetSystemBindings().Guid,
+                            XCBinary b => ts.Byte.MakeArrayType(),
+                            XCInt b => ts.Int,
+                            XCString b => ts.String,
+                            XCNumeric b => ts.Double,
+                            XCBoolean b => ts.Boolean,
+                            XCDateTime b => ts.DateTime,
+                            XCGuid b => ts.Guid,
                             };
 
                         //var propType = builder.FindType(pt.CLRType.FullName);
-                        dtoClass.DefinePropertyWithBackingField(propType, $"{prop.Name}_{pt.Name}");
+                        var ptProperty = dtoClass.DefinePropertyWithBackingField(propType, propName);
+
+                        Stage0EmitMap(rg, readerParam, readerType, propType, ts, ptProperty.Setter, prop
+                            .GetPropertySchemas(prop.DatabaseColumnName)
+                            .First(x => x.SchemaType == ((prop.Types.Count > 1)
+                                            ? XCColumnSchemaType.Value
+                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).Name);
                     }
                     else if (ctype is XCObjectTypeBase ot)
                     {
                         if (!propertyGenerated)
                         {
                             propertyGenerated = true;
-                            dtoClass.DefinePropertyWithBackingField(builder.TypeSystem.GetSystemBindings().Guid,
-                                $"{prop.Name}_{ot.Name}");
+                            var otProperty = dtoClass.DefinePropertyWithBackingField(
+                                ts.Guid,
+                                propRef);
+
+                            Stage0EmitMap(rg, readerParam, readerType, ts.Guid, ts, otProperty.Setter, prop
+                                .GetPropertySchemas(prop.DatabaseColumnName)
+                                .First(x => x.SchemaType == XCColumnSchemaType.Ref).Name);
                         }
                     }
                 }
             }
 
+
+            rg.Ret();
             //end create dto class
         }
 
