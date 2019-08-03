@@ -180,6 +180,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter Ldlen(this IEmitter emitter) => emitter.Emit(OpCodes.Ldlen);
 
         public static IEmitter Add(this IEmitter emitter) => emitter.Emit(OpCodes.Add);
+        public static IEmitter And(this IEmitter emitter) => emitter.Emit(OpCodes.And);
         public static IEmitter Sub(this IEmitter emitter) => emitter.Emit(OpCodes.Sub);
         public static IEmitter Mul(this IEmitter emitter) => emitter.Emit(OpCodes.Mul);
         public static IEmitter Div(this IEmitter emitter) => emitter.Emit(OpCodes.Div);

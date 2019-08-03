@@ -4,6 +4,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class Assignment : Expression
     {
+        public override TypeSyntax Type => Name.Type;
     }
 
     /// <summary>
@@ -14,6 +15,8 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         public PostIncrementExpression(ILineInfo li, string name) : this(li, new Name(li, name))
         {
         }
+
+        public override TypeSyntax Type => Name.Type;
     }
 
     public partial class PostDecrementExpression : Expression
@@ -21,5 +24,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         public PostDecrementExpression(ILineInfo li, string name) : this(li, new Name(li, name))
         {
         }
+
+        public override TypeSyntax Type => Name.Type;
     }
 }

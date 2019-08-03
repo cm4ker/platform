@@ -282,7 +282,12 @@ namespace ZenPlatform.Compiler.Cecil
             return this;
         }
 
-        public IEmitter ThrowException(IType exceptionType)
+        public IEmitter Throw()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter CatchException(IType exceptionType)
         {
             return this.Emit(SreOpCodes.Throw, exceptionType);
         }

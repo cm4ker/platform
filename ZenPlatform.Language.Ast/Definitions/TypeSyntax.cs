@@ -31,6 +31,12 @@ namespace ZenPlatform.Language.Ast.Definitions
             return tnk == TypeNodeKind.Int || tnk == TypeNodeKind.Double;
         }
 
+
+        public static bool IsBoolean(this TypeNodeKind tnk)
+        {
+            return tnk == TypeNodeKind.Boolean;
+        }
+
         public static bool IsString(this TypeNodeKind tnk)
         {
             return tnk == TypeNodeKind.String;
@@ -38,6 +44,8 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public static bool IsNumeric(this TypeSyntax ts) => ts.Kind.IsNumeric();
         public static bool IsString(this TypeSyntax ts) => ts.Kind.IsString();
+
+        public static bool IsBoolean(this TypeSyntax ts) => ts.Kind.IsBoolean();
     }
 
     /// <summary>

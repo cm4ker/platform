@@ -44,10 +44,15 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class CompilationUnit : SyntaxNode
     {
-        public CompilationUnit(ILineInfo lineInfo, List<string> namespaces, List<TypeEntity> entityes): base(lineInfo)
+        public CompilationUnit(ILineInfo lineInfo, List<NamespaceBase> namespaces, List<TypeEntity> entityes): base(lineInfo)
         {
             var slot = 0;
             Namespaces = namespaces;
+            foreach (var item in Namespaces)
+            {
+                Childs.Add(item);
+            }
+
             Entityes = entityes;
             foreach (var item in Entityes)
             {
@@ -55,7 +60,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             }
         }
 
-        public List<string> Namespaces
+        public List<NamespaceBase> Namespaces
         {
             get;
         }
@@ -68,6 +73,78 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitCompilationUnit(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public abstract partial class NamespaceBase : SyntaxNode
+    {
+        public NamespaceBase(ILineInfo lineInfo, String name): base(lineInfo)
+        {
+            var slot = 0;
+            Name = name;
+        }
+
+        public String Name
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class Namespace : NamespaceBase
+    {
+        public Namespace(ILineInfo lineInfo, String name): base(lineInfo, name)
+        {
+            var slot = 0;
+            Name = name;
+        }
+
+        public String Name
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitNamespace(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class ClassNamespace : NamespaceBase
+    {
+        public ClassNamespace(ILineInfo lineInfo, String className, String alias): base(lineInfo, className)
+        {
+            var slot = 0;
+            ClassName = className;
+            Alias = alias;
+        }
+
+        public String ClassName
+        {
+            get;
+        }
+
+        public String Alias
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitClassNamespace(this);
         }
     }
 }
@@ -218,14 +295,20 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public abstract partial class UnaryExpression : Expression
     {
-        public UnaryExpression(ILineInfo lineInfo, Expression expression): base(lineInfo)
+        public UnaryExpression(ILineInfo lineInfo, Expression expression, UnaryOperatorType operaotrType): base(lineInfo)
         {
             var slot = 0;
             Expression = expression;
             Childs.Add(Expression);
+            OperaotrType = operaotrType;
         }
 
         public Expression Expression
+        {
+            get;
+        }
+
+        public UnaryOperatorType OperaotrType
         {
             get;
         }
@@ -241,13 +324,14 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class CastExpression : UnaryExpression
     {
-        public CastExpression(ILineInfo lineInfo, Expression expression, TypeSyntax castType): base(lineInfo, expression)
+        public CastExpression(ILineInfo lineInfo, Expression expression, TypeSyntax castType, UnaryOperatorType operaotrType): base(lineInfo, expression, operaotrType)
         {
             var slot = 0;
             Expression = expression;
             Childs.Add(Expression);
             CastType = castType;
             Childs.Add(CastType);
+            OperaotrType = operaotrType;
         }
 
         public Expression Expression
@@ -256,6 +340,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         }
 
         public TypeSyntax CastType
+        {
+            get;
+        }
+
+        public UnaryOperatorType OperaotrType
         {
             get;
         }
@@ -271,13 +360,14 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class IndexerExpression : UnaryExpression
     {
-        public IndexerExpression(ILineInfo lineInfo, Expression indexer, Expression expression): base(lineInfo, expression)
+        public IndexerExpression(ILineInfo lineInfo, Expression indexer, Expression expression, UnaryOperatorType operaotrType): base(lineInfo, expression, operaotrType)
         {
             var slot = 0;
             Indexer = indexer;
             Childs.Add(Indexer);
             Expression = expression;
             Childs.Add(Expression);
+            OperaotrType = operaotrType;
         }
 
         public Expression Indexer
@@ -286,6 +376,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         }
 
         public Expression Expression
+        {
+            get;
+        }
+
+        public UnaryOperatorType OperaotrType
         {
             get;
         }
@@ -301,13 +396,12 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class LogicalOrArithmeticExpression : UnaryExpression
     {
-        public LogicalOrArithmeticExpression(ILineInfo lineInfo, Expression expression, UnaryOperatorType operaotrType): base(lineInfo, expression)
+        public LogicalOrArithmeticExpression(ILineInfo lineInfo, Expression expression, UnaryOperatorType operaotrType): base(lineInfo, expression, operaotrType)
         {
             var slot = 0;
             Expression = expression;
             Childs.Add(Expression);
             OperaotrType = operaotrType;
-            Childs.Add(OperaotrType);
         }
 
         public Expression Expression
@@ -596,20 +690,13 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Field : Member, IAstSymbol
     {
-        public Field(ILineInfo lineInfo, String name, TypeSyntax type): base(lineInfo)
+        public Field(ILineInfo lineInfo, String name): base(lineInfo)
         {
             var slot = 0;
             Name = name;
-            Type = type;
-            Childs.Add(Type);
         }
 
         public String Name
-        {
-            get;
-        }
-
-        public TypeSyntax Type
         {
             get;
         }
@@ -750,6 +837,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             var slot = 0;
             TypeBody = typeBody;
+            Childs.Add(TypeBody);
             Name = name;
             IsMappable = isMappable;
         }
@@ -1120,6 +1208,29 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitPostDecrementExpression(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions.Expressions
+{
+    public partial class Throw : Expression
+    {
+        public Throw(ILineInfo lineInfo, Expression exception): base(lineInfo)
+        {
+            var slot = 0;
+            Exception = exception;
+            Childs.Add(Exception);
+        }
+
+        public Expression Exception
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitThrow(this);
         }
     }
 }

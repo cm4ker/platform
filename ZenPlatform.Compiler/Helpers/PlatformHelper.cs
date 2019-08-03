@@ -46,6 +46,11 @@ namespace ZenPlatform.Compiler.Helpers
 
         public static IType ToClrType(this TypeSyntax typeSyntax, IAssembly context)
         {
+            if (typeSyntax is SingleTypeSyntax sts)
+            {
+                return ToClrType(typeSyntax, context.TypeSystem) ?? context.FindType(sts.TypeName);
+            }
+
             return ToClrType(typeSyntax, context.TypeSystem);
         }
 
@@ -67,7 +72,8 @@ namespace ZenPlatform.Compiler.Helpers
                     TypeNodeKind.Char => _stb.Char,
                     TypeNodeKind.Double => _stb.Double,
                     TypeNodeKind.String => _stb.String,
-                    TypeNodeKind.Byte => _stb.Byte
+                    TypeNodeKind.Byte => _stb.Byte,
+                    TypeNodeKind.Object => _stb.Object
                     };
             }
 

@@ -7,12 +7,13 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class Name : Expression
     {
-    }
-
-    public partial class FieldExpression : Expression
-    {
-        public FieldExpression(Expression exp, string fieldName) : this(null, exp, fieldName)
+        public override TypeSyntax Type
         {
+            get
+            {
+                var v = FirstParent<IScoped>().SymbolTable.Find(this.Value, SymbolType.Variable);
+                return ((ITypedNode) v.SyntaxObject).Type;
+            }
         }
     }
 }

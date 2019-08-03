@@ -1,4 +1,6 @@
-namespace ZenPlatform.Language.Ast.Definitions.Functions
+using ZenPlatform.Language.Ast.Definitions;
+
+namespace ZenPlatform.Language.Ast
 {
     public interface ITypedNode
     {

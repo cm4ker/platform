@@ -5,6 +5,7 @@ using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
@@ -22,18 +23,22 @@ namespace ZenPlatform.Component.Tests
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
             var asm = pl.CreateAssembly("Debug");
 
+            var root = new Root(null, new List<CompilationUnit>());
+
             foreach (var component in conf.Data.Components)
             {
                 foreach (var type in component.Types)
                 {
-                    var root = new Root(null, new List<CompilationUnit>());
                     new StagedGeneratorAst(component).Stage0(type, root);
-
-                    foreach (var cu in root.Units)
-                    {
-                        new Generator(new GeneratorParameters(cu, asm, CompilationMode.Server)).Build();
-                    }
+                    new StagedGeneratorAst(component).Stage1(type, root);
                 }
+            }
+
+            AstScopeRegister.Apply(root);
+
+            foreach (var cu in root.Units)
+            {
+                new Generator(new GeneratorParameters(cu, asm, CompilationMode.Server)).Build();
             }
 
             asm.Write("Debug.bll");

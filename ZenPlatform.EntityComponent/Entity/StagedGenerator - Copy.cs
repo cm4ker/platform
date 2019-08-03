@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data.Common;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -24,7 +25,12 @@ using ZenPlatform.Contracts;
 using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
+using ZenPlatform.Language.Ast.Infrastructure;
+using BinaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.BinaryExpression;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 using Property = ZenPlatform.Language.Ast.Definitions.Property;
 using TypeAttributes = System.Reflection.TypeAttributes;
@@ -44,17 +50,19 @@ namespace ZenPlatform.EntityComponent.Entity
             _dtoCollections = new Dictionary<XCSingleEntity, IType>();
         }
 
-        private IType GetTypeFromPlatformType(XCPremitiveType pt, ITypeSystem ts)
+        private TypeSyntax GetAstFromPlatformType(XCTypeBase pt)
         {
             return pt switch
                 {
-                XCBinary b => ts.GetSystemBindings().Byte.MakeArrayType(),
-                XCInt b => ts.GetSystemBindings().Int,
-                XCString b => ts.GetSystemBindings().String,
-                XCNumeric b => ts.GetSystemBindings().Double,
-                XCBoolean b => ts.GetSystemBindings().Boolean,
-                XCDateTime b => ts.GetSystemBindings().DateTime,
-                XCGuid b => ts.GetSystemBindings().Guid,
+                XCBinary b => (TypeSyntax) new ArrayTypeSyntax(null,
+                    new PrimitiveTypeSyntax(null, TypeNodeKind.Byte)),
+                XCInt b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Int),
+                XCString b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.String),
+                XCNumeric b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Double),
+                XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
+                XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type),
+                XCObjectTypeBase b => (TypeSyntax) new SingleTypeSyntax(null, b.Name, TypeNodeKind.Type),
+                XCGuid b =>(TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
                 };
         }
 
@@ -154,7 +162,9 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var cls = new Class(null, new TypeBody(members), dtoClassName, true);
 
-            var cu = new CompilationUnit(null, null, new List<TypeEntity>() {cls});
+            cls.Namespace = @namespace;
+
+            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
             root.Add(cu);
         }
@@ -164,90 +174,88 @@ namespace ZenPlatform.EntityComponent.Entity
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
                                        $"This component only can serve {nameof(XCSingleEntity)} objects");
             var className = type.Name;
+            var dtoClassName =
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             List<Member> members = new List<Member>();
 
+            var field = new Field(null, "_dto",
+                new SingleTypeSyntax(null, $"{@namespace}.{dtoClassName}", TypeNodeKind.Type));
+
+            members.Add(field);
+
             foreach (var prop in singleEntityType.Properties)
             {
                 bool propertyGenerated = false;
 
+                var propName = prop.Name;
+
+                var propType = (prop.Types.Count > 1)
+                    ? new PrimitiveTypeSyntax(null, TypeNodeKind.Object)
+                    : GetAstFromPlatformType(prop.Types[0]);
+
+
+                var astProp = new Property(null, propName, propType
+                    , true, true);
+
+
+                members.Add(astProp);
+                var get = new List<Statement>();
+
                 if (prop.Types.Count > 1)
                 {
+                    foreach (var ctype in prop.Types)
                     {
-                        var dbColName = prop.GetPropertySchemas(prop.DatabaseColumnName)
-                            .First(x => x.SchemaType == XCColumnSchemaType.Type).Name;
+                        var intType = new PrimitiveTypeSyntax(null, TypeNodeKind.Int);
+                        var typeLiteral = new Literal(null, ctype.Id.ToString(), intType);
 
-                        var astProp = new Property(null, prop.Name + "_Type",
-                            new PrimitiveTypeSyntax(null, TypeNodeKind.Int), dbColName);
+                        var schema = prop.GetPropertySchemas(prop.Name)
+                            .First(x => x.SchemaType == XCColumnSchemaType.Type);
 
-                        members.Add(astProp);
+                        var fieldExpression = new FieldExpression(new Name(null, "_dto"), schema.Name);
+
+                        var expr = new BinaryExpression(null,
+                            typeLiteral
+                            , fieldExpression
+                            , BinaryOperatorType.Equal);
+
+
+                        var schemaTyped = prop.GetPropertySchemas(prop.Name)
+                            .First(x => x.PlatformType == ctype);
+
+                        var feTypedProp = new FieldExpression(new Name(null, "_dto"), schemaTyped.Name);
+
+                        var ret = new Return(null, feTypedProp);
+
+                        var i = new If(null, null, ret.ToBlock(), expr);
+
+
+                        get.Add(i);
                     }
+
+                    get.Add(new Throw(null,
+                            new Literal(null, "The type not found", new PrimitiveTypeSyntax(null, TypeNodeKind.String)))
+                        .ToStatement());
                 }
-
-
-                foreach (var ctype in prop.Types)
+                else
                 {
-                    if (ctype is XCPremitiveType pt)
-                    {
-                        var dbColName = prop
-                            .GetPropertySchemas(prop.DatabaseColumnName)
-                            .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                            ? XCColumnSchemaType.Value
-                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).Name;
-
-                        var propName = prop
-                            .GetPropertySchemas(prop.Name)
-                            .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                            ? XCColumnSchemaType.Value
-                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).Name;
-
-                        TypeSyntax propType = pt switch
-                            {
-                            XCBinary b => (TypeSyntax) new ArrayTypeSyntax(null,
-                                new PrimitiveTypeSyntax(null, TypeNodeKind.Byte)),
-                            XCInt b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Int),
-                            XCString b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.String),
-                            XCNumeric b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Double),
-                            XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
-                            XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type)
-                            ,
-                            XCGuid b =>(TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
-                            };
-
-                        var astProp = new Property(null, propName, propType, dbColName);
-                        members.Add(astProp);
-                    }
-                    else if (ctype is XCObjectTypeBase ot)
-                    {
-                        if (!propertyGenerated)
-                        {
-                            propertyGenerated = true;
-
-                            var dbColName = prop
-                                .GetPropertySchemas(prop.DatabaseColumnName)
-                                .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                                ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) && x.PlatformType == ot).Name;
-
-                            var propName = prop
-                                .GetPropertySchemas(prop.Name)
-                                .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                                ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) && x.PlatformType == ot).Name;
-
-                            var astProp = new Property(null, propName,
-                                new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type), dbColName);
-                            members.Add(astProp);
-                        }
-                    }
+                    var schema = prop.GetPropertySchemas(prop.Name)
+                        .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
+                    var fieldExpression = new FieldExpression(new Name(null, "_dto"), schema.Name);
+                    var ret = new Return(null, fieldExpression);
+                    get.Add(ret);
                 }
+
+                astProp.Getter = new Block(get);
             }
 
-            var cls = new Class(null, new TypeBody(members), className, true);
+            var cls = new Class(null, new TypeBody(members), className);
 
-            var cu = new CompilationUnit(null, null, new List<TypeEntity>() {cls});
+            cls.Namespace = @namespace;
+
+            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
             root.Add(cu);
         }
