@@ -625,12 +625,13 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Property : Member, IAstSymbol
     {
-        public Property(ILineInfo lineInfo, String name, TypeSyntax type): base(lineInfo)
+        public Property(ILineInfo lineInfo, String name, TypeSyntax type, String mapTo = null): base(lineInfo)
         {
             var slot = 0;
             Name = name;
             Type = type;
             Childs.Add(Type);
+            MapTo = mapTo;
         }
 
         public String Name
@@ -639,6 +640,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public TypeSyntax Type
+        {
+            get;
+        }
+
+        public String MapTo
         {
             get;
         }
@@ -740,11 +746,12 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Class : TypeEntity, IAstSymbol
     {
-        public Class(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, name)
+        public Class(ILineInfo lineInfo, TypeBody typeBody, String name, Boolean isMappable = false): base(lineInfo, name)
         {
             var slot = 0;
             TypeBody = typeBody;
             Name = name;
+            IsMappable = isMappable;
         }
 
         public TypeBody TypeBody
@@ -753,6 +760,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public String Name
+        {
+            get;
+        }
+
+        public Boolean IsMappable
         {
             get;
         }
