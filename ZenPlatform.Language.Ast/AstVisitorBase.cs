@@ -276,6 +276,26 @@ namespace ZenPlatform.Language.Ast
         {
             return DefaultVisit(obj);
         }
+
+        public T VisitNamespaceBase(NamespaceBase obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public T VisitNamespace(Namespace obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public T VisitClassNamespace(ClassNamespace obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public T VisitThrow(Throw obj)
+        {
+            return DefaultVisit(obj);
+        }
     }
 
     public class AstWalker<T> : AstVisitorBase<T>

@@ -152,12 +152,17 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new NotImplementedException();
         }
 
-        public IEmitter ThrowException(IType exceptionType)
+        public IEmitter CatchException(IType exceptionType)
         {
             throw new NotImplementedException();
         }
 
         public IEmitter EndExceptionBlock()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEmitter Throw()
         {
             throw new NotImplementedException();
         }

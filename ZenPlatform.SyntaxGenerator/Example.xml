@@ -8,8 +8,27 @@
 
     <Syntax Name="CompilationUnit">
         <Arguments>
-            <List DenyChildrenFill="true" Name="Namespaces" Type="List&lt;string&gt;"/>
+            <List Name="Namespaces" Type="List&lt;NamespaceBase&gt;"/>
             <List Name="Entityes" Type="List&lt;TypeEntity&gt;"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="NamespaceBase" IsAbstract="true">
+        <Arguments>
+            <Single Name="Name" DenyChildrenFill="true" Type="String"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Namespace" Base="NamespaceBase">
+        <Arguments>
+            <Single Name="Name" PassBase="true" DenyChildrenFill="true" Type="String"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ClassNamespace" Base="NamespaceBase">
+        <Arguments>
+            <Single Name="ClassName" PassBase="true" DenyChildrenFill="true" Type="String"/>
+            <Single Name="Alias" DenyChildrenFill="true" Type="String"/>
         </Arguments>
     </Syntax>
 
@@ -41,6 +60,7 @@
     <Syntax Name="UnaryExpression" Base="Expression" IsAbstract="true" NS="Expressions">
         <Arguments>
             <Single Name="Expression" Type="Expression"/>
+            <Single Name="OperaotrType" Type="UnaryOperatorType" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 
@@ -48,6 +68,7 @@
         <Arguments>
             <Single Name="Expression" Type="Expression" PassBase="true"/>
             <Single Name="CastType" Type="TypeSyntax"/>
+            <Single Name="OperaotrType" Type="UnaryOperatorType" DenyChildrenFill="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
@@ -55,13 +76,14 @@
         <Arguments>
             <Single Name="Indexer" Type="Expression"/>
             <Single Name="Expression" Type="Expression" PassBase="true"/>
+            <Single Name="OperaotrType" Type="UnaryOperatorType" DenyChildrenFill="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="LogicalOrArithmeticExpression" Base="UnaryExpression" NS="Expressions">
         <Arguments>
             <Single Name="Expression" Type="Expression" PassBase="true"/>
-            <Single Name="OperaotrType" Type="UnaryOperatorType"/>
+            <Single Name="OperaotrType" Type="UnaryOperatorType" DenyChildrenFill="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
@@ -111,7 +133,6 @@
     <Syntax Name="Field" Base="Member" IsSymbol="true">
         <Arguments>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
-            <Single Name="Type" Type="TypeSyntax"/>
         </Arguments>
     </Syntax>
 
@@ -145,7 +166,7 @@
 
     <Syntax Name="Class" Base="TypeEntity" IsSymbol="true">
         <Arguments>
-            <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true"/>
+            <Single Name="TypeBody" Type="TypeBody"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>
             <Single Name="IsMappable" Type="Boolean" DenyChildrenFill="true" Default="false"/>
         </Arguments>
@@ -230,6 +251,12 @@
     <Syntax Name="PostDecrementExpression" Base="Expression" NS="Expressions">
         <Arguments>
             <Single Name="Name" Type="Name"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Throw" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Exception" Type="Expression"/>
         </Arguments>
     </Syntax>
 </Config>

@@ -7,5 +7,6 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class Class : TypeEntity
     {
+        
     }
 }

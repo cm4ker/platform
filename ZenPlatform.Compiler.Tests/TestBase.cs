@@ -184,7 +184,7 @@ namespace ZenPlatform.Compiler.Tests
             });
 
 
-            AstSymbolPreparator.Prepare(cu);
+            AstScopeRegister.Apply(cu);
 
             var gp = new GeneratorParameters(cu, asm, CompilationMode.Server);
 

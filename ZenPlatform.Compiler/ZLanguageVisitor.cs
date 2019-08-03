@@ -44,7 +44,7 @@ namespace ZenPlatform.Compiler.AST
 
             base.VisitEntryPoint(context);
 
-            var cu = new CompilationUnit(context.start.ToLineInfo(), new List<string>(), typeList);
+            var cu = new CompilationUnit(context.start.ToLineInfo(), new List<NamespaceBase>(), typeList);
 
             return cu;
         }
@@ -305,7 +305,7 @@ namespace ZenPlatform.Compiler.AST
             base.VisitCastExpression(context);
 
             var result = new CastExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
-                _syntaxStack.PopType());
+                _syntaxStack.PopType(), UnaryOperatorType.Cast);
 
             _syntaxStack.Push(result);
 
@@ -477,7 +477,7 @@ namespace ZenPlatform.Compiler.AST
             var li = context.start.ToLineInfo();
             if (context.indexerExpression != null)
                 _syntaxStack.Push(new IndexerExpression(li, _syntaxStack.PopExpression(),
-                    _syntaxStack.PopExpression()));
+                    _syntaxStack.PopExpression(), UnaryOperatorType.Indexer));
 
             return null;
         }

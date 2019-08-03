@@ -12,6 +12,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
@@ -80,7 +81,8 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitClass(Class @class)
         {
-            var tb = _asm.DefineType(DEFAULT_ASM_NAMESPACE, @class.Name,
+            var tb = _asm.DefineType(
+                (string.IsNullOrEmpty(@class.Namespace) ? DEFAULT_ASM_NAMESPACE : @class.Namespace), @class.Name,
                 SreTA.Class | SreTA.NotPublic |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass,
                 _bindings.Object);
@@ -130,6 +132,22 @@ namespace ZenPlatform.Compiler.Generation
                         case BinaryOperatorType.Modulo:
                             e.Rem();
                             break;
+                    }
+
+                if (be.Type.IsString())
+                    switch (be.BinaryOperatorType)
+                    {
+                        case BinaryOperatorType.Add:
+                            e.EmitCall(_bindings.Methods.Concat);
+                            //e.EmitCall(_bindings.String.FindMethod(x => x.Name == "Concat" && x.Parameters.Count == 2));
+                            break;
+                        default: throw new NotSupportedException();
+                    }
+
+                if (be.Type.IsBoolean())
+                {
+                    switch (be.BinaryOperatorType)
+                    {
                         case BinaryOperatorType.Equal:
                             e.Ceq();
                             break;
@@ -149,22 +167,13 @@ namespace ZenPlatform.Compiler.Generation
                             e.LessOrEqual();
                             break;
                         case BinaryOperatorType.And:
-                            e.Add();
+                            e.And();
                             break;
                         case BinaryOperatorType.Or:
                             e.Or();
                             break;
                     }
-
-                if (be.Type.IsString())
-                    switch (be.BinaryOperatorType)
-                    {
-                        case BinaryOperatorType.Add:
-                            e.EmitCall(_bindings.Methods.Concat);
-                            //e.EmitCall(_bindings.String.FindMethod(x => x.Name == "Concat" && x.Parameters.Count == 2));
-                            break;
-                        default: throw new NotSupportedException();
-                    }
+                }
             }
             else if (expression is UnaryExpression ue)
             {
@@ -241,7 +250,10 @@ namespace ZenPlatform.Compiler.Generation
                         e.LdLoc(vd);
                 }
                 else if (variable.CodeObject is IField fd)
-                    e.LdsFld(fd);
+                {
+                    e.LdArg_0();
+                    e.LdFld(fd);
+                }
                 else if (variable.CodeObject is IParameter pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
@@ -267,10 +279,15 @@ namespace ZenPlatform.Compiler.Generation
                 EmitExpression(e, fe.Expression, symbolTable);
                 var expType = fe.Expression.Type;
 
-                IType extTypeScan = null;
+                IType extTypeScan = expType.ToClrType(_asm);
 
                 var expProp = extTypeScan.Properties.First(x => x.Name == fe.FieldName);
-                fe.Type = new SingleTypeSyntax(null, expProp.PropertyType.Name, TypeNodeKind.Unknown);
+
+                if (expProp.PropertyType.IsArray)
+                    fe.Type = new ArrayTypeSyntax(null,
+                        new SingleTypeSyntax(null, expProp.PropertyType.ArrayElementType.Name, TypeNodeKind.Unknown));
+                else
+                    fe.Type = new SingleTypeSyntax(null, expProp.PropertyType.Name, TypeNodeKind.Unknown);
 
                 e.PropGetValue(expProp);
             }
@@ -323,6 +340,13 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is Variable variable)
             {
                 EmitVariable(e, symbolTable, variable);
+            }
+            else if (expression is Throw th)
+            {
+                EmitExpression(e, th.Exception, symbolTable);
+                var constructor = _ts.FindType<Exception>().FindConstructor(_bindings.String);
+                e.NewObj(constructor);
+                e.Throw();
             }
         }
 

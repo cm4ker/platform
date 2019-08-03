@@ -47,7 +47,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         public override Microsoft.CodeAnalysis.SyntaxNode VisitCompilationUnit(CompilationUnit cu)
         {
             return SyntaxFactory.CompilationUnit()
-                .AddUsings(cu.Namespaces.Select(GetUsing).ToArray())
+                //.AddUsings(cu.Namespaces.Select(GetUsing).ToArray())
                 .AddMembers(cu.Entityes.Select(x => Visit(x)).Cast<MemberDeclarationSyntax>().ToArray());
         }
 

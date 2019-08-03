@@ -67,7 +67,7 @@ namespace ZenPlatform.Compiler
 
             module.PrintPretty("", true);
 
-            AstSymbolPreparator.Prepare(module);
+            AstScopeRegister.Apply(module);
 
             var prm = new GeneratorParameters(module, ab, CompilationMode.Client);
 

@@ -5,6 +5,7 @@ using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
@@ -40,14 +41,10 @@ namespace ZenPlatform.Compiler.Generation
                 if (ret.Expression != null)
                 {
                     EmitExpression(e, ret.Expression, context.SymbolTable);
-                }
 
-//                if (ret.GetParent<Function>().Type is UnionTypeNode mtn)
-//                {
-//                    var exp = e.DefineLocal(ret.Value.Type.Type);
-//                    e.StLoc(exp);
-//                    WrapMultitypeStackValue(e, mtn, returnVariable, exp);
-//                }
+                    if (returnVariable.Type == _bindings.Object)
+                        e.Box(ret.Expression.Type.ToClrType(_asm));
+                }
 
                 if (inTry)
                 {
