@@ -12,8 +12,10 @@ using Microsoft.CodeAnalysis.Editing;
 using Npgsql.TypeHandlers;
 using ServiceStack;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -55,7 +57,6 @@ namespace ZenPlatform.EntityComponent.Entity
                 };
         }
 
-
         private void Stage0EmitMap(IEmitter rg, IParameter readerParam, IType readerType, IType propertyType,
             SystemTypeBindings ts, IMethod setter, string propName)
         {
@@ -81,7 +82,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var dtoClass = builder.DefineType(@namespace, dtoClassName,
                 TypeAttributes.Public | TypeAttributes.Class);
 
-            dtoClass.AddInterfaceImplementation(builder.TypeSystem.FindType<IMappedDto>());
+            dtoClass.AddInterfaceImplementation(builder.TypeSystem.FindType<ICanMapSelfFromDataReader>());
             var readerMethod = dtoClass.DefineMethod("Map", true, false, true);
             var rg = readerMethod.Generator;
 
@@ -208,6 +209,13 @@ namespace ZenPlatform.EntityComponent.Entity
         public void Stage3(XCObjectTypeBase type, ITypeBuilder builder,
             ImmutableDictionary<XCObjectTypeBase, IType> platformTypes, IAssemblyBuilder asmBuilderd)
         {
+            foreach (var pm in type.GetProgramModules())
+            {
+                if (pm.ModuleRelationType == XCProgramModuleRelationType.Object)
+                {
+                    var script = pm.ModuleText;
+                }
+            }
         }
 
 

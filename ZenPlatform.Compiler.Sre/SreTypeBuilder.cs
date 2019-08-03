@@ -124,5 +124,9 @@ namespace ZenPlatform.Compiler.Sre
         }
 
         public IEmitter Generator { get; }
+        public IParameter DefineParameter(IType type)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -119,6 +119,7 @@
         <Arguments>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
             <Single Name="Type" Type="TypeSyntax"/>
+            <Single Name="MapTo" Type="String" Default="null" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 
@@ -146,14 +147,17 @@
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>
+            <Single Name="IsMappable" Type="Boolean" DenyChildrenFill="true" Default="false"/>
         </Arguments>
     </Syntax>
+
     <Syntax Name="Module" Base="TypeEntity" IsSymbol="true">
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>
         </Arguments>
     </Syntax>
+
     <Syntax Name="Variable" Base="Expression" IsSymbol="true">
         <Arguments>
             <Single Name="Value" Type="Expression"/>

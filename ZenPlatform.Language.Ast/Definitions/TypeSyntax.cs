@@ -18,6 +18,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         Char,
         Boolean,
         Object,
+        Byte,
         Array,
         Type,
         UnionType,

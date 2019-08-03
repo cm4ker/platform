@@ -42,7 +42,10 @@ namespace ZenPlatform.Compiler.Generation
 
             _mode = parameters.Mode;
             _bindings = _ts.GetSystemBindings();
+        }
 
+        public void Build()
+        {
             foreach (var typeEntity in _cu.Entityes)
             {
                 switch (typeEntity)
@@ -81,6 +84,11 @@ namespace ZenPlatform.Compiler.Generation
                 SreTA.Class | SreTA.NotPublic |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass,
                 _bindings.Object);
+
+            PrebuildProperties(@class.TypeBody, tb);
+
+            //Поддержка интерфейса ICanMapSelfFromDataReader
+            EmitMappingSupport(@class, tb);
 
             // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
             // Для того, чтобы можно было делать вызов функции из другой функции
@@ -355,89 +363,6 @@ namespace ZenPlatform.Compiler.Generation
                     //symbolTable.Add(function.Name, SymbolType.Function, function, method);
                 }
             }
-
-//            if (isClass)
-//            {
-//                foreach (var field in typeBody.Fields)
-//                {
-//                    var fieldCodeObj = tb.DefineField(field.Type.Type, field.Name, false, false);
-//                    typeBody.SymbolTable.ConnectCodeObject(field, fieldCodeObj);
-//                }
-//
-//                foreach (var property in typeBody.Properties)
-//                {
-//                    var propBuilder = tb.DefineProperty(property.Type.Type, property.Name);
-//
-//                    IField backField = null;
-//
-//                    if (property.Setter == null && property.Getter == null)
-//                    {
-//                        backField = tb.DefineField(property.Type.Type, $"{property.Name}_backingField", false,
-//                            false);
-//                    }
-//
-//                    var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
-//                    var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
-//
-//                    setMethod.WithReturnType(_bindings.Void);
-//                    var valueArg = setMethod.WithParameter("value", property.Type.Type, false, false);
-//
-//                    getMethod.WithReturnType(property.Type.Type);
-//
-//                    if (property.Getter != null)
-//                    {
-//                        IEmitter emitter = getMethod.Generator;
-//                        emitter.InitLocals = true;
-//
-//                        ILocal resultVar = null;
-//
-//                        resultVar = emitter.DefineLocal(property.Type.Type);
-//
-//                        var returnLabel = emitter.DefineLabel();
-//                        EmitBody(emitter, property.Getter, returnLabel, ref resultVar);
-//
-//                        emitter.MarkLabel(returnLabel);
-//
-//                        if (resultVar != null)
-//                            emitter.LdLoc(resultVar);
-//
-//                        emitter.Ret();
-//                    }
-//                    else
-//                    {
-//                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
-//                    }
-//
-//                    if (property.Setter != null)
-//                    {
-//                        IEmitter emitter = setMethod.Generator;
-//                        emitter.InitLocals = true;
-//
-//                        ILocal resultVar = null;
-//
-//                        resultVar = emitter.DefineLocal(property.Type.Type);
-//
-//                        var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable);
-//                        valueSym.CodeObject = valueArg;
-//
-//                        var returnLabel = emitter.DefineLabel();
-//                        EmitBody(emitter, property.Setter, returnLabel, ref resultVar);
-//
-//                        emitter.MarkLabel(returnLabel);
-//                        emitter.Ret();
-//                    }
-//                    else
-//                    {
-//                        if (backField != null)
-//                            setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
-//                        else
-//                            setMethod.Generator.Ret();
-//                    }
-//
-//
-//                    propBuilder.WithGetter(getMethod).WithSetter(setMethod);
-//                }
-//            }
 
             return result;
         }
