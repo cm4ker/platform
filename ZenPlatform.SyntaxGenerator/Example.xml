@@ -91,7 +91,7 @@
         <Arguments>
             <Single Name="Value" Type="Expression"/>
             <Single Name="Index" Type="Expression"/>
-            <Single Name="Name" Type="Name"/>
+            <Single Name="Assignable" Type="ICanBeAssigned"/>
         </Arguments>
     </Syntax>
 
@@ -197,7 +197,14 @@
 
     </Syntax>
 
-    <Syntax Name="FieldExpression" Base="Expression">
+    <Syntax Name="GetFieldExpression" Base="Expression">
+        <Arguments>
+            <Single Name="Expression" Type="Expression"/>
+            <Single Name="FieldName" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="AssignFieldExpression" Base="Expression">
         <Arguments>
             <Single Name="Expression" Type="Expression"/>
             <Single Name="FieldName" Type="String" DenyChildrenFill="true"/>
@@ -257,6 +264,20 @@
     <Syntax Name="Throw" Base="Expression" NS="Expressions">
         <Arguments>
             <Single Name="Exception" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="MatchAtom" NS="Statements">
+        <Arguments>
+            <Single Name="Block" Type="Block"/>
+            <Single Name="Expression" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Match" Base="Statement" NS="Statements">
+        <Arguments>
+            <List Name="Matches" Type="List&lt;MatchAtom&gt;"/>
+            <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
 </Config>

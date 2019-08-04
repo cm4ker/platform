@@ -222,5 +222,7 @@ namespace ZenPlatform.Compiler.Contracts
             emitter.Emit(OpCodes.Starg_S, parameter);
 
         public static IEmitter PropGetValue(this IEmitter emitter, IProperty prop) => emitter.EmitCall(prop.Getter);
+
+        public static IEmitter PropSetValue(this IEmitter emitter, IProperty prop) => emitter.EmitCall(prop.Setter);
     }
 }

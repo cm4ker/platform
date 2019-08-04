@@ -425,15 +425,15 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class Assignment : Expression
     {
-        public Assignment(ILineInfo lineInfo, Expression value, Expression index, Name name): base(lineInfo)
+        public Assignment(ILineInfo lineInfo, Expression value, Expression index, ICanBeAssigned assignable): base(lineInfo)
         {
             var slot = 0;
             Value = value;
             Childs.Add(Value);
             Index = index;
             Childs.Add(Index);
-            Name = name;
-            Childs.Add(Name);
+            Assignable = assignable;
+            Childs.Add(Assignable);
         }
 
         public Expression Value
@@ -446,7 +446,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
             get;
         }
 
-        public Name Name
+        public ICanBeAssigned Assignable
         {
             get;
         }
@@ -968,9 +968,9 @@ namespace ZenPlatform.Language.Ast.Definitions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class FieldExpression : Expression
+    public partial class GetFieldExpression : Expression
     {
-        public FieldExpression(ILineInfo lineInfo, Expression expression, String fieldName): base(lineInfo)
+        public GetFieldExpression(ILineInfo lineInfo, Expression expression, String fieldName): base(lineInfo)
         {
             var slot = 0;
             Expression = expression;
@@ -990,7 +990,36 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitFieldExpression(this);
+            return visitor.VisitGetFieldExpression(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class AssignFieldExpression : Expression
+    {
+        public AssignFieldExpression(ILineInfo lineInfo, Expression expression, String fieldName): base(lineInfo)
+        {
+            var slot = 0;
+            Expression = expression;
+            Childs.Add(Expression);
+            FieldName = fieldName;
+        }
+
+        public Expression Expression
+        {
+            get;
+        }
+
+        public String FieldName
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitAssignFieldExpression(this);
         }
     }
 }
@@ -1231,6 +1260,70 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitThrow(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions.Statements
+{
+    public partial class MatchAtom : SyntaxNode
+    {
+        public MatchAtom(ILineInfo lineInfo, Block block, Expression expression): base(lineInfo)
+        {
+            var slot = 0;
+            Block = block;
+            Childs.Add(Block);
+            Expression = expression;
+            Childs.Add(Expression);
+        }
+
+        public Block Block
+        {
+            get;
+        }
+
+        public Expression Expression
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitMatchAtom(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions.Statements
+{
+    public partial class Match : Statement
+    {
+        public Match(ILineInfo lineInfo, List<MatchAtom> matches, Expression expression): base(lineInfo)
+        {
+            var slot = 0;
+            Matches = matches;
+            foreach (var item in Matches)
+            {
+                Childs.Add(item);
+            }
+
+            Expression = expression;
+            Childs.Add(Expression);
+        }
+
+        public List<MatchAtom> Matches
+        {
+            get;
+        }
+
+        public Expression Expression
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitMatch(this);
         }
     }
 }

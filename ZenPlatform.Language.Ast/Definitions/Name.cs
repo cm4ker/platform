@@ -5,7 +5,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// <summary>
     /// Именованоое поле (переменная). В последствии раскручивания дерева эта переменная запишется в таблицу символов
     /// </summary>
-    public partial class Name : Expression
+    public partial class Name : Expression, ICanBeAssigned
     {
         public override TypeSyntax Type
         {
@@ -15,5 +15,14 @@ namespace ZenPlatform.Language.Ast.Definitions
                 return ((ITypedNode) v.SyntaxObject).Type;
             }
         }
+    }
+
+
+    public partial class AssignFieldExpression : ICanBeAssigned
+    {
+    }
+
+    public interface ICanBeAssigned
+    {
     }
 }

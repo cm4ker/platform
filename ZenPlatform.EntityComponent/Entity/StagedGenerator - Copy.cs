@@ -203,9 +203,14 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 members.Add(astProp);
                 var get = new List<Statement>();
+                var set = new List<Statement>();
 
                 if (prop.Types.Count > 1)
                 {
+                    var matchAtomList = new List<MatchAtom>();
+
+                    var valExp  = new Name(null, "value");
+                    
                     foreach (var ctype in prop.Types)
                     {
                         var intType = new PrimitiveTypeSyntax(null, TypeNodeKind.Int);
@@ -214,7 +219,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         var schema = prop.GetPropertySchemas(prop.Name)
                             .First(x => x.SchemaType == XCColumnSchemaType.Type);
 
-                        var fieldExpression = new FieldExpression(new Name(null, "_dto"), schema.Name);
+                        var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.Name);
 
                         var expr = new BinaryExpression(null,
                             typeLiteral
@@ -225,15 +230,25 @@ namespace ZenPlatform.EntityComponent.Entity
                         var schemaTyped = prop.GetPropertySchemas(prop.Name)
                             .First(x => x.PlatformType == ctype);
 
-                        var feTypedProp = new FieldExpression(new Name(null, "_dto"), schemaTyped.Name);
+                        var feTypedProp = new GetFieldExpression(new Name(null, "_dto"), schemaTyped.Name);
 
                         var ret = new Return(null, feTypedProp);
 
-                        var i = new If(null, null, ret.ToBlock(), expr);
+                        var @if = new If(null, null, ret.ToBlock(), expr);
+                        get.Add(@if);
 
+                       
 
-                        get.Add(i);
+                        var afe = new AssignFieldExpression(null, new Name(null, "_dto"), schemaTyped.Name);
+                        var dtoAssignment = new Assignment(null, valExp, null, afe);
+
+                        var matchAtom = new MatchAtom(null, dtoAssignment.ToStatement().ToBlock(), null);
+
+                        matchAtomList.Add(matchAtom);
                     }
+                    
+
+                    var match = new Match(null, matchAtomList, valExp);
 
                     get.Add(new Throw(null,
                             new Literal(null, "The type not found", new PrimitiveTypeSyntax(null, TypeNodeKind.String)))
@@ -243,7 +258,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 {
                     var schema = prop.GetPropertySchemas(prop.Name)
                         .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
-                    var fieldExpression = new FieldExpression(new Name(null, "_dto"), schema.Name);
+                    var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.Name);
                     var ret = new Return(null, fieldExpression);
                     get.Add(ret);
                 }

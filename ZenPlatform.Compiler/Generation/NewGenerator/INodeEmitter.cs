@@ -80,7 +80,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             if (Check<Assignment>(context, out var asg))
             {
-                ISymbol variable = st.Find(asg.Name.Value, SymbolType.Variable);
+                ISymbol variable = st.Find((asg.Assignable as Name).Value, SymbolType.Variable);
 
                 //Preload context
                 if (asg.Index == null)
@@ -159,7 +159,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             var symbolTable = context.SymbolTable;
 
-            ISymbol variable = symbolTable.Find(assignment.Name.Value, SymbolType.Variable);
+            ISymbol variable = symbolTable.Find((assignment.Assignable as Name).Value, SymbolType.Variable);
             var il = context.Emitter;
 
 
