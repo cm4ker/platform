@@ -459,7 +459,7 @@ namespace ZenPlatform.Compiler.AST
 
                     foreach (var str in identifier.ToList().GetRange(1, identifier.Length - 1))
                     {
-                        _syntaxStack.Push(new FieldExpression(_syntaxStack.PopExpression(), str));
+                        _syntaxStack.Push(new GetFieldExpression(_syntaxStack.PopExpression(), str));
                     }
                 }
                 else

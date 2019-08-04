@@ -120,7 +120,7 @@ namespace ZenPlatform.Language.Ast
             ;
         }
 
-        public virtual T VisitFieldExpression(FieldExpression obj)
+        public virtual T VisitGetFieldExpression(GetFieldExpression obj)
         {
             return DefaultVisit(obj);
             ;
@@ -293,6 +293,21 @@ namespace ZenPlatform.Language.Ast
         }
 
         public T VisitThrow(Throw obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public T VisitMatch(Match obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public T VisitMatchAtom(MatchAtom obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public T VisitAssignFieldExpression(AssignFieldExpression obj)
         {
             return DefaultVisit(obj);
         }

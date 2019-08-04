@@ -71,7 +71,7 @@ namespace ZenPlatform.Compiler.Visitor
 
         private Expression GetValue(Name name)
         {
-            return new FieldExpression(name, "Value");
+            return new GetFieldExpression(name, "Value");
         }
 
         public void Bake()

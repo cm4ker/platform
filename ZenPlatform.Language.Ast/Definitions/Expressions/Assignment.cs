@@ -4,7 +4,14 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class Assignment : Expression
     {
-        public override TypeSyntax Type => Name.Type;
+        public override TypeSyntax Type
+        {
+            get
+            {
+                if (Assignable is Name n) return n.Type;
+                else return null;
+            }
+        }
     }
 
     /// <summary>
