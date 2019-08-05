@@ -10,7 +10,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
     /// </summary>
     public partial class Parameter : ITypedNode
     {
-        public Parameter(ILineInfo li,  string name, TypeSyntax type, PassMethod pm) : this(li, name, pm)
+        public Parameter(ILineInfo li, string name, TypeSyntax type, PassMethod pm) : this(li, name, pm)
         {
             Type = type;
         }

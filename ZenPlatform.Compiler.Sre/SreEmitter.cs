@@ -101,7 +101,7 @@ namespace ZenPlatform.Compiler.Sre
             return this;
         }
 
-        public IEmitter ThrowException(IType exceptionType)
+        public IEmitter CatchException(IType exceptionType)
         {
             _ilg.ThrowException(((SreType) exceptionType).Type);
             return this;

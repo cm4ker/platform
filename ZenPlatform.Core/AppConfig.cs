@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Core
 {
     public class AppConfig
     {
         public AccessPointConfig AccessPoint { get; set; }
+
+        public CacheServiceConfig CacheService { get; set; }
         public List<StartupConfig> Environments { get; set; }
+    }
+
+    public class CacheServiceConfig
+    {
+        public string Address { get; set; }
     }
 
     public enum ListenerType
@@ -28,6 +34,4 @@ namespace ZenPlatform.Core
         public string Address { get; set; }
         public ListenerType Type { get; set; }
     }
-
-    
 }

@@ -1,3 +1,4 @@
+using System;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Infrastructure;
 
@@ -15,9 +16,32 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 
     public partial class IndexerExpression : UnaryExpression
     {
+        public override TypeSyntax Type =>
+            (Expression.Type as ArrayTypeSyntax ??
+             throw new Exception("Expression have to be array type or something is wrong?")).ElementType;
     }
 
     public partial class LogicalOrArithmeticExpression : UnaryExpression
     {
+        public override TypeSyntax Type
+        {
+            get
+            {
+                TypeSyntax tn;
+
+                switch (OperaotrType)
+                {
+                    case UnaryOperatorType.Not:
+                        tn = new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean);
+                        break;
+                    default:
+                        tn = Expression.Type;
+                        break;
+                }
+
+
+                return tn;
+            }
+        }
     }
 }

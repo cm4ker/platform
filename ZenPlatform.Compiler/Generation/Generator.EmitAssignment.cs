@@ -1,8 +1,13 @@
+using System;
+using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Infrastructure;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
@@ -15,35 +20,37 @@ namespace ZenPlatform.Compiler.Generation
     {
         private void EmitAssignment(IEmitter e, Assignment assignment, SymbolTable symbolTable)
         {
-            var variable = symbolTable.Find(assignment.Name.Value, SymbolType.Variable);
-            if (variable == null)
-                Error("Assignment variable " + assignment.Name + " unknown.");
-
-            // Non-indexed assignment
-            if (assignment.Index == null)
+            if (assignment.Assignable is Name name)
             {
-                bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is UnionTypeSyntax;
+                var variable = symbolTable.Find(name.Value, SymbolType.Variable);
+                if (variable == null)
+                    Error("Assignment variable " + name + " unknown.");
 
-                if (variable.CodeObject is IParameter pd)
+                // Non-indexed assignment
+                if (assignment.Index == null)
                 {
-                    Parameter p = variable.SyntaxObject as Parameter;
-                    if (p.PassMethod == PassMethod.ByReference)
-                        e.LdArg(pd);
-                }
-                else if (variable.CodeObject is IField fl)
-                {
-                    EmitLoadThis(e);
-                }
-                else if (variable.CodeObject is IProperty p)
-                {
-                    EmitLoadThis(e);
-                }
-                else if (variable.CodeObject is ILocal l && mtNode)
-                    e.LdLocA(l);
+                    bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is UnionTypeSyntax;
+
+                    if (variable.CodeObject is IParameter pd)
+                    {
+                        Parameter p = variable.SyntaxObject as Parameter;
+                        if (p.PassMethod == PassMethod.ByReference)
+                            e.LdArg(pd);
+                    }
+                    else if (variable.CodeObject is IField fl)
+                    {
+                        EmitLoadThis(e);
+                    }
+                    else if (variable.CodeObject is IProperty p)
+                    {
+                        EmitLoadThis(e);
+                    }
+                    else if (variable.CodeObject is ILocal l && mtNode)
+                        e.LdLocA(l);
 
 
-                // Load value
-                EmitExpression(e, assignment.Value, symbolTable);
+                    // Load value
+                    EmitExpression(e, assignment.Value, symbolTable);
 
 
 //                if (mtNode)
@@ -58,35 +65,81 @@ namespace ZenPlatform.Compiler.Generation
 //                    return;
 //                }
 
-                // Store
-                if (variable.CodeObject is ILocal vd)
-                    e.StLoc(vd);
-                else if (variable.CodeObject is IField fd)
-                    e.StFld(fd);
-                else if (variable.CodeObject is IParameter ppd)
+                    // Store
+                    if (variable.CodeObject is ILocal vd)
+                        e.StLoc(vd);
+                    else if (variable.CodeObject is IField fd)
+                        e.StFld(fd);
+                    else if (variable.CodeObject is IParameter ppd)
+                    {
+                        Parameter p = variable.SyntaxObject as Parameter;
+                        if (p.PassMethod == PassMethod.ByReference)
+                            e.StIndI4();
+                        else
+                            e.StArg(ppd);
+                    }
+                }
+                else
                 {
-                    Parameter p = variable.SyntaxObject as Parameter;
-                    if (p.PassMethod == PassMethod.ByReference)
-                        e.StIndI4();
-                    else
-                        e.StArg(ppd);
+                    // Load array.
+                    if (variable.CodeObject is ILocal vd)
+                        e.LdLoc(vd);
+                    else if (variable.CodeObject is IField fd)
+                        e.LdsFld(fd);
+                    else if (variable.CodeObject is IParameter pd)
+                        e.LdArg(pd.Sequence);
+                    // Load index.
+                    EmitExpression(e, assignment.Index, symbolTable);
+                    // Load value.
+                    EmitExpression(e, assignment.Value, symbolTable);
+                    // Set
+                    e.StElemI4();
                 }
             }
-            else
+
+            if (assignment.Assignable is AssignFieldExpression afe)
             {
-                // Load array.
-                if (variable.CodeObject is ILocal vd)
-                    e.LdLoc(vd);
-                else if (variable.CodeObject is IField fd)
-                    e.LdsFld(fd);
-                else if (variable.CodeObject is IParameter pd)
-                    e.LdArg(pd.Sequence);
-                // Load index.
-                EmitExpression(e, assignment.Index, symbolTable);
-                // Load value.
-                EmitExpression(e, assignment.Value, symbolTable);
-                // Set
-                e.StElemI4();
+                if (afe.Expression is null)
+                {
+                    //Then we a re set local Property, just load Arg0
+                    e.LdArg_0();
+
+                    var cls = assignment.FirstParent<Class>();
+
+                    if (cls is null) throw new Exception("The assigment can't be resolved in current context");
+
+                    var expType =
+                        new SingleTypeSyntax(null, $"{cls.Namespace}.{cls.Name}", TypeNodeKind.Type).ToClrType(_asm);
+
+                    var expProp = expType.Properties.First(x => x.Name == afe.FieldName);
+
+                    //load value
+                    EmitExpression(e, assignment.Value, symbolTable);
+
+                    //Set value
+                    e.PropSetValue(expProp);
+                }
+                else
+                {
+                    EmitExpression(e, afe.Expression, symbolTable);
+
+                    var expType = afe.Expression.Type;
+
+                    IType extTypeScan = expType.ToClrType(_asm);
+
+                    var expProp = extTypeScan.Properties.First(x => x.Name == afe.FieldName);
+
+                    //load value
+                    EmitExpression(e, assignment.Value, symbolTable);
+
+                    if (assignment.Value.Type.Kind == TypeNodeKind.Object)
+                    {
+                        e.Unbox_Any(expProp.PropertyType);
+                    }
+
+                    //Set value
+                    e.PropSetValue(expProp);
+                }
             }
         }
 
