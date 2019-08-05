@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Network;
-using ZenPlatform.ServerClientShared.Network;
-using ZenPlatform.ServerClientShared;
-using ZenPlatform.ServerClientShared.DI;
+using ZenPlatform.Core.DI;
 using ZenPlatform.Core.Logging;
 using System.Configuration;
-using ZenPlatform.ServerClientShared.Logging;
-using ZenPlatform.Core.Network.Handlers;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Data;
+using DryIoc;
+using DryIoc.Microsoft.DependencyInjection;
 
 namespace ZenPlatform.Runner
 {
+    
+   
     class Program
     {
         public static async Task Main(string[] args)
@@ -25,8 +25,12 @@ namespace ZenPlatform.Runner
             var builder = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, config) =>
                 {
+
+
                     //config.AddEnvironmentVariables();
                     config.AddXmlFile("App.config", false, true);
+
+
                 })
                 /*
                 .ConfigureLogging((hostContext, loggingBuilder) =>
@@ -36,6 +40,8 @@ namespace ZenPlatform.Runner
                     loggingBuilder.AddNLog(hostContext.Configuration);
                 })
                 */
+
+                //.UseServiceProviderFactory<IContainer>(new DryIocServiceProviderFactory())
                 .ConfigureServices((hostContext, services) =>
                 {
                     AppConfig config = new AppConfig();
@@ -44,21 +50,29 @@ namespace ZenPlatform.Runner
                     services.AddConfig(config.AccessPoint);
                     services.AddConfig(config.Environments);
 
-                    //services.AddSingleton<IInvokeServiceManager, InvokeServiceManager>();
-
+                    
+                    services.AddTransient<IConnectionManager, ConnectionManager>();
                     services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
                     services.AddScoped<IInvokeService, InvokeService>();
-                    services.AddTransient(typeof(IConnection<>), typeof(UserConnection<>));
+                    services.AddTransient<ITCPListener, TCPListener>();
                     services.AddTransient<IChannel, Channel>();
                     services.AddSingleton<IAccessPoint, UserAccessPoint>();
                     services.AddSingleton<ITaskManager, TaskManager>();
                     services.AddTransient<IMessagePackager, SimpleMessagePackager>();
                     services.AddTransient<ISerializer, HyperionSerializer>();
-                    services.AddSingleton<IDependencyResolver, MicrosoftDependencyResolver>();
+                    services.AddTransient<UserTCPConnectionFactory>();
+                    services.AddTransient<TCPConnectionFactory>();
+                    services.AddTransient<IChannelFactory, ChannelFactory>();
+                    //services.AddTransient<ISerializer, NewtonsoftJsonSerializer>();
+                    services.AddSingleton<ITestProxyService, TestProxyService>();
                     services.AddSingleton<IEnvironmentManager, EnvironmentManager>();
-                    services.AddScoped<IEnvironment, WorkEnvironment>();
+
+                    services.AddScoped<ITestEnvironment, TestEnvironment>();
+                    services.AddScoped<IAdminEnvironment, AdminEnvironment>();
+                    services.AddScoped<IWorkEnvironment, WorkEnvironment>();
+
+
                     //services.AddTransient<IUserMessageHandler, UserMessageHandler>();
-                    services.AddTransient<IUserMessageHandler, UserConnectedMessageHandler>();
                     services.AddScoped<IAuthenticationManager, AuthenticationManager>();
                     services.AddScoped<IDataContextManager, DataContextManager>();
                     services.AddScoped<IUserManager, UserManager>();

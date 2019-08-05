@@ -10,16 +10,13 @@ using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.Data;
-using ZenPlatform.ServerClientShared.DI;
-using ZenPlatform.ServerClientShared.Logging;
-using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Core.Environment
 {
     /// <summary>
     /// Рабочая среда. Здесь же реализованы все плюшки  манипуляций с данными и так далее
     /// </summary>
-    public class WorkEnvironment : PlatformEnvironment
+    public class WorkEnvironment : PlatformEnvironment, IWorkEnvironment
     {
         private object _locking;
 
@@ -50,12 +47,12 @@ namespace ZenPlatform.Core.Environment
          */
 
         public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
-            IAuthenticationManager authenticationManager, IDependencyResolver resolver,
+            IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService) :
             base(contextManager, cacheService)
         {
             _locking = new object();
-            _resolver = resolver;
+            _serviceProvider = serviceProvider;
             _logger = logger;
             _userManager = userManager;
             InvokeService = invokeService;
@@ -81,21 +78,6 @@ namespace ZenPlatform.Core.Environment
 
             AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
 
-
-            InvokeService.Register(new Route("test"), (c, a) => (int) a[0] + 1);
-            InvokeService.Register(new Route("Test.Add"), (c, a) =>
-            {
-                var args = (object[]) a[0];
-                return (int) args[0] + (int) args[1];
-            });
-
-            InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
-            {
-                using (StreamWriter writer = new StreamWriter(stream))
-                {
-                    writer.WriteLine("dsadsdasdasdasdsadasdsadsd");
-                }
-            });
             /*
             //TODO: получить библиотеку с сгенерированными сущностями dto и так далее
             Build = Assembly.LoadFile("");
@@ -122,7 +104,7 @@ namespace ZenPlatform.Core.Environment
 
         private ILogger _logger;
 
-        private IDependencyResolver _resolver;
+        private IServiceProvider _serviceProvider;
 
         private IUserManager _userManager;
 
@@ -226,7 +208,7 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         /// <param name="type">Тип Entity</param>
         /// <returns></returns>
-        public override IEntityManager GetManager(Type type)
+        public IEntityManager GetManager(Type type)
         {
             if (Managers.TryGetValue(type, out var manager))
             {
@@ -252,7 +234,7 @@ namespace ZenPlatform.Core.Environment
         /// <param name="key">Ключ типа сущности</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public override EntityMetadata GetMetadata(Guid key)
+        public EntityMetadata GetMetadata(Guid key)
         {
             if (Entityes.TryGetValue(key, out var entityDefinition))
             {
@@ -267,7 +249,7 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         /// <param name="type">Типом может быть объект DTO или объект Entity</param>
         /// <returns></returns>
-        public override EntityMetadata GetMetadata(Type type)
+        public EntityMetadata GetMetadata(Type type)
         {
             var entityDefinition = Entityes.First(x => x.Value.EntityType == type || x.Value.DtoType == type).Value;
             return entityDefinition;

@@ -5,34 +5,32 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using ZenPlatform.ServerClientShared.Logging;
+using ZenPlatform.Core.Tools;
+using ZenPlatform.Core.Logging;
 
-namespace ZenPlatform.ServerClientShared.Network
+namespace ZenPlatform.Core.Network
 {
     public class Channel : IChannel
     {
         private byte[] _readBuffer;
         private int _bufferSize = 1024 * 4; // 4Kb
         private Stream _stream;
-        private IMessageHandler _handler;
         private readonly IMessagePackager _packager;
         private readonly ILogger _logger;
+        private readonly List<IObserver<INetworkMessage>> _observers;
 
         public bool Running { get; private set; } = false;
 
 
-        public event Action<Exception> OnError;
+        //public event Action<Exception> OnError;
 
         public Channel(IMessagePackager packager, ILogger<Channel> logger)
         {
             _logger = logger;
             _readBuffer = new byte[_bufferSize];
             _packager = packager;
-        }
+            _observers = new List<IObserver<INetworkMessage>>();
 
-        public void SetHandler(IMessageHandler handler)
-        {
-            _handler = handler;
         }
 
         private void ReceiveCallback(IAsyncResult ar)
@@ -50,19 +48,27 @@ namespace ZenPlatform.ServerClientShared.Network
                     {
                         _logger.Trace(() => string.Format("From: ''; Type: '{0}'; Message: {1}",
                             message.GetType().Name, JsonConvert.SerializeObject(message)));
-                        _handler.Receive(message, this);
+        
+                        if (message is INetworkMessage networkMessage)
+                            OnNext(networkMessage);
+                        else _logger.Warn("Received message is unknown type: {0}", message.GetType().Name);
                     }
+
+                } else
+                {
+                    Stop();
                 }
 
                 if (Running)
                 {
                     _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, new AsyncCallback(ReceiveCallback), null);
+                    
                 }
             }
             catch (Exception ex)
             {
+                OnError(ex);
                 Stop();
-                OnError?.Invoke(ex);
             }
         }
 
@@ -71,27 +77,63 @@ namespace ZenPlatform.ServerClientShared.Network
         {
             if (!Running) throw new InvalidOperationException("Channel must be running.");
             if (message == null) throw new ArgumentNullException(nameof(message));
+                _logger.Trace(() => string.Format("To: ''; Type: '{0}'; Message: {1}",
+                    message.GetType().Name, JsonConvert.SerializeObject(message)));
+            
+                _stream.Write(_packager.PackMessage(message));
 
-            _logger.Trace(() => string.Format("To: ''; Type: '{0}'; Message: {1}",
-                message.GetType().Name, JsonConvert.SerializeObject(message)));
-
-            _stream.Write(_packager.PackMessage(message));
         }
 
-        public void Start(Stream stream, IMessageHandler handler)
+        public void Start(Stream stream)
         {
-            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            _stream = stream;
 
-            Running = true;
-
-            _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, new AsyncCallback(ReceiveCallback), null);
+            try
+            {
+                Running = true;
+                _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, new AsyncCallback(ReceiveCallback), null);
+            }
+            catch (Exception ex)
+            {
+                OnError(ex);
+                Stop();
+               
+            }
         }
 
         public void Stop()
         {
             Running = false;
+            OnCompleted();
+        }
+
+        public IDisposable Subscribe(IObserver<INetworkMessage> observer)
+        {
+            _observers.Add(observer);
+            return new ListRemover<IObserver<INetworkMessage>>(_observers, observer);
+        }
+
+        private void OnError(Exception ex)
+        {
+            foreach (var observer in _observers.ToArray())
+                if (_observers.Contains(observer))
+                    observer.OnError(ex);
+        }
+
+        private void OnCompleted()
+        {
+            foreach (var observer in _observers.ToArray())
+                if (_observers.Contains(observer))
+                    observer.OnCompleted();
+        }
+
+        private void OnNext(INetworkMessage message)
+        {
+            foreach (var observer in _observers.ToArray())
+                if (_observers.Contains(observer))
+                    observer.OnNext(message);
         }
     }
 }

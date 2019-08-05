@@ -11,7 +11,6 @@ using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Compiler.Sre;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;

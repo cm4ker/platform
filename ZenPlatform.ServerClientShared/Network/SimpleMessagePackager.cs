@@ -4,13 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ZenPlatform.ServerClientShared.Network
+namespace ZenPlatform.Core.Network
 {
     public class SimpleMessagePackager: IMessagePackager
     {
         private Stream _bufferStream;
         private ISerializer _serializer;
         private readonly object _streamLock = new object();
+        private const int MAX_MESSAGE_SIZE = 8 * 1024;
         
 
         public SimpleMessagePackager(ISerializer serializer)
@@ -40,13 +41,6 @@ namespace ZenPlatform.ServerClientShared.Network
 
             return Combine(size, data);
         }
-        /*
-        public void WriteData(byte[] byteString)
-        {
-            lock (_streamLock)
-                _bufferStream.Write(byteString);
-        }
-        */
 
         public IEnumerable<object> UnpackMessages(byte[] byteString)
         {
@@ -78,6 +72,13 @@ namespace ZenPlatform.ServerClientShared.Network
             if (messageSize == 0 || messageSize < 0 )
             {
                 _bufferStream = new MemoryStream();
+                return false;
+            }
+
+            if (messageSize > MAX_MESSAGE_SIZE)
+            {
+                _bufferStream = new MemoryStream();
+                //todo добавить запись в лог о таких ситуациях(размер данных больше максимума)
                 return false;
             }
 
