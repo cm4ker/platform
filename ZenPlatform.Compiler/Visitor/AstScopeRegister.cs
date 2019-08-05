@@ -128,6 +128,8 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitProperty(Property obj)
         {
+           
+
             var parent = obj.FirstParent<TypeBody>().SymbolTable;
 
             if (obj.Setter != null && obj.Setter.SymbolTable == null)
@@ -144,8 +146,10 @@ namespace ZenPlatform.Compiler.Visitor
             obj.Setter?.SymbolTable.Clear();
 
             obj.Setter?.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByValue));
-            return base.VisitProperty(obj);
+
+            return  base.VisitProperty(obj);
         }
+
 
         public override object VisitIf(If obj)
         {
@@ -157,6 +161,14 @@ namespace ZenPlatform.Compiler.Visitor
                 obj.ElseBlock.SymbolTable = new SymbolTable(parent);
 
             return base.VisitIf(obj);
+        }
+
+        public override object VisitMatchAtom(MatchAtom obj)
+        {
+            var parent = obj.FirstParent<IScoped>().SymbolTable;
+            obj.Block.SymbolTable = new SymbolTable(parent);
+
+            return base.VisitMatchAtom(obj);
         }
 
         public override object VisitFor(For obj)

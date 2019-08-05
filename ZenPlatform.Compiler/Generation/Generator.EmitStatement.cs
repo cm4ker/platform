@@ -142,6 +142,22 @@ namespace ZenPlatform.Compiler.Generation
                 EmitBody(e, ts.CatchBlock, returnLabel, ref returnVariable, true);
                 e.EndExceptionBlock();
             }
+            else if (statement is Match mt)
+            {
+                foreach (var matchAtom in mt.Matches)
+                {
+                    var label = e.DefineLabel();
+                    //Load value
+                    EmitExpression(e, mt.Expression, context.SymbolTable);
+                    //Check is instance of the value
+                    e.Isinst(matchAtom.Type.ToClrType(_asm));
+                    e.BrFalse(label);
+
+                    EmitBody(e, matchAtom.Block, returnLabel, ref returnVariable, false);
+
+                    e.MarkLabel(label);
+                }
+            }
         }
     }
 }

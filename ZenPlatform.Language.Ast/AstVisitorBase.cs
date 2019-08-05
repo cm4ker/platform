@@ -277,37 +277,37 @@ namespace ZenPlatform.Language.Ast
             return DefaultVisit(obj);
         }
 
-        public T VisitNamespaceBase(NamespaceBase obj)
+        public virtual T VisitNamespaceBase(NamespaceBase obj)
         {
             return DefaultVisit(obj);
         }
 
-        public T VisitNamespace(Namespace obj)
+        public virtual T VisitNamespace(Namespace obj)
         {
             return DefaultVisit(obj);
         }
 
-        public T VisitClassNamespace(ClassNamespace obj)
+        public virtual T VisitClassNamespace(ClassNamespace obj)
         {
             return DefaultVisit(obj);
         }
 
-        public T VisitThrow(Throw obj)
+        public virtual T VisitThrow(Throw obj)
         {
             return DefaultVisit(obj);
         }
 
-        public T VisitMatch(Match obj)
+        public virtual T VisitMatch(Match obj)
         {
             return DefaultVisit(obj);
         }
 
-        public T VisitMatchAtom(MatchAtom obj)
+        public virtual T VisitMatchAtom(MatchAtom obj)
         {
             return DefaultVisit(obj);
         }
 
-        public T VisitAssignFieldExpression(AssignFieldExpression obj)
+        public virtual T VisitAssignFieldExpression(AssignFieldExpression obj)
         {
             return DefaultVisit(obj);
         }

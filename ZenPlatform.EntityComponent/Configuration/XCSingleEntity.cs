@@ -91,7 +91,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные
                 foreach (var propertyType in property.GetUnprocessedPropertyTypes())
                 {
-                    if (propertyType is XCPremitiveType)
+                    if (propertyType is XCPrimitiveType)
                         property.Types.Add(propertyType);
                     if (propertyType is XCUnknownType)
                     {

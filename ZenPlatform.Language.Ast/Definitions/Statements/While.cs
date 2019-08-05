@@ -21,9 +21,4 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
             throw new System.NotImplementedException();
         }
     }
-
-
-    public partial class Match
-    {
-    }
 }

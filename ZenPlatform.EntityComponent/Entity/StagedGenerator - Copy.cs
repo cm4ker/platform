@@ -10,6 +10,8 @@ using System.Threading;
 using dnlib.DotNet.Resources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
+using NLog.LayoutRenderers;
+using Npgsql.NameTranslation;
 using Npgsql.TypeHandlers;
 using ServiceStack;
 using ZenPlatform.Compiler.Contracts;
@@ -53,7 +55,7 @@ namespace ZenPlatform.EntityComponent.Entity
         private TypeSyntax GetAstFromPlatformType(XCTypeBase pt)
         {
             return pt switch
-                {
+            {
                 XCBinary b => (TypeSyntax) new ArrayTypeSyntax(null,
                     new PrimitiveTypeSyntax(null, TypeNodeKind.Byte)),
                 XCInt b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Int),
@@ -62,8 +64,8 @@ namespace ZenPlatform.EntityComponent.Entity
                 XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
                 XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type),
                 XCObjectTypeBase b => (TypeSyntax) new SingleTypeSyntax(null, b.Name, TypeNodeKind.Type),
-                XCGuid b =>(TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
-                };
+                XCGuid b => (TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
+            };
         }
 
         public void Stage0(XCObjectTypeBase type, Root root)
@@ -104,7 +106,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 foreach (var ctype in prop.Types)
                 {
-                    if (ctype is XCPremitiveType pt)
+                    if (ctype is XCPrimitiveType pt)
                     {
                         var dbColName = prop
                             .GetPropertySchemas(prop.DatabaseColumnName)
@@ -118,18 +120,7 @@ namespace ZenPlatform.EntityComponent.Entity
                                             ? XCColumnSchemaType.Value
                                             : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).Name;
 
-                        TypeSyntax propType = pt switch
-                            {
-                            XCBinary b => (TypeSyntax) new ArrayTypeSyntax(null,
-                                new PrimitiveTypeSyntax(null, TypeNodeKind.Byte)),
-                            XCInt b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Int),
-                            XCString b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.String),
-                            XCNumeric b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Double),
-                            XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
-                            XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type)
-                            ,
-                            XCGuid b =>(TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
-                            };
+                        TypeSyntax propType = GetAstFromPlatformType(pt);
 
                         var astProp = new Property(null, propName, propType, dbColName);
                         members.Add(astProp);
@@ -200,17 +191,19 @@ namespace ZenPlatform.EntityComponent.Entity
                 var astProp = new Property(null, propName, propType
                     , true, true);
 
-
                 members.Add(astProp);
                 var get = new List<Statement>();
                 var set = new List<Statement>();
 
                 if (prop.Types.Count > 1)
                 {
+                    var typeField = prop.GetPropertySchemas(prop.Name)
+                        .First(x => x.SchemaType == XCColumnSchemaType.Type);
+
                     var matchAtomList = new List<MatchAtom>();
 
-                    var valExp  = new Name(null, "value");
-                    
+                    var valExp = new Name(null, "value");
+
                     foreach (var ctype in prop.Types)
                     {
                         var intType = new PrimitiveTypeSyntax(null, TypeNodeKind.Int);
@@ -237,22 +230,40 @@ namespace ZenPlatform.EntityComponent.Entity
                         var @if = new If(null, null, ret.ToBlock(), expr);
                         get.Add(@if);
 
-                       
 
                         var afe = new AssignFieldExpression(null, new Name(null, "_dto"), schemaTyped.Name);
+                        var afe2 = new AssignFieldExpression(null, new Name(null, "_dto"), typeField.Name);
                         var dtoAssignment = new Assignment(null, valExp, null, afe);
+                        var typeAssignment = new Assignment(null, new Literal(null, ctype.Id.ToString(), intType), null,
+                            afe2);
+                        TypeSyntax matchAtomType = null;
 
-                        var matchAtom = new MatchAtom(null, dtoAssignment.ToStatement().ToBlock(), null);
+                        if (ctype is XCPrimitiveType pt)
+                        {
+                            matchAtomType = GetAstFromPlatformType(pt);
+                        }
+                        else if (ctype is XCObjectTypeBase ot)
+                        {
+                            matchAtomType = new SingleTypeSyntax(null,
+                                ot.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + ot.Name,
+                                TypeNodeKind.Type);
+                        }
+
+                        var atomBlock =
+                            new Block(new[] {dtoAssignment.ToStatement(), typeAssignment.ToStatement()}.ToList());
+
+                        var matchAtom = new MatchAtom(null, atomBlock, matchAtomType);
 
                         matchAtomList.Add(matchAtom);
                     }
-                    
 
                     var match = new Match(null, matchAtomList, valExp);
 
                     get.Add(new Throw(null,
                             new Literal(null, "The type not found", new PrimitiveTypeSyntax(null, TypeNodeKind.String)))
                         .ToStatement());
+
+                    set.Add(match);
                 }
                 else
                 {
@@ -264,6 +275,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
 
                 astProp.Getter = new Block(get);
+                astProp.Setter = new Block(set);
             }
 
             var cls = new Class(null, new TypeBody(members), className);

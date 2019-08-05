@@ -7,7 +7,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
     /// <summary>
     /// ��� ������� ������
     /// </summary>
-    public class XCString : XCPremitiveType
+    public class XCString : XCPrimitiveType
     {
         public override uint Id => 6;
 

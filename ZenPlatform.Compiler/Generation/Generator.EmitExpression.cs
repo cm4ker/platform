@@ -137,6 +137,7 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Name name)
             {
+               
                 var variable = symbolTable.Find(name.Value, SymbolType.Variable);
 
                 if (variable == null)
@@ -254,6 +255,10 @@ namespace ZenPlatform.Compiler.Generation
                 var constructor = _ts.FindType<Exception>().FindConstructor(_bindings.String);
                 e.NewObj(constructor);
                 e.Throw();
+            }
+            else if (expression is Assignment asg)
+            {
+                EmitAssignment(e, asg, symbolTable);
             }
         }
     }

@@ -271,6 +271,7 @@
         <Arguments>
             <Single Name="Block" Type="Block"/>
             <Single Name="Expression" Type="Expression"/>
+            <Single Name="Type" Type="TypeSyntax"/>
         </Arguments>
     </Syntax>
 

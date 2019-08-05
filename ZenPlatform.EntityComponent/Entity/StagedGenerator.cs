@@ -43,7 +43,7 @@ namespace ZenPlatform.EntityComponent.Entity
             _dtoCollections = new Dictionary<XCSingleEntity, IType>();
         }
 
-        private IType GetTypeFromPlatformType(XCPremitiveType pt, ITypeSystem ts)
+        private IType GetTypeFromPlatformType(XCPrimitiveType pt, ITypeSystem ts)
         {
             return pt switch
                 {
@@ -123,7 +123,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     var propName = $"{prop.Name}_{ctype.Name}";
                     var propRef = $"{prop.Name}_Ref";
 
-                    if (ctype is XCPremitiveType pt)
+                    if (ctype is XCPrimitiveType pt)
                     {
                         var propType = pt switch
                             {
@@ -229,7 +229,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 if (prop.Types.Count == 1)
                 {
-                    if (prop.Types[0] is XCPremitiveType pt)
+                    if (prop.Types[0] is XCPrimitiveType pt)
                     {
                         var clrPropertyType = GetTypeFromPlatformType(pt, asmBuilder.TypeSystem);
                         builder.DefineProperty(clrPropertyType, pt.Name, dtoField);
@@ -267,7 +267,7 @@ namespace ZenPlatform.EntityComponent.Entity
                             .LdcI4((int) propType.Id)
                             .BneUn(ni);
 
-                        if (propType is XCPremitiveType)
+                        if (propType is XCPrimitiveType)
                         {
                             var dataField =
                                 dto.Properties.FirstOrDefault(x => x.Name == $"{prop.Name}_{propType.Name}") ??
