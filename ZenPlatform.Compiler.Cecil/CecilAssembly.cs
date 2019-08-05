@@ -55,7 +55,9 @@ namespace ZenPlatform.Compiler.Cecil
             Assembly.Write(fileName);
         }
 
-        public IReadOnlyList<ITypeBuilder> DefinedTypes => null;
+        private List<ITypeBuilder> _definedTypes = new List<ITypeBuilder>();
+
+        public IReadOnlyList<ITypeBuilder> DefinedTypes => _definedTypes;
 
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
@@ -64,7 +66,13 @@ namespace ZenPlatform.Compiler.Cecil
 
             Assembly.MainModule.Types.Add(typeDefinition);
 
-            return new CecilTypeBuilder(_typeSystem, this, typeDefinition);
+
+            var tBuilder = new CecilTypeBuilder(_typeSystem, this, typeDefinition);
+
+            _definedTypes.Add(tBuilder);
+            _typeCache.Add(tBuilder.FullName, tBuilder);
+
+            return tBuilder;
         }
 
         public IAssembly EndBuild()

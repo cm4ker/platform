@@ -33,7 +33,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             LogicalOrArithmeticExpression arg)
         {
             return arg.OperaotrType switch
-            {
+                {
                 UnaryOperatorType.Positive => SyntaxFactory.PrefixUnaryExpression(SyntaxKind.UnaryPlusExpression,
                     (ExpressionSyntax) Visit(arg.Expression)),
                 UnaryOperatorType.Negative => SyntaxFactory.PrefixUnaryExpression(SyntaxKind.UnaryMinusExpression,
@@ -41,13 +41,13 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 UnaryOperatorType.Not => SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression,
                     (ExpressionSyntax) Visit(arg.Expression)),
                 _ => throw new Exception("Can't")
-            };
+                };
         }
 
         public override Microsoft.CodeAnalysis.SyntaxNode VisitCompilationUnit(CompilationUnit cu)
         {
             return SyntaxFactory.CompilationUnit()
-                .AddUsings(cu.Namespaces.Select(GetUsing).ToArray())
+                //.AddUsings(cu.Namespaces.Select(GetUsing).ToArray())
                 .AddMembers(cu.Entityes.Select(x => Visit(x)).Cast<MemberDeclarationSyntax>().ToArray());
         }
 
@@ -306,7 +306,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         public override Microsoft.CodeAnalysis.SyntaxNode VisitAssignment(Assignment obj)
         {
             return SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                SyntaxKind.SimpleAssignmentExpression, ParseName(obj.Name.Value),
+                SyntaxKind.SimpleAssignmentExpression, ParseName((obj.Assignable as Name).Value),
                 (ExpressionSyntax) Visit(obj.Value)));
         }
 
@@ -360,7 +360,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
             var right = (ExpressionSyntax) Visit(obj.Right);
 
             var kind = obj.BinaryOperatorType switch
-            {
+                {
                 BinaryOperatorType.Add => SyntaxKind.AddExpression,
                 BinaryOperatorType.Subtract => SyntaxKind.SubtractExpression,
                 BinaryOperatorType.Divide => SyntaxKind.DivideExpression,
@@ -369,7 +369,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                 BinaryOperatorType.LessThen => SyntaxKind.LessThanExpression,
                 BinaryOperatorType.GreaterThen => SyntaxKind.GreaterThanExpression,
                 _ => throw new Exception("This syntax kind not supported")
-            };
+                };
             return SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryExpression(kind, left, right));
         }
     }

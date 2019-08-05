@@ -7,7 +7,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
     /// <summary>
     /// Примитивный тип данных
     /// </summary>
-    public abstract class XCPremitiveType : XCTypeBase
+    public abstract class XCPrimitiveType : XCTypeBase
     {
         /// <summary>
         /// Размер колонки

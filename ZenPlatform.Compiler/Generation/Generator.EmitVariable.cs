@@ -3,6 +3,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -20,70 +21,57 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitExpression(e, expr, symTable);
 
-//                if (variable.Type.Type.Equals(_bindings.Object))
-//                {
-//                    e.Box(expr.Type.Type);
-//                }
+                if (variable.Type.ToClrType(_asm).Equals(_bindings.Object))
+                {
+                    e.Box(expr.Type.ToClrType(_asm));
+                }
             }
-//            else if (variable.Value is ElementCollection ec)
-//            {
-//                // Empty array initialization.
-//                if (variable.Value != null && variable.Value is Expression value)
-//                {
-//                    EmitExpression(e, value, context.SymbolTable);
-//                    e.NewArr(variable.Type.Type.ArrayElementType);
-//                }
-//                else if (variable.Value != null)
-//                {
-//                    ElementCollection elements = variable.Value as ElementCollection;
-//
-//                    e.LdcI4(elements.Count);
-//                    e.NewArr(variable.Type.Type.ArrayElementType);
-//
-//                    for (int x = 0; x < elements.Count; x++)
-//                    {
-//                        // Load array
-//                        e.Dup();
-//                        // Load index
-//                        e.LdcI4(x);
-//                        // Load value
-//                        EmitExpression(e, elements[x].Expression, context.SymbolTable);
-//                        // Store
-//                        e.StElemI4();
-//                    }
-//                }
-//            }
+            else if (false) // variable.Value is ElementCollection ec)
+            {
+                // Empty array initialization.
+                if (variable.Value != null && variable.Value is Expression value)
+                {
+                    EmitExpression(e, value, symTable);
+                    e.NewArr(variable.Type.ToClrType(_asm).ArrayElementType);
+                }
+                else if (variable.Value != null)
+                {
+                    ElementCollection elements = null; //variable.Value as ElementCollection;
+
+                    e.LdcI4(elements.Count);
+                    e.NewArr(variable.Type.ToClrType(_asm).ArrayElementType);
+
+                    for (int x = 0; x < elements.Count; x++)
+                    {
+                        // Load array
+                        e.Dup();
+                        // Load index
+                        e.LdcI4(x);
+                        // Load value
+                        EmitExpression(e, elements[x].Expression, symTable);
+                        // Store
+                        e.StElemI4();
+                    }
+                }
+            }
 
             //store phase
-            ILocal local;
-//            if (variable.Type is UnionTypeNode)
-//            {
-//                local = e.DefineLocal(_bindings.Object);
-//            }
-//            else
-//                local = e.DefineLocal(variable.Type.Type);
-//
-//
-//            if (variable.Value is Expression ex)
-//            {
-//                if (variable.Value != null)
-//                {
-//                    if (variable.Type is UnionTypeNode && !(ex.Type is UnionTypeNode))
-//                        e.Box(ex.Type.Type);
-//                    e.StLoc(local);
-//                }
-//            }
-//            else if (variable.Value is ElementCollection ec)
-//            {
-//                e.StLoc(local);
-//            }
+            ILocal local = e.DefineLocal(variable.Type.ToClrType(_asm));
 
-//            if (variable.Type is UnionTypeNode mtn)
-//            {
-//                WrapMultitypeNode(e, mtn, ref local);
-//            }
-//
-//            context.SymbolTable.ConnectCodeObject(variable, local);
+
+            if (variable.Value is Expression ex)
+            {
+                if (variable.Value != null)
+                {
+                    e.StLoc(local);
+                }
+            }
+            else if (false) //variable.Value is ElementCollection ec)
+            {
+                e.StLoc(local);
+            }
+
+            symTable.ConnectCodeObject(variable, local);
         }
 
         private void WrapMultitypeStackValue(IEmitter e, UnionTypeSyntax mtn, ILocal local, ILocal exp)

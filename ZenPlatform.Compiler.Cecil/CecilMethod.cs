@@ -36,6 +36,7 @@ namespace ZenPlatform.Compiler.Cecil
     }
 
 
+    [DebuggerDisplay("{" + nameof(Definition) + "}")]
     internal class CecilMethodBuilder : CecilMethodBase, IMethodBuilder
     {
         private readonly MethodDefinition _methodDef;

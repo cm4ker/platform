@@ -46,23 +46,35 @@ namespace ZenPlatform.Compiler.Helpers
 
         public static IType ToClrType(this TypeSyntax typeSyntax, IAssembly context)
         {
-            var _stb = context.TypeSystem.GetSystemBindings();
+            if (typeSyntax is SingleTypeSyntax sts)
+            {
+                return ToClrType(typeSyntax, context.TypeSystem) ?? context.FindType(sts.TypeName);
+            }
+
+            return ToClrType(typeSyntax, context.TypeSystem);
+        }
+
+        public static IType ToClrType(this TypeSyntax typeSyntax, ITypeSystem context)
+        {
+            var _stb = context.GetSystemBindings();
 
             if (typeSyntax is SingleTypeSyntax stn)
             {
-                return context.FindType(stn.TypeName);
+                return context.FindType(stn.TypeName) ?? context.FindType("System." + stn.TypeName);
             }
 
             else if (typeSyntax is PrimitiveTypeSyntax ptn)
             {
                 return ptn.Kind switch
-                {
+                    {
                     TypeNodeKind.Boolean => _stb.Boolean,
                     TypeNodeKind.Int => _stb.Int,
                     TypeNodeKind.Char => _stb.Char,
                     TypeNodeKind.Double => _stb.Double,
                     TypeNodeKind.String => _stb.String,
-                };
+                    TypeNodeKind.Byte => _stb.Byte,
+                    TypeNodeKind.Object => _stb.Object
+                    };
             }
 
             else if (typeSyntax is ArrayTypeSyntax atn)

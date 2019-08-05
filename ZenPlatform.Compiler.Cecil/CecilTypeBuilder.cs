@@ -16,7 +16,7 @@ namespace ZenPlatform.Compiler.Cecil
             : base(typeSystem, assembly, definition)
         {
             SelfReference = definition;
-
+            _methods = new List<IMethod>();
             _cr = new CecilContextResolver(typeSystem, Definition.Module);
         }
 
@@ -136,24 +136,5 @@ namespace ZenPlatform.Compiler.Cecil
         }
 
         public IReadOnlyList<IMethodBuilder> DefinedMethods => Methods.Cast<IMethodBuilder>().ToList();
-    }
-
-    class CecilContextResolver
-    {
-        private readonly CecilTypeSystem _ts;
-        private readonly ModuleDefinition _moduleDef;
-
-        public CecilContextResolver(CecilTypeSystem ts, ModuleDefinition moduleDef)
-        {
-            _ts = ts;
-            _moduleDef = moduleDef;
-        }
-
-        public TypeReference GetReference(ITypeReference type)
-        {
-            return _moduleDef.ImportReference(type.Reference);
-        }
-
-        public IType GetType(TypeReference tr) => _ts.Resolve(tr);
     }
 }
