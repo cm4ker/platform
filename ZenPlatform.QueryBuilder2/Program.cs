@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using ZenPlatform.QueryBuilder.DML.Delete;
@@ -30,7 +31,8 @@ namespace ZenPlatform.QueryBuilder
                     (n) => { n.As("Nasted"); }, (o) => o.On("t1", "FieldT1", "<>", "Nasted", "NastedField"))
                 .Select(tableName: "someTable", fieldName: "field1", alias: "HeyYouAreNewField")
                 .SelectRaw("CASE WHEN 1 = 1 THEN '1' ELSE '2' END")
-                .Where((f) => f.Field("field1"), "=", (f) => f.Field("field2"));
+                .Where((f) => f.Field("field1"), "=", (f) => f.Field("field2"))
+                .Where(x=>x.Or(t=> new []{t.Condition(j=>j.Raw("test"), new EqualsToken(), o=>o.Raw("test2"))}));
 
             var c = new SqlServerCompiller();
 

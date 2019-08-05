@@ -5,6 +5,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     public partial class Property : Member, IAstSymbol
     {
         private Block _getter;
+        private Block _setter;
 
         public Property(ILineInfo lineInfo, string name, TypeSyntax type, bool hasGet, bool hasSet) : this(lineInfo,
             name, type)
@@ -30,6 +31,15 @@ namespace ZenPlatform.Language.Ast.Definitions
             }
         }
 
-        public Block Setter { get; set; }
+        public Block Setter
+        {
+            get => _setter;
+            set
+            {
+                Childs.Remove(_setter);
+                _setter = value;
+                Childs.Add(_setter);
+            }
+        }
     }
 }

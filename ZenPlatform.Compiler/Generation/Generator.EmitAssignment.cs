@@ -132,6 +132,11 @@ namespace ZenPlatform.Compiler.Generation
                     //load value
                     EmitExpression(e, assignment.Value, symbolTable);
 
+                    if (assignment.Value.Type.Kind == TypeNodeKind.Object)
+                    {
+                        e.Unbox_Any(expProp.PropertyType);
+                    }
+
                     //Set value
                     e.PropSetValue(expProp);
                 }
