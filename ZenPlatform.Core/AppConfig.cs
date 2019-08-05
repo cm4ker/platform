@@ -17,8 +17,21 @@ namespace ZenPlatform.Core
         public string Address { get; set; }
     }
 
+    public enum ListenerType
+    {
+        User,
+        Admin,
+        Test
+    }
+
     public class AccessPointConfig
     {
+        public List<ListenerConfig> Listener { get; set; }
+    }
+    
+    public class ListenerConfig
+    {
         public string Address { get; set; }
+        public ListenerType Type { get; set; }
     }
 }

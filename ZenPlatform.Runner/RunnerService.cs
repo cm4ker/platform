@@ -5,11 +5,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Network;
-using ZenPlatform.ServerClientShared.DI;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Logging;
-using ZenPlatform.ServerClientShared.Logging;
-
+using Microsoft.Extensions.DependencyInjection;
 namespace ZenPlatform.Runner
 {
     class RunnerService : IHostedService, IDisposable
@@ -17,12 +15,12 @@ namespace ZenPlatform.Runner
 
 
         private readonly ILogger<RunnerService> _logger;
-        private readonly IDependencyResolver _dependencyResolver;
+        private readonly IServiceProvider _serviceProvider;
         private IAccessPoint _accessPoint;
-        public RunnerService(IDependencyResolver dependencyResolver)
+        public RunnerService(IServiceProvider serviceProvider)
         {
-            _dependencyResolver = dependencyResolver;
-            _logger = _dependencyResolver.Resolve<ILogger<RunnerService>>();
+            _serviceProvider = serviceProvider;
+            _logger = _serviceProvider.GetRequiredService<ILogger<RunnerService>>();
         }
 
 
@@ -35,9 +33,9 @@ namespace ZenPlatform.Runner
         {
             _logger.Info("Starting...");
             ///var registrator = _dependencyResolver.Resolve<IInvokeServiceManager>();
-            _accessPoint = _dependencyResolver.Resolve<IAccessPoint>();
+            _accessPoint = _serviceProvider.GetRequiredService<IAccessPoint>();
 
-           var envManager = _dependencyResolver.Resolve<IEnvironmentManager>();
+           var envManager = _serviceProvider.GetRequiredService<IEnvironmentManager>();
 
             //var route = new Route($"system\\test");
             //registrator.GetInvokeService(route.GetService()).Register(route, (c,a) => { return (int)a[0] + 1; });

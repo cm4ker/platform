@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Sessions;
-using ZenPlatform.ServerClientShared.Network;
 
 namespace ZenPlatform.Core.Network
 {
@@ -17,13 +16,14 @@ namespace ZenPlatform.Core.Network
     public class InvokeContext
     {
         public Task Task { get; private set; }
-        public CancellationTokenSource Canceller { get; private set; }
+        public CancellationTokenSource CancellationToken { get; private set; }
+
         public ISession Session { get; private set; }
 
-        public InvokeContext(Task task, CancellationTokenSource canceller, ISession session)
+        public InvokeContext(Task task, CancellationTokenSource cancellationToken, ISession session)
         {
             Task = task;
-            Canceller = canceller;
+            CancellationToken = cancellationToken;
             Session = session;
         }
     }
@@ -49,6 +49,8 @@ namespace ZenPlatform.Core.Network
 
         Task InvokeStream(Route route, ISession session, Stream stream, params object[] arg);
 
+        object GetRequiredService(Type type);
 
+        Task<object> InvokeProxy(ISession session, object instanceObject, string methodName, object[] args);
     }
 }

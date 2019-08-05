@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Compiler.Infrastructure;
-using ZenPlatform.ServerClientShared.Network;
+using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Compiler.Contracts
 {

@@ -1,25 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Sessions;
 
 namespace ZenPlatform.Core.Network
 {
     public class TaskManager : ITaskManager
     {
 
-        public TaskManager()
-        {
+        private readonly List<InvokeContext> _invokes;
+        private readonly ILogger<TaskManager> _logger;
 
+        public TaskManager(ILogger<TaskManager> logger)
+        {
+            _logger = logger;
+            _invokes = new List<InvokeContext>();
         }
 
-        public void StartTask(InvokeContext invokeContext)
+        private void StartTask(InvokeContext invokeContext)
         {
+            _logger.Trace("Start task id: {0}.", invokeContext.Task.Id);
+            _invokes.Add(invokeContext);
 
+            invokeContext.Task.ContinueWith(t => FinishTask(invokeContext));
         }
 
-        public void FinishTask(InvokeContext invokeContext)
+        private void FinishTask(InvokeContext invokeContext)
         {
+            _logger.Trace("End task id: {0}.", invokeContext.Task.Id);
+            _invokes.Remove(invokeContext);
+        }
 
+        public Task<object> RunTask(ISession session, Func<InvokeContext, object> action)
+        {
+            
+            var canceller = new CancellationTokenSource();
+            Task<object> task = null;
+            InvokeContext context = null;
+            task = Task.Factory.StartNew(() =>
+            {
+                context = new InvokeContext(task, canceller, session);
+
+                StartTask(context);
+                using (canceller.Token.Register(Thread.CurrentThread.Interrupt))
+                {
+
+
+                    try
+                    {
+                        return action(context);
+
+                    }
+
+                    finally
+                    {
+                        // _taskManager.FinishTask(invokeContext);
+                    }
+
+                }
+            }, canceller.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
+
+            
+
+            return task;
         }
     }
 }
