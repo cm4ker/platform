@@ -197,6 +197,9 @@ namespace ZenPlatform.Compiler.Generation
                 else
                     fe.Type = new SingleTypeSyntax(null, expProp.PropertyType.Name, TypeNodeKind.Unknown);
 
+                if(expProp.Getter is null) 
+                    throw new Exception($"Can't resolve property: {fe.FieldName}");
+                
                 e.PropGetValue(expProp);
             }
             else if (expression is PostIncrementExpression pis)

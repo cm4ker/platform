@@ -7,8 +7,9 @@ namespace ZenPlatform.Language.Ast.Definitions
         private Block _getter;
         private Block _setter;
 
-        public Property(ILineInfo lineInfo, string name, TypeSyntax type, bool hasGet, bool hasSet) : this(lineInfo,
-            name, type)
+        public Property(ILineInfo lineInfo, string name, TypeSyntax type, bool hasGet, bool hasSet,
+            string mapTo = null) : this(lineInfo,
+            name, type, mapTo)
         {
             HasGetter = hasGet;
             HasSetter = hasSet;

@@ -961,7 +961,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get;
         }
-
+        
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitClass(this);
