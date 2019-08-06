@@ -30,6 +30,7 @@ using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using BinaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.BinaryExpression;
@@ -172,10 +173,34 @@ namespace ZenPlatform.EntityComponent.Entity
 
             List<Member> members = new List<Member>();
 
-            var field = new Field(null, "_dto",
-                new SingleTypeSyntax(null, $"{@namespace}.{dtoClassName}", TypeNodeKind.Type));
+            var sessionType = new PrimitiveTypeSyntax(null, TypeNodeKind.Session);
+            var dtoType = new SingleTypeSyntax(null, $"{@namespace}.{dtoClassName}", TypeNodeKind.Type);
+
+            var sessionParameter = new Parameter(null, "session", sessionType
+                , PassMethod.ByValue);
+
+            var dtoParameter = new Parameter(null, "dto", dtoType
+                , PassMethod.ByValue);
+
+            var block = new Block(null,
+                new[]
+                    {
+                        new Assignment(null, new Name(null, "session"), null, new Name(null, "_session")).ToStatement(),
+                        new Assignment(null, new Name(null, "dto"), null, new Name(null, "_dto")).ToStatement()
+                    }
+                    .ToList());
+
+            var constructor =
+                new Constructor(null, block, new List<Parameter>() {sessionParameter, dtoParameter}, null);
+
+            var field = new Field(null, "_dto", dtoType);
+
+            var fieldSession = new Field(null, "_session", sessionType);
+
+            members.Add(constructor);
 
             members.Add(field);
+            members.Add(fieldSession);
 
             foreach (var prop in singleEntityType.Properties)
             {

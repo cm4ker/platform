@@ -59,6 +59,9 @@ namespace ZenPlatform.Compiler.Generation
         private Dictionary<Property, IPropertyBuilder> _stage1Properties = new Dictionary<Property, IPropertyBuilder>();
         private Dictionary<Field, IField> _stage1Fields = new Dictionary<Field, IField>();
 
+        private Dictionary<Constructor, IConstructorBuilder> _stage1constructors =
+            new Dictionary<Constructor, IConstructorBuilder>();
+
 
         /// <summary>
         /// Prebuilding 1 level elements - classes and modules
@@ -131,6 +134,13 @@ namespace ZenPlatform.Compiler.Generation
                             ;
                         }
 
+                        foreach (var constructor in c.TypeBody.Constructors)
+                        {
+                            var pf = PrebuildConstructor(constructor, tbc);
+                            _stage1constructors.Add(constructor, pf);
+                            ;
+                        }
+
                         break;
                     default:
                         throw new Exception("The type entity not supported");
@@ -169,11 +179,45 @@ namespace ZenPlatform.Compiler.Generation
                             BuildProperty(property, tbc, _stage1Properties[property]);
                         }
 
+                        foreach (var constructor in c.TypeBody.Constructors)
+                        {
+                            BuildConstructor(constructor, tbc, _stage1constructors[constructor]);
+                        }
+
                         break;
                     default:
                         throw new Exception("The type entity not supported");
                 }
             }
+        }
+
+        private void BuildConstructor(Constructor constructor, ITypeBuilder tbc, IConstructorBuilder stage1Constructor)
+        {
+            constructor.Builder = stage1Constructor.Generator;
+
+            EmitConstructor(constructor);
+        }
+
+
+        private void EmitConstructor(Constructor constructor)
+        {
+            if (constructor == null)
+                throw new ArgumentNullException();
+
+            IEmitter emitter = constructor.Builder;
+            emitter.InitLocals = true;
+
+            ILocal resultVar = null;
+
+            var returnLabel = emitter.DefineLabel();
+
+            //Используем конструктор по умолчанию
+            emitter.LdArg_0().EmitCall(_bindings.Object.Constructors[0]);
+
+            EmitBody(emitter, constructor.Block, returnLabel, ref resultVar);
+            emitter.MarkLabel(returnLabel);
+
+            emitter.Ret();
         }
 
         private IMethodBuilder PrebuildFunction(Function function, ITypeBuilder tb, bool isClass)
@@ -188,6 +232,15 @@ namespace ZenPlatform.Compiler.Generation
 
             var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
                 .WithReturnType(function.Type.ToClrType(_asm));
+
+            if (function.Parameters != null)
+            {
+                foreach (var p in function.Parameters)
+                {
+                    var codeObj = method.DefineParameter(p.Name, p.Type.ToClrType(_asm), false, false);
+                    function.Block.SymbolTable.ConnectCodeObject(p, codeObj);
+                }
+            }
 
             return method;
         }
@@ -280,21 +333,22 @@ namespace ZenPlatform.Compiler.Generation
             return tb.DefineField(field.Type.ToClrType(_asm), field.Name, false, false);
         }
 
-        private void BuildModule(Module module)
+        private IConstructorBuilder PrebuildConstructor(Constructor constructor, ITypeBuilder tb)
         {
-            var typeBuilder = _asm.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
-                SreTA.Class | SreTA.Public | SreTA.Abstract |
-                SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
+            var c = tb.DefineConstructor(false);
 
-            // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
-            // Для того, чтобы можно было делать вызов функции из другой функции
-            foreach (var item in PrebuildFunctions(module.TypeBody, typeBuilder, false))
+            if (constructor.Parameters != null)
             {
-                BuildFunction(item.Item1, item.Item2);
+                foreach (var p in constructor.Parameters)
+                {
+                    var codeObj = c.DefineParameter(p.Type.ToClrType(_asm));
+                    constructor.Block.SymbolTable.ConnectCodeObject(p, codeObj);
+                }
             }
 
-            typeBuilder.EndBuild();
+            return c;
         }
+
 
         private ITypeBuilder PreBuildClass(Class @class)
         {
@@ -386,14 +440,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (function == null)
                 throw new ArgumentNullException();
-            if (function.Parameters != null)
-            {
-                foreach (var p in function.Parameters)
-                {
-                    var codeObj = method.DefineParameter(p.Name, null, false, false);
-                    function.Block.SymbolTable.ConnectCodeObject(p, codeObj);
-                }
-            }
+
 
             function.Builder = method.Generator;
 

@@ -49,6 +49,11 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 f.Block.SymbolTable.Add(obj);
             }
+
+            if (obj.Parent is Constructor c)
+            {
+                c.Block.SymbolTable.Add(obj);
+            }
             else
             {
                 throw new Exception("Invalid register parameter in scope");
@@ -126,10 +131,25 @@ namespace ZenPlatform.Compiler.Visitor
             return base.VisitFunction(obj);
         }
 
+        public override object VisitConstructor(Constructor obj)
+        {
+            if (obj.Parent is TypeBody te)
+            {
+                if (obj.Block.SymbolTable == null)
+                    obj.Block.SymbolTable = new SymbolTable(te.SymbolTable);
+
+                obj.Block.SymbolTable.Clear();
+            }
+            else
+            {
+                throw new Exception("Invalid register function in scope");
+            }
+
+            return base.VisitConstructor(obj);
+        }
+
         public override object VisitProperty(Property obj)
         {
-           
-
             var parent = obj.FirstParent<TypeBody>().SymbolTable;
 
             if (obj.Setter != null && obj.Setter.SymbolTable == null)
@@ -147,7 +167,7 @@ namespace ZenPlatform.Compiler.Visitor
 
             obj.Setter?.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByValue));
 
-            return  base.VisitProperty(obj);
+            return base.VisitProperty(obj);
         }
 
 

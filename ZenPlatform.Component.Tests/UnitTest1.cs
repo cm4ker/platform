@@ -5,8 +5,10 @@ using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Sessions;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Tests.Common;
@@ -24,6 +26,11 @@ namespace ZenPlatform.Component.Tests
             var asm = pl.CreateAssembly("Debug");
 
             var root = new Root(null, new List<CompilationUnit>());
+
+            var st = asm.TypeSystem.FindType<Session>();
+
+            var sessionType =
+                new PrimitiveTypeSyntax(null, TypeNodeKind.Session).ToClrType(asm);
 
             foreach (var component in conf.Data.Components)
             {

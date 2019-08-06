@@ -17,7 +17,6 @@ namespace ZenPlatform.Compiler.Dnlib
         public DnlibAssemblyBuilder(ITypeSystem ts, AssemblyDefUser assembly) : base(ts, assembly)
         {
             _assembly = assembly;
-            assembly.
         }
 
         public IReadOnlyList<ITypeBuilder> DefinedTypes => _definedTypes;
