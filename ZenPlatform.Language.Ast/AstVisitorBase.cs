@@ -311,6 +311,11 @@ namespace ZenPlatform.Language.Ast
         {
             return DefaultVisit(obj);
         }
+
+        public virtual T VisitConstructor(Constructor obj)
+        {
+            return DefaultVisit(obj);
+        }
     }
 
     public class AstWalker<T> : AstVisitorBase<T>

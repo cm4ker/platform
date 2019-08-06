@@ -16,11 +16,12 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             var slot = 0;
             Units = units;
-            foreach (var item in Units)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Units != null)
+                foreach (var item in Units)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
         }
 
         public List<CompilationUnit> Units
@@ -49,18 +50,20 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             var slot = 0;
             Namespaces = namespaces;
-            foreach (var item in Namespaces)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Namespaces != null)
+                foreach (var item in Namespaces)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
 
             Entityes = entityes;
-            foreach (var item in Entityes)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Entityes != null)
+                foreach (var item in Entityes)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
         }
 
         public List<NamespaceBase> Namespaces
@@ -156,29 +159,40 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class TypeBody : SyntaxNode, IScoped
     {
-        public TypeBody(ILineInfo lineInfo, List<Function> functions, List<Field> fields, List<Property> properties): base(lineInfo)
+        public TypeBody(ILineInfo lineInfo, List<Function> functions, List<Field> fields, List<Property> properties, List<Constructor> constructors): base(lineInfo)
         {
             var slot = 0;
             Functions = functions;
-            foreach (var item in Functions)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Functions != null)
+                foreach (var item in Functions)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
 
             Fields = fields;
-            foreach (var item in Fields)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Fields != null)
+                foreach (var item in Fields)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
 
             Properties = properties;
-            foreach (var item in Properties)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Properties != null)
+                foreach (var item in Properties)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
+
+            Constructors = constructors;
+            if (Constructors != null)
+                foreach (var item in Constructors)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
         }
 
         public List<Function> Functions
@@ -192,6 +206,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public List<Property> Properties
+        {
+            get;
+        }
+
+        public List<Constructor> Constructors
         {
             get;
         }
@@ -558,11 +577,12 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             var slot = 0;
             Statements = statements;
-            foreach (var item in Statements)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Statements != null)
+                foreach (var item in Statements)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
         }
 
         public List<Statement> Statements
@@ -652,18 +672,20 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
             if (Block != null)
                 Childs.Add(Block);
             Parameters = parameters;
-            foreach (var item in Parameters)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Parameters != null)
+                foreach (var item in Parameters)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
 
             Attributes = attributes;
-            foreach (var item in Attributes)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Attributes != null)
+                foreach (var item in Attributes)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
 
             Name = name;
             Type = type;
@@ -697,6 +719,61 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitFunction(this);
+        }
+
+        public SymbolTable SymbolTable
+        {
+            get;
+            set;
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class Constructor : Member, IScoped
+    {
+        public Constructor(ILineInfo lineInfo, Block block, List<Parameter> parameters, List<Attribute> attributes): base(lineInfo)
+        {
+            var slot = 0;
+            Block = block;
+            if (Block != null)
+                Childs.Add(Block);
+            Parameters = parameters;
+            if (Parameters != null)
+                foreach (var item in Parameters)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
+
+            Attributes = attributes;
+            if (Attributes != null)
+                foreach (var item in Attributes)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
+        }
+
+        public Block Block
+        {
+            get;
+        }
+
+        public List<Parameter> Parameters
+        {
+            get;
+        }
+
+        public List<Attribute> Attributes
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstructor(this);
         }
 
         public SymbolTable SymbolTable
@@ -803,11 +880,12 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             var slot = 0;
             Arguments = arguments;
-            foreach (var item in Arguments)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Arguments != null)
+                foreach (var item in Arguments)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
 
             Name = name;
             if (Name != null)
@@ -1360,11 +1438,12 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             var slot = 0;
             Matches = matches;
-            foreach (var item in Matches)
-            {
-                if (item != null)
-                    Childs.Add(item);
-            }
+            if (Matches != null)
+                foreach (var item in Matches)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
 
             Expression = expression;
             if (Expression != null)
