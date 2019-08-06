@@ -27,11 +27,6 @@ namespace ZenPlatform.Component.Tests
 
             var root = new Root(null, new List<CompilationUnit>());
 
-            var st = asm.TypeSystem.FindType<Session>();
-
-            var sessionType =
-                new PrimitiveTypeSyntax(null, TypeNodeKind.Session).ToClrType(asm);
-
             foreach (var component in conf.Data.Components)
             {
                 foreach (var type in component.Types)

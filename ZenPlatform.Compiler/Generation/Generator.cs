@@ -169,6 +169,8 @@ namespace ZenPlatform.Compiler.Generation
                     case Class c:
                         var tbc = _stage0[c];
 
+                        EmitMappingSupport(c, tbc);
+
                         foreach (var function in c.TypeBody.Functions)
                         {
                             BuildFunction(function, _stage1Methods[function]);
@@ -251,35 +253,47 @@ namespace ZenPlatform.Compiler.Generation
 
             IField backField = null;
 
+
             if (property.Setter == null && property.Getter == null)
             {
                 backField = tb.DefineField(property.Type.ToClrType(_asm), $"{property.Name}_backingField", false,
                     false);
             }
 
-            var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
-            var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
-
-            setMethod.WithReturnType(_bindings.Void);
-            var valueArg = setMethod.DefineParameter("value", property.Type.ToClrType(_asm), false, false);
-
-            getMethod.WithReturnType(property.Type.ToClrType(_asm));
-
-            if (property.Getter == null)
+            if (property.HasGetter || property.Getter != null)
             {
-                getMethod.Generator.LdArg_0().LdFld(backField).Ret();
+                var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
+                getMethod.WithReturnType(property.Type.ToClrType(_asm));
+
+                if (property.Getter == null)
+                {
+                    if (backField != null)
+                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
+                }
+
+                propBuilder.WithGetter(getMethod);
             }
 
-            if (property.Setter == null)
+            if (property.HasSetter || property.Setter != null)
             {
-                if (backField != null)
-                    setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
-                else
-                    setMethod.Generator.Ret();
+                var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
+                setMethod.WithReturnType(_bindings.Void);
+                setMethod.DefineParameter("value", property.Type.ToClrType(_asm), false, false);
+
+
+                if (property.Setter == null)
+                {
+                    if (backField != null)
+                        setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
+                    else
+                        setMethod.Generator.Ret();
+                }
+
+
+                propBuilder.WithSetter(setMethod);
             }
 
-
-            return propBuilder.WithGetter(getMethod).WithSetter(setMethod);
+            return propBuilder;
         }
 
         private void BuildProperty(Property property, ITypeBuilder tb, IPropertyBuilder pb)
@@ -352,11 +366,17 @@ namespace ZenPlatform.Compiler.Generation
 
         private ITypeBuilder PreBuildClass(Class @class)
         {
-            return _asm.DefineType(
+            var tb = _asm.DefineType(
                 (string.IsNullOrEmpty(@class.Namespace) ? DEFAULT_ASM_NAMESPACE : @class.Namespace), @class.Name,
                 SreTA.Class | SreTA.NotPublic |
                 SreTA.BeforeFieldInit | SreTA.AnsiClass,
                 _bindings.Object);
+
+
+            if (@class.ImplementsReference)
+                tb.AddInterfaceImplementation(_bindings.Reference);
+
+            return tb;
         }
 
         private ITypeBuilder PreBuildModule(Module module)
@@ -366,74 +386,9 @@ namespace ZenPlatform.Compiler.Generation
                 SreTA.BeforeFieldInit | SreTA.AnsiClass, _bindings.Object);
         }
 
-        private void BuildClass(Class @class)
-        {
-            var tb = _asm.DefineType(
-                (string.IsNullOrEmpty(@class.Namespace) ? DEFAULT_ASM_NAMESPACE : @class.Namespace), @class.Name,
-                SreTA.Class | SreTA.NotPublic |
-                SreTA.BeforeFieldInit | SreTA.AnsiClass,
-                _bindings.Object);
-
-            PrebuildProperties(@class.TypeBody, tb);
-
-            //Поддержка интерфейса ICanMapSelfFromDataReader
-            EmitMappingSupport(@class, tb);
-
-            // Сделаем прибилд функции, чтобы она зерегистрировала себя в доступных символах модуля
-            // Для того, чтобы можно было делать вызов функции из другой функции
-            foreach (var item in PrebuildFunctions(@class.TypeBody, tb, true))
-            {
-                BuildFunction(item.Item1, item.Item2);
-            }
-
-            tb.EndBuild();
-        }
-
         private void Error(string message)
         {
             throw new Exception(message);
-        }
-
-
-        /// <summary>
-        /// Создание функций исходя из тела типа
-        /// </summary>
-        /// <param name="typeBody"></param>
-        /// <param name="builder"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        private List<(Function, IMethodBuilder)> PrebuildFunctions(TypeBody typeBody, ITypeBuilder tb, bool isClass)
-        {
-            if (typeBody == null)
-                throw new ArgumentNullException();
-
-
-            List<(Function, IMethodBuilder)> result = new List<(Function, IMethodBuilder)>();
-
-            if (typeBody != null && typeBody.Functions != null)
-            {
-                foreach (Function function in typeBody.Functions)
-                {
-                    //На сервере никогда не может существовать клиентских процедур
-                    if (((int) function.Flags & (int) _mode) == 0 && !isClass)
-                    {
-                        continue;
-                    }
-
-                    Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
-
-                    var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
-                        .WithReturnType(function.Type.ToClrType(_asm));
-
-                    result.Add((function, method));
-
-                    // Make child visible to parent.
-                    typeBody.SymbolTable.ConnectCodeObject(function, method);
-                    //symbolTable.Add(function.Name, SymbolType.Function, function, method);
-                }
-            }
-
-            return result;
         }
 
         private IMethodBuilder BuildFunction(Function function, IMethodBuilder method)

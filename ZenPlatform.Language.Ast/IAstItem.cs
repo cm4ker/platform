@@ -92,9 +92,6 @@ namespace ZenPlatform.Language.Ast
 
         public int Position { get; set; }
 
-        //public AstNodeCollection Children { get; }
-
-
         public abstract T Accept<T>(AstVisitorBase<T> visitor);
     }
 }
