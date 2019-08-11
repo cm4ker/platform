@@ -40,7 +40,9 @@ namespace ZenPlatform.Component.Tests
 
             foreach (var cu in root.Units)
             {
-                new Generator(new GeneratorParameters(cu, asm, CompilationMode.Server)).Build();
+                var generator = new Generator(new GeneratorParameters(cu, asm, CompilationMode.Server));
+                generator.BuildStructure();
+                generator.BuildCode();
             }
 
             asm.Write("Debug.bll");

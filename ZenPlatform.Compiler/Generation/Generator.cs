@@ -47,10 +47,15 @@ namespace ZenPlatform.Compiler.Generation
             _bindings = _ts.GetSystemBindings();
         }
 
-        public void Build()
+
+        public void BuildStructure()
         {
             BuildStage0();
             BuildStage1();
+        }
+
+        public void BuildCode()
+        {
             BuildStage2();
         }
 
@@ -149,7 +154,7 @@ namespace ZenPlatform.Compiler.Generation
         }
 
         /// <summary>
-        /// Prebuilding, finaly, 3 level body of the methods && properties
+        /// Build, finaly, 3 level body of the methods && properties
         /// </summary>
         /// <exception cref="Exception"></exception>
         private void BuildStage2()
@@ -193,13 +198,13 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
+
         private void BuildConstructor(Constructor constructor, ITypeBuilder tbc, IConstructorBuilder stage1Constructor)
         {
             constructor.Builder = stage1Constructor.Generator;
 
             EmitConstructor(constructor);
         }
-
 
         private void EmitConstructor(Constructor constructor)
         {
