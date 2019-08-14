@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using Npgsql.TypeHandlers;
 using ServiceStack;
+using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Platform;
@@ -30,6 +31,26 @@ using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
+    
+    
+    /*
+     * Пишу тут, так как это напрямую связано с генерацией кода
+     *
+     * Этапы:
+     *     1) Создать полностью каркас приложения. Сгенерировать классы свойсва и поля
+     *     2) Необходимо создать Юниты компиляции и зарегистрировать видимость всех нужных вещей, это
+     *        необходимо для того, чтобы можно было компилировать правильно локальный код.
+     *
+     *       * Мы НЕ должны видеть внутренних переменных
+     *       * Мы НЕ должны видеть лишние классы окружения (вообще нужно вырезать оператор new,
+     *         платформа сама занимается созданием объектов)
+     *       * Мы должны видеть переменные, которые МЫ объявили
+     *       * Мы должны видеть разрешенные нам классы (например класс менеджер сущностей)
+     *
+     *         Все классы генерируются на уровне инструкций потому что это API удобно предоставить, на него легально
+     *         можно накладывать отладочную информацию (когда именно это необходимо)
+     */
+    
     public class StagedGenerator : IPlatformStagedAssemblyGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
@@ -214,6 +235,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 if (pm.ModuleRelationType == XCProgramModuleRelationType.Object)
                 {
                     var script = pm.ModuleText;
+                    
                 }
             }
         }
