@@ -55,7 +55,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
         public override object VisitParameter(Parameter obj)
         {
-            var codeObj = _context.Method.DefineParameter(obj.Name, obj.Type.ToClrType(_context.Assembly), false, false);
+            var codeObj =
+                _context.Method.DefineParameter(obj.Name, obj.Type.ToClrType(_context.Assembly), false, false);
             _context.SymbolTable.ConnectCodeObject(obj, codeObj);
 
 

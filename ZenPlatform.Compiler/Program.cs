@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Antlr4.Runtime;
 using ZenPlatform.Compiler.AST;
-using ZenPlatform.Compiler.AST.Definitions;
+
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
@@ -55,7 +55,7 @@ module TestModule
 
             CompilationBackend cb = new CompilationBackend();
             var b = cb.Compile(text);
-            
+
             var path = "AsmPlatform.dll";
             if (File.Exists(path))
                 File.Delete(path);

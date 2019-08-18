@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using MethodBody = Mono.Cecil.Cil.MethodBody;

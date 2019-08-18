@@ -1,15 +1,7 @@
 using System;
-using System.Runtime.CompilerServices;
-using Hyperion.ValueSerializers;
-using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Symbols;
-using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast;
-using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
@@ -64,7 +56,7 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitName(Name obj)
         {
-            var v = obj.FirstParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable);
+            var v = obj.FirstParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable, obj.GetScope());
 
             if (v?.SyntaxObject is Variable vv) obj.Type = vv.Type;
             if (v?.SyntaxObject is Parameter p) obj.Type = p.Type;

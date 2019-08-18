@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
@@ -11,7 +12,8 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                var v = FirstParent<IScoped>().SymbolTable.Find(this.Value, SymbolType.Variable);
+                var v = FirstParent<IScoped>().SymbolTable
+                    .Find(this.Value, SymbolType.Variable, this.GetScope());
                 return ((ITypedNode) v.SyntaxObject).Type;
             }
         }
