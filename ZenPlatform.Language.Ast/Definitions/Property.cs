@@ -16,6 +16,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public SymbolType SymbolType => SymbolType.Variable;
+        public SymbolScope SymbolScope { get; set; }
 
         public bool HasGetter { get; set; }
         public bool HasSetter { get; set; }

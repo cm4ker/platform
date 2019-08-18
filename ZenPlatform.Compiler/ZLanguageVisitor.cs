@@ -4,15 +4,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Antlr4.Runtime;
-using Microsoft.CodeAnalysis.CSharp;
-using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast;
-using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Extension;
@@ -22,7 +16,7 @@ using ZenPlatform.Language.Ast.Infrastructure;
 using Attribute = ZenPlatform.Language.Ast.Definitions.Attribute;
 using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
-namespace ZenPlatform.Compiler.AST
+namespace ZenPlatform.Compiler
 {
     public class ZLanguageVisitor : ZSharpParserBaseVisitor<SyntaxNode>
     {

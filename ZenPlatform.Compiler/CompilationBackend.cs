@@ -3,7 +3,6 @@ using System.IO;
 using Antlr4.Runtime;
 using Microsoft.CodeAnalysis;
 using ZenPlatform.Compiler.AST;
-using ZenPlatform.Compiler.AST.Definitions;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
@@ -13,6 +12,7 @@ using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using CompilationOptions = ZenPlatform.Compiler.Generation.NewGenerator.CompilationOptions;
+using SyntaxNode = ZenPlatform.Language.Ast.SyntaxNode;
 
 namespace ZenPlatform.Compiler
 {
@@ -92,6 +92,54 @@ namespace ZenPlatform.Compiler
         /// <param name="tokenStream"></param>
         /// <returns></returns>
         private ZSharpParser Parse(ITokenStream tokenStream)
+        {
+            ZSharpParser parser = new ZSharpParser(tokenStream);
+
+            parser.AddErrorListener(new Listener());
+
+            return parser;
+        }
+    }
+
+
+    public static class ParserHelper
+    {
+        public static SyntaxNode ParseModuleBody(string text)
+        {
+            using (var s = new StringReader(text))
+            {
+                var p = Parse(CreateInputStream(s));
+
+                var v = new ZLanguageVisitor();
+
+                return v.VisitModuleBody(p.moduleBody());
+            }
+        }
+
+        public static SyntaxNode ParseTypeBody(string text)
+        {
+            using (var s = new StringReader(text))
+            {
+                var p = Parse(CreateInputStream(s));
+
+                var v = new ZLanguageVisitor();
+
+                return v.VisitTypeBody(p.typeBody());
+            }
+        }
+
+        private static ITokenStream CreateInputStream(Stream input)
+        {
+            return PreProcessor.Do(new AntlrInputStream(input));
+        }
+
+        private static ITokenStream CreateInputStream(TextReader reader)
+        {
+            return PreProcessor.Do(new AntlrInputStream(reader));
+        }
+
+
+        public static ZSharpParser Parse(ITokenStream tokenStream)
         {
             ZSharpParser parser = new ZSharpParser(tokenStream);
 

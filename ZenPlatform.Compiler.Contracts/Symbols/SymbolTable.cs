@@ -1,5 +1,4 @@
 using System.Collections;
-using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Contracts.Symbols
@@ -7,42 +6,42 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
     public interface ISymbolTable
     {
         ISymbol Add(IAstSymbol astSymbol);
-        ISymbol Add(string name, SymbolType type, IAstSymbol syntaxObject, object codeObject);
+        ISymbol Add(string name, SymbolType type, SymbolScope scope, IAstSymbol syntaxObject, object codeObject);
         ISymbol ConnectCodeObject(IAstSymbol v, object codeObject);
-        bool Contains(string name, SymbolType type);
+        bool Contains(string name, SymbolType type, SymbolScope scope);
         ISymbol Find(IAstSymbol symbol);
         T FindCodeObject<T>(IAstSymbol symbol);
-        ISymbol Find(string name, SymbolType type);
+        ISymbol Find(string name, SymbolType type, SymbolScope scope);
         void Clear();
     }
 
     public class SymbolTable : ISymbolTable
     {
-        private ISymbolTable _parent;
+        private SymbolTable _parent;
         private Hashtable _hashtable = new Hashtable();
 
         public SymbolTable()
         {
         }
 
-        public SymbolTable(ISymbolTable parent)
+        public SymbolTable(SymbolTable parent)
         {
             _parent = parent;
         }
 
         public ISymbol Add(IAstSymbol astSymbol)
         {
-            return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol, null);
+            return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol.SymbolScope, astSymbol, null);
         }
 
-        public ISymbol Add(string name, SymbolType type, IAstSymbol syntaxObject, object codeObject)
+        public ISymbol Add(string name, SymbolType type, SymbolScope scope, IAstSymbol syntaxObject, object codeObject)
         {
             string prefix = PrefixFromType(type);
 
             if (_hashtable.Contains(prefix + name))
                 throw new SymbolException("Symbol already exists in symbol table.");
 
-            Symbol symbol = new Symbol(name, type, syntaxObject, codeObject);
+            Symbol symbol = new Symbol(name, type, scope, syntaxObject, codeObject);
             _hashtable.Add(prefix + name, symbol);
 
             return symbol;
@@ -50,10 +49,10 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
 
         public ISymbol ConnectCodeObject(IAstSymbol v, object codeObject)
         {
-            var result = Find(v.Name, v.SymbolType);
+            var result = Find(v.Name, v.SymbolType, v.SymbolScope);
             if (result == null)
             {
-                return Add(v.Name, v.SymbolType, v, codeObject);
+                return Add(v.Name, v.SymbolType, v.SymbolScope, v, codeObject);
             }
             else
             {
@@ -63,14 +62,14 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return result;
         }
 
-        public bool Contains(string name, SymbolType type)
+        public bool Contains(string name, SymbolType type, SymbolScope scope)
         {
-            return Find(name, type) != null;
+            return Find(name, type, scope) != null;
         }
 
         public ISymbol Find(IAstSymbol symbol)
         {
-            return Find(symbol.Name, symbol.SymbolType);
+            return Find(symbol.Name, symbol.SymbolType, symbol.SymbolScope);
         }
 
         public T FindCodeObject<T>(IAstSymbol symbol)
@@ -78,7 +77,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return (T) Find(symbol)?.CodeObject;
         }
 
-        public ISymbol Find(string name, SymbolType type)
+        public ISymbol Find(string name, SymbolType type, SymbolScope scope)
         {
             string prefix = PrefixFromType(type);
 
@@ -86,7 +85,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
                 return (Symbol) _hashtable[prefix + name];
             if (_parent != null)
             {
-                return _parent.Find(name, type);
+                return _parent.Find(name, type, scope);
             }
 
             return null;
