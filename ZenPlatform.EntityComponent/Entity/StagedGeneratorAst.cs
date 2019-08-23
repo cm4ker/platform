@@ -15,7 +15,9 @@ using NLog.LayoutRenderers;
 using Npgsql.NameTranslation;
 using Npgsql.TypeHandlers;
 using ServiceStack;
+using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration.Data.Contracts;
@@ -37,6 +39,7 @@ using BinaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.Binary
 using IType = ZenPlatform.Compiler.Contracts.IType;
 using Parameter = ZenPlatform.Language.Ast.Definitions.Functions.Parameter;
 using Property = ZenPlatform.Language.Ast.Definitions.Property;
+using PublicKey = System.Security.Cryptography.X509Certificates.PublicKey;
 using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -192,11 +195,11 @@ namespace ZenPlatform.EntityComponent.Entity
                     .ToList());
 
             var constructor =
-                new Constructor(null, block, new List<Parameter>() {sessionParameter, dtoParameter}, null);
+                new Constructor(null, block, new List<Parameter>() {sessionParameter, dtoParameter}, null, className);
 
-            var field = new Field(null, "_dto", dtoType);
+            var field = new Field(null, "_dto", dtoType) {SymbolScope = SymbolScope.System};
 
-            var fieldSession = new Field(null, "_session", sessionType);
+            var fieldSession = new Field(null, "_session", sessionType) {SymbolScope = SymbolScope.System};
 
             members.Add(constructor);
 
@@ -321,9 +324,32 @@ namespace ZenPlatform.EntityComponent.Entity
             cls.ImplementsReference = true;
             cls.Namespace = @namespace;
 
+            Stage1Modules(type, cls);
+
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
             root.Add(cu);
+        }
+
+        public void Stage1Modules(XCObjectTypeBase type, Class cls)
+        {
+            foreach (var module in type.GetProgramModules())
+            {
+                if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
+                {
+                    var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
+
+                    foreach (var func in typeBody.Functions)
+                    {
+                        func.SymbolScope = SymbolScope.User;
+                        cls.AddFunction(func);
+                    }
+                }
+            }
+        }
+
+        public void Stage3()
+        {
         }
     }
 }

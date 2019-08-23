@@ -731,9 +731,9 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class Constructor : Member, IScoped
+    public partial class Constructor : Member, IScoped, IAstSymbol
     {
-        public Constructor(ILineInfo lineInfo, Block block, List<Parameter> parameters, List<Attribute> attributes): base(lineInfo)
+        public Constructor(ILineInfo lineInfo, Block block, List<Parameter> parameters, List<Attribute> attributes, String name): base(lineInfo)
         {
             var slot = 0;
             Block = block;
@@ -754,6 +754,8 @@ namespace ZenPlatform.Language.Ast.Definitions
                     if (item != null)
                         Childs.Add(item);
                 }
+
+            Name = name;
         }
 
         public Block Block
@@ -767,6 +769,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public List<Attribute> Attributes
+        {
+            get;
+        }
+
+        public String Name
         {
             get;
         }
@@ -961,7 +968,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get;
         }
-        
+
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitClass(this);

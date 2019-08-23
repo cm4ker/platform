@@ -104,7 +104,7 @@ namespace ZenPlatform.Compiler
 
     public static class ParserHelper
     {
-        public static SyntaxNode ParseModuleBody(string text)
+        public static TypeBody ParseModuleBody(string text)
         {
             using (var s = new StringReader(text))
             {
@@ -112,11 +112,11 @@ namespace ZenPlatform.Compiler
 
                 var v = new ZLanguageVisitor();
 
-                return v.VisitModuleBody(p.moduleBody());
+                return (TypeBody) v.VisitModuleBody(p.moduleBody());
             }
         }
 
-        public static SyntaxNode ParseTypeBody(string text)
+        public static TypeBody ParseTypeBody(string text)
         {
             using (var s = new StringReader(text))
             {
@@ -124,7 +124,7 @@ namespace ZenPlatform.Compiler
 
                 var v = new ZLanguageVisitor();
 
-                return v.VisitTypeBody(p.typeBody());
+                return (TypeBody) v.VisitTypeBody(p.typeBody());
             }
         }
 

@@ -58,6 +58,13 @@ namespace ZenPlatform.Tests.Common
             invoice.Properties.Add(prop);
             invoice.Name = "Invoice";
 
+            invoice.Modules.Add(new XCSingleEntityModule()
+            {
+                ModuleText = "public void Test(int i) { int _i = i; _i++; }",
+                ModuleRelationType = XCProgramModuleRelationType.Object
+            });
+
+
             invoice.Initialize();
 
             return root;

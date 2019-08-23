@@ -131,11 +131,12 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="Constructor" Base="Member" IsScoped="true">
+    <Syntax Name="Constructor" Base="Member" IsScoped="true" IsSymbol="true">
         <Arguments>
             <Single Name="Block" Type="Block"/>
             <List Name="Parameters" Type="List&lt;Parameter&gt;"/>
             <List Name="Attributes" Type="List&lt;Attribute&gt;"/>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 

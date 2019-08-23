@@ -69,7 +69,7 @@ namespace ZenPlatform.Compiler.Generation
 
                     resultVar = emitter.DefineLocal(property.Type.ToClrType(_asm));
 
-                    var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScope.Default);
+                    var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScope.Shared);
                     valueSym.CodeObject = valueArg;
 
                     var returnLabel = emitter.DefineLabel();

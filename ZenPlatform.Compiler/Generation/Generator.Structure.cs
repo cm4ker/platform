@@ -83,7 +83,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         foreach (var function in c.TypeBody.Functions)
                         {
-                            var mf = PrebuildFunction(function, tbc, false);
+                            var mf = PrebuildFunction(function, tbc, true);
                             _stage1Methods.Add(function, mf);
                             c.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
                         }
@@ -272,7 +272,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 resultVar = emitter.DefineLocal(property.Type.ToClrType(_asm));
 
-                var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScope.Default);
+                var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScope.Shared);
                 valueSym.CodeObject = mb.Parameters[0];
 
                 var returnLabel = emitter.DefineLabel();
