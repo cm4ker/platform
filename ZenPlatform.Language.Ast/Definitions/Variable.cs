@@ -10,6 +10,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     public partial class Variable : ITypedNode
     {
         public SymbolType SymbolType => SymbolType.Variable;
+        public SymbolScope SymbolScope { get; set; }
 
 
         public Variable(ILineInfo li, Expression value, string name) : this(li, value, name, value.Type)

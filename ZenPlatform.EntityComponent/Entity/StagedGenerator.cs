@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using Npgsql.TypeHandlers;
 using ServiceStack;
+using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Platform;
@@ -30,7 +31,39 @@ using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
-    public class StagedGenerator : IPlatformStagedAssemblyGenerator
+    /*
+     * Пишу тут, так как это напрямую связано с генерацией кода
+     *
+     * Этапы:
+     *     1) Создать полностью каркас приложения. Сгенерировать классы свойсва и поля
+     *     2) Необходимо создать Юниты компиляции и зарегистрировать видимость всех нужных вещей, это
+     *        необходимо для того, чтобы можно было компилировать правильно локальный код.
+     *
+     *       * Мы НЕ должны видеть внутренних переменных
+     *       * Мы НЕ должны видеть лишние классы окружения (вообще нужно вырезать оператор new,
+     *         платформа сама занимается созданием объектов)
+     *       * Мы должны видеть переменные, которые МЫ объявили
+     *       * Мы должны видеть разрешенные нам классы (например класс менеджер сущностей)
+     *
+     *         Все классы генерируются на уровне инструкций потому что это API удобно предоставить, на него легально
+     *         можно накладывать отладочную информацию (когда именно это необходимо)
+     */
+
+    public class CompileInformation
+    {
+        public IAssemblyBuilder Assembly { get; }
+
+        public List<CompilationUnit> Units { get; }
+
+        public XCObjectTypeBase CurrentConf { get; }
+
+        public ITypeBuilder CurrentType { get; }
+
+        public ImmutableDictionary<XCObjectTypeBase, IType> PlatformTypes { get; set; }
+    }
+
+
+    public class StagedGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
         private readonly XCComponent _component;
@@ -46,7 +79,7 @@ namespace ZenPlatform.EntityComponent.Entity
         private IType GetTypeFromPlatformType(XCPrimitiveType pt, ITypeSystem ts)
         {
             return pt switch
-                {
+            {
                 XCBinary b => ts.GetSystemBindings().Byte.MakeArrayType(),
                 XCInt b => ts.GetSystemBindings().Int,
                 XCString b => ts.GetSystemBindings().String,
@@ -54,7 +87,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 XCBoolean b => ts.GetSystemBindings().Boolean,
                 XCDateTime b => ts.GetSystemBindings().DateTime,
                 XCGuid b => ts.GetSystemBindings().Guid,
-                };
+            };
         }
 
         private void Stage0EmitMap(IEmitter rg, IParameter readerParam, IType readerType, IType propertyType,
@@ -69,8 +102,11 @@ namespace ZenPlatform.EntityComponent.Entity
                 .EmitCall(setter);
         }
 
-        public void Stage0(XCObjectTypeBase type, IAssemblyBuilder builder)
+        public void Stage0(CompileInformation ci)
         {
+            var type = ci.CurrentConf;
+            var builder = ci.Assembly;
+
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
                                        $"This component only can serve {nameof(XCSingleEntity)} objects");
             var dtoClassName =
@@ -126,7 +162,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     if (ctype is XCPrimitiveType pt)
                     {
                         var propType = pt switch
-                            {
+                        {
                             XCBinary b => ts.Byte.MakeArrayType(),
                             XCInt b => ts.Int,
                             XCString b => ts.String,
@@ -134,7 +170,7 @@ namespace ZenPlatform.EntityComponent.Entity
                             XCBoolean b => ts.Boolean,
                             XCDateTime b => ts.DateTime,
                             XCGuid b => ts.Guid,
-                            };
+                        };
 
                         //var propType = builder.FindType(pt.CLRType.FullName);
                         var ptProperty = dtoClass.DefinePropertyWithBackingField(propType, propName);
@@ -167,8 +203,11 @@ namespace ZenPlatform.EntityComponent.Entity
             //end create dto class
         }
 
-        public ITypeBuilder Stage1(XCObjectTypeBase type, IAssemblyBuilder builder)
+        public ITypeBuilder Stage1(CompileInformation ci)
         {
+            var type = ci.CurrentConf;
+            var builder = ci.Assembly;
+
             var set = type as XCSingleEntity ?? throw new InvalidOperationException(
                           $"This component only can serve {nameof(XCSingleEntity)} objects");
             var className =
@@ -180,9 +219,13 @@ namespace ZenPlatform.EntityComponent.Entity
             return builder.DefineType(@namespace, className, TypeAttributes.Public | TypeAttributes.Class);
         }
 
-        public void Stage2(XCObjectTypeBase type, ITypeBuilder builder,
-            ImmutableDictionary<XCObjectTypeBase, IType> platformTypes, IAssemblyBuilder asmBuilder)
+        public void Stage2(CompileInformation ci)
         {
+            var type = ci.CurrentConf;
+            var asmBuilder = ci.Assembly;
+            var builder = ci.CurrentType;
+            var platformTypes = ci.PlatformTypes;
+
             var set = type as XCSingleEntity ?? throw new InvalidOperationException(
                           $"This component only can serve {nameof(XCSingleEntity)} objects");
 

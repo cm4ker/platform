@@ -35,5 +35,6 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         public bool IsPublic { get; set; }
 
         public SymbolType SymbolType => SymbolType.Function;
+        public SymbolScope SymbolScope { get; set; }
     }
 }

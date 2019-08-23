@@ -24,7 +24,4 @@ namespace ZenPlatform.Compiler.Contracts
 
         IType EndBuild();
     }
-    
-    
-    
 }
