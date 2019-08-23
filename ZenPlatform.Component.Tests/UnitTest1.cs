@@ -5,8 +5,10 @@ using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Sessions;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Tests.Common;
@@ -38,7 +40,9 @@ namespace ZenPlatform.Component.Tests
 
             foreach (var cu in root.Units)
             {
-                new Generator(new GeneratorParameters(cu, asm, CompilationMode.Server)).Build();
+                var generator = new Generator(new GeneratorParameters(cu, asm, CompilationMode.Server));
+                generator.BuildStructure();
+                generator.BuildCode();
             }
 
             asm.Write("Debug.bll");

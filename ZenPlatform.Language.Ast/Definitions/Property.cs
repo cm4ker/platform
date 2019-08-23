@@ -7,14 +7,16 @@ namespace ZenPlatform.Language.Ast.Definitions
         private Block _getter;
         private Block _setter;
 
-        public Property(ILineInfo lineInfo, string name, TypeSyntax type, bool hasGet, bool hasSet) : this(lineInfo,
-            name, type)
+        public Property(ILineInfo lineInfo, string name, TypeSyntax type, bool hasGet, bool hasSet,
+            string mapTo = null) : this(lineInfo,
+            name, type, mapTo)
         {
             HasGetter = hasGet;
             HasSetter = hasSet;
         }
 
         public SymbolType SymbolType => SymbolType.Variable;
+        public SymbolScope SymbolScope { get; set; }
 
         public bool HasGetter { get; set; }
         public bool HasSetter { get; set; }

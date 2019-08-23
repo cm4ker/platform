@@ -137,8 +137,7 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Name name)
             {
-               
-                var variable = symbolTable.Find(name.Value, SymbolType.Variable);
+                var variable = symbolTable.Find(name.Value, SymbolType.Variable, name.GetScope());
 
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
@@ -197,19 +196,17 @@ namespace ZenPlatform.Compiler.Generation
                 else
                     fe.Type = new SingleTypeSyntax(null, expProp.PropertyType.Name, TypeNodeKind.Unknown);
 
+                if (expProp.Getter is null)
+                    throw new Exception($"Can't resolve property: {fe.FieldName}");
+
                 e.PropGetValue(expProp);
             }
             else if (expression is PostIncrementExpression pis)
             {
-                var symbol = symbolTable.Find(pis.Name.Value, SymbolType.Variable) ??
+                var symbol = symbolTable.Find(pis.Name.Value, SymbolType.Variable, pis.GetScope()) ??
                              throw new Exception($"Variable {pis.Name} not found");
 
-                IType opType = null;
-//                if (symbol.SyntaxObject is Parameter p)
-//                    opType = p.Type.Type;
-//                else if (symbol.SyntaxObject is Variable v)
-//                    opType = v.Type.Type;
-
+                IType opType = pis.Type.ToClrType(_asm);
 
                 EmitExpression(e, pis.Name, symbolTable);
 
@@ -224,7 +221,7 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is PostDecrementExpression pds)
             {
-                var symbol = symbolTable.Find(pds.Name.Value, SymbolType.Variable) ??
+                var symbol = symbolTable.Find(pds.Name.Value, SymbolType.Variable, pds.GetScope()) ??
                              throw new Exception($"Variable {pds.Name} not found");
 
                 IType opType = null;

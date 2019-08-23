@@ -44,6 +44,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public bool IsSystemProperty { get; set; }
 
         /// <summary>
+        /// Указывает на то, что поле является только для
+        /// чтения
+        /// </summary>
+        public bool IsReadOnly { get; set; }
+
+        /// <summary>
         /// Вид даты (только для числовых типов)
         /// </summary>
         public XCDateCaseType DateCase { get; set; }

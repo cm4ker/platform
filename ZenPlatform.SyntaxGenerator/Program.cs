@@ -112,7 +112,7 @@ namespace ZenPlatform.SyntaxGenerator
                             if (argument is SyntaxArgumentList)
                                 fillStmt =
                                     SyntaxFactory.ParseStatement(
-                                        $"foreach(var item in {argument.Name}) {{if(item != null) Childs.Add(item);}}");
+                                        $"if({argument.Name} != null) foreach(var item in {argument.Name}) {{if(item != null) Childs.Add(item);}}");
                             else if (argument is SyntaxArgumentSingle)
                             {
                                 fillStmt =

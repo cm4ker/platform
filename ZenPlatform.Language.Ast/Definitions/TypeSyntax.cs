@@ -21,6 +21,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         Byte,
         Array,
         Type,
+        Session,
         UnionType,
     }
 

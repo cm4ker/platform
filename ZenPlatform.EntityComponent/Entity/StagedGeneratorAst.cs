@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using dnlib.DotNet;
 using dnlib.DotNet.Resources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
@@ -14,7 +15,9 @@ using NLog.LayoutRenderers;
 using Npgsql.NameTranslation;
 using Npgsql.TypeHandlers;
 using ServiceStack;
+using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration.Data.Contracts;
@@ -34,7 +37,9 @@ using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using BinaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.BinaryExpression;
 using IType = ZenPlatform.Compiler.Contracts.IType;
+using Parameter = ZenPlatform.Language.Ast.Definitions.Functions.Parameter;
 using Property = ZenPlatform.Language.Ast.Definitions.Property;
+using PublicKey = System.Security.Cryptography.X509Certificates.PublicKey;
 using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -97,7 +102,7 @@ namespace ZenPlatform.EntityComponent.Entity
                             .First(x => x.SchemaType == XCColumnSchemaType.Type).Name;
 
                         var astProp = new Property(null, prop.Name + "_Type",
-                            new PrimitiveTypeSyntax(null, TypeNodeKind.Int), dbColName);
+                            new PrimitiveTypeSyntax(null, TypeNodeKind.Int), true, true, dbColName);
 
                         members.Add(astProp);
                     }
@@ -122,7 +127,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         TypeSyntax propType = GetAstFromPlatformType(pt);
 
-                        var astProp = new Property(null, propName, propType, dbColName);
+                        var astProp = new Property(null, propName, propType, true, true, dbColName);
                         members.Add(astProp);
                     }
                     else if (ctype is XCObjectTypeBase ot)
@@ -144,7 +149,7 @@ namespace ZenPlatform.EntityComponent.Entity
                                                 : XCColumnSchemaType.NoSpecial) && x.PlatformType == ot).Name;
 
                             var astProp = new Property(null, propName,
-                                new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type), dbColName);
+                                new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type), true, true, dbColName);
                             members.Add(astProp);
                         }
                     }
@@ -169,13 +174,37 @@ namespace ZenPlatform.EntityComponent.Entity
                 $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
-
+            var intType = new PrimitiveTypeSyntax(null, TypeNodeKind.Int);
             List<Member> members = new List<Member>();
 
-            var field = new Field(null, "_dto",
-                new SingleTypeSyntax(null, $"{@namespace}.{dtoClassName}", TypeNodeKind.Type));
+            var sessionType = new PrimitiveTypeSyntax(null, TypeNodeKind.Session);
+            var dtoType = new SingleTypeSyntax(null, $"{@namespace}.{dtoClassName}", TypeNodeKind.Type);
+
+            var sessionParameter = new Parameter(null, "session", sessionType
+                , PassMethod.ByValue);
+
+            var dtoParameter = new Parameter(null, "dto", dtoType
+                , PassMethod.ByValue);
+
+            var block = new Block(null,
+                new[]
+                    {
+                        new Assignment(null, new Name(null, "session"), null, new Name(null, "_session")).ToStatement(),
+                        new Assignment(null, new Name(null, "dto"), null, new Name(null, "_dto")).ToStatement()
+                    }
+                    .ToList());
+
+            var constructor =
+                new Constructor(null, block, new List<Parameter>() {sessionParameter, dtoParameter}, null, className);
+
+            var field = new Field(null, "_dto", dtoType) {SymbolScope = SymbolScope.System};
+
+            var fieldSession = new Field(null, "_session", sessionType) {SymbolScope = SymbolScope.System};
+
+            members.Add(constructor);
 
             members.Add(field);
+            members.Add(fieldSession);
 
             foreach (var prop in singleEntityType.Properties)
             {
@@ -188,8 +217,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     : GetAstFromPlatformType(prop.Types[0]);
 
 
-                var astProp = new Property(null, propName, propType
-                    , true, true);
+                var astProp = new Property(null, propName, propType, true, !prop.IsReadOnly);
 
                 members.Add(astProp);
                 var get = new List<Statement>();
@@ -206,7 +234,6 @@ namespace ZenPlatform.EntityComponent.Entity
 
                     foreach (var ctype in prop.Types)
                     {
-                        var intType = new PrimitiveTypeSyntax(null, TypeNodeKind.Int);
                         var typeLiteral = new Literal(null, ctype.Id.ToString(), intType);
 
                         var schema = prop.GetPropertySchemas(prop.Name)
@@ -274,17 +301,55 @@ namespace ZenPlatform.EntityComponent.Entity
                     get.Add(ret);
                 }
 
-                astProp.Getter = new Block(get);
-                astProp.Setter = new Block(set);
+                if (astProp.HasGetter)
+                    astProp.Getter = new Block(get);
+
+                if (astProp.HasSetter)
+                    astProp.Setter = new Block(set);
             }
 
-            var cls = new Class(null, new TypeBody(members), className);
+            //IReferenceImpl
 
+
+            var tprop = new Property(null, "Type", intType, true, false);
+            tprop.Getter = new Block(new[]
+            {
+                (Statement) new Return(null, new Literal(null, singleEntityType.Id.ToString(), intType))
+            }.ToList());
+            //
+
+            members.Add(tprop);
+
+            var cls = new Class(null, new TypeBody(members), className);
+            cls.ImplementsReference = true;
             cls.Namespace = @namespace;
+
+            Stage1Modules(type, cls);
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
             root.Add(cu);
+        }
+
+        public void Stage1Modules(XCObjectTypeBase type, Class cls)
+        {
+            foreach (var module in type.GetProgramModules())
+            {
+                if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
+                {
+                    var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
+
+                    foreach (var func in typeBody.Functions)
+                    {
+                        func.SymbolScope = SymbolScope.User;
+                        cls.AddFunction(func);
+                    }
+                }
+            }
+        }
+
+        public void Stage3()
+        {
         }
     }
 }

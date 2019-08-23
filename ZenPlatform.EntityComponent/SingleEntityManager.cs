@@ -69,7 +69,10 @@ namespace ZenPlatform.EntityComponent
         {
             var def = session.GetMetadata(entityType);
 
-            var dto = LoadDtoObject(session, def.DtoType, def.EntityConfig.Id, key);
+            object dto = session.CacheService.Get(def.DtoType, 1, (int) def.EntityConfig.Id, key);
+
+            if (dto == null)
+                dto = LoadDtoObject(session, def.DtoType, def.EntityConfig.Id, key);
 
             return CreateEntityFromDto(session, entityType, dto);
         }

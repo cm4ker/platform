@@ -66,15 +66,17 @@ namespace ZenPlatform.Compiler.Helpers
             else if (typeSyntax is PrimitiveTypeSyntax ptn)
             {
                 return ptn.Kind switch
-                    {
+                {
                     TypeNodeKind.Boolean => _stb.Boolean,
                     TypeNodeKind.Int => _stb.Int,
                     TypeNodeKind.Char => _stb.Char,
                     TypeNodeKind.Double => _stb.Double,
                     TypeNodeKind.String => _stb.String,
                     TypeNodeKind.Byte => _stb.Byte,
-                    TypeNodeKind.Object => _stb.Object
-                    };
+                    TypeNodeKind.Object => _stb.Object,
+                    TypeNodeKind.Void => _stb.Void,
+                    TypeNodeKind.Session => _stb.Session
+                };
             }
 
             else if (typeSyntax is ArrayTypeSyntax atn)
