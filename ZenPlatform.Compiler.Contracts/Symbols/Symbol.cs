@@ -6,9 +6,9 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
     public enum SymbolScope
     {
         /// <summary>
-        /// Символ виден и для системного и для пользовательского использования
+        /// Оыбласть видимости не известна
         /// </summary>
-        Default = 0,
+        Unknown = 0,
 
         /// <summary>
         /// Пользовательское
@@ -18,7 +18,12 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         /// <summary>
         /// Системное
         /// </summary>
-        System = 2 >> 1
+        System = 2 >> 1,
+
+        /// <summary>
+        /// Символ виден и для системного и для пользовательского использования
+        /// </summary>
+        Shared = User | System,
     }
 
     public interface ISymbol

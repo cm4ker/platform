@@ -206,12 +206,7 @@ namespace ZenPlatform.Compiler.Generation
                 var symbol = symbolTable.Find(pis.Name.Value, SymbolType.Variable, pis.GetScope()) ??
                              throw new Exception($"Variable {pis.Name} not found");
 
-                IType opType = null;
-//                if (symbol.SyntaxObject is Parameter p)
-//                    opType = p.Type.Type;
-//                else if (symbol.SyntaxObject is Variable v)
-//                    opType = v.Type.Type;
-
+                IType opType = pis.Type.ToClrType(_asm);
 
                 EmitExpression(e, pis.Name, symbolTable);
 

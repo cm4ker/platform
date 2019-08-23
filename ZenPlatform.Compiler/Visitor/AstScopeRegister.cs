@@ -41,8 +41,7 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 f.Block.SymbolTable.Add(obj);
             }
-
-            if (obj.Parent is Constructor c)
+            else if (obj.Parent is Constructor c)
             {
                 c.Block.SymbolTable.Add(obj);
             }

@@ -74,6 +74,7 @@ namespace ZenPlatform.Compiler.Helpers
                     TypeNodeKind.String => _stb.String,
                     TypeNodeKind.Byte => _stb.Byte,
                     TypeNodeKind.Object => _stb.Object,
+                    TypeNodeKind.Void => _stb.Void,
                     TypeNodeKind.Session => _stb.Session
                 };
             }
