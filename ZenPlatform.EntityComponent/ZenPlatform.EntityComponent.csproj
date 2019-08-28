@@ -9,11 +9,6 @@
         <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <Reference Include="System">
-            <HintPath>System</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
         <Folder Include="Helpers\" />
     </ItemGroup>
 </Project>
