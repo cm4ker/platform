@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Hyperion;
 using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Core.Network;
@@ -16,6 +17,12 @@ namespace ZenPlatform.Compiler.Contracts
         private const string MSCORLIB =
             "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 
+        private const string PLATFORM_CORE 
+            = "ZenPlatform.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
+        
+        private const string PLATFORM_DATA_COMPONENT 
+            = "ZenPlatform.DataComponent, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
+        
         private const string SYSTEM_NAMESPACE = "System";
 
         internal SystemTypeBindings(ITypeSystem ts)
@@ -52,6 +59,10 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType Client => _ts.FindType<Client>();
 
+        public IType Session => _ts.FindType($"ZenPlatform.Core.Sessions.Session", PLATFORM_CORE);
+        
+        public IType Reference => _ts.FindType($"ZenPlatform.DataComponent.Interfaces.IReference", PLATFORM_DATA_COMPONENT);
+        
         public IType MultiType => _ts.FindType<UnionType>();
 
         public IType UnionTypeStorage => _ts.FindType<UnionTypeStorage>();

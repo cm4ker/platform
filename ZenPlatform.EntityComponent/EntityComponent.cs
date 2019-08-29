@@ -18,7 +18,7 @@ namespace ZenPlatform.EntityComponent
 
         public override void OnInitializing()
         {
-            Generator = new StagedGenerator(Component);
+            //Generator = new StagedGenerator(Component);
             Manager = new SingleEntityManager();
             ComponentManager = new SingleEntityConfigurationManager(Component);
 

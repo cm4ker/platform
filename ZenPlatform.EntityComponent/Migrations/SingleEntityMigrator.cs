@@ -63,9 +63,9 @@ namespace ZenPlatform.EntityComponent.Migrations
                     var hasObjectInt = false;
                     foreach (var type in prop.Types)
                     {
-                        if (type is XCPremitiveType ptype)
+                        if (type is XCPrimitiveType ptype)
                         {
-                            ItemSwitch<XCPremitiveType>.Switch(ptype)
+                            ItemSwitch<XCPrimitiveType>.Switch(ptype)
                                 .CaseIs<XCBoolean>(i =>
                                     createTable.WithColumn($"{prop.DatabaseColumnName}_{type.Name}", x => x.Boolean()))
                                 .CaseIs<XCString>(i => createTable.WithColumn($"{prop.DatabaseColumnName}_{type.Name}",
@@ -169,7 +169,7 @@ namespace ZenPlatform.EntityComponent.Migrations
 
                 foreach (var type in old.Types)
                 {
-                    if (type is XCPremitiveType ptype)
+                    if (type is XCPrimitiveType ptype)
                     {
                         result.Add(new AlterTableQueryNode(old.Parent.RelTableName).DropColumn(
                             $"{old.DatabaseColumnName}_{type.Name}"));
@@ -210,9 +210,9 @@ namespace ZenPlatform.EntityComponent.Migrations
                 var hasObjectInt = false;
                 foreach (var type in actual.Types)
                 {
-                    if (type is XCPremitiveType ptype)
+                    if (type is XCPrimitiveType ptype)
                     {
-                        ItemSwitch<XCPremitiveType>.Switch(ptype)
+                        ItemSwitch<XCPrimitiveType>.Switch(ptype)
                             .CaseIs<XCBoolean>(i =>
                                 result.Add(new AlterTableQueryNode(actual.Parent.RelTableName).AddColumn(
                                     $"{actual.DatabaseColumnName}_{type.Name}", x => x.Boolean())))
@@ -271,7 +271,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                 {
                     if (!actual.Types.Contains(oldType))
                     {
-                        if (oldType is XCPremitiveType ptype)
+                        if (oldType is XCPrimitiveType ptype)
                         {
                             result.Add(new AlterTableQueryNode(old.Parent.RelTableName).DropColumn(
                                 $"{old.DatabaseColumnName}_{oldType.Name}"));

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using dnlib.DotNet;
+using dnlib.DotNet.MD;
 using ZenPlatform.Compiler.Contracts;
 using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
 using IType = ZenPlatform.Compiler.Contracts.IType;

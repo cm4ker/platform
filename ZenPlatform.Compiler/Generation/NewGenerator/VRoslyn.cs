@@ -47,7 +47,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         public override Microsoft.CodeAnalysis.SyntaxNode VisitCompilationUnit(CompilationUnit cu)
         {
             return SyntaxFactory.CompilationUnit()
-                .AddUsings(cu.Namespaces.Select(GetUsing).ToArray())
+                //.AddUsings(cu.Namespaces.Select(GetUsing).ToArray())
                 .AddMembers(cu.Entityes.Select(x => Visit(x)).Cast<MemberDeclarationSyntax>().ToArray());
         }
 
@@ -306,7 +306,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
         public override Microsoft.CodeAnalysis.SyntaxNode VisitAssignment(Assignment obj)
         {
             return SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                SyntaxKind.SimpleAssignmentExpression, ParseName(obj.Name.Value),
+                SyntaxKind.SimpleAssignmentExpression, ParseName((obj.Assignable as Name).Value),
                 (ExpressionSyntax) Visit(obj.Value)));
         }
 

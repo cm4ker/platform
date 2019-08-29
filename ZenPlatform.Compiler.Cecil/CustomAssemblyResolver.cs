@@ -57,7 +57,7 @@ namespace ZenPlatform.Compiler.Cecil
 
             var libname = name.Name;
 
-            if (libname == "mscorlib")
+            if (libname == "mscorlib" || libname == "System.Private.CoreLib")
             {
                 libname = "netstandard";
             }

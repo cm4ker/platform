@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
@@ -68,7 +69,10 @@ namespace ZenPlatform.EntityComponent
         {
             var def = session.GetMetadata(entityType);
 
-            var dto = LoadDtoObject(session, def.DtoType, def.EntityConfig.Id, key);
+            object dto = session.CacheService.Get(def.DtoType, 1, (int) def.EntityConfig.Id, key);
+
+            if (dto == null)
+                dto = LoadDtoObject(session, def.DtoType, def.EntityConfig.Id, key);
 
             return CreateEntityFromDto(session, entityType, dto);
         }
@@ -121,7 +125,7 @@ namespace ZenPlatform.EntityComponent
 
             if (reader.Read())
             {
-                var mappedDto = (IMappedDto) Activator.CreateInstance(def.DtoType);
+                var mappedDto = (ICanMapSelfFromDataReader) Activator.CreateInstance(def.DtoType);
 
                 //Вместо рефлексии нужно использовать статический маппер
                 mappedDto.Map(reader);

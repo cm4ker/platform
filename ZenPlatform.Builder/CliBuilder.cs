@@ -207,7 +207,7 @@ namespace ZenPlatform.Cli
                 $"DatabaseType: {databaseType}\nServer: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
             var cb = new UniversalConnectionStringBuilder(databaseType);
 
-            // После успешного созадания базы пробуем к ней подключиться, провести миграции и 
+            //После успешного созадания базы пробуем к ней подключиться, провести миграции и 
             //создать новую конфигурацию
             cb.Database = database;
             cb.Server = server;

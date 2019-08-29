@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -14,8 +15,18 @@ namespace ZenPlatform.Language.Ast.Definitions
         public TypeBody(IList<Member> members) : this(null,
             members.Where(x => x is Function).Cast<Function>().ToList(),
             members.Where(x => x is Field).Cast<Field>().ToList(),
-            members.Where(x => x is Property).Cast<Property>().ToList())
+            members.Where(x => x is Property).Cast<Property>().ToList(),
+            members.Where(x => x is Constructor).Cast<Constructor>().ToList())
         {
+        }
+
+
+        public void AddFunction(Function function)
+        {
+            if (function == null) throw new ArgumentNullException(nameof(function));
+            
+            Functions.Add(function);
+            Childs.Add(function);
         }
     }
 }

@@ -1,5 +1,4 @@
 using System.Reflection.Emit;
-using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 
@@ -101,7 +100,7 @@ namespace ZenPlatform.Compiler.Sre
             return this;
         }
 
-        public IEmitter ThrowException(IType exceptionType)
+        public IEmitter CatchException(IType exceptionType)
         {
             _ilg.ThrowException(((SreType) exceptionType).Type);
             return this;

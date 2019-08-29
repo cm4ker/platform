@@ -19,6 +19,8 @@ namespace ZenPlatform.Language.Ast.Definitions
             Childs.Add(TypeBody);
         }
 
+        public string Namespace { get; set; }
+
         public SymbolType SymbolType => SymbolType.Type;
     }
 }

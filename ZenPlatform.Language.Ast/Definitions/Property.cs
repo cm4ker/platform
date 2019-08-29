@@ -4,19 +4,44 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Property : Member, IAstSymbol
     {
-        public Property(ILineInfo lineInfo, string name, TypeSyntax type, bool hasGet, bool hasSet) : this(lineInfo,
-            name, type)
+        private Block _getter;
+        private Block _setter;
+
+        public Property(ILineInfo lineInfo, string name, TypeSyntax type, bool hasGet, bool hasSet,
+            string mapTo = null) : this(lineInfo,
+            name, type, mapTo)
         {
             HasGetter = hasGet;
             HasSetter = hasSet;
         }
 
         public SymbolType SymbolType => SymbolType.Variable;
+        public SymbolScope SymbolScope { get; set; }
 
         public bool HasGetter { get; set; }
         public bool HasSetter { get; set; }
 
-        public Block Getter { get; set; }
-        public Block Setter { get; set; }
+
+        public Block Getter
+        {
+            get { return _getter; }
+            set
+            {
+                Childs.Remove(_getter);
+                _getter = value;
+                Childs.Add(_getter);
+            }
+        }
+
+        public Block Setter
+        {
+            get => _setter;
+            set
+            {
+                Childs.Remove(_setter);
+                _setter = value;
+                Childs.Add(_setter);
+            }
+        }
     }
 }
