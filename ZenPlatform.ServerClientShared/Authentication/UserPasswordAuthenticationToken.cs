@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ZenPlatform.Core.Authentication
 {
+    [Serializable]
     public class UserPasswordAuthenticationToken: IAuthenticationToken
     {
         public string Name { get; }

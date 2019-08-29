@@ -6,6 +6,7 @@ using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.DML.From;
 using ZenPlatform.QueryBuilder.DML.GroupBy;
 using ZenPlatform.QueryBuilder.DML.Having;
+using ZenPlatform.QueryBuilder.DML.OrderBy;
 using ZenPlatform.QueryBuilder.DML.Where;
 using ZenPlatform.Shared.ParenChildCollection;
 using ZenPlatform.Shared.Tree;
@@ -18,6 +19,7 @@ namespace ZenPlatform.QueryBuilder.DML.Select
         private WhereNode _where;
         private HavingNode _having;
         private GroupByNode _groupBy;
+        private OrderByNode _orderBy;
         private FromNode _from;
         private TopNode _top;
 
@@ -28,6 +30,7 @@ namespace ZenPlatform.QueryBuilder.DML.Select
             _having = new HavingNode();
             _groupBy = new GroupByNode();
             _from = new FromNode();
+            _orderBy = new OrderByNode();
         }
 
         public SelectQueryNode WithTop(int count)
@@ -162,6 +165,8 @@ namespace ZenPlatform.QueryBuilder.DML.Select
 
         GroupByNode ISelectQuery.GroupByNode => _groupBy;
 
+        OrderByNode ISelectQuery.OrderByNode => _orderBy;
+
         HavingNode ISelectQuery.HavingNode => _having;
 
         SelectNode ISelectQuery.SelectNode => _select;
@@ -181,6 +186,7 @@ namespace ZenPlatform.QueryBuilder.DML.Select
         FromNode FromNode { get; }
         GroupByNode GroupByNode { get; }
         HavingNode HavingNode { get; }
+        OrderByNode OrderByNode { get; }
         SelectNode SelectNode { get; }
         TopNode TopNode { get; }
     }

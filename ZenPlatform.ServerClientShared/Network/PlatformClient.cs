@@ -1,41 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.Settings;
+using ZenPlatform.Core.DI;
+using System.IO;
+using System.Reflection;
+using ZenPlatform.Core.Tools;
+using ZenPlatform.QueryBuilder;
+using ZenPlatform.Core.ClientServices;
 
 namespace ZenPlatform.Core.Network
 {
-    public class DatabaseConnectionSettings
-    {
-        public string Address;
-        public string Database;
-    }
+    
     public class PlatformClient
     {
         private readonly Client _client;
         private readonly ILogger _logger;
+        private DatabaseConnectionSettings _connectionSettings;
+        private ClientAssemblyManager _assemblyManager;
+
 
         public PlatformClient(ILogger<PlatformClient> logger, Client client)
         {
             _client = client;
             _logger = logger;
+            
         }
 
-        public void AddDatabase(DatabaseConnectionSettings connectionSettings)
-        {
 
-        }
-
-        public bool ChackConnection(DatabaseConnectionSettings connectionSettings)
-        {
-            return true;
-        }
 
         public void Connect(DatabaseConnectionSettings connectionSettings)
         {
             _client.Connect(NetworkUtility.CreateIPEndPoint(connectionSettings.Address));
             _client.Use(connectionSettings.Database);
+
+            _connectionSettings = connectionSettings;
+            
+
+            
         }
 
 
@@ -43,6 +48,13 @@ namespace ZenPlatform.Core.Network
         {
             _client.Authentication(new UserPasswordAuthenticationToken(name, password));
 
+            _assemblyManager = new ClientAssemblyManager(_client.GetService<IAssemblyManagerClientService>(),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "ZenClient", _connectionSettings.Database, "AssemblyCashe"));
+            _assemblyManager.UpdateAssemblyes();
+
         }
+
+        
     }
 }

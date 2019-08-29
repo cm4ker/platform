@@ -36,6 +36,7 @@ namespace ZenPlatform.Configuration
         /// Сохранить корневой объект
         /// </summary>
         void SaveRootBlob(Stream stream);
+
     }
 
 

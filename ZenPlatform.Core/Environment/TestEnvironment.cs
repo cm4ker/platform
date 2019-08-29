@@ -26,6 +26,8 @@ namespace ZenPlatform.Core.Environment
 
         public string Name => "test";
 
+        public IDataContextManager DataContextManager => throw new NotImplementedException();
+
         public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService, ILogger<TestEnvironment> logger)
         {
             Sessions = new RemovingList<ISession>();

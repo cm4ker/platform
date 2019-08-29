@@ -9,7 +9,13 @@ using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Core.Tools;
 using ZenPlatform.Data;
+using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.Crypto;
+using ZenPlatform.Configuration.Structure;
+
+using ZenPlatform.Initializer;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -72,11 +78,33 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         public override void Initialize(StartupConfig config)
         {
+
+            MigrationRunner.Migrate(config.ConnectionString,
+                                    config.DatabaseType);
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
             base.Initialize(config);
             _logger.Info("Database '{0}' loaded.", Configuration.ProjectName);
 
             AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
+
+
+            
+
+            var mainAssembly = ConfigurationTools.GetLastAssemblyDescriptionByName("MainServerAssembly", 
+                DataContextManager.SqlCompiler, DataContextManager.GetContext());
+
+            
+            
+            if (mainAssembly is null || !mainAssembly.ConfigurationHash.Equals(HashHelper.HashMD5(Configuration.SerializeToStream())))
+            {
+                _logger.Info("Rebulid configuration.");
+                ConfigurationTools.BuildConfiguration(Configuration, DataContextManager.SqlCompiler, DataContextManager.GetContext());
+                mainAssembly = ConfigurationTools.GetLastAssemblyDescriptionByName("MainServerAssembly",
+                DataContextManager.SqlCompiler, DataContextManager.GetContext());
+            }
+
+
+
 
             /*
             //TODO: получить библиотеку с сгенерированными сущностями dto и так далее

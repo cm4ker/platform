@@ -62,6 +62,12 @@ namespace ZenPlatform.Core.Network
             _manager = manager;
             _filter = filter;
         }
+
+        public void AddWorkEnvironment(StartupConfig config)
+        {
+            _manager.AddWorkEnvironment(config);
+        }
+
         public IEnvironment GetEnvironment(string name)
         {
             var env = _manager.GetEnvironment(name);

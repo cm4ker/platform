@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Serialisers;
 
 namespace ZenPlatform.Core.Network
 {
@@ -9,7 +10,7 @@ namespace ZenPlatform.Core.Network
     {
         public IChannel CreateChannel()
         {
-            return new Channel(new SimpleMessagePackager(new HyperionSerializer()), new SimpleConsoleLogger<Channel>());
+            return new Channel(new SimpleMessagePackager(new ApexSerializer()), new SimpleConsoleLogger<Channel>());
         }
     }
 }
