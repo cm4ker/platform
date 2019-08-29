@@ -28,6 +28,8 @@
   </ItemGroup> 
 
   <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.Compiler.Platform\ZenPlatform.Compiler.Platform.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />

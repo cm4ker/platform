@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -12,8 +13,10 @@ namespace ZenPlatform.Compiler.Contracts
         IType FindType(string fullName);
 
         void Write(string fileName);
-
+        void Write(Stream stream);
 
         ITypeSystem TypeSystem { get; }
     }
+
+
 }

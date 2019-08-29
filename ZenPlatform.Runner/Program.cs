@@ -16,6 +16,10 @@ using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Settings;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.ClientServices;
+using ZenPlatform.Core.Assemblies;
+using ZenPlatform.Core.Configuration;
+using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Compiler.Platform;
 
 namespace ZenPlatform.Runner
 {
@@ -70,6 +74,11 @@ namespace ZenPlatform.Runner
                     services.AddTransient<IChannelFactory, ChannelFactory>();
                     services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
                     services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
+                    services.AddScoped<IAssemblyManager, AssemblyManager>();
+                    services.AddScoped<IConfigurationManager, ConfigurationManager>();
+                    services.AddScoped<IXCCompiller, XCCompiller>();
+
+
                     services.AddSingleton<ITestProxyService, TestProxyService>();
                     services.AddSingleton<IEnvironmentManager, EnvironmentManager>();
 

@@ -118,7 +118,7 @@ namespace ZenPlatform.Compiler.Cecil
             return this;
         }
 
-        public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, GenericParameterConstraint>> args)
+        public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, Mono.Cecil.GenericParameterConstraint>> args)
         {
             foreach (var arg in args)
             {
@@ -133,6 +133,11 @@ namespace ZenPlatform.Compiler.Cecil
             Reference.Name = Definition.Name;
             SelfReference = Definition.MakeGenericInstanceType(Definition.GenericParameters.Cast<TypeReference>()
                 .ToArray());
+        }
+
+        public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, Contracts.GenericParameterConstraint>> names)
+        {
+            throw new NotImplementedException();
         }
 
         public IReadOnlyList<IMethodBuilder> DefinedMethods => Methods.Cast<IMethodBuilder>().ToList();
