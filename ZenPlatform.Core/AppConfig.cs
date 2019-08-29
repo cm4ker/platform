@@ -9,6 +9,12 @@ namespace ZenPlatform.Core
     {
         public AccessPointConfig AccessPoint { get; set; }
         public List<StartupConfig> Environments { get; set; }
+
+        public AppConfig()
+        {
+            Environments = new List<StartupConfig>();
+            AccessPoint = new AccessPointConfig();
+        }
     }
 
     public enum ListenerType
@@ -21,6 +27,11 @@ namespace ZenPlatform.Core
     public class AccessPointConfig
     {
         public List<ListenerConfig> Listener { get; set; }
+
+        public AccessPointConfig()
+        {
+            Listener = new List<ListenerConfig>();
+        }
     }
     
     public class ListenerConfig

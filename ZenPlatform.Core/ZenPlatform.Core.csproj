@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Language\QueryLanguage\QuerySyntax.g4" />
@@ -15,6 +15,7 @@
     <PackageReference Include="ServiceStack.Redis.Core" Version="5.5.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.Compiler.Platform\ZenPlatform.Compiler.Platform.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     <ProjectReference Include="..\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj" />

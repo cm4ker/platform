@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ZenPlatform.Core.Network
 {
+    [Serializable]
     public class Route
     {
 

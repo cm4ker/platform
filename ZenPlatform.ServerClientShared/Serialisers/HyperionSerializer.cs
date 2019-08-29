@@ -5,7 +5,7 @@ using Hyperion.SerializerFactories;
 using Hyperion;
 using System.IO;
 
-namespace ZenPlatform.Core.Network
+namespace ZenPlatform.Core.Serialisers
 {
     public class HyperionSerializer : ISerializer
     {

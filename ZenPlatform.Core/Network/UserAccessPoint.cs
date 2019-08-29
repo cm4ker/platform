@@ -7,6 +7,7 @@ using System.Threading;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.DI;
 using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Core.Network
 {
@@ -18,16 +19,16 @@ namespace ZenPlatform.Core.Network
         private readonly IList<ITCPListener> _listeners = new List<ITCPListener>();
 
 
-        public UserAccessPoint(ILogger<UserAccessPoint> logger, IServiceProvider serviceProvider, IConfig<AccessPointConfig> config)
+        public UserAccessPoint(ILogger<UserAccessPoint> logger, IServiceProvider serviceProvider, ISettingsStorage settingsStorage)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
-            _config = config.Value;
+            _config = settingsStorage.Get<AppConfig>().AccessPoint;
         }
 
         public void Start()
         {
-
+            //_config.Listener.Add(new ListenerConfig() { Address = "127.0.0.1:12345", Type = ListenerType.Test });
             foreach (var lisetnercfg in _config.Listener)
             {
                 ITCPListener listener = _serviceProvider.GetRequiredService<ITCPListener>();
