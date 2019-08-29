@@ -13,6 +13,12 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
+        public void Build()
+        {
+            BuildStructure();
+            BuildCode();
+        }
+
         public void BuildStructure()
         {
             BuildStage0();
