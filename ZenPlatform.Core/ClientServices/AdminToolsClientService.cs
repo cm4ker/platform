@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ZenPlatform.Core.ClientServices;
+using ZenPlatform.Core.Configuration;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Settings;
@@ -14,16 +15,19 @@ namespace ZenPlatform.Core.Tools
     {
         private IEnvironmentManager _environmentManager;
         private ISettingsStorage _settingsStorage;
+        private IConfigurationManager _configurationManager;
 
-        public AdminToolsClientService(IEnvironmentManager environmentManager, ISettingsStorage settingsStorage)
+        public AdminToolsClientService(IEnvironmentManager environmentManager, ISettingsStorage settingsStorage,
+            IConfigurationManager configurationManager)
         {
             _environmentManager = environmentManager;
             _settingsStorage = settingsStorage;
+            _configurationManager = configurationManager;
         }
 
         public void CreateConfiguration(string name, SqlDatabaseType databaseType, string connectionString)
         {
-            ConfigurationTools.CreateConfiguration(name, databaseType, connectionString, true);
+            _configurationManager.CreateConfiguration(name, databaseType, connectionString);
 
             var startupConfig = new StartupConfig() { DatabaseType = databaseType, ConnectionString = connectionString };
 
@@ -46,21 +50,6 @@ namespace ZenPlatform.Core.Tools
 
             _environmentManager.AddWorkEnvironment(startupConfig);
         }
-
-
-        public void BuildConfiguration(string name)
-        {
-            var env = _environmentManager.GetEnvironment(name);
-            if (env is WorkEnvironment workEnvironment)
-            {
-                ConfigurationTools.BuildConfiguration(workEnvironment.Configuration, workEnvironment.DataContextManager.SqlCompiler,
-                    workEnvironment.DataContextManager.GetContext());
-
-                
-
-            }
-        }
-
 
     }
 }
