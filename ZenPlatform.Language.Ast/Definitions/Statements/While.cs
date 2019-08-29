@@ -21,33 +21,4 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
             throw new System.NotImplementedException();
         }
     }
-
-    public class Match : Statement
-    {
-        public class MatchCondition
-        {
-            public Expression Condition { get; set; }
-
-            public Block Block { get; set; }
-        }
-
-        public Match(ILineInfo lineInfo) : base(lineInfo)
-        {
-            Cases = new List<MatchCondition>();
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Expression MatchExpression { get; set; }
-
-        public List<MatchCondition> Cases { get; }
-
-        public void AddCase(Expression expr, Block block)
-        {
-            Cases.Add(new MatchCondition() {Condition = expr, Block = block});
-        }
-    }
 }

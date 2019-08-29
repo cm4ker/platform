@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using Xunit;
 using ZenPlatform.Compiler.Infrastructure;
-using ZenPlatform.Compiler.Sre;
 
 namespace ZenPlatform.Compiler.Tests
 {

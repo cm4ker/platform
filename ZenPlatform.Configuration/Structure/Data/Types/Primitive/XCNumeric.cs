@@ -3,7 +3,7 @@ using System.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCNumeric : XCPremitiveType
+    public class XCNumeric : XCPrimitiveType
     {
         public override uint Id => 5;
 

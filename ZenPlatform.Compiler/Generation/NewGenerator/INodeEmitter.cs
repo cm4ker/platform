@@ -1,6 +1,5 @@
 using System;
 using System.Xml;
-using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Definitions;
@@ -80,7 +79,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             if (Check<Assignment>(context, out var asg))
             {
-                ISymbol variable = st.Find(asg.Name.Value, SymbolType.Variable);
+                ISymbol variable = st.Find((asg.Assignable as Name).Value, SymbolType.Variable, asg.GetScope());
 
                 //Preload context
                 if (asg.Index == null)
@@ -106,12 +105,12 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
                         // Regular value
                         if (arg.Expression is Name n)
                         {
-                            var variable = st.Find(n.Value, SymbolType.Variable);
+                            var variable = st.Find(n.Value, SymbolType.Variable, n.GetScope());
                             LoadVariableReference(variable, il);
                         }
                         else if (arg.Expression is IndexerExpression ue)
                         {
-                            var variable = st.Find(((Name) ue.Expression).Value, SymbolType.Variable);
+                            var variable = st.Find(((Name) ue.Expression).Value, SymbolType.Variable, ue.GetScope());
                             LoadVariable(variable, il);
                         }
                         else
@@ -159,7 +158,8 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             var symbolTable = context.SymbolTable;
 
-            ISymbol variable = symbolTable.Find(assignment.Name.Value, SymbolType.Variable);
+            ISymbol variable = symbolTable.Find((assignment.Assignable as Name).Value, SymbolType.Variable,
+                assignment.GetScope());
             var il = context.Emitter;
 
 
@@ -221,7 +221,7 @@ namespace ZenPlatform.Compiler.Generation.NewGenerator
 
             var st = context.SymbolTable;
 
-            var symbol = st.Find(call.Name, SymbolType.Function);
+            var symbol = st.Find(call.Name, SymbolType.Function, call.GetScope());
 
             if (symbol is null) throw new NullReferenceException();
 

@@ -1,5 +1,3 @@
-using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -14,7 +12,7 @@ namespace ZenPlatform.Compiler.Generation
     {
         private void EmitCall(IEmitter e, Call call, SymbolTable symbolTable)
         {
-            var symbol = symbolTable.Find(call.Name, SymbolType.Function);
+            var symbol = symbolTable.Find(call.Name, SymbolType.Function, call.GetScope());
 
             if (symbol != null)
             {
@@ -58,7 +56,7 @@ namespace ZenPlatform.Compiler.Generation
                             // Regular value
                             if (argument.Expression is Name arg)
                             {
-                                var variable = symbolTable.Find(arg.Value, SymbolType.Variable);
+                                var variable = symbolTable.Find(arg.Value, SymbolType.Variable, arg.GetScope());
                                 if (variable.CodeObject is ILocal vd)
                                 {
                                     e.LdLocA(vd);
@@ -76,7 +74,7 @@ namespace ZenPlatform.Compiler.Generation
                             {
                                 if (ue.Expression is Name uen)
                                 {
-                                    var variable = symbolTable.Find(uen.Value, SymbolType.Variable);
+                                    var variable = symbolTable.Find(uen.Value, SymbolType.Variable, uen.GetScope());
 //                                    
 //                                    if (variable.CodeObject is ILocal codeObject)
 //                                    {

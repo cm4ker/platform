@@ -1,5 +1,4 @@
 using System.Reflection.Emit;
-using ZenPlatform.Compiler.AST.Definitions.Symbols;
 using ZenPlatform.Compiler.Contracts.Symbols;
 
 namespace ZenPlatform.Compiler.Contracts
@@ -22,7 +21,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         ILabel BeginExceptionBlock();
         IEmitter BeginCatchBlock(IType exceptionType);
-        IEmitter ThrowException(IType exceptionType);
+        IEmitter CatchException(IType exceptionType);
         IEmitter EndExceptionBlock();
 
         IEmitter MarkLabel(ILabel label);

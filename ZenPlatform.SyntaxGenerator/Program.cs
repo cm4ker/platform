@@ -37,7 +37,8 @@ namespace ZenPlatform.SyntaxGenerator
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Compiler.Contracts.Symbols")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Statements")),
+                        SyntaxFactory.UsingDirective(
+                            SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Statements")),
                         SyntaxFactory.UsingDirective(
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Functions")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Infrastructure"))
@@ -89,8 +90,7 @@ namespace ZenPlatform.SyntaxGenerator
                             initializer = initializer.AddArgumentListArguments(
                                 SyntaxFactory.Argument(SyntaxFactory.ParseName(argument.Name.ToCamelCase())));
 
-                        
-                        
+
                         constructor = constructor.AddParameterListParameters(parameterSyntax);
 
                         var ae = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
@@ -112,12 +112,12 @@ namespace ZenPlatform.SyntaxGenerator
                             if (argument is SyntaxArgumentList)
                                 fillStmt =
                                     SyntaxFactory.ParseStatement(
-                                        $"foreach(var item in {argument.Name}) {{Childs.Add(item);}}");
+                                        $"if({argument.Name} != null) foreach(var item in {argument.Name}) {{if(item != null) Childs.Add(item);}}");
                             else if (argument is SyntaxArgumentSingle)
                             {
                                 fillStmt =
                                     SyntaxFactory.ParseStatement(
-                                        $"Childs.Add({argument.Name});");
+                                        $"if({argument.Name} != null) Childs.Add({argument.Name});");
                             }
                             else
                             {
@@ -129,7 +129,7 @@ namespace ZenPlatform.SyntaxGenerator
                     }
 
                     constructor = constructor.WithInitializer(initializer);
-                    
+
                     var visitor =
                         (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
                             "public override T Accept<T>(AstVisitorBase<T> visitor){}");

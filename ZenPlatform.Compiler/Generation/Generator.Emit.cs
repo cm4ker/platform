@@ -8,11 +8,22 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Core.Network;
+using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
+        private void EmitFunction(Function function, IMethodBuilder method)
+        {
+            if (function == null)
+                throw new ArgumentNullException();
+
+            function.Builder = method.Generator;
+
+            EmitFunction(function);
+        }
+
         private void EmitFunction(Function function)
         {
             if (function == null)
@@ -44,7 +55,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (expression.Expression is Name name)
             {
-                var variable = symbolTable.Find(name.Value, SymbolType.Variable);
+                var variable = symbolTable.Find(name.Value, SymbolType.Variable, name.GetScope());
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
 
@@ -53,7 +64,6 @@ namespace ZenPlatform.Compiler.Generation
                 else if (variable.SyntaxObject is Parameter p)
                     expression.Expression.Type = p.Type;
             }
-
 
             //TODO: Нужно доделать ComputingEngine
 //            TypeNode valueType;

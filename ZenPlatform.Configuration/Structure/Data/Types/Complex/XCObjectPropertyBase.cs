@@ -44,6 +44,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public bool IsSystemProperty { get; set; }
 
         /// <summary>
+        /// Указывает на то, что поле является только для
+        /// чтения
+        /// </summary>
+        public bool IsReadOnly { get; set; }
+
+        /// <summary>
         /// Вид даты (только для числовых типов)
         /// </summary>
         public XCDateCaseType DateCase { get; set; }
@@ -85,7 +91,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         {
             foreach (var type in Types)
             {
-                if (type is XCPremitiveType) yield return type;
+                if (type is XCPrimitiveType) yield return type;
                 if (type is XCObjectTypeBase objType) yield return new XCUnknownType() {Guid = objType.Guid};
             }
         }
@@ -142,7 +148,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
                 foreach (var type in _types)
                 {
-                    if (type is XCPremitiveType)
+                    if (type is XCPrimitiveType)
                         yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
                             $"{propName}_{type.Name}");
 

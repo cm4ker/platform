@@ -7,8 +7,14 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// <summary>
     /// Describes a variable.
     /// </summary>
-    public partial class Variable : Expression, ITypedNode, IAstSymbol
+    public partial class Variable : ITypedNode
     {
         public SymbolType SymbolType => SymbolType.Variable;
+        public SymbolScope SymbolScope { get; set; }
+
+
+        public Variable(ILineInfo li, Expression value, string name) : this(li, value, name, value.Type)
+        {
+        }
     }
 }

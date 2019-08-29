@@ -4,15 +4,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Antlr4.Runtime;
-using Microsoft.CodeAnalysis.CSharp;
-using ZenPlatform.Compiler.AST.Definitions;
-using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast;
-using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Extension;
@@ -22,7 +16,7 @@ using ZenPlatform.Language.Ast.Infrastructure;
 using Attribute = ZenPlatform.Language.Ast.Definitions.Attribute;
 using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
-namespace ZenPlatform.Compiler.AST
+namespace ZenPlatform.Compiler
 {
     public class ZLanguageVisitor : ZSharpParserBaseVisitor<SyntaxNode>
     {
@@ -43,7 +37,7 @@ namespace ZenPlatform.Compiler.AST
 
             base.VisitEntryPoint(context);
 
-            var cu = new CompilationUnit(context.start.ToLineInfo(), new List<string>(), typeList);
+            var cu = new CompilationUnit(context.start.ToLineInfo(), new List<NamespaceBase>(), typeList);
 
             return cu;
         }
@@ -304,7 +298,7 @@ namespace ZenPlatform.Compiler.AST
             base.VisitCastExpression(context);
 
             var result = new CastExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
-                _syntaxStack.PopType());
+                _syntaxStack.PopType(), UnaryOperatorType.Cast);
 
             _syntaxStack.Push(result);
 
@@ -458,7 +452,7 @@ namespace ZenPlatform.Compiler.AST
 
                     foreach (var str in identifier.ToList().GetRange(1, identifier.Length - 1))
                     {
-                        _syntaxStack.Push(new FieldExpression(_syntaxStack.PopExpression(), str));
+                        _syntaxStack.Push(new GetFieldExpression(_syntaxStack.PopExpression(), str));
                     }
                 }
                 else
@@ -476,7 +470,7 @@ namespace ZenPlatform.Compiler.AST
             var li = context.start.ToLineInfo();
             if (context.indexerExpression != null)
                 _syntaxStack.Push(new IndexerExpression(li, _syntaxStack.PopExpression(),
-                    _syntaxStack.PopExpression()));
+                    _syntaxStack.PopExpression(), UnaryOperatorType.Indexer));
 
             return null;
         }

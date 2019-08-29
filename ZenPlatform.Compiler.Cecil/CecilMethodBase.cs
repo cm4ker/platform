@@ -15,12 +15,15 @@ namespace ZenPlatform.Compiler.Cecil
             TypeSystem = typeSystem;
             Reference = method;
             Definition = method.Resolve();
+            ContextResolver = new CecilContextResolver(typeSystem, method.Module);
             _declaringTR = declaringType;
         }
 
         private void UpdateReferenceInfo()
         {
         }
+
+        protected CecilContextResolver ContextResolver { get; }
 
         public CecilTypeSystem TypeSystem { get; }
 
@@ -30,8 +33,8 @@ namespace ZenPlatform.Compiler.Cecil
 
         public string Name => Definition.Name;
 
-        public IType ReturnType => TypeSystem.Resolve(Definition.ReturnType);
-        public IType DeclaringType => TypeSystem.Resolve(_declaringTR);
+        public IType ReturnType => ContextResolver.GetType(Definition.ReturnType);
+        public IType DeclaringType => ContextResolver.GetType(_declaringTR);
 
         protected TypeReference DeclaringTypeReference => _declaringTR;
 

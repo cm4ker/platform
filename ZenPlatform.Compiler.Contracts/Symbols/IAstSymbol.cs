@@ -5,5 +5,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         string Name { get; }
 
         SymbolType SymbolType { get; }
+
+        SymbolScope SymbolScope { get; set; }
     }
 }
