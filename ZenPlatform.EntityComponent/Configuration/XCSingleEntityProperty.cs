@@ -13,7 +13,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         private XCSingleEntity _parent;
 
-        public XCSingleEntityProperty()
+        internal XCSingleEntityProperty()
         {
         }
 
