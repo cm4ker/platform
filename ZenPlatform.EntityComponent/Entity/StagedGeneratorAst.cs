@@ -73,7 +73,7 @@ namespace ZenPlatform.EntityComponent.Entity
             };
         }
 
-        public void Stage0(XCObjectTypeBase type, Root root)
+        private void GenerateServerDtoClass(XCObjectTypeBase type, Root root)
         {
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
                                        $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -165,7 +165,94 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        public void Stage1(XCObjectTypeBase type, Root root)
+        private void GenerateClientDtoClass(XCObjectTypeBase type, Root root)
+        {
+            var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
+                                       $"This component only can serve {nameof(XCSingleEntity)} objects");
+            var dtoClassName =
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+
+            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+
+            List<Member> members = new List<Member>();
+
+            //Create dto class
+            foreach (var prop in singleEntityType.Properties)
+            {
+                bool propertyGenerated = false;
+
+                if (prop.DatabaseColumnName.IsNullOrEmpty())
+                {
+                    throw new Exception(
+                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {singleEntityType.Name}. Database column is empty!");
+                }
+
+                if (prop.Types.Count > 1)
+                {
+                    {
+                        var dbColName = prop.GetPropertySchemas(prop.DatabaseColumnName)
+                            .First(x => x.SchemaType == XCColumnSchemaType.Type).Name;
+
+                        var astProp = new Property(null, prop.Name + "_Type",
+                            new PrimitiveTypeSyntax(null, TypeNodeKind.Int), true, true);
+
+                        members.Add(astProp);
+                    }
+                }
+
+                foreach (var ctype in prop.Types)
+                {
+                    if (ctype is XCPrimitiveType pt)
+                    {
+                        var propName = prop
+                            .GetPropertySchemas(prop.Name)
+                            .First(x => x.SchemaType == ((prop.Types.Count > 1)
+                                            ? XCColumnSchemaType.Value
+                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).Name;
+
+                        TypeSyntax propType = GetAstFromPlatformType(pt);
+
+                        var astProp = new Property(null, propName, propType, true, true);
+                        members.Add(astProp);
+                    }
+                    else if (ctype is XCObjectTypeBase ot)
+                    {
+                        if (!propertyGenerated)
+                        {
+                            propertyGenerated = true;
+
+                            var dbColName = prop
+                                .GetPropertySchemas(prop.DatabaseColumnName)
+                                .First(x => x.SchemaType == ((prop.Types.Count > 1)
+                                                ? XCColumnSchemaType.Ref
+                                                : XCColumnSchemaType.NoSpecial) && x.PlatformType == ot).Name;
+
+                            var propName = prop
+                                .GetPropertySchemas(prop.Name)
+                                .First(x => x.SchemaType == ((prop.Types.Count > 1)
+                                                ? XCColumnSchemaType.Ref
+                                                : XCColumnSchemaType.NoSpecial) && x.PlatformType == ot).Name;
+
+                            var astProp = new Property(null, propName,
+                                new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type), true, true, dbColName);
+                            members.Add(astProp);
+                        }
+                    }
+                }
+            }
+
+            var cls = new Class(null, new TypeBody(members), dtoClassName);
+
+            cls.Namespace = @namespace;
+
+            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+
+            //end create dto class
+            root.Add(cu);
+        }
+
+
+        private void GenerateObjectClass(XCObjectTypeBase type, Root root)
         {
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
                                        $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -324,14 +411,14 @@ namespace ZenPlatform.EntityComponent.Entity
             cls.ImplementsReference = true;
             cls.Namespace = @namespace;
 
-            Stage1Modules(type, cls);
+            GenerateObjectClassUserModules(type, cls);
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
             root.Add(cu);
         }
 
-        public void Stage1Modules(XCObjectTypeBase type, Class cls)
+        private void GenerateObjectClassUserModules(XCObjectTypeBase type, Class cls)
         {
             foreach (var module in type.GetProgramModules())
             {
@@ -346,6 +433,28 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                 }
             }
+        }
+
+        /// <summary>
+        ///  Генерация серверного кода
+        /// </summary>
+        /// <param name="type">Тип</param>
+        /// <param name="root">Корень проекта</param>
+        public void StageServer(XCObjectTypeBase type, Root root)
+        {
+            GenerateServerDtoClass(type, root);
+            GenerateObjectClass(type, root);
+        }
+
+
+        /// <summary>
+        /// Генерация клиентского кода
+        /// </summary>
+        /// <param name="type">Тип</param>
+        /// <param name="root">Корень проекта</param>
+        public void StageClient(XCObjectTypeBase type, Root root)
+        {
+            GenerateClientDtoClass(type, root);
         }
 
         public void Stage3()
