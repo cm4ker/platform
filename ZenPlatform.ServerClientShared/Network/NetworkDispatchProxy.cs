@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -47,19 +48,33 @@ namespace ZenPlatform.Core.Network
 
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {
-            var request = new RequestInvokeMethodProxy(_Id, targetMethod.Name, args);
-            object result = null;
-            var wait = RequestAsync(request, m =>
+
+            if (targetMethod.ReturnType.Equals(typeof(Stream)))
             {
-                if (m is ResponceInvokeMethodProxy responce)
+                var request = new RequestInvokeStreamProxy(_Id, targetMethod.Name, args);
+
+                var result = new DataStream(request.Id, _connection);
+                _connection.Channel.Send(request);
+
+                return result;
+            }
+            else
+            {
+
+                var request = new RequestInvokeMethodProxy(_Id, targetMethod.Name, args);
+                object result = null;
+                var wait = RequestAsync(request, m =>
                 {
-                    result = responce.Result;
-                }
-            });
+                    if (m is ResponceInvokeMethodProxy responce)
+                    {
+                        result = responce.Result;
+                    }
+                });
 
-            wait.WaitOne();
+                wait.WaitOne();
 
-            return result;
+                return result;
+            }
         }
 
         private WaitHandle RequestAsync(INetworkMessage message, Action<INetworkMessage> CallBack)

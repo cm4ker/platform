@@ -5,6 +5,7 @@ using System.Linq;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.DI;
 using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -14,12 +15,12 @@ namespace ZenPlatform.Core.Environment
         private readonly List<IEnvironment> environments = new List<IEnvironment>();
         private readonly ILogger _logger;
 
-        public EnvironmentManager(IConfig<List<StartupConfig>> config, IServiceProvider serviceProvider, ILogger<EnvironmentManager> logger)
+        public EnvironmentManager(ISettingsStorage configStorage, IServiceProvider serviceProvider, ILogger<EnvironmentManager> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
 
-            Initialize(config.Value);
+            Initialize(configStorage.Get<AppConfig>().Environments);
         }
 
         private void Initialize(List<StartupConfig> list)
@@ -29,8 +30,13 @@ namespace ZenPlatform.Core.Environment
             environments.Add(CreateEnvironment<IAdminEnvironment>(new StartupConfig() { ConnectionString = ""}));
 
 #if DEBUG
-            environments.Add(CreateEnvironment<ITestEnvironment>(new StartupConfig() { ConnectionString = "" }));
+            //environments.Add(CreateEnvironment<ITestEnvironment>(new StartupConfig() { ConnectionString = "" }));
 #endif
+        }
+
+        public void AddWorkEnvironment(StartupConfig config)
+        {
+            environments.Add(CreateEnvironment<IWorkEnvironment>(config));
         }
 
         protected IEnvironment CreateEnvironment<T>(StartupConfig config) where T: IEnvironment

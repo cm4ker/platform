@@ -9,7 +9,14 @@ using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Core.Tools;
 using ZenPlatform.Data;
+using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.Crypto;
+using ZenPlatform.Configuration.Structure;
+
+using ZenPlatform.Initializer;
+using ZenPlatform.Core.Assemblies;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -48,7 +55,7 @@ namespace ZenPlatform.Core.Environment
 
         public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
-            IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService) :
+            IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService, IAssemblyManager assemblyManager) :
             base(contextManager, cacheService)
         {
             _locking = new object();
@@ -56,6 +63,7 @@ namespace ZenPlatform.Core.Environment
             _logger = logger;
             _userManager = userManager;
             InvokeService = invokeService;
+            _assemblyManager = assemblyManager;
 
             Globals = new Dictionary<string, object>();
 
@@ -72,11 +80,29 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         public override void Initialize(StartupConfig config)
         {
+
+            MigrationRunner.Migrate(config.ConnectionString,
+                                    config.DatabaseType);
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
             base.Initialize(config);
             _logger.Info("Database '{0}' loaded.", Configuration.ProjectName);
 
             AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
+
+
+            
+
+            var assemblyList = _assemblyManager.GetLastAssemblies();
+
+
+            if (assemblyList.Count == 0 || assemblyList.Any(a => !a.ConfigurationHash.Equals(HashHelper.HashMD5(Configuration.SerializeToStream()))))
+            {
+                _logger.Info("Rebulid configuration.");
+                _assemblyManager.BuildConfiguration(Configuration);
+            }
+
+
+
 
             /*
             //TODO: получить библиотеку с сгенерированными сущностями dto и так далее
@@ -107,6 +133,8 @@ namespace ZenPlatform.Core.Environment
         private IServiceProvider _serviceProvider;
 
         private IUserManager _userManager;
+
+        private IAssemblyManager _assemblyManager;
 
         public override IInvokeService InvokeService { get; }
 

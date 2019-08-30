@@ -7,7 +7,6 @@ using System.Threading;
 using ZenPlatform.Core.Network;
 using System.IO;
 using System.Reflection;
-using Hyperion.Internal;
 using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Logging;
@@ -22,11 +21,22 @@ namespace ZenPlatform.ServerRPC
 
             Client client = new Client(new SimpleConsoleLogger<Client>());
 
+
+            PlatformClient platformClient = new PlatformClient(null, client);
+
+            platformClient.Connect(new Core.Settings.DatabaseConnectionSettings() { Address = "127.0.0.1:12345", Database = "testdb" });
+
+            platformClient.Login("admin", "admin");
+
+
+            //platformClient.test();
+
+/*
             client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345));
             client.Use("test");
 
             client.Authentication(new UserPasswordAuthenticationToken("admin", "admin"));
-            /*
+            
             //Start hack
             Infrastructure.Main(client);
 
@@ -35,7 +45,7 @@ namespace ZenPlatform.ServerRPC
             var mi = type.GetMethod("Add");
             mi.Invoke(null, new object[] {2, 3});
             //End hack
-            */
+           
             var service = client.GetService<ITestProxyService>();
 
             int res = service.Sum(10, 15);
@@ -55,8 +65,10 @@ namespace ZenPlatform.ServerRPC
 
 
             client.Close();
+*/
 
-            
+
+
 
 
         }
