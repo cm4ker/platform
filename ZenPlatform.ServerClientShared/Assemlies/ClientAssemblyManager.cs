@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Crypto;
@@ -12,6 +13,8 @@ namespace ZenPlatform.Core.Assemlies
     {
         IAssemblyManagerClientService _service;
         string _cachePath;
+
+        public List<Assembly> Assemblies { get; private set; }
         public ClientAssemblyManager(IAssemblyManagerClientService service, string cachePath)
         {
             _service = service;
@@ -49,6 +52,12 @@ namespace ZenPlatform.Core.Assemlies
             }
 
 
+        }
+
+        public void LoadAssemblyes()
+        {
+            Assemblies = Directory.GetFiles(_cachePath).Select(path => Assembly.LoadFile(path)).ToList();
+            
         }
 
         private void Download(AssemblyDescription assemblyDescription)

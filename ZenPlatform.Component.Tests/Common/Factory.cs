@@ -60,7 +60,7 @@ namespace ZenPlatform.Tests.Common
 
             invoice.Modules.Add(new XCSingleEntityModule()
             {
-                ModuleText = "public void Test(int i) { int _i = i; _i++; }",
+                ModuleText = "public int Test(int i) { int _i = i; _i++; return _i; }",
                 ModuleRelationType = XCProgramModuleRelationType.Object
             });
 
