@@ -41,11 +41,14 @@ namespace ZenPlatform.Tests.Common
             root.Data.Components.Add(component);
 
             var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+
             store.Name = "Store";
             store.Description = "This is a store entity";
             store.Initialize();
 
-            var prop = new XCSingleEntityProperty();
+            var prop = invoice.CreateProperty();
+
             prop.Name = "CompositeProperty";
             prop.Types.Add(new XCBinary());
             prop.Types.Add(new XCBoolean());
@@ -55,8 +58,6 @@ namespace ZenPlatform.Tests.Common
 
             prop.DatabaseColumnName = "Fld_0001";
 
-            var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
-            invoice.Properties.Add(prop);
             invoice.Name = "Invoice";
 
             invoice.Initialize();
