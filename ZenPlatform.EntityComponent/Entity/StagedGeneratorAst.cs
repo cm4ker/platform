@@ -73,11 +73,6 @@ namespace ZenPlatform.EntityComponent.Entity
             };
         }
 
-        public void StageMinus1(Root root)
-        {
-            root.
-        }
-
         public void Stage0(XCObjectTypeBase type, Root root)
         {
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
