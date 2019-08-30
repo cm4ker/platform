@@ -4,6 +4,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using ZenPlatform.Compiler.Contracts;
+using GenericParameterConstraint = ZenPlatform.Compiler.Contracts.GenericParameterConstraint;
 
 namespace ZenPlatform.Compiler.Cecil
 {
@@ -44,6 +45,7 @@ namespace ZenPlatform.Compiler.Cecil
             Definition.Interfaces.Add(new InterfaceImplementation(GetReference(type)));
             _interfaces = null;
         }
+
 
         public IMethodBuilder DefineMethod(string name, bool isPublic,
             bool isStatic,
@@ -123,9 +125,6 @@ namespace ZenPlatform.Compiler.Cecil
             foreach (var arg in args)
             {
                 var gp = new GenericParameter(arg.Key, Definition);
-                // TODO: for some reason types can't be instantiated properly
-                /*if (arg.Value.IsClass)
-                    gp.Attributes = GenericParameterAttributes.NotNullableValueTypeConstraint;*/
                 Definition.GenericParameters.Add(gp);
             }
 

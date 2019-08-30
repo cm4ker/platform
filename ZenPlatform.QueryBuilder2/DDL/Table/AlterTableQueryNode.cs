@@ -1,13 +1,12 @@
 ﻿using System;
+using System.Text;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.Columns;
 using ZenPlatform.QueryBuilder.Common.Factoryes;
 using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.QueryBuilder.Common.SqlTokens;
-using ZenPlatform.QueryBuilder.DML.Select;
-using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.QueryBuilder.DDL.CreateTable
+namespace ZenPlatform.QueryBuilder.DDL.Table
 {
     public class AlterTableQueryNode : SqlNode
     {
@@ -47,5 +46,22 @@ namespace ZenPlatform.QueryBuilder.DDL.CreateTable
 
             return this;
         }
+    }
+
+    public class RenameTableQueryNode : SqlNode
+    {
+        private readonly string _newTableName;
+        private TableNode _table;
+
+        public RenameTableQueryNode(string tableName, string newTableName, Action<TableNode> options = null)
+        {
+            _newTableName = newTableName;
+            _table = new TableNode(tableName);
+            options?.Invoke(_table);
+        }
+
+        public TableNode Table => _table;
+
+        public IdentifierNode NewTableName => new IdentifierNode(_newTableName);
     }
 }

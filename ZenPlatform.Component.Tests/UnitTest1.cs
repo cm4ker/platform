@@ -23,29 +23,38 @@ namespace ZenPlatform.Component.Tests
         {
             var conf = Factory.CreateExampleConfiguration();
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
-            var asm = pl.CreateAssembly("Debug");
+            var server = pl.CreateAssembly("Server");
+            var client = pl.CreateAssembly("Client");
 
-            var root = new Root(null, new List<CompilationUnit>());
+            var rootServer = new Root(null, new List<CompilationUnit>());
+            var rootClient = new Root(null, new List<CompilationUnit>());
 
             foreach (var component in conf.Data.Components)
             {
                 foreach (var type in component.Types)
                 {
-                    new StagedGeneratorAst(component).Stage0(type, root);
-                    new StagedGeneratorAst(component).Stage1(type, root);
+                    new StagedGeneratorAst(component).StageServer(type, rootServer);
+                    new StagedGeneratorAst(component).StageClient(type, rootClient);
                 }
             }
 
-            AstScopeRegister.Apply(root);
+            AstScopeRegister.Apply(rootServer);
+            AstScopeRegister.Apply(rootClient);
 
-            foreach (var cu in root.Units)
+            foreach (var cu in rootServer.Units)
             {
-                var generator = new Generator(new GeneratorParameters(cu, asm, CompilationMode.Server));
-                generator.BuildStructure();
-                generator.BuildCode();
+                var generator = new Generator(new GeneratorParameters(cu, server, CompilationMode.Server));
+                generator.Build();
             }
 
-            asm.Write("Debug.bll");
+            foreach (var cu in rootClient.Units)
+            {
+                var generator = new Generator(new GeneratorParameters(cu, client, CompilationMode.Client));
+                generator.Build();
+            }
+
+            server.Write("Server.bll");
+            client.Write("Client.bll");
         }
     }
 }

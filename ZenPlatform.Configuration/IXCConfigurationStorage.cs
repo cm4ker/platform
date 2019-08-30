@@ -58,10 +58,10 @@ namespace ZenPlatform.Configuration
         /// Получить настройки для объектов
         /// </summary>
         /// <returns></returns>
-        IDictionary<Guid, string> GeteSettings();
+        IDictionary<Guid, string> GetSettings();
 
         /// <summary>
-        /// Созранить настройки объектов для их последующего восстановления
+        /// Сохранить настройки объектов для их последующего восстановления
         /// </summary>
         /// <param name="guid">Глобальный идентификатор объекта</param>
         /// <param name="id">Уникальный идентификатор объекта в разрезе базы  данных </param>
