@@ -20,7 +20,9 @@ namespace ZenPlatform.Core.Network
         private readonly Client _client;
         private readonly ILogger _logger;
         private DatabaseConnectionSettings _connectionSettings;
-        private ClientAssemblyManager _assemblyManager;
+        public ClientAssemblyManager AssemblyManager { get; private set; }
+
+
 
 
         public PlatformClient(ILogger<PlatformClient> logger, Client client)
@@ -48,10 +50,15 @@ namespace ZenPlatform.Core.Network
         {
             _client.Authentication(new UserPasswordAuthenticationToken(name, password));
 
-            _assemblyManager = new ClientAssemblyManager(_client.GetService<IAssemblyManagerClientService>(),
+            AssemblyManager = new ClientAssemblyManager(_client.GetService<IAssemblyManagerClientService>(),
+
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "ZenClient", _connectionSettings.Database, "AssemblyCashe"));
-            _assemblyManager.UpdateAssemblyes();
+
+
+            AssemblyManager.UpdateAssemblyes();
+
+            AssemblyManager.LoadAssemblyes();
 
         }
 

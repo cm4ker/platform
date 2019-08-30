@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
@@ -7,16 +8,18 @@ using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.Data;
-using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.Logging;
-using System.IO;
+using ZenPlatform.Core.Tools;
+using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Assemblies;
 
-namespace ZenPlatform.Core.Environment
+namespace ZenPlatform.Core.Test.Environment
 {
-    public class AdminEnvironment : IEnvironment, IAdminEnvironment
+    public class TestEnvironment : IEnvironment, IWorkEnvironment
     {
         private StartupConfig _config;
         private ILogger _logger;
+        private IAssemblyManager _assemblyManager;
 
         public IList<ISession> Sessions { get; }
 
@@ -24,18 +27,23 @@ namespace ZenPlatform.Core.Environment
 
         public IAuthenticationManager AuthenticationManager { get; }
 
-        public string Name => "admin";
+        public string Name => "test";
 
         public IDataContextManager DataContextManager => throw new NotImplementedException();
 
-        public AdminEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService, ILogger<AdminEnvironment> logger)
+        public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService, ILogger<TestEnvironment> logger,
+            IAssemblyManager assemblyManager)
         {
             Sessions = new RemovingList<ISession>();
             AuthenticationManager = authenticationManager;
             AuthenticationManager.RegisterProvider(new AnonymousAuthenticationProvider());
             InvokeService = invokeService;
+            _assemblyManager = assemblyManager;
+            _assemblyManager.BuildConfiguration(Tests.Common.Factory.CreateExampleConfiguration());
             _logger = logger;
 
+
+            
         }
 
         public ISession CreateSession(IUser user)
@@ -47,8 +55,29 @@ namespace ZenPlatform.Core.Environment
         public void Initialize(StartupConfig config)
         {
             _config = config;
-            _logger.Info("Start admin environment.");
-            
+            _logger.Info("TEST ENVIRONMENT START.");
+
+           
+
+
+            InvokeService.Register(new Route("test"), (c, a) =>
+            {
+            return (int)a[0] + 1;
+            });
+
+
+            InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
+            {
+
+
+                using (StreamWriter writer = new StreamWriter(stream))
+                {
+                    writer.WriteLine("dsadsdasdasdasdsadasdsadsd");
+
+                }
+            });
+
+
         }
     }
 }

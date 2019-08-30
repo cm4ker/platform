@@ -82,7 +82,7 @@ namespace ZenPlatform.Runner
                     services.AddSingleton<ITestProxyService, TestProxyService>();
                     services.AddSingleton<IEnvironmentManager, EnvironmentManager>();
 
-                    services.AddScoped<ITestEnvironment, TestEnvironment>();
+                    //services.AddScoped<ITestEnvironment, TestEnvironment>();
                     services.AddScoped<IAdminEnvironment, AdminEnvironment>();
                     services.AddScoped<IWorkEnvironment, WorkEnvironment>();
 

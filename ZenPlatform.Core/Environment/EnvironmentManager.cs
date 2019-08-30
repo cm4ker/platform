@@ -30,7 +30,7 @@ namespace ZenPlatform.Core.Environment
             environments.Add(CreateEnvironment<IAdminEnvironment>(new StartupConfig() { ConnectionString = ""}));
 
 #if DEBUG
-            environments.Add(CreateEnvironment<ITestEnvironment>(new StartupConfig() { ConnectionString = "" }));
+            //environments.Add(CreateEnvironment<ITestEnvironment>(new StartupConfig() { ConnectionString = "" }));
 #endif
         }
 
