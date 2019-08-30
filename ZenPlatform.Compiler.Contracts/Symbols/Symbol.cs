@@ -55,7 +55,6 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         SymbolScope SymbolScope { get; set; }
     }
 
-
     /// <summary>
     /// Символ. Объект на который можно сослаться в коде
     /// </summary>
