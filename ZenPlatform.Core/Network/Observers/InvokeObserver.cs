@@ -42,7 +42,10 @@ namespace ZenPlatform.Core.Network.States
             switch (value)
             {
                 case RequestInvokeInstanceProxy instance:
-                    new ProxyObjectObserver(context.Connection, instance, _environment);
+                    var type = Type.GetType(instance.InterfaceName);
+                    var instanceService = _environment.InvokeService.GetRequiredService(type);
+                    
+                    new ProxyObjectObserver(context.Connection, instance.Id, instanceService, _environment);
                     break;
                 case RequestInvokeUnaryNetworkMessage invoke:
                     if (context is ServerConnectionContext serverContext)

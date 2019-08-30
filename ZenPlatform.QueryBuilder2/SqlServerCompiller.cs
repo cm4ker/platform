@@ -29,6 +29,8 @@ namespace ZenPlatform.QueryBuilder
 
             VisitNode(select.GroupByNode, sb);
 
+            VisitNode(select.OrderByNode, sb);
+
             VisitNode(select.HavingNode, sb);
 
             if (selectQueryNode.Parent != null)

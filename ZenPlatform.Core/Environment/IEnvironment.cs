@@ -21,6 +21,7 @@ namespace ZenPlatform.Core.Environment
         IInvokeService InvokeService { get; }
         void Initialize(StartupConfig config);
         IAuthenticationManager AuthenticationManager { get; }
+        IDataContextManager DataContextManager { get; }
 
         ISession CreateSession(IUser user);
 

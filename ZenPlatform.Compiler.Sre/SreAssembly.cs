@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Lokad.ILPack;
@@ -41,6 +42,12 @@ namespace ZenPlatform.Compiler.Sre
         {
             var generator = new AssemblyGenerator();
             generator.GenerateAssembly(Assembly, fileName);
+        }
+
+        public void Write(Stream stream)
+        {
+            var generator = new AssemblyGenerator();
+            stream.Write(generator.GenerateAssemblyBytes(Assembly));
         }
 
         public void Init()

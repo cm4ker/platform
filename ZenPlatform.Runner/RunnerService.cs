@@ -8,6 +8,8 @@ using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Core.Settings;
+
 namespace ZenPlatform.Runner
 {
     class RunnerService : IHostedService, IDisposable
@@ -32,7 +34,7 @@ namespace ZenPlatform.Runner
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.Info("Starting...");
-            ///var registrator = _dependencyResolver.Resolve<IInvokeServiceManager>();
+
             _accessPoint = _serviceProvider.GetRequiredService<IAccessPoint>();
 
            var envManager = _serviceProvider.GetRequiredService<IEnvironmentManager>();
@@ -49,6 +51,8 @@ namespace ZenPlatform.Runner
         {
             _logger.Info("Stoping...");
             _accessPoint.Stop();
+
+            _serviceProvider.GetRequiredService<ISettingsStorage>().Save();
             return Task.CompletedTask;
         }
     }
