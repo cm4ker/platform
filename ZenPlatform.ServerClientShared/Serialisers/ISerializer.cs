@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZenPlatform.Core.Network
+namespace ZenPlatform.Core.Serialisers
 {
     public interface ISerializer
     {

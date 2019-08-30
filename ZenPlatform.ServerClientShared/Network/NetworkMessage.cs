@@ -17,6 +17,7 @@ namespace ZenPlatform.Core.Network
         
     }
 
+    [Serializable]
     public class OkNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -30,6 +31,7 @@ namespace ZenPlatform.Core.Network
         }
     }
 
+    [Serializable]
     public class PingNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -37,6 +39,7 @@ namespace ZenPlatform.Core.Network
         public Guid RequestId { get; private set; }
     }
 
+    [Serializable]
     public class RequestInvokeUnaryNetworkMessage : IInvokeMessage
     {
         public Guid Id { get; private set; }
@@ -55,6 +58,7 @@ namespace ZenPlatform.Core.Network
 
     }
 
+    [Serializable]
     public class ResponceInvokeUnaryNetworkMessage : IInvokeMessage
     {
         public Guid Id { get; private set; }
@@ -71,6 +75,7 @@ namespace ZenPlatform.Core.Network
         }
     }
 
+    [Serializable]
     public class ErrorNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -91,6 +96,7 @@ namespace ZenPlatform.Core.Network
     }
 
 
+    [Serializable]
     public class RequestEnvironmentListNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -104,6 +110,7 @@ namespace ZenPlatform.Core.Network
     }
 
 
+    [Serializable]
     public class RequestEnvironmentUseNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -120,6 +127,7 @@ namespace ZenPlatform.Core.Network
 
     }
 
+    [Serializable]
     public class ResponceEnvironmentUseNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -136,6 +144,7 @@ namespace ZenPlatform.Core.Network
     }
 
 
+    [Serializable]
     public class ResponceEnvironmentListNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -152,6 +161,7 @@ namespace ZenPlatform.Core.Network
         }
     }
 
+    [Serializable]
     public class DataStreamNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -168,6 +178,7 @@ namespace ZenPlatform.Core.Network
         }
     }
 
+    [Serializable]
     public class StartInvokeStreamNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -185,6 +196,7 @@ namespace ZenPlatform.Core.Network
         }
     }
 
+    [Serializable]
     public class EndInvokeStreamNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -199,6 +211,7 @@ namespace ZenPlatform.Core.Network
         }
     }
 
+    [Serializable]
     public class RequestAuthenticationNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -215,6 +228,7 @@ namespace ZenPlatform.Core.Network
 
     }
 
+    [Serializable]
     public class ResponceAuthenticationNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -231,6 +245,7 @@ namespace ZenPlatform.Core.Network
 
     }
 
+    [Serializable]
     public class RequestInvokeInstanceProxy: INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -243,6 +258,7 @@ namespace ZenPlatform.Core.Network
         }
     }
 
+    [Serializable]
     public class RequestInvokeDisposeProxy : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -254,6 +270,7 @@ namespace ZenPlatform.Core.Network
         }
     }
 
+    [Serializable]
     public class RequestInvokeMethodProxy : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -270,6 +287,7 @@ namespace ZenPlatform.Core.Network
         }
     }
 
+    [Serializable]
     public class ResponceInvokeMethodProxy : INetworkMessage
     {
         public Guid Id { get; private set; }
@@ -282,6 +300,24 @@ namespace ZenPlatform.Core.Network
             Result = result;
         }
     }
+
+    public class RequestInvokeStreamProxy : INetworkMessage
+    {
+        public Guid Id { get; private set; }
+        public Guid RequestId { get; private set; }
+        public string MethodName { get; private set; }
+        public object[] Args { get; private set; }
+
+        public RequestInvokeStreamProxy(Guid requestId, string methodName, object[] args)
+        {
+            Id = Guid.NewGuid();
+            MethodName = methodName;
+            RequestId = requestId;
+            Args = args;
+        }
+    }
+
+    
 
 }
 

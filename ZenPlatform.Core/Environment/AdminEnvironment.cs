@@ -26,7 +26,9 @@ namespace ZenPlatform.Core.Environment
 
         public string Name => "admin";
 
-        public AdminEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService, ILogger<TestEnvironment> logger)
+        public IDataContextManager DataContextManager => throw new NotImplementedException();
+
+        public AdminEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService, ILogger<AdminEnvironment> logger)
         {
             Sessions = new RemovingList<ISession>();
             AuthenticationManager = authenticationManager;

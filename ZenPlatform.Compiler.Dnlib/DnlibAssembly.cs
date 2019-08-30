@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
@@ -39,6 +40,11 @@ namespace ZenPlatform.Compiler.Dnlib
         public void Write(string fileName)
         {
             Assembly.Write(fileName);
+        }
+
+        public void Write(Stream stream)
+        {
+            Assembly.Write(stream);
         }
 
         public ITypeSystem TypeSystem { get; }

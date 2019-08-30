@@ -13,7 +13,7 @@ using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Network
 {
-    public class Client: IConnectionObserver<IConnectionContext>
+    public class Client : IConnectionObserver<IConnectionContext>, IClient
     {
         private ConcurrentDictionary<Guid, Action<INetworkMessage>> _resultCallbacks;
         private readonly ILogger _logger;
@@ -32,12 +32,12 @@ namespace ZenPlatform.Core.Network
         public Client(ILogger<Client> logger)
 
         {
-            
+
             _logger = logger;
             _resultCallbacks = new ConcurrentDictionary<Guid, Action<INetworkMessage>>();
 
         }
-
+        
         public void Connect(IPEndPoint endPoint)
         {
             _logger.Info("Connect to {0}", endPoint.Address.ToString());
@@ -45,7 +45,7 @@ namespace ZenPlatform.Core.Network
             {
                 var tcpClient = new TcpClient();
                 tcpClient.Connect(endPoint);
-                _connection = new ClientConnection(new SimpleConsoleLogger<ClientConnection>(), 
+                _connection = new ClientConnection(new SimpleConsoleLogger<ClientConnection>(),
                     tcpClient, new ClientChannelFactory());
                 _unsubscriber = _connection.Subscribe(this);
                 _connection.Open();
@@ -66,7 +66,7 @@ namespace ZenPlatform.Core.Network
         private WaitHandle RequestAsync(INetworkMessage message, Action<INetworkMessage> CallBack)
         {
             AutoResetEvent restEvent = new AutoResetEvent(false);
-            _resultCallbacks.TryAdd(message.Id, (m) => { CallBack(m); _resultCallbacks.TryRemove(message.Id, out _); restEvent.Set(); }) ;
+            _resultCallbacks.TryAdd(message.Id, (m) => { CallBack(m); _resultCallbacks.TryRemove(message.Id, out _); restEvent.Set(); });
             _connection.Channel.Send(message);
 
             return restEvent;
@@ -91,7 +91,7 @@ namespace ZenPlatform.Core.Network
 
                         break;
                 }
-                
+
             });
             wait.WaitOne();
             return Authenticated;
@@ -123,7 +123,7 @@ namespace ZenPlatform.Core.Network
                      case ResponceEnvironmentUseNetworkMessage res:
                          IsUse = true;
                          Database = res.Name;
- 
+
                          break;
                      case ErrorNetworkMessage res:
                          IsUse = false;
