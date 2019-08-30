@@ -9,7 +9,7 @@ using System.Globalization;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace ZenPlatform.Core.Network
+namespace ZenPlatform.Core.Serialisers
 {
     public class NewtonsoftJsonSerializer : ISerializer
     {

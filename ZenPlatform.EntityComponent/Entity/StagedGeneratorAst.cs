@@ -19,7 +19,6 @@ using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation;
-using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;

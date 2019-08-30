@@ -101,6 +101,8 @@ namespace ZenPlatform.Core.Configuration
             }
         }
 
+        
+
         public Stream GetRootBlob()
         {
             return GetBlob("root", "");

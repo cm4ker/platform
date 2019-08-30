@@ -20,11 +20,10 @@ namespace ZenPlatform.Core.Environment
     public abstract class PlatformEnvironment : IEnvironment
     {
         protected ICacheService CacheService;
-
+        protected IServiceProvider ServiceProvider;
         protected PlatformEnvironment(IDataContextManager dataContextManager, ICacheService cacheService)
         {
             Sessions = new List<ISession>();
-
             DataContextManager = dataContextManager;
             CacheService = cacheService;
         }
