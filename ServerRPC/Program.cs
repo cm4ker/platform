@@ -7,6 +7,7 @@ using System.Threading;
 using ZenPlatform.Core.Network;
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Logging;
@@ -17,14 +18,13 @@ namespace ZenPlatform.ServerRPC
     {
         static void Main(string[] args)
         {
-            
-
             Client client = new Client(new SimpleConsoleLogger<Client>());
 
 
-            PlatformClient platformClient = new PlatformClient(null, client);
+            PlatformClient platformClient = new PlatformClient(null, client, null);
 
-            platformClient.Connect(new Core.Settings.DatabaseConnectionSettings() { Address = "127.0.0.1:12345", Database = "testdb" });
+            platformClient.Connect(new Core.Settings.DatabaseConnectionSettings()
+                {Address = "127.0.0.1:12345", Database = "testdb"});
 
             platformClient.Login("admin", "admin");
 
@@ -66,11 +66,6 @@ namespace ZenPlatform.ServerRPC
 
             client.Close();
 */
-
-
-
-
-
         }
     }
 }

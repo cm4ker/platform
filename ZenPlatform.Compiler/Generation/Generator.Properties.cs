@@ -28,8 +28,8 @@ namespace ZenPlatform.Compiler.Generation
                         false);
                 }
 
-                var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
-                var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
+                var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, property.IsInterface);
+                var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, property.IsInterface);
 
                 setMethod.WithReturnType(_bindings.Void);
                 var valueArg = setMethod.DefineParameter("value", property.Type.ToClrType(_asm), false, false);

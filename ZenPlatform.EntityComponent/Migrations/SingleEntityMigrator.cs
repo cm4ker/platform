@@ -26,7 +26,7 @@ namespace ZenPlatform.EntityComponent.Migrations
      * 3) Удаление старых структур
      * 4) Переименование новых структур
      */
-    
+
     public class SingleEntityMigrator : IEntityMigrator
     {
         /// <summary>
@@ -64,25 +64,43 @@ namespace ZenPlatform.EntityComponent.Migrations
 
                     var hasObjectGuid = false;
                     var hasObjectInt = false;
-                    foreach (var type in prop.Types)
+
+                    var columnSchemas = prop.GetPropertySchemas(prop.DatabaseColumnName);
+
+                    void createFromSchema(XCColumnSchemaDefinition schema)
                     {
-                        if (type is XCPrimitiveType ptype)
+                        var name = schema.Name;
+//
+//                        ItemSwitch<XCPrimitiveType>.Switch(schema.PlatformType)
+//                            .CaseIs<XCBoolean>(i =>
+//                                createTable.WithColumn(name, x => x.Boolean()))
+//                            .CaseIs<XCString>(i => createTable.WithColumn(name, x => x.Varchar(i.ColumnSize)))
+//                            .CaseIs<XCDateTime>(i => createTable.WithColumn(name, x => x.DateTime()))
+//                            .CaseIs<XCGuid>(i => createTable.WithColumn(name, x => x.Guid()))
+//                            .CaseIs<XCNumeric>(i =>
+//                                createTable.WithColumn(name, x => x.Numeric(i.Scale, i.Precision)))
+//                            .CaseIs<XCBinary>(i => createTable.WithColumn(name, x => x.Varbinary(i.ColumnSize)));
+                    }
+
+                    foreach (var schema in columnSchemas)
+                    {
+                        if (schema.SchemaType == XCColumnSchemaType.Value)
                         {
-                            ItemSwitch<XCPrimitiveType>.Switch(ptype)
+                            var name = schema.Name;
+                            var type = schema.PlatformType as XCPrimitiveType ??
+                                       throw new Exception("The value can be only primitive type");
+
+                            ItemSwitch<XCPrimitiveType>.Switch(type)
                                 .CaseIs<XCBoolean>(i =>
-                                    createTable.WithColumn($"{prop.DatabaseColumnName}_{type.Name}", x => x.Boolean()))
-                                .CaseIs<XCString>(i => createTable.WithColumn($"{prop.DatabaseColumnName}_{type.Name}",
-                                    x => x.Varchar(i.ColumnSize)))
-                                .CaseIs<XCDateTime>(i =>
-                                    createTable.WithColumn($"{prop.DatabaseColumnName}_{type.Name}", x => x.DateTime()))
-                                .CaseIs<XCGuid>(i =>
-                                    createTable.WithColumn($"{prop.DatabaseColumnName}_{type.Name}", x => x.Guid()))
-                                .CaseIs<XCNumeric>(i => createTable.WithColumn($"{prop.DatabaseColumnName}_{type.Name}",
-                                    x => x.Numeric(i.Scale, i.Precision)))
-                                .CaseIs<XCBinary>(i => createTable.WithColumn($"{prop.DatabaseColumnName}_{type.Name}",
-                                    x => x.Varbinary(i.ColumnSize)));
+                                    createTable.WithColumn(name, x => x.Boolean()))
+                                .CaseIs<XCString>(i => createTable.WithColumn(name, x => x.Varchar(i.ColumnSize)))
+                                .CaseIs<XCDateTime>(i => createTable.WithColumn(name, x => x.DateTime()))
+                                .CaseIs<XCGuid>(i => createTable.WithColumn(name, x => x.Guid()))
+                                .CaseIs<XCNumeric>(i =>
+                                    createTable.WithColumn(name, x => x.Numeric(i.Scale, i.Precision)))
+                                .CaseIs<XCBinary>(i => createTable.WithColumn(name, x => x.Varbinary(i.ColumnSize)));
                         }
-                        else if (type is XCObjectTypeBase obj)
+                        else if (schema.SchemaType == XCColumnSchemaType.Type)
                         {
                             //TODO: по задумке дочерний компонент должен самостоятельно инкапсулировать поля для ссылки на него в чужие объекты
                             /*
@@ -93,25 +111,26 @@ namespace ZenPlatform.EntityComponent.Migrations
                              */
 
                             //Необхоидимо проверить, является ли тип принадлежащим к зависимому компоненту
-                            if (obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn)
-                            {
-                                if (!hasObjectGuid)
-                                {
-                                    createTable.WithColumn($"{prop.DatabaseColumnName}_Ref", x => x.Guid());
-                                    hasObjectGuid = true;
-                                }
-                                else if (!hasObjectInt)
-                                {
-                                    createTable.WithColumn($"{prop.DatabaseColumnName}_Type", x => x.Int());
-                                    hasObjectInt = true;
-                                }
-                            }
-
-                            //Если компонент приатаченный, в таком случае на свойство необходимо также запустить миграцию
-                            if (actual.Parent.AttachedComponents.Contains(obj.Parent))
-                            {
-                                obj.Parent.ComponentImpl.Migrator.GetScript(null, obj);
-                            }
+//                            if (obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn)
+//                            {
+//                                if (!hasObjectGuid)
+//                                {
+//                                    var columnSchema = columnSchemas.Where(x => x.SchemaType == XCColumnSchemaType.Ref);
+//                                    createTable.WithColumn($"{prop.DatabaseColumnName}_Ref", x => x.Guid());
+//                                    hasObjectGuid = true;
+//                                }
+//                                else if (!hasObjectInt)
+//                                {
+//                                    createTable.WithColumn($"{prop.DatabaseColumnName}_Type", x => x.Int());
+//                                    hasObjectInt = true;
+//                                }
+//                            }
+//
+//                            //Если компонент приатаченный, в таком случае на свойство необходимо также запустить миграцию
+//                            if (actual.Parent.AttachedComponents.Contains(obj.Parent))
+//                            {
+//                                obj.Parent.ComponentImpl.Migrator.GetScript(null, obj);
+//                            }
                         }
                     }
                 }

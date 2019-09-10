@@ -12,7 +12,9 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibAssembly : IAssembly
     {
-        public DnlibAssembly(ITypeSystem ts, AssemblyDef assembly)
+        private Dictionary<string, DnlibType> _typeCache = new Dictionary<string, DnlibType>();
+
+        public DnlibAssembly(DnlibTypeSystem ts, AssemblyDef assembly)
         {
             Assembly = assembly;
             TypeSystem = ts;
@@ -26,15 +28,24 @@ namespace ZenPlatform.Compiler.Dnlib
         public string Name => Assembly.Name;
 
         private IReadOnlyList<ICustomAttribute> _attributes;
-        private readonly DnlibTypeSystem _typeSystem;
+        private readonly DnlibTypeSystem _ts;
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes =>
-            _attributes ??= Assembly.CustomAttributes.Select(ca => new DnlibCusotmAtttribute(_typeSystem, ca))
+            _attributes ??= Assembly.CustomAttributes.Select(ca => new DnlibCusotmAtttribute(_ts, ca))
                 .ToList();
 
         public IType FindType(string fullName)
         {
-            throw new NotImplementedException();
+            if (_typeCache.TryGetValue(fullName, out var rv))
+                return rv;
+            var lastDot = fullName.LastIndexOf(".", StringComparison.Ordinal);
+            var asmRef = new AssemblyNameInfo(Assembly.FullName);
+
+            var resolved = Assembly.Find(fullName, false).ResolveTypeDef();
+            if (resolved != null)
+                return _typeCache[fullName] = _ts.GetTypeFor(resolved);
+
+            return null;
         }
 
         public void Write(string fileName)

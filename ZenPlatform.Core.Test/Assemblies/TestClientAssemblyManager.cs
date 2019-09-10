@@ -27,7 +27,7 @@ namespace ZenPlatform.Core.Test.Assemblies
             return new MemoryStream();
         }
 
-        public void UpdateAssemblyes()
+        public void UpdateAssemblies()
         {
            
         }

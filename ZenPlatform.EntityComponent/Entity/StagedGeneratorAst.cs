@@ -397,7 +397,7 @@ namespace ZenPlatform.EntityComponent.Entity
             //IReferenceImpl
 
 
-            var tprop = new Property(null, "Type", intType, true, false);
+            var tprop = new Property(null, "Type", intType, true, false) {IsInterface = true};
             tprop.Getter = new Block(new[]
             {
                 (Statement) new Return(null, new Literal(null, singleEntityType.Id.ToString(), intType))
