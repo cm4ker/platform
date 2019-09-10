@@ -12,14 +12,21 @@ using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
+using ZenPlatform.QueryBuilder.DDL.Table;
 using ZenPlatform.QueryBuilder.DML.Update;
 using ZenPlatform.Shared;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Migrations
 {
-    //TODO: Пока конфигурация не хранится в базе данных, делать какие-то телодвижения в миграциях бессмысленно, ибо нам неоткуда взять дифф
-
+    /*
+     * Мигрирование происходит в несколько этапов
+     * 1) Создание таблицы для нового типа структуры
+     * 2) Перекачивание данных с трансформацией из старого типа структуры в новое
+     * 3) Удаление старых структур
+     * 4) Переименование новых структур
+     */
+    
     public class SingleEntityMigrator : IEntityMigrator
     {
         /// <summary>
@@ -45,7 +52,6 @@ namespace ZenPlatform.EntityComponent.Migrations
                  *  2) Сгенерировать скрипт создания таблиц
                  */
 
-                //TODO: Проверить, присваиваются ли идентификаторы для XCTypeBase.Id автоматически. Если нет, то этим должна заниматься конфигурация
                 actual.RelTableName = $"ent{actual.Id}";
 
                 var createTable =
