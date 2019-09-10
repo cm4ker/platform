@@ -16,7 +16,6 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             Assembly = assembly;
             TypeSystem = ts;
-            
         }
 
         public AssemblyDef Assembly { get; }

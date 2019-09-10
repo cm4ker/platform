@@ -71,6 +71,12 @@ namespace ZenPlatform.Core.Environment
 
             foreach (var type in types)
             {
+                /*
+                 * Все DDL (data definition language) происходят вне транзакции. Поэтому должны быть полностью
+                 * безопасны для внезапного прерывания.
+                 *
+                 * Необходимо логировать мигрирование каждого объекта 
+                 */
                 var migrateScript = type.component.ComponentImpl.Migrator.GetScript(type.old, type.actual);
 
                 var cmd = context.CreateCommand();

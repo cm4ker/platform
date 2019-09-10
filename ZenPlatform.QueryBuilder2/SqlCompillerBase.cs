@@ -10,6 +10,7 @@ using ZenPlatform.QueryBuilder.Common.Table;
 using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using ZenPlatform.QueryBuilder.DDL.Index;
+using ZenPlatform.QueryBuilder.DDL.Table;
 using ZenPlatform.QueryBuilder.DML.Delete;
 using ZenPlatform.QueryBuilder.DML.From;
 using ZenPlatform.QueryBuilder.DML.GroupBy;
@@ -119,8 +120,15 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<IndexTableColumnNode>(i => VisitIndexTableColumnNode(i, sb))
                 .CaseIs<AndConditionNode>(i => VisitAndConditionNode(i, sb))
                 .CaseIs<IsNullConditionNode>(i => VisitIsNullConditionNode(i, sb))
+                .CaseIs<RenameTableQueryNode>(i => VisitRenameTableQueryNode(i, sb))
                 .CaseIs<CreateTableQueryNode>(i=>VisitCreateTableQueryNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        public virtual void VisitRenameTableQueryNode(RenameTableQueryNode renameTableQueryNode, StringBuilder sb)
+        {
+            //All the RDBMS has different mechanics for rename the table
+            throw new NotImplementedException();
         }
 
         public virtual  void VisitCreateTableQueryNode(CreateTableQueryNode createTableQueryNode, StringBuilder sb)
@@ -444,7 +452,7 @@ namespace ZenPlatform.QueryBuilder
                 case JoinType.Cross:
                     sb.Append("CROSS");
                     break;
-                    //TODO: Добавить все
+                //TODO: Добавить все
             }
 
             sb.Append(" JOIN ");
