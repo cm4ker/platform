@@ -9,6 +9,7 @@ using ZenPlatform.Core.Sessions;
 using ZenPlatform.Core.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.Core.Network
 {

@@ -90,17 +90,7 @@ namespace ZenPlatform.Core.Environment
             AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
 
 
-            
-
-            var assemblyList = _assemblyManager.GetLastAssemblies();
-
-
-            if (assemblyList.Count == 0 || assemblyList.Any(a => !a.ConfigurationHash.Equals(HashHelper.HashMD5(Configuration.SerializeToStream()))))
-            {
-                _logger.Info("Rebulid configuration.");
-                _assemblyManager.BuildConfiguration(Configuration);
-            }
-
+            _assemblyManager.CheckConfiguration(Configuration);
 
 
 

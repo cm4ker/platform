@@ -18,5 +18,15 @@ namespace ZenPlatform.Compiler.Contracts
         ITypeSystem TypeSystem { get; }
     }
 
-
+    public static class AssemblyExtension
+    {
+        public static byte[] ToBytes(this IAssembly assembly)
+        {
+            using (var stream = new MemoryStream())
+            {
+                assembly.Write(stream);
+                return stream.ToArray();
+            }
+        }
+    }
 }

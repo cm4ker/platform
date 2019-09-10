@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZenPlatform.Core.Network
+namespace ZenPlatform.Core.Contracts
 {
 
-    public class Route_old
+    public class Route
     {
 
-        public Route_old(string path)
+        public Route(string path)
         {
             Path = path;
         }
@@ -17,7 +17,7 @@ namespace ZenPlatform.Core.Network
 
         public override bool Equals(object obj)
         {
-            Route_old route = obj as Route_old;
+            Route route = obj as Route;
             return route.Path == Path;
 
         }

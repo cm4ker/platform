@@ -1,9 +1,7 @@
 using System;
 using System.Reflection;
-using Hyperion;
-using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Compiler.Infrastructure;
-using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -57,7 +55,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType DateTime => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.DateTime)}", MSCORLIB);
 
-        public IType Client => _ts.FindType<Client>();
+        public IType Client => _ts.FindType<IClientInvoker>(); // _ts.FindType<Client>()
 
         public IType Session => _ts.FindType($"ZenPlatform.Core.Sessions.Session", PLATFORM_CORE);
         

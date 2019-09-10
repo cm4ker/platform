@@ -19,6 +19,8 @@ using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration;
 using ZenPlatform.Core.Test.Configuration;
 using ZenPlatform.Core.Test.Environment;
+using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.Test.Assemblies;
 
 namespace ZenPlatform.Core.Test
 {
@@ -45,9 +47,10 @@ namespace ZenPlatform.Core.Test
 
 
 
-            services.AddScoped<IAssemblyManager, TestAssemblyManager>();
+            services.AddScoped<IAssemblyManager, AssemblyManager>();
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
             services.AddSingleton<IXCConfigurationStorage, XCTestStorage>();
+            services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
 
 
             services.AddScoped<IConfigurationManager, ConfigurationManager>();
@@ -78,10 +81,19 @@ namespace ZenPlatform.Core.Test
             IServiceCollection services = new ServiceCollection();
 
 
-            services.AddTransient<PlatformClient>();
-            services.AddTransient<Client>();
+            services.AddSingleton<PlatformClient>();
+            services.AddSingleton<IClient, Client>();
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
+            services.AddSingleton<PlatformAssemblyLoadContext>();
+            services.AddSingleton<IClientAssemblyManager, ClientAssemblyManager>();
 
+
+
+            services.AddSingleton(factory =>
+            {
+                var client = factory.GetRequiredService<IClient>();
+                return client.GetService<IAssemblyManagerClientService>();
+            });
 
             return services.BuildServiceProvider();
         }

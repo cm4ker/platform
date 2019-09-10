@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Sessions;
 
 namespace ZenPlatform.Core.Network
@@ -13,6 +14,7 @@ namespace ZenPlatform.Core.Network
     public delegate object ParametricMethod(InvokeContext context, params object[] list);
     public delegate void StreamMethod(InvokeContext context, Stream stream, params object[] list);
     
+
     public class InvokeContext
     {
         public Task Task { get; private set; }

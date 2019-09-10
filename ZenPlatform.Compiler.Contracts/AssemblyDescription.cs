@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace ZenPlatform.Core.Assemlies
+namespace ZenPlatform.Compiler
 {
-    [Serializable]
     public class AssemblyDescription
     {
-        public int Id;
         public string AssemblyHash;
         public string ConfigurationHash;
         public string Name;
-        public DateTime CreateDataTime;
+        public AssemblyType Type;
     }
 }
