@@ -5,7 +5,7 @@ using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Core.Test
 {
-    public class TestSettingsStorage__ : ISettingsStorage
+    public class TestSettingsStorage : ISettingsStorage
     {
         private AppConfig _appConfig = new AppConfig()
         {

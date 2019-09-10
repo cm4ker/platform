@@ -10,28 +10,36 @@ using System.IO;
 using System.Reflection;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.Core.ClientServices;
-
+using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Compiler;
 namespace ZenPlatform.Core.Network
 {
     
     public class PlatformClient
     {
-        private readonly Client _client;
+        private readonly IClient _client;
         private readonly ILogger _logger;
         private DatabaseConnectionSettings _connectionSettings;
-        public ClientAssemblyManager AssemblyManager { get; private set; }
+        private readonly IServiceProvider _serviceProvider;
 
 
+        public PlatformAssemblyLoadContext PlatformAssemblyLoadContext { get; private set; }
 
-
-        public PlatformClient(ILogger<PlatformClient> logger, Client client)
+        public PlatformClient(ILogger<PlatformClient> logger, IClient client, IServiceProvider serviceProvider)
         {
             _client = client;
             _logger = logger;
-            
+
+            _serviceProvider = serviceProvider;
+
         }
 
+        public Assembly LoadMainAssembly()
+        {
+            var assemblyName = $"{ _client.Database}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}";
+
+            return PlatformAssemblyLoadContext.LoadFromAssemblyName(new AssemblyName(assemblyName));
+        }
 
 
         public void Connect(DatabaseConnectionSettings connectionSettings)
@@ -50,16 +58,8 @@ namespace ZenPlatform.Core.Network
         {
             _client.Authentication(new UserPasswordAuthenticationToken(name, password));
 
-            AssemblyManager = new ClientAssemblyManager(_client.GetService<IAssemblyManagerClientService>(),
 
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "ZenClient", _connectionSettings.Database, "AssemblyCashe"));
-
-
-            AssemblyManager.UpdateAssemblyes();
-
-            AssemblyManager.LoadAssemblyes();
-
+            PlatformAssemblyLoadContext =  _serviceProvider.GetRequiredService<PlatformAssemblyLoadContext>();
         }
 
         

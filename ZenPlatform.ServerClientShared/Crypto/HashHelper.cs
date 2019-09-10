@@ -17,5 +17,16 @@ namespace ZenPlatform.Core.Crypto
                 return BitConverter.ToString(h).Replace("-", "").ToLowerInvariant();
             }
         }
+
+        public static string HashMD5(byte[] data)
+        {
+            using (var md5 = MD5.Create())
+            {
+                var h = md5.ComputeHash(data);
+                return BitConverter.ToString(h).Replace("-", "").ToLowerInvariant();
+            }
+        }
+
+        
     }
 }

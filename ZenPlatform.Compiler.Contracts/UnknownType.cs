@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using ZenPlatform.AsmClientInfrastructure;
+//using ZenPlatform.AsmClientInfrastructure;
 
 namespace ZenPlatform.Compiler.Contracts
 {

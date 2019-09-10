@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ZenPlatform.Compiler;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Assemlies;
@@ -14,194 +15,82 @@ using ZenPlatform.Data;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.DML.Insert;
 using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.Core.Logging;
+
 
 namespace ZenPlatform.Core.Assemblies
 {
     public class AssemblyManager : IAssemblyManager
     {
-        private IDataContextManager _dataContextManager;
+        private IAssemblyStorage _assemblyStorage;
         private IXCCompiller _compiller;
-
-        public AssemblyManager(IDataContextManager dataContextManager, IXCCompiller compiller)
+        private ILogger _logger;
+        public AssemblyManager(IXCCompiller compiller, IAssemblyStorage assemblyStorage, ILogger<AssemblyManager> logger)
         {
-            _dataContextManager = dataContextManager;
+            _assemblyStorage = assemblyStorage;
             _compiller = compiller;
+            _logger = logger;
         }
+
+        public void CheckConfiguration(XCRoot configuration)
+        {
+            var hash = HashHelper.HashMD5(configuration.SerializeToStream());
+
+
+
+            var assemblies = _assemblyStorage.GetAssemblies(hash);
+
+            if (assemblies.FirstOrDefault(a=>
+                a.Name.Equals($"{configuration.ProjectName}_server") 
+                || a.Name.Equals($"{configuration.ProjectName}_client")) == null)
+            {
+                
+                BuildConfiguration(configuration);
+            }
+
+        }
+        
 
         public void BuildConfiguration(XCRoot configuration)
         {
+            _logger.Info("Build configuration.");
+            var assembly = _compiller.Build(configuration, CompilationMode.Server);
 
-            var assemblies = _compiller.Build(configuration);
 
-            foreach (var assemblyStream in assemblies)
+            var stream = new MemoryStream();
+            assembly.Write(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var description = new AssemblyDescription()
             {
-                SaveAssembly(assemblyStream.Key, HashHelper.HashMD5(configuration.SerializeToStream()), assemblyStream.Value);
-            }
-
-
-        }
-        public void SaveAssembly(string name, string configurationHash, Stream stream)
-        {
-
-
-            var query = new InsertQueryNode()
-               .InsertInto("assemblies")
-               .WithFieldAndValue(x => x.Field("assembly_hash"),
-                   x => x.Parameter("assembly_hash"))
-               .WithFieldAndValue(x => x.Field("configuration_hash"),
-                   x => x.Parameter("configuration_hash"))
-               .WithFieldAndValue(x => x.Field("name"),
-                   x => x.Parameter("name"))
-               .WithFieldAndValue(x => x.Field("data"),
-                   x => x.Parameter("data"));
-
-            using (var cmd = _dataContextManager.GetContext().CreateCommand())
-            {
-
-                cmd.CommandText = _dataContextManager.SqlCompiler.Compile(query);
-                cmd.AddParameterWithValue("assembly_hash", HashHelper.HashMD5(stream));
-                cmd.AddParameterWithValue("configuration_hash", configurationHash);
-                cmd.AddParameterWithValue("name", name);
-
-                byte[] buffer = new byte[stream.Length];
-                stream.Read(buffer, 0, (int)stream.Length);
-
-                cmd.AddParameterWithValue("data", buffer);
-
-                cmd.ExecuteNonQuery();
-            }
-
-
-        }
-
-        private AssemblyDescription Map(DbDataReader reader)
-        {
-            return new AssemblyDescription()
-            {
-                Id = reader.GetInt32(0),
-                AssemblyHash = reader.GetString(1),
-                ConfigurationHash = reader.GetString(2),
-                CreateDataTime = reader.GetDateTime(3),
-                Name = reader.GetString(4)
+                AssemblyHash = HashHelper.HashMD5(stream),
+                ConfigurationHash = configuration.GetHash(),
+                Name = assembly.Name,
+                Type = AssemblyType.Server, 
             };
-        }
 
-        public List<AssemblyDescription> GetLastAssemblies()
-        {
-            var list = new List<AssemblyDescription>();
+            _assemblyStorage.SaveAssembly(description, stream.ToArray());
 
-            var query = new SelectQueryNode()
-                        .From("assemblies")
-                        .Select("id")
-                        .Select("assembly_hash")
-                        .Select("configuration_hash")
-                        .Select("create_datetime")
-                        .Select("name");
 
-            var cmdText = _dataContextManager.SqlCompiler.Compile(query);
-            using (var cmd = _dataContextManager.GetContext().CreateCommand())
+            assembly = _compiller.Build(configuration, CompilationMode.Client);
+
+
+            var clientStream = new MemoryStream();
+            assembly.Write(clientStream);
+            clientStream.Seek(0, SeekOrigin.Begin);
+            description = new AssemblyDescription()
             {
-                cmd.CommandText = cmdText;
+                AssemblyHash = HashHelper.HashMD5(clientStream),
+                ConfigurationHash = configuration.GetHash(),
+                Name = assembly.Name,
+                Type = AssemblyType.Client,
+            };
 
-
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        list.Add(Map(reader));
-
-                    }
-                }
-
-                return list.GroupBy(a => a.Name).Select(g => g.Aggregate((a1, a2) => a1.Id > a2.Id ? a1 : a2)).ToList();
-            }
-
-
+            _assemblyStorage.SaveAssembly(description, clientStream.ToArray());
 
         }
 
-        public AssemblyDescription GetLastAssemblyDescriptionByName(string name)
-        {
-            var query = new SelectQueryNode()
-                        .From("assemblies")
-                        .WithTop(1)
-                        .Select("id")
-                        .Select("assembly_hash")
-                        .Select("configuration_hash")
-                        .Select("create_datetime")
-                        .Select("name")
-                        .Where(x => x.Field("name"), "=", x => x.Parameter("name"))
-                        .OrderBy("id").Desc();
+        
 
-
-            var cmdText = _dataContextManager.SqlCompiler.Compile(query);
-
-            using (var cmd = _dataContextManager.GetContext().CreateCommand())
-            {
-                cmd.CommandText = cmdText;
-                cmd.AddParameterWithValue("name", name);
-
-                using (var reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-
-                        return Map(reader);
-
-
-                    }
-                }
-                return null;
-            }
-        }
-
-        public Stream GetLastAssemblyByName(string name)
-        {
-            var query = new SelectQueryNode()
-                        .From("assemblies")
-                        .WithTop(1)
-                        .Select("data")
-                        .Where(x => x.Field("name"), "=", x => x.Parameter("name"))
-                        .OrderBy("id").Desc();
-
-
-            var cmdText = _dataContextManager.SqlCompiler.Compile(query);
-
-            using (var cmd = _dataContextManager.GetContext().CreateCommand())
-            {
-                cmd.CommandText = cmdText;
-                cmd.AddParameterWithValue("name", name);
-
-
-                MemoryStream ms = new MemoryStream((byte[])cmd.ExecuteScalar());
-                return ms;
-            }
-        }
-
-        public Stream GetAssemblyByDescription(AssemblyDescription description)
-        {
-            return GetAssemblyById(description.Id);
-        }
-
-        public Stream GetAssemblyById(int id)
-        {
-            var query = new SelectQueryNode()
-                        .From("assemblies")
-                        .Select("data")
-                        .Where(x => x.Field("id"), "=", x => x.Parameter("id"));
-
-
-            var cmdText = _dataContextManager.SqlCompiler.Compile(query);
-            using (var cmd = _dataContextManager.GetContext().CreateCommand())
-            {
-                cmd.CommandText = cmdText;
-                cmd.AddParameterWithValue("id", id);
-
-
-                MemoryStream ms = new MemoryStream((byte[])cmd.ExecuteScalar());
-                return ms;
-            }
-        }
 
     }
 }

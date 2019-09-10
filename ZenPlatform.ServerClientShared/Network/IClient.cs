@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Net;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.Core.Network
 {

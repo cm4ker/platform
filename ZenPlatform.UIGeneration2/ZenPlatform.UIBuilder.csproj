@@ -7,8 +7,6 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataGrid\src\Avalonia.DataGrid.Themes.Default\Avalonia.DataGrid.Themes.Default.csproj" />
-    <ProjectReference Include="..\DataGrid\src\Avalonia.DataGrid\Avalonia.DataGrid.csproj" />
     <ProjectReference Include="..\ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj" />
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
   </ItemGroup>

@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Tools;
 
