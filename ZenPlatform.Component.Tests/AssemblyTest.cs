@@ -16,7 +16,7 @@ using ZenPlatform.Tests.Common;
 
 namespace ZenPlatform.Component.Tests
 {
-    public class UnitTest1
+    public class AssemblyTest
     {
         [Fact]
         public void BuildAstTest()

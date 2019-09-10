@@ -22,17 +22,14 @@ namespace ZenPlatform.EntityComponent.Migrations
 
     public class SingleEntityMigrator : IEntityMigrator
     {
-        private readonly IXCConfigurationSettingsStore _store;
-
         /// <summary>
         /// Создать новую миграцию для сущности
         /// </summary>
         /// <param name="store">хранилище настроек</param>
         /// <param name="old">Старая конфигурация</param>
         /// <param name="actual">Новая конфигурация</param>
-        public SingleEntityMigrator(IXCConfigurationSettingsStore store)
+        public SingleEntityMigrator()
         {
-            _store = store;
         }
 
         private IList<SqlNode> GetScript(XCSingleEntity old, XCSingleEntity actual)

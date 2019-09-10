@@ -53,6 +53,22 @@ namespace ZenPlatform.Shared.Tree
         }
 
         /// <summary>
+        /// Заменяет старую ноду на новую в дочерних относительно текущего
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="newNode"></param>
+        public virtual void Replace(Node node, Node newNode)
+        {
+            var index = Childs.IndexOf(node);
+
+            if (index >= 0)
+            {
+                Childs[index].Detach();
+                newNode.Attach(index, this);
+            }
+        }
+
+        /// <summary>
         /// Добавить список нод
         /// </summary>
         /// <param name="nodes"></param>

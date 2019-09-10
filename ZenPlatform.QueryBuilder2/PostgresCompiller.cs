@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.DML.Insert;
 using ZenPlatform.QueryBuilder.DML.Select;
@@ -19,6 +21,20 @@ namespace ZenPlatform.QueryBuilder
             }
 
             base.VisitTokens(token, sb);
+        }
+
+        protected override void VisitTypeDefinitionNode(TypeDefinitionNode typeDefinitionNode, StringBuilder sb)
+        {
+            if (typeDefinitionNode is BooleanTypeDefinitionNode)
+            {
+                //Replace default
+                var node = typeDefinitionNode.GetChild<IdentifierNode>();
+
+                if (node != null)
+                    typeDefinitionNode.Replace(node, new IdentifierNode("BOOLEAN"));
+            }
+
+            base.VisitTypeDefinitionNode(typeDefinitionNode, sb);
         }
 
         protected override void VisitSelectQueryNode(SelectQueryNode selectQueryNode, StringBuilder sb)
