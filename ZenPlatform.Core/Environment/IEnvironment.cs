@@ -13,7 +13,10 @@ namespace ZenPlatform.Core.Environment
 
     public interface IAdminEnvironment : IEnvironment { }
     public interface ITestEnvironment : IEnvironment { }
-    public interface IWorkEnvironment : IEnvironment { }
+    public interface IWorkEnvironment : IEnvironment
+    {
+        XCRoot Configuration { get; }
+    }
     public interface IEnvironment
     {
         string Name { get; }

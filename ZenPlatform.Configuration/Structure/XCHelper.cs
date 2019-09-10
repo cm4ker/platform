@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using Portable.Xaml;
 using ZenPlatform.Configuration.Structure.Data;
-
+using ZenPlatform.Core.Crypto;
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -66,6 +66,11 @@ namespace ZenPlatform.Configuration.Structure
             ms.Seek(0, SeekOrigin.Begin);
             
             return ms;
+        }
+
+        public static string GetHash(this XCRoot root)
+        {
+            return HashHelper.HashMD5(root.SerializeToStream());
         }
     }
 }

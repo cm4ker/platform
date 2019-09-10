@@ -1,5 +1,5 @@
 ﻿using System;
-using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.AsmClientInfrastructure
 {
@@ -8,7 +8,7 @@ namespace ZenPlatform.AsmClientInfrastructure
     /// </summary>
     public class Infrastructure
     {
-        public static void Main(Client client)
+        public static void Main(IClientInvoker client)
         {
             GlobalScope.Client = client;
         }
@@ -16,13 +16,15 @@ namespace ZenPlatform.AsmClientInfrastructure
 
     public static class GlobalScope
     {
-        private static Client _client;
+        private static IClientInvoker _client;
 
-        public static Client Client
+        public static IClientInvoker Client
         {
             get => _client ?? throw new PlatformNotInitializedException();
             set => _client = value;
         }
+
+        
     }
 
     public class PlatformNotInitializedException : Exception

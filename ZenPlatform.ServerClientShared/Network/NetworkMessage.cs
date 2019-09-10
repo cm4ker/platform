@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.Core.Network
 {

@@ -23,22 +23,8 @@ namespace ZenPlatform.Core.Settings
         public string Database;
     }
 
-    public class AssemblyCache
-    {
-        public AssemblyDescription Description;
-        public string FilePath;
-    }
 
-    public class AssemblesCache 
-    {
-        public List<AssemblyCache> Assemblies;
-
-        public AssemblesCache()
-        {
-            Assemblies = new List<AssemblyCache>();
-        }
-
-    }
+   
 
 
 }

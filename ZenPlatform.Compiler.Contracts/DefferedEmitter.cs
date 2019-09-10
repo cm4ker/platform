@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Transactions;
 using System.Xml.Schema;
-using Hyperion.Internal;
 using ZenPlatform.Compiler.Contracts.Symbols;
 
 namespace ZenPlatform.Compiler.Contracts
