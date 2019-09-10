@@ -27,7 +27,7 @@ namespace ZenPlatform.Tests.Common
         {
             var root = new XCRoot();
 
-            root.ProjectId = Guid.NewGuid();
+            root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a"); //Guid.NewGuid();
             root.ProjectName = "Library";
             root.ProjectVersion = "0.0.0.1";
 
