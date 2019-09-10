@@ -133,7 +133,7 @@ namespace ZenPlatform.QueryBuilder
 
         public virtual  void VisitCreateTableQueryNode(CreateTableQueryNode createTableQueryNode, StringBuilder sb)
         {
-            VisitChilds(createTableQueryNode, sb);
+           
         }
 
         private void VisitIsNullConditionNode(IsNullConditionNode isNullConditionNode, StringBuilder sb)

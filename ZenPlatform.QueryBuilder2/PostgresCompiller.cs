@@ -35,7 +35,15 @@ namespace ZenPlatform.QueryBuilder
                 var node = typeDefinitionNode.GetChild<IdentifierNode>();
 
                 if (node != null)
-                    typeDefinitionNode.Replace(node, new IdentifierNode("BOOLEAN"));
+                    typeDefinitionNode.Replace(node, new IdentifierNode("bool"));
+            }
+            else if (typeDefinitionNode is GuidTypeDefinitionNode)
+            {
+                //Replace default
+                var node = typeDefinitionNode.GetChild<IdentifierNode>();
+
+                if (node != null)
+                    typeDefinitionNode.Replace(node, new IdentifierNode("uuid"));
             }
 
             base.VisitTypeDefinitionNode(typeDefinitionNode, sb);
