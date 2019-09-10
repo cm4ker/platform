@@ -8,6 +8,7 @@ using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.Common.Table;
 using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
+using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using ZenPlatform.QueryBuilder.DDL.Index;
 using ZenPlatform.QueryBuilder.DML.Delete;
 using ZenPlatform.QueryBuilder.DML.From;
@@ -118,7 +119,13 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<IndexTableColumnNode>(i => VisitIndexTableColumnNode(i, sb))
                 .CaseIs<AndConditionNode>(i => VisitAndConditionNode(i, sb))
                 .CaseIs<IsNullConditionNode>(i => VisitIsNullConditionNode(i, sb))
+                .CaseIs<CreateTableQueryNode>(i=>VisitCreateTableQueryNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        public virtual  void VisitCreateTableQueryNode(CreateTableQueryNode createTableQueryNode, StringBuilder sb)
+        {
+            VisitChilds(createTableQueryNode, sb);
         }
 
         private void VisitIsNullConditionNode(IsNullConditionNode isNullConditionNode, StringBuilder sb)
