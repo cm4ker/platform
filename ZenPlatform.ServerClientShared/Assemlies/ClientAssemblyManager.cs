@@ -56,7 +56,7 @@ namespace ZenPlatform.Core.Assemlies
             }
         }
 
-        public void UpdateAssemblyes()
+        public void UpdateAssemblies()
         {
 
             var descriptions = LoadCacheDescription().ToList();

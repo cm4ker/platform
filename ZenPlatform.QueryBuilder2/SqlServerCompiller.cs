@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using ZenPlatform.QueryBuilder.Common.SqlTokens;
+using ZenPlatform.QueryBuilder.DDL.Table;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.QueryBuilder.DML.Insert;
 
@@ -7,6 +8,20 @@ namespace ZenPlatform.QueryBuilder
 {
     public class SqlServerCompiller : SqlCompillerBase
     {
+        public override void VisitRenameTableQueryNode(RenameTableQueryNode renameTableQueryNode, StringBuilder sb)
+        {
+            sb.Append("sp_rename");
+            VisitNode(Tokens.LeftBracketToken, sb);
+
+            VisitNode(renameTableQueryNode.Table, sb);
+
+            VisitNode(Tokens.CommaToken, sb);
+
+            VisitNode(renameTableQueryNode.NewTableName, sb);
+
+            VisitNode(Tokens.RightBracketToken, sb);
+        }
+
         protected override void VisitSelectQueryNode(SelectQueryNode selectQueryNode, StringBuilder sb)
         {
             ISelectQuery select = selectQueryNode;
