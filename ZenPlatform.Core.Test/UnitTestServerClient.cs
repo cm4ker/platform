@@ -65,7 +65,7 @@ namespace ZenPlatform.Core.Test
             var root = Tests.Common.Factory.CreateExampleConfiguration();
 
             var _assembly = compiller.Build(root, Compiler.CompilationMode.Client);
-
+            _assembly.Write("test.dll");
             Assert.Equal(_assembly.Name, $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");
 
             PlatformAssemblyLoadContext loadContext = new PlatformAssemblyLoadContext(new TestClientAssemblyManager(_assembly));
@@ -74,7 +74,8 @@ namespace ZenPlatform.Core.Test
 
             Assert.NotNull(result);
 
-
+            
+            
             var invoice = result.CreateInstance("Document._Invoice");
             Assert.NotNull(invoice);
         }
@@ -92,12 +93,12 @@ namespace ZenPlatform.Core.Test
 
             var assemblies = storage.GetAssemblies(root.GetHash());
 
-            //Создалась клиенская сборка 
+            //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
             && a.Name == $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
 
 
-            //Создалась серверная сборка 
+            //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
             && a.Name == $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Server)}"));
 
@@ -133,12 +134,12 @@ namespace ZenPlatform.Core.Test
 
             var result = assemblyManagerClientService.GetDiffAssemblies(assemblies);
 
-            //возврашает к отправки клиенскую сборку
+            //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             Assert.NotNull(result.FirstOrDefault(a => a.ConfigurationHash == env.Configuration.GetHash()
             && a.Name == $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
 
 
-            //не возвращает серверную к отправки клиенскую сборку
+            //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             Assert.Null(result.FirstOrDefault(a => a.Type == AssemblyType.Server));
 
 

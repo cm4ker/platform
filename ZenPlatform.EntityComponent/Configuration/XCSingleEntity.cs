@@ -16,7 +16,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     [XmlRoot("SingleEntity")]
     public class XCSingleEntity : XCObjectTypeBase
     {
-        public XCSingleEntity()
+        internal XCSingleEntity()
         {
             Properties = new XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty>(this);
             Properties.CollectionChanged += Properties_CollectionChanged;
@@ -124,6 +124,13 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override IEnumerable<XCProgramModuleBase> GetProgramModules()
         {
             return Modules;
+        }
+
+        public override XCObjectPropertyBase CreateProperty()
+        {
+            var prop = new XCSingleEntityProperty();
+            Properties.Add(prop);
+            return prop;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Xunit;
-using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.QueryBuilder.DML.Insert;

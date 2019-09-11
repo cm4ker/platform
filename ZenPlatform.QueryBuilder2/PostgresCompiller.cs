@@ -1,5 +1,11 @@
 ﻿using System.Text;
+using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Common.Operations;
+using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Common.SqlTokens;
+using ZenPlatform.QueryBuilder.DDL.Table;
 using ZenPlatform.QueryBuilder.DML.Insert;
 using ZenPlatform.QueryBuilder.DML.Select;
 
@@ -19,6 +25,39 @@ namespace ZenPlatform.QueryBuilder
             }
 
             base.VisitTokens(token, sb);
+        }
+
+        protected override void VisitTypeDefinitionNode(TypeDefinitionNode typeDefinitionNode, StringBuilder sb)
+        {
+            if (typeDefinitionNode is BooleanTypeDefinitionNode)
+            {
+                //Replace default
+                var node = typeDefinitionNode.GetChild<IdentifierNode>();
+
+                if (node != null)
+                    typeDefinitionNode.Replace(node, new IdentifierNode("bool"));
+            }
+            else if (typeDefinitionNode is GuidTypeDefinitionNode)
+            {
+                //Replace default
+                var node = typeDefinitionNode.GetChild<IdentifierNode>();
+
+                if (node != null)
+                    typeDefinitionNode.Replace(node, new IdentifierNode("uuid"));
+            }
+
+            base.VisitTypeDefinitionNode(typeDefinitionNode, sb);
+        }
+
+        public override void VisitRenameTableQueryNode(RenameTableQueryNode renameTableQueryNode, StringBuilder sb)
+        {
+            VisitNode(Tokens.AlterToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(Tokens.TableToken, sb);
+            VisitNode(Tokens.SpaceToken, sb);
+            VisitNode(renameTableQueryNode.Table, sb);
+            sb.AppendFormat(" RENAME TO ");
+            VisitNode(renameTableQueryNode.NewTableName, sb);
         }
 
         protected override void VisitSelectQueryNode(SelectQueryNode selectQueryNode, StringBuilder sb)

@@ -4,6 +4,7 @@ using Xunit;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Visitor;
@@ -16,13 +17,13 @@ using ZenPlatform.Tests.Common;
 
 namespace ZenPlatform.Component.Tests
 {
-    public class UnitTest1
+    public class AssemblyTest
     {
         [Fact]
         public void BuildAstTest()
         {
             var conf = Factory.CreateExampleConfiguration();
-            IAssemblyPlatform pl = new CecilAssemblyPlatform();
+            IAssemblyPlatform pl = new DnlibAssemblyPlatform();
             var server = pl.CreateAssembly("Server");
             var client = pl.CreateAssembly("Client");
 
@@ -34,7 +35,7 @@ namespace ZenPlatform.Component.Tests
                 foreach (var type in component.Types)
                 {
                     new StagedGeneratorAst(component).StageServer(type, rootServer);
-                    new StagedGeneratorAst(component).StageServer(type, rootClient);
+                    new StagedGeneratorAst(component).StageClient(type, rootClient);
                 }
             }
 

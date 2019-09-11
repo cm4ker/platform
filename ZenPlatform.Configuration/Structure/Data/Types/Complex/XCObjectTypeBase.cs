@@ -89,6 +89,17 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         public virtual bool HasProperties { get; }
 
+
+        /// <summary>
+        /// Создать новое свойство
+        /// </summary>
+        /// <returns>Только что созданное свойство</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public virtual XCObjectPropertyBase CreateProperty()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -14,6 +15,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// <summary>
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public abstract class XCObjectPropertyBase
     {
         private List<XCTypeBase> _serializedTypes;
@@ -141,20 +143,22 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             var done = false;
 
             if (Types.Count == 1)
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, Types[0], propName);
+                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, Types[0], propName, false);
             if (Types.Count > 1)
             {
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, null, $"{propName}_Type");
+                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, null, $"{propName}_Type", false);
 
                 foreach (var type in _types)
                 {
                     if (type is XCPrimitiveType)
                         yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
-                            $"{propName}_{type.Name}");
+                            $"{propName}_{type.Name}", false);
 
-                    if (type is XCObjectTypeBase && !done)
+                    if (type is XCObjectTypeBase obj && !done)
                     {
-                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, type, $"{propName}_Ref");
+                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, type, $"{propName}_Ref",
+                            !obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn);
+
                         done = true;
                     }
                 }
@@ -168,11 +172,13 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// </summary>
     public struct XCColumnSchemaDefinition
     {
-        public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, XCTypeBase platformType, string name)
+        public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, XCTypeBase platformType, string name,
+            bool isPseudo)
         {
             SchemaType = schemaType;
             Name = name;
             PlatformType = platformType;
+            IsPseudo = isPseudo;
         }
 
         /// <summary>
@@ -186,7 +192,15 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public string Name { get; set; }
 
 
+        /// <summary>
+        /// Тип платформы, закреплённый за схемой
+        /// </summary>
         public XCTypeBase PlatformType { get; set; }
+
+        /// <summary>
+        /// Псевдо схема. Используется, если "чужие" свойства не создают колонки, но программного должны генерироваться
+        /// </summary>
+        public bool IsPseudo { get; set; }
     }
 
     /// <summary>
