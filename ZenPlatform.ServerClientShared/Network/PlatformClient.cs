@@ -23,7 +23,7 @@ namespace ZenPlatform.Core.Network
         private readonly IServiceProvider _serviceProvider;
 
 
-        public PlatformAssemblyLoadContext PlatformAssemblyLoadContext { get; private set; }
+        private PlatformAssemblyLoadContext _platformAssemblyLoadContext;
 
         public PlatformClient(ILogger<PlatformClient> logger, IClient client, IServiceProvider serviceProvider)
         {
@@ -38,7 +38,7 @@ namespace ZenPlatform.Core.Network
         {
             var assemblyName = $"{ _client.Database}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}";
 
-            return PlatformAssemblyLoadContext.LoadFromAssemblyName(new AssemblyName(assemblyName));
+            return _platformAssemblyLoadContext.LoadFromAssemblyName(new AssemblyName(assemblyName));
         }
 
 
@@ -59,7 +59,7 @@ namespace ZenPlatform.Core.Network
             _client.Authentication(new UserPasswordAuthenticationToken(name, password));
 
 
-            PlatformAssemblyLoadContext =  _serviceProvider.GetRequiredService<PlatformAssemblyLoadContext>();
+            _platformAssemblyLoadContext =  _serviceProvider.GetRequiredService<PlatformAssemblyLoadContext>();
         }
 
         
