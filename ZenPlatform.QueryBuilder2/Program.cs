@@ -3,6 +3,7 @@ using System.Text;
 using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
+using ZenPlatform.QueryBuilder.DDL.Table;
 using ZenPlatform.QueryBuilder.DML.Delete;
 using ZenPlatform.QueryBuilder.DML.From;
 using ZenPlatform.QueryBuilder.DML.Insert;
