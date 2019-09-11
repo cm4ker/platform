@@ -33,6 +33,7 @@ namespace ZenPlatform.Compiler.Cecil
             TypeSystem = typeSystem;
             Reference = reference;
             Definition = definition;
+            
             if (reference.IsArray)
                 Definition = ((CecilType) typeSystem.GetType("System.Array")).Definition;
         }

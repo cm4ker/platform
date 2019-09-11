@@ -10,11 +10,11 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibProperty : IProperty
     {
-        private readonly PropertyDef _property;
+        protected readonly PropertyDef PropertyDef;
 
         public DnlibProperty(PropertyDef property)
         {
-            _property = property;
+            PropertyDef = property;
         }
 
         public bool Equals(IProperty other)

@@ -6,20 +6,6 @@ using dnlib.DotNet;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
-    public class DnlibMetadataResolver : IResolver
-    {
-        public TypeDef Resolve(TypeRef typeRef, ModuleDef sourceModule)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMemberForwarded Resolve(MemberRef memberRef)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
     public class DnlibAssemblyResolver : IAssemblyResolver
     {
         private static readonly string BaseDirectory = AppContext.BaseDirectory;
@@ -32,15 +18,31 @@ namespace ZenPlatform.Compiler.Dnlib
             "/usr/local/share/dotnet/sdk/NuGetFallbackFolder/netstandard.library/2.0.3/build/netstandard2.0/ref";
 
         Dictionary<string, AssemblyDef> libraries;
+        private AssemblyResolver _defaultResolver;
 
 
         public DnlibAssemblyResolver()
         {
             libraries = new Dictionary<string, AssemblyDef>();
+
+            _defaultResolver = new AssemblyResolver();
+            _defaultResolver.FindExactMatch = false;
+            _defaultResolver.EnableFrameworkRedirect = true;
+            _defaultResolver.PreSearchPaths.Add(BaseDirectory);
+            _defaultResolver.PreSearchPaths.Add(RuntimeDirectory);
+            _defaultResolver.PreSearchPaths.Add(NetstandardDirectory);
+            _defaultResolver.PreSearchPaths.Add(MacNetstandardDirectory);
         }
 
         public AssemblyDef Resolve(IAssembly assembly, ModuleDef sourceModule)
         {
+            var asm = _defaultResolver.Resolve(assembly, sourceModule);
+            if (asm != null)
+            {
+                asm.ManifestModule.Context = new ModuleContext(this, new DnlibMetadataResolver(this));
+                return asm;
+            }
+
             if (assembly == null)
                 throw new ArgumentNullException("name");
 
@@ -56,10 +58,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
             var libname = assembly.Name;
 
-            if (libname == "mscorlib" || libname == "System.Private.CoreLib")
-            {
-                libname = "mscorlib";
-            }
+//            if (libname == "mscorlib" || libname == "System.Private.CoreLib")
+//            {
+//                libname = "mscorlib";
+//            }
 
             if (!libraries.TryGetValue(libname, out def))
             {
@@ -68,7 +70,8 @@ namespace ZenPlatform.Compiler.Dnlib
                     var dllPath = Path.Combine(path, $"{libname}.dll");
                     if (File.Exists(dllPath))
                     {
-                        def = AssemblyDef.Load(dllPath, new ModuleContext(this, new DnlibMetadataResolver()));
+                        def = AssemblyDef.Load(dllPath,
+                            new ModuleContext(this, new DnlibMetadataResolver(this)));
                         libraries.Add(libname, def);
 
                         return def;
