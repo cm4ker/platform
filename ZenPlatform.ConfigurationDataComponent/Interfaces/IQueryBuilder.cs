@@ -8,6 +8,7 @@ namespace ZenPlatform.DataComponent.Interfaces
     public interface IReference
     {
         int Type { get; }
+
         Guid Id { get; }
     }
 }
