@@ -143,15 +143,18 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
 
-        public DnlibType Get(ITypeDefOrRef reference)
+        public DnlibType Get(ITypeDefOrRef defOrRef)
         {
-            var definition = reference.ResolveTypeDef();
+            //var r = new DnlibContextResolver(TypeSystem, defOrRef.Module);
+
+            var definition = defOrRef.ResolveTypeDef();
+            var reference = new TypeRefUser(defOrRef.Module, defOrRef.Namespace, defOrRef.Name);
 
             var asm = (DnlibAssembly) TypeSystem.FindAssembly(definition.Module.Assembly);
 
             if (!_definitions.TryGetValue(definition, out var dentry))
                 _definitions[definition] = dentry = new DefinitionEntry();
-            if (reference is TypeDef def)
+            if (defOrRef is TypeDef def)
                 return dentry.Direct ?? (dentry.Direct = new DnlibType(TypeSystem, def, reference, asm));
 
             var rtype = reference.GetType();
