@@ -10,9 +10,12 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibTypeBuilder : DnlibType, ITypeBuilder
     {
+        private readonly DnlibTypeSystem _ts;
+
         public DnlibTypeBuilder(DnlibTypeSystem typeSystem, TypeDef typeDef, DnlibAssembly assembly)
-            : base(typeSystem, typeDef, typeDef, assembly)
+            : base(typeSystem, typeDef, typeDef.ToTypeRef(), assembly)
         {
+            _ts = typeSystem;
         }
 
         public void AddInterfaceImplementation(IType type)
@@ -47,8 +50,9 @@ namespace ZenPlatform.Compiler.Dnlib
             if (isInterfaceImpl)
                 method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
 
+            method.DeclaringType = TypeDef;
 
-            return new DnlibMethod(method);
+            return new DnlibMethodBuilder(_ts, method, TypeRef);
         }
 
         public IPropertyBuilder DefineProperty(IType propertyType, string name)
