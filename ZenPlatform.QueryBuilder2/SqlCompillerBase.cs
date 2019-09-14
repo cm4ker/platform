@@ -8,6 +8,7 @@ using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.Common.Table;
 using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
+using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using ZenPlatform.QueryBuilder.DDL.Index;
 using ZenPlatform.QueryBuilder.DDL.Table;
 using ZenPlatform.QueryBuilder.DML.Delete;
@@ -120,6 +121,7 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<AndConditionNode>(i => VisitAndConditionNode(i, sb))
                 .CaseIs<IsNullConditionNode>(i => VisitIsNullConditionNode(i, sb))
                 .CaseIs<RenameTableQueryNode>(i => VisitRenameTableQueryNode(i, sb))
+                .CaseIs<CreateTableQueryNode>(i=>VisitCreateTableQueryNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
         }
 
@@ -127,6 +129,11 @@ namespace ZenPlatform.QueryBuilder
         {
             //All the RDBMS has different mechanics for rename the table
             throw new NotImplementedException();
+        }
+
+        public virtual  void VisitCreateTableQueryNode(CreateTableQueryNode createTableQueryNode, StringBuilder sb)
+        {
+           
         }
 
         private void VisitIsNullConditionNode(IsNullConditionNode isNullConditionNode, StringBuilder sb)

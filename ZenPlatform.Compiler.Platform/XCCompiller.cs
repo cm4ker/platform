@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -9,6 +10,8 @@ using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.Crypto;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
 
@@ -22,57 +25,35 @@ namespace ZenPlatform.Compiler.Platform
 
         }
 
-        public IDictionary<string, Stream> Build(XCRoot root)
+        public IAssembly Build(XCRoot configuration, CompilationMode mode)
         {
-
-            var clientName = $"{root.ProjectName}_client";
-            var serverName = $"{root.ProjectName}_server";
-
+            
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
-            var server = pl.CreateAssembly(serverName);
-            var client = pl.CreateAssembly(clientName);
+            var assemblyBuilder = pl.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}" );
 
-            var rootServer = new Root(null, new List<CompilationUnit>());
-            var rootClient = new Root(null, new List<CompilationUnit>());
 
-            foreach (var component in root.Data.Components)
+            var root = new Root(null, new List<CompilationUnit>());
+
+            foreach (var component in configuration.Data.Components)
             {
                 foreach (var type in component.Types)
                 {
-                    new StagedGeneratorAst(component).StageServer(type, rootServer);
-                    new StagedGeneratorAst(component).StageServer(type, rootClient);
+                    new StagedGeneratorAst(component).StageServer(type, root);
                 }
             }
 
-            AstScopeRegister.Apply(rootServer);
-            AstScopeRegister.Apply(rootClient);
+            AstScopeRegister.Apply(root);
 
-            foreach (var cu in rootServer.Units)
+            foreach (var cu in root.Units)
             {
-                var generator = new Generator(new GeneratorParameters(cu, server, CompilationMode.Server));
+                var generator = new Generator(new GeneratorParameters(cu, assemblyBuilder, mode));
                 generator.Build();
             }
 
-            foreach (var cu in rootClient.Units)
-            {
-                var generator = new Generator(new GeneratorParameters(cu, client, CompilationMode.Client));
-                generator.Build();
-            }
-
-            var result = new Dictionary<string, Stream>();
-
-            var clientStream = new MemoryStream();
-            client.Write(clientStream);
-            clientStream.Seek(0, SeekOrigin.Begin);
-            result.Add(clientName, clientStream);
-
-            var serverStream = new MemoryStream();
-            server.Write(serverStream);
-            serverStream.Seek(0, SeekOrigin.Begin);
-            result.Add(serverName, serverStream);
-
-            return result;
+            return assemblyBuilder;
         }
+
+
         public string Build(XCRoot root, string outputDirectory, string buildName)
         {
 

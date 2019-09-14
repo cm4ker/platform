@@ -3,7 +3,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
-using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.Compiler.Generation
 {

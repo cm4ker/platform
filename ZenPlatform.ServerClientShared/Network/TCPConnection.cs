@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using ZenPlatform.Core.DI;
-using Newtonsoft.Json;
 using ZenPlatform.Core.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;

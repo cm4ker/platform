@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.Logging;
+using Newtonsoft.Json;
 
 namespace ZenPlatform.Core.Network
 {

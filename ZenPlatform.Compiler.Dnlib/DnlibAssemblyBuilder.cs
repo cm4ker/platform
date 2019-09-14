@@ -11,11 +11,13 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibAssemblyBuilder : DnlibAssembly, IAssemblyBuilder
     {
+        private readonly DnlibTypeSystem _ts;
         private readonly AssemblyDefUser _assembly;
         private readonly List<ITypeBuilder> _definedTypes;
 
-        public DnlibAssemblyBuilder(ITypeSystem ts, AssemblyDefUser assembly) : base(ts, assembly)
+        public DnlibAssemblyBuilder(DnlibTypeSystem ts, AssemblyDefUser assembly) : base(ts, assembly)
         {
+            _ts = ts;
             _assembly = assembly;
         }
 
@@ -23,13 +25,13 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
-            var dnlibBaseType = (DnlibType) baseType;
+            var bType = _assembly.ManifestModule.Import(((DnlibType) baseType).TypeDef);
 
-            var type = new TypeDefUser(@namespace, name, dnlibBaseType.TypeDef);
+            var type = new TypeDefUser(@namespace, name, bType);
 
             _assembly.ManifestModule.Types.Add(type);
 
-            return new DnlibTypeBuilder(type, this);
+            return new DnlibTypeBuilder(_ts, type, this);
         }
 
         public IAssembly EndBuild()

@@ -10,8 +10,12 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibTypeBuilder : DnlibType, ITypeBuilder
     {
-        public DnlibTypeBuilder(TypeDef typeDef, DnlibAssembly assembly) : base(typeDef, assembly)
+        private readonly DnlibTypeSystem _ts;
+
+        public DnlibTypeBuilder(DnlibTypeSystem typeSystem, TypeDef typeDef, DnlibAssembly assembly)
+            : base(typeSystem, typeDef, typeDef.ToTypeRef(), assembly)
         {
+            _ts = typeSystem;
         }
 
         public void AddInterfaceImplementation(IType type)
@@ -28,18 +32,37 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IField DefineField(IType type, string name, bool isPublic, bool isStatic)
         {
-            throw new NotImplementedException();
+            var field = new FieldDefUser(name);
+            field.IsStatic = isStatic;
+            field.Access |= (isPublic) ? FieldAttributes.Public : FieldAttributes.Private;
+            TypeDef.Fields.Add(field);
+
+            return new DnlibField(field);
         }
 
         public IMethodBuilder DefineMethod(string name, bool isPublic, bool isStatic, bool isInterfaceImpl,
             IMethod overrideMethod = null)
         {
-            throw new NotImplementedException();
+            var method = new MethodDefUser(name);
+
+            method.Attributes |= (isPublic) ? MethodAttributes.Public : MethodAttributes.Private;
+            method.IsStatic = isPublic;
+            if (isInterfaceImpl)
+                method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
+
+            method.DeclaringType = TypeDef;
+
+            return new DnlibMethodBuilder(_ts, method, TypeRef);
         }
 
         public IPropertyBuilder DefineProperty(IType propertyType, string name)
         {
-            throw new NotImplementedException();
+            var prop = new PropertyDefUser(name);
+
+            TypeDef.Properties.Add(prop);
+            prop.DeclaringType = ((DnlibType) propertyType).TypeDef;
+
+            return new DnlibPropertyBuilder(prop);
         }
 
         public IConstructorBuilder DefineConstructor(bool isStatic, params IType[] args)

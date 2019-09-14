@@ -4,28 +4,46 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using ZenPlatform.Compiler;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Crypto;
+using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Core.Assemlies
 {
-    public class ClientAssemblyManager
+
+
+
+
+
+    public class ClientAssemblyManager : IClientAssemblyManager
     {
         IAssemblyManagerClientService _service;
-        string _cachePath;
+        private IClient _client;
 
-        public List<Assembly> Assemblies { get; private set; }
-        public ClientAssemblyManager(IAssemblyManagerClientService service, string cachePath)
+        public string CashPath
+        {
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ZenClient", _client.Database, "AssemblyCache");
+            }
+        }
+
+        public ClientAssemblyManager(IAssemblyManagerClientService service, IClient client)
         {
             _service = service;
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-            _cachePath = cachePath;
+            _client = client;
+
+            if (!Directory.Exists(CashPath)) Directory.CreateDirectory(CashPath);
+
+
         }
+
 
         private IEnumerable<AssemblyDescription> LoadCacheDescription()
         {
-            
-            foreach (var filePath in Directory.GetFiles(_cachePath))
+
+            foreach (var filePath in Directory.GetFiles(CashPath))
             {
                 using (var file = new FileStream(filePath, FileMode.Open))
                 {
@@ -38,12 +56,10 @@ namespace ZenPlatform.Core.Assemlies
             }
         }
 
-        public void UpdateAssemblyes()
+        public void UpdateAssemblies()
         {
 
             var descriptions = LoadCacheDescription().ToList();
-
-
             var diff = _service.GetDiffAssemblies(descriptions);
 
             foreach (var desc in diff)
@@ -54,17 +70,17 @@ namespace ZenPlatform.Core.Assemlies
 
         }
 
-        public void LoadAssemblyes()
+        public Stream GetAssembly(string name)
         {
-            Assemblies = Directory.GetFiles(_cachePath).Select(path => Assembly.LoadFile(path)).ToList();
-            
+            return new FileStream(Path.Combine(CashPath, name), FileMode.Open);
+
         }
 
         private void Download(AssemblyDescription assemblyDescription)
         {
             using (var stream = _service.GetAssembly(assemblyDescription))
             {
-                using (var file = new FileStream(Path.Combine(_cachePath, assemblyDescription.Name), FileMode.Create))
+                using (var file = new FileStream(Path.Combine(CashPath, assemblyDescription.Name), FileMode.Create))
                 {
                     stream.CopyTo(file);
                 }
