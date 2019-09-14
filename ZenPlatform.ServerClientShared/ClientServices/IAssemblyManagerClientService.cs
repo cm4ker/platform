@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Compiler;
 
 namespace ZenPlatform.Core.ClientServices
 {

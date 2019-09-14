@@ -55,8 +55,8 @@ namespace ZenPlatform.Compiler.Dnlib
                 }
             }
 
-            //Custom
-            TypeAttrDic.Add(SreTypeAttr.NotPublic, DnlibTypeAttr.NotPublic);
+//            //Custom
+//            TypeAttrDic.Add(SreTypeAttr.NotPublic, DnlibTypeAttr.NotPublic);
         }
 
         public static Dictionary<SreOpCode, DblibOpCode> OpCodeDic = new Dictionary<SreOpCode, DblibOpCode>();

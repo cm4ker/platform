@@ -1,4 +1,6 @@
-﻿namespace ZenPlatform.Core.Network
+﻿using ZenPlatform.Core.Contracts;
+
+namespace ZenPlatform.Core.Network
 {
     public interface IRouteFactory
     {

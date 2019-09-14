@@ -29,6 +29,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             _method = method;
             _ts = (DnlibTypeSystem) typeSystem;
+            _body = _method.Body;
         }
 
 
@@ -123,7 +124,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
 
             public int Index => LocalDef.Index;
-            public IType Type => _ts.Resolve(LocalDef.Type.TryGetTypeDef());
+            public IType Type => _ts.Resolve(LocalDef.Type.TryGetTypeRef());
         }
 
         class DnlibLabel : ILabel

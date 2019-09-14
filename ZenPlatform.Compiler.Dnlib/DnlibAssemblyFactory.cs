@@ -10,9 +10,11 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             var dnts = (DnlibTypeSystem) ts;
 
-
             var asmDef = new AssemblyDefUser(assemblyName, assemblyVersion);
-
+            var module = new ModuleDefUser(assemblyName, Guid.NewGuid());
+            module.Kind = ModuleKind.Dll;
+            asmDef.Modules.Add(module);
+            
             return new DnlibAssemblyBuilder(dnts, asmDef);
         }
     }

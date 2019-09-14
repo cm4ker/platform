@@ -12,10 +12,15 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibAssembly : IAssembly
     {
-        public DnlibAssembly(ITypeSystem ts, AssemblyDef assembly)
+        private DnlibTypeSystem _ts;
+
+        private Dictionary<string, DnlibType> _typeCache = new Dictionary<string, DnlibType>();
+
+        public DnlibAssembly(DnlibTypeSystem ts, AssemblyDef assembly)
         {
             Assembly = assembly;
-            TypeSystem = ts;
+            _ts = ts;
+            
         }
 
         public AssemblyDef Assembly { get; }
@@ -26,15 +31,29 @@ namespace ZenPlatform.Compiler.Dnlib
         public string Name => Assembly.Name;
 
         private IReadOnlyList<ICustomAttribute> _attributes;
-        private readonly DnlibTypeSystem _typeSystem;
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes =>
-            _attributes ??= Assembly.CustomAttributes.Select(ca => new DnlibCusotmAtttribute(_typeSystem, ca))
+            _attributes ??= Assembly.CustomAttributes.Select(ca => new DnlibCusotmAtttribute(_ts, ca))
                 .ToList();
 
         public IType FindType(string fullName)
         {
-            throw new NotImplementedException();
+            if (_typeCache.TryGetValue(fullName, out var rv))
+                return rv;
+            var lastDot = fullName.LastIndexOf(".", StringComparison.Ordinal);
+            var asmRef = new AssemblyNameInfo(Assembly.FullName).ToAssemblyRef();
+
+
+            var tref = (lastDot == -1)
+                ? new TypeRefUser(Assembly.ManifestModule, null, fullName, asmRef)
+                : new TypeRefUser(Assembly.ManifestModule, fullName.Substring(0, lastDot),
+                    fullName.Substring(lastDot + 1), asmRef);
+
+            var resolved = tref.Resolve(Assembly.ManifestModule);
+            if (resolved != null)
+                return _typeCache[fullName] = _ts.GetTypeFromReference(resolved);
+
+            return null;
         }
 
         public void Write(string fileName)
@@ -47,6 +66,6 @@ namespace ZenPlatform.Compiler.Dnlib
             Assembly.Write(stream);
         }
 
-        public ITypeSystem TypeSystem { get; }
+        public ITypeSystem TypeSystem => _ts;
     }
 }

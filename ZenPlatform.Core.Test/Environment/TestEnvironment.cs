@@ -12,6 +12,7 @@ using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Assemblies;
+using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.Core.Test.Environment
 {
@@ -27,9 +28,11 @@ namespace ZenPlatform.Core.Test.Environment
 
         public IAuthenticationManager AuthenticationManager { get; }
 
-        public string Name => "test";
+        public string Name => "Library";
 
         public IDataContextManager DataContextManager => throw new NotImplementedException();
+
+        public XCRoot Configuration => Tests.Common.Factory.CreateExampleConfiguration();
 
         public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService, ILogger<TestEnvironment> logger,
             IAssemblyManager assemblyManager)
@@ -39,7 +42,7 @@ namespace ZenPlatform.Core.Test.Environment
             AuthenticationManager.RegisterProvider(new AnonymousAuthenticationProvider());
             InvokeService = invokeService;
             _assemblyManager = assemblyManager;
-            _assemblyManager.BuildConfiguration(Tests.Common.Factory.CreateExampleConfiguration());
+            _assemblyManager.CheckConfiguration(Configuration);
             _logger = logger;
 
 

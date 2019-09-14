@@ -4,31 +4,21 @@ using System.Text;
 
 namespace ZenPlatform.Core.Network
 {
-    [Serializable]
-    public class Route
+
+    public class Route_old
     {
 
-        public Route(string path)
+        public Route_old(string path)
         {
             Path = path;
-          //  RouteID = HashCode.Combine(path);
         }
 
         public string Path { get; private set; }
-    //    public int RouteID { get; set; }
 
         public override bool Equals(object obj)
         {
-            Route route = obj as Route;
+            Route_old route = obj as Route_old;
             return route.Path == Path;
-
-        }
-
-        public string GetService()
-        {
-            var split = Path.Split('\\');
-
-            return split[0];
 
         }
 

@@ -21,6 +21,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         public bool HasGetter { get; set; }
         public bool HasSetter { get; set; }
 
+        public bool IsInterface { get; set; }
 
         public Block Getter
         {
