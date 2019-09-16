@@ -5,6 +5,8 @@ namespace ZenPlatform.Compiler.Contracts
 {
     public interface ITypeSystem
     {
+        IWellKnownTypes WellKnownTypes { get; }
+
         IReadOnlyList<IAssembly> Assemblies { get; }
 
         IAssembly FindAssembly(string substring);
