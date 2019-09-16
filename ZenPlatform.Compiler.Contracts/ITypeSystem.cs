@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace ZenPlatform.Compiler.Contracts
 {
+    public interface IAssemblyReference
+    {
+        
+    }
+
     public interface ITypeSystem
     {
         IWellKnownTypes WellKnownTypes { get; }

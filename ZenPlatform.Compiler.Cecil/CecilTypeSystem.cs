@@ -26,6 +26,30 @@ namespace ZenPlatform.Compiler.Cecil
         private CustomMetadataResolver _metadataResolver;
         private CecilTypeCache _typeCache;
 
+        public void Dispose()
+        {
+            foreach (var asm in _asms)
+                asm.Assembly.Dispose();
+        }
+
+        public AssemblyDefinition Resolve(AssemblyNameReference name) => _asmResolver.Resolve(name);
+        public AssemblyDefinition Resolve(string fullName) => _asmResolver.Resolve(fullName);
+
+//        CecilAssembly ResolveWrapped(AssemblyNameReference name)
+//        {
+//            if (_assemblyCache.TryGetValue(name.FullName, out var rv))
+//                return rv;
+//            foreach (var asm in _asms)
+//                if (asm.Assembly.Name.Equals(name))
+//                    return _assemblyCache[name.FullName] = asm;
+//            foreach (var asm in _asms)
+//                if (asm.Assembly.Name.Name == name.Name)
+//                    return _assemblyCache[name.FullName] = asm;
+//            throw new AssemblyResolutionException(name);
+//        }
+
+        public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters) => Resolve(name);
+
         public CecilTypeSystem(IEnumerable<string> paths, string targetPath = null)
         {
             if (targetPath != null)
@@ -46,6 +70,7 @@ namespace ZenPlatform.Compiler.Cecil
                     SymbolReaderProvider = isTarget ? new DefaultSymbolReaderProvider(true) : null,
                     ReadSymbols = isTarget
                 });
+                
                 var wrapped = RegisterAssembly(asm);
                 if (path == targetPath)
                 {
@@ -55,19 +80,6 @@ namespace ZenPlatform.Compiler.Cecil
             }
         }
 
-        
-        public void Dispose()
-        {
-            foreach (var asm in _asms)
-                asm.Assembly.Dispose();
-        }
-
-        public AssemblyDefinition Resolve(AssemblyNameReference name) => _asmResolver.Resolve(name);
-        public AssemblyDefinition Resolve(string fullName) => _asmResolver.Resolve(fullName);
-
-        public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters) => Resolve(name);
-
-        
         public IAssembly TargetAssembly { get; private set; }
 
         internal MetadataResolver MetadataResolver => _metadataResolver;
