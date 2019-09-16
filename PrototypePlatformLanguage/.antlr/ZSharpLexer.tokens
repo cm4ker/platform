@@ -1,0 +1,9 @@
+T__0=1
+T__1=2
+WHITESPACES=3
+VAR=4
+IDENTIFIER=5
+DEC_DIGIT=6
+';'=1
+'='=2
+'var'=4

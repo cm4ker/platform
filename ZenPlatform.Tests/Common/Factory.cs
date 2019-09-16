@@ -27,7 +27,7 @@ namespace ZenPlatform.Tests.Common
         public static XCRoot CreateExampleConfiguration()
         {
             var root = new XCRoot();
-            
+
             root.ProjectId = Guid.NewGuid();
             root.ProjectName = "Library";
             root.ProjectVersion = "0.0.0.1";
@@ -41,24 +41,27 @@ namespace ZenPlatform.Tests.Common
             root.Data.Components.Add(component);
 
             var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+
             store.Name = "Store";
             store.Description = "This is a store entity";
             store.Initialize();
-            
-            var prop = new XCSingleEntityProperty();
+
+            var prop = invoice.CreateProperty();
+
             prop.Name = "CompositeProperty";
             prop.Types.Add(new XCBinary());
             prop.Types.Add(new XCBoolean());
             prop.Types.Add(new XCString());
             prop.Types.Add(new XCDateTime());
             prop.Types.Add(store);
-            
-            var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
-            invoice.Properties.Add(prop);
+
+            prop.DatabaseColumnName = "Fld_0001";
+
             invoice.Name = "Invoice";
 
             invoice.Initialize();
-            
+
             return root;
         }
     }

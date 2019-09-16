@@ -34,14 +34,31 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
 
             switch (treeRequest.ItemType)
             {
+                case XCNodeKind.Nil:
+                {
+                    responce.RequestId = treeRequest.RequestId;
+
+                    var rootItem = new XCItem()
+                    {
+                        ItemType = XCNodeKind.Root, ItemId = _conf.ProjectId, ItemName = _conf.ProjectName
+                    };
+
+                    responce.Items.Add(rootItem);
+                    break;
+                }
                 case XCNodeKind.Root:
                 {
                     responce.RequestId = treeRequest.RequestId;
                     responce.ParentId = treeRequest.ItemId;
 
                     var dataItem = new XCItem() {ItemType = XCNodeKind.Data, ItemName = "Data"};
+                    var rolesItem = new XCItem() {ItemType = XCNodeKind.Roles, ItemName = "Roles"};
+                    var modulesItem = new XCItem() {ItemType = XCNodeKind.Modules, ItemName = "Modules"};
+                    var languagesItem = new XCItem() {ItemType = XCNodeKind.Languages, ItemName = "Languages"};
+                    var interfaceItem = new XCItem() {ItemType = XCNodeKind.Interface, ItemName = "Interfaces"};
 
-                    responce.Items.Add(dataItem);
+                    responce.Items.AddRange(new[] {dataItem, rolesItem, modulesItem, languagesItem, interfaceItem});
+
                     break;
                 }
                 case XCNodeKind.Data:
@@ -50,7 +67,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     responce.ParentId = treeRequest.ItemId;
 
                     var items = _conf.Data.Components.Select(x => new XCItem()
-                    {    
+                    {
                         ItemType = XCNodeKind.Component,
                         ItemId = x.Info.ComponentId,
                         ItemName = x.Info.ComponentName
@@ -94,7 +111,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                             ParentId = treeRequest.ItemId
                         });
                     }
-                    
+
                     //TODO: Обработать присоединённые компоненты
 
                     break;

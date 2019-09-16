@@ -2,7 +2,7 @@
   "profiles": {
     "ZenPlatform.Cli": {
       "commandName": "Project",
-      "commandLineArgs": "create MyTestProject db -s 192.168.88.21 -d cad -u postgres -p password -t postgres --port 5432"
+      "commandLineArgs": "create --project_name=testdb db --connString=\"Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=testdb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False\" -t SqlServer"
     }
   }
 }

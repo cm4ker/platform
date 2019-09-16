@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -14,6 +15,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// <summary>
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public abstract class XCObjectPropertyBase
     {
         private List<XCTypeBase> _serializedTypes;
@@ -42,6 +44,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// На них можно лишь воздействовать через какие-нибудь другие свойства
         /// </summary>
         public bool IsSystemProperty { get; set; }
+
+        /// <summary>
+        /// Указывает на то, что поле является только для
+        /// чтения
+        /// </summary>
+        public bool IsReadOnly { get; set; }
 
         /// <summary>
         /// Вид даты (только для числовых типов)
@@ -85,7 +93,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         {
             foreach (var type in Types)
             {
-                if (type is XCPremitiveType) yield return type;
+                if (type is XCPrimitiveType) yield return type;
                 if (type is XCObjectTypeBase objType) yield return new XCUnknownType() {Guid = objType.Guid};
             }
         }
@@ -129,5 +137,97 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
          *      В таком случае на каждый тип отводится своя колонка. Биндинг должен осуществляться таким
          *      не хитрым мапированием: Свойство, Тип -> Колонка
          */
+
+        public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName)
+        {
+            var done = false;
+
+            if (Types.Count == 1)
+                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, Types[0], propName, false);
+            if (Types.Count > 1)
+            {
+                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, null, $"{propName}_Type", false);
+
+                foreach (var type in _types)
+                {
+                    if (type is XCPrimitiveType)
+                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
+                            $"{propName}_{type.Name}", false);
+
+                    if (type is XCObjectTypeBase obj && !done)
+                    {
+                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, type, $"{propName}_Ref",
+                            !obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn);
+
+                        done = true;
+                    }
+                }
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Описывает тип и название колонки
+    /// </summary>
+    public struct XCColumnSchemaDefinition
+    {
+        public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, XCTypeBase platformType, string name,
+            bool isPseudo)
+        {
+            SchemaType = schemaType;
+            Name = name;
+            PlatformType = platformType;
+            IsPseudo = isPseudo;
+        }
+
+        /// <summary>
+        /// Тип колонки
+        /// </summary>
+        public XCColumnSchemaType SchemaType { get; set; }
+
+        /// <summary>
+        /// Название
+        /// </summary>
+        public string Name { get; set; }
+
+
+        /// <summary>
+        /// Тип платформы, закреплённый за схемой
+        /// </summary>
+        public XCTypeBase PlatformType { get; set; }
+
+        /// <summary>
+        /// Псевдо схема. Используется, если "чужие" свойства не создают колонки, но программного должны генерироваться
+        /// </summary>
+        public bool IsPseudo { get; set; }
+    }
+
+    /// <summary>
+    /// Детерминированный тип колонки реквизита конфигурации
+    /// Реквизит может быть нескольких типов одновременно
+    /// Это перечисление представляет все типы колонок которые могут быть 
+    /// </summary>
+    public enum XCColumnSchemaType
+    {
+        /// <summary>
+        /// Не специализированная колонка. Говорит о том, что значение одно
+        /// </summary>
+        NoSpecial,
+
+        /// <summary>
+        /// Колонка значения (строка, число, дата и т.д.)
+        /// </summary>
+        Value,
+
+        /// <summary>
+        /// Колонка ссылки
+        /// </summary>
+        Ref,
+
+        /// <summary>
+        /// Колонка хранящая тип
+        /// </summary>
+        Type
     }
 }

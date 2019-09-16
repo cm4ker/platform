@@ -523,7 +523,6 @@ namespace ZenPlatform.EntityComponent.Entity
             return result;
         }
 
-
         /*
         TODO: Необходимо сгенерировать следующее API для работы с сущностями:
               Session.Document().Invoice.Save();

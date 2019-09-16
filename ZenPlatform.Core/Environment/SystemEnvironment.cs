@@ -1,11 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using MoreLinq;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Annotations;
+using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Configuration;
+using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Data;
 using ZenPlatform.Initializer;
+using ZenPlatform.Core.DI;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -14,16 +21,17 @@ namespace ZenPlatform.Core.Environment
     /// </summary>
     public class SystemEnvironment : PlatformEnvironment
     {
-        public SystemEnvironment(StartupConfig config) : base(config)
+        public SystemEnvironment(IDataContextManager dataContextManager, ICacheService cacheService) :
+            base(dataContextManager, cacheService)
         {
         }
 
-        public override void Initialize()
+        public override void Initialize(StartupConfig config)
         {
-            base.Initialize();
+            base.Initialize(config);
 
             var storage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
-                SystemSession.GetDataContext(), SqlCompiler);
+                this.DataContextManager.GetContext(), DataContextManager.SqlCompiler);
 
             SavedConfiguration = XCRoot.Load(storage);
         }
@@ -34,6 +42,10 @@ namespace ZenPlatform.Core.Environment
         /// Причем при этом за кулисами происходит генерирование скрипта миграции
         /// </summary>
         public XCRoot SavedConfiguration { get; private set; }
+
+        public override IInvokeService InvokeService => throw new NotImplementedException();
+
+        public override IAuthenticationManager AuthenticationManager => throw new NotImplementedException();
 
 
         // Совершить миграцию базы данных
@@ -47,30 +59,41 @@ namespace ZenPlatform.Core.Environment
              * 3) Подменить код сборки
              */
 
-            var context = SystemSession.GetDataContext();
+            var context = DataContextManager.GetContext();
 
             var savedTypes = SavedConfiguration.Data.ComponentTypes;
             var dbTypes = Configuration.Data.ComponentTypes;
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
-                x => new { component = x.Parent, old = x, actual = default(XCObjectTypeBase) },
-                x => new { component = x.Parent, old = default(XCObjectTypeBase), actual = x },
-                (x, y) => new { component = x.Parent, old = x, actual = y });
+                x => new {component = x.Parent, old = x, actual = default(XCObjectTypeBase)},
+                x => new {component = x.Parent, old = default(XCObjectTypeBase), actual = x},
+                (x, y) => new {component = x.Parent, old = x, actual = y});
 
             foreach (var type in types)
             {
+                /*
+                 * Все DDL (data definition language) происходят вне транзакции. Поэтому должны быть полностью
+                 * безопасны для внезапного прерывания.
+                 *
+                 * Необходимо логировать мигрирование каждого объекта 
+                 */
                 var migrateScript = type.component.ComponentImpl.Migrator.GetScript(type.old, type.actual);
 
                 var cmd = context.CreateCommand();
 
                 foreach (var node in migrateScript)
                 {
-                    cmd.CommandText = SqlCompiler.Compile(node);
+                    cmd.CommandText = DataContextManager.SqlCompiler.Compile(node);
                     cmd.ExecuteNonQuery();
                 }
             }
 
             //TODO: подменить код сборки и инвалидировать её, чтобы все участники обновили сборку.
+        }
+
+        public override ISession CreateSession(IUser user)
+        {
+            throw new NotImplementedException();
         }
     }
 }

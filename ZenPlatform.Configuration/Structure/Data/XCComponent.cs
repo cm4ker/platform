@@ -214,6 +214,11 @@ namespace ZenPlatform.Configuration.Structure.Data
             return _codeGenRules[type];
         }
 
+        public string GetCodeRuleExpression(CodeGenRuleType type)
+        {
+            return GetCodeRule(type).GetExpression();
+        }
+
 
         public XCObjectTypeBase GetTypeByName(string typeName)
         {

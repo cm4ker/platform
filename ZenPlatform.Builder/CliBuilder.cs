@@ -3,6 +3,8 @@ using System.IO;
 using System.Reflection;
 using FluentMigrator.Runner.Initialization;
 using McMaster.Extensions.CommandLineUtils;
+//using ZenPlatform.Cli.Builder;
+using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Configuration;
@@ -71,9 +73,9 @@ namespace ZenPlatform.Cli
                     Console.WriteLine($"Success load project {projectFilePath}");
                     Console.WriteLine($"Start building");
 
-                    XCCompiller compiller = new XCCompiller(root, buildPathArgument.Value);
-                    compiller.Build();
 
+                    XCCompiller compiller = new XCCompiller();
+                    compiller.Build(root, buildPathArgument.Value, "Build");
                 });
             });
 
@@ -82,6 +84,7 @@ namespace ZenPlatform.Cli
             {
                 createCmd.HelpOption(inherited: true);
 
+                //var projectNameArg = createCmd.Option("--project_name", "Name of new project", CommandOptionType.SingleValue);
                 var projectNameArg = createCmd.Argument("project_name", "Name of new project").IsRequired();
 
                 createCmd.Command("fs", (fsCmd) =>
@@ -119,7 +122,8 @@ namespace ZenPlatform.Cli
                                 portOpt.ParsedValue, databaseOpt.Value(), userNameOpt.Value(), passwordOpt.Value(),
                                 createOpt.HasValue());
                         else
-                            OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue, connectionString.Value(), createOpt.HasValue());
+                            OnCreateDbCommand(projectNameArg.Value, databaseTypeOpt.ParsedValue,
+                                connectionString.Value(), createOpt.HasValue());
                     });
                 });
             });
@@ -187,9 +191,12 @@ namespace ZenPlatform.Cli
             Console.WriteLine($"Done!");
         }
 
-        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string connectionString, bool createIfNotExists)
+        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string connectionString,
+            bool createIfNotExists)
         {
-            OnCreateDbCommand(projectName, databaseType, UniversalConnectionStringBuilder.FromConnectionString(databaseType, connectionString), createIfNotExists);
+            OnCreateDbCommand(projectName, databaseType,
+                UniversalConnectionStringBuilder.FromConnectionString(databaseType, connectionString),
+                createIfNotExists);
         }
 
         private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port,
@@ -200,7 +207,7 @@ namespace ZenPlatform.Cli
                 $"DatabaseType: {databaseType}\nServer: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
             var cb = new UniversalConnectionStringBuilder(databaseType);
 
-            // После успешного созадания базы пробуем к ней подключиться, провести миграции и 
+            //После успешного созадания базы пробуем к ней подключиться, провести миграции и 
             //создать новую конфигурацию
             cb.Database = database;
             cb.Server = server;

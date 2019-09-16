@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
+using System.Security.Policy;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using ZenPlatform.Contracts;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
+using ZenPlatform.EntityComponent.Migrations;
 using ZenPlatform.EntityComponent.UIGenerations;
 
 namespace ZenPlatform.EntityComponent
@@ -17,12 +22,15 @@ namespace ZenPlatform.EntityComponent
 
         public override void OnInitializing()
         {
-            Generator = new SingleEntityGenerator(Component);
+            //Generator = new StagedGenerator(Component);
             Manager = new SingleEntityManager();
             ComponentManager = new SingleEntityConfigurationManager(Component);
 
             //TODO: Вынести интерфейс генерации UI в DataComponentBase. Если мы взаимодействуем с данными, то мы должны их как-то показывать
             InterfaceGenerator = new InterfaceGenerator();
+            DatabaseObjectsGenerator = new EntityDatabaseObjectGenerator();
+
+            Migrator = new SingleEntityMigrator();
 
             RegisterSupportedTypes();
             RegisterCodeRules();
@@ -40,12 +48,11 @@ namespace ZenPlatform.EntityComponent
 
         private void RegisterCodeRules()
         {
-            Component.RegisterCodeRule(Generator.GetInForeignPropertySetActionRule());
-            Component.RegisterCodeRule(Generator.GetInForeignPropertyGetActionRule());
-            Component.RegisterCodeRule(Generator.GetEntityClassPostfixRule());
-            Component.RegisterCodeRule(Generator.GetEntityClassPrefixRule());
-
-            Component.RegisterCodeRule(Generator.GetNamespaceRule());
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.DtoPostfixRule, ""));
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.DtoPreffixRule, "_"));
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.EntityClassPostfixRule, ""));
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.EntityClassPrefixRule, ""));
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.NamespaceRule, "Documents"));
         }
 
         /*
@@ -64,5 +71,15 @@ namespace ZenPlatform.EntityComponent
          *   
          *
          */
+    }
+
+    public class EntityDatabaseObjectGenerator : IDatabaseObjectsGenerator
+    {
+        public Dictionary<string, XCPrimitiveType> GetColumnOptions()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool HasForeignColumn => true;
     }
 }

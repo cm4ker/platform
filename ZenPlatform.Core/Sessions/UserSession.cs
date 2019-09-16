@@ -2,7 +2,9 @@
 using System.Collections.Concurrent;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Environment;
+using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Sessions
 {
@@ -10,17 +12,19 @@ namespace ZenPlatform.Core.Sessions
     /// Пользовательская сессия - по виду этой сессии мы можем запрещать незакконные операции - например мигрирование базы данных
     /// Пользователь не может выполнять инструкции связанные с изменением схемы, он лишь манипулирует данными
     /// </summary>
-    public class UserSession : Session<WorkEnvironment>
+    public class UserSession : Session
     {
-        private readonly User _user;
         private readonly ConcurrentDictionary<string, object> _sessionParameters;
 
-        public UserSession(WorkEnvironment env, User user, int id) : base(env, id)
+        public UserSession(WorkEnvironment env, IUser user, IDataContextManager dataContextManger,
+            ICacheService cacheService)
+            : base(env, dataContextManger, cacheService)
         {
-            _user = user;
+            _sessionParameters = new ConcurrentDictionary<string, object>();
+            User = user;
         }
 
-        public User User => _user;
+        public override IUser User { get; protected set; }
 
         // Задача ниже V - не пойму для чего она. У сессии есть доступ к среде, не понятно, зачем для каждой сессии генерировать свой набор компонент.
         // Это скажется на потреблении памяти, это раз а два - это необходимость переинициализировать все компоненты в случае динамического обновления.
@@ -33,7 +37,7 @@ namespace ZenPlatform.Core.Sessions
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void SetSessionParameter(string key, object value)
+        public override void SetSessionParameter(string key, object value)
         {
             _sessionParameters[key] = value;
         }
@@ -45,7 +49,7 @@ namespace ZenPlatform.Core.Sessions
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public object GetSessionParameter(string key, object value)
+        public override object GetSessionParameter(string key, object value)
         {
             if (_sessionParameters.TryGetValue(key, out var result))
                 return result;
@@ -60,7 +64,8 @@ namespace ZenPlatform.Core.Sessions
         /// <returns></returns>
         public EntityMetadata GetMetadata(Type type)
         {
-            return Environment.GetMetadata(type);
+            //    return Environment.GetMetadata(type);
+            return null;
         }
 
         /// <summary>
@@ -70,7 +75,8 @@ namespace ZenPlatform.Core.Sessions
         /// <returns></returns>
         public EntityMetadata GetMetadata(Guid typeId)
         {
-            return Environment.GetMetadata(typeId);
+            //    return Environment.GetMetadata(typeId);
+            return null;
         }
 
         /// <summary>
@@ -80,7 +86,8 @@ namespace ZenPlatform.Core.Sessions
         /// <returns></returns>
         public IEntityManager GetManager(Type type)
         {
-            return Environment.GetManager(type);
+            //return Environment.GetManager(type);
+            return null;
         }
     }
 }

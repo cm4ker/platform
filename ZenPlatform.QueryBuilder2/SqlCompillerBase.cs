@@ -8,12 +8,15 @@ using ZenPlatform.QueryBuilder.Common.Operations;
 using ZenPlatform.QueryBuilder.Common.SqlTokens;
 using ZenPlatform.QueryBuilder.Common.Table;
 using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
+using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using ZenPlatform.QueryBuilder.DDL.Index;
+using ZenPlatform.QueryBuilder.DDL.Table;
 using ZenPlatform.QueryBuilder.DML.Delete;
 using ZenPlatform.QueryBuilder.DML.From;
 using ZenPlatform.QueryBuilder.DML.GroupBy;
 using ZenPlatform.QueryBuilder.DML.Having;
 using ZenPlatform.QueryBuilder.DML.Insert;
+using ZenPlatform.QueryBuilder.DML.OrderBy;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.QueryBuilder.DML.Update;
 using ZenPlatform.QueryBuilder.DML.Where;
@@ -88,6 +91,7 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<WhereNode>(i => VisitWhereNode(i, sb))
                 .CaseIs<HavingNode>(i => VisitHavingNode(i, sb))
                 .CaseIs<GroupByNode>(i => VisitGroupByNode(i, sb))
+                .CaseIs<OrderByNode>(i => VisitOrderByNode(i, sb))
                 .CaseIs<SelectColumnNode>(i => VisitSelectFieldNode(i, sb))
                 .CaseIs<SetFieldNode>(i => VisitSetFieldNode(i, sb))
                 .CaseIs<ColumnNode>((i) => { VisitFieldNode(i, sb); })
@@ -116,7 +120,20 @@ namespace ZenPlatform.QueryBuilder
                 .CaseIs<IndexTableColumnNode>(i => VisitIndexTableColumnNode(i, sb))
                 .CaseIs<AndConditionNode>(i => VisitAndConditionNode(i, sb))
                 .CaseIs<IsNullConditionNode>(i => VisitIsNullConditionNode(i, sb))
+                .CaseIs<RenameTableQueryNode>(i => VisitRenameTableQueryNode(i, sb))
+                .CaseIs<CreateTableQueryNode>(i=>VisitCreateTableQueryNode(i, sb))
                 .Case(i => true, () => SimpleVisitor(node, sb));
+        }
+
+        public virtual void VisitRenameTableQueryNode(RenameTableQueryNode renameTableQueryNode, StringBuilder sb)
+        {
+            //All the RDBMS has different mechanics for rename the table
+            throw new NotImplementedException();
+        }
+
+        public virtual  void VisitCreateTableQueryNode(CreateTableQueryNode createTableQueryNode, StringBuilder sb)
+        {
+           
         }
 
         private void VisitIsNullConditionNode(IsNullConditionNode isNullConditionNode, StringBuilder sb)
@@ -303,8 +320,26 @@ namespace ZenPlatform.QueryBuilder
             VisitChilds(deleteNode, sb);
         }
 
+        protected virtual void VisitOrderByNode(OrderByNode orderByNode, StringBuilder sb)
+        {
+            if (!orderByNode.Childs.Any()) return;
+            sb.Append("\nORDER BY ");
+            sb.Append("\n");
+            sb.Append("    ");
+            VisitChilds(orderByNode, sb);
+
+            if (orderByNode.IsDesc)
+                sb.Append("\nDESC");
+
+        }
+
         protected virtual void VisitGroupByNode(GroupByNode groupByNode, StringBuilder sb)
         {
+            if (!groupByNode.Childs.Any()) return;
+            sb.Append("\nGROUP BY ");
+            sb.Append("\n");
+            sb.Append("    ");
+            VisitChilds(groupByNode, sb);
         }
 
         protected virtual void VisitHavingNode(HavingNode havingNode, StringBuilder sb)
@@ -417,7 +452,7 @@ namespace ZenPlatform.QueryBuilder
                 case JoinType.Cross:
                     sb.Append("CROSS");
                     break;
-                    //TODO: Добавить все
+                //TODO: Добавить все
             }
 
             sb.Append(" JOIN ");

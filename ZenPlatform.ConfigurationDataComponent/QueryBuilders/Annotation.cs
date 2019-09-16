@@ -45,3 +45,4 @@
  * 6) Удалить одиночный объект (DeleteSingleObject)
  * 7) Удалить несколько объектов (DeleteMultiplyObjects)
  */
+

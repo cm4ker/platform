@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using Antlr4.Runtime;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
+using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.Core.Sessions;
@@ -66,7 +67,7 @@ namespace ZenPlatform.Core.Language
              */
 
             var sqlNode = Evaluate();
-            var dataContext = _session.GetDataContext();
+            var dataContext = ((PlatformEnvironment)_session.Environment).DataContextManager.GetContext();
             var command = dataContext.CreateCommand(sqlNode);
 
             foreach (var parameter in _parameters)
@@ -135,7 +136,7 @@ namespace ZenPlatform.Core.Language
             ZSqlGrammarLexer speakLexer = new ZSqlGrammarLexer(inputStream);
             CommonTokenStream commonTokenStream = new CommonTokenStream(speakLexer);
             ZSqlGrammarParser speakParser = new ZSqlGrammarParser(commonTokenStream);
-            ZSqlGrammarVisitor visitor = new ZSqlGrammarVisitor(_session.Environment.Configuration, context);
+            ZSqlGrammarVisitor visitor = new ZSqlGrammarVisitor(((PlatformEnvironment) _session.Environment).Configuration, context);
 
             var result = visitor.Visit(speakParser.parse());
 

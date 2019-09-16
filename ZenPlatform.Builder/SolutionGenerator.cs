@@ -35,18 +35,18 @@ namespace ZenPlatform.Cli
                 File.Delete(file);
             }
 
-            var files = generator.GenerateSourceFiles();
-
-            foreach (var file in files)
-            {
-                using (var fs = File.Create(Path.Combine(folderName, file.Key)))
-                {
-                    using (StreamWriter sw = new StreamWriter(fs))
-                    {
-                        sw.WriteLine(file.Value);
-                    }
-                }
-            }
+//            var files = generator.GenerateSourceFiles();
+//
+//            foreach (var file in files)
+//            {
+//                using (var fs = File.Create(Path.Combine(folderName, file.Key)))
+//                {
+//                    using (StreamWriter sw = new StreamWriter(fs))
+//                    {
+//                        sw.WriteLine(file.Value);
+//                    }
+//                }
+//            }
 
             var task = new AddFilesToProject()
             {

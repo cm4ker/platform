@@ -9,15 +9,15 @@ namespace ZenPlatform.ConnectionServer
     {
         public static void Main()
         {
-            var wp = new SystemProcess(new StartupConfig()
-            {
-                ConnectionString = "host=localhost; database=db1; user id=postgres;  password=123456;",
-                DatabaseType = SqlDatabaseType.Postgres
-            });
+//            var wp = new SystemProcess(new StartupConfig()
+//            {
+//                ConnectionString = "host=localhost; database=db1; user id=postgres;  password=123456;",
+//                DatabaseType = SqlDatabaseType.Postgres
+//            });
 
             Console.WriteLine("Starting migration...");
 
-            wp.Migrate();
+            //wp.Migrate();
 
             Console.WriteLine("Migration done!");
         }

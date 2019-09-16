@@ -12,17 +12,17 @@
         /// <summary>
         /// Имя колонки идентификатора
         /// </summary>
-        public const string USER_TABLE_ID_FIELD = "id";
+        public const string USER_TABLE_ID_FIELD = "user_id";
 
         /// <summary>
         /// Имя колонки имени пользователя
         /// </summary>
-        public const string USER_TABLE_NAME_FIELD = "name";
+        public const string USER_TABLE_NAME_FIELD = "user_name";
 
         /// <summary>
         /// Имя колонки пароль пользователя
         /// </summary>
-        public const string USER_TABLE_PASSWORD_FIELD = "password";
+        public const string USER_TABLE_PASSWORD_FIELD = "user_password";
 
         #endregion
 

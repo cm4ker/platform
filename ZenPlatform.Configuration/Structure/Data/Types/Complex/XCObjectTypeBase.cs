@@ -89,11 +89,33 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         public virtual bool HasProperties { get; }
 
+
+        /// <summary>
+        /// Создать новое свойство
+        /// </summary>
+        /// <returns>Только что созданное свойство</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public virtual XCObjectPropertyBase CreateProperty()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
         /// <returns></returns>
         public virtual IEnumerable<XCObjectPropertyBase> GetProperties()
+        {
+            throw new NotSupportedException();
+        }
+
+
+        /// <summary>
+        /// Получить доступные программные модули объекта
+        /// </summary>
+        /// <returns>Список программных модулей</returns>
+        /// <exception cref="NotSupportedException">Выдается в случае, если программные модули не поддерживаются компонентом</exception>
+        public virtual IEnumerable<XCProgramModuleBase> GetProgramModules()
         {
             throw new NotSupportedException();
         }

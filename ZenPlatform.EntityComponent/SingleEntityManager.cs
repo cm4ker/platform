@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net.Mail;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
@@ -57,12 +60,19 @@ namespace ZenPlatform.EntityComponent
             var document = Activator.CreateInstance(entityType, session, dto) as SingleEntity;
             return document;
         }
+//
+//        public SingleEntity Load(UserSession session, int typeId, object key)
+//        {
+//        }
 
-        public SingleEntity Load(UserSession session, Type entityType, object key)
+        public SingleEntity Load(UserSession session, Type entityType, Guid key)
         {
             var def = session.GetMetadata(entityType);
 
-            var dto = LoadDtoObject(session, def.DtoType, key);
+            object dto = session.CacheService.Get(def.DtoType, 1, (int) def.EntityConfig.Id, key);
+
+            if (dto == null)
+                dto = LoadDtoObject(session, def.DtoType, def.EntityConfig.Id, key);
 
             return CreateEntityFromDto(session, entityType, dto);
         }
@@ -71,15 +81,21 @@ namespace ZenPlatform.EntityComponent
         /// Загрузить DTO сущность объекта
         /// </summary>
         /// <param name="session">Сессия в которой загружаем</param>
-        /// <param name="type">Тип Entity от DTO, которого хотим загрузить</param>
+        /// <param name="dtoType">Тип Entity от DTO, которого хотим загрузить</param>
         /// <param name="key">Ключ</param>
         /// <returns></returns>
-        public object LoadDtoObject(UserSession session, Type type, object key)
+        public object LoadDtoObject(UserSession session, Type dtoType, uint typeId, Guid key)
         {
-            // Получить контекс данных 
-            var context = session.GetDataContext();
+            //Проверим кэш
 
-            var def = session.GetMetadata(type);
+            var dto = session.CacheService.Get(dtoType, 1, (int) typeId, key);
+
+            if (dto != null) return dto;
+
+            // Получить контекс данных 
+            var context = session.DataContext;
+
+            var def = session.GetMetadata(dtoType);
 
             var conf = def.EntityConfig as XCSingleEntity;
 
@@ -109,14 +125,10 @@ namespace ZenPlatform.EntityComponent
 
             if (reader.Read())
             {
-                var dto = Activator.CreateInstance(def.DtoType);
+                var mappedDto = (ICanMapSelfFromDataReader) Activator.CreateInstance(def.DtoType);
 
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    var propInfo = def.DtoType.GetProperty(reader.GetName(i));
-                    propInfo.SetValue(dto, reader.GetValue(i));
-                }
-
+                //Вместо рефлексии нужно использовать статический маппер
+                mappedDto.Map(reader);
                 return dto;
             }
             else
@@ -147,7 +159,7 @@ namespace ZenPlatform.EntityComponent
             _session = session;
         }
 
-        public T Load(object key)
+        public T Load(Guid key)
         {
             return _singleEntityManager.Load(_session, typeof(T), key) as T;
         }

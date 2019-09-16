@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using Portable.Xaml;
 using ZenPlatform.Configuration.Structure.Data;
-
+using ZenPlatform.Core.Crypto;
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -62,8 +62,15 @@ namespace ZenPlatform.Configuration.Structure
             XamlObjectReader reader = new XamlObjectReader(obj, context);
             XamlXmlWriter writer = new XamlXmlWriter(ms, context);
             XamlServices.Transform(reader, writer);
+
+            ms.Seek(0, SeekOrigin.Begin);
             
             return ms;
+        }
+
+        public static string GetHash(this XCRoot root)
+        {
+            return HashHelper.HashMD5(root.SerializeToStream());
         }
     }
 }

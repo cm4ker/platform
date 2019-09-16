@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Configuration.Contracts;
+﻿using System.Dynamic;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
@@ -27,7 +28,9 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// <summary>
         /// Генератор сущностей необходимо на стадии сборки проекта
         /// </summary>
-        IEntityGenerator Generator { get; }
+        //IEntityGenerator Generator { get; }
+
+        IPlatformStagedAssemblyGenerator Generator { get; }
 
         /// <summary>
         /// Генератор объектов базы данных
