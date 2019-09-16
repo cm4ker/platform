@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
@@ -81,35 +82,6 @@ namespace ZenPlatform.Compiler.Dnlib
         public IMethod MakeGenericMethod(IType[] typeArguments)
         {
             throw new NotImplementedException();
-        }
-    }
-
-    public class DnlibMethodBuilder : DnlibMethodBase, IMethodBuilder
-    {
-        public bool Equals(IMethod other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMethod MakeGenericMethod(IType[] typeArguments)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IParameter DefineParameter(string name, IType type, bool isOut, bool isRef)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMethodBuilder WithReturnType(IType type)
-        {
-            MethodDef.ReturnType = ContextResolver.GetReference(type.ToTypeRef()).ToTypeSig();
-            return this;
-        }
-
-        public DnlibMethodBuilder(DnlibTypeSystem typeSystem, IMethodDefOrRef method, TypeRef declaringType) :
-            base(typeSystem, method, declaringType)
-        {
         }
     }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using dnlib.DotNet;
+using dnlib.DotNet.Emit;
 using ZenPlatform.Compiler.Contracts;
 using IField = ZenPlatform.Compiler.Contracts.IField;
 using IMethod = ZenPlatform.Compiler.Contracts.IMethod;
@@ -20,7 +21,8 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public void AddInterfaceImplementation(IType type)
         {
-            throw new NotImplementedException();
+            var dType = (DnlibType) type;
+            this.TypeDef.Interfaces.Add(new InterfaceImplUser(dType.TypeRef));
         }
 
         public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, GenericParameterConstraint>> names)
@@ -51,6 +53,9 @@ namespace ZenPlatform.Compiler.Dnlib
                 method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
 
             method.DeclaringType = TypeDef;
+            method.Body = new CilBody();
+
+            method.MethodSig = new MethodSig();
 
             return new DnlibMethodBuilder(_ts, method, TypeRef);
         }
