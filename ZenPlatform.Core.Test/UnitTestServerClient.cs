@@ -62,7 +62,7 @@ namespace ZenPlatform.Core.Test
             var root = Tests.Common.Factory.CreateExampleConfiguration();
 
             var _assembly = compiller.Build(root, Compiler.CompilationMode.Client);
-            _assembly.Write("test.dll");
+            _assembly.Write("test.bll");
             Assert.Equal(_assembly.Name,
                 $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");
 
@@ -74,7 +74,7 @@ namespace ZenPlatform.Core.Test
             Assert.NotNull(result);
 
 
-            var invoice = result.CreateInstance("Document._Invoice");
+            var invoice = result.CreateInstance("Documents._Invoice");
             Assert.NotNull(invoice);
         }
 
