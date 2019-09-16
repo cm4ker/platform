@@ -71,7 +71,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IMethodBuilder WithReturnType(IType type)
         {
-            _methodDef.ReturnType = ContextResolver.GetReference((ITypeReference) type);
+            _methodDef.ReturnType = _md.ImportReference(((ITypeReference) type).Reference);
             return this;
         }
     }
