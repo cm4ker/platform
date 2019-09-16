@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using ZenPlatform.Compiler.Contracts.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
+    [DebuggerDisplay("{Name}")]
     public partial class Property : Member, IAstSymbol
     {
         private Block _getter;

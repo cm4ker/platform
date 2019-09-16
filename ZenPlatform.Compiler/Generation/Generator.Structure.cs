@@ -109,6 +109,11 @@ namespace ZenPlatform.Compiler.Generation
                             ;
                         }
 
+                        if (!c.TypeBody.Constructors.Any())
+                        {
+                            c.TypeBody.AddConstructor(Constructor.Default);
+                        }
+
                         foreach (var constructor in c.TypeBody.Constructors)
                         {
                             var pf = PrebuildConstructor(constructor, tbc);
