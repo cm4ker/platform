@@ -12,6 +12,7 @@ namespace ZenPlatform.Compiler.Sre
     public class SreTypeSystem : ITypeSystem
     {
         private List<IAssembly> _assemblies = new List<IAssembly>();
+        public IWellKnownTypes WellKnownTypes { get; }
         public IReadOnlyList<IAssembly> Assemblies => _assemblies;
 
         private Dictionary<Type, SreType> _typeDic = new Dictionary<Type, SreType>();
