@@ -7,9 +7,11 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibParameter : IParameter
     {
+        private Parameter _parameter;
+
         public DnlibParameter(DnlibTypeSystem typeSystem, MethodDef methodDef, Parameter parameter)
         {
-            throw new NotImplementedException();
+            _parameter = parameter;
         }
 
         public bool Equals(IParameter other)
@@ -17,9 +19,9 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new NotImplementedException();
         }
 
-        public string Name { get; }
-        public IType Type { get; }
-        public int Sequence { get; }
-        public int ArgIndex { get; }
+        public string Name => _parameter.Name;
+        public IType Type => null;
+        public int Sequence => _parameter.Index;
+        public int ArgIndex => _parameter.ParamDef.Sequence;
     }
 }
