@@ -41,6 +41,7 @@ namespace ZenPlatform.Tests.Common
 
             var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+
             store.Name = "Store";
             store.Description = "This is a store entity";
             store.Initialize();
@@ -55,8 +56,6 @@ namespace ZenPlatform.Tests.Common
 
             prop.DatabaseColumnName = "Fld_0001";
 
-          
-            invoice.Properties.Add(prop);
             invoice.Name = "Invoice";
 
             invoice.Modules.Add(new XCSingleEntityModule()
