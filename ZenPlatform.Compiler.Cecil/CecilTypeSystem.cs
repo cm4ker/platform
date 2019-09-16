@@ -70,6 +70,7 @@ namespace ZenPlatform.Compiler.Cecil
                     SymbolReaderProvider = isTarget ? new DefaultSymbolReaderProvider(true) : null,
                     ReadSymbols = isTarget
                 });
+                
                 var wrapped = RegisterAssembly(asm);
                 if (path == targetPath)
                 {
@@ -84,6 +85,7 @@ namespace ZenPlatform.Compiler.Cecil
         internal MetadataResolver MetadataResolver => _metadataResolver;
 
         public AssemblyDefinition TargetAssemblyDefinition { get; private set; }
+        public IWellKnownTypes WellKnownTypes { get; }
         public IReadOnlyList<IAssembly> Assemblies => _asms.AsReadOnly();
         public IAssembly FindAssembly(string name) => RegisterAssembly(Resolve(name));
 

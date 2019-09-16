@@ -28,12 +28,10 @@ namespace ZenPlatform.Compiler.Cecil
         public CecilType(CecilTypeSystem typeSystem, CecilAssembly assembly, TypeDefinition definition,
             TypeReference reference)
         {
-            
-            _assembly = assembly ?? throw  new NullReferenceException("Assembly");
+            _assembly = assembly;
             TypeSystem = typeSystem;
             Reference = reference;
             Definition = definition;
-            
             if (reference.IsArray)
                 Definition = ((CecilType) typeSystem.GetType("System.Array")).Definition;
         }
@@ -54,16 +52,9 @@ namespace ZenPlatform.Compiler.Cecil
         public IAssembly Assembly => _assembly;
         protected IReadOnlyList<IMethod> _methods;
 
-        public IReadOnlyList<IMethod> Methods
-        {
-            get
-            {
-                var methods = Definition.GetMethods();
-                if(methods is null ) throw new NullReferenceException("Methods");
-                return _methods ??= methods.Select(m => (IMethod) new CecilMethod(TypeSystem,
-                    m, Reference, _assembly.Assembly.MainModule)).ToList();
-            }
-        }
+        public IReadOnlyList<IMethod> Methods =>
+            _methods ??= Definition.GetMethods().Select(m => (IMethod) new CecilMethod(TypeSystem,
+                m, Reference, _assembly.Assembly.MainModule)).ToList();
 
         protected IReadOnlyList<IConstructor> _constructors;
 

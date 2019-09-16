@@ -29,6 +29,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             _method = method;
             _ts = (DnlibTypeSystem) typeSystem;
+            _body = _method.Body;
         }
 
 
