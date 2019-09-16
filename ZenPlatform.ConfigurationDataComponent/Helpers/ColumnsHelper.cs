@@ -27,7 +27,7 @@ namespace ZenPlatform.DataComponent.Helpers
             var hasObjectInt = false;
             foreach (var type in prop.Types)
             {
-                if (type is XCPremitiveType ptype)
+                if (type is XCPrimitiveType ptype)
                 {
                     result.Add(new DatabaseColumnDefinitionItem(prop, $"{prop.DatabaseColumnName}_{type.Name}", ptype));
                 }
@@ -38,12 +38,14 @@ namespace ZenPlatform.DataComponent.Helpers
                     {
                         if (!hasObjectGuid)
                         {
-                            result.Add(new DatabaseColumnDefinitionItem(prop, $"{prop.DatabaseColumnName}_Ref", new XCGuid()));
+                            result.Add(new DatabaseColumnDefinitionItem(prop, $"{prop.DatabaseColumnName}_Ref",
+                                new XCGuid()));
                             hasObjectGuid = true;
                         }
                         else if (!hasObjectInt)
                         {
-                            result.Add(new DatabaseColumnDefinitionItem(prop, $"{prop.DatabaseColumnName}_Type", new XCGuid()));
+                            result.Add(new DatabaseColumnDefinitionItem(prop, $"{prop.DatabaseColumnName}_Type",
+                                new XCGuid()));
                             hasObjectInt = true;
                         }
                     }
@@ -59,7 +61,8 @@ namespace ZenPlatform.DataComponent.Helpers
     /// </summary>
     public class DatabaseColumnDefinitionItem
     {
-        public DatabaseColumnDefinitionItem(XCObjectPropertyBase property, string databaseColumnName, XCPremitiveType type)
+        public DatabaseColumnDefinitionItem(XCObjectPropertyBase property, string databaseColumnName,
+            XCPrimitiveType type)
         {
             Property = property;
             DatabaseColumnName = databaseColumnName;
@@ -78,6 +81,6 @@ namespace ZenPlatform.DataComponent.Helpers
         /// <summary>
         /// Тип колонки в базе данных
         /// </summary>
-        public XCPremitiveType Type { get; set; }
+        public XCPrimitiveType Type { get; set; }
     }
 }

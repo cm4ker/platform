@@ -2,12 +2,8 @@
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization.Formatters;
 using MessagePack;
-using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core;
-using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
-using ZenPlatform.Core.Sessions;
-using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.WorkProcess
 {
@@ -30,12 +26,12 @@ namespace ZenPlatform.WorkProcess
 
         public WorkProcess(StartupConfig config)
         {
-            _env = new WorkEnvironment(config);
+            //  _env = new WorkEnvironment(config);
         }
 
         public void Start()
         {
-            _env.Initialize();
+            // _env.Initialize();
         }
 
         public void Stop()
@@ -53,37 +49,36 @@ namespace ZenPlatform.WorkProcess
         /// <summary>
         /// Зарегистрировать соединение, т.е. создать сессию для соединения
         /// </summary>
-        public void RegisterConnection(User user)
-        {
-            //TODO: выполнить проверку контрольной ссумы пользователя, для того, чтобы не получилось подмены
-            _env.CreateSession(user);
-        }
+//        public void RegisterConnection(User user)
+//        {
+//            //TODO: выполнить проверку контрольной ссумы пользователя, для того, чтобы не получилось подмены
+//            _env.CreateSession(user);
     }
+}
 
+/*
+ * Необходимо сделать несколько протоколов общения
+ *
+ * Типа всё - это микросервисы.
+ *
+ * 1) Сервер <-> Рабочий процесс
+ * 2) Рабочий процесс <-> Сервер кэша и транзакций
+ */
+
+
+public class WorkProcessProtocol
+{
     /*
-     * Необходимо сделать несколько протоколов общения
-     *
-     * Типа всё - это микросервисы.
-     *
-     * 1) Сервер <-> Рабочий процесс
-     * 2) Рабочий процесс <-> Сервер кэша и транзакций
+     *Список команд:
+     *     1) Получить объект (Ид, Маршрут)
+     *     2) Получить список объектов (Маршрут)
      */
 
-
-    public class WorkProcessProtocol
+    public void ExecuteCommand()
     {
-        /*
-         *Список команд:
-         *     1) Получить объект (Ид, Маршрут)
-         *     2) Получить список объектов (Маршрут)
-         */
+    }
 
-        public void ExecuteCommand()
-        {
-        }
-
-        public void AuthorizeUser()
-        {
-        }
+    public void AuthorizeUser()
+    {
     }
 }

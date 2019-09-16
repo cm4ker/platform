@@ -3,7 +3,7 @@ using System.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCBoolean : XCPremitiveType
+    public class XCBoolean : XCPrimitiveType
     {
         public override uint Id => 2;
 

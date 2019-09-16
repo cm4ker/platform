@@ -1,17 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.CacheService;
+using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Core.Tools;
+using ZenPlatform.Data;
+using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.Crypto;
+using ZenPlatform.Configuration.Structure;
+
+using ZenPlatform.Initializer;
+using ZenPlatform.Core.Assemblies;
 
 namespace ZenPlatform.Core.Environment
 {
     /// <summary>
     /// Рабочая среда. Здесь же реализованы все плюшки  манипуляций с данными и так далее
     /// </summary>
-    public class WorkEnvironment : PlatformEnvironment
+    public class WorkEnvironment : PlatformEnvironment, IWorkEnvironment
     {
         private object _locking;
 
@@ -41,14 +53,24 @@ namespace ZenPlatform.Core.Environment
          *
          */
 
-        public WorkEnvironment(StartupConfig config) : base(config)
+        public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
+            IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
+            IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService, IAssemblyManager assemblyManager) :
+            base(contextManager, cacheService)
         {
             _locking = new object();
+            _serviceProvider = serviceProvider;
+            _logger = logger;
+            _userManager = userManager;
+            InvokeService = invokeService;
+            _assemblyManager = assemblyManager;
 
             Globals = new Dictionary<string, object>();
 
             Managers = new Dictionary<Type, IEntityManager>();
             Entityes = new Dictionary<Guid, EntityMetadata>();
+
+            AuthenticationManager = authenticationManager;
         }
 
         /// <summary>
@@ -56,13 +78,27 @@ namespace ZenPlatform.Core.Environment
         /// На этом этапе происходит создание подключения к базе
         /// Загрузка конфигурации и так далее
         /// </summary>
-        public override void Initialize()
+        public override void Initialize(StartupConfig config)
         {
-            //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
-            base.Initialize();
 
+            MigrationRunner.Migrate(config.ConnectionString,
+                                    config.DatabaseType);
+            //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
+            base.Initialize(config);
+            _logger.Info("Database '{0}' loaded.", Configuration.ProjectName);
+
+            AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
+
+
+            _assemblyManager.CheckConfiguration(Configuration);
+
+
+
+            /*
             //TODO: получить библиотеку с сгенерированными сущностями dto и так далее
             Build = Assembly.LoadFile("");
+
+           
 
             //Зарегистрируем все даные
             foreach (var type in Configuration.Data.ComponentTypes)
@@ -79,7 +115,21 @@ namespace ZenPlatform.Core.Environment
                 RegisterManager(csEntityType, manager);
                 RegisterEntity(new EntityMetadata(type, csEntityType, csDtoType));
             }
+            */
         }
+
+        private ILogger _logger;
+
+        private IServiceProvider _serviceProvider;
+
+        private IUserManager _userManager;
+
+        private IAssemblyManager _assemblyManager;
+
+        public override IInvokeService InvokeService { get; }
+
+        public override IAuthenticationManager AuthenticationManager { get; }
+
 
         /// <summary>
         /// Сборка конфигурации.
@@ -108,15 +158,15 @@ namespace ZenPlatform.Core.Environment
         /// <param name="user">Пользователь</param>
         /// <returns></returns>
         /// <exception cref="Exception">Если платформа не инициализирована</exception>
-        public ISession CreateSession(User user)
+        public override ISession CreateSession(IUser user)
         {
             lock (_locking)
             {
-                if (!Sessions.Any()) throw new Exception("The environment not initialized!");
+                //if (!Sessions.Any()) throw new Exception("The environment not initialized!");
 
-                var id = Sessions.Max(x => x.Id) + 1;
+                //var id = Sessions.Max(x => x.Id) + 1;
 
-                var session = new UserSession(this, user, id);
+                var session = new UserSession(this, user, DataContextManager, CacheService);
 
                 Sessions.Add(session);
 
@@ -140,7 +190,7 @@ namespace ZenPlatform.Core.Environment
         /// Убить сессию
         /// </summary>
         /// <param name="id"></param>
-        public void KillSession(int id)
+        public void KillSession(Guid id)
         {
             lock (_locking)
             {

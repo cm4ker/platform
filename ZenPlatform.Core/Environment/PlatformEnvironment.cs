@@ -1,38 +1,53 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Configuration;
+using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Data;
 using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Environment
 {
     /// <summary>
     ///  Базовый класс среды, служит для того, чтобы описать две производные среды <see cref="WorkEnvironment"/> и <see cref="SystemEnvironment"/>
     /// </summary>
-    public abstract class PlatformEnvironment
+    public abstract class PlatformEnvironment : IEnvironment
     {
-        protected PlatformEnvironment(StartupConfig config)
+        protected ICacheService CacheService;
+        protected IServiceProvider ServiceProvider;
+        protected PlatformEnvironment(IDataContextManager dataContextManager, ICacheService cacheService)
         {
             Sessions = new List<ISession>();
-            StartupConfig = config;
-
-            SqlCompiler = SqlCompillerBase.FormEnum(config.DatabaseType);
+            DataContextManager = dataContextManager;
+            CacheService = cacheService;
         }
 
         protected SystemSession SystemSession { get; private set; }
 
-        public virtual void Initialize()
+        public virtual void Initialize(StartupConfig config)
         {
-            SystemSession = new SystemSession(this, 1);
+            StartupConfig = config;
+
+            DataContextManager.Initialize(config.DatabaseType, config.ConnectionString);
+
+            SystemSession = new SystemSession(this, DataContextManager, CacheService);
+            Sessions.Add(SystemSession);
 
             //TODO: Дать возможность выбрать, какую конфигурацию загружать, с базы данных или из файловой системы
 
-            var storage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, SystemSession.GetDataContext(),
-                SqlCompiler);
+            var storage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
+                DataContextManager.GetContext(),
+                DataContextManager.SqlCompiler);
 
             Configuration = XCRoot.Load(storage);
         }
+        public abstract ISession CreateSession(IUser user);
 
         /// <summary>
         /// Конфигурация базы данных
@@ -47,12 +62,15 @@ namespace ZenPlatform.Core.Environment
         /// <summary>
         /// Стартовая конфигурация
         /// </summary>
-        public StartupConfig StartupConfig { get; }
+        public StartupConfig StartupConfig { get; private set; }
 
 
-        /// <summary>
-        /// Компилятор запросов, определяется на этапе инициализации приложения
-        /// </summary>
-        public SqlCompillerBase SqlCompiler { get; }
+        public IDataContextManager DataContextManager { get; private set; }
+
+        public abstract IInvokeService InvokeService { get; }
+
+        public abstract IAuthenticationManager AuthenticationManager { get; }
+
+        public string Name => Configuration.ProjectName;
     }
 }

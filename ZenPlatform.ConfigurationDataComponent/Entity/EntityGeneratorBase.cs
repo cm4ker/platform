@@ -49,6 +49,25 @@ namespace ZenPlatform.DataComponent.Entity
             return $"{preffix}{obj.Name}{postfix}";
         }
 
+        /*
+         *using System;
+         *
+         * namspace Documents
+         * {
+         *    public class Invoice
+         *     {
+         *        Session _session;
+         *        InvoiceDTO _dto;
+         * 
+         *        public Invoice(Session session, InvoiceDTO dto)
+         *        {
+         *         }
+         *     
+         *     }
+         * }
+         * 
+         */
+
         public virtual string GetMultiDataStorageClassName(XCObjectPropertyBase property)
         {
             return $"MultiDataStorage_{property.DatabaseColumnName}";
@@ -121,7 +140,6 @@ namespace ZenPlatform.DataComponent.Entity
         {
             throw new NotImplementedException();
         }
-
     }
 
     /*

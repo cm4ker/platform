@@ -13,7 +13,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         private XCSingleEntity _parent;
 
-        public XCSingleEntityProperty()
+        internal XCSingleEntityProperty()
         {
         }
 
@@ -42,7 +42,8 @@ namespace ZenPlatform.EntityComponent.Configuration
                 DatabaseColumnName = "Id",
                 Types = {PlatformTypes.Guid},
                 IsSystemProperty = true,
-                Unique = true
+                Unique = true,
+                IsReadOnly = true
             };
         }
     }

@@ -2,39 +2,59 @@
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Data;
+using System.Linq;
+using System;
+using ZenPlatform.Core.CacheService;
 
 namespace ZenPlatform.Core.Sessions
 {
     /// <summary>
     /// Абстракция сессии
     /// </summary>
-    public abstract class Session<TPlatformEnv> : ISession
-        where TPlatformEnv : PlatformEnvironment
+    public abstract class Session : ISession
     {
-        protected Session(TPlatformEnv env, int id)
+        protected Session(IEnvironment env, IDataContextManager dataContextManger, ICacheService cacheService)
         {
             Environment = env;
-            Id = id;
-            UserManager = new UserManager(this);
-            DataContextManger =
-                new DataContextManger(env.StartupConfig.DatabaseType, env.StartupConfig.ConnectionString);
+            Id = Guid.NewGuid();
+            CacheService = cacheService;
+            _dataContextManger = dataContextManger;
         }
 
-        public int Id { get; }
+        private IDisposable _remover;
 
-        protected DataContextManger DataContextManger { get; }
-        internal TPlatformEnv Environment { get; }
+        public Guid Id { get; }
 
-        protected UserManager UserManager { get; }
+        protected IDataContextManager _dataContextManger;
 
-        public UserManager GetUserManager()
+        public IEnvironment Environment { get; }
+
+        public abstract IUser User { get; protected set; }
+
+        public ICacheService CacheService { get; }
+
+        public DataContext DataContext
         {
-            return UserManager;
+            get => _dataContextManger.GetContext();
         }
 
-        public DataContext GetDataContext()
+
+        public abstract void SetSessionParameter(string key, object value);
+        public abstract object GetSessionParameter(string key, object value);
+
+        public void SetRemover(IDisposable remover)
         {
-            return DataContextManger.GetContext();
+            _remover = remover;
+        }
+
+        public void Dispose()
+        {
+            Close();
+        }
+
+        public void Close()
+        {
+            _remover?.Dispose();
         }
     }
 }

@@ -48,7 +48,17 @@ namespace ZenPlatform.Contracts
         /// <summary>
         /// Правила для генерации namespace
         /// </summary>
-        NamespaceRule
+        NamespaceRule,
+
+        /// <summary>
+        /// Префикс для объектов DTO
+        /// </summary>
+        DtoPreffixRule,
+
+        /// <summary>
+        /// Постфикс для объектов DTO
+        /// </summary>
+        DtoPostfixRule
     }
 
     public class CodeGenRule

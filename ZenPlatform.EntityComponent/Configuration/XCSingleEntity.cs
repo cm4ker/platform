@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -15,10 +16,12 @@ namespace ZenPlatform.EntityComponent.Configuration
     [XmlRoot("SingleEntity")]
     public class XCSingleEntity : XCObjectTypeBase
     {
-        public XCSingleEntity()
+        internal XCSingleEntity()
         {
             Properties = new XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty>(this);
             Properties.CollectionChanged += Properties_CollectionChanged;
+
+            Modules = new XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>(this);
         }
 
         private void Properties_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -51,7 +54,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             }
         }
 
-
         /// <summary>
         /// Коллекция свойств сущности
         /// </summary>
@@ -60,9 +62,16 @@ namespace ZenPlatform.EntityComponent.Configuration
         public XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty> Properties { get; }
 
         /// <summary>
+        /// Коллекция модулей сущности
+        /// </summary>
+        [XmlArray]
+        [XmlArrayItem(ElementName = "Modules", Type = typeof(XCSingleEntityModule))]
+        public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; }
+
+        /// <summary>
         /// Имя связанной таблицы документа
         /// 
-        /// При миграции присваивается движком. В последствии хранится в структурых инициализации конкретной базы.
+        /// При миграции присваивается движком. В последствии хранится в служебных структурах конкретной базы.
         /// </summary>
         //TODO: Продумать структуру, в которой будут храниться сопоставление Тип -> Дополнительные настройки компонента 
         /*
@@ -82,7 +91,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные
                 foreach (var propertyType in property.GetUnprocessedPropertyTypes())
                 {
-                    if (propertyType is XCPremitiveType)
+                    if (propertyType is XCPrimitiveType)
                         property.Types.Add(propertyType);
                     if (propertyType is XCUnknownType)
                     {
@@ -109,6 +118,19 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override IEnumerable<XCObjectPropertyBase> GetProperties()
         {
             return Properties;
+        }
+
+        /// <inheritdoc />
+        public override IEnumerable<XCProgramModuleBase> GetProgramModules()
+        {
+            return Modules;
+        }
+
+        public override XCObjectPropertyBase CreateProperty()
+        {
+            var prop = new XCSingleEntityProperty();
+            Properties.Add(prop);
+            return prop;
         }
     }
 }

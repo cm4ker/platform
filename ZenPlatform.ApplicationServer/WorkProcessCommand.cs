@@ -1,4 +1,6 @@
-﻿using ZenPlatform.Core.Annotations;
+﻿//using ZenPlatform.Core.Annotations;
+
+using System;
 
 namespace ZenPlatform.WorkProcess
 {
@@ -17,5 +19,11 @@ namespace ZenPlatform.WorkProcess
             RoutingKey = routingKey;
             RoutingParams = routingParams;
         }
+
+
+
+        
     }
+
+
 }

@@ -27,8 +27,12 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// Key - Имя столбца
         /// Value - Тип столбца
         /// </summary>
-        Dictionary<string, XCPremitiveType> GetColumnOptions();
+        Dictionary<string, XCPrimitiveType> GetColumnOptions();
 
+        /// <summary>
+        /// Колонка относится к основному объекту, как принимающая сторона.
+        /// Если мы зададим это с свойство, то при генерации объекта будут сгенерированы свойства для родительского объекта
+        /// </summary>
         bool HasForeignColumn { get; }
     }
 }

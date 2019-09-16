@@ -22,6 +22,7 @@ namespace ZenPlatform.Core.Configuration
         private readonly string _tableName;
         private readonly DataContext _context;
         private readonly SqlCompillerBase _compiler;
+        private uint _maxId = 100;
 
         //TODO: Посмотерть использование класса InternalDbContext в качестве аргумента конструктора
         public XCDatabaseStorage(string tableName, DataContext context, SqlCompillerBase compiler)
@@ -100,6 +101,8 @@ namespace ZenPlatform.Core.Configuration
             }
         }
 
+        
+
         public Stream GetRootBlob()
         {
             return GetBlob("root", "");
@@ -110,9 +113,13 @@ namespace ZenPlatform.Core.Configuration
             SaveBlob("root", "", stream);
         }
 
-        public void GetId(Guid confId, ref uint oldId)
+        public void GetId(Guid confId, ref uint uid)
         {
-            throw new NotImplementedException();
+
+            if (uid != 0)
+                return;
+
+            uid = _maxId++;
         }
     }
 }
