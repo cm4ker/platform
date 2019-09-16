@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Mono.Cecil;
@@ -10,6 +11,7 @@ using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.Compiler.Cecil
 {
+    [DebuggerDisplay("{Name}")]
     public class CecilAssembly : IAssembly, IAssemblyBuilder
     {
         private Dictionary<string, CecilType> _typeCache = new Dictionary<string, CecilType>();
@@ -40,10 +42,12 @@ namespace ZenPlatform.Compiler.Cecil
                 return rv;
             var lastDot = fullName.LastIndexOf(".", StringComparison.Ordinal);
             var asmRef = new AssemblyNameReference(Assembly.Name.Name, Assembly.Name.Version);
+            
             var tref = (lastDot == -1)
                 ? new TypeReference(null, fullName, Assembly.MainModule, asmRef)
                 : new TypeReference(fullName.Substring(0, lastDot),
                     fullName.Substring(lastDot + 1), Assembly.MainModule, asmRef);
+     
             var resolved = tref.Resolve();
             if (resolved != null)
                 return _typeCache[fullName] = _typeSystem.GetTypeFor(resolved);

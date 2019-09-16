@@ -58,10 +58,10 @@ namespace ZenPlatform.Compiler.Cecil
 
             var libname = name.Name;
 
-            if (libname == "mscorlib" || libname == "System.Private.CoreLib")
-            {
-                libname = "mscorlib";
-            }
+//            if (libname == "mscorlib" || libname == "System.Private.CoreLib")
+//            {
+//                libname = "mscorlib";
+//            }
 
             if (!libraries.TryGetValue(libname, out def))
             {
