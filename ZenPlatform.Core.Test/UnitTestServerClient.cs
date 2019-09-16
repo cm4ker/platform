@@ -24,17 +24,14 @@ namespace ZenPlatform.Core.Test
 {
     public class UnitTestServerClient
     {
-
-
         [Fact]
         public void Connecting()
         {
-
             var serverServices = Initializer.GetServerService();
 
             var clientServices = Initializer.GetClientService();
 
-           
+
             var environmentManager = serverServices.GetRequiredService<IEnvironmentManager>();
             Assert.NotEmpty(environmentManager.GetEnvironmentList());
 
@@ -45,7 +42,8 @@ namespace ZenPlatform.Core.Test
 
 
             var platformClient = clientServices.GetRequiredService<PlatformClient>();
-            platformClient.Connect(new Settings.DatabaseConnectionSettings() { Address = "127.0.0.1:12345", Database = "Library" });
+            platformClient.Connect(new Settings.DatabaseConnectionSettings()
+                {Address = "127.0.0.1:12345", Database = "Library"});
             //need check connection
 
             platformClient.Login("admin", "admin");
@@ -59,23 +57,23 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void CompileAndLoadAssembly()
         {
-
             var compiller = new XCCompiller();
 
             var root = Tests.Common.Factory.CreateExampleConfiguration();
 
             var _assembly = compiller.Build(root, Compiler.CompilationMode.Client);
             _assembly.Write("test.dll");
-            Assert.Equal(_assembly.Name, $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");
+            Assert.Equal(_assembly.Name,
+                $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");
 
-            PlatformAssemblyLoadContext loadContext = new PlatformAssemblyLoadContext(new TestClientAssemblyManager(_assembly));
-            
+            PlatformAssemblyLoadContext loadContext =
+                new PlatformAssemblyLoadContext(new TestClientAssemblyManager(_assembly));
+
             var result = loadContext.LoadFromAssemblyName(new AssemblyName(_assembly.Name));
 
             Assert.NotNull(result);
 
-            
-            
+
             var invoice = result.CreateInstance("Document._Invoice");
             Assert.NotNull(invoice);
         }
@@ -83,7 +81,6 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void AssemblyManagerTest()
         {
-
             var storage = new TestAssemblyStorage();
             var manager = new AssemblyManager(new XCCompiller(), storage, new SimpleConsoleLogger<AssemblyManager>());
 
@@ -95,18 +92,14 @@ namespace ZenPlatform.Core.Test
 
             //��������� ��������� ������ 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
-            && a.Name == $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
+                                                          && a.Name ==
+                                                          $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
 
 
             //��������� ��������� ������ 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
-            && a.Name == $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Server)}"));
-
-
-
-            
-
-
+                                                          && a.Name ==
+                                                          $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Server)}"));
         }
 
         [Fact]
@@ -116,19 +109,17 @@ namespace ZenPlatform.Core.Test
 
             var assemblyManagerClientService = serverService.GetRequiredService<IAssemblyManagerClientService>();
 
-             var env = serverService.GetRequiredService<IWorkEnvironment>();
+            var env = serverService.GetRequiredService<IWorkEnvironment>();
 
             var assemblies = new List<AssemblyDescription>()
             {
                 new AssemblyDescription()
                 {
-                    Name = $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}",
+                    Name =
+                        $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}",
                     ConfigurationHash = "fake",
                     AssemblyHash = "fake"
-                    
-
                 }
-
             };
 
 
@@ -136,7 +127,8 @@ namespace ZenPlatform.Core.Test
 
             //���������� � �������� ��������� ������
             Assert.NotNull(result.FirstOrDefault(a => a.ConfigurationHash == env.Configuration.GetHash()
-            && a.Name == $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
+                                                      && a.Name ==
+                                                      $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
 
 
             //�� ���������� ��������� � �������� ��������� ������
@@ -144,14 +136,6 @@ namespace ZenPlatform.Core.Test
 
 
             //var clientService = Initializer.GetClientService();
-
-
-
         }
-
-
-
-
-
     }
 }
