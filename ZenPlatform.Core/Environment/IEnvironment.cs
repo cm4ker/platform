@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Authentication;
@@ -10,23 +9,45 @@ using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Environment
 {
-
-    public interface IAdminEnvironment : IEnvironment { }
-    public interface ITestEnvironment : IEnvironment { }
-    public interface IWorkEnvironment : IEnvironment
+    /// <summary>
+    ///  Среда для подключения. Обеспечивает некий контекст в котором работает удаленный пользователь
+    /// </summary>
+    public interface IEnvironment<in TConfiguration>
+        where TConfiguration : class
     {
-        XCRoot Configuration { get; }
-    }
-    public interface IEnvironment
-    {
+        /// <summary>
+        /// Имя среды
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        ///  Текущие сессии
+        /// </summary>
         IList<ISession> Sessions { get; }
+
+
+        /// <summary>
+        /// Сервис RPC
+        /// </summary>
         IInvokeService InvokeService { get; }
-        void Initialize(StartupConfig config);
+
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        /// <param name="config">Конфигурация</param>
+        void Initialize(TConfiguration config);
+
+        /// <summary>
+        /// Менеджер аутентификации
+        /// </summary>
         IAuthenticationManager AuthenticationManager { get; }
-        IDataContextManager DataContextManager { get; }
 
+        /// <summary>
+        /// Создать сессию
+        /// </summary>
+        /// <param name="user">Пользователь</param>
+        /// <returns>Экземпляр сессии</returns>
         ISession CreateSession(IUser user);
-
     }
 }

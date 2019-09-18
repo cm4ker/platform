@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Core.Logging;
@@ -9,13 +8,20 @@ using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Core.Environment
 {
+    /*
+     * Концептуально:
+     *     У нас есть сервер приложений
+     *     На сервере приложений поднят IAdminEnvirnoment, который следует переименовать в IServerAppEnvironment
+     *     
+     */
     public class EnvironmentManager : IEnvironmentManager
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly List<IEnvironment> environments = new List<IEnvironment>();
         private readonly ILogger _logger;
 
-        public EnvironmentManager(ISettingsStorage configStorage, IServiceProvider serviceProvider, ILogger<EnvironmentManager> logger)
+        public EnvironmentManager(ISettingsStorage configStorage, IServiceProvider serviceProvider,
+            ILogger<EnvironmentManager> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -27,7 +33,7 @@ namespace ZenPlatform.Core.Environment
         {
             list.ForEach(c => environments.Add(CreateEnvironment<IWorkEnvironment>(c)));
 
-            environments.Add(CreateEnvironment<IAdminEnvironment>(new StartupConfig() { ConnectionString = ""}));
+            environments.Add(CreateEnvironment<IAdminEnvironment>(new StartupConfig() {ConnectionString = ""}));
 
 #if DEBUG
             //environments.Add(CreateEnvironment<ITestEnvironment>(new StartupConfig() { ConnectionString = "" }));
@@ -39,22 +45,22 @@ namespace ZenPlatform.Core.Environment
             environments.Add(CreateEnvironment<IWorkEnvironment>(config));
         }
 
-        protected IEnvironment CreateEnvironment<T>(StartupConfig config) where T: IEnvironment
+        protected IEnvironment CreateEnvironment<T>(StartupConfig config) where T : IEnvironment
         {
-            
             try
             {
                 _logger.Info("Creating environment, connection string: {0}", config.ConnectionString);
                 var scope = _serviceProvider.CreateScope();
-                
-                    var env = scope.ServiceProvider.GetRequiredService<T>();
-                    env.Initialize(config);
-                    return env;
-                
-            } catch (Exception ex)
+
+                var env = scope.ServiceProvider.GetRequiredService<T>();
+                env.Initialize(config);
+                return env;
+            }
+            catch (Exception ex)
             {
                 _logger.Error(ex, "Create environment error, connection string: {0}", config.ConnectionString);
             }
+
             return null;
         }
 
@@ -67,6 +73,5 @@ namespace ZenPlatform.Core.Environment
         {
             return environments;
         }
-
     }
 }

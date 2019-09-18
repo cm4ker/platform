@@ -154,7 +154,7 @@ namespace ZenPlatform.Compiler.Cecil
             => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilMethodBase) method).Reference)));
 
         public IEmitter Emit(SreOpCode code, IConstructor ctor)
-            => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilConstructor) ctor).Definition)));
+            => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilConstructor) ctor).Reference)));
 
         public IEmitter Emit(SreOpCode code, string arg)
             => Emit(Instruction.Create(Dic[code], arg));

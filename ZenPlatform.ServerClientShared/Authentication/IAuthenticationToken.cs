@@ -7,6 +7,7 @@ namespace ZenPlatform.Core.Authentication
     public interface IAuthenticationToken
     {
         string Name { get; }
+
         object Credential { get; }
     }
 }
