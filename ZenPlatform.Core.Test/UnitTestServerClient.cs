@@ -28,7 +28,6 @@ namespace ZenPlatform.Core.Test
         public void Connecting()
         {
             var serverServices = Initializer.GetServerService();
-
             var clientServices = Initializer.GetClientService();
 
 
