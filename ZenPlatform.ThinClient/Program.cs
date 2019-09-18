@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using Avalonia;
-using Avalonia.Logging.Serilog;
-using Dock.Model;
-using Dock.Serializer;
-using ZenPlatform.ThinClient.Infrastructure;
-using ZenPlatform.ThinClient.TCP;
-using ZenPlatform.ThinClient.ViewModels;
-using ZenPlatform.ThinClient.Views;
-using System.Net;
-using ZenPlatform.ServerClientShared.RPC;
+﻿using System.IO;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.ThinClient
 {
@@ -58,17 +53,50 @@ namespace ZenPlatform.ThinClient
 
     class Program
     {
-        [STAThread]
+        public static Assembly ClientMainAssembly { get; set; }
+
         static void Main(string[] args)
         {
-            Bootstrapper.Init();
-            BuildAvaloniaApp().Start<MainWindow>(IoC.Resolve<IMainWindow>);
+            var clientServices = Initializer.GetClientService();
+            var platformClient = clientServices.GetRequiredService<PlatformClient>();
+            platformClient.Connect(new DatabaseConnectionSettings()
+            {
+                Address = "127.0.0.1:12345",
+                Database = "Library"
+            });
+            //need check connection
+
+            platformClient.Login("admin", "admin");
+
+            ClientMainAssembly = platformClient.LoadMainAssembly();
+        }
+    }
+
+
+    public class TestClientAssemblyManager : IClientAssemblyManager
+    {
+        private IAssembly _assembly;
+
+        public TestClientAssemblyManager(IAssembly assembly)
+        {
+            _assembly = assembly;
         }
 
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .UseReactiveUI()
-                .LogToDebug();
+        public Stream GetAssembly(string name)
+        {
+            if (_assembly != null && _assembly.Name == name)
+            {
+                var stream = new MemoryStream();
+                _assembly.Write(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                return stream;
+            }
+
+            return new MemoryStream();
+        }
+
+        public void UpdateAssemblies()
+        {
+        }
     }
 }

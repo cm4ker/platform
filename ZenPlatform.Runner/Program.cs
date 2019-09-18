@@ -23,8 +23,6 @@ using ZenPlatform.Compiler.Platform;
 
 namespace ZenPlatform.Runner
 {
-    
-   
     class Program
     {
         public static async Task Main(string[] args)
@@ -32,12 +30,8 @@ namespace ZenPlatform.Runner
             var builder = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, config) =>
                 {
-
-
                     //config.AddEnvironmentVariables();
                     config.AddXmlFile("App.config", false, true);
-
-
                 })
                 /*
                 .ConfigureLogging((hostContext, loggingBuilder) =>
@@ -59,7 +53,7 @@ namespace ZenPlatform.Runner
 
                     services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
 
-                    
+
                     services.AddTransient<IConnectionManager, ConnectionManager>();
                     services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
                     services.AddScoped<IInvokeService, InvokeService>();

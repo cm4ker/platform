@@ -218,7 +218,6 @@ namespace ZenPlatform.SyntaxGenerator
         }
     }
 
-
     public abstract class SyntaxArgument
     {
         [XmlAttribute] public string Name { get; set; }
