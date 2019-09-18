@@ -17,10 +17,11 @@ namespace ZenPlatform.Core.Environment
     /// <summary>
     ///  Базовый класс среды, служит для того, чтобы описать две производные среды <see cref="WorkEnvironment"/> и <see cref="SystemEnvironment"/>
     /// </summary>
-    public abstract class PlatformEnvironment : IEnvironment
+    public abstract class PlatformEnvironment : IPlatformEnvironment
     {
         protected ICacheService CacheService;
         protected IServiceProvider ServiceProvider;
+
         protected PlatformEnvironment(IDataContextManager dataContextManager, ICacheService cacheService)
         {
             Sessions = new List<ISession>();
@@ -47,6 +48,7 @@ namespace ZenPlatform.Core.Environment
 
             Configuration = XCRoot.Load(storage);
         }
+
         public abstract ISession CreateSession(IUser user);
 
         /// <summary>

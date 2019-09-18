@@ -40,7 +40,7 @@ namespace ZenPlatform.Cli
      *     update [toVersion] - обновить компоненты приложения до версии, по умолчанию максимальная
      *
      * + client 
-     *     connect [databaseNameOrDatabaseId] [userName] [password] [mode (client|configuration)] - использовать консольный клиент для подключения к прикладному решению
+     *     connect [host] [port] [dbName] [userName] [password] [mode (client|configuration)] - использовать консольный клиент для подключения к прикладному решению
      *     exec [command] - выполнить комманду в прикладном решении (нужно реализовать интерфейс комманд)
      *     cui - запустить консольное отображение
      *     ui - запустить обычный клиент

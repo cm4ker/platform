@@ -59,7 +59,10 @@ namespace ZenPlatform.Compiler.Cecil
         protected IReadOnlyList<IConstructor> _constructors;
 
         public IReadOnlyList<IConstructor> Constructors =>
-            _constructors ??= Definition.GetConstructors().Select(c => new CecilConstructor(TypeSystem, c, Reference))
+            _constructors ??= Definition.GetConstructors().Select(c => 
+                    new CecilConstructor(TypeSystem, c,
+                    new MethodReference(c.Name, TypeSystem.GetTypeReference(c.ReturnType.FullName), Reference),
+                    Reference))
                 .ToList();
 
         protected IReadOnlyList<IField> _fields;

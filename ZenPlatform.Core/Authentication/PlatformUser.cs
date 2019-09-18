@@ -8,9 +8,9 @@ namespace ZenPlatform.Core.Authentication
     /// Пользователь в системе.
     /// Обязателен для работы, потому что все манипуляции с данными будут всегда выполняться в контексте данного пользователя
     /// </summary>
-    public class User : IUser
+    public class PlatformUser : IPlatformUser
     {
-        public User()
+        public PlatformUser()
         {
             Roles = new List<RoleBase>();
         }
@@ -32,5 +32,16 @@ namespace ZenPlatform.Core.Authentication
         {
             return Name;
         }
+    }
+
+    /// <summary>
+    /// Пользователь сервера. Позволяет производить процесс администрирования сервера
+    /// </summary>
+    public class ServerUser : IUser
+    {
+        /// <inheritdoc cref="Name"/>
+        public string Name { get; }
+
+        public string PasswordHash { get; set; }
     }
 }

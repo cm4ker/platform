@@ -249,7 +249,7 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is Throw th)
             {
                 EmitExpression(e, th.Exception, symbolTable);
-                var constructor = _ts.FindType<Exception>().FindConstructor(_bindings.String);
+                var constructor = _ts.GetSystemBindings().Exception.FindConstructor(_bindings.String);
                 e.NewObj(constructor);
                 e.Throw();
             }

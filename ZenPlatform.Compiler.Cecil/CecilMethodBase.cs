@@ -10,13 +10,19 @@ namespace ZenPlatform.Compiler.Cecil
     {
         private TypeReference _declaringTR;
 
-        public CecilMethodBase(CecilTypeSystem typeSystem, MethodReference method, TypeReference declaringType)
+        public CecilMethodBase(CecilTypeSystem typeSystem, MethodReference method, MethodDefinition def,
+            TypeReference declaringType)
         {
             TypeSystem = typeSystem;
             Reference = method;
-            Definition = method.Resolve();
+            Definition = def;
             ContextResolver = new CecilContextResolver(typeSystem, method.Module);
             _declaringTR = declaringType;
+        }
+
+        public CecilMethodBase(CecilTypeSystem typeSystem, MethodReference method, TypeReference declaringType)
+            : this(typeSystem, method, method.Resolve(), declaringType)
+        {
         }
 
         private void UpdateReferenceInfo()

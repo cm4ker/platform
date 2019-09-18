@@ -30,6 +30,9 @@ namespace ZenPlatform.Core.Network
         }
     }
     
+    /// <summary>
+    /// Интерфейс для вызова удаленных процедур
+    /// </summary>
     public interface IInvokeService
     {
         /// <summary>
