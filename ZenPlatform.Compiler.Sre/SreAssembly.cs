@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Lokad.ILPack;
 using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Sre
@@ -40,14 +40,16 @@ namespace ZenPlatform.Compiler.Sre
 
         public void Write(string fileName)
         {
-            var generator = new AssemblyGenerator();
-            generator.GenerateAssembly(Assembly, fileName);
+            throw new NotImplementedException();
+//            var generator = new AssemblyGenerator();
+//            generator.GenerateAssembly(Assembly, fileName);
         }
 
         public void Write(Stream stream)
         {
-            var generator = new AssemblyGenerator();
-            stream.Write(generator.GenerateAssemblyBytes(Assembly));
+            throw new NotImplementedException();
+//            var generator = new AssemblyGenerator();
+//            stream.Write(generator.GenerateAssemblyBytes(Assembly));
         }
 
         public void Init()
