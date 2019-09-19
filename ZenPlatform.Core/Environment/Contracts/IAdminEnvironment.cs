@@ -11,7 +11,7 @@ namespace ZenPlatform.Core.Environment
     /// <br />    * Остановка/запуск обслуживания баз (экземпляра приложения)
     /// <br />    * Утилиты для обеспеяения сохранности данных (бэкапирование)
     /// </summary>
-    public interface IAdminEnvironment : IEnvironment<object>
+    public interface IAdminEnvironment : IInitializibleEnvironment<object>
     {
     }
 }

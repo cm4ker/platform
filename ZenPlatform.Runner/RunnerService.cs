@@ -37,7 +37,7 @@ namespace ZenPlatform.Runner
 
             _accessPoint = _serviceProvider.GetRequiredService<IAccessPoint>();
 
-           var envManager = _serviceProvider.GetRequiredService<IEnvironmentManager>();
+           var envManager = _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>();
 
             //var route = new Route($"system\\test");
             //registrator.GetInvokeService(route.GetService()).Register(route, (c,a) => { return (int)a[0] + 1; });

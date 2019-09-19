@@ -7,6 +7,6 @@
     <PackageReference Include="Ether.Network" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.ApplicationServer\ZenPlatform.WorkProcess.csproj" />
+    <ProjectReference Include="..\ZenPlatform.ApplicationServer\ZenPlatform.ApplicationServer.csproj" />
   </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@ namespace ZenPlatform.Core.Environment
         XCRoot Configuration { get; }
     }
 
-    public interface IPlatformEnvironment : IEnvironment<StartupConfig>
+    public interface IPlatformEnvironment : IInitializibleEnvironment<StartupConfig>
     {
         /// <summary>
         /// Менеджер доступа к данным

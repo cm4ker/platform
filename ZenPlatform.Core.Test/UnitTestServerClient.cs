@@ -31,7 +31,7 @@ namespace ZenPlatform.Core.Test
             var clientServices = Initializer.GetClientService();
 
 
-            var environmentManager = serverServices.GetRequiredService<IEnvironmentManager>();
+            var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
             Assert.NotEmpty(environmentManager.GetEnvironmentList());
 
 

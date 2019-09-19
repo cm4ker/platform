@@ -5,7 +5,7 @@ namespace ZenPlatform.Core.Environment
     /// <summary>
     /// Менеджер среды 
     /// </summary>
-    public interface IEnvironmentManager
+    public interface IPlatformEnvironmentManager
     {
         IEnvironment GetEnvironment(string name);
 

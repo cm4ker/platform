@@ -9,11 +9,7 @@ using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Environment
 {
-    /// <summary>
-    ///  Среда для подключения. Обеспечивает некий контекст в котором работает удаленный пользователь
-    /// </summary>
-    public interface IEnvironment<in TConfiguration>
-        where TConfiguration : class
+    public interface IEnvironment
     {
         /// <summary>
         /// Имя среды
@@ -31,13 +27,6 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         IInvokeService InvokeService { get; }
 
-
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        /// <param name="config">Конфигурация</param>
-        void Initialize(TConfiguration config);
-
         /// <summary>
         /// Менеджер аутентификации
         /// </summary>
@@ -49,5 +38,18 @@ namespace ZenPlatform.Core.Environment
         /// <param name="user">Пользователь</param>
         /// <returns>Экземпляр сессии</returns>
         ISession CreateSession(IUser user);
+    }
+
+    /// <summary>
+    ///  Среда для подключения. Обеспечивает некий контекст в котором работает удаленный пользователь
+    /// </summary>
+    public interface IInitializibleEnvironment<in TConfiguration> : IEnvironment
+        where TConfiguration : class
+    {
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        /// <param name="config">Конфигурация</param>
+        void Initialize(TConfiguration config);
     }
 }
