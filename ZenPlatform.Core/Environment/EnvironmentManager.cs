@@ -14,7 +14,13 @@ namespace ZenPlatform.Core.Environment
      *     На сервере приложений поднят IAdminEnvirnoment, который следует переименовать в IServerAppEnvironment
      *     
      */
-    public class EnvironmentManager : IEnvironmentManager
+
+    /// <summary>
+    /// Менеджер сред для платформы.
+    ///
+    /// <br /> Возжможно, потом, топологически каждая отдельная среда - это отдельный процесс
+    ///  </summary>
+    public class EnvironmentManager : IPlatformEnvironmentManager
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly List<IEnvironment> environments = new List<IEnvironment>();
@@ -31,21 +37,15 @@ namespace ZenPlatform.Core.Environment
 
         private void Initialize(List<StartupConfig> list)
         {
-            list.ForEach(c => environments.Add(CreateEnvironment<IWorkEnvironment>(c)));
-
-            environments.Add(CreateEnvironment<IAdminEnvironment>(new StartupConfig() {ConnectionString = ""}));
-
-#if DEBUG
-            //environments.Add(CreateEnvironment<ITestEnvironment>(new StartupConfig() { ConnectionString = "" }));
-#endif
+            list.ForEach(c => environments.Add(CreatePlatformEnvironment<IWorkEnvironment>(c)));
         }
 
         public void AddWorkEnvironment(StartupConfig config)
         {
-            environments.Add(CreateEnvironment<IWorkEnvironment>(config));
+            environments.Add(CreatePlatformEnvironment<IWorkEnvironment>(config));
         }
 
-        protected IEnvironment CreateEnvironment<T>(StartupConfig config) where T : IEnvironment
+        protected IPlatformEnvironment CreatePlatformEnvironment<T>(StartupConfig config) where T : IPlatformEnvironment
         {
             try
             {

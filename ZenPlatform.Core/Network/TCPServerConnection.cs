@@ -23,7 +23,7 @@ namespace ZenPlatform.Core.Network
         private ServerConnectionContext _connectionContext;
 
         public TCPServerConnection(ILogger<TCPServerConnection> logger, IChannelFactory channelFactory, 
-            TcpClient tcpClient, IEnvironmentManager environmentManager) 
+            TcpClient tcpClient, IPlatformEnvironmentManager environmentManager) 
             : base(logger, tcpClient, channelFactory)
         {
             _connectionContext = new ServerConnectionContext()

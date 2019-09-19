@@ -16,23 +16,26 @@ namespace ZenPlatform.Core.Network
         {
             _serviceProvider = serviceProvider;
         }
-        protected TCPServerConnection CreateConnection(TcpClient tcpClient, IEnvironmentManager environmentManager)
+
+        protected TCPServerConnection CreateConnection(TcpClient tcpClient,
+            IPlatformEnvironmentManager environmentManager)
         {
             var connection = new TCPServerConnection(
                 _serviceProvider.GetRequiredService<ILogger<TCPServerConnection>>(),
                 _serviceProvider.GetRequiredService<IChannelFactory>(),
                 tcpClient,
                 environmentManager
-                );
+            );
 
             return connection;
         }
+
         public virtual TCPServerConnection CreateConnection(TcpClient tcpClient)
         {
             var connection = CreateConnection(
                 tcpClient,
-                _serviceProvider.GetRequiredService<IEnvironmentManager>()
-                );
+                _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>()
+            );
 
             return connection;
         }
@@ -46,18 +49,20 @@ namespace ZenPlatform.Core.Network
 
         public override TCPServerConnection CreateConnection(TcpClient tcpClient)
         {
-            return CreateConnection(tcpClient, new FilteredEnvironmentManager(_serviceProvider.GetRequiredService<IEnvironmentManager>(),
+            return CreateConnection(tcpClient, new FilteredEnvironmentManager(
+                _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>(),
                 env => { return env.GetType().Equals(typeof(WorkEnvironment)); }));
         }
     }
 
 
-
-    public class FilteredEnvironmentManager : IEnvironmentManager
+    public class FilteredEnvironmentManager : IPlatformEnvironmentManager
     {
-        private IEnvironmentManager _manager;
+        private IPlatformEnvironmentManager _manager;
         private Func<IEnvironment, bool> _filter;
-        public FilteredEnvironmentManager(IEnvironmentManager manager, Func<IEnvironment, bool> filter)
+
+        public FilteredEnvironmentManager(IPlatformEnvironmentManager manager,
+            Func<IEnvironment, bool> filter)
         {
             _manager = manager;
             _filter = filter;
@@ -80,6 +85,5 @@ namespace ZenPlatform.Core.Network
         {
             return _manager.GetEnvironmentList().Where(e => _filter(e)).ToList();
         }
-
     }
 }

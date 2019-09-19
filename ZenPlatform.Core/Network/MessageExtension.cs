@@ -10,12 +10,13 @@ namespace ZenPlatform.Core.Network
 {
     public static class MessageExtension
     {
-        public static async Task<INetworkMessage> Invoke(this RequestInvokeUnaryNetworkMessage request, IInvokeService service, ISession session)
+        public static async Task<INetworkMessage> Invoke(this RequestInvokeUnaryNetworkMessage request,
+            IInvokeService service, ISession session)
         {
             try
             {
-                
-                return new ResponceInvokeUnaryNetworkMessage(request.Id, await service.Invoke(request.Route, session, request.Args));
+                return new ResponceInvokeUnaryNetworkMessage(request.Id,
+                    await service.Invoke(request.Route, session, request.Args));
             }
             catch (Exception ex)
             {
@@ -23,13 +24,13 @@ namespace ZenPlatform.Core.Network
             }
         }
 
-        public static async Task<INetworkMessage> InvokeStream(this StartInvokeStreamNetworkMessage request, IInvokeService service, ISession session, IChannel channel)
+        public static async Task<INetworkMessage> InvokeStream(this StartInvokeStreamNetworkMessage request,
+            IInvokeService service, ISession session, IChannel channel)
         {
             try
             {
-                
-               // var stream = new DataStream(request.Id, channel);
-               // await service.InvokeStream(request.Route, session, stream, request.Request);
+                // var stream = new DataStream(request.Id, channel);
+                // await service.InvokeStream(request.Route, session, stream, request.Request);
                 return new OkNetworkMessage(request.Id);
             }
             catch (Exception ex)
@@ -38,7 +39,8 @@ namespace ZenPlatform.Core.Network
             }
         }
 
-        public static async Task<INetworkMessage> Authentication(this RequestAuthenticationNetworkMessage request, IAuthenticationManager manager, Action<IUser> AuthCallback)
+        public static async Task<INetworkMessage> Authentication(this RequestAuthenticationNetworkMessage request,
+            IAuthenticationManager manager, Action<IUser> AuthCallback)
         {
             try
             {
@@ -52,20 +54,22 @@ namespace ZenPlatform.Core.Network
             }
         }
 
-        public static async Task<INetworkMessage> GetEnvironmentList(this RequestEnvironmentListNetworkMessage request, IEnvironmentManager manager)
+        public static async Task<INetworkMessage> GetEnvironmentList(this RequestEnvironmentListNetworkMessage request,
+            IPlatformEnvironmentManager manager)
         {
             try
             {
-                return new ResponceEnvironmentListNetworkMessage(request.Id, manager.GetEnvironmentList().Select(env => env.Name).ToList());
+                return new ResponceEnvironmentListNetworkMessage(request.Id,
+                    manager.GetEnvironmentList().Select(env => env.Name).ToList());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new ErrorNetworkMessage(request.Id, "Get environment list error", ex);
             }
-            
         }
 
-        public static async Task<INetworkMessage> UseEnvironment(this RequestEnvironmentUseNetworkMessage request, IEnvironmentManager manager, Action<IEnvironment> UseCallBack)
+        public static async Task<INetworkMessage> UseEnvironment(this RequestEnvironmentUseNetworkMessage request,
+            IPlatformEnvironmentManager manager, Action<IEnvironment> UseCallBack)
         {
             try
             {
@@ -84,12 +88,11 @@ namespace ZenPlatform.Core.Network
             if (!task.IsFaulted || task.IsCompletedSuccessfully)
             {
                 channel.Send(task.Result);
-            } else
+            }
+            else
             {
                 channel.Send(new ErrorNetworkMessage(id, "Unhandled exception.", task.Exception));
             }
         }
-
-
     }
 }

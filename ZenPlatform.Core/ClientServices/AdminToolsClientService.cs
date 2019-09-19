@@ -13,11 +13,11 @@ namespace ZenPlatform.Core.Tools
 {
     public class AdminToolsClientService : IAdminToolsClientService
     {
-        private IEnvironmentManager _environmentManager;
+        private IPlatformEnvironmentManager _environmentManager;
         private ISettingsStorage _settingsStorage;
         private IConfigurationManager _configurationManager;
 
-        public AdminToolsClientService(IEnvironmentManager environmentManager, ISettingsStorage settingsStorage,
+        public AdminToolsClientService(IPlatformEnvironmentManager environmentManager, ISettingsStorage settingsStorage,
             IConfigurationManager configurationManager)
         {
             _environmentManager = environmentManager;

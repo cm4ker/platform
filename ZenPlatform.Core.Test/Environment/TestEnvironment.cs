@@ -16,7 +16,7 @@ using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.Core.Test.Environment
 {
-    public class TestEnvironment : IEnvironment, IWorkEnvironment
+    public class TestEnvironment : IInitializibleEnvironment<>, IWorkEnvironment
     {
         private StartupConfig _config;
         private ILogger _logger;

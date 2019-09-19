@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConnectionServe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.UIBuilder", "ZenPlatform.UIGeneration2\ZenPlatform.UIBuilder.csproj", "{6298E023-E6CF-422D-B12D-49A64B33D601}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.WorkProcess", "ZenPlatform.ApplicationServer\ZenPlatform.WorkProcess.csproj", "{4276280D-D771-4572-A690-AF8188163F4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ApplicationServer", "ZenPlatform.ApplicationServer\ZenPlatform.ApplicationServer.csproj", "{4276280D-D771-4572-A690-AF8188163F4F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Interface", "ZenPlatform.Interface\ZenPlatform.Interface.csproj", "{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}"
 EndProject

@@ -58,7 +58,7 @@ namespace ZenPlatform.Core.Test
 
 
             //services.AddSingleton<ITestProxyService, TestProxyService>();
-            services.AddSingleton<IEnvironmentManager, EnvironmentManager>();
+            services.AddSingleton<IPlatformEnvironmentManager, EnvironmentManager>();
 
             //services.AddScoped<ITestEnvironment, TestEnvironment>();
             services.AddScoped<IAdminEnvironment, AdminEnvironment>();
