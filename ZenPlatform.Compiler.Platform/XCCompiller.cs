@@ -38,7 +38,7 @@ namespace ZenPlatform.Compiler.Platform
             {
                 foreach (var type in component.Types)
                 {
-                    new StagedGeneratorAst(component).StageServer(type, root);
+                    new StagedGeneratorAst(component).StageClient(type, root);
                 }
             }
 

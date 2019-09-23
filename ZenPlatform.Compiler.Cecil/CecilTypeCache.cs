@@ -25,8 +25,8 @@ namespace ZenPlatform.Compiler.Cecil
 
         public CecilType Get(TypeReference reference)
         {
-            if (reference.GetType() == typeof(TypeReference))
-                reference = reference.Resolve();
+//            if (reference.GetType() == typeof(TypeReference))
+//                reference = reference.Resolve();
             var definition = reference.Resolve();
             var asm = TypeSystem.FindAsm(definition.Module.Assembly);
             if (!_definitions.TryGetValue(definition, out var dentry))

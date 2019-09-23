@@ -9,13 +9,13 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         public IPropertyBuilder WithSetter(IMethod method)
         {
-            PropertyDef.GetMethod = ((DnlibMethod) method).MethodDef;
+            PropertyDef.GetMethod = ((DnlibMethodBase) method).MethodDef;
             return this;
         }
 
         public IPropertyBuilder WithGetter(IMethod method)
         {
-            PropertyDef.SetMethod = ((DnlibMethod) method).MethodDef;
+            PropertyDef.SetMethod = ((DnlibMethodBase) method).MethodDef;
             return this;
         }
 
