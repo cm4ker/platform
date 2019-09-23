@@ -23,7 +23,8 @@ namespace ZenPlatform.Component.Tests
         public void BuildAstTest()
         {
             var conf = Factory.CreateExampleConfiguration();
-            IAssemblyPlatform pl = new DnlibAssemblyPlatform();
+            IAssemblyPlatform pl = new CecilAssemblyPlatform();
+
             var server = pl.CreateAssembly("Server");
             var client = pl.CreateAssembly("Client");
 

@@ -14,20 +14,20 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibType : IType
     {
-        private readonly DnlibTypeSystem _typeSystem;
+        private readonly DnlibTypeSystem _ts;
         private readonly DnlibAssembly _assembly;
 
-        public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, ITypeDefOrRef typeRef, DnlibAssembly assembly)
+        public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, TypeRef typeRef, DnlibAssembly assembly)
         {
-            _typeSystem = typeSystem;
+            _ts = typeSystem;
             _assembly = assembly;
             TypeDef = typeDef;
-            TypeRef = typeRef;
+            TypeRef = typeRef ?? throw new ArgumentNullException(nameof(typeRef));
         }
 
         public TypeDef TypeDef { get; }
 
-        public ITypeDefOrRef TypeRef { get; }
+        public TypeRef TypeRef { get; }
 
         public bool Equals(IType other)
         {
@@ -54,7 +54,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<IEventInfo> Events { get; }
 
         public IReadOnlyList<IMethod> Methods =>
-            _methods ??= TypeDef.Methods.Select(x => new DnlibMethod(x)).ToList();
+            _methods ??= TypeDef.Methods.Select(x => new DnlibMethod(_ts, x, TypeRef)).ToList();
 
         public IReadOnlyList<IConstructor> Constructors =>
             _constructors ??= TypeDef.FindConstructors().Select(x => new DnlibConstructor(x)).ToList();

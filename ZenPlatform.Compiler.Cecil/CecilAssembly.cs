@@ -2,10 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Metadata;
 using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
+using AssemblyDefinition = Mono.Cecil.AssemblyDefinition;
 using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 using TypeAttributes = System.Reflection.TypeAttributes;
+using TypeDefinition = Mono.Cecil.TypeDefinition;
+using TypeReference = Mono.Cecil.TypeReference;
 
 
 namespace ZenPlatform.Compiler.Cecil
@@ -17,11 +22,13 @@ namespace ZenPlatform.Compiler.Cecil
         public ITypeSystem TypeSystem => _typeSystem;
 
         public AssemblyDefinition Assembly { get; }
+        public AssemblyNameReference Reference { get; }
 
         public CecilAssembly(CecilTypeSystem typeSystem, AssemblyDefinition assembly)
         {
             _typeSystem = typeSystem;
             Assembly = assembly;
+            Reference = AssemblyNameReference.Parse(assembly.FullName);
         }
 
         public bool Equals(IAssembly other) => other == this;
@@ -39,14 +46,15 @@ namespace ZenPlatform.Compiler.Cecil
             if (_typeCache.TryGetValue(fullName, out var rv))
                 return rv;
             var lastDot = fullName.LastIndexOf(".", StringComparison.Ordinal);
-            var asmRef = new AssemblyNameReference(Assembly.Name.Name, Assembly.Name.Version);
+            var asmRef = Reference;
+
             var tref = (lastDot == -1)
                 ? new TypeReference(null, fullName, Assembly.MainModule, asmRef)
                 : new TypeReference(fullName.Substring(0, lastDot),
                     fullName.Substring(lastDot + 1), Assembly.MainModule, asmRef);
             var resolved = tref.Resolve();
             if (resolved != null)
-                return _typeCache[fullName] = _typeSystem.GetTypeFor(resolved);
+                return _typeCache[fullName] = _typeSystem.GetTypeFor(tref);
 
             return null;
         }

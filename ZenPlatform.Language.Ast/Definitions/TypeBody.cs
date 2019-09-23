@@ -28,5 +28,13 @@ namespace ZenPlatform.Language.Ast.Definitions
             Functions.Add(function);
             Childs.Add(function);
         }
+
+        public void AddConstructor(Constructor constructor)
+        {
+            if (constructor == null) throw new ArgumentNullException(nameof(constructor));
+            
+            Constructors.Add(constructor);
+            Childs.Add(constructor);
+        }
     }
 }

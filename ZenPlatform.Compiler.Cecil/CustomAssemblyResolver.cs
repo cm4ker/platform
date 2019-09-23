@@ -50,18 +50,17 @@ namespace ZenPlatform.Compiler.Cecil
 
             List<string> paths = new List<string>();
             paths.Add(BaseDirectory);
-            paths.Add(RuntimeDirectory);
-            paths.Add(NetstandardDirectory);
+            //paths.Add(NetstandardDirectory);
             paths.Add(MacNetstandardDirectory);
-            
+            paths.Add(RuntimeDirectory);
             paths.Add("");
 
             var libname = name.Name;
 
-            if (libname == "mscorlib" || libname == "System.Private.CoreLib")
-            {
-                libname = "mscorlib";
-            }
+//            if (libname == "mscorlib" || libname == "System.Private.CoreLib")
+//            {
+//                libname = "netstandard";
+//            }
 
             if (!libraries.TryGetValue(libname, out def))
             {
