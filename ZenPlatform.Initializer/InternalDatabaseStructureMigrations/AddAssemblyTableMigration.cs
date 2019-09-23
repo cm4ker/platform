@@ -10,6 +10,7 @@ namespace ZenPlatform.Initializer.InternalDatabaseStructureMigrations
     {
         public override void Up()
         {
+
             Create.Table("assemblies")
                .WithColumn("id").AsInt32().PrimaryKey().Identity()
                .WithColumn("assembly_hash").AsString(200).Unique()
@@ -18,7 +19,7 @@ namespace ZenPlatform.Initializer.InternalDatabaseStructureMigrations
                .WithColumn("name").AsString(200)
                .WithColumn("create_datetime").AsDateTime().WithDefault(SystemMethods.CurrentDateTime)
                .WithColumn("data").AsBinary();
-
+            
         }
 
         public override void Down()
