@@ -115,7 +115,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Test", "Ze
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Contracts", "ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj", "{27B54484-31D4-447E-BDBB-FDFF2576D355}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.QueryBuilderTests", "ZenPlatform.QueryBuilderTests\ZenPlatform.QueryBuilderTests.csproj", "{94908DC9-077B-4E8F-9CBC-D840B8A51BFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryBuilder.Tests", "ZenPlatform.QueryBuilderTests\ZenPlatform.QueryBuilder.Tests.csproj", "{94908DC9-077B-4E8F-9CBC-D840B8A51BFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
