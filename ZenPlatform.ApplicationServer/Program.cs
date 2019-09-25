@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization.Formatters;
 using MessagePack;
@@ -11,6 +12,18 @@ namespace ZenPlatform.WorkProcess
     {
         public static void Main(params string[] args)
         {
+            var tw = new StringWriter();
+            var tr = new StringReader("Hello this is input stream");
+            Console.SetIn(tr);
+            Console.SetOut(tw);
+
+            Console.ReadLine();
+
+            Console.ReadKey();
+            
+            Console.WriteLine(tw.ToString());
+            
+            Console.ReadKey();
         }
     }
 
