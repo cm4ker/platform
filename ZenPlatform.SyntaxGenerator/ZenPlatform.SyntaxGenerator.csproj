@@ -4,6 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <LangVersion>preview</LangVersion>
+        <StartupObject>ZenPlatform.SyntaxGenerator.Program</StartupObject>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,5 +15,11 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="sql_syntax.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>
