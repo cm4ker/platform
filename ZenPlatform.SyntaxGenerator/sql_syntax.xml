@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Config>
+  <Syntax Name="TableNode">
+    <Arguments>
+      <Single Name="Name" Type="string" />
+      <Single Name="Schema" Type="SchemaNode"/>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ColumnNode">
+    <Arguments>
+      <Single Name="Name" Type="string" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SchemaNode">
+    <Arguments>
+      <Single Name="Name" Type="string" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="AlterTableNode">
+    <Arguments>
+      <Single Name="Table" Type="TableNode" />
+      <List Name="AddColumns" Type="ColumnDefinitionNode" />
+      <List Name="AlterColumns" Type="ColumnDefinitionNode" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="TypeDefinitionNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="IntTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="BigintTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="BinaryTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="DoubleTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="BooleanTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="GuidTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="DateTimeTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="ByteTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="TextTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="XmlTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="FloatTypeDefinitionNode" Base="TypeDefinitionNode"/>
+  <Syntax Name="NumericTypeDefinitionNode" Base="TypeDefinitionNode">
+    <Arguments>
+      <Single Name="Scale" Type="int" />
+      <Single Name="Precision" Type="int" />
+    </Arguments>
+  </Syntax>
+  <Syntax Name="VarbinaryTypeDefinitionNode" Base="TypeDefinitionNode">
+    <Arguments>
+      <Single Name="Size" Type="int" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ColumnDefinitionNode">
+    <Arguments>
+      <Single Name="Column" Type="ColumnNode"/>
+      <Single Name="Type" Type="TypeDefinitionNode"/>
+      <Single Name="Null" Type="bool" Null="true"/>
+      <Single Name="NotNull" Type="bool" Null="true"/>
+      <Single Name="Identity" Type="bool" Null="true"/>
+      <Single Name="DefaultValue" Type="object" />
+      <Single Name="DefaultMethod" Type="SystemMethods"/>
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="TypeConstraintNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="PrimaryKeyTypeConstraintNode" Base="TypeConstraintNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ForeingKeyTypeConstraintNode" Base="TypeConstraintNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="UniqueTypeConstraintNode" Base="TypeConstraintNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConstraintDefinitionNode">
+    <Arguments>
+      <Single Name="Type" Type="TypeConstraintNode"/>
+      <Single Name="Name" Type="string"/>
+      <Single Name="Table" Type="TableNode"/>
+      <List Name="Columns" Type="ColumnNode"/>
+      
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="IndexDefinitionNode">
+    <Arguments>
+      <Single Name="Name" Type="IdentifierNode"/>
+      <Single Name="Table" Type="TableNode"/>
+      <Single Name="Unique" Type="bool"/>
+      <Single Name="Clustered" Type="bool"/>
+    </Arguments>
+  </Syntax>
+  
+
+  <Syntax Name="TableDefinitionNode">
+    <Arguments>
+      <Single Name="Table" Type="TableNode" />
+      <List Name="Columns" Type="ColumnDefinitionNode"/>
+      <List Name="Constraints" Type="ConstraintDefinitionNode"/>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="IdentifierNode">
+    <Arguments>
+      <Single Name="Name" Type="string" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ParameterNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+</Config>
