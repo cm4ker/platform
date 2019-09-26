@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
@@ -696,12 +697,13 @@ namespace tterm.Ansi
         }
     }
 
-
     internal class AnsiBuilder
     {
         private const char Bracket = '[';
         private const char D = 'D';
+        private const char H = 'H';
         private const char C = 'C';
+        private const char Semicolon = ';';
 
         public static byte[] Build(TerminalCode code)
         {
@@ -710,8 +712,17 @@ namespace tterm.Ansi
                 TerminalCodeType.CursorBackward => Encoding.ASCII.GetBytes(new[] {C0.ESC, Bracket, D}),
                 TerminalCodeType.CursorForward => Encoding.ASCII.GetBytes(new[] {C0.ESC, Bracket, C}),
                 TerminalCodeType.Backspace => Encoding.ASCII.GetBytes(new[] {C0.BS}),
+                TerminalCodeType.CursorPosition => Encoding.ASCII.GetBytes(
+                    "" + C0.ESC + Bracket + code.Line + Semicolon + code.Column + H),
+                
                 _ => throw new Exception()
             };
+        }
+
+        public static byte[] SetCursorPosCommand(int cursorLine, int cursorColumn)
+        {
+            var res = "" + C0.ESC + Bracket + cursorLine + Semicolon + cursorColumn + H;
+            return Encoding.ASCII.GetBytes(res);
         }
     }
 }

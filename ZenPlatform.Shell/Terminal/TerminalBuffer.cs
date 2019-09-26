@@ -48,20 +48,27 @@ namespace ZenPlatform.Shell.Terminal
         {
             var termChar = new TerminalBufferChar(c, new CharAttributes());
 
-            if (_cursorPosition == _currentChars.Count - 1)
+            if (_cursorPosition == _currentChars.Count)
             {
-                MoveCursorForward();
                 _currentChars.Add(termChar);
+               
             }
             else
             {
                 _currentChars.Insert(_cursorPosition, termChar);
             }
+
+            MoveCursorForward();
+        }
+
+        static string ToArrayString(IEnumerable<char> charSequence)
+        {
+            return new String(charSequence.ToArray());
         }
 
         public string GetText()
         {
-            return new string(_currentChars.Skip(_cursorPosition).Select(x => x.Char).ToArray());
+            return ToArrayString(_currentChars.Skip(_cursorPosition - 1).Select(x => x.Char));
         }
 
         public void Clear()
