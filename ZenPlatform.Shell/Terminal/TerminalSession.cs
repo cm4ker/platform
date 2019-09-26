@@ -10,6 +10,7 @@ using MiniTerm;
 using TextCopy;
 using tterm.Ansi;
 using tterm.Utility;
+using ZenPlatform.Shell.Terminal;
 
 namespace tterm.Terminal
 {
@@ -35,24 +36,11 @@ namespace tterm.Terminal
         public bool ErrorOccured { get; private set; }
         public Exception Exception { get; private set; }
 
-        public TerminalBuffer Buffer { get; }
-
-        public TerminalSize Size
-        {
-            get => Buffer.Size;
-            set
-            {
-                if (Buffer.Size != value)
-                {
-                    Buffer.Size = value;
-                    BufferSizeChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-        }
+        public TerminalCommandBuffer Buffer { get; }
 
         public TerminalSession(TerminalSize size)
         {
-            Buffer = new TerminalBuffer(size);
+            Buffer = new TerminalCommandBuffer();
 
             writer = new AnonymousPipeServerStream(PipeDirection.Out);
             reader = new AnonymousPipeClientStream(PipeDirection.In, (writer.GetClientHandleAsString()));
@@ -119,63 +107,66 @@ namespace tterm.Terminal
             }
         }
 
+        private void OnDataReceived(string text)
+        {
+            var data = Encoding.UTF8.GetBytes(text);
+            OnDataReceived(data);
+        }
+
+        private void OnDataReceived(byte[] data)
+        {
+            DataReceived?.Invoke(this, data);
+        }
+
         private void ProcessTerminalCode(TerminalCode code)
         {
             switch (code.Type)
             {
                 case TerminalCodeType.ResetMode:
-                    Buffer.ShowCursor = false;
                     break;
                 case TerminalCodeType.SetMode:
-                    Buffer.ShowCursor = true;
-
-                    // HACK We want clear to reset the window position but not general typing.
-                    //      We therefore reset the window only if the cursor is moved to the top.
-                    if (Buffer.CursorY == 0)
-                    {
-                        Buffer.WindowTop = 0;
-                    }
-
                     break;
                 case TerminalCodeType.Text:
-                    
                     Buffer.Type(code.Text);
-
-                    var data = Encoding.UTF8.GetBytes(Buffer.GetText());
-                    
-                    
-                    DataReceived?.Invoke(this, );
+                    OnDataReceived(Buffer.GetText());
+                    break;
+                case TerminalCodeType.CursorForward:
+                    Buffer.MoveCursorForward();
+                    OnDataReceived(AnsiBuilder.Build(code));
+                    break;
+                case TerminalCodeType.CursorBackward:
+                    Buffer.MoveCursorBack();
+                    OnDataReceived(AnsiBuilder.Build(code));
                     break;
                 case TerminalCodeType.LineFeed:
-                    //new line feed
+                    Buffer.Clear();
                     break;
                 case TerminalCodeType.CarriageReturn:
-                    //Flush command to the handler
+                    Buffer.Flush();
                     break;
                 case TerminalCodeType.CharAttributes:
-                    Buffer.CurrentCharAttributes = code.CharAttributes;
+                    break;
+                case TerminalCodeType.Backspace:
+                    Buffer.Backspace();
+                    OnDataReceived(AnsiBuilder.Build(code));
                     break;
                 case TerminalCodeType.CursorPosition:
-                    Buffer.CursorX = code.Column;
-                    Buffer.CursorY = code.Line;
+
                     break;
                 case TerminalCodeType.CursorUp:
-                    Buffer.CursorY -= code.Line;
+
                     break;
                 case TerminalCodeType.CursorCharAbsolute:
-                    Buffer.CursorX = code.Column;
+
                     break;
                 case TerminalCodeType.EraseInLine:
                     if (code.Line == 0)
                     {
-                        Buffer.ClearBlock(Buffer.CursorX, Buffer.CursorY, Buffer.Size.Columns - 1, Buffer.CursorY);
                     }
 
                     break;
                 case TerminalCodeType.EraseInDisplay:
-                    Buffer.Clear();
-                    Buffer.CursorX = 0;
-                    Buffer.CursorY = 0;
+
                     break;
                 case TerminalCodeType.SetTitle:
                     Title = code.Text;
