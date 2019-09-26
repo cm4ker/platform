@@ -2,7 +2,9 @@
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,6 +55,7 @@ namespace MiniTerm
                         break;
                     DataReceived?.Invoke(this, buf.Take(length).ToArray());
                 }
+
                 CloseReceived?.Invoke(this, 0);
             });
         }
@@ -72,7 +75,6 @@ namespace MiniTerm
         public void OnSizeChanged(ConsoleSize size)
         {
             this.pseudoConsole.Resize(size.WidthColumns, size.HeightRows);
-
         }
 
         private void DisposeResources(params IDisposable[] disposables)
@@ -86,56 +88,6 @@ namespace MiniTerm
         public void Dispose()
         {
             DisposeResources(reader, writer, process, pseudoConsole, outputPipe, inputPipe);
-        }
-    }
-
-    public class MyTerminal : ITerminal
-    {
-        public event EventHandler<uint> CloseReceived;
-        public event EventHandler<byte[]> DataReceived;
-
-        public MyTerminal()
-        {
-            inputStream = new StringWriter();
-        }
-
-        public void Dispose()
-        {
-
-        }
-
-        public void OnClose()
-        {
-
-        }
-
-        public void OnInput(byte[] data)
-        {
-
-        }
-
-        public void OnSizeChanged(ConsoleSize size)
-        {
-
-        }
-
-        private Stream inputStream;
-
-        public void Run()
-        {
-            // copy all pseudoconsole output to stdout
-            Task.Run(() =>
-            {
-                var buf = new byte[1024];
-                while (!proc.HasExited)
-                {
-                    var length = reader.Read(buf, 0, buf.Length);
-                    if (length == 0)
-                        break;
-                    DataReceived?.Invoke(this, buf.Take(length).ToArray());
-                }
-                CloseReceived?.Invoke(this, 0);
-            });
         }
     }
 }

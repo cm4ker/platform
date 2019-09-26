@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,6 +12,7 @@
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>FxSsh.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>FxSsh</RootNamespace>
   </PropertyGroup>
 
 </Project>
