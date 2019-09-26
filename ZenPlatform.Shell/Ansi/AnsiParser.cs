@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using Microsoft.VisualBasic.CompilerServices;
 using tterm.Utility;
 
 namespace tterm.Ansi
@@ -543,6 +547,9 @@ namespace tterm.Ansi
                 case 'H':
                     Emit(new TerminalCode(TerminalCodeType.CursorPosition, (int) _params[1] - 1, (int) _params[0] - 1));
                     return true;
+                case 'C':
+                    Emit(new TerminalCode(TerminalCodeType.CursorForward));
+                    return true;
                 case 'D':
                     Emit(new TerminalCode(TerminalCodeType.CursorBackward));
                     return true;
@@ -686,6 +693,25 @@ namespace tterm.Ansi
             Charset,
             Dcs,
             Ignore
+        }
+    }
+
+
+    internal class AnsiBuilder
+    {
+        private const char Bracket = '[';
+        private const char D = 'D';
+        private const char C = 'C';
+
+        public static byte[] Build(TerminalCode code)
+        {
+            return code.Type switch
+            {
+                TerminalCodeType.CursorBackward => Encoding.ASCII.GetBytes(new[] {C0.ESC, Bracket, D}),
+                TerminalCodeType.CursorForward => Encoding.ASCII.GetBytes(new[] {C0.ESC, Bracket, C}),
+                TerminalCodeType.Backspace => Encoding.ASCII.GetBytes(new[] {C0.BS}),
+                _ => throw new Exception()
+            };
         }
     }
 }
