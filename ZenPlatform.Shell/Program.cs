@@ -4,6 +4,7 @@ using MiniTerm;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using tterm.Terminal;
 
 namespace SshServerLoader
 {
@@ -14,8 +15,10 @@ namespace SshServerLoader
         static void Main(string[] args)
         {
             var server = new SshServer();
-            server.AddHostKey("ssh-rsa", "BwIAAACkAABSU0EyAAQAAAEAAQADKjiW5UyIad8ITutLjcdtejF4wPA1dk1JFHesDMEhU9pGUUs+HPTmSn67ar3UvVj/1t/+YK01FzMtgq4GHKzQHHl2+N+onWK4qbIAMgC6vIcs8u3d38f3NFUfX+lMnngeyxzbYITtDeVVXcLnFd7NgaOcouQyGzYrHBPbyEivswsnqcnF4JpUTln29E1mqt0a49GL8kZtDfNrdRSt/opeexhCuzSjLPuwzTPc6fKgMc6q4MBDBk53vrFY2LtGALrpg3tuydh3RbMLcrVyTNT+7st37goubQ2xWGgkLvo+TZqu3yutxr1oLSaPMSmf9bTACMi5QDicB3CaWNe9eU73MzhXaFLpNpBpLfIuhUaZ3COlMazs7H9LCJMXEL95V6ydnATf7tyO0O+jQp7hgYJdRLR3kNAKT0HU8enE9ZbQEXG88hSCbpf1PvFUytb1QBcotDy6bQ6vTtEAZV+XwnUGwFRexERWuu9XD6eVkYjA4Y3PGtSXbsvhwgH0mTlBOuH4soy8MV4dxGkxM8fIMM0NISTYrPvCeyozSq+NDkekXztFau7zdVEYmhCqIjeMNmRGuiEo8ppJYj4CvR1hc8xScUIw7N4OnLISeAdptm97ADxZqWWFZHno7j7rbNsq5ysdx08OtplghFPx4vNHlS09LwdStumtUel5oIEVMYv+yWBYSPPZBcVY5YFyZFJzd0AOkVtUbEbLuzRs5AtKZG01Ip/8+pZQvJvdbBMLT1BUvHTrccuRbY03SHIaUM3cTUc=");
-            server.AddHostKey("ssh-dss", "BwIAAAAiAABEU1MyAAQAAG+6KQWB+crih2Ivb6CZsMe/7NHLimiTl0ap97KyBoBOs1amqXB8IRwI2h9A10R/v0BHmdyjwe0c0lPsegqDuBUfD2VmsDgrZ/i78t7EJ6Sb6m2lVQfTT0w7FYgVk3J1Deygh7UcbIbDoQ+refeRNM7CjSKtdR+/zIwO3Qub2qH+p6iol2iAlh0LP+cw+XlH0LW5YKPqOXOLgMIiO+48HZjvV67pn5LDubxru3ZQLvjOcDY0pqi5g7AJ3wkLq5dezzDOOun72E42uUHTXOzo+Ct6OZXFP53ZzOfjNw0SiL66353c9igBiRMTGn2gZ+au0jMeIaSsQNjQmWD+Lnri39n0gSCXurDaPkec+uaufGSG9tWgGnBdJhUDqwab8P/Ipvo5lS5p6PlzAQAAACqx1Nid0Ea0YAuYPhg+YolsJ/ce");
+            server.AddHostKey("ssh-rsa",
+                "BwIAAACkAABSU0EyAAQAAAEAAQADKjiW5UyIad8ITutLjcdtejF4wPA1dk1JFHesDMEhU9pGUUs+HPTmSn67ar3UvVj/1t/+YK01FzMtgq4GHKzQHHl2+N+onWK4qbIAMgC6vIcs8u3d38f3NFUfX+lMnngeyxzbYITtDeVVXcLnFd7NgaOcouQyGzYrHBPbyEivswsnqcnF4JpUTln29E1mqt0a49GL8kZtDfNrdRSt/opeexhCuzSjLPuwzTPc6fKgMc6q4MBDBk53vrFY2LtGALrpg3tuydh3RbMLcrVyTNT+7st37goubQ2xWGgkLvo+TZqu3yutxr1oLSaPMSmf9bTACMi5QDicB3CaWNe9eU73MzhXaFLpNpBpLfIuhUaZ3COlMazs7H9LCJMXEL95V6ydnATf7tyO0O+jQp7hgYJdRLR3kNAKT0HU8enE9ZbQEXG88hSCbpf1PvFUytb1QBcotDy6bQ6vTtEAZV+XwnUGwFRexERWuu9XD6eVkYjA4Y3PGtSXbsvhwgH0mTlBOuH4soy8MV4dxGkxM8fIMM0NISTYrPvCeyozSq+NDkekXztFau7zdVEYmhCqIjeMNmRGuiEo8ppJYj4CvR1hc8xScUIw7N4OnLISeAdptm97ADxZqWWFZHno7j7rbNsq5ysdx08OtplghFPx4vNHlS09LwdStumtUel5oIEVMYv+yWBYSPPZBcVY5YFyZFJzd0AOkVtUbEbLuzRs5AtKZG01Ip/8+pZQvJvdbBMLT1BUvHTrccuRbY03SHIaUM3cTUc=");
+            server.AddHostKey("ssh-dss",
+                "BwIAAAAiAABEU1MyAAQAAG+6KQWB+crih2Ivb6CZsMe/7NHLimiTl0ap97KyBoBOs1amqXB8IRwI2h9A10R/v0BHmdyjwe0c0lPsegqDuBUfD2VmsDgrZ/i78t7EJ6Sb6m2lVQfTT0w7FYgVk3J1Deygh7UcbIbDoQ+refeRNM7CjSKtdR+/zIwO3Qub2qH+p6iol2iAlh0LP+cw+XlH0LW5YKPqOXOLgMIiO+48HZjvV67pn5LDubxru3ZQLvjOcDY0pqi5g7AJ3wkLq5dezzDOOun72E42uUHTXOzo+Ct6OZXFP53ZzOfjNw0SiL66353c9igBiRMTGn2gZ+au0jMeIaSsQNjQmWD+Lnri39n0gSCXurDaPkec+uaufGSG9tWgGnBdJhUDqwab8P/Ipvo5lS5p6PlzAQAAACqx1Nid0Ea0YAuYPhg+YolsJ/ce");
             server.ConnectionAccepted += server_ConnectionAccepted;
 
             server.Start();
@@ -41,18 +44,18 @@ namespace SshServerLoader
 
         static void e_ServiceRegistered(object sender, SshService e)
         {
-            var session = (Session)sender;
+            var session = (Session) sender;
             Console.WriteLine("Session {0} requesting {1}.",
                 BitConverter.ToString(session.SessionId).Replace("-", ""), e.GetType().Name);
 
             if (e is UserauthService)
             {
-                var service = (UserauthService)e;
+                var service = (UserauthService) e;
                 service.Userauth += service_Userauth;
             }
             else if (e is ConnectionService)
             {
-                var service = (ConnectionService)e;
+                var service = (ConnectionService) e;
                 service.CommandOpened += service_CommandOpened;
                 service.EnvReceived += service_EnvReceived;
                 service.PtyReceived += service_PtyReceived;
@@ -64,7 +67,7 @@ namespace SshServerLoader
         {
             Console.WriteLine("Received a request to forward data to {0}:{1}", e.Host, e.Port);
 
-            var allow = true;  // func(e.Host, e.Port, e.AttachedUserauthArgs);
+            var allow = true; // func(e.Host, e.Port, e.AttachedUserauthArgs);
 
             if (!allow)
                 return;
@@ -80,8 +83,8 @@ namespace SshServerLoader
         static void service_PtyReceived(object sender, PtyArgs e)
         {
             Console.WriteLine("Request to create a PTY received for terminal type {0}", e.Terminal);
-            windowWidth = (int)e.WidthChars;
-            windowHeight = (int)e.HeightRows;
+            windowWidth = (int) e.WidthChars;
+            windowHeight = (int) e.HeightRows;
         }
 
         static void service_EnvReceived(object sender, EnvironmentArgs e)
@@ -100,7 +103,7 @@ namespace SshServerLoader
         {
             Console.WriteLine($"Channel {e.Channel.ServerChannelId} runs {e.ShellType}: \"{e.CommandText}\".");
 
-            var allow = true;  // func(e.ShellType, e.CommandText, e.AttachedUserauthArgs);
+            var allow = true; // func(e.ShellType, e.CommandText, e.AttachedUserauthArgs);
 
             if (!allow)
                 return;
@@ -109,7 +112,8 @@ namespace SshServerLoader
             {
                 // requirements: Windows 10 RedStone 5, 1809
                 // also, you can call powershell.exe
-                ITerminal terminal = new Terminal("cmd.exe", windowWidth, windowHeight);
+                //ITerminal terminal = new Terminal("cmd.exe", windowWidth, windowHeight);
+                ITerminal terminal = new TerminalSession(new TerminalSize(windowWidth, windowHeight));
 
                 e.Channel.DataReceived += (ss, ee) => terminal.OnInput(ee);
                 e.Channel.CloseReceived += (ss, ee) => terminal.OnClose();
@@ -122,7 +126,8 @@ namespace SshServerLoader
             }
             else if (e.ShellType == "exec")
             {
-                var parser = new Regex(@"(?<cmd>git-receive-pack|git-upload-pack|git-upload-archive) \'/?(?<proj>.+)\.git\'");
+                var parser =
+                    new Regex(@"(?<cmd>git-receive-pack|git-upload-pack|git-upload-archive) \'/?(?<proj>.+)\.git\'");
                 var match = parser.Match(e.CommandText);
                 var command = match.Groups["cmd"].Value;
                 var project = match.Groups["proj"].Value;
