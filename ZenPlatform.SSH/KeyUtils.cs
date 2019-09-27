@@ -1,9 +1,9 @@
-﻿using FxSsh.Algorithms;
-using System;
+﻿using System;
 using System.Diagnostics.Contracts;
 using System.Security.Cryptography;
+using ZenPlatform.SSH.Algorithms;
 
-namespace FxSsh
+namespace ZenPlatform.SSH
 {
     public static class KeyUtils
     {

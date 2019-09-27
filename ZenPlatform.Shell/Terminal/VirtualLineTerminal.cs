@@ -1,29 +1,42 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using TextCopy;
+using System.Runtime.Serialization;
 using tterm.Ansi;
 using tterm.Terminal;
+using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal
 {
-    internal enum InsertionMode
-    {
-        Replace,
-        Insert
-    }
-
-    internal class TerminalCommandBuffer
+    /// <summary>
+    /// Управляет единичной командой в терминале
+    /// </summary>
+    internal class VirtualLineTerminal
     {
         private IList<TerminalBufferChar> _currentChars;
 
         private int _cursorPosition = 0;
 
-        public TerminalCommandBuffer()
+        /// <summary>
+        /// Где начинается линия
+        /// </summary>
+        private int _startPositionX, _startPositionY;
+
+        public VirtualLineTerminal(int startPositionX, int startPositionY, TerminalBufferChar buffer)
         {
+            _startPositionX = startPositionX;
+            _startPositionY = startPositionY;
+
             _currentChars = new List<TerminalBufferChar>();
         }
+
+        internal void UpdateStartPosition(int x, int y)
+        {
+            _startPositionX = x;
+            _startPositionY = y;
+        }
+
+        public event EventHandler OnUpdate;
 
         public void MoveCursorForward()
         {
@@ -51,7 +64,6 @@ namespace ZenPlatform.Shell.Terminal
             if (_cursorPosition == _currentChars.Count)
             {
                 _currentChars.Add(termChar);
-               
             }
             else
             {

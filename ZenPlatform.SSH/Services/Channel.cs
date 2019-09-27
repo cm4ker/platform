@@ -1,9 +1,9 @@
-﻿using FxSsh.Messages.Connection;
-using System;
+﻿using System;
 using System.Diagnostics.Contracts;
 using System.Threading;
+using ZenPlatform.SSH.Messages.Connection;
 
-namespace FxSsh.Services
+namespace ZenPlatform.SSH.Services
 {
     public abstract class Channel
     {
@@ -45,7 +45,7 @@ namespace FxSsh.Services
         public bool ServerMarkedEof { get; private set; }
 
         public event EventHandler<byte[]> DataReceived;
-        public event EventHandler<ConsoleSize> SizeChanged;
+        public event EventHandler<TerminalSize> SizeChanged;
         public event EventHandler EofReceived;
         public event EventHandler CloseReceived;
 
@@ -61,7 +61,7 @@ namespace FxSsh.Services
             var msg = new ChannelDataMessage();
             msg.RecipientChannel = ClientChannelId;
 
-            var total = (uint)data.Length;
+            var total = (uint) data.Length;
             var offset = 0L;
             byte[] buf = null;
             do
@@ -92,7 +92,7 @@ namespace FxSsh.Services
                 return;
 
             ServerMarkedEof = true;
-            var msg = new ChannelEofMessage { RecipientChannel = ClientChannelId };
+            var msg = new ChannelEofMessage {RecipientChannel = ClientChannelId};
             _connectionService._session.SendMessage(msg);
         }
 
@@ -103,8 +103,9 @@ namespace FxSsh.Services
 
             ServerClosed = true;
             if (exitCode.HasValue)
-                _connectionService._session.SendMessage(new ExitStatusMessage { RecipientChannel = ClientChannelId, ExitStatus = exitCode.Value });
-            _connectionService._session.SendMessage(new ChannelCloseMessage { RecipientChannel = ClientChannelId });
+                _connectionService._session.SendMessage(new ExitStatusMessage
+                    {RecipientChannel = ClientChannelId, ExitStatus = exitCode.Value});
+            _connectionService._session.SendMessage(new ChannelCloseMessage {RecipientChannel = ClientChannelId});
 
             CheckBothClosed();
         }
@@ -113,7 +114,7 @@ namespace FxSsh.Services
         {
             Contract.Requires(data != null);
 
-            ServerAttemptAdjustWindow((uint)data.Length);
+            ServerAttemptAdjustWindow((uint) data.Length);
 
             if (DataReceived != null)
                 DataReceived(this, data);
@@ -137,7 +138,7 @@ namespace FxSsh.Services
             CheckBothClosed();
         }
 
-        internal void OnSizeChanged(ConsoleSize size)
+        internal void OnSizeChanged(TerminalSize size)
         {
             SizeChanged?.Invoke(this, size);
         }

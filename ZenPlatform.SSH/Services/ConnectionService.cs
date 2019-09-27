@@ -1,12 +1,12 @@
-﻿using FxSsh.Messages;
-using FxSsh.Messages.Connection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
+using ZenPlatform.SSH.Messages;
+using ZenPlatform.SSH.Messages.Connection;
 
-namespace FxSsh.Services
+namespace ZenPlatform.SSH.Services
 {
     public class ConnectionService : SshService, IDynamicInvoker
     {

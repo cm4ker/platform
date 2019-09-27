@@ -1,5 +1,5 @@
 ﻿
-namespace FxSsh.Messages.Connection
+namespace ZenPlatform.SSH.Messages.Connection
 {
     public class ExitStatusMessage : ChannelRequestMessage
     {

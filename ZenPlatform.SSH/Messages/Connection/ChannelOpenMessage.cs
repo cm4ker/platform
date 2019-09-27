@@ -1,7 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
-namespace FxSsh.Messages.Connection
+namespace ZenPlatform.SSH.Messages.Connection
 {
     [Message("SSH_MSG_CHANNEL_OPEN", MessageNumber)]
     public class ChannelOpenMessage : ConnectionServiceMessage

@@ -1,19 +1,33 @@
 ﻿using System;
 
-namespace tterm.Terminal
+namespace ZenPlatform.SSH
 {
     /// <summary>
     /// Represents a terminal size in columns and rows.
     /// </summary>
     public struct TerminalSize : IEquatable<TerminalSize>
     {
-        public int Columns { get; }
-        public int Rows { get; }
+        public uint WidthColumns { get; }
+        public uint HeightRows { get; }
 
-        public TerminalSize(int columns, int rows)
+        public uint WidthPixels { get; set; }
+
+        public uint HeightPixels { get; set; }
+
+        public TerminalSize(uint columns, uint rows, uint widthPixels = 0, uint heightPixels = 0)
         {
-            Columns = columns;
-            Rows = rows;
+            WidthColumns = columns;
+            HeightRows = rows;
+            WidthPixels = widthPixels;
+            HeightPixels = heightPixels;
+        }
+        
+        public TerminalSize(int columns, int rows, uint widthPixels = 0, uint heightPixels = 0)
+        {
+            WidthColumns = (uint)columns;
+            HeightRows = (uint)rows;
+            WidthPixels = widthPixels;
+            HeightPixels = heightPixels;
         }
 
         public bool Equals(TerminalSize other)
@@ -33,7 +47,7 @@ namespace tterm.Terminal
 
         public override string ToString()
         {
-            return $"{Columns} x {Rows}";
+            return $"{WidthColumns} x {HeightRows}";
         }
 
         public static bool operator ==(TerminalSize a, TerminalSize b)

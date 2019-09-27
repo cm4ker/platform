@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace FxSsh
+namespace ZenPlatform.SSH
 {
     public enum ChannelOpenFailureReason
     {

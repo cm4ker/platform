@@ -1,10 +1,12 @@
-﻿using FxSsh;
-using FxSsh.Services;
-using MiniTerm;
+﻿using MiniTerm;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using tterm.Terminal;
+using ZenPlatform.Shell.MiniTerm;
+using ZenPlatform.Shell.Terminal;
+using ZenPlatform.SSH;
+using ZenPlatform.SSH.Services;
 
 namespace SshServerLoader
 {
@@ -116,11 +118,11 @@ namespace SshServerLoader
                 // requirements: Windows 10 RedStone 5, 1809
                 // also, you can call powershell.exe
                 //ITerminal terminal = new Terminal("cmd.exe", windowWidth, windowHeight);
-                ITerminal terminal = new TerminalSession(new TerminalSize(windowWidth, windowHeight));
+                ITerminalSession terminal = new TerminalSession(new TerminalSize(windowWidth, windowHeight));
 
-                e.Channel.DataReceived += (ss, ee) => terminal.OnInput(ee);
-                e.Channel.CloseReceived += (ss, ee) => terminal.OnClose();
-                e.Channel.SizeChanged += (ss, ee) => terminal.OnSizeChanged(ee);
+                e.Channel.DataReceived += (ss, ee) => terminal.ConsumeData(ee);
+                e.Channel.CloseReceived += (ss, ee) => terminal.Close();
+                e.Channel.SizeChanged += (ss, ee) => terminal.ChangeSize(ee);
 
                 terminal.DataReceived += (ss, ee) => e.Channel.SendData(ee);
                 terminal.CloseReceived += (ss, ee) => e.Channel.SendClose(ee);

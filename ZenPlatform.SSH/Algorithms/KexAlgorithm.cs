@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Security.Cryptography;
 
-namespace FxSsh.Algorithms
+namespace ZenPlatform.SSH.Algorithms
 {
     [ContractClass(typeof(KexAlgorithmContract))]
     public abstract class KexAlgorithm

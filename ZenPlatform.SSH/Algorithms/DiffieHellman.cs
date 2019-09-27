@@ -5,7 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 
-namespace FxSsh.Algorithms
+namespace ZenPlatform.SSH.Algorithms
 {
     public class DiffieHellman : AsymmetricAlgorithm
     {

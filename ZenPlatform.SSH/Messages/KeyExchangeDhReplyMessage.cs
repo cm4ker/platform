@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FxSsh.Messages
+﻿namespace ZenPlatform.SSH.Messages
 {
     [Message("SSH_MSG_KEXDH_REPLY", MessageNumber)]
     public class KeyExchangeDhReplyMessage : Message

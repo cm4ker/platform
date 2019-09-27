@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace FxSsh
+namespace ZenPlatform.SSH
 {
     public class SshServer : IDisposable
     {

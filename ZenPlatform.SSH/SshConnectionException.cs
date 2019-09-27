@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FxSsh
+namespace ZenPlatform.SSH
 {
     public class SshConnectionException : Exception
     {

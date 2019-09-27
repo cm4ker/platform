@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 
-namespace FxSsh.Algorithms
+namespace ZenPlatform.SSH.Algorithms
 {
     [ContractClass(typeof(CompressionAlgorithmContract))]
     public abstract class CompressionAlgorithm

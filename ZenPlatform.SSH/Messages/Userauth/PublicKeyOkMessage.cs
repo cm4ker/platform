@@ -1,7 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
-namespace FxSsh.Messages.Userauth
+namespace ZenPlatform.SSH.Messages.Userauth
 {
     [Message("SSH_MSG_USERAUTH_PK_OK", MessageNumber)]
     public class PublicKeyOkMessage : UserauthServiceMessage

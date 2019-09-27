@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace FxSsh.Algorithms
+namespace ZenPlatform.SSH.Algorithms
 {
     public class CipherInfo
     {

@@ -1,5 +1,5 @@
 ﻿
-namespace FxSsh.Algorithms
+namespace ZenPlatform.SSH.Algorithms
 {
     public enum CipherModeEx
     {
