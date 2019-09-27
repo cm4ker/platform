@@ -1,10 +1,10 @@
-﻿using FxSsh.Messages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using ZenPlatform.SSH.Messages;
 
-namespace FxSsh
+namespace ZenPlatform.SSH
 {
     public static class DynamicInvoker
     {

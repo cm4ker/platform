@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using tterm.Ansi;
 
-namespace tterm.Ansi
+namespace ZenPlatform.Shell.Ansi
 {
     internal struct TerminalCode
     {
         public TerminalCodeType Type { get; }
+
         public int Line { get; }
+
         public int Column { get; }
+
         public string Text { get; }
+
         public CharAttributes CharAttributes { get; }
 
         public TerminalCode(TerminalCodeType type) : this()

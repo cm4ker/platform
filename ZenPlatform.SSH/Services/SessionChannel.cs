@@ -1,5 +1,5 @@
 ﻿
-namespace FxSsh.Services
+namespace ZenPlatform.SSH.Services
 {
     public class SessionChannel : Channel
     {

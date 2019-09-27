@@ -1,5 +1,4 @@
-﻿using FxSsh.Messages.Connection;
-using Microsoft.Win32.SafeHandles;
+﻿using Microsoft.Win32.SafeHandles;
 using System;
 using System.IO;
 using System.IO.Pipes;
@@ -7,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ZenPlatform.Shell.MiniTerm;
+using ZenPlatform.SSH;
+using ZenPlatform.SSH.Messages.Connection;
 
 namespace MiniTerm
 {
@@ -72,7 +74,7 @@ namespace MiniTerm
             writer.Flush();
         }
 
-        public void OnSizeChanged(ConsoleSize size)
+        public void OnSizeChanged(TerminalSize size)
         {
             this.pseudoConsole.Resize(size.WidthColumns, size.HeightRows);
         }

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Net;
 using System.Text;
 
-namespace FxSsh.Messages.Connection
+namespace ZenPlatform.SSH.Messages.Connection
 {
     public class DirectTcpIpMessage : ChannelOpenMessage
     {

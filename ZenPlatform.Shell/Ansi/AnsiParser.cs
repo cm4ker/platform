@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using Microsoft.VisualBasic.CompilerServices;
 using tterm.Utility;
+using ZenPlatform.Shell.Ansi;
 
 namespace tterm.Ansi
 {
@@ -554,6 +555,10 @@ namespace tterm.Ansi
                 case 'D':
                     Emit(new TerminalCode(TerminalCodeType.CursorBackward));
                     return true;
+                case 'R':
+                    Emit(new TerminalCode(TerminalCodeType.DeviceStatusResponce, (int) _params[0] - 1,
+                        (int) _params[1] - 1));
+                    return true;
                 case 'K':
                     Emit(TerminalCodeType.EraseInLine);
                     return true;
@@ -703,20 +708,34 @@ namespace tterm.Ansi
         private const char D = 'D';
         private const char H = 'H';
         private const char C = 'C';
+        private const char Six = '6';
+        private const char n = 'n';
         private const char Semicolon = ';';
 
         public static byte[] Build(TerminalCode code)
         {
             return code.Type switch
             {
-                TerminalCodeType.CursorBackward => Encoding.ASCII.GetBytes(new[] {C0.ESC, Bracket, D}),
-                TerminalCodeType.CursorForward => Encoding.ASCII.GetBytes(new[] {C0.ESC, Bracket, C}),
-                TerminalCodeType.Backspace => Encoding.ASCII.GetBytes(new[] {C0.BS}),
-                TerminalCodeType.CursorPosition => Encoding.ASCII.GetBytes(
+                TerminalCodeType.CursorBackward => Conv(C0.ESC, Bracket, D),
+                TerminalCodeType.CursorForward => Conv(C0.ESC, Bracket, C),
+                TerminalCodeType.Backspace => Conv(C0.BS),
+                TerminalCodeType.CursorPosition => Conv(
                     "" + C0.ESC + Bracket + code.Line + Semicolon + code.Column + H),
-                
+                TerminalCodeType.DeviceStatusRequest => Conv(C0.ESC, Bracket, Six, n),
+
                 _ => throw new Exception()
             };
+        }
+
+
+        private static byte[] Conv(params char[] data)
+        {
+            return Encoding.ASCII.GetBytes(data);
+        }
+
+        private static byte[] Conv(string data)
+        {
+            return Encoding.ASCII.GetBytes(data);
         }
 
         public static byte[] SetCursorPosCommand(int cursorLine, int cursorColumn)

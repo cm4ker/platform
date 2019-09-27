@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 
-namespace FxSsh.Messages.Userauth
+namespace ZenPlatform.SSH.Messages.Userauth
 {
     public class PasswordRequestMessage : RequestMessage
     {

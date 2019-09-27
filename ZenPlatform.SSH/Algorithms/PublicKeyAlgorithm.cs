@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace FxSsh.Algorithms
+namespace ZenPlatform.SSH.Algorithms
 {
     [ContractClass(typeof(PublicKeyAlgorithmContract))]
     public abstract class PublicKeyAlgorithm

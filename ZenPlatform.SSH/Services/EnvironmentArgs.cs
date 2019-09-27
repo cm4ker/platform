@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 
-namespace FxSsh.Services
+namespace ZenPlatform.SSH.Services
 {
     public class EnvironmentArgs
     {

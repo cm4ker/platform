@@ -1,5 +1,5 @@
 ﻿
-namespace FxSsh.Messages.Connection
+namespace ZenPlatform.SSH.Messages.Connection
 {
     [Message("SSH_MSG_CHANNEL_CLOSE", MessageNumber)]
     public class ChannelCloseMessage : ConnectionServiceMessage

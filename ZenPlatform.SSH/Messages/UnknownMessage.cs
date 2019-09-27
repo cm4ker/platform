@@ -1,6 +1,6 @@
 using System;
 
-namespace FxSsh.Messages
+namespace ZenPlatform.SSH.Messages
 {
     public class UnknownMessage : Message
     {

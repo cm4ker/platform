@@ -1,4 +1,4 @@
-﻿namespace tterm.Ansi
+﻿namespace ZenPlatform.Shell.Ansi
 {
     internal enum TerminalCodeType
     {
@@ -27,6 +27,10 @@
         EraseInLine,
         SetGraphicsMode,
         SetMode,
+
+        DeviceStatusRequest,
+        DeviceStatusResponce,
+
         CharAttributes,
         ResetMode,
     }

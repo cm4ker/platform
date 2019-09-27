@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace FxSsh
+namespace ZenPlatform.SSH
 {
     public class StartingInfo
     {

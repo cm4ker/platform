@@ -1,7 +1,4 @@
-﻿using FxSsh.Algorithms;
-using FxSsh.Messages;
-using FxSsh.Services;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -11,8 +8,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using ZenPlatform.SSH.Algorithms;
+using ZenPlatform.SSH.Messages;
+using ZenPlatform.SSH.Services;
 
-namespace FxSsh
+namespace ZenPlatform.SSH
 {
     public class Session : IDynamicInvoker
     {

@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace FxSsh.Messages.Connection
+﻿namespace ZenPlatform.SSH.Messages.Connection
 {
     public class ShellRequestMessage : ChannelRequestMessage
     {

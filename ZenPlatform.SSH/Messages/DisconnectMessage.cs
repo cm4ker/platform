@@ -1,8 +1,7 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 using System.Text;
 
-namespace FxSsh.Messages
+namespace ZenPlatform.SSH.Messages
 {
     [Message("SSH_MSG_DISCONNECT", MessageNumber)]
     public class DisconnectMessage : Message

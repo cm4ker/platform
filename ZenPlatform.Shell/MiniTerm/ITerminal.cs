@@ -1,7 +1,8 @@
 ﻿using System;
-using FxSsh.Messages.Connection;
+using ZenPlatform.Shell.Terminal;
+using ZenPlatform.SSH;
 
-namespace MiniTerm
+namespace ZenPlatform.Shell.MiniTerm
 {
     public interface ITerminal : IDisposable
     {
@@ -10,7 +11,7 @@ namespace MiniTerm
 
         void OnClose();
         void OnInput(byte[] data);
-        void OnSizeChanged(ConsoleSize size);
+        void OnSizeChanged(TerminalSize size);
         void Run();
     }
 }

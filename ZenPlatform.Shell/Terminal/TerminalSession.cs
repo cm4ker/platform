@@ -4,53 +4,70 @@ using System.IO;
 using System.IO.Pipes;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using FxSsh.Messages.Connection;
 using MiniTerm;
 using TextCopy;
 using tterm.Ansi;
+using tterm.Terminal;
 using tterm.Utility;
-using ZenPlatform.Shell.Terminal;
+using ZenPlatform.Shell.Ansi;
+using ZenPlatform.Shell.MiniTerm;
+using ZenPlatform.SSH;
+using ZenPlatform.SSH.Messages.Connection;
 
-namespace tterm.Terminal
+namespace ZenPlatform.Shell.Terminal
 {
-    internal class TerminalSession : ITerminal
+    internal class TerminalSession : ITerminalSession
     {
-        private readonly StreamWriter _ptyWriter;
-
-        PipeStream reader;
-        AnonymousPipeServerStream writer;
-
+        PipeStream _reader;
+        AnonymousPipeServerStream _writer;
 
         private readonly object _bufferSync = new object();
         private bool _disposed;
 
-        public event EventHandler TitleChanged;
-        public event EventHandler OutputReceived;
-        public event EventHandler BufferSizeChanged;
-        public event EventHandler Finished;
-
-        public string Title { get; set; }
-        public bool Active { get; set; }
-        public bool Connected { get; private set; }
-        public bool ErrorOccured { get; private set; }
-        public Exception Exception { get; private set; }
-
-        public TerminalCommandBuffer Buffer { get; }
 
         public TerminalSession(TerminalSize size)
         {
-            Buffer = new TerminalCommandBuffer();
+            VTerminal = new VirtualTerminal(size);
 
-            writer = new AnonymousPipeServerStream(PipeDirection.Out);
-            reader = new AnonymousPipeClientStream(PipeDirection.In, (writer.GetClientHandleAsString()));
+            _writer = new AnonymousPipeServerStream(PipeDirection.Out);
+            _reader = new AnonymousPipeClientStream(PipeDirection.In, (_writer.GetClientHandleAsString()));
 
-            _ptyWriter = new StreamWriter(writer, Encoding.UTF8)
-            {
-                AutoFlush = true
-            };
+            VTerminal.OnData += (s, a) => OnDataReceived(a);
+        }
+
+
+        public bool Connected { get; private set; }
+
+        public Exception Exception { get; private set; }
+
+        public VirtualTerminal VTerminal { get; }
+
+        public event EventHandler<uint> CloseReceived;
+        public event EventHandler<byte[]> DataReceived;
+
+
+        public void Close()
+        {
+            _writer.WriteByte(0x03);
+        }
+
+        public void ConsumeData(byte[] data)
+        {
+            _writer.Write(data, 0, data.Length);
+        }
+
+        public void ChangeSize(TerminalSize size)
+        {
+            VTerminal.Size = size;
+        }
+
+
+        public void Run()
+        {
+            RequestState();
             RunOutputLoop();
         }
+
 
         public void Dispose()
         {
@@ -60,11 +77,17 @@ namespace tterm.Terminal
             }
         }
 
+
+        private void RequestState()
+        {
+            OnDataReceived(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.DeviceStatusRequest)));
+        }
+
         private async void RunOutputLoop()
         {
             try
             {
-                await ConsoleOutputAsync(reader);
+                await ConsoleOutputAsync(_reader);
             }
             catch (Exception ex)
             {
@@ -102,7 +125,7 @@ namespace tterm.Terminal
             {
                 foreach (var code in codes)
                 {
-                    ProcessTerminalCode(code);
+                    VTerminal.Consume(code);
                 }
             }
         }
@@ -118,110 +141,74 @@ namespace tterm.Terminal
             DataReceived?.Invoke(this, data);
         }
 
-        private void ProcessTerminalCode(TerminalCode code)
-        {
-            switch (code.Type)
-            {
-                case TerminalCodeType.ResetMode:
-                    break;
-                case TerminalCodeType.SetMode:
-                    break;
-                case TerminalCodeType.Text:
-                    Buffer.Type(code.Text);
-                    OnDataReceived(Buffer.GetText());
-                    break;
-                case TerminalCodeType.CursorForward:
-                    Buffer.MoveCursorForward();
-                    OnDataReceived(AnsiBuilder.Build(code));
-                    break;
-                case TerminalCodeType.CursorBackward:
-                    Buffer.MoveCursorBack();
-                    OnDataReceived(AnsiBuilder.Build(code));
-                    break;
-                case TerminalCodeType.LineFeed:
-                    Buffer.Clear();
-                    break;
-                case TerminalCodeType.CarriageReturn:
-                    Buffer.Flush();
-                    break;
-                case TerminalCodeType.CharAttributes:
-                    break;
-                case TerminalCodeType.Backspace:
-                    Buffer.Backspace();
-                    OnDataReceived(AnsiBuilder.Build(code));
-                    break;
-                case TerminalCodeType.CursorPosition:
-
-                    break;
-                case TerminalCodeType.CursorUp:
-
-                    break;
-                case TerminalCodeType.CursorCharAbsolute:
-
-                    break;
-                case TerminalCodeType.EraseInLine:
-                    if (code.Line == 0)
-                    {
-                    }
-
-                    break;
-                case TerminalCodeType.EraseInDisplay:
-
-                    break;
-                case TerminalCodeType.SetTitle:
-                    Title = code.Text;
-                    TitleChanged?.Invoke(this, EventArgs.Empty);
-                    break;
-            }
-        }
-
-        public void Write(string text)
-        {
-            _ptyWriter.Write(text);
-        }
-
-        public void Paste()
-        {
-            string text = Clipboard.GetText();
-            if (!String.IsNullOrEmpty(text))
-            {
-                Write(text);
-            }
-        }
 
         private void SessionErrored(Exception ex)
         {
             Connected = false;
             Exception = ex;
-            Finished?.Invoke(this, EventArgs.Empty);
         }
 
         private void SessionClosed()
         {
             Connected = false;
-            Finished?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+
+    public class ExtendedStack<T>
+    {
+        private List<T> items = new List<T>();
+
+        public void Push(T item)
+        {
+            items.Add(item);
         }
 
-        public event EventHandler<uint> CloseReceived;
-        public event EventHandler<byte[]> DataReceived;
-
-        public void OnClose()
+        public T Pop()
         {
-            writer.WriteByte(0x03);
+            if (items.Count > 0)
+            {
+                T temp = items[items.Count - 1];
+                items.RemoveAt(items.Count - 1);
+                return temp;
+            }
+            else
+                return default(T);
         }
 
-        public void OnInput(byte[] data)
+        public void Remove(int itemAtPosition)
         {
-            writer.Write(data, 0, data.Length);
+            items.RemoveAt(itemAtPosition);
         }
 
-        public void OnSizeChanged(ConsoleSize size)
+        public void Remove(T item)
         {
+            items.Remove(item);
         }
 
-        public void Run()
+        public T Peek()
         {
-            RunOutputLoop();
+            if (items.Count > 0)
+            {
+                T temp = items[items.Count - 1];
+                return temp;
+            }
+            else
+                throw new Exception("Can't peek form empty list'");
+        }
+
+        public bool TryPeek(out T item)
+        {
+            if (items.Count > 0)
+            {
+                item = items[items.Count - 1];
+                return true;
+            }
+            else
+            {
+                item = default;
+                return false;
+            }
         }
     }
 }

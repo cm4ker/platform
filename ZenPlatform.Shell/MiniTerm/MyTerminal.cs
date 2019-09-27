@@ -2,7 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using FxSsh.Messages.Connection;
+using ZenPlatform.Shell.MiniTerm;
+using ZenPlatform.SSH;
+using ZenPlatform.SSH.Messages.Connection;
 
 namespace MiniTerm
 {
@@ -25,7 +27,6 @@ namespace MiniTerm
 
             reader = new FileStream("test", FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
             writer = new FileStream("test", FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
-            
         }
 
         public void Dispose()
@@ -46,7 +47,7 @@ namespace MiniTerm
             writer.Flush();
         }
 
-        public void OnSizeChanged(ConsoleSize size)
+        public void OnSizeChanged(TerminalSize size)
         {
         }
 

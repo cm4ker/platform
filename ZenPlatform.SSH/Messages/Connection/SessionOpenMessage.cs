@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FxSsh.Messages.Connection
+namespace ZenPlatform.SSH.Messages.Connection
 {
     public class SessionOpenMessage : ChannelOpenMessage
     {

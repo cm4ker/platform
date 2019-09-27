@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace FxSsh.Messages
+namespace ZenPlatform.SSH.Messages
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public sealed class MessageAttribute : Attribute

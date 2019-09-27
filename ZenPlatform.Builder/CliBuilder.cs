@@ -6,6 +6,7 @@ using System.Reflection;
 using FluentMigrator.Runner.Initialization;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceStack.Text;
 //using ZenPlatform.Cli.Builder;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration;

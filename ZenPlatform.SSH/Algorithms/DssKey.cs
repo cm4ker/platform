@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace FxSsh.Algorithms
+namespace ZenPlatform.SSH.Algorithms
 {
     public class DssKey : PublicKeyAlgorithm
     {

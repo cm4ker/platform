@@ -1,5 +1,5 @@
 ﻿
-namespace FxSsh.Messages.Connection
+namespace ZenPlatform.SSH.Messages.Connection
 {
     [Message("SSH_MSG_CHANNEL_DATA", MessageNumber)]
     public class ChannelDataMessage : ConnectionServiceMessage

@@ -1,9 +1,9 @@
-﻿using FxSsh.Messages;
-using FxSsh.Messages.Userauth;
-using System;
+﻿using System;
 using System.Diagnostics.Contracts;
+using ZenPlatform.SSH.Messages;
+using ZenPlatform.SSH.Messages.Userauth;
 
-namespace FxSsh.Services
+namespace ZenPlatform.SSH.Services
 {
     public class UserauthService : SshService, IDynamicInvoker
     {

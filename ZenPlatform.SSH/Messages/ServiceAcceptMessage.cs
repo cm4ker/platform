@@ -1,7 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
-namespace FxSsh.Messages
+namespace ZenPlatform.SSH.Messages
 {
     [Message("SSH_MSG_SERVICE_ACCEPT", MessageNumber)]
     public class ServiceAcceptMessage : Message

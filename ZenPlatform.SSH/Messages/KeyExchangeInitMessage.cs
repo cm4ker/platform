@@ -1,8 +1,7 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace FxSsh.Messages
+namespace ZenPlatform.SSH.Messages
 {
     [Message("SSH_MSG_KEXINIT", MessageNumber)]
     public class KeyExchangeInitMessage : Message

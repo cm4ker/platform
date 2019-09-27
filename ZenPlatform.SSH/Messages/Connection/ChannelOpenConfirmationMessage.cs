@@ -1,5 +1,5 @@
 ﻿
-namespace FxSsh.Messages.Connection
+namespace ZenPlatform.SSH.Messages.Connection
 {
     [Message("SSH_MSG_CHANNEL_OPEN_CONFIRMATION", MessageNumber)]
     public class ChannelOpenConfirmationMessage : ConnectionServiceMessage

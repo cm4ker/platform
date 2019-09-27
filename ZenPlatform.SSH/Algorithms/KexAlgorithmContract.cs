@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace FxSsh.Algorithms
+namespace ZenPlatform.SSH.Algorithms
 {
     [ContractClassFor(typeof(KexAlgorithm))]
     abstract class KexAlgorithmContract : KexAlgorithm
