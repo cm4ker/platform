@@ -70,9 +70,9 @@ namespace ZenPlatform.Shell.Terminal
 
         void CursorPositionRequest();
 
-        void WriteLine(string text);
+        void WriteLine(string text = "");
 
-        void Write(string text);
+        void Write(string text = "");
     }
 
     internal interface IHostAppManager
