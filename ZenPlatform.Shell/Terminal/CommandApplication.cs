@@ -33,6 +33,20 @@ namespace ZenPlatform.Shell.Terminal
 
         public void Open()
         {
+            _c.WriteLine(@"
+ _____               ___ _       _    __                      
+/ _  / ___ _ __     / _ \ | __ _| |_ / _| ___  _ __ _ __ ___  
+\// / / _ \ '_ \   / /_)/ |/ _` | __| |_ / _ \| '__| '_ ` _ \ 
+ / //\  __/ | | | / ___/| | (_| | |_|  _| (_) | |  | | | | | |
+/____/\___|_| |_| \/    |_|\__,_|\__|_|  \___/|_|  |_| |_| |_|
+                                                              
+ _____                    _             _                     
+/__   \___ _ __ _ __ ___ (_)_ __   __ _| |                    
+  / /\/ _ \ '__| '_ ` _ \| | '_ \ / _` | |                    
+ / / |  __/ |  | | | | | | | | | | (_| | |                    
+ \/   \___|_|  |_| |_| |_|_|_| |_|\__,_|_|                    ");
+
+            _c.WriteLine();
             _c.CursorPositionRequest();
         }
 
@@ -50,9 +64,20 @@ namespace ZenPlatform.Shell.Terminal
                     break;
                 case TerminalCodeType.Text:
                     _cursorX += code.Text.Length;
-
                     _c.Write(code.Text);
                     SyncCursor();
+                    break;
+                case TerminalCodeType.LineFeed:
+                    _cursorY += 1;
+                    _cursorX = 0;
+                    _c.WriteLine();
+                    break;
+
+                case TerminalCodeType.CarriageReturn:
+                    _cursorY += 1;
+                    _cursorY = Math.Min((int) _size.HeightRows, _cursorY);
+                    _cursorX = 0;
+                    _c.WriteLine();
                     break;
                 case TerminalCodeType.CursorBackward:
                     _cursorX--;
@@ -82,13 +107,24 @@ namespace ZenPlatform.Shell.Terminal
             }
         }
 
+        private void RedrawCurrentLine()
+        {
+        }
+
         public void SetSize(TerminalSize size)
         {
             _size = size;
 
             if (_cursorX >= _size.WidthColumns)
             {
-                
+                _cursorX -= (int) _size.WidthColumns;
+                _cursorY += 1;
+
+                if (_cursorY > _size.HeightRows)
+                {
+                    _c.WriteLine();
+                    _cursorY = (int) _size.HeightRows;
+                }
             }
         }
 

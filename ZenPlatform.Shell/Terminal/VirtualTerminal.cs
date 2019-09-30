@@ -117,6 +117,8 @@ namespace ZenPlatform.Shell.Terminal
                     _size = dstSize;
 
                     _cursorY = Math.Min(_cursorY, (int) _size.HeightRows - 1);
+
+                    CurrentActive.SetSize(_size);
                 }
             }
         }

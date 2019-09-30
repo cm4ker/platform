@@ -63,7 +63,7 @@ namespace ZenPlatform.Shell.Terminal
             Send(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.DeviceStatusRequest)));
         }
 
-        public void WriteLine(string text)
+        public void WriteLine(string text = "")
         {
             Write(text);
             Send(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.LineFeed)));
