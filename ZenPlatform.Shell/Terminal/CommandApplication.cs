@@ -82,6 +82,16 @@ namespace ZenPlatform.Shell.Terminal
             }
         }
 
+        public void SetSize(TerminalSize size)
+        {
+            _size = size;
+
+            if (_cursorX >= _size.WidthColumns)
+            {
+                
+            }
+        }
+
         private void SyncCursor()
         {
             _c.SetCursorPosition(_cursorX + 1, _cursorY + 1);
