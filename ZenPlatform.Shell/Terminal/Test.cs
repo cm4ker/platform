@@ -63,6 +63,18 @@ namespace ZenPlatform.Shell.Terminal
         void Consume(TerminalCode code);
     }
 
+
+    internal interface IConsole
+    {
+        void SetCursorPosition(int x, int y);
+
+        void CursorPositionRequest();
+
+        void WriteLine(string text);
+
+        void Write(string text);
+    }
+
     internal interface IHostAppManager
     {
         /// <summary>
@@ -103,12 +115,12 @@ namespace ZenPlatform.Shell.Terminal
 
     internal interface ITerminalApplication
     {
-        TerminalApplicationState State { get; }
+        void Open();
 
-        event EventHandler<object> Data;
+        void Close();
 
         void Consume(TerminalCode code);
 
-        void SetState(TerminalApplicationState newState);
+        void SetSize(TerminalSize size);
     }
 }

@@ -31,7 +31,11 @@ namespace ZenPlatform.Shell.Terminal
      * 
      */
 
-    internal class VirtualTerminal : ITerminal
+    internal partial class VirtualTerminal
+    {
+    }
+
+    internal partial class VirtualTerminal
     {
         private ExtendedStack<ITerminalApplication> _apps;
 
@@ -55,17 +59,9 @@ namespace ZenPlatform.Shell.Terminal
 
 //        public bool ShowCursor { get; set; }
 
-        public void SetCursor(int x, int y)
-        {
-            _cursorX = x;
-            _cursorY = y;
-        }
-
-
         public CharAttributes CurrentCharAttributes { get; set; }
 
         public TerminalSelection Selection { get; set; }
-
 
         public VirtualTerminal(TerminalSize size)
         {
@@ -88,33 +84,11 @@ namespace ZenPlatform.Shell.Terminal
             OnData?.Invoke(this, data);
         }
 
-
         private void PushData(string text)
         {
             PushData(Encoding.UTF8.GetBytes(text));
         }
 
-        /// <summary>
-        /// Индекс начиначется с 0
-        /// </summary>
-        public int CursorX => _cursorX;
-
-
-        /// <summary>
-        /// Индекс начиначется с 1
-        /// </summary>
-        public int CursorY => _cursorY;
-
-
-        public void Consume(TerminalCode code)
-        {
-            switch (code.Type)
-            {
-                case TerminalCodeType.DeviceStatusResponce:
-                    SetCursor(code.Column, code.Line);
-                    break;
-            }
-        }
 
         public TerminalSize Size
         {
@@ -361,50 +335,6 @@ namespace ZenPlatform.Shell.Terminal
             return new TerminalTagArray(tags.ToImmutable());
         }
 
-        public ExtendedStack<ITerminalApplication> Apps => _apps;
-
-        public ITerminalApplication CurrentActive => (Apps.TryPeek(out var app)) ? app : null;
-
-        public void Close(ITerminalApplication app)
-        {
-            lock (_apps)
-            {
-                if (CurrentActive == app)
-                {
-                    app.Data -= OnAppData;
-                    _apps.Remove(app);
-                }
-            }
-        }
-
-        private void OnAppData(object sender, object e)
-        {
-            if (e is byte[] b)
-                PushData(b);
-
-            if (e is TerminalCode tc)
-                Consume(tc);
-        }
-
-        public void Open(ITerminalApplication app)
-        {
-            lock (_apps)
-            {
-                if (CurrentActive == app) return;
-
-                if (CurrentActive != null)
-                {
-                    CurrentActive.Data -= OnAppData;
-                    CurrentActive.SetState(TerminalApplicationState.NotActive);
-                }
-
-
-                Apps.Push(app);
-                app.Data += OnAppData;
-                app.SetState(TerminalApplicationState.Run);
-            }
-        }
-
         private void AddFillerTags(ImmutableArray<TerminalTag>.Builder builder, int x, int y, int length)
         {
             int tagLength = 0;
@@ -480,71 +410,6 @@ namespace ZenPlatform.Shell.Terminal
             }
         }
 
-        private bool IsPointInSelection(int x, int y)
-        {
-            var selection = Selection;
-            if (selection == null)
-            {
-                return false;
-            }
-            else if (selection.Mode == SelectionMode.Stream)
-            {
-                (var start, var end) = selection.GetMinMax();
-                if (y == start.Row)
-                {
-                    if (x < start.Column)
-                    {
-                        return false;
-                    }
-                }
-
-                if (y == end.Row)
-                {
-                    if (x > end.Column)
-                    {
-                        return false;
-                    }
-                }
-
-                if (y < start.Row || y > end.Row)
-                {
-                    return false;
-                }
-
-                return true;
-            }
-            else if (selection.Mode == SelectionMode.Block)
-            {
-                int left = Math.Min(selection.Start.Column, selection.End.Column);
-                int right = Math.Max(selection.Start.Column, selection.End.Column);
-                int top = Math.Min(selection.Start.Row, selection.End.Row);
-                int bottom = Math.Max(selection.Start.Row, selection.End.Row);
-                return (x >= left && x <= right &&
-                        y >= top && y <= bottom);
-            }
-            else
-            {
-                throw new InvalidOperationException("Unknown selection mode.");
-            }
-        }
-
-        private static bool CanContinueTag(CharAttributes previous, CharAttributes next, char nextC)
-        {
-            if (nextC == ' ')
-            {
-                return previous.BackgroundColour == next.BackgroundColour;
-            }
-            else
-            {
-                return previous == next;
-            }
-        }
-
-        public bool IsInBuffer(int x, int y)
-        {
-            return (x >= 0 && x < _size.WidthColumns && y >= 0 && y < _size.HeightRows);
-        }
-
         private int GetBufferIndex(int x, int y)
         {
             return x + (y * (int) _size.WidthColumns);
@@ -588,21 +453,6 @@ namespace ZenPlatform.Shell.Terminal
 //            }
 //        }
 
-        private static void CopyBufferToBuffer(TerminalBufferChar[] srcBuffer, TerminalSize srcSize, int srcLeft,
-            int srcTop, int srcRight, int srcBottom,
-            TerminalBufferChar[] dstBuffer, TerminalSize dstSize, int dstLeft, int dstTop)
-        {
-            int cols = srcRight - srcLeft + 1;
-            int rows = srcBottom - srcTop + 1;
-            for (int y = 0; y < rows; y++)
-            {
-                int srcY = srcTop + y;
-                int dstY = dstTop + y;
-                int srcIndex = srcLeft + (srcY * (int) srcSize.WidthColumns);
-                int dstIndex = dstLeft + (dstY * (int) dstSize.WidthColumns);
-                Array.Copy(srcBuffer, srcIndex, dstBuffer, dstIndex, cols);
-            }
-        }
 
         public void MoveCursorForward()
         {

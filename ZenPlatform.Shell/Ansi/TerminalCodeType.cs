@@ -33,5 +33,6 @@
 
         CharAttributes,
         ResetMode,
+        Delete
     }
 }
