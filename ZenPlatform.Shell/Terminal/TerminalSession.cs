@@ -30,7 +30,7 @@ namespace ZenPlatform.Shell.Terminal
             VTerminal = new VirtualTerminal(size);
 
             _writer = new AnonymousPipeServerStream(PipeDirection.Out);
-            _reader = new AnonymousPipeClientStream(PipeDirection.In, (_writer.GetClientHandleAsString()));
+            _reader = new AnonymousPipeClientStream(PipeDirection.In, _writer.GetClientHandleAsString());
 
             VTerminal.OnData += (s, a) => OnDataReceived(a);
         }
@@ -61,10 +61,9 @@ namespace ZenPlatform.Shell.Terminal
             VTerminal.Size = size;
         }
 
-
         public void Run()
         {
-            RequestState();
+            VTerminal.Open(new CommandApplication(VTerminal));
             RunOutputLoop();
         }
 
@@ -75,12 +74,6 @@ namespace ZenPlatform.Shell.Terminal
             {
                 _disposed = true;
             }
-        }
-
-
-        private void RequestState()
-        {
-            OnDataReceived(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.DeviceStatusRequest)));
         }
 
         private async void RunOutputLoop()

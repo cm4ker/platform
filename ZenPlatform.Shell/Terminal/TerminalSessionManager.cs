@@ -22,7 +22,7 @@ namespace tterm.Terminal
             PrepareTTermEnvironment();
 
             var session = new TerminalSession(size);
-            session.Finished += OnSessionFinished;
+            //session.Finished += OnSessionFinished;
 
             _sessions.Add(session);
             return session;

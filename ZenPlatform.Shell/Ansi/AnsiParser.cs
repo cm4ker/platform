@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using Microsoft.VisualBasic.CompilerServices;
+using System.Windows.Markup;
+using tterm.Ansi;
 using tterm.Utility;
-using ZenPlatform.Shell.Ansi;
 
-namespace tterm.Ansi
+namespace ZenPlatform.Shell.Ansi
 {
     internal class AnsiParser
     {
@@ -451,6 +447,7 @@ namespace tterm.Ansi
                     Emit(TerminalCodeType.CarriageReturn);
                     return true;
                 case C0.BS:
+                case C0.BS2:    
                     Emit(TerminalCodeType.Backspace);
                     return true;
                 case C0.HT:
@@ -721,8 +718,9 @@ namespace tterm.Ansi
                 TerminalCodeType.Backspace => Conv(C0.BS),
                 TerminalCodeType.CursorPosition => Conv(
                     "" + C0.ESC + Bracket + code.Line + Semicolon + code.Column + H),
+                TerminalCodeType.Text => Conv(code.Text),
                 TerminalCodeType.DeviceStatusRequest => Conv(C0.ESC, Bracket, Six, n),
-
+                TerminalCodeType.LineFeed => Conv(C0.CR, C0.LF),
                 _ => throw new Exception()
             };
         }
