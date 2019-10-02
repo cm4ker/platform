@@ -18,7 +18,7 @@ namespace ZenPlatform.Cli
      *     backup [dbId]
      *     list
      * 
-     * + kill [dbId] [userId]
+     * + kill [dbId] [sessionId]
      *
      * + instance
      *     start
