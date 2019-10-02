@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using tterm.Ansi;
 using ZenPlatform.Shell.Ansi;
+using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal
 {
@@ -21,6 +22,12 @@ namespace ZenPlatform.Shell.Terminal
         public void Consume(TerminalCode code)
         {
             CurrentActive.Consume(code);
+        }
+
+        public void SetSize(TerminalSize newSize)
+        {
+            _size = newSize;
+            CurrentActive.SetSize(newSize);
         }
 
         public ExtendedStack<ITerminalApplication> Apps => _apps;
@@ -44,7 +51,7 @@ namespace ZenPlatform.Shell.Terminal
             {
                 if (CurrentActive == app) return;
                 Apps.Push(app);
-                app.Open();
+                app.Open(_size);
             }
         }
 

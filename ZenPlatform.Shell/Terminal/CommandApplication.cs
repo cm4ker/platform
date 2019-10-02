@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml.Serialization;
+using tterm.Terminal;
 using ZenPlatform.Shell.Ansi;
 using ZenPlatform.SSH;
 
@@ -21,18 +22,19 @@ namespace ZenPlatform.Shell.Terminal
 
         private TerminalSize _size;
 
-        private List<char> _line;
+        private TerminalBufferChar[] _buffer;
 
         public CommandApplication(ITerminal terminal)
         {
             _terminal = terminal;
             _c = (IConsole) terminal;
-
-            _line = new List<char>();
+            _buffer = new TerminalBufferChar[_size.HeightRows * _size.WidthColumns];
         }
 
-        public void Open()
+        public void Open(TerminalSize size)
         {
+            _size = size;
+
             _c.WriteLine(@"
  _____               ___ _       _    __                      
 / _  / ___ _ __     / _ \ | __ _| |_ / _| ___  _ __ _ __ ___  
@@ -64,6 +66,14 @@ namespace ZenPlatform.Shell.Terminal
                     break;
                 case TerminalCodeType.Text:
                     _cursorX += code.Text.Length;
+
+                    if (_cursorX >= _size.WidthColumns)
+                    {
+                        _c.WriteLine();
+                        _cursorX = 0;
+                        SyncCursor();
+                    }
+
                     _c.Write(code.Text);
                     SyncCursor();
                     break;
@@ -114,18 +124,32 @@ namespace ZenPlatform.Shell.Terminal
         public void SetSize(TerminalSize size)
         {
             _size = size;
-
-            if (_cursorX >= _size.WidthColumns)
-            {
-                _cursorX -= (int) _size.WidthColumns;
-                _cursorY += 1;
-
-                if (_cursorY > _size.HeightRows)
-                {
-                    _c.WriteLine();
-                    _cursorY = (int) _size.HeightRows;
-                }
-            }
+//            if (size != _size)
+//            {
+//                var srcSize = _size;
+//                var dstSize = size;
+//
+//                var srcBuffer = _buffer;
+//                var dstBuffer = new TerminalBufferChar[dstSize.HeightRows * dstSize.WidthColumns];
+//
+//                int srcLeft = 0;
+//                int srcRight = Math.Min((int) srcSize.WidthColumns, (int) dstSize.WidthColumns) - 1;
+//                int srcTop = Math.Max(0, _cursorY - (int) dstSize.HeightRows + 1);
+//                int srcBottom = srcTop + Math.Min((int) srcSize.HeightRows, (int) dstSize.HeightRows) - 1;
+//                int dstLeft = 0;
+//                int dstTop = 0;
+//
+//                srcBuffer.CopyBufferToBuffer(srcSize, srcLeft, srcTop, srcRight, srcBottom,
+//                    dstBuffer, dstSize, dstLeft, dstTop);
+//
+//                _buffer = dstBuffer;
+//                _size = dstSize;
+//
+//                _cursorY = Math.Min(_cursorY, (int) _size.HeightRows - 1);
+//                _cursorX = Math.Min(_cursorX, (int) _size.WidthColumns - 1);
+//                
+//                SyncCursor();
+//            }
         }
 
         private void SyncCursor()

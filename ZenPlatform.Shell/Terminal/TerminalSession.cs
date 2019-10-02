@@ -58,7 +58,7 @@ namespace ZenPlatform.Shell.Terminal
 
         public void ChangeSize(TerminalSize size)
         {
-            VTerminal.Size = size;
+            VTerminal.SetSize(size);
         }
 
         public void Run()

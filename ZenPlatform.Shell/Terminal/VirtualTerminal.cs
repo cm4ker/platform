@@ -110,7 +110,7 @@ namespace ZenPlatform.Shell.Terminal
                     int dstLeft = 0;
                     int dstTop = 0;
 
-                    CopyBufferToBuffer(srcBuffer, srcSize, srcLeft, srcTop, srcRight, srcBottom,
+                    srcBuffer.CopyBufferToBuffer(srcSize, srcLeft, srcTop, srcRight, srcBottom,
                         dstBuffer, dstSize, dstLeft, dstTop);
 
                     _buffer = dstBuffer;
@@ -118,11 +118,13 @@ namespace ZenPlatform.Shell.Terminal
 
                     _cursorY = Math.Min(_cursorY, (int) _size.HeightRows - 1);
 
-                    CurrentActive.SetSize(_size);
+                    
                 }
             }
         }
 
+        
+        
         public void Clear()
         {
             ClearBlock(0, 0, (int) _size.WidthColumns - 1, (int) _size.HeightRows - 1);
