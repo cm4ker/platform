@@ -5,10 +5,10 @@ using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal
 {
-    internal partial class VirtualTerminal
+    internal static class Helpers
     {
-        private static void CopyBufferToBuffer(TerminalBufferChar[] srcBuffer, TerminalSize srcSize, int srcLeft,
-            int srcTop, int srcRight, int srcBottom,
+        public static void CopyBufferToBuffer(this TerminalBufferChar[] srcBuffer, TerminalSize srcSize, int srcLeft,
+        int srcTop, int srcRight, int srcBottom,
             TerminalBufferChar[] dstBuffer, TerminalSize dstSize, int dstLeft, int dstTop)
         {
             int cols = srcRight - srcLeft + 1;
@@ -22,7 +22,10 @@ namespace ZenPlatform.Shell.Terminal
                 Array.Copy(srcBuffer, srcIndex, dstBuffer, dstIndex, cols);
             }
         }
+    }
 
+    internal partial class VirtualTerminal
+    {
         private static bool CanContinueTag(CharAttributes previous, CharAttributes next, char nextC)
         {
             if (nextC == ' ')

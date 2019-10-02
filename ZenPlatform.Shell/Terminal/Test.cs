@@ -61,6 +61,8 @@ namespace ZenPlatform.Shell.Terminal
         /// </summary>
         /// <param name="code">Терминальный код</param>
         void Consume(TerminalCode code);
+
+        void SetSize(TerminalSize newSize);
     }
 
 
@@ -115,7 +117,7 @@ namespace ZenPlatform.Shell.Terminal
 
     internal interface ITerminalApplication
     {
-        void Open();
+        void Open(TerminalSize size);
 
         void Close();
 
