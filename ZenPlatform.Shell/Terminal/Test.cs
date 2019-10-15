@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using tterm.Ansi;
 using ZenPlatform.Shell.Ansi;
 using ZenPlatform.SSH;
@@ -47,16 +48,6 @@ namespace ZenPlatform.Shell.Terminal
     internal interface ITerminal : IHostAppManager
     {
         /// <summary>
-        /// Текущая колонка
-        /// </summary>
-        int CursorX { get; }
-
-        /// <summary>
-        /// Текущая 
-        /// </summary>
-        int CursorY { get; }
-
-        /// <summary>
         /// Потребить данные
         /// </summary>
         /// <param name="code">Терминальный код</param>
@@ -66,15 +57,51 @@ namespace ZenPlatform.Shell.Terminal
     }
 
 
+    public class TestClass
+    {
+        void A()
+        {
+            
+        }
+    }
+
     internal interface IConsole
     {
+        /// <summary>
+        /// Текущая колонка
+        /// </summary>
+        int CursorLeft { get; }
+
+        /// <summary>
+        /// Текущая 
+        /// </summary>
+        int CursorTop { get; }
+
         void SetCursorPosition(int x, int y);
 
         void CursorPositionRequest();
 
-        void WriteLine(string text = "");
+        void WriteLine(string text);
+        
+        void WriteLine();
 
-        void Write(string text = "");
+        void Write(string text);
+
+        TextWriter In { get; }
+
+        TextWriter Out { get; }
+
+        TextWriter Error { get; }
+
+        bool CursorVisible { get; }
+
+        ConsoleColor BackgroundColor { get; set; }
+
+        ConsoleColor ForegroundColor { get; set; }
+
+        ConsoleKeyInfo ReadKey();
+
+        void Beep();
     }
 
     internal interface IHostAppManager

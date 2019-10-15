@@ -4,7 +4,6 @@
         <AssemblyName>ZenPlatform.Cli</AssemblyName>
         <RootNamespace>ZenPlatform.Cli</RootNamespace>
         <LangVersion>default</LangVersion>
-        <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.1" />

@@ -45,13 +45,22 @@ namespace ZenPlatform.Cli
          * 
          */
 
+        public static CommandLineApplication Build(IConsole console)
+        {
+            var app = new CommandLineApplication(console);
+
+            BuildProjectCommands(app);
+            BuildServiceCommands(app);
+
+            return app;
+        }
+
         public static int Build(params string[] args)
         {
             var app = new CommandLineApplication();
 
             BuildProjectCommands(app);
             BuildServiceCommands(app);
-
 
             return app.Execute(args);
         }

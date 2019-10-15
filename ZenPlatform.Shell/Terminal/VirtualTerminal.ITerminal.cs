@@ -1,4 +1,3 @@
-using System;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using tterm.Ansi;
@@ -7,18 +6,8 @@ using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal
 {
-    internal partial class VirtualTerminal : ITerminal, IConsole
+    internal partial class VirtualTerminal : ITerminal
     {
-        /// <summary>
-        /// Индекс начиначется с 0
-        /// </summary>
-        public int CursorX => _cursorX;
-
-        /// <summary>
-        /// Индекс начиначется с 1
-        /// </summary>
-        public int CursorY => _cursorY;
-
         public void Consume(TerminalCode code)
         {
             CurrentActive.Consume(code);
@@ -60,25 +49,9 @@ namespace ZenPlatform.Shell.Terminal
             OnData.Invoke(this, data);
         }
 
-        public void SetCursorPosition(int x, int y)
-        {
-            Send(AnsiBuilder.SetCursorPosCommand(y, x));
-        }
-
         public void CursorPositionRequest()
         {
             Send(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.DeviceStatusRequest)));
-        }
-
-        public void WriteLine(string text = "")
-        {
-            Write(text);
-            Send(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.LineFeed)));
-        }
-
-        public void Write(string text)
-        {
-            Send(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.Text, text)));
         }
     }
 }

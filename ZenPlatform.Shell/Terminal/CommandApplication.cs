@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml.Serialization;
 using tterm.Ansi;
 using tterm.Terminal;
+using ZenPlatform.Cli;
 using ZenPlatform.Shell.Ansi;
 using ZenPlatform.SSH;
 
@@ -124,6 +127,9 @@ namespace ZenPlatform.Shell.Terminal
                     var cmd = new string(_line.Select(x => x.Char).ToArray());
                     _commandStory.Add(cmd);
                     WriteLine($"The command is: {cmd}");
+
+                    RunCommand(cmd);
+
                     WriteProposal();
 
                     _line.Clear();
@@ -281,6 +287,45 @@ namespace ZenPlatform.Shell.Terminal
         private void SyncCursor()
         {
             _c.SetCursorPosition(_cursorX + 1, _cursorY + 1);
+        }
+
+        private void RunCommand(string cmd)
+        {
+            var args = cmd.Split(' ');
+
+            var fakeConsole = new FakeConsole();
+
+            var app = CliBuilder.Build(fakeConsole);
+
+            app.ThrowOnUnexpectedArgument = false;
+
+            app.Execute(args);
+
+            fakeConsole.Out.Flush();
+            Write(fakeConsole.Out.ToString());
+        }
+
+        private void RunApp()
+        {
+            using (Process process = new Process())
+            {
+                process.StartInfo.FileName = "ipconfig.exe";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.Start();
+
+                // Synchronously read the standard output of the spawned process. 
+                StreamReader reader = process.StandardOutput;
+                string output = reader.ReadToEnd();
+
+                byte[] bytes = Encoding.Default.GetBytes(output);
+                output = Encoding.UTF8.GetString(bytes);
+
+                // Write the redirected output to this application's window.
+                WriteLine(output);
+
+                process.WaitForExit();
+            }
         }
     }
 }
