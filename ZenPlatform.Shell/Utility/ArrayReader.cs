@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace tterm.Utility
+namespace ZenPlatform.Shell.Utility
 {
     internal class ArrayReader<T>
     {

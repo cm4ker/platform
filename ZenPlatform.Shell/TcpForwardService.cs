@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace SshServerLoader
+namespace ZenPlatform.Shell
 {
     public class TcpForwardService
     {

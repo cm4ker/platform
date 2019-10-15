@@ -1,18 +1,15 @@
-﻿using MiniTerm;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using tterm.Terminal;
-using ZenPlatform.Shell.MiniTerm;
 using ZenPlatform.Shell.Terminal;
 using ZenPlatform.SSH;
 using ZenPlatform.SSH.Services;
 
-namespace SshServerLoader
+namespace ZenPlatform.Shell
 {
     class Program
     {
-        static int windowWidth, windowHeight;
+        private static int _windowWidth, _windowHeight;
 
         static void Main(string[] args)
         {
@@ -87,8 +84,8 @@ namespace SshServerLoader
         static void service_PtyReceived(object sender, PtyArgs e)
         {
             Console.WriteLine("Request to create a PTY received for terminal type {0}", e.Terminal);
-            windowWidth = (int) e.WidthChars;
-            windowHeight = (int) e.HeightRows;
+            _windowWidth = (int) e.WidthChars;
+            _windowHeight = (int) e.HeightRows;
         }
 
         static void service_EnvReceived(object sender, EnvironmentArgs e)
@@ -118,7 +115,7 @@ namespace SshServerLoader
                 // requirements: Windows 10 RedStone 5, 1809
                 // also, you can call powershell.exe
                 //ITerminal terminal = new Terminal("cmd.exe", windowWidth, windowHeight);
-                ITerminalSession terminal = new TerminalSession(new TerminalSize(windowWidth, windowHeight));
+                ITerminalSession terminal = new TerminalSession(new TerminalSize(_windowWidth, _windowHeight));
 
                 e.Channel.DataReceived += (ss, ee) => terminal.ConsumeData(ee);
                 e.Channel.CloseReceived += (ss, ee) => terminal.Close();
@@ -126,7 +123,7 @@ namespace SshServerLoader
 
                 terminal.DataReceived += (ss, ee) => e.Channel.SendData(ee);
                 terminal.CloseReceived += (ss, ee) => e.Channel.SendClose(ee);
-                
+
                 terminal.Run();
             }
             else if (e.ShellType == "exec")

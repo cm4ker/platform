@@ -1,7 +1,6 @@
-﻿using System;
-using tterm.Ansi;
+﻿using ZenPlatform.Shell.Ansi;
 
-namespace tterm.Terminal
+namespace ZenPlatform.Shell.Terminal
 {
     public struct TerminalBufferChar
     {

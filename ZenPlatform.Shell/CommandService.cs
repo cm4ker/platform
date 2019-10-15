@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SshServerLoader
+namespace ZenPlatform.Shell
 {
     public class CommandService
     {

@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using tterm.Ansi;
-using tterm.Terminal;
+using ZenPlatform.Shell.Ansi;
 using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal

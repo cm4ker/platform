@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace tterm.Terminal
+namespace ZenPlatform.Shell.Terminal
 {
     [DebuggerDisplay("{Column}, {Row}")]
     public struct TerminalPoint : IEquatable<TerminalPoint>, IComparable<TerminalPoint>
