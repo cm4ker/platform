@@ -121,8 +121,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{22D318
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Shell", "ZenPlatform.Shell\ZenPlatform.Shell.csproj", "{90FD0DBE-1C95-4692-AD16-C8DA49808E86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Cmd", "ZenPlatform.Cmd\ZenPlatform.Cmd.csproj", "{E0D117A7-4FC3-47D4-8833-708F863092FF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -1711,38 +1709,6 @@ Global
 		{90FD0DBE-1C95-4692-AD16-C8DA49808E86}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{90FD0DBE-1C95-4692-AD16-C8DA49808E86}.Release|x86.ActiveCfg = Release|Any CPU
 		{90FD0DBE-1C95-4692-AD16-C8DA49808E86}.Release|x86.Build.0 = Release|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.AppStore|Any CPU.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.AppStore|iPhone.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.AppStore|x86.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.AppStore|x86.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Debug|x86.Build.0 = Debug|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Release|iPhone.Build.0 = Release|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Release|x86.ActiveCfg = Release|Any CPU
-		{E0D117A7-4FC3-47D4-8833-708F863092FF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1782,7 +1748,6 @@ Global
 		{94908DC9-077B-4E8F-9CBC-D840B8A51BFF} = {60F9DF35-0F24-4B1B-AE89-43D43BAF8160}
 		{312510BE-85E3-4016-952A-BF963D71440A} = {22D31880-2328-451D-ABF3-996E033F9CFC}
 		{90FD0DBE-1C95-4692-AD16-C8DA49808E86} = {22D31880-2328-451D-ABF3-996E033F9CFC}
-		{E0D117A7-4FC3-47D4-8833-708F863092FF} = {22D31880-2328-451D-ABF3-996E033F9CFC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87366D66-1391-4D90-8999-95A620AD786A}
