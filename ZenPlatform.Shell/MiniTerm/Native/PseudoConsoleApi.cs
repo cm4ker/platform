@@ -1,8 +1,8 @@
-﻿using Microsoft.Win32.SafeHandles;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
 
-namespace MiniTerm.Native
+namespace ZenPlatform.Shell.MiniTerm.Native
 {
     /// <summary>
     /// PInvoke signatures for win32 pseudo console api

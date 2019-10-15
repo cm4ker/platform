@@ -1,8 +1,8 @@
-﻿using Microsoft.Win32.SafeHandles;
-using System;
-using static MiniTerm.Native.PseudoConsoleApi;
+﻿using System;
+using Microsoft.Win32.SafeHandles;
+using static ZenPlatform.Shell.MiniTerm.Native.PseudoConsoleApi;
 
-namespace MiniTerm
+namespace ZenPlatform.Shell.MiniTerm
 {
     /// <summary>
     /// Utility functions around the new Pseudo Console APIs

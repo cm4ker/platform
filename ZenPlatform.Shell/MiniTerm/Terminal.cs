@@ -1,16 +1,11 @@
-﻿using Microsoft.Win32.SafeHandles;
-using System;
+﻿using System;
 using System.IO;
-using System.IO.Pipes;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using ZenPlatform.Shell.MiniTerm;
+using ZenPlatform.Shell.MiniTerm.Processes;
 using ZenPlatform.SSH;
-using ZenPlatform.SSH.Messages.Connection;
 
-namespace MiniTerm
+namespace ZenPlatform.Shell.MiniTerm
 {
     /// <summary>
     /// The UI of the terminal. It's just a normal console window, but we're managing the input/output.

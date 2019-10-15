@@ -1,6 +1,5 @@
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using tterm.Ansi;
 using ZenPlatform.Shell.Ansi;
 using ZenPlatform.SSH;
 

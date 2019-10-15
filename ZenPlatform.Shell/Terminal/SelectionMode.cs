@@ -1,4 +1,4 @@
-﻿namespace tterm.Terminal
+﻿namespace ZenPlatform.Shell.Terminal
 {
     internal enum SelectionMode
     {

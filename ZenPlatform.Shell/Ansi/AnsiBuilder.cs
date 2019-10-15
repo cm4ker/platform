@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using tterm.Ansi;
 
 namespace ZenPlatform.Shell.Ansi
 {

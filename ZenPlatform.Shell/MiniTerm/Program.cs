@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MiniTerm
+﻿namespace ZenPlatform.Shell.MiniTerm
 {
     /// <summary>
     /// C# version of:

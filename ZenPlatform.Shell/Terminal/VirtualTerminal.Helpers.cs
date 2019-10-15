@@ -1,6 +1,5 @@
 using System;
-using tterm.Ansi;
-using tterm.Terminal;
+using ZenPlatform.Shell.Ansi;
 using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal

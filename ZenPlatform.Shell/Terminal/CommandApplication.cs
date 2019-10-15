@@ -7,8 +7,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml.Serialization;
-using tterm.Ansi;
-using tterm.Terminal;
 using ZenPlatform.Cli;
 using ZenPlatform.Shell.Ansi;
 using ZenPlatform.SSH;

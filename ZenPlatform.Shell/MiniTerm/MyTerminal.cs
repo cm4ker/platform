@@ -2,11 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ZenPlatform.Shell.MiniTerm;
 using ZenPlatform.SSH;
-using ZenPlatform.SSH.Messages.Connection;
 
-namespace MiniTerm
+namespace ZenPlatform.Shell.MiniTerm
 {
     public class MyTerminal : ITerminal
     {

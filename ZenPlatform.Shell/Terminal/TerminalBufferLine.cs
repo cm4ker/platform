@@ -1,8 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
-using tterm.Ansi;
 
-namespace tterm.Terminal
+namespace ZenPlatform.Shell.Terminal
 {
     /// <summary>
     /// Represents a single immutable line from a terminal buffer.

@@ -1,6 +1,4 @@
-﻿using tterm.Ansi;
-
-namespace ZenPlatform.Shell.Ansi
+﻿namespace ZenPlatform.Shell.Ansi
 {
     internal struct TerminalCode
     {

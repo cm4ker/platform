@@ -5,8 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Channels;
 using TextCopy;
-using tterm.Ansi;
-using tterm.Terminal;
 using ZenPlatform.Shell.Ansi;
 using ZenPlatform.SSH;
 

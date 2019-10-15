@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using static MiniTerm.Native.ProcessApi;
+using static ZenPlatform.Shell.MiniTerm.Native.ProcessApi;
 
-namespace MiniTerm
+namespace ZenPlatform.Shell.MiniTerm.Processes
 {
     /// <summary>
     /// Support for starting and configuring processes.

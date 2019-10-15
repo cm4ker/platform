@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Markup;
-using tterm.Ansi;
-using tterm.Utility;
+using ZenPlatform.Shell.Utility;
 
 namespace ZenPlatform.Shell.Ansi
 {

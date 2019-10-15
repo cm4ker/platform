@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SshServerLoader
+namespace ZenPlatform.Shell
 {
     public class GitService : CommandService
     {

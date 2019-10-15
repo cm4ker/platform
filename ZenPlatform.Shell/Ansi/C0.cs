@@ -1,4 +1,4 @@
-﻿namespace tterm.Ansi
+﻿namespace ZenPlatform.Shell.Ansi
 {
     internal class C0
     {

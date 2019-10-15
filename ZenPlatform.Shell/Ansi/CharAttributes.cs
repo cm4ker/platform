@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace tterm.Ansi
+namespace ZenPlatform.Shell.Ansi
 {
     public struct CharAttributes : IEquatable<CharAttributes>
     {
