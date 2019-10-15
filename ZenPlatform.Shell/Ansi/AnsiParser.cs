@@ -540,6 +540,9 @@ namespace ZenPlatform.Shell.Ansi
                 case 'A':
                     Emit(new TerminalCode(TerminalCodeType.CursorUp, (int) _params[0], 0));
                     return true;
+                case 'B':
+                    Emit(new TerminalCode(TerminalCodeType.CursorDown, (int) _params[0], 0));
+                    return true;
                 case 'G':
                     Emit(new TerminalCode(TerminalCodeType.CursorCharAbsolute, 0, (int) _params[0] - 1));
                     return true;

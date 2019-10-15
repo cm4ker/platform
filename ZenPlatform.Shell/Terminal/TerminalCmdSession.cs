@@ -19,7 +19,7 @@ using Process = System.Diagnostics.Process;
 
 namespace ZenPlatform.Shell.Terminal
 {
-    internal class TerminalSession : ITerminalSession
+    internal class TerminalCmdSession : ITerminalSession
     {
         PipeStream _reader;
         AnonymousPipeServerStream _writer;
@@ -29,12 +29,17 @@ namespace ZenPlatform.Shell.Terminal
         private bool _disposed;
 
 
-        public TerminalSession(TerminalSize size)
+        public TerminalCmdSession(TerminalSize size)
         {
             VTerminal = new VirtualTerminal(size);
 
             _writer = new AnonymousPipeServerStream(PipeDirection.Out);
             _reader = new AnonymousPipeClientStream(PipeDirection.In, _writer.GetClientHandleAsString());
+
+            _cmdProcess = new Process();
+            _cmdProcess.StartInfo.FileName = "ZenPlatform.Cmd.exe";
+            _cmdProcess.StartInfo.RedirectStandardInput = true;
+            _cmdProcess.StartInfo.RedirectStandardOutput = true;
 
             VTerminal.OnData += (s, a) => OnDataReceived(a);
         }
@@ -82,17 +87,15 @@ namespace ZenPlatform.Shell.Terminal
 
         private async void RunOutputLoop()
         {
-            await ConsoleOutputAsync(_reader);
-            
-//            try
-//            {
-//             
-//            }
-//            catch (Exception ex)
-//            {
-//                SessionErrored(ex);
-//                return;
-//            }
+            try
+            {
+                await ConsoleOutputAsync(_reader);
+            }
+            catch (Exception ex)
+            {
+                SessionErrored(ex);
+                return;
+            }
 
             SessionClosed();
         }
@@ -105,6 +108,7 @@ namespace ZenPlatform.Shell.Terminal
                 var sr = new StreamReader(stream);
                 do
                 {
+                    
                     int offset = 0;
                     var buffer = new char[1024];
                     int readChars = await sr.ReadAsync(buffer, offset, buffer.Length - offset);
@@ -154,5 +158,60 @@ namespace ZenPlatform.Shell.Terminal
     }
 
 
+    public class ExtendedStack<T>
+    {
+        private List<T> items = new List<T>();
 
+        public void Push(T item)
+        {
+            items.Add(item);
+        }
+
+        public T Pop()
+        {
+            if (items.Count > 0)
+            {
+                T temp = items[items.Count - 1];
+                items.RemoveAt(items.Count - 1);
+                return temp;
+            }
+            else
+                return default(T);
+        }
+
+        public void Remove(int itemAtPosition)
+        {
+            items.RemoveAt(itemAtPosition);
+        }
+
+        public void Remove(T item)
+        {
+            items.Remove(item);
+        }
+
+        public T Peek()
+        {
+            if (items.Count > 0)
+            {
+                T temp = items[items.Count - 1];
+                return temp;
+            }
+            else
+                throw new Exception("Can't peek form empty list'");
+        }
+
+        public bool TryPeek(out T item)
+        {
+            if (items.Count > 0)
+            {
+                item = items[items.Count - 1];
+                return true;
+            }
+            else
+            {
+                item = default;
+                return false;
+            }
+        }
+    }
 }
