@@ -53,22 +53,5 @@ namespace ZenPlatform.Cli
                 buildCmd.Command("list", c => { });
             });
         }
-        
-        
-        public static void BuildInstanceCommands(CommandLineApplication app)
-        {
-            //Команда построения проекта
-            app.Command("db", buildCmd =>
-            {
-                buildCmd.HelpOption(inherited: true);
-
-                buildCmd.Command("create", c => { });
-                buildCmd.Command("delete", c => { });
-                buildCmd.Command("attach", c => { });
-                buildCmd.Command("detach", c => { });
-                buildCmd.Command("backup", c => { });
-                buildCmd.Command("list", c => { });
-            });
-        }
     }
 }

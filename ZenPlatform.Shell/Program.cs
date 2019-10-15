@@ -126,7 +126,7 @@ namespace SshServerLoader
 
                 terminal.DataReceived += (ss, ee) => e.Channel.SendData(ee);
                 terminal.CloseReceived += (ss, ee) => e.Channel.SendClose(ee);
-
+                
                 terminal.Run();
             }
             else if (e.ShellType == "exec")

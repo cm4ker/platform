@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml.Serialization;
+using tterm.Ansi;
 using tterm.Terminal;
 using ZenPlatform.Shell.Ansi;
 using ZenPlatform.SSH;
@@ -16,6 +19,8 @@ namespace ZenPlatform.Shell.Terminal
     {
         private readonly ITerminal _terminal;
 
+        private bool _isInitialized = false;
+
         private int _cursorX;
         private int _cursorY;
         private IConsole _c;
@@ -23,12 +28,20 @@ namespace ZenPlatform.Shell.Terminal
         private TerminalSize _size;
 
         private TerminalBufferChar[] _buffer;
+        private List<TerminalBufferChar> _line;
+
+        private List<string> _commandStory;
+        private int _currentCommandStoryIndex = -1;
+
+        private int _currentLineIndex = -1;
 
         public CommandApplication(ITerminal terminal)
         {
             _terminal = terminal;
             _c = (IConsole) terminal;
             _buffer = new TerminalBufferChar[_size.HeightRows * _size.WidthColumns];
+            _line = new List<TerminalBufferChar>();
+            _commandStory = new List<string>();
         }
 
         public void Open(TerminalSize size)
@@ -61,8 +74,14 @@ namespace ZenPlatform.Shell.Terminal
             switch (code.Type)
             {
                 case TerminalCodeType.CursorForward:
-                    _cursorX++;
-                    SyncCursor();
+
+                    if (_currentLineIndex < _line.Count - 1)
+                    {
+                        _cursorX++;
+                        SyncCursor();
+                        _currentLineIndex++;
+                    }
+
                     break;
                 case TerminalCodeType.Text:
                     _cursorX += code.Text.Length;
@@ -72,6 +91,20 @@ namespace ZenPlatform.Shell.Terminal
                         _c.WriteLine();
                         _cursorX = 0;
                         SyncCursor();
+                    }
+
+                    if (code.Text.Length > 0)
+                    {
+                        var ch = new TerminalBufferChar(code.Text[0], code.CharAttributes);
+                        if (_currentLineIndex == _line.Count - 1)
+                            _line.Add(ch);
+                        else
+                        {
+                            _line.RemoveAt(_currentLineIndex);
+                            _line.Insert(_currentLineIndex, ch);
+                        }
+
+                        _currentLineIndex++;
                     }
 
                     _c.Write(code.Text);
@@ -84,37 +117,130 @@ namespace ZenPlatform.Shell.Terminal
                     break;
 
                 case TerminalCodeType.CarriageReturn:
-                    _cursorY += 1;
-                    _cursorY = Math.Min((int) _size.HeightRows, _cursorY);
-                    _cursorX = 0;
-                    _c.WriteLine();
+                    _currentLineIndex = -1;
+
+                    WriteLine();
+
+                    var cmd = new string(_line.Select(x => x.Char).ToArray());
+                    _commandStory.Add(cmd);
+                    WriteLine($"The command is: {cmd}");
+                    WriteProposal();
+
+                    _line.Clear();
                     break;
                 case TerminalCodeType.CursorBackward:
-                    _cursorX--;
-                    SyncCursor();
+                    if (_currentLineIndex > _line.Count - 1)
+                    {
+                        _cursorX--;
+                        SyncCursor();
+                        _currentLineIndex--;
+                    }
+
                     break;
                 case TerminalCodeType.Backspace:
-                    _cursorX--;
-                    SyncCursor();
-                    _c.Write(" ");
-                    SyncCursor();
+                    if (_currentLineIndex != -1)
+                    {
+                        _cursorX--;
+                        SyncCursor();
+                        _c.Write(" ");
+                        SyncCursor();
+                        _line.RemoveAt(_currentLineIndex);
+                        _currentLineIndex--;
+                    }
+
                     break;
                 case TerminalCodeType.Delete:
                     SyncCursor();
                     break;
                 case TerminalCodeType.CursorUp:
-                    _cursorY--;
-                    SyncCursor();
+                    UpdateStoryCommand(true);
                     break;
                 case TerminalCodeType.CursorDown:
-                    _cursorY++;
-                    SyncCursor();
+                    UpdateStoryCommand(false);
                     break;
                 case TerminalCodeType.DeviceStatusResponce:
+
                     _cursorX = code.Column;
                     _cursorY = code.Line;
+
+                    if (!_isInitialized)
+                    {
+                        _isInitialized = true;
+                        WriteProposal();
+                    }
+
                     return;
             }
+        }
+
+        private void UpdateStoryCommand(bool isUp)
+        {
+            if (!_commandStory.Any())
+                return;
+
+            if (_currentCommandStoryIndex == -1)
+            {
+                _currentCommandStoryIndex = _commandStory.Count - 1;
+            }
+            else
+            {
+                if (isUp)
+                {
+                    if (_currentCommandStoryIndex > 0)
+                        _currentCommandStoryIndex--;
+                }
+                else
+                {
+                    if (_currentCommandStoryIndex < _commandStory.Count)
+                        _currentCommandStoryIndex++;
+                }
+            }
+
+            if (_currentCommandStoryIndex < _commandStory.Count && _currentCommandStoryIndex >= 0)
+            {
+                var cmd = _commandStory[_currentCommandStoryIndex];
+
+                _line = cmd.Select(x => new TerminalBufferChar(x, new CharAttributes())).ToList();
+                _currentLineIndex = _line.Count - 1;
+                ClearLine();
+                WriteProposal();
+                Write(cmd);
+            }
+            else
+            {
+                ClearLine();
+                _currentLineIndex = -1;
+                _line.Clear();
+            }
+        }
+
+        private void WriteLine(string text = "")
+        {
+            _cursorY += 1;
+            _cursorY = Math.Min((int) _size.HeightRows, _cursorY);
+            _cursorX = 0;
+            _c.WriteLine(text);
+        }
+
+        private void WriteProposal()
+        {
+            Write("> ");
+        }
+
+        private void ClearLine()
+        {
+            _cursorX = 0;
+            SyncCursor();
+            Write(new string(' ', (int) _size.WidthColumns));
+            _cursorX = 0;
+            SyncCursor();
+        }
+
+        private void Write(string text = "")
+        {
+            _c.Write(text);
+            _cursorX += text.Length;
+            //TODO: Если команда длиннее строки
         }
 
         private void RedrawCurrentLine()
