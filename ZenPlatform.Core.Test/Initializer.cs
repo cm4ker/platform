@@ -21,6 +21,7 @@ using ZenPlatform.Core.Test.Configuration;
 using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Test.Assemblies;
+using ZenPlatform.Shell;
 
 namespace ZenPlatform.Core.Test
 {
@@ -33,7 +34,7 @@ namespace ZenPlatform.Core.Test
             services.AddTransient<IConnectionManager, ConnectionManager>();
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
             services.AddScoped<IInvokeService, InvokeService>();
-            services.AddTransient<ITCPListener, TCPListener>();
+            services.AddTransient<INetworkListener, TCPListener>();
             services.AddTransient<IChannel, Channel>();
             services.AddSingleton<IAccessPoint, UserAccessPoint>();
             services.AddSingleton<ITaskManager, TaskManager>();
@@ -44,7 +45,6 @@ namespace ZenPlatform.Core.Test
             services.AddTransient<IChannelFactory, ChannelFactory>();
             services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
             services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
-
 
 
             services.AddScoped<IAssemblyManager, AssemblyManager>();
@@ -73,7 +73,6 @@ namespace ZenPlatform.Core.Test
             services.AddScoped<IUserManager, UserManager>();
 
             return services.BuildServiceProvider();
-
         }
 
         public static ServiceProvider GetClientService()
@@ -86,7 +85,7 @@ namespace ZenPlatform.Core.Test
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
             services.AddSingleton<IClientAssemblyManager, ClientAssemblyManager>();
-
+            services.AddTransient<ITransportClientFactory, TCPTransportClientFactory>();
 
 
             services.AddSingleton(factory =>

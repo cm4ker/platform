@@ -7,7 +7,7 @@ using ZenPlatform.Core.Logging;
 
 namespace ZenPlatform.Core.Network
 {
-    public class TCPListener : ITCPListener
+    public class TCPListener : INetworkListener
     {
         private readonly ILogger _logger;
         private readonly IConnectionManager _connectionManager;
@@ -90,6 +90,11 @@ namespace ZenPlatform.Core.Network
                     _logger.Debug(ex, "Can't open client connection: ");
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

@@ -7,10 +7,14 @@ using ZenPlatform.Core.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Mono.Cecil;
 using Renci.SshNet;
+using Renci.SshNet.Common;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.SSH.Services;
 
 namespace ZenPlatform.Core.Network
 {
@@ -46,7 +50,6 @@ namespace ZenPlatform.Core.Network
         public void Open()
         {
             Channel.Start(_client.GetStream());
-
             Opened = true;
         }
 
@@ -75,13 +78,15 @@ namespace ZenPlatform.Core.Network
 
         public virtual void OnCompleted()
         {
-            _logger.Info("Client '{0}' disconnected.", _client.RemoteEndPoint);
+            _logger.Info("Client '{0}' disconnected. {1}", _client.RemoteEndPoint, "Cause: COMPLETED");
+            throw new Exception();
             Close();
         }
 
         public virtual void OnError(Exception error)
         {
             _logger.Info("Client '{0}' disconnected: '{1}'", _client.RemoteEndPoint, error.Message);
+            throw error;
             Close();
         }
 
@@ -135,7 +140,7 @@ namespace ZenPlatform.Core.Network
     public class SSHTransportClient : ITransportClient
     {
         private readonly SshClient _client;
-        private ShellStream _stream;
+        private SSHClientShellStream _stream;
 
 
         public SSHTransportClient(SshClient client)
@@ -146,8 +151,9 @@ namespace ZenPlatform.Core.Network
         public Stream GetStream()
         {
             if (_stream == null)
-                _stream = _client.CreateShellStream("someTerminal", UInt32.MaxValue, UInt32.MaxValue, UInt32.MaxValue,
-                    UInt32.MaxValue, Int32.MaxValue);
+                _stream = new SSHClientShellStream(_client.CreateShellStream("client", 300,
+                    300, 300,
+                    300, 213));
             return _stream;
         }
 
@@ -198,6 +204,161 @@ namespace ZenPlatform.Core.Network
         {
             _stream?.Dispose();
             _client?.Dispose();
+        }
+    }
+
+
+    public class SSHTransportServer : ITransportClient
+    {
+        private SessionChannel _sessionChannel;
+
+        public SSHTransportServer(SessionChannel sessionChannel)
+        {
+            _sessionChannel = sessionChannel;
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public Stream GetStream()
+        {
+            return new SSHStreamFacade(_sessionChannel);
+        }
+
+        public bool IsConnected => true;
+        public string RemoteEndPoint => "Server transport";
+
+        public void Close()
+        {
+            _sessionChannel.SendClose();
+        }
+    }
+
+    public class SSHStreamFacade : Stream
+    {
+        private readonly SessionChannel _sessionChannel;
+        private readonly MemoryStream _bufferStream;
+        private AutoResetEvent _waitReceive;
+        private readonly object _readLock = new object();
+
+        public SSHStreamFacade(SessionChannel sessionChannel)
+        {
+            _sessionChannel = sessionChannel;
+            _sessionChannel.DataReceived += SessionChannelOnDataReceived;
+            _bufferStream = new MemoryStream();
+            _waitReceive = new AutoResetEvent(false);
+        }
+
+        public override void Flush()
+        {
+            _sessionChannel.SendClose();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            _waitReceive.WaitOne();
+
+            int readbyte = 0;
+            lock (_readLock)
+            {
+                readbyte = _bufferStream.Read(buffer, offset, count);
+            }
+
+            return readbyte;
+        }
+
+        private void SessionChannelOnDataReceived(object sender, byte[] e)
+        {
+            lock (_readLock)
+            {
+                var pos = _bufferStream.Position;
+                _bufferStream.Write(e);
+                _bufferStream.Seek(pos, SeekOrigin.Begin);
+                _waitReceive.Set();
+            }
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            _sessionChannel.SendData(buffer);
+        }
+
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => true;
+        public override long Length => throw new NotImplementedException();
+
+        public override long Position
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
+    }
+
+    public class SSHClientShellStream : Stream
+    {
+        private readonly ShellStream _ss;
+        private AutoResetEvent _read;
+
+        public SSHClientShellStream(ShellStream ss)
+        {
+            _ss = ss;
+            _read = new AutoResetEvent(false);
+            _ss.DataReceived += SsOnDataReceived;
+        }
+
+        private void SsOnDataReceived(object sender, ShellDataEventArgs e)
+        {
+            _read.Set();
+        }
+
+        public override void Flush()
+        {
+            _ss.Flush();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            _read.WaitOne();
+            return _ss.Read(buffer, offset, count);
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            _ss.Write(buffer, offset, count);
+            _ss.Flush();
+        }
+
+        public override bool CanRead => _ss.CanRead;
+        public override bool CanSeek => _ss.CanSeek;
+        public override bool CanWrite => _ss.CanWrite;
+        public override long Length => _ss.Length;
+
+        public override long Position
+        {
+            get => _ss.Position;
+            set => _ss.Position = value;
         }
     }
 }

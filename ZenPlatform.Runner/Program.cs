@@ -57,7 +57,7 @@ namespace ZenPlatform.Runner
                     services.AddTransient<IConnectionManager, ConnectionManager>();
                     services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
                     services.AddScoped<IInvokeService, InvokeService>();
-                    services.AddTransient<ITCPListener, TCPListener>();
+                    services.AddTransient<INetworkListener, TCPListener>();
                     services.AddTransient<IChannel, Channel>();
                     services.AddSingleton<IAccessPoint, UserAccessPoint>();
                     services.AddSingleton<ITaskManager, TaskManager>();

@@ -11,6 +11,12 @@ namespace ZenPlatform.SSH
         {
         }
 
+        
+        public StartingInfo(IPAddress localAddress, int port) : this(localAddress, port, "SSH-2.0-FxSsh")
+        {
+
+        }
+        
         public StartingInfo(IPAddress localAddress, int port, string serverBanner)
         {
             LocalAddress = localAddress;

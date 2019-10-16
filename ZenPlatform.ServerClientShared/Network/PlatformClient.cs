@@ -45,8 +45,11 @@ namespace ZenPlatform.Core.Network
         public void Connect(DatabaseConnectionSettings connectionSettings)
         {
             _client.Connect(NetworkUtility.CreateIPEndPoint(connectionSettings.Address));
+            
+            _logger.Info("Try use DB..");
             _client.Use(connectionSettings.Database);
-
+            _logger.Info("Success!");
+            
             _connectionSettings = connectionSettings;
             
 
@@ -56,8 +59,17 @@ namespace ZenPlatform.Core.Network
 
         public void Login(string name, string password)
         {
-            _client.Authentication(new UserPasswordAuthenticationToken(name, password));
+            _logger.Info("Try login");
+            if (_client.Authentication(new UserPasswordAuthenticationToken(name, password)))
+            {
+                _logger.Info("Success");
+            }
+            else
+            {
+                _logger.Info("Failure");
+            }
 
+            
 
             _platformAssemblyLoadContext =  _serviceProvider.GetRequiredService<PlatformAssemblyLoadContext>();
         }

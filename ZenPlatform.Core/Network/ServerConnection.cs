@@ -13,6 +13,7 @@ namespace ZenPlatform.Core.Network
 {
     public class ServerConnection : Connection, IRemovable
     {
+        private readonly ILogger<ServerConnection> _logger;
         private IDisposable _remover;
 
         //public IState State { get; set; }
@@ -26,6 +27,7 @@ namespace ZenPlatform.Core.Network
             ITransportClient tcpClient, IPlatformEnvironmentManager environmentManager)
             : base(logger, tcpClient, channelFactory)
         {
+            _logger = logger;
             _connectionContext = new ServerConnectionContext()
             {
                 Connection = this
@@ -65,8 +67,6 @@ namespace ZenPlatform.Core.Network
                 {
                     observer.OnCompleted(_connectionContext);
                 }
-
-            base.OnCompleted();
         }
 
         public override void OnError(Exception error)

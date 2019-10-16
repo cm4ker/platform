@@ -79,6 +79,8 @@ namespace ZenPlatform.Core.Network
         {
             var req = new RequestAuthenticationNetworkMessage(token);
 
+            _logger.Info("Try send RequestAuthenticationNetworkMessage");
+            
             var wait = RequestAsync(req, msg =>
             {
                 switch (msg)
