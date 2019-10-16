@@ -1,9 +1,7 @@
-﻿
-
-namespace ZenPlatform.Core.Network
+﻿namespace ZenPlatform.Core.Network
 {
     public interface IConnectionManager
     {
-        void AddConnection(ServerConnection connection);
+        void AddConnection(Connection connection);
     }
 }

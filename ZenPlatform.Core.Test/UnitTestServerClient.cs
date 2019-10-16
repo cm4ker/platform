@@ -11,6 +11,7 @@ using System.Linq;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Compiler.Platform;
 using System.IO;
+using System.Threading.Tasks;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Test.Assemblies;
 using ZenPlatform.Core.Assemblies;
@@ -27,6 +28,34 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void Connecting()
         {
+            for (int i = 0; i < 10; i++)
+            {
+                var serverServices = Initializer.GetServerService();
+                var clientServices = Initializer.GetClientService();
+
+
+                var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
+                Assert.NotEmpty(environmentManager.GetEnvironmentList());
+
+
+                var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
+                accessPoint.Start();
+                //need check listing
+
+                var platformClient = clientServices.GetRequiredService<PlatformClient>();
+                platformClient.Connect(new Settings.DatabaseConnectionSettings()
+                    {Address = "127.0.0.1:12345", Database = "Library"});
+                //need check connection
+
+                accessPoint.Stop();
+
+                Task.Delay(5000).Wait();
+            }
+        }
+
+        [Fact]
+        public void ConnectingAndLogin()
+        {
             var serverServices = Initializer.GetServerService();
             var clientServices = Initializer.GetClientService();
 
@@ -38,7 +67,6 @@ namespace ZenPlatform.Core.Test
             var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
             accessPoint.Start();
             //need check listing
-
 
             var platformClient = clientServices.GetRequiredService<PlatformClient>();
             platformClient.Connect(new Settings.DatabaseConnectionSettings()

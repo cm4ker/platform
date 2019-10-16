@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
@@ -81,9 +82,9 @@ namespace ZenPlatform.SSH.Services
             var channel = HandleChannelOpenMessage(message);
             var args = new TcpRequestArgs(channel,
                 message.Address,
-                (int)message.Port,
+                (int) message.Port,
                 message.OriginatorIPAddress,
-                (int)message.OriginatorPort,
+                (int) message.OriginatorPort,
                 _auth);
             TcpForwardRequest?.Invoke(this, args);
         }
@@ -93,9 +94,9 @@ namespace ZenPlatform.SSH.Services
             var channel = HandleChannelOpenMessage(message);
             var args = new TcpRequestArgs(channel,
                 message.Host,
-                (int)message.Port,
+                (int) message.Port,
                 message.OriginatorIPAddress,
-                (int)message.OriginatorPort,
+                (int) message.OriginatorPort,
                 _auth);
             TcpForwardRequest?.Invoke(this, args);
         }
@@ -133,13 +134,14 @@ namespace ZenPlatform.SSH.Services
                     if (message.WantReply)
                     {
                         var c = FindChannelByServerId<SessionChannel>(message.RecipientChannel);
-                        _session.SendMessage(new ChannelSuccessMessage { RecipientChannel = c.ClientChannelId });
+                        _session.SendMessage(new ChannelSuccessMessage {RecipientChannel = c.ClientChannelId});
                     }
+
                     break;
                 case "winadj@putty.projects.tartarus.org":
                     //https://tartarus.org/~simon/putty-snapshots/htmldoc/AppendixF.html
                     var channel = FindChannelByServerId<SessionChannel>(message.RecipientChannel);
-                    _session.SendMessage(new ChannelFailureMessage { RecipientChannel = channel.ClientChannelId });
+                    _session.SendMessage(new ChannelFailureMessage {RecipientChannel = channel.ClientChannelId});
                     break;
                 default:
                     if (message.WantReply)
@@ -158,7 +160,7 @@ namespace ZenPlatform.SSH.Services
             EnvReceived?.Invoke(this, new EnvironmentArgs(channel, message.Name, message.Value, _auth));
 
             if (message.WantReply)
-                _session.SendMessage(new ChannelSuccessMessage { RecipientChannel = channel.ClientChannelId });
+                _session.SendMessage(new ChannelSuccessMessage {RecipientChannel = channel.ClientChannelId});
         }
 
         private void HandleMessage(PtyRequestMessage message)
@@ -175,11 +177,13 @@ namespace ZenPlatform.SSH.Services
                     message.modes, _auth));
 
             if (message.WantReply)
-                _session.SendMessage(new ChannelSuccessMessage { RecipientChannel = channel.ClientChannelId });
+                _session.SendMessage(new ChannelSuccessMessage {RecipientChannel = channel.ClientChannelId});
         }
 
         private void HandleMessage(ChannelDataMessage message)
         {
+            Console.WriteLine("DATA!");
+            
             var channel = FindChannelByServerId<Channel>(message.RecipientChannel);
             channel.OnData(message.Data);
         }
@@ -221,7 +225,7 @@ namespace ZenPlatform.SSH.Services
                 message.SenderChannel,
                 message.InitialWindowSize,
                 message.MaximumPacketSize,
-                (uint)Interlocked.Increment(ref _serverChannelCounter));
+                (uint) Interlocked.Increment(ref _serverChannelCounter));
 
             lock (_locker)
                 _channels.Add(channel);
@@ -243,7 +247,7 @@ namespace ZenPlatform.SSH.Services
             var channel = FindChannelByServerId<SessionChannel>(message.RecipientChannel);
 
             if (message.WantReply)
-                _session.SendMessage(new ChannelSuccessMessage { RecipientChannel = channel.ClientChannelId });
+                _session.SendMessage(new ChannelSuccessMessage {RecipientChannel = channel.ClientChannelId});
 
             CommandOpened?.Invoke(this, new CommandRequestedArgs(channel, "shell", null, _auth));
         }
@@ -253,7 +257,7 @@ namespace ZenPlatform.SSH.Services
             var channel = FindChannelByServerId<SessionChannel>(message.RecipientChannel);
 
             if (message.WantReply)
-                _session.SendMessage(new ChannelSuccessMessage { RecipientChannel = channel.ClientChannelId });
+                _session.SendMessage(new ChannelSuccessMessage {RecipientChannel = channel.ClientChannelId});
 
             CommandOpened?.Invoke(this, new CommandRequestedArgs(channel, "exec", message.Command, _auth));
         }
@@ -263,7 +267,7 @@ namespace ZenPlatform.SSH.Services
             var channel = FindChannelByServerId<SessionChannel>(message.RecipientChannel);
 
             if (message.WantReply)
-                _session.SendMessage(new ChannelSuccessMessage { RecipientChannel = channel.ClientChannelId });
+                _session.SendMessage(new ChannelSuccessMessage {RecipientChannel = channel.ClientChannelId});
 
             CommandOpened?.Invoke(this, new CommandRequestedArgs(channel, "subsystem", message.Name, _auth));
         }

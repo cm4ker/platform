@@ -24,5 +24,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
+    <ProjectReference Include="..\ZenPlatform.SSH\ZenPlatform.SSH.csproj" />
   </ItemGroup>
 </Project>
