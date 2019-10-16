@@ -63,8 +63,8 @@ namespace ZenPlatform.Runner
                     services.AddSingleton<ITaskManager, TaskManager>();
                     services.AddTransient<IMessagePackager, SimpleMessagePackager>();
                     services.AddTransient<ISerializer, ApexSerializer>();
-                    services.AddTransient<UserTCPConnectionFactory>();
-                    services.AddTransient<TCPConnectionFactory>();
+                    services.AddTransient<UserConnectionFactory>();
+                    services.AddTransient<ServerConnectionFactory>();
                     services.AddTransient<IChannelFactory, ChannelFactory>();
                     services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
                     services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();

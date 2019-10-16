@@ -11,7 +11,7 @@ using ZenPlatform.Core.Authentication;
 
 namespace ZenPlatform.Core.Network
 {
-    public class TCPServerConnection : TCPConnection, IRemovable
+    public class ServerConnection : Connection, IRemovable
     {
         private IDisposable _remover;
 
@@ -22,8 +22,8 @@ namespace ZenPlatform.Core.Network
 
         private ServerConnectionContext _connectionContext;
 
-        public TCPServerConnection(ILogger<TCPServerConnection> logger, IChannelFactory channelFactory, 
-            TcpClient tcpClient, IPlatformEnvironmentManager environmentManager) 
+        public ServerConnection(ILogger<ServerConnection> logger, IChannelFactory channelFactory,
+            ITransportClient tcpClient, IPlatformEnvironmentManager environmentManager)
             : base(logger, tcpClient, channelFactory)
         {
             _connectionContext = new ServerConnectionContext()
@@ -33,7 +33,6 @@ namespace ZenPlatform.Core.Network
 
             var state = new EnvironmentManagerObserver(environmentManager);
             state.Subscribe(this);
-
         }
 
         public void SetRemover(IDisposable remover)
@@ -52,22 +51,21 @@ namespace ZenPlatform.Core.Network
 
         public override void OnNext(INetworkMessage value)
         {
-
             foreach (var observer in _connectionObservers.ToArray())
-            if (_connectionObservers.Contains(observer) && observer.CanObserve(value.GetType()))
-            {
-                observer.OnNext(_connectionContext, value);
-            }
-           
+                if (_connectionObservers.Contains(observer) && observer.CanObserve(value.GetType()))
+                {
+                    observer.OnNext(_connectionContext, value);
+                }
         }
 
         public override void OnCompleted()
         {
             foreach (var observer in _connectionObservers.ToArray())
-            if (_connectionObservers.Contains(observer))
-            {
-                observer.OnCompleted(_connectionContext);
-            }
+                if (_connectionObservers.Contains(observer))
+                {
+                    observer.OnCompleted(_connectionContext);
+                }
+
             base.OnCompleted();
         }
 
@@ -83,7 +81,4 @@ namespace ZenPlatform.Core.Network
             base.OnError(error);
         }
     }
-
-
-    
 }

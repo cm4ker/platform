@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +17,7 @@ namespace ZenPlatform.Core.Network
     {
         private ConcurrentDictionary<Guid, Action<INetworkMessage>> _resultCallbacks;
         private readonly ILogger _logger;
-        private TcpClient _tcpClient;
+        private readonly ITransportClientFactory _tcFactory;
         private ClientConnection _connection;
         private IDisposable _unsubscriber;
 
@@ -30,24 +29,23 @@ namespace ZenPlatform.Core.Network
 
         public bool Connected { get; private set; }
 
-        public Client(ILogger<Client> logger)
+        public Client(ILogger<Client> logger, ITransportClientFactory tcFactory)
 
         {
-
             _logger = logger;
+            _tcFactory = tcFactory;
             _resultCallbacks = new ConcurrentDictionary<Guid, Action<INetworkMessage>>();
-
         }
-        
+
         public void Connect(IPEndPoint endPoint)
         {
             _logger.Info("Connect to {0}", endPoint.Address.ToString());
             try
             {
-                var tcpClient = new TcpClient();
-                tcpClient.Connect(endPoint);
+                var transport = _tcFactory.Create(endPoint);
+
                 _connection = new ClientConnection(new SimpleConsoleLogger<ClientConnection>(),
-                    tcpClient, new ClientChannelFactory());
+                    transport, new ClientChannelFactory());
                 _unsubscriber = _connection.Subscribe(this);
                 _connection.Open();
 
@@ -61,18 +59,20 @@ namespace ZenPlatform.Core.Network
 
                 throw socketException;
             }
-
         }
 
         private WaitHandle RequestAsync(INetworkMessage message, Action<INetworkMessage> CallBack)
         {
             AutoResetEvent restEvent = new AutoResetEvent(false);
-            _resultCallbacks.TryAdd(message.Id, (m) => { CallBack(m); _resultCallbacks.TryRemove(message.Id, out _); restEvent.Set(); });
+            _resultCallbacks.TryAdd(message.Id, (m) =>
+            {
+                CallBack(m);
+                _resultCallbacks.TryRemove(message.Id, out _);
+                restEvent.Set();
+            });
             _connection.Channel.Send(message);
 
             return restEvent;
-
-
         }
 
         public bool Authentication(IAuthenticationToken token)
@@ -92,7 +92,6 @@ namespace ZenPlatform.Core.Network
 
                         break;
                 }
-
             });
             wait.WaitOne();
             return Authenticated;
@@ -101,7 +100,8 @@ namespace ZenPlatform.Core.Network
 
         public Stream InvokeStream(Route route, params object[] args)
         {
-            if (!Connected && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
+            if (!Connected && !Authenticated)
+                throw new NotSupportedException("Client is not connected or not authenticated.");
 
             var message = new StartInvokeStreamNetworkMessage(route, args);
             var stream = new DataStream(message.Id, _connection);
@@ -118,26 +118,27 @@ namespace ZenPlatform.Core.Network
 
             var req = new RequestEnvironmentUseNetworkMessage(name);
             var wait = RequestAsync(req, msg =>
-             {
-                 switch (msg)
-                 {
-                     case ResponceEnvironmentUseNetworkMessage res:
-                         IsUse = true;
-                         Database = res.Name;
+            {
+                switch (msg)
+                {
+                    case ResponceEnvironmentUseNetworkMessage res:
+                        IsUse = true;
+                        Database = res.Name;
 
-                         break;
-                     case ErrorNetworkMessage res:
-                         IsUse = false;
-                         break;
-                 }
-             });
+                        break;
+                    case ErrorNetworkMessage res:
+                        IsUse = false;
+                        break;
+                }
+            });
             wait.WaitOne();
             return IsUse;
         }
 
         public TResponce Invoke<TResponce>(Route route, params object[] args)
         {
-            if (!Connected && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
+            if (!Connected && !Authenticated)
+                throw new NotSupportedException("Client is not connected or not authenticated.");
             if (!IsUse) throw new NotSupportedException("First need to choose a database. Need call method Use.");
 
             TResponce responce = default;
@@ -156,29 +157,27 @@ namespace ZenPlatform.Core.Network
                     case ResponceInvokeUnaryNetworkMessage res:
                         try
                         {
-                            responce = (TResponce)res.Result;
+                            responce = (TResponce) res.Result;
                         }
                         catch (Exception ex)
                         {
                             exception = ex;
                         }
+
                         break;
                 }
-
             });
 
             wait.WaitOne();
             if (exception != null) throw exception;
 
             return responce;
-
         }
 
         public async Task<TResponce> InvokeAsync<TResponce>(Route route, params object[] args)
         {
-
             return await Task.Factory.StartNew(() => Invoke<TResponce>(route, args)
-            , TaskCreationOptions.LongRunning);
+                , TaskCreationOptions.LongRunning);
         }
 
 
@@ -193,6 +192,7 @@ namespace ZenPlatform.Core.Network
                 _connection?.Close();
             }
         }
+
         public T GetService<T>()
         {
             var factory = new NetworkProxyFactory();

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ZenPlatform.Core.Environment.Contracts;
 
 namespace ZenPlatform.Core.Environment
 {

@@ -32,17 +32,17 @@ namespace ZenPlatform.Core.Network
             foreach (var lisetnercfg in _config.Listener)
             {
                 ITCPListener listener = _serviceProvider.GetRequiredService<ITCPListener>();
-                TCPConnectionFactory connectionFactory = null;
+                ServerConnectionFactory connectionFactory = null;
                 switch (lisetnercfg.Type)
                 {
                     case ListenerType.User:
-                        connectionFactory = _serviceProvider.GetRequiredService<UserTCPConnectionFactory>();
+                        connectionFactory = _serviceProvider.GetRequiredService<UserConnectionFactory>();
                         break;
                     case ListenerType.Admin:
-                        connectionFactory = _serviceProvider.GetRequiredService<TCPConnectionFactory>();
+                        connectionFactory = _serviceProvider.GetRequiredService<ServerConnectionFactory>();
                         break;
                     case ListenerType.Test:
-                        connectionFactory = _serviceProvider.GetRequiredService<TCPConnectionFactory>();
+                        connectionFactory = _serviceProvider.GetRequiredService<ServerConnectionFactory>();
                         break;
                     default:
                         throw new InvalidOperationException();

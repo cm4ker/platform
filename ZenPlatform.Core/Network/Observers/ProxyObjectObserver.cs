@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Network.States

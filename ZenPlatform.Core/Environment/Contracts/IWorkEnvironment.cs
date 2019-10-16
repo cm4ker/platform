@@ -1,4 +1,5 @@
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Environment

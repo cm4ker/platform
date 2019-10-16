@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace ZenPlatform.Core.Network
@@ -9,4 +10,9 @@ namespace ZenPlatform.Core.Network
         IConnection Connection { get; }
     }
 
+
+    public interface ITransportClientFactory
+    {
+        ITransportClient Create(IPEndPoint endPoint);
+    }
 }

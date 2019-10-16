@@ -1,13 +1,9 @@
 ﻿using System.Collections.Generic;
-using ZenPlatform.Core.Sessions;
-using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Authentication;
-using ZenPlatform.QueryBuilder;
-using System;
-using ZenPlatform.Configuration.Data.Contracts.Entity;
-using ZenPlatform.Data;
+using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Sessions;
 
-namespace ZenPlatform.Core.Environment
+namespace ZenPlatform.Core.Environment.Contracts
 {
     public interface IEnvironment
     {
