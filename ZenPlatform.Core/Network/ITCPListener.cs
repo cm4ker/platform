@@ -5,7 +5,7 @@ namespace ZenPlatform.Core.Network
 
     public interface ITCPListener
     {
-        void Start(IPEndPoint endPoint, TCPConnectionFactory connectionFactory);
+        void Start(IPEndPoint endPoint, ServerConnectionFactory connectionFactory);
         void Stop();
     }
 }

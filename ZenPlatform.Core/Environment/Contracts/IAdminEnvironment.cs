@@ -1,3 +1,5 @@
+using ZenPlatform.Core.Environment.Contracts;
+
 namespace ZenPlatform.Core.Environment
 {
     /// <summary>

@@ -143,6 +143,10 @@ namespace ZenPlatform.Shell
 
                 git.Start();
             }
+            else if (e.ShellType == "client")
+            {
+                
+            }
             else if (e.ShellType == "subsystem")
             {
                 // do something more

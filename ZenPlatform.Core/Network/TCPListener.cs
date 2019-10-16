@@ -7,8 +7,6 @@ using ZenPlatform.Core.Logging;
 
 namespace ZenPlatform.Core.Network
 {
-
-
     public class TCPListener : ITCPListener
     {
         private readonly ILogger _logger;
@@ -16,27 +14,26 @@ namespace ZenPlatform.Core.Network
         private TcpListener _listener;
         private bool _running;
         private Thread _thread;
-        private TCPConnectionFactory _connectionFactory;
+        private ServerConnectionFactory _connectionFactory;
 
         public TCPListener(ILogger<TCPListener> logger, IConnectionManager connectionManager)
         {
             _logger = logger;
             _connectionManager = connectionManager;
-           
         }
 
-        public void Start(IPEndPoint endPoint, TCPConnectionFactory connectionFactory)
+        public void Start(IPEndPoint endPoint, ServerConnectionFactory connectionFactory)
         {
             try
             {
                 _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
 
                 _logger.Info("Started listening: {0}:{1}", endPoint.Address, endPoint.Port);
-                
+
 
                 _listener = new TcpListener(endPoint ?? throw new ArgumentNullException(nameof(endPoint)));
                 _listener.Start();
-                
+
 
                 _running = true;
                 _thread = new Thread(ThreadListen);
@@ -46,7 +43,6 @@ namespace ZenPlatform.Core.Network
             {
                 _logger.Error(ex, "Error starting listener.");
             }
-
         }
 
         public void Stop()
@@ -60,20 +56,15 @@ namespace ZenPlatform.Core.Network
         }
 
 
-
         private void ThreadListen()
         {
-
             while (_running)
             {
-                TcpClient client = null;
+                ITransportClient client = null;
                 try
                 {
-                    client = _listener.AcceptTcpClient();
-                    _logger.Info("Client connected: '{0}'", client.Client.RemoteEndPoint.ToString());
-
-
-
+                    client = new TCPTransportClient(_listener.AcceptTcpClient());
+                    _logger.Info("Client connected: '{0}'", client.RemoteEndPoint);
                 }
 
                 catch (Exception ex)
@@ -99,10 +90,6 @@ namespace ZenPlatform.Core.Network
                     _logger.Debug(ex, "Can't open client connection: ");
                 }
             }
-
-
         }
-
-
     }
 }
