@@ -1,36 +1,11 @@
 ﻿using System.IO;
 using System.Net;
-using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.Core.Network.Contracts
 {
-    public interface IPlatformClient : IProtocolClient
-    {
-        /// <summary>
-        /// Аутентификация пройдена
-        /// </summary>
-        bool IsAuthenticated { get; }
-
-        bool Authenticate(IAuthenticationToken token);
-
-        /// <summary>
-        /// Текущая база данных
-        /// </summary>
-        string Database { get; }
-
-        bool IsUse { get; }
-
-        /// <summary>
-        /// Использовать базу данных
-        /// </summary>
-        /// <param name="name">Имя базы данных</param>
-        /// <returns></returns>
-        bool Use(string name);
-    }
-
     /// <summary>
-    /// Описывает
+    /// Уровень протокола
     /// </summary>
     public interface IProtocolClient
     {
@@ -42,7 +17,7 @@ namespace ZenPlatform.Core.Network.Contracts
         /// <summary>
         /// Информация о соединении
         /// </summary>
-        ConnectionInfo Info { get; }
+        IConnectionInfo Info { get; }
 
         /// <summary>
         /// Закрыть соединение

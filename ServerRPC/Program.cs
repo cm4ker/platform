@@ -20,12 +20,12 @@ namespace ZenPlatform.ServerRPC
             Client client = new Client(new SimpleConsoleLogger<Client>());
 
 
-            PlatformClient platformClient = new PlatformClient(null, client, null);
+            ClientPlatformContext clientPlatformContext = new ClientPlatformContext(null, client, null);
 
-            platformClient.Connect(new Core.Settings.DatabaseConnectionSettings()
+            clientPlatformContext.Connect(new Core.Settings.DatabaseConnectionSettings()
                 {Address = "127.0.0.1:12345", Database = "testdb"});
 
-            platformClient.Login("admin", "admin");
+            clientPlatformContext.Login("admin", "admin");
 
 
             //platformClient.test();

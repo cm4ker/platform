@@ -60,7 +60,7 @@ namespace ZenPlatform.Core.Network
         /// <summary>
         /// Информация о соединении
         /// </summary>
-        public ConnectionInfo Info => throw new NotImplementedException();
+        public IConnectionInfo Info => throw new NotImplementedException();
 
 
         /// <summary>
