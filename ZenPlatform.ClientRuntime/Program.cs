@@ -1,7 +1,7 @@
 ﻿using System;
 using ZenPlatform.Core.Contracts;
 
-namespace ZenPlatform.AsmClientInfrastructure
+namespace ZenPlatform.ClientRuntime
 {
     /// <summary>
     /// Оснавная точка входа в программу
@@ -23,8 +23,6 @@ namespace ZenPlatform.AsmClientInfrastructure
             get => _client ?? throw new PlatformNotInitializedException();
             set => _client = value;
         }
-
-        
     }
 
     public class PlatformNotInitializedException : Exception

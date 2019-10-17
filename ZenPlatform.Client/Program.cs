@@ -4,6 +4,7 @@ using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Client
 {
@@ -15,15 +16,19 @@ namespace ZenPlatform.Client
 
             Console.WriteLine("Please enter the destination address or leave empty for the default config [{0}] ",
                 "Some Addr");
-            
+
             Console.WriteLine("Attempt to connect");
-            
-            
-            
+
+
+            var serv = Build();
+
+            var client = serv.GetService<PlatformClient>();
+            client.Connect(new DatabaseConnectionSettings {Address = "localhost:12345", Database = "Library"});
+            client.LoadMainAssembly();
         }
-        
-        
-        public static ServiceProvider GetClientService()
+
+
+        public static ServiceProvider Build()
         {
             IServiceCollection services = new ServiceCollection();
 

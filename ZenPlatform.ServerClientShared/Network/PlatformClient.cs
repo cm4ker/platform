@@ -12,9 +12,9 @@ using ZenPlatform.Core.Tools;
 using ZenPlatform.QueryBuilder;
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Compiler;
+
 namespace ZenPlatform.Core.Network
 {
-    
     public class PlatformClient
     {
         private readonly IClient _client;
@@ -31,12 +31,11 @@ namespace ZenPlatform.Core.Network
             _logger = logger;
 
             _serviceProvider = serviceProvider;
-
         }
 
         public Assembly LoadMainAssembly()
         {
-            var assemblyName = $"{ _client.Database}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}";
+            var assemblyName = $"{_client.Database}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}";
 
             return _platformAssemblyLoadContext.LoadFromAssemblyName(new AssemblyName(assemblyName));
         }
@@ -45,15 +44,12 @@ namespace ZenPlatform.Core.Network
         public void Connect(DatabaseConnectionSettings connectionSettings)
         {
             _client.Connect(NetworkUtility.CreateIPEndPoint(connectionSettings.Address));
-            
+
             _logger.Info("Try use DB..");
             _client.Use(connectionSettings.Database);
             _logger.Info("Success!");
-            
-            _connectionSettings = connectionSettings;
-            
 
-            
+            _connectionSettings = connectionSettings;
         }
 
 
@@ -69,11 +65,8 @@ namespace ZenPlatform.Core.Network
                 _logger.Info("Failure");
             }
 
-            
 
-            _platformAssemblyLoadContext =  _serviceProvider.GetRequiredService<PlatformAssemblyLoadContext>();
+            _platformAssemblyLoadContext = _serviceProvider.GetRequiredService<PlatformAssemblyLoadContext>();
         }
-
-        
     }
 }
