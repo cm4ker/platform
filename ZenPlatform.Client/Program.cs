@@ -2,12 +2,30 @@
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.ClientServices;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Network.Contracts;
 using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Client
 {
+    public static class GlobalScope
+    {
+        private static IClientInvoker _client;
+
+        public static IClientInvoker Client
+        {
+            get => _client ?? throw new PlatformNotInitializedException();
+            set => _client = value;
+        }
+    }
+
+
+    public class PlatformNotInitializedException : Exception
+    {
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -25,6 +43,8 @@ namespace ZenPlatform.Client
             var client = serv.GetService<PlatformClient>();
             client.Connect(new DatabaseConnectionSettings {Address = "localhost:12345", Database = "Library"});
             client.LoadMainAssembly();
+
+            GlobalScope.Client = client.ConnectionClient;
         }
 
 
@@ -34,7 +54,7 @@ namespace ZenPlatform.Client
 
 
             services.AddSingleton<PlatformClient>();
-            services.AddSingleton<IClient, Core.Network.Client>();
+            services.AddSingleton<IProtocolClient, Core.Network.Client>();
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
             services.AddSingleton<IClientAssemblyManager, ClientAssemblyManager>();
@@ -43,7 +63,7 @@ namespace ZenPlatform.Client
 
             services.AddSingleton(factory =>
             {
-                var client = factory.GetRequiredService<IClient>();
+                var client = factory.GetRequiredService<IProtocolClient>();
                 return client.GetService<IAssemblyManagerClientService>();
             });
 
