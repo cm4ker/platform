@@ -2,48 +2,38 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using ZenPlatform.Compiler;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Crypto;
-using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Core.Assemlies
 {
-
-
-
-
-
-    public class ClientAssemblyManager : IClientAssemblyManager
+    public class PlatformClientAssemblyManager : IClientAssemblyManager
     {
         IAssemblyManagerClientService _service;
-        private IProtocolClient _client;
+        private IPlatformClient _client;
 
         public string CashPath
         {
             get
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ZenClient", _client.Database, "AssemblyCache");
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ZenClient",
+                    _client.Database, "AssemblyCache");
             }
         }
 
-        public ClientAssemblyManager(IAssemblyManagerClientService service, IProtocolClient client)
+        public PlatformClientAssemblyManager(IAssemblyManagerClientService service, IPlatformClient client)
         {
             _service = service;
             _client = client;
 
             if (!Directory.Exists(CashPath)) Directory.CreateDirectory(CashPath);
-
-
         }
 
 
         private IEnumerable<AssemblyDescription> LoadCacheDescription()
         {
-
             foreach (var filePath in Directory.GetFiles(CashPath))
             {
                 using (var file = new FileStream(filePath, FileMode.Open))
@@ -59,7 +49,6 @@ namespace ZenPlatform.Core.Assemlies
 
         public void UpdateAssemblies()
         {
-
             var descriptions = LoadCacheDescription().ToList();
             var diff = _service.GetDiffAssemblies(descriptions);
 
@@ -67,14 +56,11 @@ namespace ZenPlatform.Core.Assemlies
             {
                 Download(desc);
             }
-
-
         }
 
         public Stream GetAssembly(string name)
         {
             return new FileStream(Path.Combine(CashPath, name), FileMode.Open);
-
         }
 
         private void Download(AssemblyDescription assemblyDescription)
@@ -87,7 +73,5 @@ namespace ZenPlatform.Core.Assemlies
                 }
             }
         }
-
-
     }
 }

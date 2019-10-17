@@ -81,11 +81,11 @@ namespace ZenPlatform.Core.Test
             IServiceCollection services = new ServiceCollection();
 
 
-            services.AddSingleton<PlatformClient>();
+            services.AddSingleton<ClientPlatformContext>();
             services.AddSingleton<IProtocolClient, Client>();
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
-            services.AddSingleton<IClientAssemblyManager, ClientAssemblyManager>();
+            services.AddSingleton<IClientAssemblyManager, PlatformClientAssemblyManager>();
             services.AddTransient<ITransportClientFactory, TCPTransportClientFactory>();
 
 

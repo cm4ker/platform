@@ -58,7 +58,7 @@ namespace ZenPlatform.ThinClient
         static void Main(string[] args)
         {
             var clientServices = Initializer.GetClientService();
-            var platformClient = clientServices.GetRequiredService<PlatformClient>();
+            var platformClient = clientServices.GetRequiredService<ClientPlatformContext>();
             platformClient.Connect(new DatabaseConnectionSettings()
             {
                 Address = "127.0.0.1:12345",

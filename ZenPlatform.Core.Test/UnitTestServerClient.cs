@@ -42,7 +42,7 @@ namespace ZenPlatform.Core.Test
                 accessPoint.Start();
                 //need check listing
 
-                var platformClient = clientServices.GetRequiredService<PlatformClient>();
+                var platformClient = clientServices.GetRequiredService<ClientPlatformContext>();
                 platformClient.Connect(new Settings.DatabaseConnectionSettings()
                     {Address = "127.0.0.1:12345", Database = "Library"});
                 //need check connection
@@ -68,7 +68,7 @@ namespace ZenPlatform.Core.Test
             accessPoint.Start();
             //need check listing
 
-            var platformClient = clientServices.GetRequiredService<PlatformClient>();
+            var platformClient = clientServices.GetRequiredService<ClientPlatformContext>();
             platformClient.Connect(new Settings.DatabaseConnectionSettings()
                 {Address = "127.0.0.1:12345", Database = "Library"});
             //need check connection

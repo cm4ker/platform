@@ -12,9 +12,9 @@ namespace ZenPlatform.Client
 {
     public static class GlobalScope
     {
-        private static IClientInvoker _client;
+        private static IPlatformClient _client;
 
-        public static IClientInvoker Client
+        public static IPlatformClient Client
         {
             get => _client ?? throw new PlatformNotInitializedException();
             set => _client = value;
@@ -35,16 +35,26 @@ namespace ZenPlatform.Client
             Console.WriteLine("Please enter the destination address or leave empty for the default config [{0}] ",
                 "Some Addr");
 
-            Console.WriteLine("Attempt to connect");
+            Console.WriteLine("Attempt to connect...");
 
 
             var serv = Build();
 
-            var client = serv.GetService<PlatformClient>();
-            client.Connect(new DatabaseConnectionSettings {Address = "localhost:12345", Database = "Library"});
-            client.LoadMainAssembly();
+            var context = serv.GetService<ClientPlatformContext>();
+            context.Connect(new DatabaseConnectionSettings {Address = "localhost:12345", Database = "Library"});
 
-            GlobalScope.Client = client.ConnectionClient;
+            if (context.Client.IsConnected) Console.WriteLine("Success connect!");
+            else
+            {
+                Console.WriteLine("Connection has refused!");
+                return;
+            }
+
+            Console.WriteLine("Start load assembly");
+            context.LoadMainAssembly();
+            Console.WriteLine("Done load assembly");
+
+            GlobalScope.Client = context.Client;
         }
 
 
@@ -53,11 +63,11 @@ namespace ZenPlatform.Client
             IServiceCollection services = new ServiceCollection();
 
 
-            services.AddSingleton<PlatformClient>();
+            services.AddSingleton<ClientPlatformContext>();
             services.AddSingleton<IProtocolClient, Core.Network.Client>();
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
-            services.AddSingleton<IClientAssemblyManager, ClientAssemblyManager>();
+            services.AddSingleton<IClientAssemblyManager, PlatformClientAssemblyManager>();
             services.AddTransient<ITransportClientFactory, TCPTransportClientFactory>();
 
 

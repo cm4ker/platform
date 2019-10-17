@@ -16,25 +16,28 @@ using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Core.Network
 {
-    public class PlatformClient
+    /// <summary>
+    /// Контекст платформы
+    /// <br />
+    /// на этом уровне Клиентское соединение платформы оборачивается. Есть позможность работать со сборками (выгрузка загрузка)
+    /// </summary>
+    public class ClientPlatformContext
     {
-        private readonly IProtocolClient _client;
+        private readonly IPlatformClient _client;
         private readonly ILogger _logger;
         private DatabaseConnectionSettings _connectionSettings;
         private readonly IServiceProvider _serviceProvider;
 
-
         private PlatformAssemblyLoadContext _platformAssemblyLoadContext;
 
-        public PlatformClient(ILogger<PlatformClient> logger, IProtocolClient client, IServiceProvider serviceProvider)
+        public ClientPlatformContext(ILogger<ClientPlatformContext> logger, IPlatformClient client,
+            IServiceProvider serviceProvider)
         {
             _client = client;
             _logger = logger;
 
             _serviceProvider = serviceProvider;
         }
-
-        public IProtocolClient ConnectionClient => _client;
 
         public Assembly LoadMainAssembly()
         {
@@ -43,6 +46,8 @@ namespace ZenPlatform.Core.Network
             return _platformAssemblyLoadContext.LoadFromAssemblyName(new AssemblyName(assemblyName));
         }
 
+
+        public IPlatformClient Client => _client;
 
         public void Connect(DatabaseConnectionSettings connectionSettings)
         {
@@ -59,7 +64,7 @@ namespace ZenPlatform.Core.Network
         public void Login(string name, string password)
         {
             _logger.Info("Try login");
-            if (_client.Authentication(new UserPasswordAuthenticationToken(name, password)))
+            if (_client.Authenticate(new UserPasswordAuthenticationToken(name, password)))
             {
                 _logger.Info("Success");
             }
