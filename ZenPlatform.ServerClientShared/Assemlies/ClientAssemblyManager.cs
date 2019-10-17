@@ -8,6 +8,7 @@ using ZenPlatform.Compiler;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Crypto;
 using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Core.Assemlies
 {
@@ -19,7 +20,7 @@ namespace ZenPlatform.Core.Assemlies
     public class ClientAssemblyManager : IClientAssemblyManager
     {
         IAssemblyManagerClientService _service;
-        private IClient _client;
+        private IProtocolClient _client;
 
         public string CashPath
         {
@@ -29,7 +30,7 @@ namespace ZenPlatform.Core.Assemlies
             }
         }
 
-        public ClientAssemblyManager(IAssemblyManagerClientService service, IClient client)
+        public ClientAssemblyManager(IAssemblyManagerClientService service, IProtocolClient client)
         {
             _service = service;
             _client = client;

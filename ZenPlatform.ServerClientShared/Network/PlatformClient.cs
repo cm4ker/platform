@@ -12,12 +12,13 @@ using ZenPlatform.Core.Tools;
 using ZenPlatform.QueryBuilder;
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Compiler;
+using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Core.Network
 {
     public class PlatformClient
     {
-        private readonly IClient _client;
+        private readonly IProtocolClient _client;
         private readonly ILogger _logger;
         private DatabaseConnectionSettings _connectionSettings;
         private readonly IServiceProvider _serviceProvider;
@@ -25,13 +26,15 @@ namespace ZenPlatform.Core.Network
 
         private PlatformAssemblyLoadContext _platformAssemblyLoadContext;
 
-        public PlatformClient(ILogger<PlatformClient> logger, IClient client, IServiceProvider serviceProvider)
+        public PlatformClient(ILogger<PlatformClient> logger, IProtocolClient client, IServiceProvider serviceProvider)
         {
             _client = client;
             _logger = logger;
 
             _serviceProvider = serviceProvider;
         }
+
+        public IProtocolClient ConnectionClient => _client;
 
         public Assembly LoadMainAssembly()
         {

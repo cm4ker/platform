@@ -14,18 +14,6 @@ namespace ZenPlatform.ClientRuntime
         }
     }
 
-    public static class GlobalScope
-    {
-        private static IClientInvoker _client;
+  
 
-        public static IClientInvoker Client
-        {
-            get => _client ?? throw new PlatformNotInitializedException();
-            set => _client = value;
-        }
-    }
-
-    public class PlatformNotInitializedException : Exception
-    {
-    }
 }
