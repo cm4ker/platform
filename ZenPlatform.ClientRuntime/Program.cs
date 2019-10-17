@@ -1,7 +1,7 @@
 ﻿using System;
 using ZenPlatform.Core.Contracts;
 
-namespace ZenPlatform.AsmClientInfrastructure
+namespace ZenPlatform.ClientRuntime
 {
     /// <summary>
     /// Оснавная точка входа в программу
@@ -14,20 +14,6 @@ namespace ZenPlatform.AsmClientInfrastructure
         }
     }
 
-    public static class GlobalScope
-    {
-        private static IClientInvoker _client;
+  
 
-        public static IClientInvoker Client
-        {
-            get => _client ?? throw new PlatformNotInitializedException();
-            set => _client = value;
-        }
-
-        
-    }
-
-    public class PlatformNotInitializedException : Exception
-    {
-    }
 }

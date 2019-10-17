@@ -40,6 +40,7 @@ namespace ZenPlatform.Compiler.Cecil
         public string Name => Definition.Name;
 
         public IType ReturnType => ContextResolver.GetType(Definition.ReturnType);
+        
         public IType DeclaringType => ContextResolver.GetType(_declaringTR);
 
         protected TypeReference DeclaringTypeReference => _declaringTR;
@@ -51,8 +52,8 @@ namespace ZenPlatform.Compiler.Cecil
             .Select(p => new CecilParameter(TypeSystem, Definition, p))
             .ToList();
 
-
         private IEmitter _generator;
+        
         public IEmitter Generator => _generator ??= new CecilEmitter(TypeSystem, Definition);
     }
 }

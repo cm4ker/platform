@@ -166,6 +166,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter EmitCall(this IEmitter emitter, IConstructor method,
             bool swallowResult = false)
         {
+            
             emitter.Emit(OpCodes.Call, method);
             return emitter;
         }
