@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using Lokad.ILPack;
 using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Sre
@@ -14,6 +14,11 @@ namespace ZenPlatform.Compiler.Sre
         private IReadOnlyList<ICustomAttribute> _customAttributes;
         public AssemblyBuilder Assembly { get; }
         public ModuleBuilder MainModule { get; }
+        public void Write(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
         public ITypeSystem TypeSystem => _system;
 
         private List<ITypeBuilder> _definedTypes = new List<ITypeBuilder>();
@@ -48,8 +53,9 @@ namespace ZenPlatform.Compiler.Sre
 
         public void Write(string fileName)
         {
-            var generator = new AssemblyGenerator();
-            generator.GenerateAssembly(Assembly, fileName);
+            throw new NotImplementedException();
+//            var generator = new AssemblyGenerator();
+//            generator.GenerateAssembly(Assembly, fileName);
         }
 
         public IReadOnlyList<ITypeBuilder> DefinedTypes => _definedTypes;

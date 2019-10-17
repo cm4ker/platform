@@ -21,5 +21,13 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
             var actual = "CREATE TABLE \"test\".\"SomeTableName\"(\"Column1\" \"bool\")";
             Assert.Equal(actual, script);
         }
+
+        public void CreateTableInterfaceTest()
+        {
+            var table = Query.Create();
+
+            table.Schema();
+            table.Column();
+        }
     }
 }

@@ -53,6 +53,9 @@ namespace ZenPlatform.Compiler.Cecil
                 : new TypeReference(fullName.Substring(0, lastDot),
                     fullName.Substring(lastDot + 1), Assembly.MainModule, asmRef);
             var resolved = tref.Resolve();
+            
+            
+            
             if (resolved != null)
                 return _typeCache[fullName] = _typeSystem.GetTypeFor(tref);
 

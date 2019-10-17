@@ -13,42 +13,39 @@ using System.IO;
 
 namespace ZenPlatform.Core.Environment
 {
-    public class AdminEnvironment : IEnvironment, IAdminEnvironment
+    /// <inheritdoc cref="IAdminEnvironment"/>
+    public class AdminEnvironment : IAdminEnvironment
     {
-        private StartupConfig _config;
         private ILogger _logger;
 
-        public IList<ISession> Sessions { get; }
 
-        public IInvokeService InvokeService { get; }
-
-        public IAuthenticationManager AuthenticationManager { get; }
-
-        public string Name => "admin";
-
-        public IDataContextManager DataContextManager => throw new NotImplementedException();
-
-        public AdminEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService, ILogger<AdminEnvironment> logger)
+        public AdminEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService,
+            ILogger<AdminEnvironment> logger)
         {
             Sessions = new RemovingList<ISession>();
             AuthenticationManager = authenticationManager;
             AuthenticationManager.RegisterProvider(new AnonymousAuthenticationProvider());
             InvokeService = invokeService;
             _logger = logger;
-
         }
+
+        public string Name => "admin";
+
+        public IList<ISession> Sessions { get; }
+
+        public IInvokeService InvokeService { get; }
+
+        public void Initialize(object config)
+        {
+            _logger.Info("Start admin environment.");
+        }
+
+        public IAuthenticationManager AuthenticationManager { get; }
 
         public ISession CreateSession(IUser user)
         {
             var session = new SimpleSession(this, user);
             return session;
-        }
-
-        public void Initialize(StartupConfig config)
-        {
-            _config = config;
-            _logger.Info("Start admin environment.");
-            
         }
     }
 }

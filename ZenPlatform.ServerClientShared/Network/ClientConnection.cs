@@ -7,13 +7,13 @@ using ZenPlatform.Core.Logging;
 
 namespace ZenPlatform.Core.Network
 {
-    public class ClientConnection : TCPConnection
+    public class ClientConnection : Connection
     {
         private Action<IChannel, INetworkMessage> _handler;
-        public ClientConnection(ILogger logger, TcpClient client, IChannelFactory channelFactory) 
+
+        public ClientConnection(ILogger logger, ITransportClient client, IChannelFactory channelFactory)
             : base(logger, client, channelFactory)
         {
-          
         }
 
         public override void OnNext(INetworkMessage value)
@@ -21,7 +21,8 @@ namespace ZenPlatform.Core.Network
             foreach (var observer in _connectionObservers.ToArray())
                 if (_connectionObservers.Contains(observer) && observer.CanObserve(value.GetType()))
                 {
-                    observer.OnNext(new ClientConnectionContext() { Connection = this }, value); ;
+                    observer.OnNext(new ClientConnectionContext() {Connection = this}, value);
+                    ;
                 }
         }
     }

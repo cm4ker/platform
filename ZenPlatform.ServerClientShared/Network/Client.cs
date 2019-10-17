@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -10,98 +9,137 @@ using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Network.Contracts;
 using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Network
 {
-    public class Client : IConnectionObserver<IConnectionContext>, IClient
+    /// <summary>
+    /// Имплементация клиента, который выполняет уже функции платформы поверх транспортного уровня
+    ///
+    /// <br />
+    /// Внимание на данный момент клиент не является потокобезопасным 
+    /// </summary>
+    public class Client : IConnectionObserver<IConnectionContext>, IPlatformClient
     {
         private ConcurrentDictionary<Guid, Action<INetworkMessage>> _resultCallbacks;
         private readonly ILogger _logger;
-        private TcpClient _tcpClient;
+        private readonly ITransportClientFactory _tcFactory;
         private ClientConnection _connection;
         private IDisposable _unsubscriber;
-
-        public string Database { get; private set; }
-        public bool IsUse { get; private set; }
-        public bool Authenticated { get; private set; }
-
-        public ConnectionInfo Info => throw new NotImplementedException();
-
-        public bool Connected { get; private set; }
-
-        public Client(ILogger<Client> logger)
-
-        {
-
-            _logger = logger;
-            _resultCallbacks = new ConcurrentDictionary<Guid, Action<INetworkMessage>>();
-
-        }
         
+        //TODO: Сделать клиента потокобезопасным
+
+        /// <summary>
+        /// Создать клиента
+        /// </summary>
+        /// <param name="logger">Логгер</param>
+        /// <param name="tcFactory">Фабрика клиентских подключений</param>
+        public Client(ILogger<Client> logger, ITransportClientFactory tcFactory)
+        {
+            _logger = logger;
+            _tcFactory = tcFactory;
+            _resultCallbacks = new ConcurrentDictionary<Guid, Action<INetworkMessage>>();
+        }
+
+        /// <summary>
+        /// Текущая база данных
+        /// </summary>
+        public string Database { get; private set; }
+
+        /// <summary>
+        /// База данных используется
+        /// </summary>
+        public bool IsUse => !string.IsNullOrEmpty(Database);
+
+        /// <summary>
+        /// Аутентификация пройдера
+        /// </summary>
+        public bool IsAuthenticated { get; private set; }
+
+        /// <summary>
+        /// Информация о соединении
+        /// </summary>
+        public IConnectionInfo Info => throw new NotImplementedException();
+
+
+        /// <summary>
+        /// Соединен
+        /// </summary>
+        public bool IsConnected { get; private set; }
+
+
+        /// <summary>
+        /// Подключиться
+        /// </summary>
+        /// <param name="endPoint">Адрес подключения</param>
         public void Connect(IPEndPoint endPoint)
         {
             _logger.Info("Connect to {0}", endPoint.Address.ToString());
             try
             {
-                var tcpClient = new TcpClient();
-                tcpClient.Connect(endPoint);
+                var transport = _tcFactory.Create(endPoint);
+
                 _connection = new ClientConnection(new SimpleConsoleLogger<ClientConnection>(),
-                    tcpClient, new ClientChannelFactory());
+                    transport, new ClientChannelFactory());
                 _unsubscriber = _connection.Subscribe(this);
                 _connection.Open();
 
-                Connected = true;
+                IsConnected = true;
             }
             catch (SocketException socketException)
             {
-                Connected = false;
+                IsConnected = false;
 
                 _logger.Error(socketException, "Connection error: ");
 
-                throw socketException;
+                throw;
             }
-
         }
 
         private WaitHandle RequestAsync(INetworkMessage message, Action<INetworkMessage> CallBack)
         {
             AutoResetEvent restEvent = new AutoResetEvent(false);
-            _resultCallbacks.TryAdd(message.Id, (m) => { CallBack(m); _resultCallbacks.TryRemove(message.Id, out _); restEvent.Set(); });
+            _resultCallbacks.TryAdd(message.Id, (m) =>
+            {
+                CallBack(m);
+                _resultCallbacks.TryRemove(message.Id, out _);
+                restEvent.Set();
+            });
             _connection.Channel.Send(message);
 
             return restEvent;
-
-
         }
 
-        public bool Authentication(IAuthenticationToken token)
+        public bool Authenticate(IAuthenticationToken token)
         {
             var req = new RequestAuthenticationNetworkMessage(token);
+
+            _logger.Info("Try send RequestAuthenticationNetworkMessage");
 
             var wait = RequestAsync(req, msg =>
             {
                 switch (msg)
                 {
                     case ResponceAuthenticationNetworkMessage res:
-                        Authenticated = true;
+                        IsAuthenticated = true;
 
                         break;
                     case ErrorNetworkMessage res:
-                        Authenticated = false;
+                        IsAuthenticated = false;
 
                         break;
                 }
-
             });
             wait.WaitOne();
-            return Authenticated;
+            return IsAuthenticated;
         }
 
 
-        public Stream InvokeStream(Route route, params object[] args)
+        public Stream InvokeAsStream(Route route, params object[] args)
         {
-            if (!Connected && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
+            if (!IsConnected && !IsAuthenticated)
+                throw new NotSupportedException("Client is not connected or not authenticated.");
 
             var message = new StartInvokeStreamNetworkMessage(route, args);
             var stream = new DataStream(message.Id, _connection);
@@ -113,31 +151,29 @@ namespace ZenPlatform.Core.Network
 
         public bool Use(string name)
         {
-            if (!Connected) throw new NotSupportedException("Client is disconnected.");
-            if (IsUse) return IsUse; //todo
+            if (!IsConnected) throw new NotSupportedException("Client is disconnected.");
+            if (IsUse) return IsUse;
 
             var req = new RequestEnvironmentUseNetworkMessage(name);
             var wait = RequestAsync(req, msg =>
-             {
-                 switch (msg)
-                 {
-                     case ResponceEnvironmentUseNetworkMessage res:
-                         IsUse = true;
-                         Database = res.Name;
-
-                         break;
-                     case ErrorNetworkMessage res:
-                         IsUse = false;
-                         break;
-                 }
-             });
+            {
+                switch (msg)
+                {
+                    case ResponceEnvironmentUseNetworkMessage res:
+                        Database = res.Name;
+                        break;
+                    case ErrorNetworkMessage res:
+                        break;
+                }
+            });
             wait.WaitOne();
             return IsUse;
         }
 
         public TResponce Invoke<TResponce>(Route route, params object[] args)
         {
-            if (!Connected && !Authenticated) throw new NotSupportedException("Client is not connected or not authenticated.");
+            if (!IsConnected && !IsAuthenticated)
+                throw new NotSupportedException("Client is not connected or not authenticated.");
             if (!IsUse) throw new NotSupportedException("First need to choose a database. Need call method Use.");
 
             TResponce responce = default;
@@ -156,43 +192,42 @@ namespace ZenPlatform.Core.Network
                     case ResponceInvokeUnaryNetworkMessage res:
                         try
                         {
-                            responce = (TResponce)res.Result;
+                            responce = (TResponce) res.Result;
                         }
                         catch (Exception ex)
                         {
                             exception = ex;
                         }
+
                         break;
                 }
-
             });
 
             wait.WaitOne();
             if (exception != null) throw exception;
 
             return responce;
-
         }
 
         public async Task<TResponce> InvokeAsync<TResponce>(Route route, params object[] args)
         {
-
             return await Task.Factory.StartNew(() => Invoke<TResponce>(route, args)
-            , TaskCreationOptions.LongRunning);
+                , TaskCreationOptions.LongRunning);
         }
 
 
         public void Close()
         {
-            if (Connected)
+            if (IsConnected)
             {
                 _logger.Info("Close connection.");
 
                 _unsubscriber?.Dispose();
-                Connected = false;
+                IsConnected = false;
                 _connection?.Close();
             }
         }
+
         public T GetService<T>()
         {
             var factory = new NetworkProxyFactory();

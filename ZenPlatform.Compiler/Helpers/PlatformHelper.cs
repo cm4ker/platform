@@ -3,7 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Mono.Cecil;
-using ZenPlatform.AsmClientInfrastructure;
+using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;

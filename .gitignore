@@ -267,3 +267,7 @@ ZenPlatform.DocumentComponent.dll
 ZenPlatform.ThinClient/Program.exe
 ZenPlatform.ThinClient/Program.netmodule
 ZenPlatform.ConfigurationExample/tools/*
+/.ionide/symbolCache.db
+/ZenPlatform.Compiler/Debug.dll
+/PrototypePlatformLanguage/debug.dll
+/git

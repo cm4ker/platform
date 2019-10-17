@@ -24,16 +24,13 @@ namespace ZenPlatform.Language.Ast
         public virtual T Visit(SyntaxNode visitable)
         {
             if (visitable is null) return default;
-            ;
 
             return visitable.Accept(this);
         }
 
-
         public T VisitArrayTypeNode(ArrayTypeSyntax arg)
         {
             return DefaultVisit(arg);
-            ;
         }
 
         public virtual T VisitLogicalOrArithmeticExpression(LogicalOrArithmeticExpression arg)
@@ -141,7 +138,6 @@ namespace ZenPlatform.Language.Ast
         public virtual T VisitReturn(Return obj)
         {
             return DefaultVisit(obj);
-            ;
         }
 
         public virtual T VisitAssignment(Assignment obj)

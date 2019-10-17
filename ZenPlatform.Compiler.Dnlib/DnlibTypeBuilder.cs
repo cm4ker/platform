@@ -72,6 +72,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IConstructorBuilder DefineConstructor(bool isStatic, params IType[] args)
         {
+            var sig = new MethodSig();
+
+            sig.HasThis = true;
+            
+           // var c = new MethodDefUser(".ctor",);
             throw new NotImplementedException();
         }
 
