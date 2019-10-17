@@ -14,8 +14,6 @@ namespace ZenPlatform.Runner
 {
     class RunnerService : IHostedService, IDisposable
     {
-
-
         private readonly ILogger<RunnerService> _logger;
         private readonly IServiceProvider _serviceProvider;
         private IAccessPoint _accessPoint;
