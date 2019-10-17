@@ -10,13 +10,19 @@ namespace ZenPlatform.Compiler.Cecil
     {
         private TypeReference _declaringTR;
 
-        public CecilMethodBase(CecilTypeSystem typeSystem, MethodReference method, TypeReference declaringType)
+        public CecilMethodBase(CecilTypeSystem typeSystem, MethodReference method, MethodDefinition def,
+            TypeReference declaringType)
         {
             TypeSystem = typeSystem;
             Reference = method;
-            Definition = method.Resolve();
+            Definition = def;
             ContextResolver = new CecilContextResolver(typeSystem, method.Module);
             _declaringTR = declaringType;
+        }
+
+        public CecilMethodBase(CecilTypeSystem typeSystem, MethodReference method, TypeReference declaringType)
+            : this(typeSystem, method, method.Resolve(), declaringType)
+        {
         }
 
         private void UpdateReferenceInfo()
@@ -34,6 +40,7 @@ namespace ZenPlatform.Compiler.Cecil
         public string Name => Definition.Name;
 
         public IType ReturnType => ContextResolver.GetType(Definition.ReturnType);
+        
         public IType DeclaringType => ContextResolver.GetType(_declaringTR);
 
         protected TypeReference DeclaringTypeReference => _declaringTR;
@@ -45,8 +52,8 @@ namespace ZenPlatform.Compiler.Cecil
             .Select(p => new CecilParameter(TypeSystem, Definition, p))
             .ToList();
 
-
         private IEmitter _generator;
+        
         public IEmitter Generator => _generator ??= new CecilEmitter(TypeSystem, Definition);
     }
 }

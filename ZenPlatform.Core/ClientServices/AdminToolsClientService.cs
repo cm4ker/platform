@@ -13,11 +13,11 @@ namespace ZenPlatform.Core.Tools
 {
     public class AdminToolsClientService : IAdminToolsClientService
     {
-        private IEnvironmentManager _environmentManager;
+        private IPlatformEnvironmentManager _environmentManager;
         private ISettingsStorage _settingsStorage;
         private IConfigurationManager _configurationManager;
 
-        public AdminToolsClientService(IEnvironmentManager environmentManager, ISettingsStorage settingsStorage,
+        public AdminToolsClientService(IPlatformEnvironmentManager environmentManager, ISettingsStorage settingsStorage,
             IConfigurationManager configurationManager)
         {
             _environmentManager = environmentManager;
@@ -29,27 +29,22 @@ namespace ZenPlatform.Core.Tools
         {
             _configurationManager.CreateConfiguration(name, databaseType, connectionString);
 
-            var startupConfig = new StartupConfig() { DatabaseType = databaseType, ConnectionString = connectionString };
+            var startupConfig = new StartupConfig() {DatabaseType = databaseType, ConnectionString = connectionString};
 
             _settingsStorage.Get<AppConfig>().Environments.Add(startupConfig);
             _settingsStorage.Save();
 
             _environmentManager.AddWorkEnvironment(startupConfig);
         }
-
-
-
 
         public void AddConfiguration(SqlDatabaseType databaseType, string connectionString)
         {
-
-            var startupConfig = new StartupConfig() { DatabaseType = databaseType, ConnectionString = connectionString };
+            var startupConfig = new StartupConfig() {DatabaseType = databaseType, ConnectionString = connectionString};
 
             _settingsStorage.Get<AppConfig>().Environments.Add(startupConfig);
             _settingsStorage.Save();
 
             _environmentManager.AddWorkEnvironment(startupConfig);
         }
-
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Sessions

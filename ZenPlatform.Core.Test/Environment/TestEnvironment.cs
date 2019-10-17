@@ -13,10 +13,11 @@ using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Environment.Contracts;
 
 namespace ZenPlatform.Core.Test.Environment
 {
-    public class TestEnvironment : IEnvironment, IWorkEnvironment
+    public class TestEnvironment : IWorkEnvironment
     {
         private StartupConfig _config;
         private ILogger _logger;

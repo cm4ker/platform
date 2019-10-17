@@ -14,10 +14,12 @@ namespace ZenPlatform.Compiler.Cecil
             _moduleDef = moduleDef;
         }
 
-        public TypeReference GetReference(ITypeReference type)
-        {
-            return _moduleDef.ImportReference(type.Reference);
-        }
+        public TypeReference GetReference(IType type) =>
+            Import(_ts.GetTypeReference(type));
+
+        public TypeReference Import(TypeReference tr) => _moduleDef.ImportReference(tr);
+
+        public TypeReference GetReference(ITypeReference type) => Import(type.Reference);
 
         public IType GetType(TypeReference tr) => _ts.Resolve(tr);
     }

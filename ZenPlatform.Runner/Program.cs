@@ -23,8 +23,6 @@ using ZenPlatform.Compiler.Platform;
 
 namespace ZenPlatform.Runner
 {
-    
-   
     class Program
     {
         public static async Task Main(string[] args)
@@ -32,12 +30,8 @@ namespace ZenPlatform.Runner
             var builder = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, config) =>
                 {
-
-
                     //config.AddEnvironmentVariables();
                     config.AddXmlFile("App.config", false, true);
-
-
                 })
                 /*
                 .ConfigureLogging((hostContext, loggingBuilder) =>
@@ -59,18 +53,18 @@ namespace ZenPlatform.Runner
 
                     services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
 
-                    
+
                     services.AddTransient<IConnectionManager, ConnectionManager>();
                     services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
                     services.AddScoped<IInvokeService, InvokeService>();
-                    services.AddTransient<ITCPListener, TCPListener>();
+                    services.AddTransient<INetworkListener, TCPListener>();
                     services.AddTransient<IChannel, Channel>();
                     services.AddSingleton<IAccessPoint, UserAccessPoint>();
                     services.AddSingleton<ITaskManager, TaskManager>();
                     services.AddTransient<IMessagePackager, SimpleMessagePackager>();
                     services.AddTransient<ISerializer, ApexSerializer>();
-                    services.AddTransient<UserTCPConnectionFactory>();
-                    services.AddTransient<TCPConnectionFactory>();
+                    services.AddTransient<UserConnectionFactory>();
+                    services.AddTransient<ServerConnectionFactory>();
                     services.AddTransient<IChannelFactory, ChannelFactory>();
                     services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
                     services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
@@ -80,7 +74,7 @@ namespace ZenPlatform.Runner
 
 
                     services.AddSingleton<ITestProxyService, TestProxyService>();
-                    services.AddSingleton<IEnvironmentManager, EnvironmentManager>();
+                    services.AddSingleton<IPlatformEnvironmentManager, EnvironmentManager>();
 
                     //services.AddScoped<ITestEnvironment, TestEnvironment>();
                     services.AddScoped<IAdminEnvironment, AdminEnvironment>();
