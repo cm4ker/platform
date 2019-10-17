@@ -20,6 +20,7 @@ using ZenPlatform.Configuration;
 using ZenPlatform.Core.Test.Configuration;
 using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.Network.Contracts;
 using ZenPlatform.Core.Test.Assemblies;
 using ZenPlatform.Shell;
 
@@ -80,17 +81,17 @@ namespace ZenPlatform.Core.Test
             IServiceCollection services = new ServiceCollection();
 
 
-            services.AddSingleton<PlatformClient>();
-            services.AddSingleton<IClient, Client>();
+            services.AddSingleton<ClientPlatformContext>();
+            services.AddSingleton<IProtocolClient, Client>();
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
-            services.AddSingleton<IClientAssemblyManager, ClientAssemblyManager>();
+            services.AddSingleton<IClientAssemblyManager, PlatformClientAssemblyManager>();
             services.AddTransient<ITransportClientFactory, TCPTransportClientFactory>();
 
 
             services.AddSingleton(factory =>
             {
-                var client = factory.GetRequiredService<IClient>();
+                var client = factory.GetRequiredService<IProtocolClient>();
                 return client.GetService<IAssemblyManagerClientService>();
             });
 

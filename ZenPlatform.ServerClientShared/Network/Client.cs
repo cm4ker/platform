@@ -9,34 +9,70 @@ using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Network.Contracts;
 using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Network
 {
-    public class Client : IConnectionObserver<IConnectionContext>, IClient
+    /// <summary>
+    /// Имплементация клиента, который выполняет уже функции платформы поверх транспортного уровня
+    ///
+    /// <br />
+    /// Внимание на данный момент клиент не является потокобезопасным 
+    /// </summary>
+    public class Client : IConnectionObserver<IConnectionContext>, IPlatformClient
     {
         private ConcurrentDictionary<Guid, Action<INetworkMessage>> _resultCallbacks;
         private readonly ILogger _logger;
         private readonly ITransportClientFactory _tcFactory;
         private ClientConnection _connection;
         private IDisposable _unsubscriber;
+        
+        //TODO: Сделать клиента потокобезопасным
 
-        public string Database { get; private set; }
-        public bool IsUse { get; private set; }
-        public bool Authenticated { get; private set; }
-
-        public ConnectionInfo Info => throw new NotImplementedException();
-
-        public bool Connected { get; private set; }
-
+        /// <summary>
+        /// Создать клиента
+        /// </summary>
+        /// <param name="logger">Логгер</param>
+        /// <param name="tcFactory">Фабрика клиентских подключений</param>
         public Client(ILogger<Client> logger, ITransportClientFactory tcFactory)
-
         {
             _logger = logger;
             _tcFactory = tcFactory;
             _resultCallbacks = new ConcurrentDictionary<Guid, Action<INetworkMessage>>();
         }
 
+        /// <summary>
+        /// Текущая база данных
+        /// </summary>
+        public string Database { get; private set; }
+
+        /// <summary>
+        /// База данных используется
+        /// </summary>
+        public bool IsUse => !string.IsNullOrEmpty(Database);
+
+        /// <summary>
+        /// Аутентификация пройдера
+        /// </summary>
+        public bool IsAuthenticated { get; private set; }
+
+        /// <summary>
+        /// Информация о соединении
+        /// </summary>
+        public IConnectionInfo Info => throw new NotImplementedException();
+
+
+        /// <summary>
+        /// Соединен
+        /// </summary>
+        public bool IsConnected { get; private set; }
+
+
+        /// <summary>
+        /// Подключиться
+        /// </summary>
+        /// <param name="endPoint">Адрес подключения</param>
         public void Connect(IPEndPoint endPoint)
         {
             _logger.Info("Connect to {0}", endPoint.Address.ToString());
@@ -49,15 +85,15 @@ namespace ZenPlatform.Core.Network
                 _unsubscriber = _connection.Subscribe(this);
                 _connection.Open();
 
-                Connected = true;
+                IsConnected = true;
             }
             catch (SocketException socketException)
             {
-                Connected = false;
+                IsConnected = false;
 
                 _logger.Error(socketException, "Connection error: ");
 
-                throw socketException;
+                throw;
             }
         }
 
@@ -75,34 +111,34 @@ namespace ZenPlatform.Core.Network
             return restEvent;
         }
 
-        public bool Authentication(IAuthenticationToken token)
+        public bool Authenticate(IAuthenticationToken token)
         {
             var req = new RequestAuthenticationNetworkMessage(token);
 
             _logger.Info("Try send RequestAuthenticationNetworkMessage");
-            
+
             var wait = RequestAsync(req, msg =>
             {
                 switch (msg)
                 {
                     case ResponceAuthenticationNetworkMessage res:
-                        Authenticated = true;
+                        IsAuthenticated = true;
 
                         break;
                     case ErrorNetworkMessage res:
-                        Authenticated = false;
+                        IsAuthenticated = false;
 
                         break;
                 }
             });
             wait.WaitOne();
-            return Authenticated;
+            return IsAuthenticated;
         }
 
 
-        public Stream InvokeStream(Route route, params object[] args)
+        public Stream InvokeAsStream(Route route, params object[] args)
         {
-            if (!Connected && !Authenticated)
+            if (!IsConnected && !IsAuthenticated)
                 throw new NotSupportedException("Client is not connected or not authenticated.");
 
             var message = new StartInvokeStreamNetworkMessage(route, args);
@@ -115,8 +151,8 @@ namespace ZenPlatform.Core.Network
 
         public bool Use(string name)
         {
-            if (!Connected) throw new NotSupportedException("Client is disconnected.");
-            if (IsUse) return IsUse; //todo
+            if (!IsConnected) throw new NotSupportedException("Client is disconnected.");
+            if (IsUse) return IsUse;
 
             var req = new RequestEnvironmentUseNetworkMessage(name);
             var wait = RequestAsync(req, msg =>
@@ -124,12 +160,9 @@ namespace ZenPlatform.Core.Network
                 switch (msg)
                 {
                     case ResponceEnvironmentUseNetworkMessage res:
-                        IsUse = true;
                         Database = res.Name;
-
                         break;
                     case ErrorNetworkMessage res:
-                        IsUse = false;
                         break;
                 }
             });
@@ -139,7 +172,7 @@ namespace ZenPlatform.Core.Network
 
         public TResponce Invoke<TResponce>(Route route, params object[] args)
         {
-            if (!Connected && !Authenticated)
+            if (!IsConnected && !IsAuthenticated)
                 throw new NotSupportedException("Client is not connected or not authenticated.");
             if (!IsUse) throw new NotSupportedException("First need to choose a database. Need call method Use.");
 
@@ -185,12 +218,12 @@ namespace ZenPlatform.Core.Network
 
         public void Close()
         {
-            if (Connected)
+            if (IsConnected)
             {
                 _logger.Info("Close connection.");
 
                 _unsubscriber?.Dispose();
-                Connected = false;
+                IsConnected = false;
                 _connection?.Close();
             }
         }

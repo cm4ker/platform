@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Data.Contracts;
@@ -17,19 +18,16 @@ using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Compiler.Platform
 {
-    public class XCCompiller: IXCCompiller
+    public class XCCompiller : IXCCompiller
     {
-
         public XCCompiller()
         {
-
         }
 
         public IAssembly Build(XCRoot configuration, CompilationMode mode)
         {
-            
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
-            var assemblyBuilder = pl.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}" );
+            var assemblyBuilder = pl.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
 
 
             var root = new Root(null, new List<CompilationUnit>());
@@ -56,8 +54,6 @@ namespace ZenPlatform.Compiler.Platform
 
         public string Build(XCRoot root, string outputDirectory, string buildName)
         {
-
-          
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
             var asm = pl.CreateAssembly(buildName);
 
@@ -81,12 +77,11 @@ namespace ZenPlatform.Compiler.Platform
             {
                 t.Parent.ComponentImpl.Generator.Stage2(t, (ITypeBuilder) list[t], list.ToImmutableDictionary(), asm);
             }
+
             var buildFIlePath = Path.Combine(outputDirectory, $"{buildName}.dll");
             asm.Write(buildFIlePath);
 
             return buildFIlePath;
-            
-
         }
     }
 }

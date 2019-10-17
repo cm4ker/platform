@@ -3,6 +3,7 @@ using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.ThinClient
 {
@@ -20,16 +21,16 @@ namespace ZenPlatform.ThinClient
             IServiceCollection services = new ServiceCollection();
 
 
-            services.AddSingleton<PlatformClient>();
-            services.AddSingleton<IClient, Client>();
+            services.AddSingleton<ClientPlatformContext>();
+            services.AddSingleton<IProtocolClient, Client>();
             services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
-            services.AddSingleton<IClientAssemblyManager, ClientAssemblyManager>();
+            services.AddSingleton<IClientAssemblyManager, PlatformClientAssemblyManager>();
 
 
             services.AddSingleton(factory =>
             {
-                var client = factory.GetRequiredService<IClient>();
+                var client = factory.GetRequiredService<IProtocolClient>();
                 return client.GetService<IAssemblyManagerClientService>();
             });
 
