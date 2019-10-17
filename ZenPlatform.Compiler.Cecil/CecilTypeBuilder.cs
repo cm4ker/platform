@@ -84,28 +84,25 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IConstructorBuilder DefineConstructor(bool isStatic, params IType[] args)
         {
-            var attrs =  MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
+            var attrs = MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
 
             if (isStatic)
                 attrs |= MethodAttributes.Static;
             else
                 attrs |= MethodAttributes.Public;
-            
-            var vType = Definition.Module.TypeSystem.Void;
-            var def = new MethodDefinition(isStatic ? ".cctor" : ".ctor", attrs,
-                Definition.Module.ImportReference(vType));
+
+            var vType = GetReference(TypeSystem.GetSystemBindings().Void);
+            var def = new MethodDefinition(isStatic ? ".cctor" : ".ctor", attrs, vType);
             if (args != null)
                 foreach (var a in args)
                     def.Parameters.Add(new ParameterDefinition(GetReference(a)));
             def.Body.InitLocals = true;
             Definition.Methods.Add(def);
-            
+
             var rv = new CecilConstructor(TypeSystem, def, def, SelfReference);
             ((List<CecilConstructor>) Constructors).Add(rv);
             return rv;
         }
-
-        public IType CreateType() => this;
 
         public ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic)
         {
@@ -122,19 +119,19 @@ namespace ZenPlatform.Compiler.Cecil
             return this;
         }
 
-//        public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, Mono.Cecil.GenericParameterConstraint>> args)
-//        {
-//            foreach (var arg in args)
-//            {
-//                var gp = new GenericParameter(arg.Key, Definition);
-//                Definition.GenericParameters.Add(gp);
-//            }
-//
-//            Definition.Name = Name + "`" + args.Count;
-//            Reference.Name = Definition.Name;
-//            SelfReference = Definition.MakeGenericInstanceType(Definition.GenericParameters.Cast<TypeReference>()
-//                .ToArray());
-//        }
+        public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, Mono.Cecil.GenericParameterConstraint>> args)
+        {
+            foreach (var arg in args)
+            {
+                var gp = new GenericParameter(arg.Key, Definition);
+                Definition.GenericParameters.Add(gp);
+            }
+
+            Definition.Name = Name + "`" + args.Count;
+            Reference.Name = Definition.Name;
+            SelfReference = Definition.MakeGenericInstanceType(Definition.GenericParameters.Cast<TypeReference>()
+                .ToArray());
+        }
 
         public void DefineGenericParameters(
             IReadOnlyList<KeyValuePair<string, Contracts.GenericParameterConstraint>> names)

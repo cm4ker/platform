@@ -8,7 +8,6 @@ using ZenPlatform.Core.Network;
 using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using ZenPlatform.AsmClientInfrastructure;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Logging;
 
