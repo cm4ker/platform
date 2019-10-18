@@ -2,6 +2,8 @@ using Xunit;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using System.Text;
+using ZenPlatform.QueryBuilder.Visitor;
+using ZenPlatform.QueryBuilder.Contracts;
 
 namespace ZenPlatform.Tests.SqlBuilder.Postgres
 {
@@ -20,6 +22,7 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
             var script = sc.Compile(c);
             var actual = "CREATE TABLE \"test\".\"SomeTableName\"(\"Column1\" \"bool\")";
             Assert.Equal(actual, script);
+
         }
     }
 }

@@ -7,6 +7,6 @@ namespace ZenPlatform.Data
         DataContext GetContext();
         void Initialize(SqlDatabaseType dbType, string connectionString);
 
-        SqlCompillerBase SqlCompiler { get; }
+        ISqlCompiler SqlCompiler { get; }
     }
 }
