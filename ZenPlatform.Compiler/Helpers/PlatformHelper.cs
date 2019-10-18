@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Mono.Cecil;
+using ZenPlatform.Client;
 using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
@@ -11,6 +12,7 @@ using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Compiler.Helpers
 {
@@ -18,7 +20,7 @@ namespace ZenPlatform.Compiler.Helpers
     {
         public static IMethod ClientInvoke(this SystemTypeBindings b)
         {
-            return b.Client.Methods.FirstOrDefault(x => x.Name == nameof(Client.Invoke)) ??
+            return b.Client.Methods.FirstOrDefault(x => x.Name == nameof(IPlatformClient.Invoke)) ??
                    throw new NotSupportedException();
         }
 

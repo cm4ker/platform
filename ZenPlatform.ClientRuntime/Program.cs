@@ -1,5 +1,7 @@
 ﻿using System;
+using ZenPlatform.Client;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.ClientRuntime
 {
@@ -8,12 +10,9 @@ namespace ZenPlatform.ClientRuntime
     /// </summary>
     public class Infrastructure
     {
-        public static void Main(IClientInvoker client)
+        public static void Main(IPlatformClient client)
         {
             GlobalScope.Client = client;
         }
     }
-
-  
-
 }
