@@ -7,7 +7,7 @@ using ZenPlatform.QueryBuilder.Contracts;
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public abstract class QuerySyntaxNode
+    public abstract class QuerySyntaxNode : ZenPlatform.QueryBuilder.Common.SqlNode
     {
         public abstract T Accept<T>(QueryVisitorBase<T> visitor);
     }
@@ -15,20 +15,14 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class TableNode : QuerySyntaxNode
+    public partial class Expression : QuerySyntaxNode
     {
-        public TableNode( string  name)
+        public Expression()
         {
-            Name = name;
+            Nodes = new List<QuerySyntaxNode>();
         }
 
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        public SchemaNode Schema
+        public List<QuerySyntaxNode> Nodes
         {
             get;
             set;
@@ -36,21 +30,20 @@ namespace ZenPlatform.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitTableNode(this);
+            return visitor.VisitExpression(this);
         }
     }
 }
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class ColumnNode : QuerySyntaxNode
+    public partial class StringValue : QuerySyntaxNode
     {
-        public ColumnNode( string  name)
+        public StringValue()
         {
-            Name = name;
         }
 
-        public string Name
+        public string Value
         {
             get;
             set;
@@ -58,21 +51,95 @@ namespace ZenPlatform.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitColumnNode(this);
+            return visitor.VisitStringValue(this);
         }
     }
 }
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SchemaNode : QuerySyntaxNode
+    public partial class Scheme : StringValue
     {
-        public SchemaNode( string  name)
+        public Scheme()
         {
-            Name = name;
         }
 
-        public string Name
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitScheme(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Database : StringValue
+    {
+        public Database()
+        {
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDatabase(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Table : StringValue
+    {
+        public Table()
+        {
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitTable(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Column : StringValue
+    {
+        public Column()
+        {
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Constraint : StringValue
+    {
+        public Constraint()
+        {
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstraint(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SchemeOperation : QuerySyntaxNode
+    {
+        public SchemeOperation()
+        {
+        }
+
+        public Scheme Scheme
         {
             get;
             set;
@@ -80,34 +147,20 @@ namespace ZenPlatform.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitSchemaNode(this);
+            return visitor.VisitSchemeOperation(this);
         }
     }
 }
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class AlterTableNode : QuerySyntaxNode
+    public partial class DatabaseOperation : SchemeOperation
     {
-        public AlterTableNode()
+        public DatabaseOperation()
         {
-            AddColumns = new List<ColumnDefinitionNode>();
-            AlterColumns = new List<ColumnDefinitionNode>();
         }
 
-        public TableNode Table
-        {
-            get;
-            set;
-        }
-
-        public List<ColumnDefinitionNode> AddColumns
-        {
-            get;
-            set;
-        }
-
-        public List<ColumnDefinitionNode> AlterColumns
+        public Database Database
         {
             get;
             set;
@@ -115,208 +168,20 @@ namespace ZenPlatform.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitAlterTableNode(this);
+            return visitor.VisitDatabaseOperation(this);
         }
     }
 }
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class TypeDefinitionNode : QuerySyntaxNode
+    public partial class TableOperation : DatabaseOperation
     {
-        public TypeDefinitionNode()
+        public TableOperation()
         {
         }
 
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class IntTypeDefinitionNode : TypeDefinitionNode
-    {
-        public IntTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitIntTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class BigintTypeDefinitionNode : TypeDefinitionNode
-    {
-        public BigintTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitBigintTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class BinaryTypeDefinitionNode : TypeDefinitionNode
-    {
-        public BinaryTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitBinaryTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class DoubleTypeDefinitionNode : TypeDefinitionNode
-    {
-        public DoubleTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitDoubleTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class BooleanTypeDefinitionNode : TypeDefinitionNode
-    {
-        public BooleanTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitBooleanTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class GuidTypeDefinitionNode : TypeDefinitionNode
-    {
-        public GuidTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitGuidTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class DateTimeTypeDefinitionNode : TypeDefinitionNode
-    {
-        public DateTimeTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitDateTimeTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class ByteTypeDefinitionNode : TypeDefinitionNode
-    {
-        public ByteTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitByteTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class TextTypeDefinitionNode : TypeDefinitionNode
-    {
-        public TextTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitTextTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class XmlTypeDefinitionNode : TypeDefinitionNode
-    {
-        public XmlTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitXmlTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class FloatTypeDefinitionNode : TypeDefinitionNode
-    {
-        public FloatTypeDefinitionNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitFloatTypeDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class NumericTypeDefinitionNode : TypeDefinitionNode
-    {
-        public NumericTypeDefinitionNode( int  scale,  int  precision)
-        {
-            Scale = scale;
-            Precision = precision;
-        }
-
-        public int Scale
-        {
-            get;
-            set;
-        }
-
-        public int Precision
+        public Table Table
         {
             get;
             set;
@@ -324,66 +189,62 @@ namespace ZenPlatform.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitNumericTypeDefinitionNode(this);
+            return visitor.VisitTableOperation(this);
         }
     }
 }
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class VarbinaryTypeDefinitionNode : TypeDefinitionNode
+    public partial class ColumnType : QuerySyntaxNode
     {
-        public VarbinaryTypeDefinitionNode( int  size)
+        public ColumnType()
         {
-            Size = size;
-        }
-
-        public int Size
-        {
-            get;
-            set;
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitVarbinaryTypeDefinitionNode(this);
+            return visitor.VisitColumnType(this);
         }
     }
 }
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class ColumnDefinitionNode : QuerySyntaxNode
+    public partial class ColumnTypeInt : ColumnType
     {
-        public ColumnDefinitionNode()
+        public ColumnTypeInt()
         {
         }
 
-        public ColumnNode Column
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            get;
-            set;
+            return visitor.VisitColumnTypeInt(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnDefinition : QuerySyntaxNode
+    {
+        public ColumnDefinition()
+        {
         }
 
-        public TypeDefinitionNode Type
-        {
-            get;
-            set;
-        }
-
-        public bool Null
-        {
-            get;
-            set;
-        }
-
-        public bool NotNull
+        public Column Column
         {
             get;
             set;
         }
 
-        public bool Identity
+        public ColumnType Type
+        {
+            get;
+            set;
+        }
+
+        public bool IsNotNull
         {
             get;
             set;
@@ -403,195 +264,17 @@ namespace ZenPlatform.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitColumnDefinitionNode(this);
+            return visitor.VisitColumnDefinition(this);
         }
     }
 }
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class TypeConstraintNode : QuerySyntaxNode
+    public partial class ConstraintDefinition : QuerySyntaxNode
     {
-        public TypeConstraintNode()
+        public ConstraintDefinition()
         {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitTypeConstraintNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class PrimaryKeyTypeConstraintNode : TypeConstraintNode
-    {
-        public PrimaryKeyTypeConstraintNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitPrimaryKeyTypeConstraintNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class ForeingKeyTypeConstraintNode : TypeConstraintNode
-    {
-        public ForeingKeyTypeConstraintNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitForeingKeyTypeConstraintNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class UniqueTypeConstraintNode : TypeConstraintNode
-    {
-        public UniqueTypeConstraintNode()
-        {
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitUniqueTypeConstraintNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class ConstraintDefinitionNode : QuerySyntaxNode
-    {
-        public ConstraintDefinitionNode( string  name)
-        {
-            Name = name;
-            Columns = new List<ColumnNode>();
-        }
-
-        public TypeConstraintNode Type
-        {
-            get;
-            set;
-        }
-
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        public TableNode Table
-        {
-            get;
-            set;
-        }
-
-        public List<ColumnNode> Columns
-        {
-            get;
-            set;
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitConstraintDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class IndexDefinitionNode : QuerySyntaxNode
-    {
-        public IndexDefinitionNode( bool  unique,  bool  clustered)
-        {
-            Unique = unique;
-            Clustered = clustered;
-        }
-
-        public IdentifierNode Name
-        {
-            get;
-            set;
-        }
-
-        public TableNode Table
-        {
-            get;
-            set;
-        }
-
-        public bool Unique
-        {
-            get;
-            set;
-        }
-
-        public bool Clustered
-        {
-            get;
-            set;
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitIndexDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class TableDefinitionNode : QuerySyntaxNode
-    {
-        public TableDefinitionNode()
-        {
-            Columns = new List<ColumnDefinitionNode>();
-            Constraints = new List<ConstraintDefinitionNode>();
-        }
-
-        public TableNode Table
-        {
-            get;
-            set;
-        }
-
-        public List<ColumnDefinitionNode> Columns
-        {
-            get;
-            set;
-        }
-
-        public List<ConstraintDefinitionNode> Constraints
-        {
-            get;
-            set;
-        }
-
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
-        {
-            return visitor.VisitTableDefinitionNode(this);
-        }
-    }
-}
-
-namespace ZenPlatform.QueryBuilder.Model
-{
-    public partial class IdentifierNode : QuerySyntaxNode
-    {
-        public IdentifierNode( string  name)
-        {
-            Name = name;
         }
 
         public string Name
@@ -602,22 +285,220 @@ namespace ZenPlatform.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitIdentifierNode(this);
+            return visitor.VisitConstraintDefinition(this);
         }
     }
 }
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class ParameterNode : QuerySyntaxNode
+    public partial class ConstraintDefinitionUnique : ConstraintDefinition
     {
-        public ParameterNode()
+        public ConstraintDefinitionUnique()
         {
+            Columns = new List<Column>();
+        }
+
+        public List<Column> Columns
+        {
+            get;
+            set;
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitParameterNode(this);
+            return visitor.VisitConstraintDefinitionUnique(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConstraintDefinitionPrimaryKey : ConstraintDefinition
+    {
+        public ConstraintDefinitionPrimaryKey()
+        {
+            Columns = new List<Column>();
+        }
+
+        public List<Column> Columns
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstraintDefinitionPrimaryKey(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConstraintDefinitionForeignKey : ConstraintDefinition
+    {
+        public ConstraintDefinitionForeignKey()
+        {
+            Columns = new List<Column>();
+            ForeignColumns = new List<Column>();
+        }
+
+        public List<Column> Columns
+        {
+            get;
+            set;
+        }
+
+        public List<Column> ForeignColumns
+        {
+            get;
+            set;
+        }
+
+        public Table ForeignTable
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstraintDefinitionForeignKey(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class CreateTable : TableOperation
+    {
+        public CreateTable()
+        {
+            Columns = new List<ColumnDefinition>();
+            Constraints = new List<ConstraintDefinition>();
+        }
+
+        public List<ColumnDefinition> Columns
+        {
+            get;
+            set;
+        }
+
+        public List<ConstraintDefinition> Constraints
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitCreateTable(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class DropColumn : TableOperation
+    {
+        public DropColumn()
+        {
+        }
+
+        public Column Column
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDropColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AddColumn : TableOperation
+    {
+        public AddColumn()
+        {
+        }
+
+        public ColumnDefinition Column
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAddColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AlterColumn : TableOperation
+    {
+        public AlterColumn()
+        {
+        }
+
+        public ColumnDefinition Column
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAlterColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AddConstraint : TableOperation
+    {
+        public AddConstraint()
+        {
+        }
+
+        public ConstraintDefinition Constraint
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAddConstraint(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class DropConstraint : TableOperation
+    {
+        public DropConstraint()
+        {
+        }
+
+        public Constraint Constraint
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDropConstraint(this);
         }
     }
 }
@@ -630,142 +511,117 @@ namespace ZenPlatform.QueryBuilder.Visitor
         {
         }
 
-        public virtual T VisitTableNode(TableNode node)
+        public virtual T VisitExpression(Expression node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitColumnNode(ColumnNode node)
+        public virtual T VisitStringValue(StringValue node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitSchemaNode(SchemaNode node)
+        public virtual T VisitScheme(Scheme node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitAlterTableNode(AlterTableNode node)
+        public virtual T VisitDatabase(Database node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitTypeDefinitionNode(TypeDefinitionNode node)
+        public virtual T VisitTable(Table node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitIntTypeDefinitionNode(IntTypeDefinitionNode node)
+        public virtual T VisitColumn(Column node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitBigintTypeDefinitionNode(BigintTypeDefinitionNode node)
+        public virtual T VisitConstraint(Constraint node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitBinaryTypeDefinitionNode(BinaryTypeDefinitionNode node)
+        public virtual T VisitSchemeOperation(SchemeOperation node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitDoubleTypeDefinitionNode(DoubleTypeDefinitionNode node)
+        public virtual T VisitDatabaseOperation(DatabaseOperation node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitBooleanTypeDefinitionNode(BooleanTypeDefinitionNode node)
+        public virtual T VisitTableOperation(TableOperation node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitGuidTypeDefinitionNode(GuidTypeDefinitionNode node)
+        public virtual T VisitColumnType(ColumnType node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitDateTimeTypeDefinitionNode(DateTimeTypeDefinitionNode node)
+        public virtual T VisitColumnTypeInt(ColumnTypeInt node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitByteTypeDefinitionNode(ByteTypeDefinitionNode node)
+        public virtual T VisitColumnDefinition(ColumnDefinition node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitTextTypeDefinitionNode(TextTypeDefinitionNode node)
+        public virtual T VisitConstraintDefinition(ConstraintDefinition node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitXmlTypeDefinitionNode(XmlTypeDefinitionNode node)
+        public virtual T VisitConstraintDefinitionUnique(ConstraintDefinitionUnique node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitFloatTypeDefinitionNode(FloatTypeDefinitionNode node)
+        public virtual T VisitConstraintDefinitionPrimaryKey(ConstraintDefinitionPrimaryKey node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitNumericTypeDefinitionNode(NumericTypeDefinitionNode node)
+        public virtual T VisitConstraintDefinitionForeignKey(ConstraintDefinitionForeignKey node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitVarbinaryTypeDefinitionNode(VarbinaryTypeDefinitionNode node)
+        public virtual T VisitCreateTable(CreateTable node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitColumnDefinitionNode(ColumnDefinitionNode node)
+        public virtual T VisitDropColumn(DropColumn node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitTypeConstraintNode(TypeConstraintNode node)
+        public virtual T VisitAddColumn(AddColumn node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitPrimaryKeyTypeConstraintNode(PrimaryKeyTypeConstraintNode node)
+        public virtual T VisitAlterColumn(AlterColumn node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitForeingKeyTypeConstraintNode(ForeingKeyTypeConstraintNode node)
+        public virtual T VisitAddConstraint(AddConstraint node)
         {
             return DefaultVisit(node);
         }
 
-        public virtual T VisitUniqueTypeConstraintNode(UniqueTypeConstraintNode node)
-        {
-            return DefaultVisit(node);
-        }
-
-        public virtual T VisitConstraintDefinitionNode(ConstraintDefinitionNode node)
-        {
-            return DefaultVisit(node);
-        }
-
-        public virtual T VisitIndexDefinitionNode(IndexDefinitionNode node)
-        {
-            return DefaultVisit(node);
-        }
-
-        public virtual T VisitTableDefinitionNode(TableDefinitionNode node)
-        {
-            return DefaultVisit(node);
-        }
-
-        public virtual T VisitIdentifierNode(IdentifierNode node)
-        {
-            return DefaultVisit(node);
-        }
-
-        public virtual T VisitParameterNode(ParameterNode node)
+        public virtual T VisitDropConstraint(DropConstraint node)
         {
             return DefaultVisit(node);
         }

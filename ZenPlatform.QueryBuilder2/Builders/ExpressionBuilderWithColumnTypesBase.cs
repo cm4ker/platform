@@ -17,12 +17,8 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// Returns the column definition to set the type for
         /// </summary>
         /// <returns>The column definition to set the type for</returns>
-        public abstract ColumnDefinitionNode GetColumnForType();
+        public abstract void SetType(ColumnType columnType);
 
-        /// <summary>
-        /// Gets the current column definition
-        /// </summary>
-        private ColumnDefinitionNode Column => GetColumnForType();
 
         /// <inheritdoc />
         public TNext AsAnsiString()
@@ -51,30 +47,25 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsBinary()
         {
-            Column.Type = new VarbinaryTypeDefinitionNode(0);
-
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
         public TNext AsBinary(int size)
         {
-            Column.Type = new VarbinaryTypeDefinitionNode(size);
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
         public TNext AsBoolean()
         {
-            Column.Type = new BooleanTypeDefinitionNode();
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
         public TNext AsByte()
         {
-            Column.Type = new ByteTypeDefinitionNode();
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
@@ -92,8 +83,7 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsDateTime()
         {
-            Column.Type = new DateTimeTypeDefinitionNode();
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
@@ -129,8 +119,7 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsDouble()
         {
-            Column.Type = new DoubleTypeDefinitionNode();
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
@@ -160,15 +149,13 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsFloat()
         {
-            Column.Type = new FloatTypeDefinitionNode();
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
         public TNext AsGuid()
         {
-            Column.Type = new GuidTypeDefinitionNode();
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
@@ -180,7 +167,7 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsInt32()
         {
-            Column.Type = new IntTypeDefinitionNode();
+            SetType(new ColumnTypeInt());
             return (TNext)(object)this;
         }
 
@@ -193,8 +180,7 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsString()
         {
-            Column.Type = new TextTypeDefinitionNode();
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
@@ -224,8 +210,7 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsXml()
         {
-            Column.Type = new XmlTypeDefinitionNode();
-            return (TNext)(object)this;
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />

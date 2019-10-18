@@ -21,11 +21,11 @@ namespace ZenPlatform.Core.Configuration
     {
         private readonly string _tableName;
         private readonly DataContext _context;
-        private readonly SqlCompillerBase _compiler;
+        private readonly ISqlCompiler _compiler;
         private uint _maxId = 100;
 
         //TODO: Посмотерть использование класса InternalDbContext в качестве аргумента конструктора
-        public XCDatabaseStorage(string tableName, DataContext context, SqlCompillerBase compiler)
+        public XCDatabaseStorage(string tableName, DataContext context, ISqlCompiler compiler)
         {
             _tableName = tableName;
             _context = context;

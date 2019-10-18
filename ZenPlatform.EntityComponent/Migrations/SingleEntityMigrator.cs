@@ -41,6 +41,7 @@ namespace ZenPlatform.EntityComponent.Migrations
 
         private IList<SqlNode> GetScript(XCSingleEntity old, XCSingleEntity actual)
         {
+            
             var result = new List<SqlNode>();
 
             if (old == null)

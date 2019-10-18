@@ -19,11 +19,29 @@
     </Arguments>
   </Syntax>
 
+  <Syntax Name="AlterColumn">
+    <Arguments>
+      <Single Name="Column" Type="ColumnDefinitionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="AlterTypedActionNode">
+    <Arguments>
+      <Single Name="Type" Type="NodeActionType"/>
+      <Single Name="Node" Type="QuerySyntaxNode"/>
+    </Arguments>
+  </Syntax>
+
   <Syntax Name="AlterTableNode">
     <Arguments>
       <Single Name="Table" Type="TableNode" />
-      <List Name="AddColumns" Type="ColumnDefinitionNode" />
-      <List Name="AlterColumns" Type="ColumnDefinitionNode" />
+      <List Name="Nodes" Type="AlterTypedActionNode"/>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ComplexNode">
+    <Arguments>
+      <List Name="Nodes" Type="QuerySyntaxNode" />
     </Arguments>
   </Syntax>
   
@@ -59,43 +77,70 @@
     <Arguments>
       <Single Name="Column" Type="ColumnNode"/>
       <Single Name="Type" Type="TypeDefinitionNode"/>
-      <Single Name="Null" Type="bool" Null="true"/>
-      <Single Name="NotNull" Type="bool" Null="true"/>
       <Single Name="Identity" Type="bool" Null="true"/>
+
+      <List Name="Constraints" Type="ConstraintDefinitionNode"/>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="PrimaryKeyConstraintDefinitionNode" Base="ComplexConstraintDefinitionNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ForeignKeyConstraintDefinitionNode" Base="ComplexConstraintDefinitionNode">
+    <Arguments>
+      <List Name="PrimaryColumns" Type="ColumnNode"/>
+      <Single Name="PrimaryTable" Type="TableNode"/>
+      <Single Name="IsOnDelete" Type="bool" Null="true"/>
+      <Single Name="IsOnUpdate" Type="bool" Null="true"/>
+      <Single Name="Rule" Type="System.Data.Rule" Null="true"/>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="UniqueColumnConstraintDefinitionNode" Base="UniqueConstraintDefinitionNode"/>
+  <Syntax Name="ForeignKeyColumnConstraintDefinitionNode" Base="ForeignKeyConstraintDefinitionNode"/>
+  <Syntax Name="PrimaryKeyColumnConstraintDefinitionNode" Base="PrimaryKeyConstraintDefinitionNode"/>
+
+  <Syntax Name="UniqueConstraintDefinitionNode" Base="ComplexConstraintDefinitionNode"/>
+
+  <Syntax Name="NotNullConstraintDefinitionNode" Base="SimpleConstraintDefinitionNode"/>
+  <Syntax Name="DefaultValueConstraintDefinitionNode" Base="SimpleConstraintDefinitionNode">
+    <Arguments>
       <Single Name="DefaultValue" Type="object" />
+    </Arguments> 
+  </Syntax>
+  <Syntax Name="DefaultMethodConstraintDefinitionNode" Base="SimpleConstraintDefinitionNode">
+    <Arguments>
       <Single Name="DefaultMethod" Type="SystemMethods"/>
     </Arguments>
   </Syntax>
-  
-  <Syntax Name="TypeConstraintNode">
-    <Arguments>
-    </Arguments>
+  <Syntax Name="SimpleConstraintDefinitionNode" Base="ConstraintDefinitionNode">
+  <Arguments>
+    <Single Name="Column" Type="ColumnNode"/>
+  </Arguments>
   </Syntax>
 
-  <Syntax Name="PrimaryKeyTypeConstraintNode" Base="TypeConstraintNode">
+  <Syntax Name="ConstraintNode">
     <Arguments>
-    </Arguments>
-  </Syntax>
-
-  <Syntax Name="ForeingKeyTypeConstraintNode" Base="TypeConstraintNode">
-    <Arguments>
-    </Arguments>
-  </Syntax>
-
-  <Syntax Name="UniqueTypeConstraintNode" Base="TypeConstraintNode">
-    <Arguments>
-    </Arguments>
-  </Syntax>
-
-  <Syntax Name="ConstraintDefinitionNode">
-    <Arguments>
-      <Single Name="Type" Type="TypeConstraintNode"/>
       <Single Name="Name" Type="string"/>
-      <Single Name="Table" Type="TableNode"/>
-      <List Name="Columns" Type="ColumnNode"/>
-      
     </Arguments>
   </Syntax>
+
+  <Syntax Name="MultiNode">
+    <Arguments>
+      <List Name="Nodes" Type="QuerySyntaxNode"/>
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="ComplexConstraintDefinitionNode" Base="ConstraintDefinitionNode">
+    <Arguments>
+      <Single Name="Constraint" Type="ConstraintNode" Null="true"/>
+      <List Name="Columns" Type="ColumnNode"/>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConstraintDefinitionNode"/>
 
   <Syntax Name="IndexDefinitionNode">
     <Arguments>
@@ -114,6 +159,57 @@
       <List Name="Constraints" Type="ConstraintDefinitionNode"/>
     </Arguments>
   </Syntax>
+
+  <Syntax Name="SelectNode">
+    <Arguments>
+      <List Name="Columns" Type="ColumnNode" />
+      <Single Name="From" Type="FromNode" />
+      <Single Name="Wher" Type="FromNode" />
+      <Single Name="GroupBy" Type="FromNode" />
+      <Single Name="OrderBy" Type="FromNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="FromNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="JoinNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="WhereNode">
+    <Arguments>
+      <Single Name="Condition" Type="ConditionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="OrderByNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="GroupByNode">
+    <Arguments>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConditionNode">
+    <Arguments>
+      <Single Name="Argument1" Type="QuerySyntaxNode" />
+      <Single Name="Condition" Type="ConditionTypeNode" />
+      <Single Name="Argument2" Type="QuerySyntaxNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConditionTypeNode"/>
+  <Syntax Name="EqualsConditionTypeNode" Base="ConditionTypeNode"/>
+  <Syntax Name="NotEqualsConditionTypeNode" Base="ConditionTypeNode"/>
+  <Syntax Name="NotConditionTypeNode" Base="ConditionTypeNode"/>
+  <Syntax Name="GreatConditionTypeNode" Base="ConditionTypeNode"/>
+  <Syntax Name="LessConditionTypeNode" Base="ConditionTypeNode"/>
 
   <Syntax Name="IdentifierNode">
     <Arguments>

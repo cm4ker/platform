@@ -34,7 +34,7 @@ namespace ZenPlatform.Data
             SqlCompiler = SqlCompillerBase.FormEnum(dbType);
         }
 
-        public SqlCompillerBase SqlCompiler { get; private set; }
+        public ISqlCompiler SqlCompiler { get; private set; }
 
         /// <summary>
         /// Получить контекст данных.

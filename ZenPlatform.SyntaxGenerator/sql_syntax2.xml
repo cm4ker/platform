@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+
+  <Syntax Name="Expression">
+    <Arguments>
+      <List Name="Nodes" Type="QuerySyntaxNode" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="StringValue">
+    <Arguments>
+      <Single Name="Value" Type="string" Null="true" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="Scheme" Base="StringValue"/>
+  <Syntax Name="Database" Base="StringValue"/>
+  <Syntax Name="Table" Base="StringValue"/>
+  <Syntax Name="Column" Base="StringValue"/>
+  <Syntax Name="Constraint" Base="StringValue"/>
+
+  
+    <Syntax Name="SchemeOperation">
+    <Arguments>
+      <Single Name="Scheme" Type="Scheme" />
+    </Arguments>
+  </Syntax>
+  
+   <Syntax Name="DatabaseOperation" Base="SchemeOperation">
+    <Arguments>
+      <Single Name="Database" Type="Database" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="TableOperation" Base="DatabaseOperation">
+    <Arguments>
+      <Single Name="Table" Type="Table" />
+    </Arguments>
+  </Syntax>
+
+  <!--
+  <Syntax Name="ColumnConstraint"/>
+  <Syntax Name="ColumnConstraintUnique" Base="ColumnConstraint"/>
+  <Syntax Name="ColumnConstraintPrimaryKey" Base="ColumnConstraint"/>
+  <Syntax Name="ColumnConstraintForeignKey" Base="ColumnConstraint">
+    <Arguments>
+      <Single Name="ForeignColumn" Type="Column" />
+      <Single Name="ForeignTable" Type="Table" />
+    </Arguments>
+  </Syntax>
+  <Syntax Name="ColumnConstraintSimple" Base="ColumnConstraint"/>
+  <Syntax Name="ColumnConstraintNotNull" Base="ColumnConstraintSimple"/>
+  <Syntax Name="ColumnConstraintNull" Base="ColumnConstraintSimple"/>
+  <Syntax Name="ColumnConstraintDefaultValue" Base="ColumnConstraint">
+    <Arguments>
+      <Single Name="Value" Type="object" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="ColumnConstraintDefaultMethod" Base="ColumnConstraint">
+    <Arguments>
+      <Single Name="Method" Type="SystemMethods" />
+    </Arguments>
+  </Syntax>
+  -->
+  
+  <Syntax Name="ColumnType"/>
+  <Syntax Name="ColumnTypeInt" Base="ColumnType"/>
+
+  <Syntax Name="ColumnDefinition">
+    <Arguments>
+      <Single Name="Column" Type="Column" />
+      <Single Name="Type" Type="ColumnType"/>
+      <Single Name="IsNotNull" Type="bool" Null="true"/>
+      <Single Name="DefaultValue" Type="object" Null="true"/>
+      <Single Name="DefaultMethod" Type="SystemMethods" Null="true"/>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConstraintDefinition">
+    <Arguments>
+      <Single Name="Name" Type="string" Null="true" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConstraintDefinitionUnique" Base="ConstraintDefinition">
+    <Arguments>
+      <List Name="Columns" Type="Column"/>
+    </Arguments>
+  </Syntax>
+  <Syntax Name="ConstraintDefinitionPrimaryKey" Base="ConstraintDefinition">
+    <Arguments>
+      <List Name="Columns" Type="Column"/>
+    </Arguments>
+  </Syntax>
+  <Syntax Name="ConstraintDefinitionForeignKey" Base="ConstraintDefinition">
+    <Arguments>
+      <List Name="Columns" Type="Column"/>
+      <List Name="ForeignColumns" Type="Column"/>
+      <Single Name="ForeignTable" Type="Table"/>
+    </Arguments>
+  </Syntax>
+
+
+  <Syntax Name="CreateTable" Base="TableOperation">
+    <Arguments>
+      <List Name="Columns" Type="ColumnDefinition" />
+      <List Name="Constraints" Type="ConstraintDefinition"/>
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="DropColumn" Base="TableOperation">
+    <Arguments>
+      <Single Name="Column" Type="Column" />
+    </Arguments>
+  </Syntax>
+
+  
+  <Syntax Name="AddColumn" Base="TableOperation">
+    <Arguments>
+      <Single Name="Column" Type="ColumnDefinition" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="AlterColumn" Base="TableOperation">
+    <Arguments>
+      <Single Name="Column" Type="ColumnDefinition" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="AddConstraint" Base="TableOperation">
+    <Arguments>
+      <Single Name="Constraint" Type="ConstraintDefinition" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="DropConstraint" Base="TableOperation">
+    <Arguments>
+      <Single Name="Constraint" Type="Constraint" />
+    </Arguments>
+  </Syntax>
+
+</Config>
