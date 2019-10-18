@@ -273,6 +273,7 @@ namespace ZenPlatform.Core.Network
             lock (_readLock)
             {
                 var pos = _bufferStream.Position;
+                _bufferStream.Seek(0, SeekOrigin.End);
                 _bufferStream.Write(e);
                 _bufferStream.Seek(pos, SeekOrigin.Begin);
                 _waitReceive.Set();
