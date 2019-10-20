@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -10,21 +12,38 @@ namespace ZenPlatform.Configuration.Structure
         public XCCommand(bool predefined)
         {
             IsPredefined = predefined;
+
+            Guid = Guid.NewGuid();
         }
 
-        // Предпределенная ли это команда (не доступна для редактирования)
+        /// <summary>
+        /// Уникальный идентификатор комманды
+        /// </summary>
+        public Guid Guid { get; set; }
+
+        /// <summary>
+        /// Предпределенная ли это команда (не доступна для редактирования)
+        /// </summary>
         public bool IsPredefined { get; }
 
-        // Текстовое представление комманды
+        /// <summary>
+        /// Текстовое представление комманды
+        /// </summary>
         public string Name { get; set; }
 
-        // Явное отображение комманды в интерфейсе
+        /// <summary>
+        /// Явное отображение комманды в интерфейсе
+        /// </summary>
         public string Display { get; set; }
 
-        // Какую процедуру выполняет комманда
+        /// <summary>
+        /// Какую процедуру выполняет комманда
+        /// </summary>
         public string Handler { get; set; }
 
-        // Аргументы команды
+        /// <summary>
+        /// Аргументы команды
+        /// </summary>
         public List<XCDataExpression> Arguments { get; }
     }
 }

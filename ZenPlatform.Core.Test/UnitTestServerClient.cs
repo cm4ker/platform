@@ -49,7 +49,7 @@ namespace ZenPlatform.Core.Test
 
                 accessPoint.Stop();
 
-                Task.Delay(5000).Wait();
+                Task.Delay(1000).Wait();
             }
         }
 
