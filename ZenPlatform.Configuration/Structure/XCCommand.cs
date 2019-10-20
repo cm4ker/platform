@@ -38,9 +38,18 @@ namespace ZenPlatform.Configuration.Structure
 
         /// <summary>
         /// Какую процедуру выполняет комманда
+        ///
+        /// В формате (Module.FunctionName) 
         /// </summary>
         public string Handler { get; set; }
 
+        /*
+         * using Default()
+         *
+         * [ServerCommand]
+         * Module.MyInterestedCommand()
+         */
+        
         /// <summary>
         /// Аргументы команды
         /// </summary>
