@@ -17,5 +17,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             AddUnit(node as CompilationUnit ?? throw new Exception("You can add only CompilationUnitNode"));
             base.Add(node);
         }
+
+        public void Add(CompilationUnit cu)
+        {
+            AddUnit(cu);
+            base.Add(cu);
+        }
     }
 }

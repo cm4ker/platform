@@ -173,14 +173,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <returns></returns>
         private void InitPredefinedCommands()
         {
-            var openCommand = new XCCommand(true)
-            {
-                Name = "Open",
-                Display = "Открыть",
-                Handler = "SomeHandler"
-            };
-
-            _predefinedCommands.Add(openCommand);
+            
         }
     }
 }

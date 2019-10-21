@@ -18,7 +18,7 @@ namespace ZenPlatform.Compiler.Cecil
 
             _cr = new CecilContextResolver(ts, md.Module);
 
-            _cr.GetReference((ITypeReference) _cr.GetType(_pd.ParameterType));
+            _pd.ParameterType = _cr.GetReference((ITypeReference) _cr.GetType(_pd.ParameterType));
         }
 
         public ParameterDefinition ParameterDefinition => _pd;

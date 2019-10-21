@@ -23,43 +23,4 @@ namespace ZenPlatform.Configuration.Structure
 
         public XCProgramModuleRelationType ModuleRelationType { get; set; }
     }
-
-
-    /// <summary>
-    /// Тип модуля по отношению к объекту
-    /// </summary>
-    public enum XCProgramModuleRelationType
-    {
-        /// <summary>
-        /// Модуль относится непосредственно к объекту
-        /// </summary>
-        Object,
-
-        /// <summary>
-        /// Модуль относится к менеджеру объектов
-        /// </summary>
-        Manager
-    }
-
-
-    /// <summary>
-    /// Тип программного модуля
-    /// </summary>
-    public enum XCProgramModuleDirectionType
-    {
-        /// <summary>
-        /// Серверный
-        /// </summary>
-        Server,
-
-        /// <summary>
-        /// Клиентский
-        /// </summary>
-        Client,
-
-        /// <summary>
-        /// Сервер-клиентский
-        /// </summary>
-        ClientServer
-    }
 }

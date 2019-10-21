@@ -78,7 +78,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         var tb = _stage0[m];
 
-                        foreach (var function in m.TypeBody.Functions)
+                        foreach (var function in m.TypeBody.Functions.FilterFunc(_mode))
                         {
                             _stage1Methods.Add(function, PrebuildFunction(function, tb, false));
                         }
@@ -87,7 +87,7 @@ namespace ZenPlatform.Compiler.Generation
                     case Class c:
                         var tbc = _stage0[c];
 
-                        foreach (var function in c.TypeBody.Functions)
+                        foreach (var function in c.TypeBody.Functions.FilterFunc(_mode))
                         {
                             var mf = PrebuildFunction(function, tbc, true);
                             _stage1Methods.Add(function, mf);
@@ -140,7 +140,7 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     case Module m:
 
-                        foreach (var function in m.TypeBody.Functions)
+                        foreach (var function in m.TypeBody.Functions.FilterFunc(_mode))
                         {
                             EmitFunction(function, _stage1Methods[function]);
                         }
@@ -151,7 +151,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         EmitMappingSupport(c, tbc);
 
-                        foreach (var function in c.TypeBody.Functions)
+                        foreach (var function in c.TypeBody.Functions.FilterFunc(_mode))
                         {
                             EmitFunction(function, _stage1Methods[function]);
                         }
@@ -176,11 +176,22 @@ namespace ZenPlatform.Compiler.Generation
 
         private IMethodBuilder PrebuildFunction(Function function, ITypeBuilder tb, bool isClass)
         {
-            //На сервере никогда не может существовать клиентских процедур
-            if (((int) function.Flags & (int) _mode) == 0 && !isClass)
-            {
-                return null;
-            }
+            /* 
+             * [Client]
+             * fn A1()
+             * 
+             * [Server]
+             * fn A2()
+             * 
+             * [ServerCall]
+             * fn A3()
+             */
+
+//            //На сервере никогда не может существовать клиентских процедур
+//            if (((int) function.Flags & (int) _mode) == 0 && !isClass)
+//            {
+//                return null;
+//            }
 
             Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
 

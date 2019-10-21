@@ -12,7 +12,7 @@ namespace ZenPlatform.Configuration.Structure
         public XCCommand(bool predefined)
         {
             IsPredefined = predefined;
-
+            Module = new XCProgramModule();
             Guid = Guid.NewGuid();
         }
 
@@ -34,14 +34,7 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Явное отображение комманды в интерфейсе
         /// </summary>
-        public string Display { get; set; }
-
-        /// <summary>
-        /// Какую процедуру выполняет комманда
-        ///
-        /// В формате (Module.FunctionName) 
-        /// </summary>
-        public string Handler { get; set; }
+        public string DisplayName { get; set; }
 
         /*
          * using Default()
@@ -49,7 +42,9 @@ namespace ZenPlatform.Configuration.Structure
          * [ServerCommand]
          * Module.MyInterestedCommand()
          */
-        
+
+        public XCProgramModuleBase Module { get; set; }
+
         /// <summary>
         /// Аргументы команды
         /// </summary>

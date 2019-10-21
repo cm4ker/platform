@@ -1,4 +1,5 @@
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts.Network;
 
 namespace ZenPlatform.Core.Network.Contracts
 {

@@ -117,6 +117,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
         /// </summary>
+        [XmlIgnore]
         public string DatabaseColumnName { get; set; }
 
         /*

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
@@ -13,6 +14,7 @@ using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Network.Contracts;
+using ZenPlatform.Language.Ast.Definitions.Functions;
 
 namespace ZenPlatform.Compiler.Helpers
 {
@@ -100,6 +102,11 @@ namespace ZenPlatform.Compiler.Helpers
         public static ILineInfo ToLineInfo(this IToken token)
         {
             return new LineInfo {Line = token.Line, Position = token.Column};
+        }
+
+        public static IEnumerable<Function> FilterFunc(this IEnumerable<Function> list, CompilationMode mode)
+        {
+            return list.Where(x => ((int) x.Flags & (int) mode) != 0);
         }
     }
 }
