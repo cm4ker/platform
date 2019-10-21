@@ -88,11 +88,16 @@ namespace ZenPlatform.Core.Test
 
             var root = Tests.Common.Factory.CreateExampleConfiguration();
 
-            var _assembly = compiller.Build(root, Compiler.CompilationMode.Client);
-            
-            if(File.Exists("test.bll"))
+            var _assembly = compiller.Build(root, CompilationMode.Client);
+            var _assembly2 = compiller.Build(root, CompilationMode.Server);
+
+            if (File.Exists("server.bll"))
+                File.Delete("server.bll");
+
+            if (File.Exists("test.bll"))
                 File.Delete("test.bll");
-            
+
+            _assembly2.Write("server.bll");
             _assembly.Write("test.bll");
             Assert.Equal(_assembly.Name,
                 $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");

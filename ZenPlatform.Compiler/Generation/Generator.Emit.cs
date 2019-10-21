@@ -19,6 +19,9 @@ namespace ZenPlatform.Compiler.Generation
             if (function == null)
                 throw new ArgumentNullException();
 
+            if(method == null)
+                throw new ArgumentNullException();
+            
             function.Builder = method.Generator;
 
             EmitFunction(function);

@@ -30,6 +30,8 @@ namespace ZenPlatform.EntityComponent
             InterfaceGenerator = new InterfaceGenerator();
             DatabaseObjectsGenerator = new EntityDatabaseObjectGenerator();
 
+            Generator = new StagedGeneratorAst(Component);
+
             Migrator = new SingleEntityMigrator();
 
             RegisterSupportedTypes();

@@ -128,6 +128,11 @@ namespace ZenPlatform.Compiler
             }
         }
 
+        public static Block ParseInstructionBlock(string text)
+        {
+            throw new NotImplementedException();
+        }
+
         private static ITokenStream CreateInputStream(Stream input)
         {
             return PreProcessor.Do(new AntlrInputStream(input));

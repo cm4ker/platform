@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Net;
-using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Network.Contracts;
 
-namespace ZenPlatform.Core.Network.Contracts
+namespace ZenPlatform.Core.Contracts.Network
 {
     /// <summary>
     /// Уровень протокола
@@ -35,9 +35,9 @@ namespace ZenPlatform.Core.Network.Contracts
         /// </summary>
         /// <param name="route">Маршрут</param>
         /// <param name="args">Аргументы</param>
-        /// <typeparam name="TResponce">Тип возвращаемого ответа</typeparam>
+        /// <typeparam name="TResponse">Тип возвращаемого ответа</typeparam>
         /// <returns>Возвращает объект - результат выполнения удалённой процедуры</returns>
-        TResponce Invoke<TResponce>(Route route, params object[] args);
+        TResponse Invoke<TResponse>(Route route, params object[] args);
 
 
         /// <summary>
