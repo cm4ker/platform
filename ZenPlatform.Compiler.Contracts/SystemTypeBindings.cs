@@ -14,13 +14,12 @@ namespace ZenPlatform.Compiler.Contracts
     {
         private readonly ITypeSystem _ts;
 
-        private const string MSCORLIB =
-            "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
+        public string MSCORLIB { get; } = "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 
-        private const string PLATFORM_CORE
-            = "ZenPlatform.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
+        public string PLATFORM_CORE { get; } =
+            "ZenPlatform.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
 
-        private const string PLATFORM_DATA_COMPONENT
+        public string PLATFORM_DATA_COMPONENT { get; }
             = "ZenPlatform.DataComponent, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
 
         private const string SYSTEM_NAMESPACE = "System";
