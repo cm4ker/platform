@@ -3,6 +3,7 @@ using System.Reflection;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Contracts.Network;
+using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Compiler.Contracts
@@ -59,6 +60,10 @@ namespace ZenPlatform.Compiler.Contracts
         public IType Exception => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Exception)}", MSCORLIB);
 
         public IType Client => _ts.FindType<IProtocolClient>(); // _ts.FindType<Client>()
+
+        public IType ServerInitializer => _ts.FindType<IServerInitializer>();
+
+        public IType InvokeService => _ts.FindType<IInvokeService>();
 
         public IType Session => _ts.FindType($"ZenPlatform.Core.Sessions.Session", PLATFORM_CORE);
 

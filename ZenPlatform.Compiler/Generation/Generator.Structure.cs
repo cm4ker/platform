@@ -15,6 +15,8 @@ namespace ZenPlatform.Compiler.Generation
     {
         public void Build()
         {
+            _serviceScope = new AssemblyServiceScope(_asm);
+
             BuildStructure();
             BuildCode();
         }

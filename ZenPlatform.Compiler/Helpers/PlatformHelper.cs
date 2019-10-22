@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Mono.Cecil;
-using ZenPlatform.Client;
 using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;

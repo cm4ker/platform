@@ -19,9 +19,9 @@ namespace ZenPlatform.Compiler.Generation
             if (function == null)
                 throw new ArgumentNullException();
 
-            if(method == null)
+            if (method == null)
                 throw new ArgumentNullException();
-            
+
             function.Builder = method.Generator;
 
             EmitFunction(function);
@@ -31,7 +31,8 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (function == null)
                 throw new ArgumentNullException();
-            if (function.Flags == FunctionFlags.ServerClientCall)
+            
+            if (function.Flags == FunctionFlags.ServerClientCall && _mode == CompilationMode.Client)
             {
                 EmitRemoteCall(function);
                 return;

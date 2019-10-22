@@ -9,7 +9,6 @@ namespace ZenPlatform.Compiler.Contracts
         string Name { get; }
         IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
 
-
         IType FindType(string fullName);
 
         void Write(string fileName);

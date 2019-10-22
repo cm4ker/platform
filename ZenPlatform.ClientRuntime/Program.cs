@@ -1,5 +1,4 @@
 ﻿using System;
-using ZenPlatform.Client;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Network.Contracts;
 
@@ -15,4 +14,19 @@ namespace ZenPlatform.ClientRuntime
             GlobalScope.Client = client;
         }
     }
+    public class PlatformNotInitializedException : Exception
+    {
+    }
+    
+    public static class GlobalScope
+    {
+        private static IPlatformClient _client;
+
+        public static IPlatformClient Client
+        {
+            get => _client ?? throw new PlatformNotInitializedException();
+            set => _client = value;
+        }
+    }
+
 }
