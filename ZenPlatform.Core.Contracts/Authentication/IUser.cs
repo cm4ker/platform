@@ -22,10 +22,16 @@ namespace ZenPlatform.Core.Authentication
     /// </summary>
     public interface IPlatformUser : IUser
     {
+        Guid Id { get; }
+
         /// <summary>
         /// Набор ролей пользователя.
         /// Наполняются в процессе авторизации пользователя (наделения правами)
         /// </summary>
-        List<RoleBase> Roles { get; }
+        List<IRole> Roles { get; }
+    }
+
+    public interface IRole
+    {
     }
 }

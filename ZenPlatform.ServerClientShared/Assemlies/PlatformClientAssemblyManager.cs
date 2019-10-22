@@ -18,7 +18,8 @@ namespace ZenPlatform.Core.Assemlies
         {
             get
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ZenClient",
+                return Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData),
+                    "ZenClient",
                     _client.Database, "AssemblyCache");
             }
         }

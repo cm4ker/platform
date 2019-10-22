@@ -17,6 +17,7 @@ using ZenPlatform.Configuration.Structure;
 
 using ZenPlatform.Initializer;
 using ZenPlatform.Core.Assemblies;
+using ZenPlatform.Core.Environment.Contracts;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -78,7 +79,7 @@ namespace ZenPlatform.Core.Environment
         /// На этом этапе происходит создание подключения к базе
         /// Загрузка конфигурации и так далее
         /// </summary>
-        public override void Initialize(StartupConfig config)
+        public override void Initialize(IStartupConfig config)
         {
 
             MigrationRunner.Migrate(config.ConnectionString,

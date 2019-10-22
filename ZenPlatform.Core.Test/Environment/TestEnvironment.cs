@@ -19,7 +19,7 @@ namespace ZenPlatform.Core.Test.Environment
 {
     public class TestEnvironment : IWorkEnvironment
     {
-        private StartupConfig _config;
+        private IStartupConfig _config;
         private ILogger _logger;
         private IAssemblyManager _assemblyManager;
 
@@ -56,7 +56,7 @@ namespace ZenPlatform.Core.Test.Environment
             return session;
         }
 
-        public void Initialize(StartupConfig config)
+        public void Initialize(IStartupConfig config)
         {
             _config = config;
             _logger.Info("TEST ENVIRONMENT START.");

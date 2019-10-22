@@ -1,11 +1,12 @@
-﻿using ZenPlatform.QueryBuilder;
+﻿using ZenPlatform.Core.Environment;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core
 {
     /// <summary>
     /// Минимально необходимый набор параметров, чтобы всё заработало
     /// </summary>
-    public class StartupConfig
+    public class StartupConfig : IStartupConfig
     {
         /// <summary>
         /// Строка подключения к базе

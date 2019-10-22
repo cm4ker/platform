@@ -12,6 +12,8 @@ namespace ZenPlatform.Compiler.Generation
         private readonly ITypeSystem _ts;
         private readonly CompilationMode _mode;
 
+        private AssemblyServiceScope _serviceScope;
+
         private SystemTypeBindings _bindings;
 
         private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";

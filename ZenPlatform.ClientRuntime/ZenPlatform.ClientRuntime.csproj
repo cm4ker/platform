@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Client\ZenPlatform.Client.csproj" />
       <ProjectReference Include="..\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj" />
     </ItemGroup>
 
