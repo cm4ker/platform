@@ -21,7 +21,7 @@ namespace ZenPlatform.Core.Network
         /// Задача
         /// </summary>
         public Task Task { get; private set; }
-        
+
         /// <summary>
         /// Токен отмены задачи
         /// </summary>
@@ -39,7 +39,7 @@ namespace ZenPlatform.Core.Network
             Session = session;
         }
     }
-    
+
     /// <summary>
     /// Интерфейс для вызова удаленных процедур
     /// </summary>
@@ -51,7 +51,7 @@ namespace ZenPlatform.Core.Network
         /// <param name="route">Маршрут метода</param>
         /// <param name="method">Метод</param>
         void Register(Route route, ParametricMethod method);
-        
+
         /// <summary>
         /// Вызывает метод зарегистрированный на сервере
         /// </summary>
