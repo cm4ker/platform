@@ -5,4 +5,8 @@ using System.Text;
 
 namespace ZenPlatform.Core.Contracts
 {
+    public interface IServerInitializer
+    {
+        void Init();
+    }
 }

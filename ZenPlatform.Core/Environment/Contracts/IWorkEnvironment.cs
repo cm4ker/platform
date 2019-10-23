@@ -1,8 +1,6 @@
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Core.Environment.Contracts;
-using ZenPlatform.Data;
 
-namespace ZenPlatform.Core.Environment
+namespace ZenPlatform.Core.Environment.Contracts
 {
     /// <summary>
     ///  Рабочая среда обеспечивает доступ пользователя к контексту какого-то прикладного решения
@@ -10,13 +8,5 @@ namespace ZenPlatform.Core.Environment
     public interface IWorkEnvironment : IPlatformEnvironment
     {
         XCRoot Configuration { get; }
-    }
-
-    public interface IPlatformEnvironment : IInitializibleEnvironment<StartupConfig>
-    {
-        /// <summary>
-        /// Менеджер доступа к данным
-        /// </summary>
-        IDataContextManager DataContextManager { get; }
     }
 }

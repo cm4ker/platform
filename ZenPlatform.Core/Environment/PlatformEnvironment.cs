@@ -31,7 +31,7 @@ namespace ZenPlatform.Core.Environment
 
         protected SystemSession SystemSession { get; private set; }
 
-        public virtual void Initialize(StartupConfig config)
+        public virtual void Initialize(IStartupConfig config)
         {
             StartupConfig = config;
 
@@ -64,7 +64,7 @@ namespace ZenPlatform.Core.Environment
         /// <summary>
         /// Стартовая конфигурация
         /// </summary>
-        public StartupConfig StartupConfig { get; private set; }
+        public IStartupConfig StartupConfig { get; private set; }
 
 
         public IDataContextManager DataContextManager { get; private set; }

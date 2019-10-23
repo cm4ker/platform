@@ -27,7 +27,7 @@ namespace ZenPlatform.Core.Network
             _filter = filter;
         }
 
-        public void AddWorkEnvironment(StartupConfig config)
+        public void AddWorkEnvironment(IStartupConfig config)
         {
             _manager.AddWorkEnvironment(config);
         }

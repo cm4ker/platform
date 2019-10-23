@@ -7,19 +7,29 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Network;
 using ZenPlatform.Core.Sessions;
 
 namespace ZenPlatform.Core.Network
 {
-    public delegate object ParametricMethod(InvokeContext context, params object[] list);
-    public delegate void StreamMethod(InvokeContext context, Stream stream, params object[] list);
-    
-
+    /// <summary>
+    /// Контекст выполнения метода
+    /// </summary>
     public class InvokeContext
     {
+        /// <summary>
+        /// Задача
+        /// </summary>
         public Task Task { get; private set; }
+        
+        /// <summary>
+        /// Токен отмены задачи
+        /// </summary>
         public CancellationTokenSource CancellationToken { get; private set; }
 
+        /// <summary>
+        /// Текущая сессия
+        /// </summary>
         public ISession Session { get; private set; }
 
         public InvokeContext(Task task, CancellationTokenSource cancellationToken, ISession session)
