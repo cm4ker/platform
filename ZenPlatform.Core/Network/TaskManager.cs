@@ -10,7 +10,6 @@ namespace ZenPlatform.Core.Network
 {
     public class TaskManager : ITaskManager
     {
-
         private readonly List<InvokeContext> _invokes;
         private readonly ILogger<TaskManager> _logger;
 
@@ -22,6 +21,9 @@ namespace ZenPlatform.Core.Network
 
         private void StartTask(InvokeContext invokeContext)
         {
+            if (invokeContext == null)
+                throw new NullReferenceException("THIS IS SUPER MESSAGE");
+
             _logger.Trace("Start task id: {0}.", invokeContext.Task.Id);
             _invokes.Add(invokeContext);
 
@@ -36,10 +38,10 @@ namespace ZenPlatform.Core.Network
 
         public Task<object> RunTask(ISession session, Func<InvokeContext, object> action)
         {
-            
             var canceller = new CancellationTokenSource();
             Task<object> task = null;
             InvokeContext context = null;
+            task = new Task(null, parent, cancellationToken, creationOptions, internalOptions | InternalTaskOptions.QueuedByRuntime, scheduler)
             task = Task.Factory.StartNew(() =>
             {
                 context = new InvokeContext(task, canceller, session);
@@ -47,23 +49,17 @@ namespace ZenPlatform.Core.Network
                 StartTask(context);
                 using (canceller.Token.Register(Thread.CurrentThread.Interrupt))
                 {
-
-
                     try
                     {
                         return action(context);
-
                     }
-
                     finally
                     {
                         // _taskManager.FinishTask(invokeContext);
                     }
-
                 }
             }, canceller.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
 
-            
 
             return task;
         }

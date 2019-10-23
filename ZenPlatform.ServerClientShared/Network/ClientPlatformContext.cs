@@ -43,8 +43,12 @@ namespace ZenPlatform.Core.Network
         {
             var assemblyName = $"{_client.Database}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}";
 
-            return _platformAssemblyLoadContext.LoadFromAssemblyName(new AssemblyName(assemblyName));
+            MainAssembly = _platformAssemblyLoadContext.LoadFromAssemblyName(new AssemblyName(assemblyName));
+
+            return MainAssembly;
         }
+
+        public Assembly MainAssembly { get; private set; }
 
 
         public IPlatformClient Client => _client;
