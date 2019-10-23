@@ -7,6 +7,7 @@ using System.Reflection;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Compiler.Platform;
@@ -28,12 +29,46 @@ using ZenPlatform.Core.Language.QueryLanguage;
 
 namespace ZenPlatform.Core.Test
 {
-    public class UnitTestServerClient
+    public delegate void InvokeInClientServerContextDelegate(ServiceProvider clientService,
+        ServiceProvider serverSerice, ClientPlatformContext clientContext);
+
+    public class ClientServerTestBase
+    {
+        public void InvokeInClientServerContext(InvokeInClientServerContextDelegate action)
+        {
+            var serverServices = Initializer.GetServerService();
+            var clientServices = Initializer.GetClientService();
+
+
+            var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
+            Assert.NotEmpty(environmentManager.GetEnvironmentList());
+
+
+            var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
+            accessPoint.Start();
+            //need check listing
+
+            var platformClient = clientServices.GetRequiredService<ClientPlatformContext>();
+            platformClient.Connect(new Settings.DatabaseConnectionSettings()
+                {Address = "127.0.0.1:12345", Database = "Library"});
+            //need check connection
+
+            platformClient.Login("admin", "admin");
+            var assembly = platformClient.LoadMainAssembly();
+            Assert.NotNull(assembly);
+
+            action(clientServices, serverServices, platformClient);
+
+            accessPoint.Stop();
+        }
+    }
+
+    public class UnitTestServerClient : ClientServerTestBase
     {
         [Fact]
         public void Connecting()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var serverServices = Initializer.GetServerService();
                 var clientServices = Initializer.GetClientService();
@@ -89,39 +124,17 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void ConnectingAndLoginAndInvoke()
         {
-            var serverServices = Initializer.GetServerService();
-            var clientServices = Initializer.GetClientService();
-
-
-            var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
-            Assert.NotEmpty(environmentManager.GetEnvironmentList());
-
-
-            var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
-            accessPoint.Start();
-            //need check listing
-
-            var contextClient = clientServices.GetRequiredService<ClientPlatformContext>();
-            contextClient.Connect(new Settings.DatabaseConnectionSettings()
-                {Address = "127.0.0.1:12345", Database = "Library"});
-            //need check connection
-
-            GlobalScope.Client = contextClient.Client;
-
-            contextClient.Login("admin", "admin");
-            var assembly = contextClient.LoadMainAssembly();
-
-            Assert.NotNull(assembly);
-
-            var cmdType = assembly.GetType("CompileNamespace.__cmd_HelloFromServer");
-
-            var result = cmdType.GetMethod("ClientCallProc").Invoke(null, new object[] {10});
-
-            Assert.Equal(11, result);
-
-            accessPoint.Stop();
+            for (int i = 0; i < 15; i++)
+            {
+                InvokeInClientServerContext((clientService, serverService, clientContext) =>
+                {
+                    GlobalScope.Client = clientContext.Client;
+                    var cmdType = clientContext.MainAssembly.GetType("CompileNamespace.__cmd_HelloFromServer");
+                    var result = cmdType.GetMethod("ClientCallProc").Invoke(null, new object[] {10});
+                    Assert.Equal(11, result);
+                });
+            }
         }
-
 
         [Fact]
         public void CompileAndLoadAssembly()
@@ -169,13 +182,11 @@ namespace ZenPlatform.Core.Test
 
             var assemblies = storage.GetAssemblies(root.GetHash());
 
-            //��������� ��������� ������ 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
                                                           && a.Name ==
                                                           $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
 
 
-            //��������� ��������� ������ 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
                                                           && a.Name ==
                                                           $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Server)}"));
@@ -204,13 +215,11 @@ namespace ZenPlatform.Core.Test
 
             var result = assemblyManagerClientService.GetDiffAssemblies(assemblies);
 
-            //���������� � �������� ��������� ������
             Assert.NotNull(result.FirstOrDefault(a => a.ConfigurationHash == env.Configuration.GetHash()
                                                       && a.Name ==
                                                       $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
 
 
-            //�� ���������� ��������� � �������� ��������� ������
             Assert.Null(result.FirstOrDefault(a => a.Type == AssemblyType.Server));
 
 
