@@ -52,12 +52,12 @@ namespace ZenPlatform.Core.Authentication
             _dataContextManager = dataContextManager;
         }
 
-        public PlatformUser Create()
+        public IPlatformUser Create()
         {
             return new PlatformUser();
         }
 
-        public void Update(PlatformUser user)
+        public void Update(IPlatformUser user)
         {
             
             var cmd = _dataContextManager.GetContext().CreateCommand();
@@ -77,7 +77,7 @@ namespace ZenPlatform.Core.Authentication
             cmd.ExecuteNonQuery();
         }
 
-        public void Delete(PlatformUser user)
+        public void Delete(IPlatformUser user)
         {
 
 

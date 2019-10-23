@@ -64,7 +64,7 @@ namespace ZenPlatform.Configuration.Structure
             XamlServices.Transform(reader, writer);
 
             ms.Seek(0, SeekOrigin.Begin);
-            
+
             return ms;
         }
 

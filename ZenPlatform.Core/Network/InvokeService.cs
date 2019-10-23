@@ -10,6 +10,7 @@ using ZenPlatform.Core.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Network;
 
 namespace ZenPlatform.Core.Network
 {

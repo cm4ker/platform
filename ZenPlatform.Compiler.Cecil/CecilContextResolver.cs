@@ -17,7 +17,17 @@ namespace ZenPlatform.Compiler.Cecil
         public TypeReference GetReference(IType type) =>
             Import(_ts.GetTypeReference(type));
 
-        public TypeReference Import(TypeReference tr) => _moduleDef.ImportReference(tr);
+        public TypeReference Import(TypeReference tr)
+        {
+            if (tr.Scope.Name.Contains("System.Private.CoreLib"))
+            {
+                //In this case we need redirect type
+                tr = new TypeReference(tr.Namespace, tr.Name, _moduleDef,
+                    AssemblyNameReference.Parse(_ts.GetSystemBindings().MSCORLIB));
+            }
+
+            return _moduleDef.ImportReference(tr);
+        }
 
         public TypeReference GetReference(ITypeReference type) => Import(type.Reference);
 

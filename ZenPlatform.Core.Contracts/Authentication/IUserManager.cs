@@ -5,10 +5,10 @@ namespace ZenPlatform.Core.Authentication
     public interface IUserManager
     {
         bool Authenticate(string userName, string password);
-        PlatformUser Create();
-        void Delete(PlatformUser user);
+        IPlatformUser Create();
+        void Delete(IPlatformUser user);
         IUser FindUserByName(string name);
         IUser Get(Guid id);
-        void Update(PlatformUser user);
+        void Update(IPlatformUser user);
     }
 }
