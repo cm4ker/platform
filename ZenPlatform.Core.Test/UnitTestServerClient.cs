@@ -12,6 +12,8 @@ using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Compiler.Platform;
 using System.IO;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using ZenPlatform.ClientRuntime;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Test.Assemblies;
 using ZenPlatform.Core.Assemblies;
@@ -20,6 +22,9 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Compiler;
+using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Environment.Contracts;
+using ZenPlatform.Core.Language.QueryLanguage;
 
 namespace ZenPlatform.Core.Test
 {
@@ -33,14 +38,15 @@ namespace ZenPlatform.Core.Test
                 var serverServices = Initializer.GetServerService();
                 var clientServices = Initializer.GetClientService();
 
-
                 var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
                 Assert.NotEmpty(environmentManager.GetEnvironmentList());
 
-
                 var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
                 accessPoint.Start();
+
                 //need check listing
+
+                IInvokeService s = null;
 
                 var platformClient = clientServices.GetRequiredService<ClientPlatformContext>();
                 platformClient.Connect(new Settings.DatabaseConnectionSettings()
@@ -49,7 +55,7 @@ namespace ZenPlatform.Core.Test
 
                 accessPoint.Stop();
 
-                Task.Delay(5000).Wait();
+                Task.Delay(1000).Wait();
             }
         }
 
@@ -80,6 +86,42 @@ namespace ZenPlatform.Core.Test
             accessPoint.Stop();
         }
 
+        [Fact]
+        public void ConnectingAndLoginAndInvoke()
+        {
+            var serverServices = Initializer.GetServerService();
+            var clientServices = Initializer.GetClientService();
+
+
+            var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
+            Assert.NotEmpty(environmentManager.GetEnvironmentList());
+
+
+            var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
+            accessPoint.Start();
+            //need check listing
+
+            var contextClient = clientServices.GetRequiredService<ClientPlatformContext>();
+            contextClient.Connect(new Settings.DatabaseConnectionSettings()
+                {Address = "127.0.0.1:12345", Database = "Library"});
+            //need check connection
+
+            GlobalScope.Client = contextClient.Client;
+
+            contextClient.Login("admin", "admin");
+            var assembly = contextClient.LoadMainAssembly();
+
+            Assert.NotNull(assembly);
+
+            var cmdType = assembly.GetType("CompileNamespace.__cmd_HelloFromServer");
+
+            var result = cmdType.GetMethod("ClientCallProc").Invoke(null, new object[] {10});
+
+            Assert.Equal(11, result);
+
+            accessPoint.Stop();
+        }
+
 
         [Fact]
         public void CompileAndLoadAssembly()
@@ -88,12 +130,18 @@ namespace ZenPlatform.Core.Test
 
             var root = Tests.Common.Factory.CreateExampleConfiguration();
 
-            var _assembly = compiller.Build(root, Compiler.CompilationMode.Client);
-            
-            if(File.Exists("test.bll"))
+            var _assembly2 = compiller.Build(root, CompilationMode.Server);
+            var _assembly = compiller.Build(root, CompilationMode.Client);
+
+            if (File.Exists("server.bll"))
+                File.Delete("server.bll");
+
+            if (File.Exists("test.bll"))
                 File.Delete("test.bll");
-            
+
+            _assembly2.Write("server.bll");
             _assembly.Write("test.bll");
+
             Assert.Equal(_assembly.Name,
                 $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");
 

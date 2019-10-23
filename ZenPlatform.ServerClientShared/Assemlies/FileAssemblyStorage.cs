@@ -29,7 +29,6 @@ namespace ZenPlatform.Core.Assemlies
             if (!Directory.Exists(_storagePath))
                 Directory.CreateDirectory(_storagePath);
         }
-        
 
         private IEnumerable<AssemblyDescription> GetAssemblies()
         {

@@ -44,6 +44,13 @@ namespace ZenPlatform.Compiler.Cecil
             r.ExplicitThis = def.ExplicitThis;
             r.CallingConvention = def.CallingConvention;
 
+            foreach (CecilParameter p in method.Parameters)
+            {
+                var parameterDef = p.ParameterDefinition;
+                
+                r.Parameters.Add(parameterDef);
+            }
+
             r.ReturnType = Import(r.ReturnType);
 
             return M.ImportReference(r);
@@ -59,6 +66,7 @@ namespace ZenPlatform.Compiler.Cecil
         ParameterDefinition Import(IParameter p)
         {
             var cecilParam = (CecilParameter) p;
+
             cecilParam.ParameterDefinition.ParameterType = Import(cecilParam.ParameterDefinition.ParameterType);
             return cecilParam.ParameterDefinition;
         }

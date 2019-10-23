@@ -1,8 +1,10 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.ClientRuntime;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Network;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Network.Contracts;
@@ -10,21 +12,6 @@ using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Client
 {
-    public static class GlobalScope
-    {
-        private static IPlatformClient _client;
-
-        public static IPlatformClient Client
-        {
-            get => _client ?? throw new PlatformNotInitializedException();
-            set => _client = value;
-        }
-    }
-
-
-    public class PlatformNotInitializedException : Exception
-    {
-    }
 
     class Program
     {
@@ -56,7 +43,6 @@ namespace ZenPlatform.Client
 
             GlobalScope.Client = context.Client;
         }
-
 
         public static ServiceProvider Build()
         {

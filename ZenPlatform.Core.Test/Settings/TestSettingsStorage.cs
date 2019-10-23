@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Core.Test
@@ -17,7 +18,7 @@ namespace ZenPlatform.Core.Test
                         Type = ListenerType.Test }
                 }
             },
-            Environments = new List<StartupConfig>() {
+            Environments = new List<IStartupConfig>() {
                 new StartupConfig() {
                     ConnectionString = "",
                     DatabaseType = QueryBuilder.SqlDatabaseType.SqlServer

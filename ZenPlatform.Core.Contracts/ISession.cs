@@ -2,7 +2,6 @@
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Environment.Contracts;
-using ZenPlatform.Data;
 using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Sessions

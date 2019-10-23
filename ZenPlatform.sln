@@ -121,6 +121,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{D31941
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Client", "ZenPlatform.Client\ZenPlatform.Client.csproj", "{E7E1D7DC-F6B2-4CF5-9978-5DF04CCC348B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.ServerRuntime", "ZenPlatform.ServerRuntime\ZenPlatform.ServerRuntime.csproj", "{47CC079F-6BAB-4036-8273-D6518F1C418D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -1741,6 +1743,38 @@ Global
 		{E7E1D7DC-F6B2-4CF5-9978-5DF04CCC348B}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{E7E1D7DC-F6B2-4CF5-9978-5DF04CCC348B}.Release|x86.ActiveCfg = Release|Any CPU
 		{E7E1D7DC-F6B2-4CF5-9978-5DF04CCC348B}.Release|x86.Build.0 = Release|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.AppStore|x86.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.AppStore|x86.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Debug|x86.Build.0 = Debug|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Release|iPhone.Build.0 = Release|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Release|x86.ActiveCfg = Release|Any CPU
+		{47CC079F-6BAB-4036-8273-D6518F1C418D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1782,6 +1816,7 @@ Global
 		{4A7467AC-ED2E-4A96-8537-1CE038038E9B} = {22D31880-2328-451D-ABF3-996E033F9CFC}
 		{E7E1D7DC-F6B2-4CF5-9978-5DF04CCC348B} = {D3194114-4EF0-406B-BB33-B744BA2CC2AF}
 		{CDB9FAD5-5752-4F3A-8391-A46C8F8A6532} = {D3194114-4EF0-406B-BB33-B744BA2CC2AF}
+		{47CC079F-6BAB-4036-8273-D6518F1C418D} = {22D31880-2328-451D-ABF3-996E033F9CFC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87366D66-1391-4D90-8999-95A620AD786A}

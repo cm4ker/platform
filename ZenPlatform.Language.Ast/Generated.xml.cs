@@ -895,8 +895,6 @@ namespace ZenPlatform.Language.Ast.Definitions
                 }
 
             Name = name;
-            if (Name != null)
-                Childs.Add(Name);
         }
 
         public IList<Argument> Arguments

@@ -95,7 +95,7 @@ namespace ZenPlatform.EntityComponent.Entity
             rg
                 .LdArg_0()
                 .LdArg(readerParam.ArgIndex)
-                .Ldstr(propName)
+                .LdStr(propName)
                 .EmitCall(readerType.FindMethod("get_Item", ts.String))
                 .Unbox_Any(propertyType)
                 .EmitCall(setter);

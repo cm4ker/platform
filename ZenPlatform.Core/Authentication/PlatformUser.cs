@@ -12,7 +12,7 @@ namespace ZenPlatform.Core.Authentication
     {
         public PlatformUser()
         {
-            Roles = new List<RoleBase>();
+            Roles = new List<IRole>();
         }
 
 
@@ -25,7 +25,7 @@ namespace ZenPlatform.Core.Authentication
         /// </summary>
 
 
-        public List<RoleBase> Roles { get; }
+        public List<IRole> Roles { get; }
 
 
         public override string ToString()

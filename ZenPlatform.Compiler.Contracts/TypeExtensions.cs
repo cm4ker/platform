@@ -119,6 +119,7 @@ namespace ZenPlatform.Compiler.Contracts
                                                               && c.Parameters.Count == args.Count))
             {
                 var mismatch = false;
+                
                 for (var c = 0; c < args.Count; c++)
                 {
                     mismatch = !ctor.Parameters[c].Type.IsAssignableFrom(args[c]);

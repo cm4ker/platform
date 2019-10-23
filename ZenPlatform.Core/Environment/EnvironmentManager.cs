@@ -36,17 +36,17 @@ namespace ZenPlatform.Core.Environment
             Initialize(configStorage.Get<AppConfig>().Environments);
         }
 
-        private void Initialize(List<StartupConfig> list)
+        private void Initialize(List<IStartupConfig> list)
         {
             list.ForEach(c => environments.Add(CreatePlatformEnvironment<IWorkEnvironment>(c)));
         }
 
-        public void AddWorkEnvironment(StartupConfig config)
+        public void AddWorkEnvironment(IStartupConfig config)
         {
             environments.Add(CreatePlatformEnvironment<IWorkEnvironment>(config));
         }
 
-        protected IPlatformEnvironment CreatePlatformEnvironment<T>(StartupConfig config) where T : IPlatformEnvironment
+        protected IPlatformEnvironment CreatePlatformEnvironment<T>(IStartupConfig config) where T : IPlatformEnvironment
         {
             try
             {

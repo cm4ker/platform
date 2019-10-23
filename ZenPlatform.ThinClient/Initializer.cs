@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.ClientServices;
+using ZenPlatform.Core.Contracts.Network;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Network.Contracts;

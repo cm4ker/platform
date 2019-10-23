@@ -54,8 +54,12 @@ namespace ZenPlatform.Compiler.Cecil
             {
                 var a = MetadataResolver.GetMethod(methods, reference);
                 if (a == null)
+                {
                     if (methods[index].Name == reference.Name)
                         return methods[index];
+                }
+                else
+                    return a;
             }
 
             return (MethodDefinition) null;
