@@ -7,6 +7,7 @@ using System.Reflection;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Compiler.Platform;
@@ -28,7 +29,41 @@ using ZenPlatform.Core.Language.QueryLanguage;
 
 namespace ZenPlatform.Core.Test
 {
-    public class UnitTestServerClient
+    public delegate void InvokeInClientServerContextDelegate(ServiceProvider clientService,
+        ServiceProvider serverSerice, ClientPlatformContext clientContext);
+
+    public class ClientServerTestBase
+    {
+        public void InvokeInClientServerContext(InvokeInClientServerContextDelegate action)
+        {
+            var serverServices = Initializer.GetServerService();
+            var clientServices = Initializer.GetClientService();
+
+
+            var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
+            Assert.NotEmpty(environmentManager.GetEnvironmentList());
+
+
+            var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
+            accessPoint.Start();
+            //need check listing
+
+            var platformClient = clientServices.GetRequiredService<ClientPlatformContext>();
+            platformClient.Connect(new Settings.DatabaseConnectionSettings()
+                {Address = "127.0.0.1:12345", Database = "Library"});
+            //need check connection
+
+            platformClient.Login("admin", "admin");
+            var assembly = platformClient.LoadMainAssembly();
+            Assert.NotNull(assembly);
+
+            action(clientServices, serverServices, platformClient);
+
+            accessPoint.Stop();
+        }
+    }
+
+    public class UnitTestServerClient : ClientServerTestBase
     {
         [Fact]
         public void Connecting()
@@ -89,37 +124,13 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void ConnectingAndLoginAndInvoke()
         {
-            var serverServices = Initializer.GetServerService();
-            var clientServices = Initializer.GetClientService();
-
-
-            var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
-            Assert.NotEmpty(environmentManager.GetEnvironmentList());
-
-
-            var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
-            accessPoint.Start();
-            //need check listing
-
-            var contextClient = clientServices.GetRequiredService<ClientPlatformContext>();
-            contextClient.Connect(new Settings.DatabaseConnectionSettings()
-                {Address = "127.0.0.1:12345", Database = "Library"});
-            //need check connection
-
-            GlobalScope.Client = contextClient.Client;
-
-            contextClient.Login("admin", "admin");
-            var assembly = contextClient.LoadMainAssembly();
-
-            Assert.NotNull(assembly);
-
-            var cmdType = assembly.GetType("CompileNamespace.__cmd_HelloFromServer");
-
-            var result = cmdType.GetMethod("ClientCallProc").Invoke(null, new object[] {10});
-
-            Assert.Equal(11, result);
-
-            accessPoint.Stop();
+            InvokeInClientServerContext((clientService, serverService, clientContext) =>
+            {
+                GlobalScope.Client = clientContext.Client;
+                var cmdType = clientContext.MainAssembly.GetType("CompileNamespace.__cmd_HelloFromServer");
+                var result = cmdType.GetMethod("ClientCallProc").Invoke(null, new object[] {10});
+                Assert.Equal(11, result);
+            });
         }
 
 
