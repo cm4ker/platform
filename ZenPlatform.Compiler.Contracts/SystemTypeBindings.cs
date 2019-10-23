@@ -65,6 +65,10 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType InvokeService => _ts.FindType<IInvokeService>();
 
+        public IType InvokeContext => _ts.FindType<InvokeContext>();
+
+        public IType Route => _ts.FindType<Route>();
+
         public IType Session => _ts.FindType($"ZenPlatform.Core.Sessions.Session", PLATFORM_CORE);
 
         public IType Reference =>
@@ -74,6 +78,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType UnionTypeStorage => _ts.FindType<UnionTypeStorage>();
 
+        public IType ParametricMethod => _ts.FindType<ParametricMethod>();
 
         public SystemMethods Methods { get; }
 

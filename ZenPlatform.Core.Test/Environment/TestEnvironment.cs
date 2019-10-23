@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
+using ZenPlatform.Compiler;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Authentication;
@@ -35,7 +38,8 @@ namespace ZenPlatform.Core.Test.Environment
 
         public XCRoot Configuration => Tests.Common.Factory.CreateExampleConfiguration();
 
-        public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService, ILogger<TestEnvironment> logger,
+        public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService,
+            ILogger<TestEnvironment> logger,
             IAssemblyManager assemblyManager)
         {
             Sessions = new RemovingList<ISession>();
@@ -45,9 +49,6 @@ namespace ZenPlatform.Core.Test.Environment
             _assemblyManager = assemblyManager;
             _assemblyManager.CheckConfiguration(Configuration);
             _logger = logger;
-
-
-            
         }
 
         public ISession CreateSession(IUser user)
@@ -61,27 +62,25 @@ namespace ZenPlatform.Core.Test.Environment
             _config = config;
             _logger.Info("TEST ENVIRONMENT START.");
 
-           
 
+            var asms = _assemblyManager.GetAssemblies(Configuration).First(x => x.Type == AssemblyType.Server);
 
-            InvokeService.Register(new Route("test"), (c, a) =>
-            {
-            return (int)a[0] + 1;
-            });
+            var bytes = _assemblyManager.GetAssemblyBytes(asms);
+            var serverAssembly = Assembly.Load(bytes);
 
+            var serviceType = serverAssembly.GetType("Service.ServerInitializer");
+            var initializerInstance = (IServerInitializer)Activator.CreateInstance(serviceType, InvokeService);
+            initializerInstance.Init();
+            
+            InvokeService.Register(new Route("test"), (c, a) => { return (int) a[0] + 1; });
 
             InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
             {
-
-
                 using (StreamWriter writer = new StreamWriter(stream))
                 {
                     writer.WriteLine("dsadsdasdasdasdsadasdsadsd");
-
                 }
             });
-
-
         }
     }
 }

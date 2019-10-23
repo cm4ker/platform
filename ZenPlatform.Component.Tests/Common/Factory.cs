@@ -65,8 +65,21 @@ namespace ZenPlatform.Tests.Common
             });
 
             var cmd = invoice.CreateCommand();
-            cmd.Name = "Hello";
-            cmd.Module.ModuleText = "[ClientCall] public int Test(int a){ a++; return 0; }";
+            cmd.Name = "HelloFromServer";
+            cmd.Module.ModuleText = @"
+
+[ClientCall] 
+public int ClientCallProc(int a)
+{ 
+    a++; 
+    return a; 
+}
+
+[Client]
+public void OnClientClientCallProc()
+{
+    ClientCallProc(10);
+}";
             cmd.DisplayName = "Invoke the command";
 
             invoice.Initialize();
