@@ -57,13 +57,30 @@ namespace ZenPlatform.Tests.Common
             prop.DatabaseColumnName = "Fld_0001";
 
             invoice.Name = "Invoice";
-
+            
             invoice.Modules.Add(new XCSingleEntityModule()
             {
                 ModuleText = "public int Test(int i) { int _i = i; _i++; return _i; }",
                 ModuleRelationType = XCProgramModuleRelationType.Object
             });
 
+            var cmd = invoice.CreateCommand();
+            cmd.Name = "HelloFromServer";
+            cmd.Module.ModuleText = @"
+
+[ClientCall] 
+public int ClientCallProc(int a)
+{ 
+    a++; 
+    return a; 
+}
+
+[Client]
+public void OnClientClientCallProc()
+{
+    ClientCallProc(10);
+}";
+            cmd.DisplayName = "Invoke the command";
 
             invoice.Initialize();
 

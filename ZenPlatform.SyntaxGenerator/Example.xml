@@ -164,7 +164,7 @@
     <Syntax Name="Call" Base="Expression">
         <Arguments>
             <List Name="Arguments" Type="IList&lt;Argument&gt;"/>
-            <Single Name="Name" Type="String"/>
+            <Single Name="Name" Type="String" DenyChildrenFill="true" />
         </Arguments>
     </Syntax>
     <!--Test comment-->

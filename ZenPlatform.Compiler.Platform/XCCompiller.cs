@@ -18,6 +18,9 @@ using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Compiler.Platform
 {
+    /// <summary>
+    /// Компилятор конфигурации - преобразовывает метаданные в коды CLI
+    /// </summary>
     public class XCCompiller : IXCCompiller
     {
         public XCCompiller()
@@ -29,59 +32,25 @@ namespace ZenPlatform.Compiler.Platform
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
             var assemblyBuilder = pl.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
 
-
             var root = new Root(null, new List<CompilationUnit>());
 
             foreach (var component in configuration.Data.Components)
             {
                 foreach (var type in component.Types)
                 {
-                    new StagedGeneratorAst(component).StageClient(type, root);
+                    if (mode == CompilationMode.Client)
+                        component.ComponentImpl.Generator.StageClient(type, root);
+                    else
+                        component.ComponentImpl.Generator.StageServer(type, root);
                 }
             }
 
             AstScopeRegister.Apply(root);
 
-            foreach (var cu in root.Units)
-            {
-                var generator = new Generator(new GeneratorParameters(cu, assemblyBuilder, mode));
-                generator.Build();
-            }
+            var generator = new Generator(new GeneratorParameters(root.Units, assemblyBuilder, mode));
+            generator.Build();
 
             return assemblyBuilder;
-        }
-
-
-        public string Build(XCRoot root, string outputDirectory, string buildName)
-        {
-            IAssemblyPlatform pl = new CecilAssemblyPlatform();
-            var asm = pl.CreateAssembly(buildName);
-
-            //STAGE0
-            foreach (var t in root.Data.ComponentTypes)
-            {
-                t.Parent.ComponentImpl.Generator.Stage0(t, asm);
-            }
-
-            var list = new Dictionary<XCObjectTypeBase, IType>();
-
-            //STAGE1
-            foreach (var t in root.Data.ComponentTypes)
-            {
-                var b = t.Parent.ComponentImpl.Generator.Stage1(t, asm);
-                list.Add(t, b);
-            }
-
-            //STAGE2
-            foreach (var t in root.Data.ComponentTypes)
-            {
-                t.Parent.ComponentImpl.Generator.Stage2(t, (ITypeBuilder) list[t], list.ToImmutableDictionary(), asm);
-            }
-
-            var buildFIlePath = Path.Combine(outputDirectory, $"{buildName}.dll");
-            asm.Write(buildFIlePath);
-
-            return buildFIlePath;
         }
     }
 }

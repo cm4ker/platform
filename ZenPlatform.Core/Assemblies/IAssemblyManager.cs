@@ -2,6 +2,7 @@
 using System.IO;
 using ZenPlatform.Compiler;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Assemlies;
 
 namespace ZenPlatform.Core.Assemblies
 {
@@ -10,5 +11,9 @@ namespace ZenPlatform.Core.Assemblies
         void BuildConfiguration(XCRoot configuration);
 
         void CheckConfiguration(XCRoot configuration);
+
+        IEnumerable<AssemblyDescription> GetAssemblies(XCRoot conf);
+
+        byte[] GetAssemblyBytes(AssemblyDescription description);
     }
 }

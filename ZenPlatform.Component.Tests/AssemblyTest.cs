@@ -43,17 +43,13 @@ namespace ZenPlatform.Component.Tests
             AstScopeRegister.Apply(rootServer);
             AstScopeRegister.Apply(rootClient);
 
-            foreach (var cu in rootServer.Units)
-            {
-                var generator = new Generator(new GeneratorParameters(cu, server, CompilationMode.Server));
-                generator.Build();
-            }
 
-            foreach (var cu in rootClient.Units)
-            {
-                var generator = new Generator(new GeneratorParameters(cu, client, CompilationMode.Client));
-                generator.Build();
-            }
+            var genS = new Generator(new GeneratorParameters(rootServer.Units, server, CompilationMode.Server));
+            genS.Build();
+
+            var genC = new Generator(new GeneratorParameters(rootClient.Units, client, CompilationMode.Client));
+            genC.Build();
+
 
             server.Write("Server.bll");
             client.Write("Client.bll");

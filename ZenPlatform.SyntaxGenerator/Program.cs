@@ -16,8 +16,8 @@ namespace ZenPlatform.SyntaxGenerator
     {
         static void Main(string[] args)
         {
-            //ComilerSyntaxGenerator.Main(args);
-            SQLSyntaxGenerator.Main(args);
+            ComilerSyntaxGenerator.Main(args);
+            //SQLSyntaxGenerator.Main(args);
         }
     }
 

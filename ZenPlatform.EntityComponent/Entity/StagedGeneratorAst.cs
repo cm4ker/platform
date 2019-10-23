@@ -43,7 +43,7 @@ using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
-    public class StagedGeneratorAst
+    public class StagedGeneratorAst : IPlatformAstGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
         private readonly XCComponent _component;
@@ -250,7 +250,6 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-
         private void GenerateObjectClass(XCObjectTypeBase type, Root root)
         {
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
@@ -425,12 +424,34 @@ namespace ZenPlatform.EntityComponent.Entity
                 {
                     var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
 
+
                     foreach (var func in typeBody.Functions)
                     {
                         func.SymbolScope = SymbolScope.User;
                         cls.AddFunction(func);
                     }
                 }
+            }
+        }
+
+        private void GenerateCommands(XCObjectTypeBase type, Root root)
+        {
+            var set = type as XCSingleEntity ?? throw new ArgumentException(nameof(type));
+
+            foreach (var command in type.GetCommands())
+            {
+                var typeBody = ParserHelper.ParseTypeBody(command.Module.ModuleText);
+                var moduleCls = new Module(null, typeBody, $"__cmd_{command.Name}");
+
+                foreach (var func in typeBody.Functions)
+                {
+                    func.SymbolScope = SymbolScope.User;
+                    
+                    //moduleCls.AddFunction(func);
+                }
+
+                var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {moduleCls});
+                root.Add(cu);
             }
         }
 
@@ -443,8 +464,8 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             GenerateServerDtoClass(type, root);
             GenerateObjectClass(type, root);
+            GenerateCommands(type, root);
         }
-
 
         /// <summary>
         /// Генерация клиентского кода
@@ -453,11 +474,8 @@ namespace ZenPlatform.EntityComponent.Entity
         /// <param name="root">Корень проекта</param>
         public void StageClient(XCObjectTypeBase type, Root root)
         {
+            GenerateCommands(type, root);
             GenerateClientDtoClass(type, root);
-        }
-
-        public void Stage3()
-        {
         }
     }
 }

@@ -170,13 +170,13 @@ namespace ZenPlatform.Core.Network
             return IsUse;
         }
 
-        public TResponce Invoke<TResponce>(Route route, params object[] args)
+        public TResponse Invoke<TResponse>(Route route, params object[] args)
         {
             if (!IsConnected && !IsAuthenticated)
                 throw new NotSupportedException("Client is not connected or not authenticated.");
             if (!IsUse) throw new NotSupportedException("First need to choose a database. Need call method Use.");
 
-            TResponce responce = default;
+            TResponse responce = default;
             Exception exception = null;
             var message = new RequestInvokeUnaryNetworkMessage(route, args);
 
@@ -192,7 +192,7 @@ namespace ZenPlatform.Core.Network
                     case ResponceInvokeUnaryNetworkMessage res:
                         try
                         {
-                            responce = (TResponce) res.Result;
+                            responce = (TResponse) res.Result;
                         }
                         catch (Exception ex)
                         {

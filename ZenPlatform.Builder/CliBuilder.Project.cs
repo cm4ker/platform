@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
+using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
@@ -46,7 +47,10 @@ namespace ZenPlatform.Cli
 
 
                     XCCompiller compiller = new XCCompiller();
-                    compiller.Build(root, buildPathArgument.Value, "Build");
+                    
+                    throw new NotImplementedException();
+                    //TODO : Сделать возможность выбора одного из 3х: Сервер, Клиент, КлиентСервер
+                    compiller.Build(root, CompilationMode.Server);
                 });
             });
 
