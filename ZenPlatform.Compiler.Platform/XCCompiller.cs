@@ -47,11 +47,8 @@ namespace ZenPlatform.Compiler.Platform
 
             AstScopeRegister.Apply(root);
 
-            foreach (var cu in root.Units)
-            {
-                var generator = new Generator(new GeneratorParameters(cu, assemblyBuilder, mode));
-                generator.Build();
-            }
+            var generator = new Generator(new GeneratorParameters(root.Units, assemblyBuilder, mode));
+            generator.Build();
 
             return assemblyBuilder;
         }

@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Language.Ast.Definitions;
 
@@ -6,13 +7,13 @@ namespace ZenPlatform.Compiler.Generation
 {
     public class GeneratorParameters
     {
-        public CompilationUnit Unit;
+        public List<CompilationUnit> Units;
         public IAssemblyBuilder Builder;
         public CompilationMode Mode;
 
-        public GeneratorParameters(CompilationUnit unit, IAssemblyBuilder builder, CompilationMode mode)
+        public GeneratorParameters(List<CompilationUnit> units, IAssemblyBuilder builder, CompilationMode mode)
         {
-            Unit = unit;
+            Units = units;
             Builder = builder;
             Mode = mode;
         }

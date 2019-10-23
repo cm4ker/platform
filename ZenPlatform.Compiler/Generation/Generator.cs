@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Language.Ast.Definitions;
 using SreTA = System.Reflection.TypeAttributes;
@@ -7,12 +8,14 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private readonly CompilationUnit _cu;
+        //private readonly CompilationUnit _cu;
         private readonly IAssemblyBuilder _asm;
         private readonly ITypeSystem _ts;
         private readonly CompilationMode _mode;
 
-        private AssemblyServiceScope _serviceScope;
+        private readonly List<CompilationUnit> _cus;
+
+        private ServerAssemblyServiceScope _serviceScope;
 
         private SystemTypeBindings _bindings;
 
@@ -20,7 +23,7 @@ namespace ZenPlatform.Compiler.Generation
 
         public Generator(GeneratorParameters parameters)
         {
-            _cu = parameters.Unit;
+            _cus = parameters.Units;
             _asm = parameters.Builder;
             _ts = _asm.TypeSystem;
 

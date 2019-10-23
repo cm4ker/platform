@@ -25,7 +25,9 @@ namespace ZenPlatform.Core.Assemblies
         private IAssemblyStorage _assemblyStorage;
         private IXCCompiller _compiller;
         private ILogger _logger;
-        public AssemblyManager(IXCCompiller compiller, IAssemblyStorage assemblyStorage, ILogger<AssemblyManager> logger)
+
+        public AssemblyManager(IXCCompiller compiller, IAssemblyStorage assemblyStorage,
+            ILogger<AssemblyManager> logger)
         {
             _assemblyStorage = assemblyStorage;
             _compiller = compiller;
@@ -36,26 +38,30 @@ namespace ZenPlatform.Core.Assemblies
         {
             var hash = HashHelper.HashMD5(configuration.SerializeToStream());
 
-
-
             var assemblies = _assemblyStorage.GetAssemblies(hash);
 
-            if (assemblies.FirstOrDefault(a=>
-                a.Name.Equals($"{configuration.ProjectName}_server") 
-                || a.Name.Equals($"{configuration.ProjectName}_client")) == null)
+            if (assemblies.FirstOrDefault(a =>
+                    a.Name.Equals($"{configuration.ProjectName}_server")
+                    || a.Name.Equals($"{configuration.ProjectName}_client")) == null)
             {
-                
                 BuildConfiguration(configuration);
             }
-
         }
-        
+
+        public IEnumerable<AssemblyDescription> GetAssemblies(XCRoot conf)
+        {
+            return _assemblyStorage.GetAssemblies(conf.GetHash());
+        }
+
+        public byte[] GetAssemblyBytes(AssemblyDescription description)
+        {
+            return _assemblyStorage.GetAssembly(description);
+        }
 
         public void BuildConfiguration(XCRoot configuration)
         {
             _logger.Info("Build configuration.");
             var assembly = _compiller.Build(configuration, CompilationMode.Server);
-
 
             var stream = new MemoryStream();
             assembly.Write(stream);
@@ -65,14 +71,12 @@ namespace ZenPlatform.Core.Assemblies
                 AssemblyHash = HashHelper.HashMD5(stream),
                 ConfigurationHash = configuration.GetHash(),
                 Name = assembly.Name,
-                Type = AssemblyType.Server, 
+                Type = AssemblyType.Server,
             };
 
             _assemblyStorage.SaveAssembly(description, stream.ToArray());
 
-
             assembly = _compiller.Build(configuration, CompilationMode.Client);
-
 
             var clientStream = new MemoryStream();
             assembly.Write(clientStream);
@@ -86,11 +90,6 @@ namespace ZenPlatform.Core.Assemblies
             };
 
             _assemblyStorage.SaveAssembly(description, clientStream.ToArray());
-
         }
-
-        
-
-
     }
 }
