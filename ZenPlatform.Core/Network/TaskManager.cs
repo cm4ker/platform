@@ -41,26 +41,28 @@ namespace ZenPlatform.Core.Network
             var canceller = new CancellationTokenSource();
             Task<object> task = null;
             InvokeContext context = null;
-            task = new Task(null, parent, cancellationToken, creationOptions, internalOptions | InternalTaskOptions.QueuedByRuntime, scheduler)
-            task = Task.Factory.StartNew(() =>
-            {
-                context = new InvokeContext(task, canceller, session);
-
-                StartTask(context);
-                using (canceller.Token.Register(Thread.CurrentThread.Interrupt))
+            
+            task = new Task<object>(
+                (o) =>
                 {
-                    try
-                    {
-                        return action(context);
-                    }
-                    finally
-                    {
-                        // _taskManager.FinishTask(invokeContext);
-                    }
-                }
-            }, canceller.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
+                    context = new InvokeContext(task, canceller, session);
 
-
+                    StartTask(context);
+                    using (canceller.Token.Register(Thread.CurrentThread.Interrupt))
+                    {
+                        try
+                        {
+                            return action(context);
+                        }
+                        finally
+                        {
+                            // _taskManager.FinishTask(invokeContext);
+                        }
+                    }
+                }, null, canceller.Token, TaskCreationOptions.LongRunning);
+            
+            task.Start(TaskScheduler.Current);
+         
             return task;
         }
     }

@@ -124,15 +124,17 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void ConnectingAndLoginAndInvoke()
         {
-            InvokeInClientServerContext((clientService, serverService, clientContext) =>
+            for (int i = 0; i < 15; i++)
             {
-                GlobalScope.Client = clientContext.Client;
-                var cmdType = clientContext.MainAssembly.GetType("CompileNamespace.__cmd_HelloFromServer");
-                var result = cmdType.GetMethod("ClientCallProc").Invoke(null, new object[] {10});
-                Assert.Equal(11, result);
-            });
+                InvokeInClientServerContext((clientService, serverService, clientContext) =>
+                {
+                    GlobalScope.Client = clientContext.Client;
+                    var cmdType = clientContext.MainAssembly.GetType("CompileNamespace.__cmd_HelloFromServer");
+                    var result = cmdType.GetMethod("ClientCallProc").Invoke(null, new object[] {10});
+                    Assert.Equal(11, result);
+                });
+            }
         }
-
 
         [Fact]
         public void CompileAndLoadAssembly()
@@ -180,13 +182,11 @@ namespace ZenPlatform.Core.Test
 
             var assemblies = storage.GetAssemblies(root.GetHash());
 
-            //��������� ��������� ������ 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
                                                           && a.Name ==
                                                           $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
 
 
-            //��������� ��������� ������ 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
                                                           && a.Name ==
                                                           $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Server)}"));
@@ -215,13 +215,11 @@ namespace ZenPlatform.Core.Test
 
             var result = assemblyManagerClientService.GetDiffAssemblies(assemblies);
 
-            //���������� � �������� ��������� ������
             Assert.NotNull(result.FirstOrDefault(a => a.ConfigurationHash == env.Configuration.GetHash()
                                                       && a.Name ==
                                                       $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
 
 
-            //�� ���������� ��������� � �������� ��������� ������
             Assert.Null(result.FirstOrDefault(a => a.Type == AssemblyType.Server));
 
 
