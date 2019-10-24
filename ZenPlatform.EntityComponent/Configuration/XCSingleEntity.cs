@@ -18,7 +18,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         private List<XCCommand> _predefinedCommands;
 
-        internal XCSingleEntity()
+        public XCSingleEntity()
         {
             Properties = new XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty>(this);
             Properties.CollectionChanged += Properties_CollectionChanged;
