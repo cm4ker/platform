@@ -80,7 +80,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Типы, описывающие поле
         /// </summary>
-        [System.ComponentModel.DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<XCTypeBase> Types => _types;
 
         /// <summary>
@@ -105,9 +105,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         private bool ShouldSerializeSerializedTypes()
         {
             _serializedTypes = GetTypes().ToList();
-            return false;
+            return true;
         }
-
+        
         /// <summary>
         /// Получить необработанные типы свойств. Вызывается во время конструирования типа при загрузке конфигурации.
         /// </summary>

@@ -9,10 +9,11 @@ using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.ConfigurationExample;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Shared.ParenChildCollection;
-using ZenPlatform.Tests.Common;
+
 
 namespace ZenPlatform.Tests.Component.EntityComponent
 {
@@ -40,7 +41,7 @@ namespace ZenPlatform.Tests.Component.EntityComponent
         [Fact]
         public void TestEntityDtoLoad()
         {
-            var conf = Factory.GetExampleConfigutaion();
+            var conf = Factory.CreateExampleConfiguration();
 
             var entity = conf.Data.PlatformTypes.FirstOrDefault(x => x.Name == "ТестоваяСущность") as XCObjectTypeBase;
             var prop = entity.GetProperties().First();

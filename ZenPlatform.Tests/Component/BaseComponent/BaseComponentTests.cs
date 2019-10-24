@@ -5,10 +5,10 @@ using System.Text;
 using Xunit;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.ConfigurationExample;
 using ZenPlatform.DataComponent.Helpers;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Shared.ParenChildCollection;
-using ZenPlatform.Tests.Common;
 
 namespace ZenPlatform.Tests.Component.BaseComponent
 {
@@ -17,7 +17,7 @@ namespace ZenPlatform.Tests.Component.BaseComponent
         [Fact]
         public void TestXCPropertyHelper()
         {
-            var conf = Factory.GetExampleConfigutaion();
+            var conf = Factory.CreateExampleConfiguration();
 
             var componentType = conf.Data.ComponentTypes.First();
 

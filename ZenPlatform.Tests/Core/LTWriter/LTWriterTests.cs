@@ -1,14 +1,18 @@
 using System.Security.Cryptography.X509Certificates;
 using Xunit;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Language.QueryLanguage;
-using ZenPlatform.Tests.Common;
 
 namespace ZenPlatform.Tests.Core.LTWriter
 {
     public class LTWriterTests
     {
-        private XCRoot conf = Factory.GetExampleConfigutaion();
+        private XCRoot conf = Factory.CreateExampleConfiguration();
+
+        public LTWriterTests()
+        {
+        }
 
         [Fact]
         public void SimpleWriter()
@@ -52,7 +56,7 @@ namespace ZenPlatform.Tests.Core.LTWriter
             ZqlLogicalTreeWriter writer = new ZqlLogicalTreeWriter(conf);
 
             writer.WriteQuery();
-            writer.WriteSource("Entity", "ТестоваяСущность", "a");
+            writer.WriteSource("Entity", "Invoice", "a");
             writer.WriteSelect();
             writer.WriteCaseOperator("Aliase");
 
