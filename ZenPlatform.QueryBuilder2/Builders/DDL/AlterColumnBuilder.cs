@@ -30,6 +30,36 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         }
 
+        public AlterColumnBuilder(Expression expression)
+        {
+            _expression = expression;
+
+            _alterColumnExpression = new AlterColumn();
+
+            _expression.Add(_alterColumnExpression);
+
+        }
+
+        public AlterColumnBuilder Column(ColumnDefinition column)
+        {
+
+            _alterColumnExpression.Column = column;
+
+            return this;
+
+        }
+
+        public AlterColumnBuilder Column(string columnName)
+        {
+            _alterColumnExpression.Column = new ColumnDefinition()
+            {
+                Column = new Column() { Value = columnName }
+            };
+
+            return this;
+        }
+
+
         public QuerySyntaxNode Expression => _expression;
 
         public override ColumnDefinition GetCurrentColumn()

@@ -10,13 +10,13 @@ using ZenPlatform.QueryBuilder.Builders;
 
 namespace ZenPlatform.Tests.SqlBuilder.SqlServer
 {
-    public class DDLSqlServerTest
+    public class SqlServerTest
     {
         const string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
         private DataContextManager _dataContextManager;
         private DataContext _context;
         private SQLQueryVisitor _visitor = new SQLQueryVisitor();
-        public DDLSqlServerTest()
+        public SqlServerTest()
         {
             _dataContextManager = new DataContextManager();
             _dataContextManager.Initialize(SqlDatabaseType.SqlServer, connectionString);
@@ -61,7 +61,7 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
         }
 
 
-        
+
         [Fact]
         public void CreateTable()
         {
@@ -70,34 +70,37 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
             createTable.Scheme = new Scheme() { Value = "MyScheme" };
             createTable.Database = new Database() { Value = "MyDatabase" };
 
-            
+
             var column1 = new ColumnDefinition()
             {
-                Column = new Column() { Value = "Column1"},
+                Column = new Column() { Value = "Column1" },
                 Type = new ColumnTypeInt(),
+                IsNotNull = true
             };
             createTable.Columns.Add(column1);
+            var pk = new ConstraintDefinitionPrimaryKey();
+            pk.Columns.Add(column1.Column);
+            createTable.Constraints.Add(pk);
 
 
             var column2 = new ColumnDefinition()
             {
                 Column = new Column() { Value = "Column2" },
                 Type = new ColumnTypeInt(),
+                DefaultValue = 10
             };
-            column2.DefaultValue = 10;
             createTable.Columns.Add(column2);
-            
+
+
+            var u = new ConstraintDefinitionUnique();
+            u.Columns.Add(column2.Column);
+            createTable.Constraints.Add(u);
 
             var fk = new ConstraintDefinitionForeignKey();
-            fk.Columns.Add(column1.Column);
-            fk.ForeignColumns.Add(column2.Column);
+            fk.Columns.Add(column2.Column);
+            fk.ForeignColumns.Add(new Column() { Value = "ForeignColumn" });
             fk.ForeignTable = new Table() { Value = "ForeignTable" };
-
-
             createTable.Constraints.Add(fk);
-
-
-            
 
 
 
@@ -108,8 +111,8 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
 
 
 
-            CreateTableBuilder builder = new CreateTableBuilder("MyTable");
-            var nodes = builder
+            var nodes = Query.New()
+                .Create().Table("MyTable")
                 .WithColumn("Column1").AsInt32().PrimaryKey().NotNullable()
                 .WithColumn("Column2").AsInt32().WithDefaultValue(10).Unique().ForeignKey("ForeignTable", "ForeignColumn")
                 .Expression;
@@ -288,6 +291,122 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
             Check(result);
         }
 
-        
+        public WhereNode GetWhere()
+        {
+            var where = new WhereNode();
+            where.Condition = new ConditionEqualNode()
+            {
+                Left = new TableFieldNode() { Field = "Field1", Table = new Table() { Value = "MyTable1" } },
+                Reight = new ConstNode() { Value = 10 }
+            };
+
+            return where;
+        }
+
+
+        public SelectNode GetSelect()
+        {
+            var select = new SelectNode();
+
+
+            select.Fields.Add(new TableFieldNode() { Field = "Field1" });
+            select.Fields.Add(new TableFieldNode() { Field = "Field2" });
+            select.Fields.Add(new TableFieldNode() { Field = "Field3" });
+            select.From = new FromNode();
+            select.From.DataSource = new TableSourceNode() { Table = new Table() { Value = "MyTable1" } };
+            select.From.Join.Add(new JoinNode()
+            {
+                JoinType = JoinType.Left,
+                DataSource = new TableSourceNode() { Table = new Table() { Value = "Mytable2" } },
+                Condition = new ConditionEqualNode()
+                {
+                    Left = new TableFieldNode() { Field = "Field1", Table = new Table() { Value = "MyTable1" } },
+                    Reight = new TableFieldNode()
+                    {
+                        Field = "Field2",
+                        Table = new Table() { Value = "MyTable2" },
+                    }
+                }
+            });
+
+            select.Where = GetWhere();
+
+
+
+
+            return select;
+        }
+
+
+        [Fact]
+        public void Select()
+        {
+
+
+            var result = _visitor.Visit(GetSelect());
+
+            Check(result);
+        }
+
+        [Fact]
+        public void Insert()
+        {
+            var datasource = new ValuesSourceNode();
+            datasource.Values.Add(new ConstNode() { Value = 20 });
+            datasource.Values.Add(new ConstNode() { Value = 20 });
+            datasource.Values.Add(new ConstNode() { Value = 20 });
+            datasource.Values.Add(new ConstNode() { Value = 20 });
+
+            var insert = new InsertNode()
+            {
+                Into = new Table() { Value = "MyTable1" },
+                DataSource = datasource
+            };
+
+
+            var result = _visitor.Visit(insert);
+
+            Check(result);
+        }
+
+        [Fact]
+        public void Update()
+        {
+
+            var update = new UpdateNode()
+            {
+                Update = new Table() { Value = "MyTable1" },
+            };
+            update.Set.Add(new SetNode()
+            {
+                Field = new TableFieldNode() { Field = "MyField1" },
+                Value = new ConstNode() { Value = 10 }
+            });
+            update.Set.Add(new SetNode()
+            {
+                Field = new TableFieldNode() { Field = "MyField2" },
+                Value = new ConstNode() { Value = 10 }
+            });
+
+            update.Where = GetWhere();
+
+            var result = _visitor.Visit(update);
+
+            Check(result);
+        }
+
+        [Fact]
+        public void Delete()
+        {
+
+            var delete = new DeleteNode();
+
+            delete.From = new Table() { Value = "MyTable1" };
+            delete.Where = GetWhere();
+            var result = _visitor.Visit(delete);
+
+            Check(result);
+        }
+
     }
 }
