@@ -139,8 +139,10 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
          *      не хитрым мапированием: Свойство, Тип -> Колонка
          */
 
-        public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName)
+        public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
+            if (string.IsNullOrEmpty(propName)) propName = this.DatabaseColumnName;
+
             var done = false;
 
             if (Types.Count == 1)

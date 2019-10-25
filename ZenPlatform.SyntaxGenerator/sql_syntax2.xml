@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+
+  <Syntax Name="Expression">
+    <Arguments>
+      <List Name="Nodes" Type="QuerySyntaxNode" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="StringValue">
+    <Arguments>
+      <Single Name="Value" Type="string" Null="true" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="Scheme" Base="StringValue"/>
+  <Syntax Name="Database" Base="StringValue"/>
+  <Syntax Name="Table" Base="StringValue"/>
+  <Syntax Name="Column" Base="StringValue"/>
+  <Syntax Name="Constraint" Base="StringValue"/>
+
+  
+    <Syntax Name="SchemeOperation">
+    <Arguments>
+      <Single Name="Scheme" Type="Scheme" />
+    </Arguments>
+  </Syntax>
+  
+   <Syntax Name="DatabaseOperation" Base="SchemeOperation">
+    <Arguments>
+      <Single Name="Database" Type="Database" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="TableOperation" Base="DatabaseOperation">
+    <Arguments>
+      <Single Name="Table" Type="Table" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="ColumnType"/>
+  <Syntax Name="ColumnTypeInt" Base="ColumnType"/>
+
+  <Syntax Name="ColumnDefinition">
+    <Arguments>
+      <Single Name="Column" Type="Column" />
+      <Single Name="Type" Type="ColumnType"/>
+      <Single Name="IsNotNull" Type="bool" Null="true"/>
+      <Single Name="DefaultValue" Type="object" Null="true"/>
+      <Single Name="DefaultMethod" Type="SystemMethods" Null="true"/>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConstraintDefinition">
+    <Arguments>
+      <Single Name="Name" Type="string" Null="true" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConstraintDefinitionUnique" Base="ConstraintDefinition">
+    <Arguments>
+      <List Name="Columns" Type="Column"/>
+    </Arguments>
+  </Syntax>
+  <Syntax Name="ConstraintDefinitionPrimaryKey" Base="ConstraintDefinition">
+    <Arguments>
+      <List Name="Columns" Type="Column"/>
+    </Arguments>
+  </Syntax>
+  <Syntax Name="ConstraintDefinitionForeignKey" Base="ConstraintDefinition">
+    <Arguments>
+      <List Name="Columns" Type="Column"/>
+      <List Name="ForeignColumns" Type="Column"/>
+      <Single Name="ForeignTable" Type="Table"/>
+    </Arguments>
+  </Syntax>
+
+
+  <Syntax Name="CreateTable" Base="TableOperation">
+    <Arguments>
+      <List Name="Columns" Type="ColumnDefinition" />
+      <List Name="Constraints" Type="ConstraintDefinition"/>
+    </Arguments>
+  </Syntax>
+
+
+  <Syntax Name="DropTable" Base="TableOperation"/>
+  
+  <Syntax Name="DropColumn" Base="TableOperation">
+    <Arguments>
+      <Single Name="Column" Type="Column" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="CopyTable" Base="TableOperation">
+    <Arguments>
+      <Single Name="DstTable" Type="Table" />
+    </Arguments>
+  </Syntax>
+
+  
+  <Syntax Name="AddColumn" Base="TableOperation">
+    <Arguments>
+      <Single Name="Column" Type="ColumnDefinition" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="AlterColumn" Base="TableOperation">
+    <Arguments>
+      <Single Name="Column" Type="ColumnDefinition" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="AddConstraint" Base="TableOperation">
+    <Arguments>
+      <Single Name="Constraint" Type="ConstraintDefinition" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="DropConstraint" Base="TableOperation">
+    <Arguments>
+      <Single Name="Constraint" Type="Constraint" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="DataSourceNode"/>
+
+  <Syntax Name="TableSourceNode" Base="DataSourceNode">
+    <Arguments>
+      <Single Name="Table" Type="Table" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="FromNode">
+    <Arguments>
+      <Single Name="DataSource" Type="DataSourceNode" />
+      <List Name="Join" Type="JoinNode"/>
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ExpressionNode" />
+  <Syntax Name="ExpressionSumNode" >
+  <Arguments>
+    <List Name="Expressions" Type="ExpressionNode" />
+  </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConditionNode" Base="ExpressionNode"/>
+
+  <Syntax Name="ConditionAndNode" Base="ConditionNode">
+    <Arguments>
+      <List Name="Nodes" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConditionOrNode" Base="ConditionNode">
+    <Arguments>
+      <List Name="Nodes" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConditionEqualNode" Base="ConditionNode">
+    <Arguments>
+      <Single Name="Left" Type="ExpressionNode" />
+      <Single Name="Reight" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConditionNotNode" Base="ConditionNode">
+    <Arguments>
+      <Single Name="Node" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+  
+
+  <Syntax Name="JoinNode">
+    <Arguments>
+      <Single Name="DataSource" Type="DataSourceNode" />
+      <Single Name="Condition" Type="ConditionNode" />
+      <Single Name="JoinType" Type="JoinType" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="WhereNode">
+    <Arguments>
+      <Single Name="Condition" Type="ConditionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ConstNode" Base="ExpressionNode">
+    <Arguments>
+      <Single Name="Value" Type="object" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="TableFieldNode" Base="ExpressionNode">
+    <Arguments>
+      <Single Name="Field" Type="string" Null="true"/>
+      <Single Name="Table" Type="Table" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SelectNode" Base="DataSourceNode">
+    <Arguments>
+      <List Name="Fields" Type="ExpressionNode" />
+      <Single Name="From" Type="FromNode" />
+      <Single Name="Where" Type="WhereNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="ValuesSourceNode" Base="DataSourceNode">
+    <Arguments>
+      <List Name="Values" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="InsertNode">
+    <Arguments>
+      <Single Name="Into" Type="Table" />
+      <Single Name="DataSource" Type="DataSourceNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SetNode">
+    <Arguments>
+      <Single Name="Field" Type="TableFieldNode" />
+      <Single Name="Value" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="UpdateNode">
+    <Arguments>
+      <Single Name="Update" Type="Table" />
+      <List Name="Set" Type="SetNode" />
+      <Single Name="From" Type="FromNode" />
+      <Single Name="Where" Type="WhereNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="DeleteNode">
+    <Arguments>
+      <Single Name="From" Type="Table" />
+      <Single Name="Where" Type="WhereNode" />
+    </Arguments>
+  </Syntax>
+
+</Config>
