@@ -20,9 +20,9 @@ namespace ZenPlatform.Tests.Core.LTWriter
             ZqlLogicalTreeWriter writer = new ZqlLogicalTreeWriter(conf);
 
             writer.WriteQuery();
-            writer.WriteSource("Entity", "ТестоваяСущность", "a");
+            writer.WriteSource("Entity", "Invoice", "a");
             writer.WriteSelect();
-            writer.WriteObjectField("СоставнойТип", "some_NotASimpleAlias", "a");
+            writer.WriteObjectField("CompositeProperty", "prop1", "a");
             writer.WriteCloseQuery();
 
             var res = writer.Result;
