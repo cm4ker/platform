@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
-namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
+namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
     /// <summary>
     /// Выражение в предложении  SELECT 

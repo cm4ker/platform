@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
-namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
+namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
     /// <summary>
     /// Заппрос
