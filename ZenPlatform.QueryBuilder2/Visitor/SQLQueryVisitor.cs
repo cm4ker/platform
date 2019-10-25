@@ -133,149 +133,111 @@ namespace ZenPlatform.QueryBuilder.Visitor
         {
             return node.Value;
         }
-/*
-        public override string VisitConstraintDefinitionDefaultMethod(ConstraintDefinitionDefaultMethod node)
+
+        public override string VisitCopyTable(CopyTable node)
         {
-            return string.Format("{0}DEFAULT {1} FOR {2}",
-                string.IsNullOrEmpty(node.Name) ? "" : $"CONSTRAINT {node.Name} ",
-                node.Method, //TODO 
-                node.Column.Accept(this)
+
+            return string.Format("SELECT * INTO {0} FROM {1}", node.DstTable.Accept(this), node.Table.Accept(this));
+        }
+
+        public override string VisitTableSourceNode(TableSourceNode node)
+        {
+            return node.Table.Accept(this);
+        }
+
+        public override string VisitFromNode(FromNode node)
+        {
+            return string.Format("FROM\n{0}\n{1}\n",
+                    node.DataSource.Accept(this),
+                    string.Join("\n", node.Join.Select(j => j.Accept(this)))
                 );
         }
 
-        public override string VisitConstraintDefinitionDefaultValue(ConstraintDefinitionDefaultValue node)
+        public override string VisitConditionEqualNode(ConditionEqualNode node)
         {
-            return string.Format("{0}DEFAULT {1} {2}",
-                string.IsNullOrEmpty(node.Name) ? "" : $"CONSTRAINT {node.Name} ",
-                node.Value,
-                node.Column.Accept(this)
+            return string.Format("({0} = {1})",
+                    node.Left.Accept(this),
+                    node.Reight.Accept(this)
                 );
         }
 
-
-
-
-        
-        public override string VisitAlterTableNode(AlterTableNode node)
+        public override string VisitJoinNode(JoinNode node)
         {
-            return string.Join(";\n", node.Nodes.Select(c => $"ALTER TABLE {node.Table.Accept(this)} \n {c.Accept(this)}"));
-        }
-
-        public override string VisitAlterTypedActionNode(AlterTypedActionNode node)
-        {
-            string action = "";
-            switch (node.Type)
-            {
-                case NodeActionType.Add:
-                    action = "ADD";
-                    break;
-                case NodeActionType.Drop:
-                    action = "DROP";
-                    break;
-                case NodeActionType.Alter:
-                    action = "ALTER COLUMN";
-                    break;
-            }
-
-            return string.Format("{0} {1}", action, node.Node.Accept(this));
-        }
-
-        public override string VisitColumnDefinitionNode(ColumnDefinitionNode node)
-        {
-
-            return string.Format("{0} {1} {2} {3}", 
-                node.Column.Accept(this), 
-                node.Type.Accept(this),
-                string.Join(",", node.Constraints.Select(c=>c.Accept(this))),
-                node.Identity ? "IDENTITY" : "");
-
-        }
-
-        public override string VisitColumnNode(ColumnNode node)
-        {
-
-            return node.Name;
-        }
-
-        public override string VisitConstraintNode(ConstraintNode node)
-        {
-            return node.Name;
-        }
-
-        public override string VisitForeignKeyColumnConstraintDefinitionNode(ForeignKeyColumnConstraintDefinitionNode node)
-        {
-            return base.VisitForeignKeyColumnConstraintDefinitionNode(node);
-        }
-
-        public override string VisitForeignKeyConstraintDefinitionNode(ForeignKeyConstraintDefinitionNode node)
-        {
-           
-            return string.Format("{0}FOREIGN KEY{1}REFERENCES {2}({3})",
-                node.Constraint!=null ? $"CONSTRAINT {node.Constraint.Accept(this)} " : "",
-                node.Columns.Count > 0 ? $" ({string.Join(",", node.Columns.Select(c => c.Accept(this)))}) " : " ",
-                node.PrimaryTable.Accept(this),
-                string.Join(",", node.PrimaryColumns.Select(c => c.Accept(this)))
+            return string.Format("JOIN {0} ON({1})\n",
+                    node.DataSource.Accept(this),
+                    node.Condition.Accept(this)
                 );
         }
 
-        public override string VisitIntTypeDefinitionNode(IntTypeDefinitionNode node)
+        public override string VisitWhereNode(WhereNode node)
         {
-            return "INT";
-        }
-
-        public override string VisitNotNullConstraintDefinitionNode(NotNullConstraintDefinitionNode node)
-        {
-            return "NOT NULL";
-        }
-
-        public override string VisitPrimaryKeyColumnConstraintDefinitionNode(PrimaryKeyColumnConstraintDefinitionNode node)
-        {
-            return "PRIMARY KEY";
-        }
-
-        public override string VisitPrimaryKeyConstraintDefinitionNode(PrimaryKeyConstraintDefinitionNode node)
-        {
-            return string.Format("{0}PRIMARY KEY {1}",
-                node.Constraint != null ? $"CONSTRAINT {node.Constraint.Accept(this)} " : "",
-                node.Columns.Count > 0 ? $" ({string.Join(",", node.Columns.Select(c => c.Accept(this)))}) " : " "
-                );
-
-        }
-
-        public override string VisitTableDefinitionNode(TableDefinitionNode node)
-        {
-
-            return string.Format("CREATE TABLE {0} \n(\n{1}{2}{3}\n)",
-                node.Table.Accept(this),
-                string.Join(",\n", node.Columns.Select(c => c.Accept(this))),
-                node.Constraints.Count > 0 ? ",\n" : "",
-                string.Join(",\n", node.Constraints.Select(c => c.Accept(this)))
-                );
-
-        }
-
-        public override string VisitTableNode(TableNode node)
-        {
-            return $"[{node.Name}]"; 
-        }
-
-        public override string VisitTextTypeDefinitionNode(TextTypeDefinitionNode node)
-        {
-            return "TEXT";
-        }
-
-        public override string VisitUniqueColumnConstraintDefinitionNode(UniqueColumnConstraintDefinitionNode node)
-        {
-            return "UNIQUE";
-        }
-
-        public override string VisitUniqueConstraintDefinitionNode(UniqueConstraintDefinitionNode node)
-        {
-            return string.Format("{0}UNIQUE {1}",
-                node.Constraint != null ? $"CONSTRAINT {node.Constraint.Accept(this)} " : "",
-                node.Columns.Count > 0 ? $" ({string.Join(",", node.Columns.Select(c => c.Accept(this)))}) " : " "
+            return string.Format("WHERE\n{0}\n",
+                    node.Condition.Accept(this)
                 );
         }
-        */
+
+        public override string VisitConstNode(ConstNode node)
+        {
+            return node.Value.ToString();
+        }
+
+        public override string VisitTableFieldNode(TableFieldNode node)
+        {
+            return string.Format("{0}{1}",
+                    node.Table == null ? "" : $"{node.Table.Accept(this)}.",
+                    node.Field
+                );
+        }
+
+        public override string VisitSelectNode(SelectNode node)
+        {
+            return string.Format("SELECT {0}\n{1}{2}",
+                string.Join(",\n", node.Fields.Select(f => f.Accept(this))),
+                node.From == null ? "" : node.From.Accept(this),
+                node.Where == null ? "" : node.Where.Accept(this)
+            );
+
+        }
+
+        public override string VisitValuesSourceNode(ValuesSourceNode node)
+        {
+            return string.Format("VALUES ({0})",
+                string.Join(",", node.Values.Select(v => v.Accept(this)))
+                );
+        }
+
+        public override string VisitInsertNode(InsertNode node)
+        {
+            return string.Format("INSERT INTO {0}\n{1}",
+                node.Into.Accept(this),
+                node.DataSource.Accept(this)
+                );
+        }
+
+        public override string VisitSetNode(SetNode node)
+        {
+            return string.Format("{0} = {1}",
+                node.Field.Accept(this),
+                node.Value.Accept(this)
+                );
+        }
+
+        public override string VisitUpdateNode(UpdateNode node)
+        {
+            return string.Format("UPDATE {0}\nSET {1}\n{2}{3}",
+                node.Update.Accept(this),
+                string.Join(", ", node.Set.Select(s => s.Accept(this))),
+                node.From==null ? "" : node.From.Accept(this),
+                node.Where==null ? "" : node.Where.Accept(this)
+                ) ;
+        }
+
+        public override string VisitDeleteNode(DeleteNode node)
+        {
+            return string.Format("DELETE FROM {0}\n{1}",
+                node.From == null ? "" : node.From.Accept(this),
+                node.Where == null ? "" : node.Where.Accept(this)
+                );
+        }
     }
 }

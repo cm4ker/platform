@@ -400,6 +400,21 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
+    public partial class DropTable : TableOperation
+    {
+        public DropTable()
+        {
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDropTable(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
     public partial class DropColumn : TableOperation
     {
         public DropColumn()
@@ -415,6 +430,27 @@ namespace ZenPlatform.QueryBuilder.Model
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitDropColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class CopyTable : TableOperation
+    {
+        public CopyTable()
+        {
+        }
+
+        public Table DstTable
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitCopyTable(this);
         }
     }
 }
@@ -499,6 +535,493 @@ namespace ZenPlatform.QueryBuilder.Model
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitDropConstraint(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class DataSourceNode : QuerySyntaxNode
+    {
+        public DataSourceNode()
+        {
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDataSourceNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class TableSourceNode : DataSourceNode
+    {
+        public TableSourceNode()
+        {
+        }
+
+        public Table Table
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitTableSourceNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class FromNode : QuerySyntaxNode
+    {
+        public FromNode()
+        {
+            Join = new List<JoinNode>();
+        }
+
+        public DataSourceNode DataSource
+        {
+            get;
+            set;
+        }
+
+        public List<JoinNode> Join
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitFromNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ExpressionNode : QuerySyntaxNode
+    {
+        public ExpressionNode()
+        {
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitExpressionNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ExpressionSumNode : QuerySyntaxNode
+    {
+        public ExpressionSumNode()
+        {
+            Expressions = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Expressions
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitExpressionSumNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConditionNode : ExpressionNode
+    {
+        public ConditionNode()
+        {
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConditionNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConditionAndNode : ConditionNode
+    {
+        public ConditionAndNode()
+        {
+            Nodes = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Nodes
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConditionAndNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConditionOrNode : ConditionNode
+    {
+        public ConditionOrNode()
+        {
+            Nodes = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Nodes
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConditionOrNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConditionEqualNode : ConditionNode
+    {
+        public ConditionEqualNode()
+        {
+        }
+
+        public ExpressionNode Left
+        {
+            get;
+            set;
+        }
+
+        public ExpressionNode Reight
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConditionEqualNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConditionNotNode : ConditionNode
+    {
+        public ConditionNotNode()
+        {
+        }
+
+        public ExpressionNode Node
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConditionNotNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class JoinNode : QuerySyntaxNode
+    {
+        public JoinNode()
+        {
+        }
+
+        public DataSourceNode DataSource
+        {
+            get;
+            set;
+        }
+
+        public ConditionNode Condition
+        {
+            get;
+            set;
+        }
+
+        public JoinType JoinType
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitJoinNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class WhereNode : QuerySyntaxNode
+    {
+        public WhereNode()
+        {
+        }
+
+        public ConditionNode Condition
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitWhereNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConstNode : ExpressionNode
+    {
+        public ConstNode()
+        {
+        }
+
+        public object Value
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class TableFieldNode : ExpressionNode
+    {
+        public TableFieldNode()
+        {
+        }
+
+        public string Field
+        {
+            get;
+            set;
+        }
+
+        public Table Table
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitTableFieldNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SelectNode : DataSourceNode
+    {
+        public SelectNode()
+        {
+            Fields = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Fields
+        {
+            get;
+            set;
+        }
+
+        public FromNode From
+        {
+            get;
+            set;
+        }
+
+        public WhereNode Where
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSelectNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ValuesSourceNode : DataSourceNode
+    {
+        public ValuesSourceNode()
+        {
+            Values = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Values
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitValuesSourceNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class InsertNode : QuerySyntaxNode
+    {
+        public InsertNode()
+        {
+        }
+
+        public Table Into
+        {
+            get;
+            set;
+        }
+
+        public DataSourceNode DataSource
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitInsertNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SetNode : QuerySyntaxNode
+    {
+        public SetNode()
+        {
+        }
+
+        public TableFieldNode Field
+        {
+            get;
+            set;
+        }
+
+        public ExpressionNode Value
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSetNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class UpdateNode : QuerySyntaxNode
+    {
+        public UpdateNode()
+        {
+            Set = new List<SetNode>();
+        }
+
+        public Table Update
+        {
+            get;
+            set;
+        }
+
+        public List<SetNode> Set
+        {
+            get;
+            set;
+        }
+
+        public FromNode From
+        {
+            get;
+            set;
+        }
+
+        public WhereNode Where
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitUpdateNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class DeleteNode : QuerySyntaxNode
+    {
+        public DeleteNode()
+        {
+        }
+
+        public Table From
+        {
+            get;
+            set;
+        }
+
+        public WhereNode Where
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDeleteNode(this);
         }
     }
 }
@@ -601,7 +1124,17 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return DefaultVisit(node);
         }
 
+        public virtual T VisitDropTable(DropTable node)
+        {
+            return DefaultVisit(node);
+        }
+
         public virtual T VisitDropColumn(DropColumn node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitCopyTable(CopyTable node)
         {
             return DefaultVisit(node);
         }
@@ -622,6 +1155,106 @@ namespace ZenPlatform.QueryBuilder.Visitor
         }
 
         public virtual T VisitDropConstraint(DropConstraint node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitDataSourceNode(DataSourceNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitTableSourceNode(TableSourceNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitFromNode(FromNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitExpressionNode(ExpressionNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitExpressionSumNode(ExpressionSumNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConditionNode(ConditionNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConditionAndNode(ConditionAndNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConditionOrNode(ConditionOrNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConditionEqualNode(ConditionEqualNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConditionNotNode(ConditionNotNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitJoinNode(JoinNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitWhereNode(WhereNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConstNode(ConstNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitTableFieldNode(TableFieldNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSelectNode(SelectNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitValuesSourceNode(ValuesSourceNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitInsertNode(InsertNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSetNode(SetNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitUpdateNode(UpdateNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitDeleteNode(DeleteNode node)
         {
             return DefaultVisit(node);
         }

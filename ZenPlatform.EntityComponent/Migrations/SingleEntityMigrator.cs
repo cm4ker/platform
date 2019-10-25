@@ -10,10 +10,12 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using ZenPlatform.QueryBuilder.DDL.Table;
 using ZenPlatform.QueryBuilder.DML.Update;
+using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.Shared;
 using ZenPlatform.Shared.Tree;
 
@@ -41,127 +43,171 @@ namespace ZenPlatform.EntityComponent.Migrations
 
         private IList<SqlNode> GetScript(XCSingleEntity old, XCSingleEntity actual)
         {
-            
+
             var result = new List<SqlNode>();
 
             if (old == null)
             {
-                /*
-                 * Создаём новую сущность
-                 * Для этого необходимо проделать следующие действия:
-                 *  1) Присвоить имена новым таблицам и колонкам
-                 *  2) Сгенерировать скрипт создания таблиц
-                 */
+               // result.Add(CreateTable(old));
 
-                actual.RelTableName = $"ent{actual.Id}";
-
-                var createTable =
-                    new CreateTableQueryNode(actual.RelTableName, (t) => { });
-
-                foreach (var prop in actual.Properties)
-                {
-                    //Генерируем по следующему алгоритму
-                    prop.DatabaseColumnName = $"fld{prop.Id}";
-
-                    var hasObjectGuid = false;
-                    var hasObjectInt = false;
-
-                    var columnSchemas = prop.GetPropertySchemas(prop.DatabaseColumnName);
-
-                    void createFromSchema(XCColumnSchemaDefinition schema)
-                    {
-                        var name = schema.Name;
-//
-//                        ItemSwitch<XCPrimitiveType>.Switch(schema.PlatformType)
-//                            .CaseIs<XCBoolean>(i =>
-//                                createTable.WithColumn(name, x => x.Boolean()))
-//                            .CaseIs<XCString>(i => createTable.WithColumn(name, x => x.Varchar(i.ColumnSize)))
-//                            .CaseIs<XCDateTime>(i => createTable.WithColumn(name, x => x.DateTime()))
-//                            .CaseIs<XCGuid>(i => createTable.WithColumn(name, x => x.Guid()))
-//                            .CaseIs<XCNumeric>(i =>
-//                                createTable.WithColumn(name, x => x.Numeric(i.Scale, i.Precision)))
-//                            .CaseIs<XCBinary>(i => createTable.WithColumn(name, x => x.Varbinary(i.ColumnSize)));
-                    }
-
-                    foreach (var schema in columnSchemas)
-                    {
-                        if (schema.SchemaType == XCColumnSchemaType.Value)
-                        {
-                            var name = schema.Name;
-                            var type = schema.PlatformType as XCPrimitiveType ??
-                                       throw new Exception("The value can be only primitive type");
-
-                            ItemSwitch<XCPrimitiveType>.Switch(type)
-                                .CaseIs<XCBoolean>(i =>
-                                    createTable.WithColumn(name, x => x.Boolean()))
-                                .CaseIs<XCString>(i => createTable.WithColumn(name, x => x.Varchar(i.ColumnSize)))
-                                .CaseIs<XCDateTime>(i => createTable.WithColumn(name, x => x.DateTime()))
-                                .CaseIs<XCGuid>(i => createTable.WithColumn(name, x => x.Guid()))
-                                .CaseIs<XCNumeric>(i =>
-                                    createTable.WithColumn(name, x => x.Numeric(i.Scale, i.Precision)))
-                                .CaseIs<XCBinary>(i => createTable.WithColumn(name, x => x.Varbinary(i.ColumnSize)));
-                        }
-                        else if (schema.SchemaType == XCColumnSchemaType.Type)
-                        {
-                            //TODO: по задумке дочерний компонент должен самостоятельно инкапсулировать поля для ссылки на него в чужие объекты
-                            /*
-                             * Опишим следующую ситуацию:
-                             *
-                             * У нас есть табличная часть. Она поставляется, как свойство в компонент.
-                             * Но она не генерирует поле в основной таблице.
-                             */
-
-                            //Необхоидимо проверить, является ли тип принадлежащим к зависимому компоненту
-//                            if (obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn)
-//                            {
-//                                if (!hasObjectGuid)
-//                                {
-//                                    var columnSchema = columnSchemas.Where(x => x.SchemaType == XCColumnSchemaType.Ref);
-//                                    createTable.WithColumn($"{prop.DatabaseColumnName}_Ref", x => x.Guid());
-//                                    hasObjectGuid = true;
-//                                }
-//                                else if (!hasObjectInt)
-//                                {
-//                                    createTable.WithColumn($"{prop.DatabaseColumnName}_Type", x => x.Int());
-//                                    hasObjectInt = true;
-//                                }
-//                            }
-//
-//                            //Если компонент приатаченный, в таком случае на свойство необходимо также запустить миграцию
-//                            if (actual.Parent.AttachedComponents.Contains(obj.Parent))
-//                            {
-//                                obj.Parent.ComponentImpl.Migrator.GetScript(null, obj);
-//                            }
-                        }
-                    }
-                }
-
-                result.Add(createTable);
-            }
-
-            if (actual == null)
-            {
-                result.Add(new DropTableQueryNode(old.RelTableName));
-                // TODO: также необходимо удалить все дочерние комопненты
             }
 
             if (old != null && actual != null)
             {
-                var props = old.Properties
-                    .FullJoin(
-                        actual.Properties, x => x.Guid, x => new {old = x, actual = default(XCSingleEntityProperty)},
-                        x => new {old = default(XCSingleEntityProperty), actual = x},
-                        (x, y) => new {old = x, actual = y});
-
-                foreach (var prop in props)
-                {
-                    result.AddRange(GetPropertyScript(prop.old, prop.actual));
-                }
+               // var actioalTableName = $"{actual.RelTableName}_atual";
+                //CreateTable(actual, actioalTableName);
+               // MoveData();
+               // DropOldTable(old.RelTableName);
+               // RenameActualTable(actioalTableName, old.RelTableName);
             }
+
+
 
             return result;
         }
 
+
+        public void DropTable(string tableName, Query query)
+        {
+            query.Delete().Table(tableName);
+
+        }
+
+        public void CopyTable(string tableSource, string tableDestination, Query query)
+        {
+            query.Copy().Table(tableSource).ToTable(tableDestination);
+            
+        }
+
+        public void MoveData(XCSingleEntity old, XCSingleEntity actual, Query query)
+        {
+            var props = old.Properties
+                    .FullJoin(
+                        actual.Properties, x => x.Guid, x => new { old = x, actual = default(XCSingleEntityProperty) },
+                        x => new { old = default(XCSingleEntityProperty), actual = x },
+                        (x, y) => new { old = x, actual = y });
+
+            string tableName = "";
+            
+            foreach(var property in props)
+            {
+                if (property.actual == null)
+                {
+                    foreach (var s in property.old.GetPropertySchemas())
+                    {
+                        query.Delete().Column(s.Name).OnTable(tableName);
+                    }
+                    
+                }
+                else if (property.old == null)
+                {
+                    GetColumnDefenition(property.actual).ForEach(c => query.Alter().Column(c));
+                    
+                }
+                 
+            }
+        }
+
+        private SqlNode CreateTable(XCSingleEntity entity,Query query, string tableName = null)
+        {
+
+            if (string.IsNullOrEmpty(tableName)) tableName = entity.RelTableName;
+
+            var create = query.Create().Table(tableName);
+
+            foreach (var prop in entity.Properties)
+            {
+                GetColumnDefenition(prop).ForEach(c => create.WithColumnDefinition(c));
+            }
+
+            return create.Expression;
+
+
+        }
+
+
+        public List<ColumnDefinition> GetColumnDefenition(XCSingleEntityProperty property)
+        {
+            List<ColumnDefinition> columns = new List<ColumnDefinition>();
+            
+
+            property.DatabaseColumnName = $"fld{property.Id}";
+
+            var columnSchemas = property.GetPropertySchemas(property.DatabaseColumnName);
+
+            foreach (var schema in columnSchemas)
+            {
+                ColumnDefinitionBuilder builder = new ColumnDefinitionBuilder();
+                builder.WithColumnName(schema.Name);
+
+                if (schema.SchemaType == XCColumnSchemaType.Value)
+                {
+
+                    var type = schema.PlatformType as XCPrimitiveType ??
+                               throw new Exception("The value can be only primitive type");
+
+                    switch (type)
+                    {
+                        case XCBoolean t:
+                            builder.AsBoolean();
+                            break;
+                        case XCString t:
+                            builder.AsString();
+                            break;
+                        case XCDateTime t:
+                            builder.AsDateTime();
+                            break;
+                        case XCGuid t:
+                            builder.AsGuid();
+                            break;
+                        case XCNumeric t:
+                            builder.AsFloat();
+                            break;
+                        case XCBinary t:
+                            builder.AsBinary();
+                            break;
+                    }
+                }
+                else if (schema.SchemaType == XCColumnSchemaType.Type)
+                {
+                    //TODO: по задумке дочерний компонент должен самостоятельно инкапсулировать поля для ссылки на него в чужие объекты
+                    /*
+                     * Опишим следующую ситуацию:
+                     *
+                     * У нас есть табличная часть. Она поставляется, как свойство в компонент.
+                     * Но она не генерирует поле в основной таблице.
+                     */
+
+                    //Необхоидимо проверить, является ли тип принадлежащим к зависимому компоненту
+                    //                            if (obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn)
+                    //                            {
+                    //                                if (!hasObjectGuid)
+                    //                                {
+                    //                                    var columnSchema = columnSchemas.Where(x => x.SchemaType == XCColumnSchemaType.Ref);
+                    //                                    createTable.WithColumn($"{prop.DatabaseColumnName}_Ref", x => x.Guid());
+                    //                                    hasObjectGuid = true;
+                    //                                }
+                    //                                else if (!hasObjectInt)
+                    //                                {
+                    //                                    createTable.WithColumn($"{prop.DatabaseColumnName}_Type", x => x.Int());
+                    //                                    hasObjectInt = true;
+                    //                                }
+                    //                            }
+                    //
+                    //                            //Если компонент приатаченный, в таком случае на свойство необходимо также запустить миграцию
+                    //                            if (actual.Parent.AttachedComponents.Contains(obj.Parent))
+                    //                            {
+                    //                                obj.Parent.ComponentImpl.Migrator.GetScript(null, obj);
+                    //                            }
+                }
+
+                columns.Add(builder.ColumnDefinition);
+            }
+
+            return columns;
+        }
+
+      
 
         public IList<SqlNode> GetPropertyScript(XCSingleEntityProperty old, XCSingleEntityProperty actual)
         {

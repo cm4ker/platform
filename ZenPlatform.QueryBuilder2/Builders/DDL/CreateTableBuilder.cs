@@ -24,6 +24,20 @@ namespace ZenPlatform.QueryBuilder.Builders
             
         }
 
+        public CreateTableBuilder(CreateTable createTable)
+        {
+            _createTable = createTable;
+
+        }
+
+
+
+        public CreateTableBuilder WithColumnDefinition(ColumnDefinition column)
+        {
+            _createTable.Columns.Add(column);
+            return this;
+        }
+
         public CreateTableBuilder WithColumn(string columnName)
         {
             _currentColumn = new ColumnDefinition()
