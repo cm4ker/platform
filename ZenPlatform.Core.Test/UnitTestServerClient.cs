@@ -23,6 +23,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Compiler;
+using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Language.QueryLanguage;
@@ -141,7 +142,7 @@ namespace ZenPlatform.Core.Test
         {
             var compiller = new XCCompiller();
 
-            var root = Tests.Common.Factory.CreateExampleConfiguration();
+            var root = Factory.CreateExampleConfiguration();
 
             var _assembly2 = compiller.Build(root, CompilationMode.Server);
             var _assembly = compiller.Build(root, CompilationMode.Client);
@@ -176,7 +177,7 @@ namespace ZenPlatform.Core.Test
             var storage = new TestAssemblyStorage();
             var manager = new AssemblyManager(new XCCompiller(), storage, new SimpleConsoleLogger<AssemblyManager>());
 
-            var root = Tests.Common.Factory.CreateExampleConfiguration();
+            var root = Factory.CreateExampleConfiguration();
 
             manager.CheckConfiguration(root);
 

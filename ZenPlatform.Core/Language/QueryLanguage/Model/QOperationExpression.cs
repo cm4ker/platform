@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
-namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
+namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
     public class QOperationExpression : QExpression
     {

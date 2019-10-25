@@ -1,30 +1,21 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Antlr4.Runtime.Atn;
-using Newtonsoft.Json.Bson;
+using dnlib.DotNet.Writer;
 using ServiceStack;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
-namespace ZenPlatform.Core.Language.QueryLanguage
+namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
-    public class BeginQueryToken
+    public class LogicStack : Stack<object>
     {
-    }
-
-    public abstract class StackObject
-    {
-    }
-
-
-    public class QDataSource : StackObject
-    {
-        
-    }
-
-    public class Alias
-    {
+        public XCComponent PopComponent()
+        {
+            return (XCComponent) this.Pop();
+        }
     }
 
     public class QLang
@@ -32,7 +23,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         private readonly XCRoot _conf;
         private InstructionContext _instructionContext = InstructionContext.None;
         private QueryContext _queryContext;
-
+        private LogicStack _logicStack;
 
         private enum QueryContext
         {
@@ -51,33 +42,37 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         }
 
 
-        private Stack<object> _logicStack;
-
         public QLang(XCRoot conf)
         {
             _conf = conf;
+            _logicStack = new LogicStack();
         }
 
         #region Context modifiers
 
         public void m_from()
         {
+            _queryContext = QueryContext.From;
         }
 
         public void m_select()
         {
+            _queryContext = QueryContext.Select;
         }
 
         public void m_where()
         {
+            _queryContext = QueryContext.Where;
         }
 
         public void m_group_by()
         {
+            _queryContext = QueryContext.GroupBy;
         }
 
         public void m_having()
         {
+            _queryContext = QueryContext.Having;
         }
 
         #endregion
@@ -86,10 +81,14 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         public void ld_component(string componentName)
         {
+            var component = _conf.Data.Components.First(x => x.Info.ComponentName == componentName);
+            _logicStack.Push(component);
         }
 
         public void ld_type(string typeName)
         {
+            var type = _logicStack.PopComponent().GetTypeByName(typeName);
+            _logicStack.Push(new QObjectTable(type));
         }
 
 
@@ -114,7 +113,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         {
         }
 
-        public void ld_field()
+        public void ld_field(string name)
         {
         }
 
@@ -122,6 +121,23 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         public void alias(string alias)
         {
+            if (_queryContext == QueryContext.From)
+            {
+                var source = _logicStack.Pop();
+
+                if (source is IQAliased a)
+                {
+                    a.Alias = alias;
+                }
+                else
+                {
+                    throw new Exception($"You can't alias this object {source}");
+                }
+            }
+            else if (_queryContext == QueryContext.Select)
+            {
+                
+            }
         }
 
         public void beign_query()
@@ -133,6 +149,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         private void pop()
         {
             _logicStack.Pop();
+        }
+
+        private void clear()
+        {
+            _logicStack.Clear();
         }
     }
 

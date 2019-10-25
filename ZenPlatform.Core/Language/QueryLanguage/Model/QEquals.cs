@@ -1,4 +1,6 @@
-namespace ZenPlatform.Core.Language.QueryLanguage.ZqlModel
+using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
+
+namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
     public class QEquals : QOperationExpression
     {
