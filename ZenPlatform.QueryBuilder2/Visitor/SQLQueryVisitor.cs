@@ -239,5 +239,55 @@ namespace ZenPlatform.QueryBuilder.Visitor
                 node.Where == null ? "" : node.Where.Accept(this)
                 );
         }
+
+        public override string VisitConditionAndNode(ConditionAndNode node)
+        {
+
+            return string.Format("({0})",
+                string.Join(" AND ", node.Nodes.Select(n => n.Accept(this)))
+                );
+        }
+
+        public override string VisitConditionOrNode(ConditionOrNode node)
+        {
+            return string.Format("({0})",
+                string.Join(" OR ", node.Nodes.Select(n => n.Accept(this)))
+                );
+        }
+
+        public override string VisitConditionNotNode(ConditionNotNode node)
+        {
+            return string.Format("NOT ({0})",
+                node.Accept(this)
+                );
+        }
+
+        public override string VisitExpressionSumNode(ExpressionSumNode node)
+        {
+            return string.Format("({0})",
+                string.Join(" + ", node.Expressions.Select(e => e.Accept(this)))
+                );
+        }
+
+        public override string VisitExpressionDiffNode(ExpressionDiffNode node)
+        {
+            return string.Format("({0})",
+                string.Join(" - ", node.Expressions.Select(e => e.Accept(this)))
+                );
+        }
+
+        public override string VisitExpressionMulNode(ExpressionMulNode node)
+        {
+            return string.Format("({0})",
+                string.Join(" * ", node.Expressions.Select(e => e.Accept(this)))
+                );
+        }
+
+        public override string VisitExpressionDevNode(ExpressionDevNode node)
+        {
+            return string.Format("({0})",
+                string.Join(" \\ ", node.Expressions.Select(e => e.Accept(this)))
+                );
+        }
     }
 }

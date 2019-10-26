@@ -620,7 +620,7 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class ExpressionSumNode : QuerySyntaxNode
+    public partial class ExpressionSumNode : ExpressionNode
     {
         public ExpressionSumNode()
         {
@@ -636,6 +636,72 @@ namespace ZenPlatform.QueryBuilder.Model
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitExpressionSumNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ExpressionDiffNode : ExpressionNode
+    {
+        public ExpressionDiffNode()
+        {
+            Expressions = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Expressions
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitExpressionDiffNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ExpressionMulNode : ExpressionNode
+    {
+        public ExpressionMulNode()
+        {
+            Expressions = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Expressions
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitExpressionMulNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ExpressionDevNode : ExpressionNode
+    {
+        public ExpressionDevNode()
+        {
+            Expressions = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Expressions
+        {
+            get;
+            set;
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitExpressionDevNode(this);
         }
     }
 }
@@ -1180,6 +1246,21 @@ namespace ZenPlatform.QueryBuilder.Visitor
         }
 
         public virtual T VisitExpressionSumNode(ExpressionSumNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitExpressionDiffNode(ExpressionDiffNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitExpressionMulNode(ExpressionMulNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitExpressionDevNode(ExpressionDevNode node)
         {
             return DefaultVisit(node);
         }
