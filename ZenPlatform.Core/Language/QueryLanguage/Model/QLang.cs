@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using dnlib.DotNet;
 using dnlib.DotNet.Writer;
 using ServiceStack;
 using ZenPlatform.Configuration.Structure;
@@ -111,10 +112,12 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public void ld_name(string name)
         {
+            //TODO: Find in scope
         }
 
         public void ld_field(string name)
         {
+            
         }
 
         #endregion
@@ -136,7 +139,6 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             }
             else if (_queryContext == QueryContext.Select)
             {
-                
             }
         }
 
