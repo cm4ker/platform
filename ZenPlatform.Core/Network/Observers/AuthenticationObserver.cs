@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.Network.States
@@ -10,10 +11,12 @@ namespace ZenPlatform.Core.Network.States
     {
         private IDisposable _unsbscriber;
         private IEnvironment _environment;
+
         public AuthenticationObserver(IEnvironment environment)
         {
             _environment = environment;
         }
+
         public bool CanObserve(Type type)
         {
             return type.Equals(typeof(RequestAuthenticationNetworkMessage));
@@ -40,7 +43,7 @@ namespace ZenPlatform.Core.Network.States
             {
                 msg.Authentication(_environment.AuthenticationManager, (u) =>
                 {
-                    ((ServerConnectionContext)context).Session = _environment.CreateSession(u);
+                    ((ServerConnectionContext) context).Session = _environment.CreateSession(u);
                     //context.State = new AuthenticatedState();
 
 
@@ -48,7 +51,6 @@ namespace ZenPlatform.Core.Network.States
                     var state = new InvokeObserver(_environment);
                     state.Subscribe(context.Connection);
                     _unsbscriber?.Dispose();
-
                 }).PipeTo(msg.Id, context.Connection.Channel);
             }
         }

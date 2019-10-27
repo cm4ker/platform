@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Mono.Cecil;
+using ZenPlatform.Compiler.Cecil.CopyFeature;
 using ZenPlatform.Compiler.Contracts;
 using AssemblyDefinition = Mono.Cecil.AssemblyDefinition;
 using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
@@ -53,6 +54,7 @@ namespace ZenPlatform.Compiler.Cecil
                 : new TypeReference(fullName.Substring(0, lastDot),
                     fullName.Substring(lastDot + 1), Assembly.MainModule, asmRef);
             var resolved = tref.Resolve();
+
             if (resolved != null)
                 return _typeCache[fullName] = _typeSystem.GetTypeFor(tref);
 
@@ -87,6 +89,15 @@ namespace ZenPlatform.Compiler.Cecil
             _typeCache.Add(tBuilder.FullName, tBuilder);
 
             return tBuilder;
+        }
+
+        public ITypeBuilder ImportWithCopy(IType type)
+        {
+            var def = ((CecilType) type).Reference;
+            ILRepack ri = new ILRepack(new RepackOptions(), new Logger<ILRepack>(new NullLoggerFactory()), _typeSystem);
+
+            var a = ri._repackImporter.CopyType(def, null);
+            return new CecilTypeBuilder(_typeSystem, this, a.Resolve());
         }
 
         public IAssembly EndBuild()

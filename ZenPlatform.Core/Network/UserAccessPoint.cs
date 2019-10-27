@@ -16,10 +16,11 @@ namespace ZenPlatform.Core.Network
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly AccessPointConfig _config;
-        private readonly IList<ITCPListener> _listeners = new List<ITCPListener>();
+        private readonly IList<INetworkListener> _listeners = new List<INetworkListener>();
 
 
-        public UserAccessPoint(ILogger<UserAccessPoint> logger, IServiceProvider serviceProvider, ISettingsStorage settingsStorage)
+        public UserAccessPoint(ILogger<UserAccessPoint> logger, IServiceProvider serviceProvider,
+            ISettingsStorage settingsStorage)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
@@ -31,24 +32,23 @@ namespace ZenPlatform.Core.Network
             //_config.Listener.Add(new ListenerConfig() { Address = "127.0.0.1:12345", Type = ListenerType.Test });
             foreach (var lisetnercfg in _config.Listener)
             {
-                ITCPListener listener = _serviceProvider.GetRequiredService<ITCPListener>();
-                TCPConnectionFactory connectionFactory = null;
+                INetworkListener listener = _serviceProvider.GetRequiredService<INetworkListener>();
+                ServerConnectionFactory connectionFactory = null;
                 switch (lisetnercfg.Type)
                 {
                     case ListenerType.User:
-                        connectionFactory = _serviceProvider.GetRequiredService<UserTCPConnectionFactory>();
+                        connectionFactory = _serviceProvider.GetRequiredService<UserConnectionFactory>();
                         break;
                     case ListenerType.Admin:
-                        connectionFactory = _serviceProvider.GetRequiredService<TCPConnectionFactory>();
+                        connectionFactory = _serviceProvider.GetRequiredService<ServerConnectionFactory>();
                         break;
                     case ListenerType.Test:
-                        connectionFactory = _serviceProvider.GetRequiredService<TCPConnectionFactory>();
+                        connectionFactory = _serviceProvider.GetRequiredService<ServerConnectionFactory>();
                         break;
                     default:
                         throw new InvalidOperationException();
-
                 }
-                
+
                 listener.Start(NetworkUtility.CreateIPEndPoint(lisetnercfg.Address), connectionFactory);
                 _listeners.Add(listener);
             }
@@ -59,6 +59,7 @@ namespace ZenPlatform.Core.Network
             foreach (var listener in _listeners)
             {
                 listener.Stop();
+                listener.Dispose();
             }
         }
     }

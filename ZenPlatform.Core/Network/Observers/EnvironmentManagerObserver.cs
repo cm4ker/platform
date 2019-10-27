@@ -8,9 +8,9 @@ namespace ZenPlatform.Core.Network.States
 {
     public class EnvironmentManagerObserver : IConnectionObserver<IConnectionContext>
     {
-        private IEnvironmentManager _environmentManager;
+        private IPlatformEnvironmentManager _environmentManager;
         private IDisposable _unsbscriber;
-        public EnvironmentManagerObserver(IEnvironmentManager environmentManager)
+        public EnvironmentManagerObserver(IPlatformEnvironmentManager environmentManager)
         {
             _environmentManager = environmentManager;
         }

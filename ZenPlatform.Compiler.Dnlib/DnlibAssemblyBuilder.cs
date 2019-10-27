@@ -34,6 +34,11 @@ namespace ZenPlatform.Compiler.Dnlib
             return new DnlibTypeBuilder(_ts, type, this);
         }
 
+        public ITypeBuilder ImportWithCopy(IType type)
+        {
+            throw new NotImplementedException();
+        }
+
         public IAssembly EndBuild()
         {
             return this;

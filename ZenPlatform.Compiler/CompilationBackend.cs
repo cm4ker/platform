@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Antlr4.Runtime;
 using Microsoft.CodeAnalysis;
@@ -68,7 +69,7 @@ namespace ZenPlatform.Compiler
 
             AstScopeRegister.Apply(module);
 
-            var prm = new GeneratorParameters(module, ab, CompilationMode.Client);
+            var prm = new GeneratorParameters(new List<CompilationUnit> {module}, ab, CompilationMode.Client);
 
             Generator g = new Generator(prm);
 
@@ -126,6 +127,11 @@ namespace ZenPlatform.Compiler
 
                 return (TypeBody) v.VisitTypeBody(p.typeBody());
             }
+        }
+
+        public static Block ParseInstructionBlock(string text)
+        {
+            throw new NotImplementedException();
         }
 
         private static ITokenStream CreateInputStream(Stream input)

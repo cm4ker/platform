@@ -4,6 +4,7 @@ using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Network;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -20,8 +21,7 @@ namespace ZenPlatform.Compiler.Generation
             var route = _ts.FindType($"{typeof(Route).Namespace}.{nameof(Route)}",
                 typeof(Route).Assembly.GetName().FullName);
 
-            var method = _bindings.ClientInvoke(new[]
-                {_bindings.Object.MakeArrayType(), function.Type.ToClrType(_asm)});
+            var method = _bindings.ClientInvoke(function.Type.ToClrType(_asm));
 
             emitter.LdLoc(client);
 

@@ -8,7 +8,7 @@ namespace ZenPlatform.Core.Network
 {
     public class ConnectionManager : IConnectionManager
     {
-        private readonly IList<TCPServerConnection> _connections = new RemovingList<TCPServerConnection>();
+        private readonly IList<Connection> _connections;
         private readonly ILogger _logger;
 
         public ConnectionManager(ILogger<ConnectionManager> logger)
@@ -16,9 +16,9 @@ namespace ZenPlatform.Core.Network
             _logger = logger;
         }
 
-        public void AddConnection(TCPServerConnection connection)
+        public void AddConnection(Connection connection)
         {
-            _connections.Add(connection);
+            _connections?.Add(connection);
         }
     }
 }

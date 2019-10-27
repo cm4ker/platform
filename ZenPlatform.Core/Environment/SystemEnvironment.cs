@@ -26,7 +26,7 @@ namespace ZenPlatform.Core.Environment
         {
         }
 
-        public override void Initialize(StartupConfig config)
+        public override void Initialize(IStartupConfig config)
         {
             base.Initialize(config);
 

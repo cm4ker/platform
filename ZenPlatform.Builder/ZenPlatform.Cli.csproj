@@ -4,10 +4,9 @@
         <AssemblyName>ZenPlatform.Cli</AssemblyName>
         <RootNamespace>ZenPlatform.Cli</RootNamespace>
         <LangVersion>default</LangVersion>
-        <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.1" />
         <PackageReference Include="Microsoft.Build" Version="15.7.179" />
         <PackageReference Include="Microsoft.Build.Framework" Version="15.7.179" />
         <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.7.179" />

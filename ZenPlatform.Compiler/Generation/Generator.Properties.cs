@@ -117,7 +117,7 @@ namespace ZenPlatform.Compiler.Generation
                 rg
                     .LdArg_0()
                     .LdArg(readerParam.ArgIndex)
-                    .Ldstr(property.MapTo)
+                    .LdStr(property.MapTo)
                     .EmitCall(readerType.FindMethod("get_Item", _bindings.String))
                     .Unbox_Any(prop.PropertyType)
                     .EmitCall(prop.Setter);
