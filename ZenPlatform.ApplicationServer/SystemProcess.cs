@@ -1,7 +1,7 @@
 ﻿////using ZenPlatform.Core;
 //using ZenPlatform.Core.Environment;
 //
-//namespace ZenPlatform.WorkProcess
+//namespace ZenPlatform.ApplicationServer
 //{
 //    /// <summary>
 //    /// Системный процесс, позволяет обновлять структуру баз данных

@@ -26,16 +26,15 @@ namespace ZenPlatform.Core.Network
                     throw new FormatException("Invalid ip-address");
                 }
             }
+
             int port;
             if (!int.TryParse(ep[ep.Length - 1], System.Globalization.NumberStyles.None,
                 System.Globalization.NumberFormatInfo.CurrentInfo, out port))
             {
                 throw new FormatException("Invalid port");
             }
+
             return new IPEndPoint(ip, port);
         }
-
-
-        
     }
 }

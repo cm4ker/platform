@@ -52,12 +52,12 @@ namespace ZenPlatform.Core.Authentication
             _dataContextManager = dataContextManager;
         }
 
-        public User Create()
+        public IPlatformUser Create()
         {
-            return new User();
+            return new PlatformUser();
         }
 
-        public void Update(User user)
+        public void Update(IPlatformUser user)
         {
             
             var cmd = _dataContextManager.GetContext().CreateCommand();
@@ -77,7 +77,7 @@ namespace ZenPlatform.Core.Authentication
             cmd.ExecuteNonQuery();
         }
 
-        public void Delete(User user)
+        public void Delete(IPlatformUser user)
         {
 
 
@@ -114,7 +114,7 @@ namespace ZenPlatform.Core.Authentication
 
             if (reader.Read())
             {
-                var user = new User
+                var user = new PlatformUser
                 {
                     Id = id,
                     Name = reader.GetString(0)
@@ -148,7 +148,7 @@ namespace ZenPlatform.Core.Authentication
 
                     if (reader.Read())
                     {
-                        var user = new User
+                        var user = new PlatformUser
                         {
                             Id = reader.GetGuid(0),
                             Name = reader.GetString(1),

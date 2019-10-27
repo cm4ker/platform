@@ -29,17 +29,44 @@ namespace ZenPlatform.Compiler.Cecil
             return rv;
         }
 
-        MethodDefinition Import(IMethod method)
+        MethodReference Import(IMethod method)
         {
-            var md = ((CecilMethodBase) method).Definition;
-            md.ReturnType = Import(md.ReturnType);
-
-            return md;
+            return Import((CecilMethodBase) method);
         }
+
+        MethodReference Import(CecilMethodBase method)
+        {
+            var def = method.Definition;
+            var r = method.Reference;
+
+            r.Name = def.Name;
+            r.HasThis = def.HasThis;
+            r.ExplicitThis = def.ExplicitThis;
+            r.CallingConvention = def.CallingConvention;
+
+            foreach (CecilParameter p in method.Parameters)
+            {
+                var parameterDef = p.ParameterDefinition;
+                
+                r.Parameters.Add(parameterDef);
+            }
+
+            r.ReturnType = Import(r.ReturnType);
+
+            return M.ImportReference(r);
+        }
+
+
+        MethodReference Import(IConstructor method)
+        {
+            return Import((CecilMethodBase) method);
+        }
+
 
         ParameterDefinition Import(IParameter p)
         {
             var cecilParam = (CecilParameter) p;
+
             cecilParam.ParameterDefinition.ParameterType = Import(cecilParam.ParameterDefinition.ParameterType);
             return cecilParam.ParameterDefinition;
         }
@@ -154,7 +181,9 @@ namespace ZenPlatform.Compiler.Cecil
             => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilMethodBase) method).Reference)));
 
         public IEmitter Emit(SreOpCode code, IConstructor ctor)
-            => Emit(Instruction.Create(Dic[code], M.ImportReference(((CecilConstructor) ctor).Definition)));
+        {
+            return Emit(Instruction.Create(Dic[code], Import(ctor)));
+        }
 
         public IEmitter Emit(SreOpCode code, string arg)
             => Emit(Instruction.Create(Dic[code], arg));

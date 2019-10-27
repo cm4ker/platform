@@ -9,6 +9,7 @@ using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Crypto;
 using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.ClientServices

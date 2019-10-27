@@ -125,5 +125,25 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         {
             return GetProperties().First(x => x.Name == name);
         }
+
+        /// <summary>
+        /// Получить список доступных комманд у типа 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        public virtual IEnumerable<XCCommand> GetCommands()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Создать новую комманду
+        /// </summary>
+        /// <returns>Возвращается новая проинициализированная комманда</returns>
+        /// <exception cref="NotSupportedException">Данная функция не поддерживается компонентом</exception>
+        public virtual XCCommand CreateCommand()
+        {
+            throw new NotSupportedException();
+        }
     }
 }

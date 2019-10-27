@@ -13,23 +13,6 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        public void Build()
-        {
-            BuildStructure();
-            BuildCode();
-        }
-
-        public void BuildStructure()
-        {
-            BuildStage0();
-            BuildStage1();
-        }
-
-        public void BuildCode()
-        {
-            BuildStage2();
-        }
-
         private Dictionary<TypeEntity, ITypeBuilder> _stage0 = new Dictionary<TypeEntity, ITypeBuilder>();
         private Dictionary<Function, IMethodBuilder> _stage1Methods = new Dictionary<Function, IMethodBuilder>();
         private Dictionary<Property, IPropertyBuilder> _stage1Properties = new Dictionary<Property, IPropertyBuilder>();
@@ -37,14 +20,47 @@ namespace ZenPlatform.Compiler.Generation
 
         private Dictionary<Constructor, IConstructorBuilder> _stage1constructors =
             new Dictionary<Constructor, IConstructorBuilder>();
+        
+        public void Build()
+        {
+            if (_mode == CompilationMode.Server)
+                _serviceScope = new ServerAssemblyServiceScope(_asm);
+
+            BuildStructure();
+            BuildCode();
+        }
+
+        public void BuildStructure()
+        {
+            foreach (var cu in _cus)
+            {
+                BuildStage0(cu);
+            }
+
+            foreach (var cu in _cus)
+            {
+                BuildStage1(cu);
+            }
+        }
+
+        public void BuildCode()
+        {
+            foreach (var cu in _cus)
+            {
+                BuildStage2(cu);
+            }
+        }
+
+
+
 
         /// <summary>
         /// Prebuilding 1 level elements - classes and modules
         /// </summary>
         /// <exception cref="Exception"></exception>
-        private void BuildStage0()
+        private void BuildStage0(CompilationUnit cu)
         {
-            foreach (var typeEntity in _cu.Entityes)
+            foreach (var typeEntity in cu.Entityes)
             {
                 switch (typeEntity)
                 {
@@ -68,9 +84,9 @@ namespace ZenPlatform.Compiler.Generation
         /// <summary>
         /// Prebuilding 2 level elements - methods, constructors, properties and fields
         /// </summary>
-        private void BuildStage1()
+        private void BuildStage1(CompilationUnit cu)
         {
-            foreach (var typeEntity in _cu.Entityes)
+            foreach (var typeEntity in cu.Entityes)
             {
                 switch (typeEntity)
                 {
@@ -78,16 +94,18 @@ namespace ZenPlatform.Compiler.Generation
 
                         var tb = _stage0[m];
 
-                        foreach (var function in m.TypeBody.Functions)
+                        foreach (var function in m.TypeBody.Functions.FilterFunc(_mode))
                         {
-                            _stage1Methods.Add(function, PrebuildFunction(function, tb, false));
+                            var mf = PrebuildFunction(function, tb, false);
+                            _stage1Methods.Add(function, mf);
+                            m.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
                         }
 
                         break;
                     case Class c:
                         var tbc = _stage0[c];
 
-                        foreach (var function in c.TypeBody.Functions)
+                        foreach (var function in c.TypeBody.Functions.FilterFunc(_mode))
                         {
                             var mf = PrebuildFunction(function, tbc, true);
                             _stage1Methods.Add(function, mf);
@@ -132,15 +150,15 @@ namespace ZenPlatform.Compiler.Generation
         /// Build, finaly, 3 level body of the methods && properties
         /// </summary>
         /// <exception cref="Exception"></exception>
-        private void BuildStage2()
+        private void BuildStage2(CompilationUnit cu)
         {
-            foreach (var typeEntity in _cu.Entityes)
+            foreach (var typeEntity in cu.Entityes)
             {
                 switch (typeEntity)
                 {
                     case Module m:
 
-                        foreach (var function in m.TypeBody.Functions)
+                        foreach (var function in m.TypeBody.Functions.FilterFunc(_mode))
                         {
                             EmitFunction(function, _stage1Methods[function]);
                         }
@@ -151,7 +169,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         EmitMappingSupport(c, tbc);
 
-                        foreach (var function in c.TypeBody.Functions)
+                        foreach (var function in c.TypeBody.Functions.FilterFunc(_mode))
                         {
                             EmitFunction(function, _stage1Methods[function]);
                         }
@@ -176,11 +194,22 @@ namespace ZenPlatform.Compiler.Generation
 
         private IMethodBuilder PrebuildFunction(Function function, ITypeBuilder tb, bool isClass)
         {
-            //На сервере никогда не может существовать клиентских процедур
-            if (((int) function.Flags & (int) _mode) == 0 && !isClass)
-            {
-                return null;
-            }
+            /* 
+             * [Client]
+             * fn A1()
+             * 
+             * [Server]
+             * fn A2()
+             * 
+             * [ServerCall]
+             * fn A3()
+             */
+
+//            //На сервере никогда не может существовать клиентских процедур
+//            if (((int) function.Flags & (int) _mode) == 0 && !isClass)
+//            {
+//                return null;
+//            }
 
             Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
 

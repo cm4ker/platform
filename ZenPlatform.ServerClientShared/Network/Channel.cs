@@ -30,7 +30,6 @@ namespace ZenPlatform.Core.Network
             _readBuffer = new byte[_bufferSize];
             _packager = packager;
             _observers = new List<IObserver<INetworkMessage>>();
-
         }
 
         private void ReceiveCallback(IAsyncResult ar)
@@ -48,13 +47,13 @@ namespace ZenPlatform.Core.Network
                     {
                         _logger.Trace(() => string.Format("From: ''; Type: '{0}'; Message: {1}",
                             message.GetType().Name, JsonConvert.SerializeObject(message)));
-        
+
                         if (message is INetworkMessage networkMessage)
                             OnNext(networkMessage);
                         else _logger.Warn("Received message is unknown type: {0}", message.GetType().Name);
                     }
-
-                } else
+                }
+                else
                 {
                     Stop();
                 }
@@ -62,7 +61,6 @@ namespace ZenPlatform.Core.Network
                 if (Running)
                 {
                     _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, new AsyncCallback(ReceiveCallback), null);
-                    
                 }
             }
             catch (Exception ex)
@@ -77,11 +75,12 @@ namespace ZenPlatform.Core.Network
         {
             if (!Running) throw new InvalidOperationException("Channel must be running.");
             if (message == null) throw new ArgumentNullException(nameof(message));
-                _logger.Trace(() => string.Format("To: ''; Type: '{0}'; Message: {1}",
-                    message.GetType().Name, JsonConvert.SerializeObject(message)));
-            
-                _stream.Write(_packager.PackMessage(message));
+            _logger.Trace(() => string.Format("To: ''; Type: '{0}'; Message: {1}",
+                message.GetType().Name, JsonConvert.SerializeObject(message)));
 
+            var bytes = _packager.PackMessage(message);
+
+            _stream.Write(bytes, 0, bytes.Length);
         }
 
         public void Start(Stream stream)
@@ -99,7 +98,6 @@ namespace ZenPlatform.Core.Network
             {
                 OnError(ex);
                 Stop();
-               
             }
         }
 

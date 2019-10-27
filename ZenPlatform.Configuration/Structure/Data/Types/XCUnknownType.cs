@@ -1,9 +1,23 @@
 namespace ZenPlatform.Configuration.Structure.Data.Types
 {
     /// <summary>
-    /// Неопределённый тип, при загрузке конфигурации сначала всё приводится к нему
+    /// РќРµРѕРїСЂРµРґРµР»С‘РЅРЅС‹Р№ С‚РёРї, РїСЂРё Р·Р°РіСЂСѓР·РєРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё СЃРЅР°С‡Р°Р»Р° РІСЃС‘ РїСЂРёРІРѕРґРёС‚СЃСЏ Рє РЅРµРјСѓ
     /// </summary>
     public class XCUnknownType : XCTypeBase
     {
+        protected override bool ShouldSerializeDescription()
+        {
+            return false;
+        }
+
+        protected override bool ShouldSerializeName()
+        {
+            return false;
+        }
+        
+        protected override bool ShouldSerializeId()
+        {
+            return false;
+        }
     }
 }

@@ -24,5 +24,13 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
             Assert.Equal(actual, script);
 
         }
+
+        public void CreateTableInterfaceTest()
+        {
+            var table = Query.Create();
+
+            table.Schema();
+            table.Column();
+        }
     }
 }

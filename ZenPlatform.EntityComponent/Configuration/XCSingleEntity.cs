@@ -16,12 +16,17 @@ namespace ZenPlatform.EntityComponent.Configuration
     [XmlRoot("SingleEntity")]
     public class XCSingleEntity : XCObjectTypeBase
     {
-        internal XCSingleEntity()
+        private List<XCCommand> _predefinedCommands;
+
+        public XCSingleEntity()
         {
             Properties = new XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty>(this);
             Properties.CollectionChanged += Properties_CollectionChanged;
-
             Modules = new XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>(this);
+            Commands = new List<XCCommand>();
+            _predefinedCommands = new List<XCCommand>();
+
+            InitPredefinedCommands();
         }
 
         private void Properties_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -67,6 +72,13 @@ namespace ZenPlatform.EntityComponent.Configuration
         [XmlArray]
         [XmlArrayItem(ElementName = "Modules", Type = typeof(XCSingleEntityModule))]
         public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; }
+
+        /// <summary>
+        /// Комманды, которые привязаны к сущности
+        /// </summary>
+        [XmlArray]
+        [XmlArrayItem(ElementName = "Commands", Type = typeof(XCCommand))]
+        public List<XCCommand> Commands { get; }
 
         /// <summary>
         /// Имя связанной таблицы документа
@@ -131,6 +143,37 @@ namespace ZenPlatform.EntityComponent.Configuration
             var prop = new XCSingleEntityProperty();
             Properties.Add(prop);
             return prop;
+        }
+
+        public override IEnumerable<XCCommand> GetCommands()
+        {
+            //Предопределенные комманды
+            foreach (var command in _predefinedCommands)
+            {
+                yield return command;
+            }
+
+            foreach (var command in Commands)
+            {
+                yield return command;
+            }
+        }
+
+        public override XCCommand CreateCommand()
+        {
+            var cmd = new XCCommand(false);
+            Commands.Add(cmd);
+            return cmd;
+        }
+
+
+        /// <summary>
+        /// Получить предопределённые комманды
+        /// </summary>
+        /// <returns></returns>
+        private void InitPredefinedCommands()
+        {
+            
         }
     }
 }

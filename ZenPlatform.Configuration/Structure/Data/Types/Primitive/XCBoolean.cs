@@ -15,7 +15,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         }
 
         public override bool IsNullable { get; set; }
+        
         public override int ColumnSize { get; set; }
+        
         public override DbType DBType
         {
             get { return DbType.Boolean; }
@@ -28,5 +30,21 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         public override int Precision { get; set; }
         public override int Scale { get; set; }
 
+
+        private bool ShouldSerializePrecision()
+        {
+            return false;
+        }
+        
+        private bool ShouldSerializeScale()
+        {
+            return false;
+        }
+        
+        
+        private bool ShouldSerializeColumnSize()
+        {
+            return false;
+        }
     }
 }

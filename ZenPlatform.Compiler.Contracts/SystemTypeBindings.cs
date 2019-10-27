@@ -2,6 +2,9 @@ using System;
 using System.Reflection;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Network;
+using ZenPlatform.Core.Network;
+using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -12,15 +15,14 @@ namespace ZenPlatform.Compiler.Contracts
     {
         private readonly ITypeSystem _ts;
 
-        private const string MSCORLIB =
-            "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
+        public string MSCORLIB { get; } = "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 
-        private const string PLATFORM_CORE 
-            = "ZenPlatform.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
-        
-        private const string PLATFORM_DATA_COMPONENT 
+        public string PLATFORM_CORE { get; } =
+            "ZenPlatform.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
+
+        public string PLATFORM_DATA_COMPONENT { get; }
             = "ZenPlatform.DataComponent, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
-        
+
         private const string SYSTEM_NAMESPACE = "System";
 
         internal SystemTypeBindings(ITypeSystem ts)
@@ -55,16 +57,28 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType DateTime => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.DateTime)}", MSCORLIB);
 
-        public IType Client => _ts.FindType<IClientInvoker>(); // _ts.FindType<Client>()
+        public IType Exception => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Exception)}", MSCORLIB);
+
+        public IType Client => _ts.FindType<IProtocolClient>(); // _ts.FindType<Client>()
+
+        public IType ServerInitializer => _ts.FindType<IServerInitializer>();
+
+        public IType InvokeService => _ts.FindType<IInvokeService>();
+
+        public IType InvokeContext => _ts.FindType<InvokeContext>();
+
+        public IType Route => _ts.FindType<Route>();
 
         public IType Session => _ts.FindType($"ZenPlatform.Core.Sessions.Session", PLATFORM_CORE);
-        
-        public IType Reference => _ts.FindType($"ZenPlatform.DataComponent.Interfaces.IReference", PLATFORM_DATA_COMPONENT);
-        
+
+        public IType Reference =>
+            _ts.FindType($"ZenPlatform.DataComponent.Interfaces.IReference", PLATFORM_DATA_COMPONENT);
+
         public IType MultiType => _ts.FindType<UnionType>();
 
         public IType UnionTypeStorage => _ts.FindType<UnionTypeStorage>();
 
+        public IType ParametricMethod => _ts.FindType<ParametricMethod>();
 
         public SystemMethods Methods { get; }
 

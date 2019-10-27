@@ -4,6 +4,7 @@ using System.Text;
 using Antlr4.Runtime;
 using Xunit;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
+using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
@@ -16,7 +17,7 @@ namespace ZenPlatform.Tests.Core
         public void ParserTest()
         {
 
-            var conf = Common.Factory.GetExampleConfigutaion();
+            var conf = Factory.CreateExampleConfiguration();
             var context = new DataQueryConstructorContext();
 
 

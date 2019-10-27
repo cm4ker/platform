@@ -74,7 +74,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public static IEmitter LdNull(this IEmitter emitter) => emitter.Emit(OpCodes.Ldnull);
 
-        public static IEmitter Ldstr(this IEmitter emitter, string arg)
+        public static IEmitter LdStr(this IEmitter emitter, string arg)
             => arg == null ? emitter.LdNull() : emitter.Emit(OpCodes.Ldstr, arg);
 
         public static IEmitter Throw(this IEmitter emitter)
@@ -154,7 +154,7 @@ namespace ZenPlatform.Compiler.Contracts
             return emitter.LdToken(method).EmitCall(conv);
         }
 
-        public static IEmitter Ldftn(this IEmitter emitter, IMethod method)
+        public static IEmitter LdFtn(this IEmitter emitter, IMethod method)
             => emitter.Emit(OpCodes.Ldftn, method);
 
         public static IEmitter Isinst(this IEmitter emitter, IType type)
@@ -214,7 +214,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter ConvR8(this IEmitter emitter) => emitter.Emit(OpCodes.Conv_R8);
         public static IEmitter ConvU2(this IEmitter emitter) => emitter.Emit(OpCodes.Conv_U2);
 
-        public static IEmitter LdStr(this IEmitter emitter, string str) => emitter.Emit(OpCodes.Ldstr, str);
+//        public static IEmitter LdStr(this IEmitter emitter, string str) => emitter.Emit(OpCodes.Ldstr, str);
 
         public static IEmitter LdcR8(this IEmitter emitter, double value) => emitter.Emit(OpCodes.Ldc_R8, value);
 
