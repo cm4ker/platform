@@ -139,28 +139,10 @@
   </Syntax>
 
   <Syntax Name="ExpressionNode" />
-  <Syntax Name="ExpressionSumNode" Base="ExpressionNode" >
+  <Syntax Name="ExpressionSumNode" >
   <Arguments>
     <List Name="Expressions" Type="ExpressionNode" />
   </Arguments>
-  </Syntax>
-
-  <Syntax Name="ExpressionDiffNode" Base="ExpressionNode" >
-    <Arguments>
-      <List Name="Expressions" Type="ExpressionNode" />
-    </Arguments>
-  </Syntax>
-
-  <Syntax Name="ExpressionMulNode" Base="ExpressionNode" >
-    <Arguments>
-      <List Name="Expressions" Type="ExpressionNode" />
-    </Arguments>
-  </Syntax>
-
-  <Syntax Name="ExpressionDevNode" Base="ExpressionNode" >
-    <Arguments>
-      <List Name="Expressions" Type="ExpressionNode" />
-    </Arguments>
   </Syntax>
 
   <Syntax Name="ConditionNode" Base="ExpressionNode"/>
