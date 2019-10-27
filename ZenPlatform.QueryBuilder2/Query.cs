@@ -1,28 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using ZenPlatform.QueryBuilder.Builders.Create;
 using ZenPlatform.QueryBuilder.Contracts;
-using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.QueryBuilder
 {
-    /*
     public static class Query
     {
         public static ICreateExpressionRoot Create()
         {
-            return new CreateExpressionRoot(new MultiNode());
+            return new CreateExpressionRoot();
         }
         public static IAlterExpressionRoot Alter()
         {
-            return new AlterExpressionRoot(new MultiNode());
+            throw new NotImplementedException();
         }
         public static IDeleteExpressionRoot Delete()
         {
-            return new DeleteExpressionRoot(new MultiNode());
+            throw new NotImplementedException();
         }
 
     }
-    */
 }
