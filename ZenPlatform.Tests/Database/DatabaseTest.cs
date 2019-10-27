@@ -4,9 +4,10 @@ using System.Data;
 using System.Text;
 using Npgsql;
 using Xunit;
+using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Data.Tools;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.Tests.Common;
+
 
 namespace ZenPlatform.Tests.Database
 {

@@ -222,7 +222,8 @@ namespace ZenPlatform.Configuration.Structure.Data
 
         public XCObjectTypeBase GetTypeByName(string typeName)
         {
-            return Types.First(x => x.Name == typeName);
+            return Types.FirstOrDefault(x => x.Name == typeName) ??
+                   throw new Exception($"Type with name {typeName} not found");
         }
     }
 
