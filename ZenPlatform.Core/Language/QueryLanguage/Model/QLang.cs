@@ -17,7 +17,19 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             return (XCComponent) this.Pop();
         }
+
+        public IQDataSource PopDataSource()
+        {
+            return (IQDataSource) this.Pop();
+        }
     }
+
+
+    public class LogicScope
+    {
+        public Dictionary<string, IQDataSource> Scope { get; set; }
+    }
+
 
     public class QLang
     {
@@ -25,6 +37,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         private InstructionContext _instructionContext = InstructionContext.None;
         private QueryContext _queryContext;
         private LogicStack _logicStack;
+        private LogicScope _scope;
 
         private enum QueryContext
         {
@@ -47,6 +60,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             _conf = conf;
             _logicStack = new LogicStack();
+            _scope = new LogicScope();
         }
 
         #region Context modifiers
@@ -112,12 +126,32 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public void ld_name(string name)
         {
-            //TODO: Find in scope
+            if (_scope.Scope.TryGetValue(name, out var source))
+            {
+                _logicStack.Push(source);
+            }
+            else
+            {
+                throw new Exception("This name not found in scope");
+            }
         }
 
         public void ld_field(string name)
         {
-            
+            if (_queryContext == QueryContext.Select)
+            {
+                var ds = _logicStack.PopDataSource();
+
+                if (ds is QObjectTable ot)
+                {
+                    var prop = ot.ObjectType.GetPropertyByName(name);
+                    _logicStack.Push(new QSourceFieldExpression(prop));
+                }
+                else if (ds is QNastedQuery nq)
+                {
+                    var prop = nq.Nasted.Select.Where(x => );
+                }
+            }
         }
 
         #endregion

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
@@ -7,26 +8,29 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// <summary>
     /// Выражение в предложении  SELECT 
     /// </summary>
-    public class QSelectExpression : LTField
+    public class QSelectExpression : QField
     {
-        public QSelectExpression(QQuery query)
+        public QSelectExpression(QExpression expression)
         {
-            Query = query;
+            Child = expression;
         }
-
-        /// <summary>
-        /// Запрос-владелец
-        /// </summary>
-        public QQuery Query { get; }
-
-        /// <summary>
-        /// Алиас выражения
-        /// </summary>
-        public string Aliase { get; set; }
 
         public override IEnumerable<XCTypeBase> GetRexpressionType()
         {
             return Child.GetRexpressionType();
         }
+    }
+
+    /// <summary>
+    /// Выражение, основанное на конечном поле данных
+    /// </summary>
+    public class QSourceFieldExpression : QField
+    {
+        public QSourceFieldExpression(XCObjectPropertyBase property)
+        {
+            Property = property;
+        }
+
+        public XCObjectPropertyBase Property { get; }
     }
 }
