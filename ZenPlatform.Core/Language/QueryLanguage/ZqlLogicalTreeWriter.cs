@@ -9,9 +9,38 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 {
     /// <summary>
     /// Построитель логического дерева запроса
+    ///
+    /// Логическое дерево запросов, обеспечивает чёткое представление о запросе в контексте метаданных
+    ///
+    /// Например. У нас есть какой-то запрос.
+    ///
+    /// SELECT
+    ///     Invoice.Id
+    /// FROM
+    ///     Documents.Invoice Invoice
+    ///
+    /// Для начала нам нужно его распарсить
+    ///
+    /// После этого нам необходимо привязать каждый распаршенный токен(CST) к контексту метаданных базы.
+    /// Это необхоидимо для того, чтобы была возможность транслировать зпрос платформы в запрос к базе SQL
+    ///
+    /// Именно этим и занимается Logical tree writer.
     /// </summary>
     public class ZqlLogicalTreeWriter
     {
+        /*
+         * Есть узлы
+         * Есть стэк который мы имеем
+         *
+         * При добавлении узла в стэк у него должны быть описаны Actions со стэком
+         *
+         * Пример
+         *     Оператор SELECT Забирает весь скоуп из стэка
+         *
+         *     Оператор CASE Забирает Сначала THEN, Потом CONDITION, Потом ELSE (Если он есть)
+         *     
+         * 
+         */
         private readonly XCRoot _conf;
         private LTQuery _result;
 
@@ -47,7 +76,6 @@ namespace ZenPlatform.Core.Language.QueryLanguage
             Select,
             OrderBy
         }
-
 
         private class State
         {
@@ -289,4 +317,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         public LTQuery Result => _result;
     }
+    
+    
+    
 }

@@ -23,6 +23,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Compiler;
+using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Language.QueryLanguage;
@@ -31,37 +32,6 @@ namespace ZenPlatform.Core.Test
 {
     public delegate void InvokeInClientServerContextDelegate(ServiceProvider clientService,
         ServiceProvider serverSerice, ClientPlatformContext clientContext);
-
-    public class ClientServerTestBase
-    {
-        public void InvokeInClientServerContext(InvokeInClientServerContextDelegate action)
-        {
-            var serverServices = Initializer.GetServerService();
-            var clientServices = Initializer.GetClientService();
-
-
-            var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
-            Assert.NotEmpty(environmentManager.GetEnvironmentList());
-
-
-            var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
-            accessPoint.Start();
-            //need check listing
-
-            var platformClient = clientServices.GetRequiredService<ClientPlatformContext>();
-            platformClient.Connect(new Settings.DatabaseConnectionSettings()
-                {Address = "127.0.0.1:12345", Database = "Library"});
-            //need check connection
-
-            platformClient.Login("admin", "admin");
-            var assembly = platformClient.LoadMainAssembly();
-            Assert.NotNull(assembly);
-
-            action(clientServices, serverServices, platformClient);
-
-            accessPoint.Stop();
-        }
-    }
 
     public class UnitTestServerClient : ClientServerTestBase
     {
@@ -141,7 +111,7 @@ namespace ZenPlatform.Core.Test
         {
             var compiller = new XCCompiller();
 
-            var root = Tests.Common.Factory.CreateExampleConfiguration();
+            var root = Factory.CreateExampleConfiguration();
 
             var _assembly2 = compiller.Build(root, CompilationMode.Server);
             var _assembly = compiller.Build(root, CompilationMode.Client);
@@ -176,7 +146,7 @@ namespace ZenPlatform.Core.Test
             var storage = new TestAssemblyStorage();
             var manager = new AssemblyManager(new XCCompiller(), storage, new SimpleConsoleLogger<AssemblyManager>());
 
-            var root = Tests.Common.Factory.CreateExampleConfiguration();
+            var root = Factory.CreateExampleConfiguration();
 
             manager.CheckConfiguration(root);
 

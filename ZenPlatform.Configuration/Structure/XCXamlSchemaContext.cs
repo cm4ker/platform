@@ -11,5 +11,6 @@ namespace ZenPlatform.Configuration.Structure
         {
             return new XCXamlMember(propertyInfo, this);
         }
+        
     }
 }

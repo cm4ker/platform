@@ -7,8 +7,9 @@ using ServiceStack.Script;
 using Xunit;
 using Xunit.Abstractions;
 using ZenPlatform.Compiler;
+using ZenPlatform.ConfigurationExample;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.Tests.Common;
+
 
 namespace ZenPlatform.Component.Tests
 {

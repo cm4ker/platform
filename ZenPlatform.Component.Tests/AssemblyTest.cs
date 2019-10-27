@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ServiceStack.Text.Pools;
 using Xunit;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Cecil;
@@ -9,10 +10,10 @@ using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.Tests.Common;
 
 
 namespace ZenPlatform.Component.Tests

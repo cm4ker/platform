@@ -80,7 +80,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Типы, описывающие поле
         /// </summary>
-        [System.ComponentModel.DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<XCTypeBase> Types => _types;
 
         /// <summary>
@@ -105,9 +105,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         private bool ShouldSerializeSerializedTypes()
         {
             _serializedTypes = GetTypes().ToList();
-            return false;
+            return true;
         }
-
+        
         /// <summary>
         /// Получить необработанные типы свойств. Вызывается во время конструирования типа при загрузке конфигурации.
         /// </summary>
@@ -139,8 +139,10 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
          *      не хитрым мапированием: Свойство, Тип -> Колонка
          */
 
-        public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName)
+        public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
+            if (string.IsNullOrEmpty(propName)) propName = this.DatabaseColumnName;
+
             var done = false;
 
             if (Types.Count == 1)

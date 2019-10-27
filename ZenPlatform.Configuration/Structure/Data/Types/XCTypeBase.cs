@@ -33,5 +33,21 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
         /// </summary>
         [XmlElement]
         public virtual string Description { get; set; }
+
+        
+        protected virtual bool ShouldSerializeName()
+        {
+            return true;
+        }
+        
+        protected virtual bool ShouldSerializeId()
+        {
+            return true;
+        }
+        
+        protected virtual bool ShouldSerializeDescription()
+        {
+            return true;
+        }
     }
 }
