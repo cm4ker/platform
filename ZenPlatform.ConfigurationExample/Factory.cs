@@ -37,6 +37,10 @@ namespace ZenPlatform.ConfigurationExample
             store.Description = "This is a store entity";
             store.Initialize();
 
+            var storeProp = invoice.CreateProperty();
+            storeProp.Name = "Store";
+            storeProp.Types.Add(store);
+
             var prop = invoice.CreateProperty();
             prop.Name = "CompositeProperty";
             prop.Types.Add(new XCBinary());

@@ -7,7 +7,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// <summary>
     /// Таблица объекта
     /// </summary>
-    public class QObjectTable : QItem, IQDataSource, IQAliased
+    public class QObjectTable : QItem, IQDataSource
     {
         public QObjectTable(XCObjectTypeBase type)
         {
@@ -18,11 +18,6 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         /// Ссылка на тип объекта
         /// </summary>
         public XCObjectTypeBase ObjectType { get; }
-
-        /// <summary>
-        /// Алиас
-        /// </summary>
-        public string Alias { get; set; }
 
         public IEnumerable<QField> GetFields()
         {

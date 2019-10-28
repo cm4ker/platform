@@ -59,5 +59,10 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             return Property.Name;
         }
+
+        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        {
+            return Property.Types;
+        }
     }
 }

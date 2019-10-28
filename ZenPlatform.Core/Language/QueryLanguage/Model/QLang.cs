@@ -101,9 +101,10 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         public void ld_type(string typeName)
         {
             var type = _logicStack.PopComponent().GetTypeByName(typeName);
-            _logicStack.Push(new QObjectTable(type));
+            var ds = new QObjectTable(type);
+            _logicStack.Push(ds);
+            _scope.ScopedDataSources.Add(ds);
         }
-
 
         /// <summary>
         /// Записать источник данных. Ссылка на него полностью получается из метаданных 
@@ -135,7 +136,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             }
             else
             {
-                throw new Exception("This name not found in scope");
+                throw new Exception($"The name :'{name}' not found in scope");
             }
         }
 
@@ -165,7 +166,9 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             if (_qContext == QueryContext.From)
             {
                 var source = _logicStack.PopDataSource();
-                _logicStack.Push(new QAliasedDataSource(source, alias));
+                var ds = new QAliasedDataSource(source, alias);
+                _logicStack.Push(ds);
+                _scope.Scope.Add(alias, ds);
             }
             else if (_qContext == QueryContext.Select)
             {
@@ -180,9 +183,9 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
                 _logicStack.Push(new BeginQueryToken());
         }
 
-        private void pop()
+        public object pop()
         {
-            _logicStack.Pop();
+            return _logicStack.Pop();
         }
 
         private void clear()
