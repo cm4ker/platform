@@ -16,7 +16,7 @@ namespace ZenPlatform.Data
         private readonly DbConnection _connection;
         private DbTransaction _activeTransaction;
         private readonly IsolationLevel _isolationLevel;
-        private SqlCompillerBase _compiller;
+        private ISqlCompiler _compiller;
         private int _tranCount;
 
         public DataContext(SqlDatabaseType compilerType, string connectionString)

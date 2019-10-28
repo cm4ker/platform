@@ -7,7 +7,7 @@ namespace ZenPlatform.QueryBuilder.Contracts
     /// </summary>
     /// <typeparam name="TNext">The interface of the next step</typeparam>
     /// <typeparam name="TNextFk">The interface of the next step after a foreign key definition</typeparam>
-    public interface IColumnOptionSyntax<TNext,TNextFk> 
+    public interface IColumnOptionSyntax<TNext> 
 
     {
         /// <summary>
@@ -94,7 +94,7 @@ namespace ZenPlatform.QueryBuilder.Contracts
         /// <param name="primaryTableName">The primary table name</param>
         /// <param name="primaryColumnName">The primary tables column name</param>
         /// <returns>The next step</returns>
-        TNextFk ForeignKey(string primaryTableName, string primaryColumnName);
+        TNext ForeignKey(string primaryTableName, string primaryColumnName);
 
         /// <summary>
         /// Specifies a foreign key
@@ -103,7 +103,7 @@ namespace ZenPlatform.QueryBuilder.Contracts
         /// <param name="primaryTableName">The primary table name</param>
         /// <param name="primaryColumnName">The primary tables column name</param>
         /// <returns>The next step</returns>
-        TNextFk ForeignKey(string foreignKeyName, string primaryTableName, string primaryColumnName);
+        TNext ForeignKey(string foreignKeyName, string primaryTableName, string primaryColumnName);
 
         /// <summary>
         /// Specifies a foreign key
@@ -113,39 +113,6 @@ namespace ZenPlatform.QueryBuilder.Contracts
         /// <param name="primaryTableName">The primary table name</param>
         /// <param name="primaryColumnName">The primary tables column name</param>
         /// <returns>The next step</returns>
-        TNextFk ForeignKey(string foreignKeyName, string primaryTableSchema, string primaryTableName, string primaryColumnName);
-
-        /// <summary>
-        /// Specifies a foreign key
-        /// </summary>
-        /// <returns>The next step</returns>
-        TNextFk ForeignKey();
-
-        /// <summary>
-        /// Specify a foreign key pointing to the current column
-        /// </summary>
-        /// <param name="foreignTableName">The foreign key table</param>
-        /// <param name="foreignColumnName">The foreign key column</param>
-        /// <returns>The next step</returns>
-        TNextFk ReferencedBy(string foreignTableName, string foreignColumnName);
-
-        /// <summary>
-        /// Specify a foreign key pointing to the current column
-        /// </summary>
-        /// <param name="foreignKeyName">The foreign key name</param>
-        /// <param name="foreignTableName">The foreign key table</param>
-        /// <param name="foreignColumnName">The foreign key column</param>
-        /// <returns>The next step</returns>
-        TNextFk ReferencedBy(string foreignKeyName, string foreignTableName, string foreignColumnName);
-
-        /// <summary>
-        /// Specify a foreign key pointing to the current column
-        /// </summary>
-        /// <param name="foreignKeyName">The foreign key name</param>
-        /// <param name="foreignTableSchema">The foreign key table schema</param>
-        /// <param name="foreignTableName">The foreign key table</param>
-        /// <param name="foreignColumnName">The foreign key column</param>
-        /// <returns>The next step</returns>
-        TNextFk ReferencedBy(string foreignKeyName, string foreignTableSchema, string foreignTableName, string foreignColumnName);
+        TNext ForeignKey(string foreignKeyName, string primaryTableSchema, string primaryTableName, string primaryColumnName);
     }
 }
