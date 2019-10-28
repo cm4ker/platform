@@ -60,12 +60,21 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         private void ChangeContext(QueryContext nContext)
         {
             if (nContext < _qContext) throw new Exception($"Can't change context {_qContext} to {nContext}");
+
+            if (_qContext == QueryContext.From)
+                m_from_close();
+
             _qContext = nContext;
         }
 
         public void m_from()
         {
             ChangeContext(QueryContext.From);
+        }
+
+        public void m_from_close()
+        {
+            _logicStack.Push(new QFrom(_logicStack.PopItems<QFromItem>(), _logicStack.PopDataSource()));
         }
 
         public void m_select()
@@ -186,6 +195,16 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         public object pop()
         {
             return _logicStack.Pop();
+        }
+
+        public void and()
+        {
+            _logicStack.Push(new QAnd(_logicStack.PopExpression(), _logicStack.PopExpression()));
+        }
+
+        public void eq()
+        {
+            _logicStack.Push(new QEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
         private void clear()
