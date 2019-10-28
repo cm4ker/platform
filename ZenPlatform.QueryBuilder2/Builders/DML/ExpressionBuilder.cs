@@ -71,7 +71,7 @@ namespace ZenPlatform.QueryBuilder.Builders
         public void Not(Action<ExpressionBuilder> builder)
         {
             var expressionNode = new ConditionNotNode();
-            
+
 
             ExpressionBuilder b = new ExpressionBuilder();
 
@@ -81,7 +81,7 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         }
 
-        public void Equal(Action<ExpressionBuilder> left, Action<ExpressionBuilder> reight)
+        public void Equal(Action<ExpressionBuilder> left, Action<ExpressionBuilder> right)
         {
             var expressionNode = new ConditionEqualNode();
 
@@ -90,9 +90,9 @@ namespace ZenPlatform.QueryBuilder.Builders
             left(leftbuilder);
             expressionNode.Left = leftbuilder.Expression;
 
-            var reightBuilder = new ExpressionBuilder();
-            left(reightBuilder);
-            expressionNode.Reight = reightBuilder.Expression;
+            var rightBuilder = new ExpressionBuilder();
+            right(rightBuilder);
+            expressionNode.Right = rightBuilder.Expression;
 
 
             _expressionNode = expressionNode;
@@ -101,7 +101,7 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         public void Equal(string fieldName, object value)
         {
-            Equal(left => left.Field(fieldName), reight => reight.Const(value));
+            Equal(left => left.Field(fieldName), right => right.Const(value));
         }
 
         public void Const(object constant)
@@ -117,6 +117,159 @@ namespace ZenPlatform.QueryBuilder.Builders
             expressionNode.Field = fieldName;
             if (!string.IsNullOrEmpty(tableName))
                 expressionNode.Table = new Table() { Value = tableName };
+            _expressionNode = expressionNode;
+        }
+
+        public void Sum(params ExpressionNode[] exp)
+        {
+            var expressionNode = new ExpressionSumNode();
+            expressionNode.Expressions.AddRange(exp);
+            _expressionNode = expressionNode;
+        }
+
+
+        public void Sum(params Action<ExpressionBuilder>[] builders)
+        {
+            Sum(builders.Select(b =>
+            {
+
+                ExpressionBuilder builder = new ExpressionBuilder();
+
+                b(builder);
+
+                return builder.Expression;
+            }).ToArray());
+        }
+
+
+        public void Sum(string fieldNameLeft, string fieldNameRight)
+        {
+            Sum(e => e.Field(fieldNameLeft), e => e.Field(fieldNameRight));
+        }
+
+        public void Sum(string fieldNameLeft, object valueRight)
+        {
+            Sum(e => e.Field(fieldNameLeft), e => e.Const(valueRight));
+        }
+
+
+        public void Diff(params ExpressionNode[] exp)
+        {
+            var expressionNode = new ExpressionDiffNode();
+            expressionNode.Expressions.AddRange(exp);
+            _expressionNode = expressionNode;
+        }
+
+
+        public void Diff(params Action<ExpressionBuilder>[] builders)
+        {
+            Diff(builders.Select(b =>
+            {
+
+                ExpressionBuilder builder = new ExpressionBuilder();
+
+                b(builder);
+
+                return builder.Expression;
+            }).ToArray());
+        }
+
+
+
+
+        public void Diff(string fieldNameLeft, string fieldNameRight)
+        {
+            Diff(e => e.Field(fieldNameLeft), e => e.Field(fieldNameRight));
+        }
+
+        public void Diff(string fieldNameLeft, object valueRight)
+        {
+            Diff(e => e.Field(fieldNameLeft), e => e.Const(valueRight));
+        }
+
+        public void Dev(params ExpressionNode[] exp)
+        {
+            var expressionNode = new ExpressionDevNode();
+            expressionNode.Expressions.AddRange(exp);
+            _expressionNode = expressionNode;
+        }
+
+
+        public void Dev(params Action<ExpressionBuilder>[] builders)
+        {
+            Dev(builders.Select(b =>
+            {
+
+                ExpressionBuilder builder = new ExpressionBuilder();
+
+                b(builder);
+
+                return builder.Expression;
+            }).ToArray());
+        }
+
+
+        public void Dev(string fieldNameLeft, string fieldNameRight)
+        {
+            Dev(e => e.Field(fieldNameLeft), e => e.Field(fieldNameRight));
+        }
+
+        public void Dev(string fieldNameLeft, object valueRight)
+        {
+            Dev(e => e.Field(fieldNameLeft), e => e.Const(valueRight));
+        }
+
+        public void Mul(params ExpressionNode[] exp)
+        {
+            var expressionNode = new ExpressionMulNode();
+            expressionNode.Expressions.AddRange(exp);
+            _expressionNode = expressionNode;
+        }
+
+
+        public void Mul(params Action<ExpressionBuilder>[] builders)
+        {
+            Mul(builders.Select(b =>
+            {
+
+                ExpressionBuilder builder = new ExpressionBuilder();
+
+                b(builder);
+
+                return builder.Expression;
+            }).ToArray());
+        }
+
+
+        public void Mul(string fieldNameLeft, string fieldNameRight)
+        {
+            Mul(e => e.Field(fieldNameLeft), e => e.Field(fieldNameRight));
+        }
+
+        public void Mul(string fieldNameLeft, object valueRight)
+        {
+            Mul(e => e.Field(fieldNameLeft), e => e.Const(valueRight));
+        }
+
+        public void AggregateSum(Action<ExpressionBuilder> action)
+        {
+            ExpressionBuilder builder = new ExpressionBuilder();
+
+            action(builder);
+
+            var expressionNode = new AggregateSumNode();
+            expressionNode.Node = builder.Expression;
+            _expressionNode = expressionNode;
+        }
+
+        public void AggregateCount(Action<ExpressionBuilder> action)
+        {
+            ExpressionBuilder builder = new ExpressionBuilder();
+
+            action(builder);
+
+            var expressionNode = new AggregateCountNode();
+            expressionNode.Node = builder.Expression;
             _expressionNode = expressionNode;
         }
 
