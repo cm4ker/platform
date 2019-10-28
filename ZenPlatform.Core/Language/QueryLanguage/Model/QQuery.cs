@@ -45,4 +45,8 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         /// </summary>
         public List<QExpression> OrderBy { get; set; }
     }
+
+    public class QFrom
+    {
+    }
 }

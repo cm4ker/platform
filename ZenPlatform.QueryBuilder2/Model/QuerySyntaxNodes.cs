@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.QueryBuilder.Contracts;
+using ZenPlatform.QueryBuilder.DML.From;
+using FromNode = ZenPlatform.QueryBuilder.Model.FromNode;
+using JoinNode = ZenPlatform.QueryBuilder.Model.JoinNode;
 
 namespace ZenPlatform.QueryBuilder.Model
 {

@@ -19,6 +19,28 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             return Child.GetRexpressionType();
         }
+
+        public override string GetName()
+        {
+            if (Child is QField ase) return ase.GetName();
+            return base.GetName();
+        }
+    }
+
+    public class QAliasedSelectExpression : QField
+    {
+        public QAliasedSelectExpression(QExpression child, string alias)
+        {
+            Alias = alias;
+            Child = child;
+        }
+
+        public string Alias { get; }
+
+        public override string GetName()
+        {
+            return Alias;
+        }
     }
 
     /// <summary>
@@ -32,5 +54,10 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         }
 
         public XCObjectPropertyBase Property { get; }
+
+        public override string GetName()
+        {
+            return Property.Name;
+        }
     }
 }

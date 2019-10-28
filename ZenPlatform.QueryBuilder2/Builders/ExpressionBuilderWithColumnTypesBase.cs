@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ZenPlatform.QueryBuilder.Common.Columns;
 using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.QueryBuilder.Builders

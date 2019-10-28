@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Common.Columns;
+using ZenPlatform.QueryBuilder.Common.Table;
 using ZenPlatform.QueryBuilder.Contracts;
+using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.QueryBuilder.Builders.Create

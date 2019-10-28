@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
@@ -22,5 +23,13 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         /// Алиас
         /// </summary>
         public string Alias { get; set; }
+
+        public IEnumerable<QField> GetFields()
+        {
+            foreach (var prop in ObjectType.GetProperties())
+            {
+                yield return new QSourceFieldExpression(prop);
+            }
+        }
     }
 }
