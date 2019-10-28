@@ -33,10 +33,19 @@ namespace ZenPlatform.SyntaxGenerator.SQL
            var accept =
                     (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                         $"public abstract T Accept<T>(QueryVisitorBase<T> visitor);");
-
-
            members.Add(accept);
 
+            /*
+            var compare =
+                (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
+                    "public bool Compare(QuerySyntaxNode node1, QuerySyntaxNode node2){}");
+
+
+            compare = compare.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"if (node1==null && node2==null) return true; if (node1==null && node2!=null) return false; if (node1!=null && node2==null) return false; return node1.Equals(node2);"));
+
+            members.Add(compare);
+            */
 
 
             var cls = SyntaxFactory.ClassDeclaration($"{name}")
@@ -48,6 +57,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
 
+            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
             return ns.AddMembers(cls);
         }
@@ -143,6 +153,9 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             //var argForConstructor = new List<SyntaxArgument>();
 
+            
+            var cond = new List<string>();
+            var hash = new List<string>();
 
             foreach (var argument in syntax.Arguments)
             {
@@ -153,6 +166,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                         SyntaxFactory.ParseStatement($"{argument.Name} = new {argument.Type}();"));
                     
                 }
+                /*
                 else if (argument.IsPrimetive() && !argument.Null)
                 {
                     //argForConstructor.Add(argument);
@@ -175,6 +189,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
 
                 }
+                */
 
                 members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
                                 argument.Name).AddModifiers(publicToken)
@@ -184,24 +199,61 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                                 .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                                     .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
 
-                /*
-                members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
-                        argument.Name.ToUpCase()).AddModifiers(publicToken)
-                    .WithAccessorList(SyntaxFactory.AccessorList()
-                        .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                                .AddBodyStatements(SyntaxFactory.ParseStatement($"return _{argument.Name.ToCamelCase()};")))
-                        .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                            .AddBodyStatements(SyntaxFactory.ParseStatement($"ReplaceOrAttach(_{argument.Name.ToCamelCase()}, value);"))
-                            .AddBodyStatements(SyntaxFactory.ParseStatement($"\r\n_{argument.Name.ToCamelCase()} = value;")))));
-
-                members.Add(SyntaxFactory.FieldDeclaration(SyntaxFactory.
-                        VariableDeclaration(SyntaxFactory.ParseTypeName(argument.Type)).
-                        AddVariables(SyntaxFactory.VariableDeclarator($"_{argument.Name.ToCamelCase()}"))
-                        ).WithModifiers(SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))));
-                */
-                // constructor = constructor.WithInitializer(initializer);
+                if (argument is SyntaxArgumentList)
+                {
+                    hash.Add($"{argument.Name}.Sum(i => i.GetHashCode())");
+                    cond.Add($"SequenceEqual(this.{argument.Name},node.{argument.Name})");
+                }
+                else if (argument.IsPrimetive())
+                {
+                    hash.Add($"({argument.Name}.GetHashCode())");
+                    cond.Add($"(this.{argument.Name} == node.{argument.Name})");
+                }
+                else if (argument.Type=="object")
+                {
+                    hash.Add($"({argument.Name} == null ? 0: {argument.Name}.GetHashCode())");
+                    cond.Add($"(this.{argument.Name}.Equals(node.{argument.Name}))");
+                }
+                else
+                {
+                    hash.Add($"({argument.Name} == null ? 0: {argument.Name}.GetHashCode())");
+                    cond.Add($"Compare(this.{argument.Name}, node.{argument.Name})");
+                }
+                
             }
-            //constructors.Add(syntax.Name, argForConstructor);
+            if (cond.Count > 0)
+            {
+                var equlse =
+                    (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
+                        $"public override bool Equals(object obj){{}}");
+                equlse = equlse.AddBodyStatements(
+                        SyntaxFactory.ParseStatement($"var node = ({syntax.Name})obj;\nreturn ({string.Join(" && ", cond)});"));
+                members.Add(equlse);
+
+                var getHash =
+                (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
+                    "public override int GetHashCode(){}");
+
+
+                getHash = getHash.AddBodyStatements(
+                        SyntaxFactory.ParseStatement($"return {string.Join(" ^ ", hash)};"));
+
+
+                members.Add(getHash);
+            } else
+            {
+                var getHash =
+                (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
+                    "public override int GetHashCode(){}");
+
+
+                getHash = getHash.AddBodyStatements(
+                        SyntaxFactory.ParseStatement($"return base.GetHashCode();"));
+
+
+                members.Add(getHash);
+            }
+
             var visitor =
                 (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                     "public override T Accept<T>(QueryVisitorBase<T> visitor){}");
@@ -209,8 +261,9 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             visitor = visitor.AddBodyStatements(
                     SyntaxFactory.ParseStatement($"return visitor.Visit{syntax.Name}(this);"));
-
             members.Add(visitor);
+
+            
 
             var cls = SyntaxFactory.ClassDeclaration(syntax.Name)
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
@@ -243,7 +296,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                 var unit = SyntaxFactory.CompilationUnit()
                     .AddUsings(
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Text")),
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Linq")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.QueryBuilder.Model")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.QueryBuilder.Visitor")),
@@ -319,7 +372,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
         public bool IsPrimetive()
         {
-            return new string[] { "int", "string", "float", "bool" }.Contains(Type);
+            return new string[] { "int", "string", "float", "bool", "JoinType", "SystemMethods", "OrderDirection" }.Contains(Type);
         }
         public bool IsNeedInitialize()
         {

@@ -7,23 +7,22 @@ using ZenPlatform.QueryBuilder.Model;
 namespace ZenPlatform.QueryBuilder.Builders
 {
 
-    public class Query: IExpression
+    public class DDLQuery: IExpression
     {
-        public static Query New()
+        public static DDLQuery New()
         {
-            return new Query();
+            return new DDLQuery();
         }
-
 
         public QuerySyntaxNode Expression => _expression;
         private Expression _expression = new Expression();
+
         public CreateBuilder Create()
         {
             var builder = new CreateBuilder();
             _expression.Nodes.Add(builder.Expression);
             return builder;
         }
-
 
         public AlterBuilder Alter()
         {
@@ -45,7 +44,32 @@ namespace ZenPlatform.QueryBuilder.Builders
             _expression.Nodes.Add(builder.Expression);
             return builder;
         }
+
+
     }
+
+
+    public class Query : IExpression
+    {
+        public QuerySyntaxNode Expression => _expression;
+        private Expression _expression = new Expression();
+
+        public static Query New()
+        {
+            return new Query();
+        }
+
+        public SelectBuilder Select()
+        {
+            SelectNode selectNode = new SelectNode();
+            _expression.Nodes.Add(selectNode);
+
+            return new SelectBuilder(selectNode);
+
+
+        }
+    }
+
     public class CreateBuilder: IExpression
     {
         public QuerySyntaxNode Expression => _expression;

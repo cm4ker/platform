@@ -67,19 +67,19 @@ namespace ZenPlatform.EntityComponent.Migrations
         }
 
 
-        public void DropTable(string tableName, Query query)
+        public void DropTable(string tableName, DDLQuery query)
         {
             query.Delete().Table(tableName);
 
         }
 
-        public void CopyTable(string tableSource, string tableDestination, Query query)
+        public void CopyTable(string tableSource, string tableDestination, DDLQuery query)
         {
             query.Copy().Table(tableSource).ToTable(tableDestination);
             
         }
 
-        public void MoveData(XCSingleEntity old, XCSingleEntity actual, Query query)
+        public void MoveData(XCSingleEntity old, XCSingleEntity actual, DDLQuery query)
         {
             var props = old.Properties
                     .FullJoin(
@@ -108,7 +108,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             }
         }
 
-        private SqlNode CreateTable(XCSingleEntity entity,Query query, string tableName = null)
+        private SqlNode CreateTable(XCSingleEntity entity, DDLQuery query, string tableName = null)
         {
 
             if (string.IsNullOrEmpty(tableName)) tableName = entity.RelTableName;
