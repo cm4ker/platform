@@ -6,12 +6,12 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// <summary>
     /// Заппрос
     /// </summary>
-    public class QQuery : LTItem
+    public class QQuery : QItem
     {
-        public QQuery()
+        public QQuery(QFrom from, List<QSelectExpression> select)
         {
-            Select = new List<QSelectExpression>();
-            From = new List<IQDataSource>();
+            From = from;
+            Select = select;
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         /// <summary>
         /// Список выбранных таблиц
         /// </summary>
-        public List<IQDataSource> From { get; set; }
+        public QFrom From { get; set; }
 
         /// <summary>
         /// Список наложенной фильтрации
@@ -44,9 +44,5 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         /// Список полей сортировки
         /// </summary>
         public List<QExpression> OrderBy { get; set; }
-    }
-
-    public class QFrom
-    {
     }
 }

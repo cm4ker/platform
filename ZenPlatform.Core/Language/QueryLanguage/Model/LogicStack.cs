@@ -24,5 +24,26 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             return (QExpression) this.Pop();
         }
+
+        /// <summary>
+        /// Получить непрерывную последовательность элементов одного типа
+        /// </summary>
+        /// <typeparam name="T">Тип элементов</typeparam>
+        /// <returns>Коллекция элементов</returns>
+        public List<T> PopItems<T>()
+        {
+            var result = new List<T>();
+            while (true)
+            {
+                if (Peek() is T item)
+                {
+                    result.Add(item);
+                    Pop();
+                }
+                else break;
+            }
+
+            return result;
+        }
     }
 }
