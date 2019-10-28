@@ -20,18 +20,20 @@ using ZenPlatform.QueryBuilder.DML.OrderBy;
 using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.QueryBuilder.DML.Update;
 using ZenPlatform.QueryBuilder.DML.Where;
+using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.Shared;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.QueryBuilder
 {
-    public abstract class SqlCompillerBase
+    public abstract class SqlCompillerBase: ISqlCompiler
     {
-        public static SqlCompillerBase FormEnum(SqlDatabaseType databaseType)
+        public static ISqlCompiler FormEnum(SqlDatabaseType databaseType)
         {
             switch (databaseType)
             {
-                case SqlDatabaseType.SqlServer: return new SqlServerCompiller();
+                //case SqlDatabaseType.SqlServer: return new SqlServerCompiller();
+                case SqlDatabaseType.SqlServer: return new HybridSQLCompiler(new SQLQueryVisitor(), new SqlServerCompiller());
                 case SqlDatabaseType.Postgres: return new PostgresCompiller();
             }
 

@@ -29,7 +29,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                 .WithBody(SyntaxFactory.Block())
                 .WithModifiers(SyntaxTokenList.Create(publicToken));
 
-
+            
            var accept =
                     (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                         $"public abstract T Accept<T>(QueryVisitorBase<T> visitor);");
@@ -41,7 +41,8 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             var cls = SyntaxFactory.ClassDeclaration($"{name}")
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
-               // .AddMembers(constructor)
+               .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
+                    .SimpleBaseType(SyntaxFactory.ParseTypeName("ZenPlatform.QueryBuilder.Common.SqlNode"))))
                 .AddMembers(members.ToArray());
 
 
