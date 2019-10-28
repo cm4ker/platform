@@ -5,48 +5,41 @@ using dnlib.DotNet;
 using dnlib.DotNet.Writer;
 using ServiceStack;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
-    public class LogicStack : Stack<object>
-    {
-        public XCComponent PopComponent()
-        {
-            return (XCComponent) this.Pop();
-        }
-
-        public IQDataSource PopDataSource()
-        {
-            return (IQDataSource) this.Pop();
-        }
-    }
-
-
     public class LogicScope
     {
+        public LogicScope()
+        {
+            Scope = new Dictionary<string, IQDataSource>();
+            ScopedDataSources = new List<IQDataSource>();
+        }
+
         public Dictionary<string, IQDataSource> Scope { get; set; }
+
+        public List<IQDataSource> ScopedDataSources { get; set; }
     }
 
 
     public class QLang
     {
         private readonly XCRoot _conf;
-        private InstructionContext _instructionContext = InstructionContext.None;
-        private QueryContext _queryContext;
+        private InstructionContext _iContext = InstructionContext.None;
+        private QueryContext _qContext;
         private LogicStack _logicStack;
         private LogicScope _scope;
 
         private enum QueryContext
         {
-            None,
-            Select,
-            From,
-            GroupBy,
-            Having,
-            Where
+            None = 0,
+            From = 1,
+            GroupBy = 2,
+            Having = 3,
+            Where = 4,
+            Select = 5,
         }
 
         private enum InstructionContext
@@ -54,7 +47,6 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             None,
             Component
         }
-
 
         public QLang(XCRoot conf)
         {
@@ -65,29 +57,35 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         #region Context modifiers
 
+        private void ChangeContext(QueryContext nContext)
+        {
+            if (nContext < _qContext) throw new Exception($"Can't change context {_qContext} to {nContext}");
+            _qContext = nContext;
+        }
+
         public void m_from()
         {
-            _queryContext = QueryContext.From;
+            ChangeContext(QueryContext.From);
         }
 
         public void m_select()
         {
-            _queryContext = QueryContext.Select;
+            ChangeContext(QueryContext.Select);
         }
 
         public void m_where()
         {
-            _queryContext = QueryContext.Where;
+            ChangeContext(QueryContext.Where);
         }
 
         public void m_group_by()
         {
-            _queryContext = QueryContext.GroupBy;
+            ChangeContext(QueryContext.GroupBy);
         }
 
         public void m_having()
         {
-            _queryContext = QueryContext.Having;
+            ChangeContext(QueryContext.Having);
         }
 
         #endregion
@@ -124,6 +122,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             }
         }
 
+        public void ld_source_context()
+        {
+            _logicStack.Push(new QCombinedDataSource(_scope.ScopedDataSources));
+        }
+
         public void ld_name(string name)
         {
             if (_scope.Scope.TryGetValue(name, out var source))
@@ -138,47 +141,42 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public void ld_field(string name)
         {
-            if (_queryContext == QueryContext.Select)
-            {
-                var ds = _logicStack.PopDataSource();
+            var ds = _logicStack.PopDataSource();
 
-                if (ds is QObjectTable ot)
-                {
-                    var prop = ot.ObjectType.GetPropertyByName(name);
-                    _logicStack.Push(new QSourceFieldExpression(prop));
-                }
-                else if (ds is QNastedQuery nq)
-                {
-                    var prop = nq.Nasted.Select.Where(x => );
-                }
+            var result = ds.GetFields().Where(x => x.GetName() == name).ToList();
+
+            if (result.Count() > 1)
+            {
+                throw new Exception($"Ambiguous field with name {name}");
             }
+
+            if (!result.Any())
+            {
+                throw new Exception($"Field with name {name} not found");
+            }
+
+            _logicStack.Push(result.First());
         }
 
         #endregion
 
         public void alias(string alias)
         {
-            if (_queryContext == QueryContext.From)
+            if (_qContext == QueryContext.From)
             {
-                var source = _logicStack.Pop();
-
-                if (source is IQAliased a)
-                {
-                    a.Alias = alias;
-                }
-                else
-                {
-                    throw new Exception($"You can't alias this object {source}");
-                }
+                var source = _logicStack.PopDataSource();
+                _logicStack.Push(new QAliasedDataSource(source, alias));
             }
-            else if (_queryContext == QueryContext.Select)
+            else if (_qContext == QueryContext.Select)
             {
+                var expr = _logicStack.PopExpression();
+                _logicStack.Push(new QAliasedSelectExpression(expr, alias));
             }
         }
 
-        public void beign_query()
+        public void begin_query()
         {
-            if (_queryContext == QueryContext.None)
+            if (_qContext == QueryContext.None)
                 _logicStack.Push(new BeginQueryToken());
         }
 
@@ -207,7 +205,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     alias "B"
     
     ld_name "A" <-- name context
-    ld_field "Id"                                SELECT SUM(A.Count) AS SumOfCount
+    ld_field "Id"                                SELECT SUM(A.Count) AS SumOfCount, COUNT(Fld123)
                                             =>   FROM Document.Invoice A
     ld_name "B" <-- name context                    JOIN Reference.Contractors B
     ld_field "Id"                                        ON A.Id = B.Id
@@ -224,8 +222,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     ld_field "Count" 
     sum
     alias "SumOfCount" <------ depend on context automatically wrap into SelectAliasedExpr Or SourceAliasedExpr 
+    ?st_field <---save complex field on the stack
 
-    st_field <---save complex field on the stack
+    ld_source_context        // load entire context
+    ld_field "Fld123"   
+    count             
         
     st_query <--- save query on  the stack
     
