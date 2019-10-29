@@ -34,7 +34,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             return (QOn) this.Pop();
         }
-        
+
         public QQuery PopQuery()
         {
             return (QQuery) this.Pop();
@@ -48,19 +48,36 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         public List<T> PopItems<T>()
         {
             var result = new List<T>();
-            while (true)
-            {
-                if (Peek() is T item)
+
+            if (Count > 0)
+                while (true)
                 {
-                    result.Add(item);
-                    Pop();
+                    if (Peek() is T item)
+                    {
+                        result.Add(item);
+                        Pop();
+                    }
+                    else break;
                 }
-                else break;
-            }
 
             return result;
         }
 
+        /// <summary>
+        /// Пытается поднять сверху объект типа <see cref="T"/>, если сверху нет этого объекта, значит ничего не происходит
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T PopItem<T>()
+        {
+            if (Count > 0)
+                if (Peek() is T item)
+                {
+                    Pop();
+                    return item;
+                }
 
+            return default;
+        }
     }
 }

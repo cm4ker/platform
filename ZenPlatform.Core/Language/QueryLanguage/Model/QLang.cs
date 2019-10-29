@@ -38,11 +38,15 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         private void ChangeContext(QueryContext nContext)
         {
-            if (nContext < CurrentScope.QueryContext)
+            if (nContext < CurrentScope.QueryContext && nContext != QueryContext.None)
                 throw new Exception($"Can't change context {CurrentScope.QueryContext} to {nContext}");
 
             if (CurrentScope.QueryContext == QueryContext.From)
                 m_from_close();
+            else if (CurrentScope.QueryContext == QueryContext.Where)
+                m_where_close();
+            else if (CurrentScope.QueryContext == QueryContext.Select)
+                m_select_close();
 
             CurrentScope.QueryContext = nContext;
         }
@@ -55,6 +59,16 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         public void m_from_close()
         {
             _logicStack.Push(new QFrom(_logicStack.PopItems<QFromItem>(), _logicStack.PopDataSource()));
+        }
+
+        public void m_select_close()
+        {
+            _logicStack.Push(new QSelect(_logicStack.PopItems<QField>()));
+        }
+
+        public void m_where_close()
+        {
+            _logicStack.Push(new QWhere(_logicStack.PopExpression()));
         }
 
         public void m_select()
@@ -110,6 +124,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             {
                 alias(p_alias);
             }
+        }
+
+        public void ld_param(string name)
+        {
+            _logicStack.Push(new QParameter(name));
         }
 
         public void ld_source_context()
@@ -173,12 +192,21 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public void st_query()
         {
+            if (CurrentScope.QueryContext != QueryContext.Select)
+                throw new Exception(
+                    $"You can save query only in the 'Select' context. Current context {CurrentScope.QueryContext}");
+
+            ChangeContext(QueryContext.None);
+
             _scope.Pop();
 
-            _logicStack.Push(new QQuery(_logicStack.PopItems<QField>(), _logicStack.PopFrom()));
+            _logicStack.Push(new QQuery(_logicStack.PopItem<QOrderBy>(),
+                _logicStack.PopItem<QSelect>(), _logicStack.PopItem<QHaving>(),
+                _logicStack.PopItem<QGroupBy>(), _logicStack.PopItem<QWhere>(),
+                _logicStack.PopFrom()));
 
             if (_scope.Count > 0) //мы находимся во внутреннем запросе
-                _logicStack.Push(new QNastedQuery(_logicStack.PopQuery()));
+                _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));
         }
 
         public void on()

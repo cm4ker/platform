@@ -5,18 +5,18 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// <summary>
     /// Вложенный запрос
     /// </summary>
-    public class QNastedQuery : QItem, IQDataSource
+    public class QNestedQuery : QItem, IQDataSource
     {
-        public QNastedQuery(QQuery nested)
+        public QNestedQuery(QQuery nested)
         {
             Nested = nested;
         }
 
-        public QQuery Nested;
+        public QQuery Nested { get; }
 
         public IEnumerable<QField> GetFields()
         {
-            foreach (var prop in Nested.Select)
+            foreach (var prop in Nested.Select.Fields)
             {
                 yield return prop;
             }

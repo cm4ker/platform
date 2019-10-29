@@ -85,7 +85,7 @@ namespace ZenPlatform.Core.Test.QLang
             q.st_query();
             //store query on stack
 
-            Assert.True(q.top() is QNastedQuery);
+            Assert.True(q.top() is QNestedQuery);
 
             q.alias("NestedQuery");
 
@@ -108,6 +108,44 @@ namespace ZenPlatform.Core.Test.QLang
 
             q.st_query();
             var query = q.top();
+        }
+
+        [Fact]
+        public void WhereTest()
+        {
+            var q = new Language.QueryLanguage.Model.QLang(conf);
+            q.begin_query();
+
+            q.m_from();
+
+            q.ld_component("Entity");
+            q.ld_type("Invoice");
+            q.alias("A");
+
+            q.m_where();
+
+            q.ld_name("A");
+            q.ld_field("Id");
+
+            q.ld_param("P_01");
+
+            q.eq();
+            q.m_select();
+
+            Assert.True(q.top() is QWhere);
+            q.ld_name("A");
+            q.ld_field("Store");
+
+            var result = (QField) q.top();
+
+            Assert.Equal(2, result.GetRexpressionType().Count());
+
+            q.st_query();
+
+            var query = (QQuery) q.top();
+
+            Assert.NotNull(query);
+            Assert.NotNull(query.Where);
         }
     }
 }
