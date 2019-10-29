@@ -40,6 +40,8 @@ namespace ZenPlatform.ConfigurationExample
             var storeProp = invoice.CreateProperty();
             storeProp.Name = "Store";
             storeProp.Types.Add(store);
+            storeProp.Types.Add(new XCGuid());
+
 
             var prop = invoice.CreateProperty();
             prop.Name = "CompositeProperty";

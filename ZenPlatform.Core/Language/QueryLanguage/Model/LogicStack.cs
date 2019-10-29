@@ -25,6 +25,21 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             return (QExpression) this.Pop();
         }
 
+        public QFrom PopFrom()
+        {
+            return (QFrom) this.Pop();
+        }
+
+        public QOn PopOn()
+        {
+            return (QOn) this.Pop();
+        }
+        
+        public QQuery PopQuery()
+        {
+            return (QQuery) this.Pop();
+        }
+
         /// <summary>
         /// Получить непрерывную последовательность элементов одного типа
         /// </summary>
@@ -45,5 +60,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
             return result;
         }
+
+
     }
 }

@@ -8,7 +8,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// </summary>
     public class QQuery : QItem
     {
-        public QQuery(QFrom from, List<QSelectExpression> select)
+        public QQuery(List<QField> select, QFrom from)
         {
             From = from;
             Select = select;
@@ -17,7 +17,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         /// <summary>
         /// Список выбранных полей
         /// </summary>
-        public List<QSelectExpression> Select { get; set; }
+        public List<QField> Select { get; set; }
 
 
         /// <summary>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualBasic.CompilerServices;
-using Microsoft.VisualBasic.Devices;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Language.Ast.Definitions;
 

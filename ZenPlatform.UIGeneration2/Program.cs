@@ -18,8 +18,6 @@ namespace ZenPlatform.UIBuilder
     {
         public static void Main()
         {
-            DataGrid dg = new DataGrid();
-
             var result = AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .SetupWithoutStarting();
