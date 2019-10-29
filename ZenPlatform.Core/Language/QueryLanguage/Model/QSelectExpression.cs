@@ -27,12 +27,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         }
     }
 
-    public class QAliasedSelectExpression : QField
+    public class QAliasedSelectExpression : QSelectExpression
     {
-        public QAliasedSelectExpression(QExpression child, string alias)
+        public QAliasedSelectExpression(QExpression child, string alias) : base(child)
         {
             Alias = alias;
-            Child = child;
         }
 
         public string Alias { get; }

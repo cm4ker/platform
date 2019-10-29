@@ -10,37 +10,14 @@ using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
-    public class LogicScope
-    {
-        public LogicScope()
-        {
-            Scope = new Dictionary<string, IQDataSource>();
-            ScopedDataSources = new List<IQDataSource>();
-        }
-
-        public Dictionary<string, IQDataSource> Scope { get; set; }
-
-        public List<IQDataSource> ScopedDataSources { get; set; }
-    }
-
-
     public class QLang
     {
         private readonly XCRoot _conf;
         private InstructionContext _iContext = InstructionContext.None;
-        private QueryContext _qContext;
-        private LogicStack _logicStack;
-        private LogicScope _scope;
 
-        private enum QueryContext
-        {
-            None = 0,
-            From = 1,
-            GroupBy = 2,
-            Having = 3,
-            Where = 4,
-            Select = 5,
-        }
+        private LogicStack _logicStack;
+        private Stack<LogicScope> _scope;
+
 
         private enum InstructionContext
         {
@@ -52,19 +29,22 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             _conf = conf;
             _logicStack = new LogicStack();
-            _scope = new LogicScope();
+            _scope = new Stack<LogicScope>();
         }
+
+        public LogicScope CurrentScope => _scope.Peek();
 
         #region Context modifiers
 
         private void ChangeContext(QueryContext nContext)
         {
-            if (nContext < _qContext) throw new Exception($"Can't change context {_qContext} to {nContext}");
+            if (nContext < CurrentScope.QueryContext)
+                throw new Exception($"Can't change context {CurrentScope.QueryContext} to {nContext}");
 
-            if (_qContext == QueryContext.From)
+            if (CurrentScope.QueryContext == QueryContext.From)
                 m_from_close();
 
-            _qContext = nContext;
+            CurrentScope.QueryContext = nContext;
         }
 
         public void m_from()
@@ -112,7 +92,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             var type = _logicStack.PopComponent().GetTypeByName(typeName);
             var ds = new QObjectTable(type);
             _logicStack.Push(ds);
-            _scope.ScopedDataSources.Add(ds);
+            CurrentScope.ScopedDataSources.Add(ds);
         }
 
         /// <summary>
@@ -134,12 +114,12 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public void ld_source_context()
         {
-            _logicStack.Push(new QCombinedDataSource(_scope.ScopedDataSources));
+            _logicStack.Push(new QCombinedDataSource(CurrentScope.ScopedDataSources));
         }
 
         public void ld_name(string name)
         {
-            if (_scope.Scope.TryGetValue(name, out var source))
+            if (CurrentScope.Scope.TryGetValue(name, out var source))
             {
                 _logicStack.Push(source);
             }
@@ -172,14 +152,14 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public void alias(string alias)
         {
-            if (_qContext == QueryContext.From)
+            if (CurrentScope.QueryContext == QueryContext.From)
             {
                 var source = _logicStack.PopDataSource();
                 var ds = new QAliasedDataSource(source, alias);
                 _logicStack.Push(ds);
-                _scope.Scope.Add(alias, ds);
+                CurrentScope.Scope.Add(alias, ds);
             }
-            else if (_qContext == QueryContext.Select)
+            else if (CurrentScope.QueryContext == QueryContext.Select)
             {
                 var expr = _logicStack.PopExpression();
                 _logicStack.Push(new QAliasedSelectExpression(expr, alias));
@@ -188,25 +168,106 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public void begin_query()
         {
-            if (_qContext == QueryContext.None)
-                _logicStack.Push(new BeginQueryToken());
+            _scope.Push(new LogicScope());
         }
 
+        public void st_query()
+        {
+            _scope.Pop();
+
+            _logicStack.Push(new QQuery(_logicStack.PopItems<QField>(), _logicStack.PopFrom()));
+
+            if (_scope.Count > 0) //мы находимся во внутреннем запросе
+                _logicStack.Push(new QNastedQuery(_logicStack.PopQuery()));
+        }
+
+        public void on()
+        {
+            _logicStack.Push(new QOn(_logicStack.PopExpression()));
+        }
+
+        /// <summary>
+        /// Внутреннее соединение 
+        /// </summary>
+        public void join()
+        {
+            join_with_type(QJoinType.Inner);
+        }
+
+        /// <summary>
+        /// Левое соединение
+        /// </summary>
+        public void left_join()
+        {
+            join_with_type(QJoinType.Left);
+        }
+
+        /// <summary>
+        /// Правое соединение
+        /// </summary>
+        public void right_join()
+        {
+            join_with_type(QJoinType.Right);
+        }
+
+        /// <summary>
+        /// Полное соединение
+        /// </summary>
+        public void full_join()
+        {
+            join_with_type(QJoinType.Full);
+        }
+
+        private void join_with_type(QJoinType type)
+        {
+            _logicStack.Push(new QFromItem(_logicStack.PopOn(), _logicStack.PopDataSource(), type));
+        }
+
+        /// <summary>
+        /// Снять со стэка
+        /// </summary>
+        /// <returns></returns>
         public object pop()
         {
             return _logicStack.Pop();
         }
 
+        /// <summary>
+        /// Получить верхний элемент без снятия
+        /// </summary>
+        /// <returns></returns>
+        public object top()
+        {
+            return _logicStack.Peek();
+        }
+
+        /// <summary>
+        /// Логическое И
+        /// </summary>
         public void and()
         {
             _logicStack.Push(new QAnd(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
+        /// <summary>
+        /// Конкатенация
+        /// </summary>
+        public void add()
+        {
+            _logicStack.Push(new QAdd(_logicStack.PopExpression(), _logicStack.PopExpression()));
+        }
+
+        /// <summary>
+        /// Сравнить
+        /// </summary>
         public void eq()
         {
             _logicStack.Push(new QEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
+        /// <summary>
+        /// Очистить стэк
+        /// </summary>
         private void clear()
         {
             _logicStack.Clear();

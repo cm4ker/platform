@@ -7,11 +7,16 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// </summary>
     public class QNastedQuery : QItem, IQDataSource
     {
-        public QQuery Nasted;
+        public QNastedQuery(QQuery nested)
+        {
+            Nested = nested;
+        }
+
+        public QQuery Nested;
 
         public IEnumerable<QField> GetFields()
         {
-            foreach (var prop in Nasted.Select)
+            foreach (var prop in Nested.Select)
             {
                 yield return prop;
             }
