@@ -333,9 +333,10 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     ld_field "Count" 
     sum
     alias "SumOfCount" <------ depend on context automatically wrap into SelectAliasedExpr Or SourceAliasedExpr 
-    ?st_field <---save complex field on the stack
+    st_field <---save complex field on the stack
 
     ld_source_context        // load entire context
+    //This need if we use field without alias
     ld_field "Fld123"   
     count             
         

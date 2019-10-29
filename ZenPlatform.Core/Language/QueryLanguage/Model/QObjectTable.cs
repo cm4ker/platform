@@ -23,7 +23,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             foreach (var prop in ObjectType.GetProperties())
             {
-                yield return new QSourceFieldExpression(prop);
+                yield return new QSourceFieldExpression(this, prop);
             }
         }
     }
