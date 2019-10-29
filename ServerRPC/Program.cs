@@ -17,6 +17,7 @@ namespace ZenPlatform.ServerRPC
     {
         static void Main(string[] args)
         {
+            /*
             Client client = new Client(new SimpleConsoleLogger<Client>());
 
 
@@ -27,7 +28,7 @@ namespace ZenPlatform.ServerRPC
 
             clientPlatformContext.Login("admin", "admin");
 
-
+            */
             //platformClient.test();
 
 /*
