@@ -2,7 +2,6 @@ using Xunit;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.DDL.CreateTable;
 using System.Text;
-using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.QueryBuilder.Contracts;
 
@@ -26,6 +25,10 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
 
         public void CreateTableInterfaceTest()
         {
+            //var table = Query.Create();
+
+            //table.Schema();
+            //table.Column();
         }
     }
 }

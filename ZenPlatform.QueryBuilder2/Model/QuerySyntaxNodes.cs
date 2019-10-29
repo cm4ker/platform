@@ -1,5 +1,5 @@
 using System;
-using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
@@ -10,7 +10,7 @@ using JoinNode = ZenPlatform.QueryBuilder.Model.JoinNode;
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public abstract class QuerySyntaxNode : ZenPlatform.QueryBuilder.Common.SqlNode
+    public abstract partial class QuerySyntaxNode : ZenPlatform.QueryBuilder.Common.SqlNode
     {
         public abstract T Accept<T>(QueryVisitorBase<T> visitor);
     }
@@ -29,6 +29,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (Expression)obj; return  ( SequenceEqual ( this . Nodes ,  node . Nodes ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Nodes.Sum(i => i.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -52,6 +62,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (StringValue)obj; return  ( ( this . Value == node . Value ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Value.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitStringValue(this);
@@ -65,6 +85,11 @@ namespace ZenPlatform.QueryBuilder.Model
     {
         public Scheme()
         {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -82,6 +107,11 @@ namespace ZenPlatform.QueryBuilder.Model
         {
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitDatabase(this);
@@ -95,6 +125,11 @@ namespace ZenPlatform.QueryBuilder.Model
     {
         public Table()
         {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -112,6 +147,11 @@ namespace ZenPlatform.QueryBuilder.Model
         {
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitColumn(this);
@@ -125,6 +165,11 @@ namespace ZenPlatform.QueryBuilder.Model
     {
         public Constraint()
         {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -148,6 +193,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (SchemeOperation)obj; return  ( Compare ( this . Scheme ,  node . Scheme ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Scheme == null ? 0 : Scheme.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitSchemeOperation(this);
@@ -167,6 +222,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (DatabaseOperation)obj; return  ( Compare ( this . Database ,  node . Database ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Database == null ? 0 : Database.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -190,6 +255,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (TableOperation)obj; return  ( Compare ( this . Table ,  node . Table ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Table == null ? 0 : Table.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitTableOperation(this);
@@ -205,6 +280,11 @@ namespace ZenPlatform.QueryBuilder.Model
         {
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitColumnType(this);
@@ -218,6 +298,11 @@ namespace ZenPlatform.QueryBuilder.Model
     {
         public ColumnTypeInt()
         {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -265,6 +350,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (ColumnDefinition)obj; return  ( Compare ( this . Column ,  node . Column ) && Compare ( this . Type ,  node . Type ) && ( this . IsNotNull == node . IsNotNull ) && ( this . DefaultValue . Equals ( node . DefaultValue ) ) && ( this . DefaultMethod == node . DefaultMethod ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Column == null ? 0 : Column.GetHashCode()) ^ (Type == null ? 0 : Type.GetHashCode()) ^ (IsNotNull.GetHashCode()) ^ (DefaultValue == null ? 0 : DefaultValue.GetHashCode()) ^ (DefaultMethod.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitColumnDefinition(this);
@@ -284,6 +379,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (ConstraintDefinition)obj; return  ( ( this . Name == node . Name ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Name.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -308,6 +413,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (ConstraintDefinitionUnique)obj; return  ( SequenceEqual ( this . Columns ,  node . Columns ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Columns.Sum(i => i.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitConstraintDefinitionUnique(this);
@@ -328,6 +443,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (ConstraintDefinitionPrimaryKey)obj; return  ( SequenceEqual ( this . Columns ,  node . Columns ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Columns.Sum(i => i.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -365,6 +490,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (ConstraintDefinitionForeignKey)obj; return  ( SequenceEqual ( this . Columns ,  node . Columns ) && SequenceEqual ( this . ForeignColumns ,  node . ForeignColumns ) && Compare ( this . ForeignTable ,  node . ForeignTable ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Columns.Sum(i => i.GetHashCode()) ^ ForeignColumns.Sum(i => i.GetHashCode()) ^ (ForeignTable == null ? 0 : ForeignTable.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitConstraintDefinitionForeignKey(this);
@@ -394,6 +529,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (CreateTable)obj; return  ( SequenceEqual ( this . Columns ,  node . Columns ) && SequenceEqual ( this . Constraints ,  node . Constraints ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Columns.Sum(i => i.GetHashCode()) ^ Constraints.Sum(i => i.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitCreateTable(this);
@@ -407,6 +552,11 @@ namespace ZenPlatform.QueryBuilder.Model
     {
         public DropTable()
         {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -430,6 +580,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (DropColumn)obj; return  ( Compare ( this . Column ,  node . Column ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Column == null ? 0 : Column.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitDropColumn(this);
@@ -449,6 +609,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (CopyTable)obj; return  ( Compare ( this . DstTable ,  node . DstTable ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (DstTable == null ? 0 : DstTable.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -472,6 +642,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (AddColumn)obj; return  ( Compare ( this . Column ,  node . Column ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Column == null ? 0 : Column.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitAddColumn(this);
@@ -491,6 +671,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (AlterColumn)obj; return  ( Compare ( this . Column ,  node . Column ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Column == null ? 0 : Column.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -514,6 +704,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (AddConstraint)obj; return  ( Compare ( this . Constraint ,  node . Constraint ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Constraint == null ? 0 : Constraint.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitAddConstraint(this);
@@ -535,9 +735,56 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (DropConstraint)obj; return  ( Compare ( this . Constraint ,  node . Constraint ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Constraint == null ? 0 : Constraint.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitDropConstraint(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class DataSourceAliasedNode : DataSourceNode
+    {
+        public DataSourceAliasedNode()
+        {
+        }
+
+        public string Alias
+        {
+            get;
+            set;
+        }
+
+        public QuerySyntaxNode Node
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (DataSourceAliasedNode)obj; return  ( ( this . Alias == node . Alias ) && Compare ( this . Node ,  node . Node ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Alias.GetHashCode()) ^ (Node == null ? 0 : Node.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDataSourceAliasedNode(this);
         }
     }
 }
@@ -548,6 +795,11 @@ namespace ZenPlatform.QueryBuilder.Model
     {
         public DataSourceNode()
         {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -569,6 +821,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (TableSourceNode)obj; return  ( Compare ( this . Table ,  node . Table ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Table == null ? 0 : Table.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -599,6 +861,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (FromNode)obj; return  ( Compare ( this . DataSource ,  node . DataSource ) && SequenceEqual ( this . Join ,  node . Join ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (DataSource == null ? 0 : DataSource.GetHashCode()) ^ Join.Sum(i => i.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitFromNode(this);
@@ -612,6 +884,11 @@ namespace ZenPlatform.QueryBuilder.Model
     {
         public ExpressionNode()
         {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -636,6 +913,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (ExpressionSumNode)obj; return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Expressions.Sum(i => i.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitExpressionSumNode(this);
@@ -656,6 +943,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (ExpressionDiffNode)obj; return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Expressions.Sum(i => i.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -680,6 +977,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (ExpressionMulNode)obj; return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Expressions.Sum(i => i.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitExpressionMulNode(this);
@@ -702,6 +1009,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (ExpressionDevNode)obj; return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Expressions.Sum(i => i.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitExpressionDevNode(this);
@@ -715,6 +1032,11 @@ namespace ZenPlatform.QueryBuilder.Model
     {
         public ConditionNode()
         {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -739,6 +1061,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (ConditionAndNode)obj; return  ( SequenceEqual ( this . Nodes ,  node . Nodes ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Nodes.Sum(i => i.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitConditionAndNode(this);
@@ -759,6 +1091,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (ConditionOrNode)obj; return  ( SequenceEqual ( this . Nodes ,  node . Nodes ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Nodes.Sum(i => i.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -782,10 +1124,20 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
-        public ExpressionNode Reight
+        public ExpressionNode Right
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (ConditionEqualNode)obj; return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -807,6 +1159,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (ConditionNotNode)obj; return  ( Compare ( this . Node ,  node . Node ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Node == null ? 0 : Node.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -842,6 +1204,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (JoinNode)obj; return  ( Compare ( this . DataSource ,  node . DataSource ) && Compare ( this . Condition ,  node . Condition ) && ( this . JoinType == node . JoinType ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (DataSource == null ? 0 : DataSource.GetHashCode()) ^ (Condition == null ? 0 : Condition.GetHashCode()) ^ (JoinType.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitJoinNode(this);
@@ -863,6 +1235,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (WhereNode)obj; return  ( Compare ( this . Condition ,  node . Condition ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Condition == null ? 0 : Condition.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitWhereNode(this);
@@ -882,6 +1264,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (ConstNode)obj; return  ( ( this . Value . Equals ( node . Value ) ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Value == null ? 0 : Value.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -911,9 +1303,56 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (TableFieldNode)obj; return  ( ( this . Field == node . Field ) && Compare ( this . Table ,  node . Table ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Field.GetHashCode()) ^ (Table == null ? 0 : Table.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitTableFieldNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class TopNode : QuerySyntaxNode
+    {
+        public TopNode()
+        {
+        }
+
+        public int Limit
+        {
+            get;
+            set;
+        }
+
+        public int Offset
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (TopNode)obj; return  ( ( this . Limit == node . Limit ) && ( this . Offset == node . Offset ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Limit.GetHashCode()) ^ (Offset.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitTopNode(this);
         }
     }
 }
@@ -945,9 +1384,252 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public GroupByNode GroupBy
+        {
+            get;
+            set;
+        }
+
+        public OrderByNode OrderBy
+        {
+            get;
+            set;
+        }
+
+        public TopNode Top
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (SelectNode)obj; return  ( SequenceEqual ( this . Fields ,  node . Fields ) && Compare ( this . From ,  node . From ) && Compare ( this . Where ,  node . Where ) && Compare ( this . GroupBy ,  node . GroupBy ) && Compare ( this . OrderBy ,  node . OrderBy ) && Compare ( this . Top ,  node . Top ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Fields.Sum(i => i.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode()) ^ (GroupBy == null ? 0 : GroupBy.GetHashCode()) ^ (OrderBy == null ? 0 : OrderBy.GetHashCode()) ^ (Top == null ? 0 : Top.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitSelectNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class OrderByNode : QuerySyntaxNode
+    {
+        public OrderByNode()
+        {
+            Fields = new List<ExpressionNode>();
+        }
+
+        public OrderDirection Direction
+        {
+            get;
+            set;
+        }
+
+        public List<ExpressionNode> Fields
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (OrderByNode)obj; return  ( ( this . Direction == node . Direction ) && SequenceEqual ( this . Fields ,  node . Fields ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Direction.GetHashCode()) ^ Fields.Sum(i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitOrderByNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class GroupByNode : QuerySyntaxNode
+    {
+        public GroupByNode()
+        {
+            Fields = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Fields
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (GroupByNode)obj; return  ( SequenceEqual ( this . Fields ,  node . Fields ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Fields.Sum(i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitGroupByNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AggregateFunctionNode : ExpressionNode
+    {
+        public AggregateFunctionNode()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAggregateFunctionNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AggregateSumNode : AggregateFunctionNode
+    {
+        public AggregateSumNode()
+        {
+        }
+
+        public ExpressionNode Node
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (AggregateSumNode)obj; return  ( Compare ( this . Node ,  node . Node ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Node == null ? 0 : Node.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAggregateSumNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AggregateCountNode : AggregateFunctionNode
+    {
+        public AggregateCountNode()
+        {
+        }
+
+        public ExpressionNode Node
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (AggregateCountNode)obj; return  ( Compare ( this . Node ,  node . Node ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Node == null ? 0 : Node.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAggregateCountNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AllFieldNode : ExpressionNode
+    {
+        public AllFieldNode()
+        {
+        }
+
+        public Table Table
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (AllFieldNode)obj; return  ( Compare ( this . Table ,  node . Table ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Table == null ? 0 : Table.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAllFieldNode(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class FieldList : DataSourceNode
+    {
+        public FieldList()
+        {
+            Values = new List<ExpressionNode>();
+        }
+
+        public List<ExpressionNode> Values
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (FieldList)obj; return  ( SequenceEqual ( this . Values ,  node . Values ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Values.Sum(i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitFieldList(this);
         }
     }
 }
@@ -965,6 +1647,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (ValuesSourceNode)obj; return  ( SequenceEqual ( this . Values ,  node . Values ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Values.Sum(i => i.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -994,6 +1686,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (InsertNode)obj; return  ( Compare ( this . Into ,  node . Into ) && Compare ( this . DataSource ,  node . DataSource ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Into == null ? 0 : Into.GetHashCode()) ^ (DataSource == null ? 0 : DataSource.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitInsertNode(this);
@@ -1019,6 +1721,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (SetNode)obj; return  ( Compare ( this . Field ,  node . Field ) && Compare ( this . Value ,  node . Value ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Field == null ? 0 : Field.GetHashCode()) ^ (Value == null ? 0 : Value.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -1061,6 +1773,16 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public override bool Equals(object obj)
+        {
+            var node = (UpdateNode)obj; return  ( Compare ( this . Update ,  node . Update ) && SequenceEqual ( this . Set ,  node . Set ) && Compare ( this . From ,  node . From ) && Compare ( this . Where ,  node . Where ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Update == null ? 0 : Update.GetHashCode()) ^ Set.Sum(i => i.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode());
+        }
+
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitUpdateNode(this);
@@ -1086,6 +1808,16 @@ namespace ZenPlatform.QueryBuilder.Model
         {
             get;
             set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var node = (DeleteNode)obj; return  ( Compare ( this . From ,  node . From ) && Compare ( this . Where ,  node . Where ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (From == null ? 0 : From.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -1228,6 +1960,11 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return DefaultVisit(node);
         }
 
+        public virtual T VisitDataSourceAliasedNode(DataSourceAliasedNode node)
+        {
+            return DefaultVisit(node);
+        }
+
         public virtual T VisitDataSourceNode(DataSourceNode node)
         {
             return DefaultVisit(node);
@@ -1313,7 +2050,47 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return DefaultVisit(node);
         }
 
+        public virtual T VisitTopNode(TopNode node)
+        {
+            return DefaultVisit(node);
+        }
+
         public virtual T VisitSelectNode(SelectNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitOrderByNode(OrderByNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitGroupByNode(GroupByNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitAggregateFunctionNode(AggregateFunctionNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitAggregateSumNode(AggregateSumNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitAggregateCountNode(AggregateCountNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitAllFieldNode(AllFieldNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitFieldList(FieldList node)
         {
             return DefaultVisit(node);
         }

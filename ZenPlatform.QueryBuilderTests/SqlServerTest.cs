@@ -111,7 +111,7 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
 
 
 
-            var nodes = Query.New()
+            var nodes = DDLQuery.New()
                 .Create().Table("MyTable")
                 .WithColumn("Column1").AsInt32().PrimaryKey().NotNullable()
                 .WithColumn("Column2").AsInt32().WithDefaultValue(10).Unique().ForeignKey("ForeignTable", "ForeignColumn")
@@ -297,7 +297,7 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
             where.Condition = new ConditionEqualNode()
             {
                 Left = new TableFieldNode() { Field = "Field1", Table = new Table() { Value = "MyTable1" } },
-                Reight = new ConstNode() { Value = 10 }
+                Right = new ConstNode() { Value = 10 }
             };
 
             return where;
@@ -311,9 +311,22 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
 
             select.Fields.Add(new TableFieldNode() { Field = "Field1" });
             select.Fields.Add(new TableFieldNode() { Field = "Field2" });
-            select.Fields.Add(new TableFieldNode() { Field = "Field3" });
+            select.Fields.Add(new AggregateSumNode() { Node = new TableFieldNode() { Field = "Field3" } });
+
             select.From = new FromNode();
-            select.From.DataSource = new TableSourceNode() { Table = new Table() { Value = "MyTable1" } };
+            var subSelect = new SelectNode()
+            {
+                From = new FromNode()
+                {
+                    DataSource = new TableSourceNode() { Table = new Table() { Value = "MySubTable1" } }
+                }
+            };
+            subSelect.Fields.Add(new AllFieldNode());
+            select.From.DataSource = new DataSourceAliasedNode()
+            {
+                Node = subSelect,
+                Alias = "MyTable1"
+            };
             select.From.Join.Add(new JoinNode()
             {
                 JoinType = JoinType.Left,
@@ -321,7 +334,7 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 Condition = new ConditionEqualNode()
                 {
                     Left = new TableFieldNode() { Field = "Field1", Table = new Table() { Value = "MyTable1" } },
-                    Reight = new TableFieldNode()
+                    Right = new TableFieldNode()
                     {
                         Field = "Field2",
                         Table = new Table() { Value = "MyTable2" },
@@ -332,9 +345,52 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
             select.Where = GetWhere();
 
 
+            select.GroupBy = new GroupByNode();
+            select.GroupBy.Fields.Add(new TableFieldNode() { Field = "Field1" });
+            select.GroupBy.Fields.Add(new TableFieldNode() { Field = "Field2" });
 
+            select.OrderBy = new OrderByNode();
+            select.OrderBy.Fields.Add(new TableFieldNode() { Field = "Field1" });
+            select.OrderBy.Fields.Add(new TableFieldNode() { Field = "Field2" });
+            select.OrderBy.Direction = OrderDirection.DESC;
 
             return select;
+        }
+
+
+        public QuerySyntaxNode GetSelectFromBuilder()
+        {
+            var query = Query.New();
+
+
+
+            query.Select()
+                .Select(b => b
+                    .Field("Field1")
+                    .Field("Field2")
+                    .Sum(f=>f.Field("Field3"))
+                )
+                .From(s=>s.SelectAll().From("MySubTable1")).As("MyTable1")
+                .LeftJoin("Mytable2", e => e.Equal(f => f.Field("Field1", "MyTable1"), f => f.Field("Field2", "MyTable2")))
+                .Where(e => e.Equal(f => f.Field("Field1", "MyTable1"), f => f.Const(10)))
+                .GroupBy(g => g
+                    .Field("Field1")
+                    .Field("Field2"))
+                .OrderBy(o => o
+                    .Field("Field1")
+                    .Field("Field2")
+                    .Desc());
+            return query.Expression;
+        }
+
+        [Fact]
+        public void SelectBuilder()
+        {
+
+            Expression s1 = new Expression();
+             s1.Nodes.Add(GetSelect());
+            var s2 = GetSelectFromBuilder();
+            Assert.Equal(s1, s2);
         }
 
 
@@ -346,6 +402,34 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
             var result = _visitor.Visit(GetSelect());
 
             Check(result);
+
+
+
+            var query = Query.New();
+
+            query.Select()
+                .SelectField("Field1")
+                .Select(e => e.Sum("Field2", "Field2"))
+                .From("dasdasdas")
+                .Where(c =>
+                {
+                    c.And(
+                        e => e.Equal("Field1", 10), 
+                        e => e.Equal("Field2", 20), 
+                        e=>e.Equal(
+                            e=>e.Field("sdad"), 
+                            e=>e.Sum("Field1","Field2")
+                            ));
+
+                });
+
+
+            
+
+            result = _visitor.Visit(query.Expression);
+
+            Check(result);
+
         }
 
         [Fact]
