@@ -123,7 +123,15 @@
     </Arguments>
   </Syntax>
 
+  <Syntax Name="DataSourceAliasedNode" Base="DataSourceNode">
+    <Arguments>
+      <Single Name="Alias" Type="string" />
+      <Single Name="Node" Type="QuerySyntaxNode" />
+    </Arguments>
+  </Syntax>
+
   <Syntax Name="DataSourceNode"/>
+
 
   <Syntax Name="TableSourceNode" Base="DataSourceNode">
     <Arguments>
@@ -180,7 +188,7 @@
   <Syntax Name="ConditionEqualNode" Base="ConditionNode">
     <Arguments>
       <Single Name="Left" Type="ExpressionNode" />
-      <Single Name="Reight" Type="ExpressionNode" />
+      <Single Name="Right" Type="ExpressionNode" />
     </Arguments>
   </Syntax>
 
@@ -218,11 +226,61 @@
     </Arguments>
   </Syntax>
 
+  <Syntax Name="TopNode" >
+    <Arguments>
+      <Single Name="Limit" Type="int" />
+      <Single Name="Offset" Type="int" />
+    </Arguments>
+  </Syntax>
+
   <Syntax Name="SelectNode" Base="DataSourceNode">
     <Arguments>
       <List Name="Fields" Type="ExpressionNode" />
       <Single Name="From" Type="FromNode" />
       <Single Name="Where" Type="WhereNode" />
+      <Single Name="GroupBy" Type="GroupByNode" />
+      <Single Name="OrderBy" Type="OrderByNode" />
+      <Single Name="Top" Type="TopNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="OrderByNode" >
+    <Arguments>
+      <Single Name="Direction" Type="OrderDirection" />
+      <List Name="Fields" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="GroupByNode" >
+    <Arguments>
+      <List Name="Fields" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="AggregateFunctionNode" Base="ExpressionNode"/>
+
+  <Syntax Name="AggregateSumNode" Base="AggregateFunctionNode" >
+    <Arguments>
+      <Single Name="Node" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="AggregateCountNode" Base="AggregateFunctionNode" >
+    <Arguments>
+      <Single Name="Node" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="AllFieldNode" Base="ExpressionNode" >
+    <Arguments>
+      <Single Name="Table" Type="Table" />
+    </Arguments>
+  </Syntax>
+  
+
+  <Syntax Name="FieldList" Base="DataSourceNode">
+    <Arguments>
+      <List Name="Values" Type="ExpressionNode" />
     </Arguments>
   </Syntax>
 

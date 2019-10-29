@@ -27,10 +27,10 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
 
         public void CreateTableInterfaceTest()
         {
-            var table = Query.Create();
+            //var table = Query.Create();
 
-            table.Schema();
-            table.Column();
+            //table.Schema();
+            //table.Column();
         }
     }
 }
