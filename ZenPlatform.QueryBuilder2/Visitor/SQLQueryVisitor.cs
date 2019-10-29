@@ -157,7 +157,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
         {
             return string.Format("({0} = {1})",
                     node.Left.Accept(this),
-                    node.Reight.Accept(this)
+                    node.Right.Accept(this)
                 );
         }
 
@@ -191,10 +191,13 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSelectNode(SelectNode node)
         {
-            return string.Format("SELECT {0}\n{1}{2}",
+            return string.Format("SELECT {5}{0}\n{1}{2}{3}{4}",
                 string.Join(",\n", node.Fields.Select(f => f.Accept(this))),
                 node.From == null ? "" : node.From.Accept(this),
-                node.Where == null ? "" : node.Where.Accept(this)
+                node.Where == null ? "" : node.Where.Accept(this),
+                node.GroupBy == null ? "" : node.GroupBy.Accept(this),
+                node.OrderBy == null ? "" : node.OrderBy.Accept(this),
+                node.Top == null ? "" : node.OrderBy.Accept(this)
             );
 
         }
@@ -288,6 +291,53 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("({0})",
                 string.Join(" \\ ", node.Expressions.Select(e => e.Accept(this)))
                 );
+        }
+
+        public override string VisitDataSourceAliasedNode(DataSourceAliasedNode node)
+        {
+            
+            return string.Format("({0}) as {1}", node.Node.Accept(this), node.Alias);
+        }
+
+        public override string VisitOrderByNode(OrderByNode node)
+        {
+            return string.Format("ORDER BY {0}{1}\n",
+                string.Join(", ", node.Fields.Select(f => f.Accept(this))),
+                node.Direction == OrderDirection.DESC ? " DESC" : ""
+                ) ;
+        }
+
+        public override string VisitGroupByNode(GroupByNode node)
+        {
+            return string.Format("GROUP BY {0}\n",
+                string.Join(", ", node.Fields.Select(f => f.Accept(this)))
+                );
+        }
+
+        public override string VisitAggregateSumNode(AggregateSumNode node)
+        {
+            return $"sum({node.Node.Accept(this)})";
+        }
+
+        public override string VisitAggregateCountNode(AggregateCountNode node)
+        {
+            return $"count({node.Node.Accept(this)})";
+        }
+
+        public override string VisitAllFieldNode(AllFieldNode node)
+        {
+            return string.Format("{0}*",
+                node.Table == null ? "" : $"{node.Table.Accept(this)}.") ;
+        }
+
+        public override string VisitFieldList(FieldList node)
+        {
+            return string.Join(", ", node.Values.Select(e => e.Accept(this)));
+        }
+
+        public override string VisitTopNode(TopNode node)
+        {
+            return $"top {node.Limit}\n";
         }
     }
 }
