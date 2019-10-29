@@ -23,4 +23,14 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             yield break;
         }
     }
+
+    public class QParameter : QExpression
+    {
+        public string Name { get; }
+
+        public QParameter(string name)
+        {
+            Name = name;
+        }
+    }
 }
