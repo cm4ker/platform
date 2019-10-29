@@ -63,6 +63,9 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             From = from;
             Select = select;
             Where = where;
+            OrderBy = orderBy;
+            Having = having;
+            GroupBy = groupBy;
         }
 
         /// <summary>
@@ -84,16 +87,16 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         /// <summary>
         /// Список сгруппировнных данных
         /// </summary>
-        public List<QExpression> GroupBy { get; }
+        public QGroupBy GroupBy { get; }
 
         /// <summary>
         /// Список наложенной фильтрации на группы
         /// </summary>
-        public QExpression Having { get; }
+        public QHaving Having { get; }
 
         /// <summary>
         /// Список полей сортировки
         /// </summary>
-        public List<QExpression> OrderBy { get; }
+        public QOrderBy OrderBy { get; }
     }
 }
