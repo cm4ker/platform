@@ -15,6 +15,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         public QuerySyntaxNode Build(QQuery query)
         {
+            
             return null;
         }
     }
