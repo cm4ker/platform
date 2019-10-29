@@ -10,14 +10,13 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// </summary>
     public class QSelectExpression : QField
     {
-        public QSelectExpression(QExpression expression)
+        public QSelectExpression(QExpression expression) : base(expression)
         {
-            Child = expression;
         }
 
         public override IEnumerable<XCTypeBase> GetRexpressionType()
         {
-            return Child.GetRexpressionType();
+            return ((QExpression) Child).GetRexpressionType();
         }
 
         public override string GetName()
@@ -47,7 +46,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// </summary>
     public class QSourceFieldExpression : QField
     {
-        public QSourceFieldExpression(XCObjectPropertyBase property)
+        public QSourceFieldExpression(QObjectTable parent, XCObjectPropertyBase property) : base(parent)
         {
             Property = property;
         }

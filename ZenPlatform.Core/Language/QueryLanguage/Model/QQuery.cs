@@ -1,58 +1,7 @@
-using System.Collections.Generic;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
-    public class QWhere
-    {
-        public QExpression Expression { get; }
-
-        public QWhere(QExpression expression)
-        {
-            Expression = expression;
-        }
-    }
-
-    public class QGroupBy
-    {
-        public List<QExpression> Expressions { get; }
-
-        public QGroupBy(List<QExpression> expressions)
-        {
-            Expressions = expressions;
-        }
-    }
-
-    public class QHaving
-    {
-        public QExpression Expression { get; }
-
-        public QHaving(QExpression expression)
-        {
-            Expression = expression;
-        }
-    }
-
-    public class QOrderBy
-    {
-        public List<QExpression> Expressions { get; }
-
-        public QOrderBy(List<QExpression> expressions)
-        {
-            Expressions = expressions;
-        }
-    }
-
-    public class QSelect
-    {
-        public List<QField> Fields { get; }
-
-        public QSelect(List<QField> fields)
-        {
-            Fields = fields;
-        }
-    }
-
     /// <summary>
     /// Заппрос
     /// </summary>
