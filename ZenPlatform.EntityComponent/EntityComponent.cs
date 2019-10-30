@@ -10,6 +10,7 @@ using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.EntityComponent.Migrations;
+using ZenPlatform.EntityComponent.QueryBuilders;
 using ZenPlatform.EntityComponent.UIGenerations;
 
 namespace ZenPlatform.EntityComponent
@@ -29,6 +30,8 @@ namespace ZenPlatform.EntityComponent
             //TODO: Вынести интерфейс генерации UI в DataComponentBase. Если мы взаимодействуем с данными, то мы должны их как-то показывать
             InterfaceGenerator = new InterfaceGenerator();
             DatabaseObjectsGenerator = new EntityDatabaseObjectGenerator();
+
+            QueryInjector = new SingleEntityQueryInjector(Component);
 
             Generator = new StagedGeneratorAst(Component);
 
