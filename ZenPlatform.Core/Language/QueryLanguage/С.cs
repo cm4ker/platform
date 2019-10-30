@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using MoreLinq.Extensions;
 using ServiceStack;
@@ -12,6 +13,8 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 {
     public class LogicToReal
     {
+        private string _context;
+
         public LogicToReal()
         {
         }
@@ -25,14 +28,15 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         private void GenerateQuery(SelectBuilder b, QQuery q)
         {
+            _context = "from";
             GenerateFrom(b, q.From);
+            _context = "select";
             GenerateSelect(b, q.Select);
         }
 
         private void GenerateSource(SelectBuilder sb, QObjectTable ot)
         {
             ot.ObjectType.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(sb, ot.ObjectType, null);
-            //TODO: Передаем управление компаненту
         }
 
         private void GenerateFrom(SelectBuilder b, QFrom from)
@@ -83,17 +87,30 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         private void GenerateField(SelectBuilder b, QField field)
         {
-            if (field is QSourceFieldExpression sf) GenerateSourceField(b, sf);
+            if (field is QSourceFieldExpression sf)
+            {
+                GenerateSourceField(b, sf);
+            }
             else if (field is QAliasedSelectExpression ase)
             {
-                GenerateItem(b, ase.Child);
-                b.As(ase.Alias);
+                if (ase.Child is QSourceFieldExpression f)
+                {
+                    if (_context == "select")
+                    {
+                        var schema = f.Property.GetPropertySchemas();
+
+                        foreach (var def in schema)
+                        {
+                            b.Select((SelectFieldsBuilder x) => x.Field($"{def.Name}"));
+                        }
+                    }
+                }
             }
         }
 
         private void GenerateSourceField(SelectBuilder sb, QSourceFieldExpression sf)
         {
-            if (sf.Parent is QSelect)
+            if (_context == "select")
             {
                 var schema = sf.Property.GetPropertySchemas();
 
