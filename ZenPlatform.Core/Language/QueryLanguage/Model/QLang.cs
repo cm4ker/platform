@@ -6,6 +6,7 @@ using dnlib.DotNet.Writer;
 using ServiceStack;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
@@ -63,7 +64,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public void m_select_close()
         {
-            _logicStack.Push(new QSelect(_logicStack.PopItems<QField>()));
+            _logicStack.Push(new QSelect(_logicStack.PopFields()));
         }
 
         public void m_where_close()
@@ -286,11 +287,19 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         }
 
         /// <summary>
-        /// Сравнить
+        /// Равно
         /// </summary>
         public void eq()
         {
             _logicStack.Push(new QEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
+        }
+
+        /// <summary>
+        /// Не равно
+        /// </summary>
+        public void ne()
+        {
+            _logicStack.Push(new QNotEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
         /// <summary>
@@ -299,6 +308,37 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         private void clear()
         {
             _logicStack.Clear();
+        }
+
+
+        /// <summary>
+        /// Загрузить на стэк пустой аргумент (null для языка)
+        /// </summary>
+        public void ld_empty()
+        {
+            _logicStack.Push(null);
+        }
+
+        public void @case()
+        {
+            _logicStack.Push(new QCase(_logicStack.PopItems<QCaseWhen>()));
+        }
+
+        public void case_when()
+        {
+            _logicStack.Push(new QCaseWhen(_logicStack.PopExpression(), _logicStack.PopExpression(),
+                _logicStack.PopOpExpression()));
+        }
+
+
+        public void ld_const(string str)
+        {
+            _logicStack.Push(new QConst(new XCString(), str));
+        }
+
+        public void ld_const(double number)
+        {
+            _logicStack.Push(new QConst(new XCNumeric(), number));
         }
     }
 
@@ -339,6 +379,26 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     //This need if we use field without alias
     ld_field "Fld123"   
     count             
+    
+    
+    //condition
+    ld_name "A"
+    ld_field "Count"
+    ld_const 5    
+    
+    eq
+    
+    //else
+    ld_empty
+    
+    //then
+    ld_name "A"
+    ld_field "Count"
+        
+    case_when
+    
+    case
+    
         
     st_query <--- save query on  the stack
     

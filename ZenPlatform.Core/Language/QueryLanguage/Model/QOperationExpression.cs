@@ -9,20 +9,6 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     {
         public QOperationExpression()
         {
-            Arguments = new List<QExpression>();
-        }
-
-        protected List<QExpression> Arguments { get; }
-
-        protected virtual int ParamCount => throw new NotImplementedException();
-
-        public void PushArgument(QExpression argument)
-        {
-            if (ParamCount != 0)
-                if (Arguments.Count == ParamCount)
-                    throw new Exception("Enough params today");
-
-            Arguments.Add(argument);
         }
 
         public override IEnumerable<XCTypeBase> GetRexpressionType()

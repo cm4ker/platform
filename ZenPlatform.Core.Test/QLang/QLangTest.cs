@@ -57,6 +57,56 @@ namespace ZenPlatform.Core.Test.QLang
             Assert.NotNull(query);
         }
 
+
+        [Fact]
+        public void QlangCaseTest()
+        {
+            var q = new Language.QueryLanguage.Model.QLang(conf);
+
+            q.begin_query();
+
+            q.m_from();
+
+            q.ld_component("Entity");
+            q.ld_type("Invoice");
+            q.alias("A");
+
+            q.m_select();
+
+            q.ld_name("A");
+            q.ld_field("Store");
+
+            q.ld_param("Store");
+
+            q.eq();
+            
+            q.ld_const(1);
+
+            q.ld_const("Test");
+
+            q.case_when();
+
+            q.@case();
+
+            var result = (QCase) q.top();
+
+            Assert.NotNull(result);
+            Assert.Single(result.Whens);
+            
+            Assert.NotNull(result.Whens[0]);
+            Assert.NotNull(result.Whens[0].Then);
+            Assert.NotNull(result.Whens[0].Else);
+            Assert.NotNull(result.Whens[0].Then);
+            
+            Assert.Equal(2, result.GetRexpressionType().Count());
+
+            q.st_query();
+
+            var query = (QQuery) q.top();
+
+            Assert.NotNull(query);
+        }
+
         [Fact]
         public void NastedQueryTest()
         {

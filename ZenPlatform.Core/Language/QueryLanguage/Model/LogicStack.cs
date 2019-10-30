@@ -25,6 +25,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             return (QExpression) this.Pop();
         }
 
+        public QOperationExpression PopOpExpression()
+        {
+            return (QOperationExpression) this.Pop();
+        }
+        
         public QFrom PopFrom()
         {
             return (QFrom) this.Pop();
@@ -38,6 +43,33 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         public QQuery PopQuery()
         {
             return (QQuery) this.Pop();
+        }
+
+        /// <summary>
+        /// Возвращает со стэка все поля, если попадается expression, он оборачивает его в поле и возврящает 
+        /// </summary>
+        /// <returns></returns>
+        public List<QField> PopFields()
+        {
+            var result = new List<QField>();
+
+            if (Count > 0)
+                while (true)
+                {
+                    if (Peek() is QField item)
+                    {
+                        result.Add(item);
+                        Pop();
+                    }
+                    else if (Peek() is QExpression exp)
+                    {
+                        result.Add(new QSelectExpression(exp));
+                        Pop();
+                    }
+                    else break;
+                }
+
+            return result;
         }
 
         /// <summary>
