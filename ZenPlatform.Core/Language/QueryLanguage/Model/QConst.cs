@@ -10,10 +10,14 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     {
         private readonly XCTypeBase _baseType;
 
-        public QConst(XCTypeBase baseType)
+
+        public QConst(XCTypeBase baseType, object value)
         {
+            Value = value;
             _baseType = baseType;
         }
+
+        public object Value { get; }
 
         public override IEnumerable<XCTypeBase> GetRexpressionType()
         {

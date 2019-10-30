@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using NLog.Filters;
 using ZenPlatform.Configuration.Structure.Data.Types;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
@@ -6,25 +9,47 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// <summary>
     /// Кейс
     /// </summary>
-    public class QCase : QOperationExpression
+    public class QCase : QExpression
     {
-        protected override int ParamCount => 3;
+        public QCase(IList<QCaseWhen> whens)
+        {
+            Whens = whens;
+            if (whens == null || !whens.Any()) throw new Exception("Need at least one element in the conditions");
+        }
 
-        public QExpression When => Arguments[0];
-        public QExpression Then => Arguments[1];
-        public QExpression Else => Arguments[2];
+        public IList<QCaseWhen> Whens { get; }
 
         public override IEnumerable<XCTypeBase> GetRexpressionType()
         {
-            foreach (var typeBase in Then.GetRexpressionType())
+            foreach (var when in Whens)
             {
-                yield return typeBase;
-            }
+                foreach (var typeBase in when.Then.GetRexpressionType())
+                {
+                    yield return typeBase;
+                }
 
-            foreach (var typeBase in Else.GetRexpressionType())
-            {
-                yield return typeBase;
+                foreach (var typeBase in when.Else.GetRexpressionType())
+                {
+                    yield return typeBase;
+                }
             }
         }
+    }
+
+
+    public class QCaseWhen : QItem
+    {
+        public QCaseWhen(QExpression @else, QExpression then, QOperationExpression @when)
+        {
+            When = when;
+            Then = then;
+            Else = @else;
+        }
+
+        public QOperationExpression When { get; }
+
+        public QExpression Then { get; }
+
+        public QExpression Else { get; }
     }
 }
