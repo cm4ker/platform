@@ -9,28 +9,18 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     public class QExpression : QItem
     {
         /// <summary>
-        /// Источник данных узла
+        /// Родительский узел с точки зрения SQL графа
         /// </summary>
         public QItem Parent { get; set; }
 
         /// <summary>
-        /// Выражение выборки
+        /// Дочерний узел с точки зрения SQL графа
         /// </summary>
         public QItem Child { get; set; }
 
         public virtual IEnumerable<XCTypeBase> GetRexpressionType()
         {
             yield break;
-        }
-    }
-
-    public class QParameter : QExpression
-    {
-        public string Name { get; }
-
-        public QParameter(string name)
-        {
-            Name = name;
         }
     }
 }

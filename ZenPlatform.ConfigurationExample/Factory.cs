@@ -35,13 +35,14 @@ namespace ZenPlatform.ConfigurationExample
 
             store.Name = "Store";
             store.Description = "This is a store entity";
+            store.RelTableName = "Obj_0001";
             store.Initialize();
 
             var storeProp = invoice.CreateProperty();
             storeProp.Name = "Store";
             storeProp.Types.Add(store);
             storeProp.Types.Add(new XCGuid());
-
+            storeProp.DatabaseColumnName = "Fld_0002";
 
             var prop = invoice.CreateProperty();
             prop.Name = "CompositeProperty";
@@ -54,7 +55,7 @@ namespace ZenPlatform.ConfigurationExample
             prop.DatabaseColumnName = "Fld_0001";
 
             invoice.Name = "Invoice";
-
+            invoice.RelTableName = "Obj_0002";
             invoice.Modules.Add(new XCSingleEntityModule()
             {
                 ModuleText = "public int Test(int i) { int _i = i; _i++; return _i; }",

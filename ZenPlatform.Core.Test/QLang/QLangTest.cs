@@ -2,7 +2,9 @@ using System.Linq;
 using Xunit;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
+using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.Core.Language.QueryLanguage.Model;
+using ZenPlatform.QueryBuilder.Visitor;
 
 namespace ZenPlatform.Core.Test.QLang
 {
@@ -146,6 +148,50 @@ namespace ZenPlatform.Core.Test.QLang
 
             Assert.NotNull(query);
             Assert.NotNull(query.Where);
+        }
+
+        [Fact]
+        public void Logic2RealTest()
+        {
+            var q = new Language.QueryLanguage.Model.QLang(conf);
+            q.begin_query();
+
+            q.m_from();
+
+            q.ld_component("Entity");
+            q.ld_type("Invoice");
+            q.alias("A");
+
+            q.m_where();
+
+            q.ld_name("A");
+            q.ld_field("Id");
+
+            q.ld_param("P_01");
+
+            q.eq();
+            q.m_select();
+
+            Assert.True(q.top() is QWhere);
+            q.ld_name("A");
+            q.ld_field("Store");
+            q.alias("MyStore");
+
+            var field = (QField) q.top();
+
+            Assert.Equal(2, field.GetRexpressionType().Count());
+
+            q.st_query();
+
+            var query = (QQuery) q.top();
+
+            SQLQueryVisitor _visitor = new SQLQueryVisitor();
+
+            LogicToReal l2r = new LogicToReal();
+
+            var syntaxTree = l2r.Build(query);
+
+            var result = _visitor.Visit(syntaxTree);
         }
     }
 }

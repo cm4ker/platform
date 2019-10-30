@@ -12,6 +12,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     {
         public QSelectExpression(QExpression expression) : base(expression)
         {
+            expression.Parent = this;
         }
 
         public override IEnumerable<XCTypeBase> GetRexpressionType()
@@ -31,6 +32,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         public QAliasedSelectExpression(QExpression child, string alias) : base(child)
         {
             Alias = alias;
+            child.Parent = this;
         }
 
         public string Alias { get; }
@@ -46,7 +48,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// </summary>
     public class QSourceFieldExpression : QField
     {
-        public QSourceFieldExpression(QObjectTable parent, XCObjectPropertyBase property) : base(parent)
+        public QSourceFieldExpression(QObjectTable child, XCObjectPropertyBase property) : base(child)
         {
             Property = property;
         }
