@@ -2,6 +2,25 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
     public class QAnd : QOperationExpression
     {
-        protected override int ParamCount => 0;
+        public QAnd(QExpression left, QExpression right)
+        {
+            Left = left;
+            Right = right;
+        }
+
+        public QExpression Left { get; }
+        public QExpression Right { get; }
+    }
+    
+    public class QAdd : QOperationExpression
+    {
+        public QAdd(QExpression left, QExpression right)
+        {
+            Left = left;
+            Right = right;
+        }
+
+        public QExpression Left { get; }
+        public QExpression Right { get; }
     }
 }

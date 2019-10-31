@@ -1,24 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Data.Common;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Mail;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using dnlib.DotNet;
-using dnlib.DotNet.Resources;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editing;
-using NLog.LayoutRenderers;
-using Npgsql.NameTranslation;
-using Npgsql.TypeHandlers;
-using ServiceStack;
 using ZenPlatform.Compiler;
-using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -26,8 +10,6 @@ using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Contracts;
-using ZenPlatform.Core.Language.QueryLanguage;
-using ZenPlatform.Core.Sessions;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -38,8 +20,6 @@ using BinaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.Binary
 using IType = ZenPlatform.Compiler.Contracts.IType;
 using Parameter = ZenPlatform.Language.Ast.Definitions.Functions.Parameter;
 using Property = ZenPlatform.Language.Ast.Definitions.Property;
-using PublicKey = System.Security.Cryptography.X509Certificates.PublicKey;
-using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
@@ -88,7 +68,7 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 bool propertyGenerated = false;
 
-                if (prop.DatabaseColumnName.IsNullOrEmpty())
+                if (string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
                         $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {singleEntityType.Name}. Database column is empty!");
@@ -180,7 +160,7 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 bool propertyGenerated = false;
 
-                if (prop.DatabaseColumnName.IsNullOrEmpty())
+                if (string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
                         $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {singleEntityType.Name}. Database column is empty!");

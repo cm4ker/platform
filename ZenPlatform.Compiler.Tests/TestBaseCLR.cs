@@ -79,13 +79,12 @@ namespace ZenPlatform.Compiler.Tests
 
             AstScopeRegister.Apply(cu);
 
-            var gp = new GeneratorParameters(cu, asm, CompilationMode.Server);
+            var gp = new GeneratorParameters(new List<CompilationUnit>() {cu}, asm, CompilationMode.Server);
 
             var gen = new Generator(gp);
 
 
             var asmName = $"test.bll";
-
             if (File.Exists(asmName))
                 File.Delete(asmName);
 

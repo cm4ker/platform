@@ -4,9 +4,26 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
     public class QEquals : QOperationExpression
     {
-        protected override int ParamCount => 2;
+        public QEquals(QExpression left, QExpression right)
+        {
+            Left = left;
+            Right = right;
+        }
 
-        public QExpression Left => Arguments[0];
-        public QExpression Right => Arguments[1];
+        public QExpression Left { get; }
+        public QExpression Right { get; }
+    }
+    
+    
+    public class QNotEquals : QOperationExpression
+    {
+        public QNotEquals(QExpression left, QExpression right)
+        {
+            Left = left;
+            Right = right;
+        }
+
+        public QExpression Left { get; }
+        public QExpression Right { get; }
     }
 }
