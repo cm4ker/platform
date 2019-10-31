@@ -7,12 +7,12 @@ using ZenPlatform.QueryBuilder.Model;
 namespace ZenPlatform.QueryBuilder.Builders
 {
 
-    public interface AliasedBuilder<TNext>
+    public interface IAliasedBuilder<TNext>
     {
         TNext As(string alias);
     }
 
-    public class SelectBuilder: AliasedBuilder<SelectBuilder>
+    public class SelectBuilder: IAliasedBuilder<SelectBuilder>
     {
         private SelectNode _selectNode;
 
@@ -32,9 +32,14 @@ namespace ZenPlatform.QueryBuilder.Builders
         }
 
 
-        public SelectBuilder SelectField(string fieldName)
+        public SelectBuilder SelectField(string fieldName, string alias = null)
         {
-            _selectNode.Fields.Add(new TableFieldNode() { Field = fieldName });
+            ExpressionNode field = new TableFieldNode() { Field = fieldName };
+
+            if (!string.IsNullOrEmpty(alias))
+                field = new ExpressionAliasedNode() { Alias = alias, Node = field };
+
+            _selectNode.Fields.Add(field);
             return this;
         }
 
@@ -44,11 +49,18 @@ namespace ZenPlatform.QueryBuilder.Builders
             return this;
         }
 
-        public SelectBuilder Select(Action<ExpressionBuilder> exp)
+        public SelectBuilder Select(Action<ExpressionBuilder> exp, string alias = null)
         {
             var builder = new ExpressionBuilder();
             exp(builder);
-            _selectNode.Fields.Add(builder.Expression);
+
+            ExpressionNode field = builder.Expression;
+
+            if (!string.IsNullOrEmpty(alias))
+                field = new ExpressionAliasedNode() { Alias = alias, Node = field };
+
+
+            _selectNode.Fields.Add(field);
             return this;
         }
 
@@ -59,7 +71,7 @@ namespace ZenPlatform.QueryBuilder.Builders
             return this;
         }
 
-        public AliasedBuilder<SelectBuilder> From(Action<SelectBuilder> subSelectBuilder)
+        public IAliasedBuilder<SelectBuilder> From(Action<SelectBuilder> subSelectBuilder)
         {
 
             var subSelectNode = new SelectNode();
