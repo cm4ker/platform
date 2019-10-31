@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using MoreLinq.Extensions;
-using ServiceStack;
 using ZenPlatform.Core.Language.QueryLanguage.Model;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Common;
