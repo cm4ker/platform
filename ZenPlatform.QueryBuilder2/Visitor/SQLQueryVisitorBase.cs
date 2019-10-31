@@ -5,10 +5,10 @@ using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.QueryBuilder.Visitor
 {
-    public class SQLQueryVisitor : QueryVisitorBase<string>
+    public class SQLQueryVisitorBase : QueryVisitorBase<string>
     {
 
-        public SQLQueryVisitor()
+        public SQLQueryVisitorBase()
         {
           
         }
@@ -189,19 +189,6 @@ namespace ZenPlatform.QueryBuilder.Visitor
                 );
         }
 
-        public override string VisitSelectNode(SelectNode node)
-        {
-            return string.Format("SELECT {5}{0}\n{1}{2}{3}{4}",
-                string.Join(",\n", node.Fields.Select(f => f.Accept(this))),
-                node.From == null ? "" : node.From.Accept(this),
-                node.Where == null ? "" : node.Where.Accept(this),
-                node.GroupBy == null ? "" : node.GroupBy.Accept(this),
-                node.OrderBy == null ? "" : node.OrderBy.Accept(this),
-                node.Top == null ? "" : node.OrderBy.Accept(this)
-            );
-
-        }
-
         public override string VisitValuesSourceNode(ValuesSourceNode node)
         {
             return string.Format("VALUES ({0})",
@@ -335,9 +322,9 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Join(", ", node.Values.Select(e => e.Accept(this)));
         }
 
-        public override string VisitTopNode(TopNode node)
+        public override string VisitExpressionAliasedNode(ExpressionAliasedNode node)
         {
-            return $"top {node.Limit}\n";
+            return string.Format("{0} as {1}", node.Node.Accept(this), node.Alias);
         }
     }
 }

@@ -23,17 +23,6 @@ namespace ZenPlatform.QueryBuilder
                 return _queryVisitor.Visit(q);
             else return _oldCompiler.Compile(node);
                
-            /*
-            try
-            {
-                return _queryVisitor.Visit((QuerySyntaxNode)node);
-            }
-            catch(InvalidCastException )
-            {
-                return _oldCompiler.Compile(node);
-            }
-
-            */
         }
     }
 }
