@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ServiceStack.Text.Pools;
 using Xunit;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Cecil;

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
     /// <summary>
@@ -5,6 +7,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// </summary>
     public interface IQDataSource
     {
+        IEnumerable<QField> GetFields();
     }
 
 

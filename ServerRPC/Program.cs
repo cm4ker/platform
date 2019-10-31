@@ -17,18 +17,17 @@ namespace ZenPlatform.ServerRPC
     {
         static void Main(string[] args)
         {
-            /*
-            Client client = new Client(new SimpleConsoleLogger<Client>());
+//            Client client = new Client(new SimpleConsoleLogger<Client>());
+//
+//
+//            ClientPlatformContext clientPlatformContext = new ClientPlatformContext(null, client, null);
+//
+//            clientPlatformContext.Connect(new Core.Settings.DatabaseConnectionSettings()
+//                {Address = "127.0.0.1:12345", Database = "testdb"});
+//
+//            clientPlatformContext.Login("admin", "admin");
 
 
-            ClientPlatformContext clientPlatformContext = new ClientPlatformContext(null, client, null);
-
-            clientPlatformContext.Connect(new Core.Settings.DatabaseConnectionSettings()
-                {Address = "127.0.0.1:12345", Database = "testdb"});
-
-            clientPlatformContext.Login("admin", "admin");
-
-            */
             //platformClient.test();
 
 /*

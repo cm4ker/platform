@@ -18,7 +18,7 @@ namespace ZenPlatform.Core.Language
     /// Тип - запрос. Позволяет писать запросы абстрагируясь от субд.
     /// Работает исключительно с данными платформы
     /// </summary>
-    public class Query
+    public class PlatformQuery
     {
         private readonly UserSession _session;
         private Dictionary<string, object> _parameters;
@@ -27,7 +27,7 @@ namespace ZenPlatform.Core.Language
         /// Создать на основании пользовательской сессии
         /// </summary>
         /// <param name="session"></param>
-        public Query(UserSession session)
+        public PlatformQuery(UserSession session)
         {
             _session = session;
             _parameters = new Dictionary<string, object>();
@@ -38,10 +38,9 @@ namespace ZenPlatform.Core.Language
         /// </summary>
         /// <param name="session"></param>
         /// <param name="text"></param>
-        public Query(UserSession session, string text) : this(session)
+        public PlatformQuery(UserSession session, string text) : this(session)
         {
             Text = text;
-
         }
 
         /// <summary>
@@ -67,7 +66,7 @@ namespace ZenPlatform.Core.Language
              */
 
             var sqlNode = Evaluate();
-            var dataContext = ((PlatformEnvironment)_session.Environment).DataContextManager.GetContext();
+            var dataContext = ((PlatformEnvironment) _session.Environment).DataContextManager.GetContext();
             var command = dataContext.CreateCommand(sqlNode);
 
             foreach (var parameter in _parameters)
@@ -76,6 +75,13 @@ namespace ZenPlatform.Core.Language
             }
 
             /*
+             *
+             * UPDATE:
+             * 1) Компонент действительно должен учавствовать в генерации запроса, но только для описания источника данных (для того, чтобы можно было делать виртуальные таблицы)
+             * 2) Все взаимодействие полей разруливает сама платформа, компонент обязан предоставить наружу "хорошие" данные
+             *
+             *
+             * 
              * Чтобы корректно обработать результат, нам нужно знать, что конкретно мы возвращяем. Пример:
              * У меня есть справочник, у него есть свойство составного типа ("SomethingProperty")
              *
@@ -111,6 +117,7 @@ namespace ZenPlatform.Core.Language
              *  dbo.Ref3 exp1
              *  JOIN dbo.Ref3 exp2 ON %CASEEXP1% = %CASEEXP2%
              *
+             * CASE WHEN Fld20_String = "Abc" OR Fld20_Boolean = "Abc" END
              */
 
             return new QueryDataReader(command.ExecuteReader());
@@ -136,7 +143,8 @@ namespace ZenPlatform.Core.Language
             ZSqlGrammarLexer speakLexer = new ZSqlGrammarLexer(inputStream);
             CommonTokenStream commonTokenStream = new CommonTokenStream(speakLexer);
             ZSqlGrammarParser speakParser = new ZSqlGrammarParser(commonTokenStream);
-            ZSqlGrammarVisitor visitor = new ZSqlGrammarVisitor(((PlatformEnvironment) _session.Environment).Configuration, context);
+            ZSqlGrammarVisitor visitor =
+                new ZSqlGrammarVisitor(((PlatformEnvironment) _session.Environment).Configuration, context);
 
             var result = visitor.Visit(speakParser.parse());
 

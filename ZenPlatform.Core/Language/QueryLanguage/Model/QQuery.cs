@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
@@ -6,43 +5,47 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
     /// <summary>
     /// Заппрос
     /// </summary>
-    public class QQuery : LTItem
+    public class QQuery : QItem
     {
-        public QQuery()
+        public QQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where, QFrom from)
         {
-            Select = new List<QSelectExpression>();
-            From = new List<IQDataSource>();
+            From = from;
+            Select = select;
+            Where = where;
+            OrderBy = orderBy;
+            Having = having;
+            GroupBy = groupBy;
         }
 
         /// <summary>
         /// Список выбранных полей
         /// </summary>
-        public List<QSelectExpression> Select { get; set; }
+        public QSelect Select { get; }
 
 
         /// <summary>
         /// Список выбранных таблиц
         /// </summary>
-        public List<IQDataSource> From { get; set; }
+        public QFrom From { get; }
 
         /// <summary>
         /// Список наложенной фильтрации
         /// </summary>
-        public QExpression Where { get; set; }
+        public QWhere Where { get; }
 
         /// <summary>
         /// Список сгруппировнных данных
         /// </summary>
-        public List<QExpression> GroupBy { get; set; }
+        public QGroupBy GroupBy { get; }
 
         /// <summary>
         /// Список наложенной фильтрации на группы
         /// </summary>
-        public QExpression Having { get; set; }
+        public QHaving Having { get; }
 
         /// <summary>
         /// Список полей сортировки
         /// </summary>
-        public List<QExpression> OrderBy { get; set; }
+        public QOrderBy OrderBy { get; }
     }
 }
