@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using dnlib.DotNet;
 using dnlib.DotNet.Writer;
-using ServiceStack;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -121,7 +120,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             ld_component(componentName);
             ld_type(typeName);
 
-            if (!p_alias.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(p_alias))
             {
                 alias(p_alias);
             }

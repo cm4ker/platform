@@ -12,7 +12,6 @@
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime" Version="4.6.5" />
     <PackageReference Include="NLog" Version="4.6.1" />
-    <PackageReference Include="ServiceStack.Redis.Core" Version="5.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
@@ -20,5 +19,10 @@
     <ProjectReference Include="..\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
     <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Runtime.Caching, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\ZenPlatform.Core.Test\bin\Debug\netcoreapp3.0\runtimes\win\lib\netcoreapp2.0\System.Runtime.Caching.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

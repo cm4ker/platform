@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using ServiceStack.Script;
 using Xunit;
 using Xunit.Abstractions;
 using ZenPlatform.Compiler;
