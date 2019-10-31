@@ -130,6 +130,14 @@
     </Arguments>
   </Syntax>
 
+  <Syntax Name="ExpressionAliasedNode" Base="ExpressionNode">
+    <Arguments>
+      <Single Name="Alias" Type="string" />
+      <Single Name="Node" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+  
+
   <Syntax Name="DataSourceNode"/>
 
 

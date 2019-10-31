@@ -120,7 +120,7 @@ namespace ZenPlatform.QueryBuilder.Builders
             _expressionNode = expressionNode;
         }
 
-        public void Sum(params ExpressionNode[] exp)
+        public void Add(params ExpressionNode[] exp)
         {
             var expressionNode = new ExpressionSumNode();
             expressionNode.Expressions.AddRange(exp);
@@ -128,9 +128,9 @@ namespace ZenPlatform.QueryBuilder.Builders
         }
 
 
-        public void Sum(params Action<ExpressionBuilder>[] builders)
+        public void Add(params Action<ExpressionBuilder>[] builders)
         {
-            Sum(builders.Select(b =>
+            Add(builders.Select(b =>
             {
 
                 ExpressionBuilder builder = new ExpressionBuilder();
@@ -142,14 +142,14 @@ namespace ZenPlatform.QueryBuilder.Builders
         }
 
 
-        public void Sum(string fieldNameLeft, string fieldNameRight)
+        public void Add(string fieldNameLeft, string fieldNameRight)
         {
-            Sum(e => e.Field(fieldNameLeft), e => e.Field(fieldNameRight));
+            Add(e => e.Field(fieldNameLeft), e => e.Field(fieldNameRight));
         }
 
         public void Sum(string fieldNameLeft, object valueRight)
         {
-            Sum(e => e.Field(fieldNameLeft), e => e.Const(valueRight));
+            Add(e => e.Field(fieldNameLeft), e => e.Const(valueRight));
         }
 
 
