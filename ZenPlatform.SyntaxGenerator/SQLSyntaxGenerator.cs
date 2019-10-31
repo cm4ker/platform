@@ -117,6 +117,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             cls = cls.AddModifiers( SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
 
+            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
             return ns.AddMembers(cls);
         }
@@ -201,7 +202,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
                 if (argument is SyntaxArgumentList)
                 {
-                    hash.Add($"{argument.Name}.Sum(i => i.GetHashCode())");
+                    hash.Add($"Xor({argument.Name},i => i.GetHashCode())");
                     cond.Add($"SequenceEqual(this.{argument.Name},node.{argument.Name})");
                 }
                 else if (argument.IsPrimetive())
@@ -227,7 +228,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                     (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                         $"public override bool Equals(object obj){{}}");
                 equlse = equlse.AddBodyStatements(
-                        SyntaxFactory.ParseStatement($"var node = ({syntax.Name})obj;\nreturn ({string.Join(" && ", cond)});"));
+                        SyntaxFactory.ParseStatement($"if (!this.GetType().Equals(obj.GetType())) return false;\nvar node = ({syntax.Name})obj;\nreturn ({string.Join(" && ", cond)});"));
                 members.Add(equlse);
 
                 var getHash =

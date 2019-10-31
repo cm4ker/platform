@@ -33,8 +33,8 @@ namespace ZenPlatform.QueryBuilder
             switch (databaseType)
             {
                 //case SqlDatabaseType.SqlServer: return new SqlServerCompiller();
-                case SqlDatabaseType.SqlServer: return new HybridSQLCompiler(new SQLQueryVisitor(), new SqlServerCompiller());
-                case SqlDatabaseType.Postgres: return new PostgresCompiller();
+                case SqlDatabaseType.SqlServer: return new HybridSQLCompiler(new SQLServerVisitor(), new SqlServerCompiller());
+                case SqlDatabaseType.Postgres: return new HybridSQLCompiler(new PostgreVisitor(), new PostgresCompiller());
             }
 
             throw new NotSupportedException();

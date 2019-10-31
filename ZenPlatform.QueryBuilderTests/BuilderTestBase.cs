@@ -1,69 +1,14 @@
-using Xunit;
-using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.Model;
-using System.Data;
-using ZenPlatform.Data;
-using System;
-using ZenPlatform.QueryBuilder.Visitor;
+﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using ZenPlatform.QueryBuilder.Builders;
+using ZenPlatform.QueryBuilder.Model;
 
-namespace ZenPlatform.Tests.SqlBuilder.SqlServer
+namespace ZenPlatform.QueryBuilder.Tests
 {
-    public class SqlServerTest
+    public class BuilderTestBase
     {
-        const string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-        private DataContextManager _dataContextManager;
-        private DataContext _context;
-        private SQLServerVisitor _visitor = new SQLServerVisitor();
-        public SqlServerTest()
-        {
-            _dataContextManager = new DataContextManager();
-            _dataContextManager.Initialize(SqlDatabaseType.SqlServer, connectionString);
-
-            _context = _dataContextManager.GetContext();
-            using (var cmd = _context.CreateCommand())
-            {
-
-                cmd.CommandText = "SET PARSEONLY ON";
-                cmd.ExecuteScalar();
-            }
-        }
-
-
-        private void Check(string script)
-        {
-            var context = _dataContextManager.GetContext();
-
-            using (var cmd = context.CreateCommand())
-            {
-
-                cmd.CommandText = script;
-
-                var msg = string.Empty;
-                object res = null;
-
-                try
-                {
-                    res = cmd.ExecuteScalar();
-                } catch (Exception ex)
-                {
-                    msg = ex.Message;
-                }
-
-                Assert.True(string.IsNullOrEmpty(msg), msg);
-                
-
-            }
-
-
-
-        }
-
-
-
-        [Fact]
-        public void CreateTable()
+        public CreateTable GetCreateTable()
         {
             var createTable = new CreateTable();
             createTable.Table = new Table() { Value = "MyTable" };
@@ -104,9 +49,7 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
 
 
 
-            var result = _visitor.Visit(createTable);
-
-            Check(result);
+            return createTable;
 
 
 
@@ -118,15 +61,11 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 .Expression;
 
 
-            var result2 = _visitor.Visit(nodes);
-
-            Assert.Equal(result2, result);
 
 
         }
 
-        [Fact]
-        public void AlterColumn()
+        public AlterColumn GetAlterColumn()
         {
 
             var column = new ColumnDefinition()
@@ -136,20 +75,19 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 IsNotNull = true
             };
 
-            
+
             var alterColumn = new AlterColumn()
             {
                 Table = new Table() { Value = "MyTable" },
                 Column = column
             };
-            var result = _visitor.Visit(alterColumn);
-
-            Check(result);
+            
+            return alterColumn;
 
         }
 
-        [Fact]
-        public void DeleteColumn()
+
+        public DropColumn GetDeleteColumn()
         {
             var deleteColimn = new DropColumn()
             {
@@ -157,15 +95,11 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 Table = new Table() { Value = "MyTable" }
             };
 
-            var result = _visitor.Visit(deleteColimn);
-
-            Check(result);
+            return deleteColimn;
         }
 
 
-
-        [Fact]
-        public void AddUniqueConstraintWithOutName()
+        public ConstraintDefinition GetAddUniqueConstraintWithOutName()
         {
             var constraint = new ConstraintDefinitionUnique();
             constraint.Columns.AddRange(new List<Column>() { new Column() { Value = "Column1" }, new Column() { Value = "Column2" } });
@@ -176,13 +110,10 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 Constraint = constraint
             };
 
-            var result = _visitor.Visit(addConstraint);
-
-            Check(result);
+            return constraint;
         }
 
-        [Fact]
-        public void AddUniqueConstraintWithName()
+        public ConstraintDefinition GetAddUniqueConstraintWithName()
         {
             var constraint = new ConstraintDefinitionUnique() { Name = "u_column1_column2" };
             constraint.Columns.AddRange(new List<Column>() { new Column() { Value = "Column1" }, new Column() { Value = "Column2" } });
@@ -193,13 +124,10 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 Constraint = constraint
             };
 
-            var result = _visitor.Visit(addConstraint);
-
-            Check(result);
+            return constraint;
         }
 
-        [Fact]
-        public void AddPrimaryKeyConstraintWithOutName()
+        public ConstraintDefinition GetAddPrimaryKeyConstraintWithOutName()
         {
             var constraint = new ConstraintDefinitionPrimaryKey();
             constraint.Columns.AddRange(new List<Column>() { new Column() { Value = "Column1" }, new Column() { Value = "Column2" } });
@@ -210,13 +138,10 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 Constraint = constraint
             };
 
-            var result = _visitor.Visit(addConstraint);
-
-            Check(result);
+            return constraint;
         }
 
-        [Fact]
-        public void AddPrimaryKeyConstraintWithName()
+        public ConstraintDefinition GetAddPrimaryKeyConstraintWithName()
         {
             var constraint = new ConstraintDefinitionPrimaryKey() { Name = "pk_column1_column2" };
             constraint.Columns.AddRange(new List<Column>() { new Column() { Value = "Column1" }, new Column() { Value = "Column2" } });
@@ -227,13 +152,10 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 Constraint = constraint
             };
 
-            var result = _visitor.Visit(addConstraint);
-
-            Check(result);
+            return constraint;
         }
 
-        [Fact]
-        public void AddForeignKeyConstraintWithOutName()
+        public ConstraintDefinition GetAddForeignKeyConstraintWithOutName()
         {
             var constraint = new ConstraintDefinitionForeignKey()
             {
@@ -250,18 +172,16 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 Constraint = constraint
             };
 
-            var result = _visitor.Visit(addConstraint);
-
-            Check(result);
+            return constraint;
         }
 
-        [Fact]
-        public void AddForeignKeyConstraintWithName()
+        public ConstraintDefinition GetAddForeignKeyConstraintWithName()
         {
-            var constraint = new ConstraintDefinitionForeignKey() {
+            var constraint = new ConstraintDefinitionForeignKey()
+            {
                 Name = "fk_column1_column2",
-                ForeignTable = new Table() { Value = "ForeignTable"}
-                };
+                ForeignTable = new Table() { Value = "ForeignTable" }
+            };
             constraint.Columns.AddRange(new List<Column>() { new Column() { Value = "Column1" }, new Column() { Value = "Column2" } });
             constraint.ForeignColumns.AddRange(new List<Column>() { new Column() { Value = "Column1" }, new Column() { Value = "Column2" } });
 
@@ -271,14 +191,11 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 Constraint = constraint
             };
 
-            var result = _visitor.Visit(addConstraint);
-
-            Check(result);
+            return constraint;
         }
 
 
-        [Fact]
-        public void DropConstraint()
+        public DropConstraint GetDropConstraint()
         {
             var dropConstraint = new DropConstraint()
             {
@@ -286,9 +203,7 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 Constraint = new QueryBuilder.Model.Constraint() { Value = "constraint_name" }
             };
 
-            var result = _visitor.Visit(dropConstraint);
-
-            Check(result);
+            return dropConstraint;
         }
 
         public WhereNode GetWhere()
@@ -309,9 +224,9 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
             var select = new SelectNode();
 
 
-            select.Fields.Add(new ExpressionAliasedNode() { Node = new TableFieldNode() { Field = "Field1" }, Alias = "f1" });
-            select.Fields.Add(new ExpressionAliasedNode() { Node = new TableFieldNode() { Field = "Field2" }, Alias = "f2" });
-            select.Fields.Add(new ExpressionAliasedNode() { Node = new AggregateSumNode() { Node = new TableFieldNode() { Field = "Field3" } }, Alias = "sum" });
+            select.Fields.Add(new TableFieldNode() { Field = "Field1" });
+            select.Fields.Add(new TableFieldNode() { Field = "Field2" });
+            select.Fields.Add(new AggregateSumNode() { Node = new TableFieldNode() { Field = "Field3" } });
 
             select.From = new FromNode();
             var subSelect = new SelectNode()
@@ -357,90 +272,8 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
             return select;
         }
 
-
-        public QuerySyntaxNode GetSelectFromBuilder()
-        {
-            var query = Query.New();
-
-            query.Select()
-                .Select(b => b
-                    .Field("Field1").As("f1")
-                    .Field("Field2").As("f2")
-                    .Sum(f=>f.Field("Field3")).As("sum")
-                )
-                .From( s=>s.SelectAll().From("MySubTable1") ) //nestedQuery
-                    .As("MyTable1")
-                .LeftJoin("Mytable2", 
-                    e => e.Equal(
-                        f => f.Field("Field1", "MyTable1"), 
-                        f => f.Field("Field2", "MyTable2")
-                        ))
-                .Where(e => e.Equal(
-                    f => f.Field("Field1", "MyTable1"), 
-                    f => f.Const(10)
-                    ))
-                .GroupBy(g => g
-                    .Field("Field1")
-                    .Field("Field2"))
-                .OrderBy(o => o
-                    .Field("Field1")
-                    .Field("Field2")
-                    .Desc());
-            return query.Expression;
-        }
-
-        [Fact]
-        public void SelectBuilder()
-        {
-
-            Expression s1 = new Expression();
-             s1.Nodes.Add(GetSelect());
-            var s2 = GetSelectFromBuilder();
-            Assert.Equal(s1, s2);
-        }
-
-
-        [Fact]
-        public void Select()
-        {
-
-
-            var result = _visitor.Visit(GetSelect());
-
-            Check(result);
-
-
-
-            var query = Query.New();
-
-            query.Select()
-            
-                .SelectField("Field1")
-                .Select(e => e.Field("Field2").As("f2"))
-                .From("dasdasdas")
-                .Where(c =>
-                {
-                    c.And(
-                        e => e.Equal("Field1", 10),
-                        e => e.Equal("Field2", 20),
-                        e => e.Equal(
-                            e => e.Field("sdad"),
-                            e => e.Sum("Field1", "Field2")
-                            ));
-
-                });
-
-
-            
-
-            result = _visitor.Visit(query.Expression);
-
-            Check(result);
-
-        }
-
-        [Fact]
-        public void Insert()
+   
+        public InsertNode GetInsert()
         {
             var datasource = new ValuesSourceNode();
             datasource.Values.Add(new ConstNode() { Value = 20 });
@@ -455,13 +288,11 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
             };
 
 
-            var result = _visitor.Visit(insert);
-
-            Check(result);
+            return insert;
         }
 
-        [Fact]
-        public void Update()
+
+        public UpdateNode GetUpdate()
         {
 
             var update = new UpdateNode()
@@ -481,23 +312,57 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
 
             update.Where = GetWhere();
 
-            var result = _visitor.Visit(update);
-
-            Check(result);
+            return update;
         }
 
-        [Fact]
-        public void Delete()
+
+        public DeleteNode GetDelete()
         {
 
             var delete = new DeleteNode();
 
             delete.From = new Table() { Value = "MyTable1" };
             delete.Where = GetWhere();
-            var result = _visitor.Visit(delete);
 
-            Check(result);
+            return delete;
+        }
+
+
+
+
+        public QuerySyntaxNode GetSelectFromBuilder()
+        {
+            var selectNode = new SelectNode();
+
+            new SelectBuilder(selectNode)
+                .Select(b => b
+                    .Field("Field1")
+                    .Field("Field2")
+                    .Sum(f => f.Field("Field3"))
+                )
+                .From(s => s.SelectAll().From("MySubTable1")) //nestedQuery
+                    .As("MyTable1")
+                .LeftJoin("Mytable2",
+                    e => e.Equal(
+                        f => f.Field("Field1", "MyTable1"),
+                        f => f.Field("Field2", "MyTable2")
+                        ))
+                .Where(e => e.Equal(
+                    f => f.Field("Field1", "MyTable1"),
+                    f => f.Const(10)
+                    ))
+                .GroupBy(g => g
+                    .Field("Field1")
+                    .Field("Field2"))
+                .OrderBy(o => o
+                    .Field("Field1")
+                    .Field("Field2")
+                    .Desc());
+
+            return selectNode;
         }
 
     }
+
+
 }

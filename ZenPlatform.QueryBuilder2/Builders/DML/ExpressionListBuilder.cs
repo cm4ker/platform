@@ -15,7 +15,7 @@ namespace ZenPlatform.QueryBuilder.Builders
         }
     }
 
-    public class SelectFieldsBuilder : ExpressionListBuilderBase<SelectFieldsBuilder>
+    public class SelectFieldsBuilder : ExpressionListBuilderBase<SelectFieldsBuilder>, IAliasedBuilder<SelectFieldsBuilder>
     {
         public SelectFieldsBuilder(List<ExpressionNode> list) : base(list)
         {
@@ -29,8 +29,9 @@ namespace ZenPlatform.QueryBuilder.Builders
 
             var expressionNode = new AggregateSumNode();
             expressionNode.Node = builder.Expression;
+            _currentNode = expressionNode;
             _list.Add(expressionNode);
-
+            
             return this;
         }
 
@@ -42,7 +43,18 @@ namespace ZenPlatform.QueryBuilder.Builders
 
             var expressionNode = new AggregateCountNode();
             expressionNode.Node = builder.Expression;
+            _currentNode = expressionNode;
             _list.Add(expressionNode);
+
+            return this;
+        }
+
+        public SelectFieldsBuilder As(string alias)
+        {
+            if (_currentNode == null) return this;
+            _list[_list.IndexOf(_currentNode)] = new ExpressionAliasedNode() { Alias = alias, Node = _currentNode };
+
+            _currentNode = null;
 
             return this;
         }
@@ -72,6 +84,7 @@ namespace ZenPlatform.QueryBuilder.Builders
     public class ExpressionListBuilderBase<TNext>
     {
         protected List<ExpressionNode> _list;
+        protected ExpressionNode _currentNode;
         public ExpressionListBuilderBase(List<ExpressionNode> list)
         {
             _list = list;
@@ -84,7 +97,7 @@ namespace ZenPlatform.QueryBuilder.Builders
             var field = new TableFieldNode() { Field = fieldName };
             if (!string.IsNullOrEmpty(tableName))
                 field.Table = new Table() { Value = tableName };
-
+            _currentNode = field;
             _list.Add(field);
             
             return (TNext)(object)this;
@@ -96,8 +109,8 @@ namespace ZenPlatform.QueryBuilder.Builders
 
 
             action(builder);
-
-            _list.Add(builder.Expression);
+            _currentNode = builder.Expression;
+            _list.Add(_currentNode);
 
             return (TNext)(object)this;
         }
