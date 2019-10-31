@@ -136,7 +136,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         Stage0EmitMap(rg, readerParam, readerType, ts.Int, ts, tProperty.Setter, prop
                             .GetPropertySchemas(prop.DatabaseColumnName)
-                            .First(x => x.SchemaType == XCColumnSchemaType.Type).Name);
+                            .First(x => x.SchemaType == XCColumnSchemaType.Type).FullName);
                     }
                 }
 
@@ -165,7 +165,7 @@ namespace ZenPlatform.EntityComponent.Entity
                             .GetPropertySchemas(prop.DatabaseColumnName)
                             .First(x => x.SchemaType == ((prop.Types.Count > 1)
                                             ? XCColumnSchemaType.Value
-                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).Name);
+                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).FullName);
                     }
                     else if (ctype is XCObjectTypeBase ot)
                     {
@@ -178,7 +178,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                             Stage0EmitMap(rg, readerParam, readerType, ts.Guid, ts, otProperty.Setter, prop
                                 .GetPropertySchemas(prop.DatabaseColumnName)
-                                .First(x => x.SchemaType == XCColumnSchemaType.Ref).Name);
+                                .First(x => x.SchemaType == XCColumnSchemaType.Ref).FullName);
                         }
                     }
                 }
