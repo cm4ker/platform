@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Compiler;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
@@ -23,7 +24,6 @@ using Property = ZenPlatform.Language.Ast.Definitions.Property;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
-    
     /*
      * Контракт для генерации кода
      *
@@ -37,7 +37,7 @@ namespace ZenPlatform.EntityComponent.Entity
      *
      * Internal
      */
-    
+
     public class StagedGeneratorAst : IPlatformAstGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
@@ -69,8 +69,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void GenerateServerDtoClass(XCObjectTypeBase type, Root root)
         {
-            var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
-                                       $"This component only can serve {nameof(XCSingleEntity)} objects");
+            var set = type as XCSingleEntity ?? throw new InvalidOperationException(
+                          $"This component only can serve {nameof(XCSingleEntity)} objects");
             var dtoClassName =
                 $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
 
@@ -79,14 +79,14 @@ namespace ZenPlatform.EntityComponent.Entity
             List<Member> members = new List<Member>();
 
             //Create dto class
-            foreach (var prop in singleEntityType.Properties)
+            foreach (var prop in set.Properties)
             {
                 bool propertyGenerated = false;
 
                 if (string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
-                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {singleEntityType.Name}. Database column is empty!");
+                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
                 }
 
                 if (prop.Types.Count > 1)
@@ -150,7 +150,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
             }
 
-            var cls = new Class(null, new TypeBody(members), dtoClassName, true);
+            var cls = new EntityAstClass(set, null, new TypeBody(members), dtoClassName, true);
 
             cls.Namespace = @namespace;
 
@@ -161,8 +161,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void GenerateClientDtoClass(XCObjectTypeBase type, Root root)
         {
-            var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
-                                       $"This component only can serve {nameof(XCSingleEntity)} objects");
+            var set = type as XCSingleEntity ?? throw new InvalidOperationException(
+                          $"This component only can serve {nameof(XCSingleEntity)} objects");
             var dtoClassName =
                 $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
 
@@ -171,14 +171,14 @@ namespace ZenPlatform.EntityComponent.Entity
             List<Member> members = new List<Member>();
 
             //Create dto class
-            foreach (var prop in singleEntityType.Properties)
+            foreach (var prop in set.Properties)
             {
                 bool propertyGenerated = false;
 
                 if (string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
-                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {singleEntityType.Name}. Database column is empty!");
+                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
                 }
 
                 if (prop.Types.Count > 1)
@@ -235,7 +235,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
             }
 
-            var cls = new Class(null, new TypeBody(members), dtoClassName);
+            var cls = new EntityAstClass(set, null, new TypeBody(members), dtoClassName);
 
             cls.Namespace = @namespace;
 
@@ -441,7 +441,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 foreach (var func in typeBody.Functions)
                 {
                     func.SymbolScope = SymbolScope.User;
-                    
+
                     //moduleCls.AddFunction(func);
                 }
 
@@ -472,5 +472,28 @@ namespace ZenPlatform.EntityComponent.Entity
             GenerateCommands(type, root);
             GenerateClientDtoClass(type, root);
         }
+
+        public void PatchType(Class cls, ITypeBuilder builder)
+        {
+            if (!(cls is EntityAstClass eac)) return;
+
+            var ts = builder.Assembly.TypeSystem;
+
+            var sb = ts.GetSystemBindings();
+
+            builder.DefineMethod(ts.FindType<>());
+        }
+    }
+
+    
+    public class EntityAstClass : Class
+    {
+        public EntityAstClass(XCSingleEntity conf, ILineInfo lineInfo, TypeBody typeBody, string name,
+            bool isMappable = false) : base(lineInfo, typeBody, name, isMappable)
+        {
+            Conf = conf;
+        }
+
+        public XCSingleEntity Conf { get; }
     }
 }
