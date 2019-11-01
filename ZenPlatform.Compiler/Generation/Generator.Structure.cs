@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private Dictionary<Constructor, IConstructorBuilder> _stage1constructors =
             new Dictionary<Constructor, IConstructorBuilder>();
-        
+
         public void Build()
         {
             if (_mode == CompilationMode.Server)
@@ -50,9 +50,6 @@ namespace ZenPlatform.Compiler.Generation
                 BuildStage2(cu);
             }
         }
-
-
-
 
         /// <summary>
         /// Prebuilding 1 level elements - classes and modules

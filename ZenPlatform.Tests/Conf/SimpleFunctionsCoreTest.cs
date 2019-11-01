@@ -52,7 +52,7 @@ namespace ZenPlatform.Tests.Conf
             var conf = Factory.CreateExampleConfiguration();
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
 
-            XCCompiller c = new XCCompiller();
+            XCCompiler c = new XCCompiler();
             var asm = c.Build(conf, CompilationMode.Server, SqlDatabaseType.SqlServer);
 
             asm.Write("Debug.bll");

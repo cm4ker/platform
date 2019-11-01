@@ -1,19 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
-using System.Runtime.CompilerServices;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Core.Assemlies;
-using ZenPlatform.Core.Crypto;
-using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 
@@ -22,9 +14,9 @@ namespace ZenPlatform.Compiler.Platform
     /// <summary>
     /// Компилятор конфигурации - преобразовывает метаданные в коды CLI
     /// </summary>
-    public class XCCompiller : IXCCompiller
+    public class XCCompiler : IXCCompiller
     {
-        public XCCompiller()
+        public XCCompiler()
         {
         }
 
@@ -48,7 +40,8 @@ namespace ZenPlatform.Compiler.Platform
 
             AstScopeRegister.Apply(root);
 
-            var generator = new Generator(new GeneratorParameters(root.Units, assemblyBuilder, mode, targetDatabaseType));
+            var generator = new Generator(new GeneratorParameters(root.Units, assemblyBuilder, mode, targetDatabaseType,
+                configuration));
             generator.Build();
 
             return assemblyBuilder;

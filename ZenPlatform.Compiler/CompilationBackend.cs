@@ -9,6 +9,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
@@ -35,6 +36,13 @@ namespace ZenPlatform.Compiler
 
     public class CompilationBackend : ICompilationBackend
     {
+        private readonly XCRoot _root;
+
+        public CompilationBackend(XCRoot root)
+        {
+            _root = root;
+        }
+        
         /// <summary>
         /// Скомпилировать поток символов и записать в сборку
         /// </summary>
@@ -69,7 +77,7 @@ namespace ZenPlatform.Compiler
             AstScopeRegister.Apply(module);
 
             var prm = new GeneratorParameters(new List<CompilationUnit> {module}, ab, CompilationMode.Client,
-                SqlDatabaseType.SqlServer);
+                SqlDatabaseType.SqlServer, _root);
 
             Generator g = new Generator(prm);
 

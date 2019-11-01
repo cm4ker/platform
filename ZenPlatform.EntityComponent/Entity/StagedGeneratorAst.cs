@@ -23,6 +23,21 @@ using Property = ZenPlatform.Language.Ast.Definitions.Property;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
+    
+    /*
+     * Контракт для генерации кода
+     *
+     * Build structure;
+     *     - Stage0
+     *     - Stage1
+     * Build code
+     *     - Stage2
+     *
+     * Code client\server
+     *
+     * Internal
+     */
+    
     public class StagedGeneratorAst : IPlatformAstGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
