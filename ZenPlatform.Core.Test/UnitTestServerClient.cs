@@ -110,7 +110,7 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void CompileAndLoadAssembly()
         {
-            var compiller = new XCCompiller();
+            var compiller = new XCCompiler();
 
             var root = Factory.CreateExampleConfiguration();
 
@@ -145,7 +145,7 @@ namespace ZenPlatform.Core.Test
         public void AssemblyManagerTest()
         {
             var storage = new TestAssemblyStorage();
-            var manager = new AssemblyManager(new XCCompiller(), storage, new SimpleConsoleLogger<AssemblyManager>());
+            var manager = new AssemblyManager(new XCCompiler(), storage, new SimpleConsoleLogger<AssemblyManager>());
 
             var root = Factory.CreateExampleConfiguration();
 

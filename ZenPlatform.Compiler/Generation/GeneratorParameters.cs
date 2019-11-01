@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 
@@ -14,6 +15,10 @@ namespace ZenPlatform.Compiler.Generation
         /// Для какой базы генерируется решение
         /// </summary>
         public SqlDatabaseType TargetDatabaseType { get; }
+
+
+        public XCRoot Configuration { get; }
+
 
         /// <summary>
         /// Юниты компиляции
@@ -32,9 +37,10 @@ namespace ZenPlatform.Compiler.Generation
 
 
         public GeneratorParameters(List<CompilationUnit> units, IAssemblyBuilder builder, CompilationMode mode,
-            SqlDatabaseType targetDatabaseType)
+            SqlDatabaseType targetDatabaseType, XCRoot configuration)
         {
             TargetDatabaseType = targetDatabaseType;
+            Configuration = configuration;
             Units = units;
             Builder = builder;
             Mode = mode;
