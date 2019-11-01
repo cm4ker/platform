@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.Generation
         private readonly XCRoot _conf;
 
 
-        private readonly List<CompilationUnit> _cus;
+        private List<CompilationUnit> _cus;
 
         private ServerAssemblyServiceScope _serviceScope;
 
