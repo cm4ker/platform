@@ -95,7 +95,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                 {
                     foreach (var s in property.old.GetPropertySchemas())
                     {
-                        query.Delete().Column(s.Name).OnTable(tableName);
+                        query.Delete().Column(s.FullName).OnTable(tableName);
                     }
                     
                 }
@@ -138,7 +138,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             foreach (var schema in columnSchemas)
             {
                 ColumnDefinitionBuilder builder = new ColumnDefinitionBuilder();
-                builder.WithColumnName(schema.Name);
+                builder.WithColumnName(schema.FullName);
 
                 if (schema.SchemaType == XCColumnSchemaType.Value)
                 {

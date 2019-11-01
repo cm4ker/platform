@@ -20,6 +20,7 @@ using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Compiler.Platform;
+using ZenPlatform.Core.Environment.Contracts;
 
 namespace ZenPlatform.Runner
 {

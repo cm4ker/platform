@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +19,20 @@ namespace ZenPlatform.ServerRPC
     {
         static void Main(string[] args)
         {
+            DbCommand b = new SqlCommand();
+            b.Connection = null;
+            b.Transaction = null;
+            
+            //inside
+            b.CommandText = "test";
+            var p = b.CreateParameter();
+            p.ParameterName = "name";
+            p.Value = null;
+            //inside
+
+            b.ExecuteNonQuery();
+
+
 //            Client client = new Client(new SimpleConsoleLogger<Client>());
 //
 //

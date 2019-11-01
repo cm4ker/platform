@@ -34,7 +34,8 @@ namespace ZenPlatform.Core.Assemblies
             _logger = logger;
         }
 
-        public void CheckConfiguration(XCRoot configuration)
+
+        public bool CheckConfiguration(XCRoot configuration)
         {
             var hash = HashHelper.HashMD5(configuration.SerializeToStream());
 
@@ -44,8 +45,10 @@ namespace ZenPlatform.Core.Assemblies
                     a.Name.Equals($"{configuration.ProjectName}_server")
                     || a.Name.Equals($"{configuration.ProjectName}_client")) == null)
             {
-                BuildConfiguration(configuration);
+                return true;
             }
+
+            return false;
         }
 
         public IEnumerable<AssemblyDescription> GetAssemblies(XCRoot conf)
@@ -58,10 +61,10 @@ namespace ZenPlatform.Core.Assemblies
             return _assemblyStorage.GetAssembly(description);
         }
 
-        public void BuildConfiguration(XCRoot configuration)
+        public void BuildConfiguration(XCRoot configuration, SqlDatabaseType dbType)
         {
             _logger.Info("Build configuration.");
-            var assembly = _compiller.Build(configuration, CompilationMode.Server);
+            var assembly = _compiller.Build(configuration, CompilationMode.Server, dbType);
 
             var stream = new MemoryStream();
             assembly.Write(stream);
@@ -76,7 +79,7 @@ namespace ZenPlatform.Core.Assemblies
 
             _assemblyStorage.SaveAssembly(description, stream.ToArray());
 
-            assembly = _compiller.Build(configuration, CompilationMode.Client);
+            assembly = _compiller.Build(configuration, CompilationMode.Client, dbType);
 
             var clientStream = new MemoryStream();
             assembly.Write(clientStream);

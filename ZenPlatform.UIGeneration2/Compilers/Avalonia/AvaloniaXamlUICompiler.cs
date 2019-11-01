@@ -71,37 +71,37 @@ namespace ZenPlatform.UIBuilder.Compilers
 
         private void VisitDataGridColumnNode(UIDataGridColumn uiDataGridColumn, StringWriter sw)
         {
-            XamlType dataGridColumnType = _context.GetXamlType(typeof(DataGridTextColumn));
-
-            var headerProperty = dataGridColumnType.GetMember("Header");
-
-            _xamlWriter.WriteStartObject(dataGridColumnType);
-
-            //Header 
-            _xamlWriter.WriteStartMember(headerProperty);
-            _xamlWriter.WriteValue("Test");
-            _xamlWriter.WriteEndMember();
-
-            _xamlWriter.WriteEndObject();
+//            XamlType dataGridColumnType = _context.GetXamlType(typeof(DataGridTextColumn));
+//
+//            var headerProperty = dataGridColumnType.GetMember("Header");
+//
+//            _xamlWriter.WriteStartObject(dataGridColumnType);
+//
+//            //Header 
+//            _xamlWriter.WriteStartMember(headerProperty);
+//            _xamlWriter.WriteValue("Test");
+//            _xamlWriter.WriteEndMember();
+//
+//            _xamlWriter.WriteEndObject();
         }
 
         private void VisitDataGridNode(UIDataGrid uiDataGrid, StringWriter sw)
         {
-            XamlType dataGridType = _context.GetXamlType(typeof(DataGrid));
-
-            var columnsProperty = dataGridType.GetMember("Columns");
-            _xamlWriter.WriteStartObject(dataGridType);
-
-            //Items
-            _xamlWriter.WriteStartMember(columnsProperty);
-            foreach (var node in uiDataGrid.Childs)
-            {
-                VisitNode((UINode)node, sw);
-            }
-
-            _xamlWriter.WriteEndMember();
-
-            _xamlWriter.WriteEndObject();
+//            XamlType dataGridType = _context.GetXamlType(typeof(DataGrid));
+//
+//            var columnsProperty = dataGridType.GetMember("Columns");
+//            _xamlWriter.WriteStartObject(dataGridType);
+//
+//            //Items
+//            _xamlWriter.WriteStartMember(columnsProperty);
+//            foreach (var node in uiDataGrid.Childs)
+//            {
+//                VisitNode((UINode)node, sw);
+//            }
+//
+//            _xamlWriter.WriteEndMember();
+//
+//            _xamlWriter.WriteEndObject();
         }
 
         private void VisitButtonNode(UIButton uiButton, StringWriter sw)

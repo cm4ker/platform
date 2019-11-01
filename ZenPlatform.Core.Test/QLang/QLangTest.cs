@@ -79,7 +79,7 @@ namespace ZenPlatform.Core.Test.QLang
             q.ld_param("Store");
 
             q.eq();
-            
+
             q.ld_const(1);
 
             q.ld_const("Test");
@@ -92,12 +92,12 @@ namespace ZenPlatform.Core.Test.QLang
 
             Assert.NotNull(result);
             Assert.Single(result.Whens);
-            
+
             Assert.NotNull(result.Whens[0]);
             Assert.NotNull(result.Whens[0].Then);
             Assert.NotNull(result.Whens[0].Else);
             Assert.NotNull(result.Whens[0].Then);
-            
+
             Assert.Equal(2, result.GetRexpressionType().Count());
 
             q.st_query();
@@ -235,7 +235,7 @@ namespace ZenPlatform.Core.Test.QLang
 
             var query = (QQuery) q.top();
 
-            SQLQueryVisitor _visitor = new SQLQueryVisitor();
+            SQLServerVisitor _visitor = new SQLServerVisitor();
 
             LogicToReal l2r = new LogicToReal();
 

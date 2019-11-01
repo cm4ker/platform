@@ -100,7 +100,8 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
                         foreach (var def in schema)
                         {
-                            b.Select((SelectFieldsBuilder x) => x.Field($"{def.Name}"));
+                            b.Select((SelectFieldsBuilder x) =>
+                                x.Field($"{def.FullName}").As(def.Prefix + ase.Alias + def.Postfix));
                         }
                     }
                 }
@@ -115,7 +116,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
                 foreach (var def in schema)
                 {
-                    sb.Select((SelectFieldsBuilder x) => x.Field($"{def.Name}"));
+                    sb.Select((SelectFieldsBuilder x) => x.Field($"{def.FullName}"));
                 }
             }
         }
