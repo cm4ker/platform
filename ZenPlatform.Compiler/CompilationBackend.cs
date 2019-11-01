@@ -12,6 +12,7 @@ using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.QueryBuilder;
 using CompilationOptions = ZenPlatform.Compiler.Generation.NewGenerator.CompilationOptions;
 using SyntaxNode = ZenPlatform.Language.Ast.SyntaxNode;
 
@@ -69,7 +70,8 @@ namespace ZenPlatform.Compiler
 
             AstScopeRegister.Apply(module);
 
-            var prm = new GeneratorParameters(new List<CompilationUnit> {module}, ab, CompilationMode.Client);
+            var prm = new GeneratorParameters(new List<CompilationUnit> {module}, ab, CompilationMode.Client,
+                SqlDatabaseType.SqlServer);
 
             Generator g = new Generator(prm);
 

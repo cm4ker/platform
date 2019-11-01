@@ -13,6 +13,7 @@ using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.QueryBuilder;
 
 
 namespace ZenPlatform.Component.Tests
@@ -44,10 +45,10 @@ namespace ZenPlatform.Component.Tests
             AstScopeRegister.Apply(rootClient);
 
 
-            var genS = new Generator(new GeneratorParameters(rootServer.Units, server, CompilationMode.Server));
+            var genS = new Generator(new GeneratorParameters(rootServer.Units, server, CompilationMode.Server, SqlDatabaseType.SqlServer));
             genS.Build();
 
-            var genC = new Generator(new GeneratorParameters(rootClient.Units, client, CompilationMode.Client));
+            var genC = new Generator(new GeneratorParameters(rootClient.Units, client, CompilationMode.Client, SqlDatabaseType.SqlServer));
             genC.Build();
 
 

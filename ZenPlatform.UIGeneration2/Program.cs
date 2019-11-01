@@ -18,9 +18,9 @@ namespace ZenPlatform.UIBuilder
     {
         public static void Main()
         {
-            var result = AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .SetupWithoutStarting();
+//            var result = AppBuilder.Configure<App>()
+//                .UsePlatformDetect()
+//                .SetupWithoutStarting();
 
 
             var window = new UIWindow().With(x =>
@@ -70,14 +70,14 @@ namespace ZenPlatform.UIBuilder
 //            TestObject obj = new TestObject();
 //            obj.Person = "123";
 //            w.DataContext = obj;
-
-            result.Instance.Run(w);
-
-            w.ShowDialog();
-
-            //XamlWriterTest();
-            //Console.Write(obj.Person);
-            Console.Read();
+//
+//            result.Instance.Run(w);
+//
+//            w.ShowDialog();
+//
+//            //XamlWriterTest();
+//            //Console.Write(obj.Person);
+//            Console.Read();
         }
 
         public class TestObject
@@ -91,10 +91,10 @@ namespace ZenPlatform.UIBuilder
         }
 
 
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .LogToDebug();
+//        public static AppBuilder BuildAvaloniaApp()
+//            => AppBuilder.Configure<App>()
+//                .UsePlatformDetect()
+//                .LogToDebug();
 
 
         public static void XamlWriterTest()
