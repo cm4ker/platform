@@ -7,14 +7,12 @@ using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
-using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
-using CompilationOptions = ZenPlatform.Compiler.Generation.NewGenerator.CompilationOptions;
-using SyntaxNode = ZenPlatform.Language.Ast.SyntaxNode;
+
 
 namespace ZenPlatform.Compiler
 {
