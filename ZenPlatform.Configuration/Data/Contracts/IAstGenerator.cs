@@ -1,3 +1,4 @@
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Language.Ast.Definitions;
 
@@ -21,5 +22,11 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
         void StageClient(XCObjectTypeBase type, Root root);
+
+        /// <summary>
+        /// Пропатчить тип 
+        /// </summary>
+        /// <param name="builder"></param>
+        void PatchType(Class cls, ITypeBuilder builder);
     }
 }
