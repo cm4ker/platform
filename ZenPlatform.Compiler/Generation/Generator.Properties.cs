@@ -97,9 +97,9 @@ namespace ZenPlatform.Compiler.Generation
                 return;
             }
 
-            tb.AddInterfaceImplementation(_ts.FindType<ICanMapSelfFromDataReader>());
+            tb.AddInterfaceImplementation(_ts.FindType<ICanMap>());
 
-            var readerMethod = tb.DefineMethod(nameof(ICanMapSelfFromDataReader.Map), true, false, true);
+            var readerMethod = tb.DefineMethod(nameof(ICanMap.Map), true, false, true);
             var rg = readerMethod.Generator;
 
             var readerType = _ts.FindType<DbDataReader>();

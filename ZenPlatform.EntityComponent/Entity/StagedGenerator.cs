@@ -104,7 +104,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var dtoClass = builder.DefineType(@namespace, dtoClassName,
                 TypeAttributes.Public | TypeAttributes.Class);
 
-            dtoClass.AddInterfaceImplementation(builder.TypeSystem.FindType<ICanMapSelfFromDataReader>());
+            dtoClass.AddInterfaceImplementation(builder.TypeSystem.FindType<ICanMap>());
             var readerMethod = dtoClass.DefineMethod("Map", true, false, true);
             var rg = readerMethod.Generator;
 

@@ -2,8 +2,13 @@ using System.Data.Common;
 
 namespace ZenPlatform.Compiler.Contracts
 {
-    public interface ICanMapSelfFromDataReader
+    public interface ICanMap
     {
         void Map(DbDataReader dataReader);
+    }
+
+    public interface ICanSave
+    {
+        void Save(DbCommand command);
     }
 }

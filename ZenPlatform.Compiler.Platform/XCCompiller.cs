@@ -15,6 +15,7 @@ using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Crypto;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Compiler.Platform
 {
@@ -27,7 +28,7 @@ namespace ZenPlatform.Compiler.Platform
         {
         }
 
-        public IAssembly Build(XCRoot configuration, CompilationMode mode)
+        public IAssembly Build(XCRoot configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
         {
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
             var assemblyBuilder = pl.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
@@ -47,7 +48,7 @@ namespace ZenPlatform.Compiler.Platform
 
             AstScopeRegister.Apply(root);
 
-            var generator = new Generator(new GeneratorParameters(root.Units, assemblyBuilder, mode));
+            var generator = new Generator(new GeneratorParameters(root.Units, assemblyBuilder, mode, targetDatabaseType));
             generator.Build();
 
             return assemblyBuilder;

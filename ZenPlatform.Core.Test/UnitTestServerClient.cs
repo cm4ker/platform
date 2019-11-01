@@ -27,6 +27,7 @@ using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Language.QueryLanguage;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Test
 {
@@ -113,8 +114,8 @@ namespace ZenPlatform.Core.Test
 
             var root = Factory.CreateExampleConfiguration();
 
-            var _assembly2 = compiller.Build(root, CompilationMode.Server);
-            var _assembly = compiller.Build(root, CompilationMode.Client);
+            var _assembly2 = compiller.Build(root, CompilationMode.Server, SqlDatabaseType.SqlServer);
+            var _assembly = compiller.Build(root, CompilationMode.Client, SqlDatabaseType.SqlServer);
 
             if (File.Exists("server.bll"))
                 File.Delete("server.bll");
@@ -148,7 +149,8 @@ namespace ZenPlatform.Core.Test
 
             var root = Factory.CreateExampleConfiguration();
 
-            manager.CheckConfiguration(root);
+            if (manager.CheckConfiguration(root))
+                manager.BuildConfiguration(root, SqlDatabaseType.SqlServer);
 
             var assemblies = storage.GetAssemblies(root.GetHash());
 
@@ -171,6 +173,8 @@ namespace ZenPlatform.Core.Test
 
             var env = serverService.GetRequiredService<IWorkEnvironment>();
 
+            env.Initialize(new StartupConfig());
+            
             var assemblies = new List<AssemblyDescription>()
             {
                 new AssemblyDescription()
