@@ -164,22 +164,13 @@
     <Syntax Name="Call" Base="Expression">
         <Arguments>
             <List Name="Arguments" Type="IList&lt;Argument&gt;"/>
-            <Single Name="Name" Type="String" DenyChildrenFill="true" />
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <!--Test comment-->
     <Syntax Name="Return" Base="Statement" NS="Statements">
         <Arguments>
             <Single Name="Expression" Type="Expression"/>
-        </Arguments>
-    </Syntax>
-
-    <Syntax Name="ComponentObject" Base="TypeEntity" IsSymbol="true">
-        <Arguments>
-            <Single Name="TypeBody" Type="TypeBody"/>
-            <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>
-            <Single Name="Component" Type="XCComponent"/>
-            <Single Name="IsMappable" Type="Boolean" DenyChildrenFill="true" Default="false"/>
         </Arguments>
     </Syntax>
     
