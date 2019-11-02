@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Compiler;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Language.Ast.Definitions;
 
@@ -27,6 +28,6 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// Пропатчить тип 
         /// </summary>
         /// <param name="builder"></param>
-        void PatchType(Class cls, ITypeBuilder builder);
+        void PatchType(ComponentAstBase astTree, ITypeBuilder builder);
     }
 }

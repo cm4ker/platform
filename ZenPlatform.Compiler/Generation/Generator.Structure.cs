@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Configuration.Compiler;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using Module = ZenPlatform.Language.Ast.Definitions.Module;
@@ -57,21 +60,39 @@ namespace ZenPlatform.Compiler.Generation
         /// <exception cref="Exception"></exception>
         private void BuildStage0(CompilationUnit cu)
         {
+            void AfterBuild<T>(T sym, ITypeBuilder tb) where T : TypeEntity, IAstSymbol
+            {
+                sym.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(sym, tb);
+                _stage0.Add(sym, tb);
+            }
+
             foreach (var typeEntity in cu.Entityes)
             {
                 switch (typeEntity)
                 {
                     case Module m:
                         var tm = PreBuildModule(m);
-                        m.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(m, tm);
-                        _stage0.Add(m, tm);
+                        AfterBuild(m, tm);
                         break;
                     case Class c:
-
                         var tc = PreBuildClass(c);
-                        c.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(c, tc);
-                        _stage0.Add(c, tc);
+                        AfterBuild(c, tc);
                         break;
+                    case ComponentClass co:
+                    {
+                        var tco = PreBuildComponentClass(co);
+                        AfterBuild(co, tco);
+                        co.Component.ComponentImpl.Generator.PatchType(co, tco);
+                        break;
+                    }
+                    case ComponentModule cm:
+                    {
+                        var tcm = PreBuildComponentModule(cm);
+                        AfterBuild(cm, tcm);
+                        cm.Component.ComponentImpl.Generator.PatchType(cm, tcm);
+                        break;
+                    }
+
                     default:
                         throw new Exception("The type entity not supported");
                 }
@@ -359,6 +380,26 @@ namespace ZenPlatform.Compiler.Generation
         private ITypeBuilder PreBuildModule(Module module)
         {
             return _asm.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
+                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
+                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
+        }
+
+        private ITypeBuilder PreBuildComponentClass(ComponentClass componentClass)
+        {
+            var tb = _asm.DefineType(
+                (string.IsNullOrEmpty(@componentClass.Namespace) ? DEFAULT_ASM_NAMESPACE : @componentClass.Namespace),
+                @componentClass.Name,
+                TypeAttributes.Class | TypeAttributes.NotPublic |
+                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
+                _bindings.Object);
+
+            return tb;
+        }
+
+
+        private ITypeBuilder PreBuildComponentModule(ComponentModule componentModule)
+        {
+            return _asm.DefineType(DEFAULT_ASM_NAMESPACE, componentModule.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
         }
