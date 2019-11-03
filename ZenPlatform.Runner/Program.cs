@@ -71,7 +71,7 @@ namespace ZenPlatform.Runner
                     services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
                     services.AddScoped<IAssemblyManager, AssemblyManager>();
                     services.AddScoped<IConfigurationManager, ConfigurationManager>();
-                    services.AddScoped<IXCCompiller, XCCompiller>();
+                    services.AddScoped<IXCCompiller, XCCompiler>();
 
 
                     services.AddSingleton<ITestProxyService, TestProxyService>();

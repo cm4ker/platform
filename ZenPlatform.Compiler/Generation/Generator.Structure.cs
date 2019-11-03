@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Configuration.Compiler;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using Module = ZenPlatform.Language.Ast.Definitions.Module;
@@ -20,7 +23,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private Dictionary<Constructor, IConstructorBuilder> _stage1constructors =
             new Dictionary<Constructor, IConstructorBuilder>();
-        
+
         public void Build()
         {
             if (_mode == CompilationMode.Server)
@@ -51,30 +54,47 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-
-
-
         /// <summary>
         /// Prebuilding 1 level elements - classes and modules
         /// </summary>
         /// <exception cref="Exception"></exception>
         private void BuildStage0(CompilationUnit cu)
         {
+            void AfterBuild<T>(T sym, ITypeBuilder tb) where T : TypeEntity, IAstSymbol
+            {
+                sym.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(sym, tb);
+                _stage0.Add(sym, tb);
+            }
+
             foreach (var typeEntity in cu.Entityes)
             {
                 switch (typeEntity)
                 {
                     case Module m:
                         var tm = PreBuildModule(m);
-                        m.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(m, tm);
-                        _stage0.Add(m, tm);
+                        AfterBuild(m, tm);
                         break;
                     case Class c:
-
                         var tc = PreBuildClass(c);
-                        c.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(c, tc);
-                        _stage0.Add(c, tc);
+                        AfterBuild(c, tc);
                         break;
+                    case ComponentClass co:
+                    {
+                        var tco = PreBuildComponentClass(co);
+                        AfterBuild(co, tco);
+                        co.Component.ComponentImpl.Generator.Stage0(co, tco);
+                        break;
+                    }
+                    case ComponentModule cm:
+                    {
+                        if (cm.CompilationMode != _mode) break;
+
+                        var tcm = PreBuildComponentModule(cm);
+                        AfterBuild(cm, tcm);
+                        cm.Component.ComponentImpl.Generator.Stage0(cm, tcm);
+                        break;
+                    }
+
                     default:
                         throw new Exception("The type entity not supported");
                 }
@@ -140,6 +160,52 @@ namespace ZenPlatform.Compiler.Generation
                         }
 
                         break;
+                    case ComponentAstBase cab:
+                        
+                        if (cab.CompilationMode != _mode) break;
+                        
+                        var tcab = _stage0[cab];
+
+                        foreach (var function in cab.TypeBody.Functions.FilterFunc(_mode))
+                        {
+                            var mf = PrebuildFunction(function, tcab, cab is ComponentClass);
+                            _stage1Methods.Add(function, mf);
+                            cab.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+                        }
+
+                        if (cab is ComponentClass)
+                        {
+                            foreach (var property in cab.TypeBody.Properties)
+                            {
+                                var pp = PrebuildProperty(property, tcab);
+                                cab.TypeBody.SymbolTable.ConnectCodeObject(property, pp);
+                                _stage1Properties.Add(property, pp);
+                            }
+
+                            foreach (var field in cab.TypeBody.Fields)
+                            {
+                                var pf = PrebuildField(field, tcab);
+                                cab.TypeBody.SymbolTable.ConnectCodeObject(field, pf);
+                                _stage1Fields.Add(field, pf);
+                                ;
+                            }
+
+                            if (!cab.TypeBody.Constructors.Any())
+                            {
+                                cab.TypeBody.AddConstructor(Constructor.Default);
+                            }
+
+                            foreach (var constructor in cab.TypeBody.Constructors)
+                            {
+                                var pf = PrebuildConstructor(constructor, tcab);
+                                _stage1constructors.Add(constructor, pf);
+                                ;
+                            }
+                        }
+
+                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab);
+                        break;
+
                     default:
                         throw new Exception("The type entity not supported");
                 }
@@ -167,8 +233,6 @@ namespace ZenPlatform.Compiler.Generation
                     case Class c:
                         var tbc = _stage0[c];
 
-                        EmitMappingSupport(c, tbc);
-
                         foreach (var function in c.TypeBody.Functions.FilterFunc(_mode))
                         {
                             EmitFunction(function, _stage1Methods[function]);
@@ -185,6 +249,29 @@ namespace ZenPlatform.Compiler.Generation
                         }
 
                         break;
+                    case ComponentAstBase cab:
+                        
+                        if (cab.CompilationMode != _mode) break;
+                        
+                        var tbcab = _stage0[cab];
+
+                        foreach (var function in cab.TypeBody.Functions.FilterFunc(_mode))
+                        {
+                            EmitFunction(function, _stage1Methods[function]);
+                        }
+
+                        foreach (var property in cab.TypeBody.Properties)
+                        {
+                            BuildProperty(property, tbcab, _stage1Properties[property]);
+                        }
+
+                        foreach (var constructor in cab.TypeBody.Constructors)
+                        {
+                            EmitConstructor(constructor, _stage1constructors[constructor]);
+                        }
+
+                        break;
+
                     default:
                         throw new Exception("The type entity not supported");
                 }
@@ -362,6 +449,26 @@ namespace ZenPlatform.Compiler.Generation
         private ITypeBuilder PreBuildModule(Module module)
         {
             return _asm.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
+                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
+                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
+        }
+
+        private ITypeBuilder PreBuildComponentClass(ComponentClass componentClass)
+        {
+            var tb = _asm.DefineType(
+                (string.IsNullOrEmpty(@componentClass.Namespace) ? DEFAULT_ASM_NAMESPACE : @componentClass.Namespace),
+                @componentClass.Name,
+                TypeAttributes.Class | TypeAttributes.NotPublic |
+                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
+                _bindings.Object);
+
+            return tb;
+        }
+
+
+        private ITypeBuilder PreBuildComponentModule(ComponentModule componentModule)
+        {
+            return _asm.DefineType(DEFAULT_ASM_NAMESPACE, componentModule.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
         }

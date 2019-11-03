@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using ZenPlatform.Compiler;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Configuration.Compiler;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -14,27 +17,26 @@ using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
-using BinaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.BinaryExpression;
-using IType = ZenPlatform.Compiler.Contracts.IType;
-using Parameter = ZenPlatform.Language.Ast.Definitions.Functions.Parameter;
-using Property = ZenPlatform.Language.Ast.Definitions.Property;
+
 
 namespace ZenPlatform.EntityComponent.Entity
 {
-    public class StagedGeneratorAst : IPlatformAstGenerator
+    public class EntityPlatformGenerator : IPlatformGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
         private readonly XCComponent _component;
         private GeneratorRules _rules;
 
-        public StagedGeneratorAst(XCComponent component)
+        public EntityPlatformGenerator(XCComponent component)
         {
             _component = component;
             _rules = new GeneratorRules(component);
             _dtoCollections = new Dictionary<XCSingleEntity, IType>();
         }
+
 
         private TypeSyntax GetAstFromPlatformType(XCTypeBase pt)
         {
@@ -54,8 +56,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void GenerateServerDtoClass(XCObjectTypeBase type, Root root)
         {
-            var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
-                                       $"This component only can serve {nameof(XCSingleEntity)} objects");
+            var set = type as XCSingleEntity ?? throw new InvalidOperationException(
+                          $"This component only can serve {nameof(XCSingleEntity)} objects");
             var dtoClassName =
                 $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
 
@@ -64,14 +66,14 @@ namespace ZenPlatform.EntityComponent.Entity
             List<Member> members = new List<Member>();
 
             //Create dto class
-            foreach (var prop in singleEntityType.Properties)
+            foreach (var prop in set.Properties)
             {
                 bool propertyGenerated = false;
 
                 if (string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
-                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {singleEntityType.Name}. Database column is empty!");
+                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
                 }
 
                 if (prop.Types.Count > 1)
@@ -135,7 +137,8 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
             }
 
-            var cls = new Class(null, new TypeBody(members), dtoClassName, true);
+            var cls = new ComponentClass(CompilationMode.Server, _component, set, null, dtoClassName,
+                new TypeBody(members));
 
             cls.Namespace = @namespace;
 
@@ -146,8 +149,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void GenerateClientDtoClass(XCObjectTypeBase type, Root root)
         {
-            var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
-                                       $"This component only can serve {nameof(XCSingleEntity)} objects");
+            var set = type as XCSingleEntity ?? throw new InvalidOperationException(
+                          $"This component only can serve {nameof(XCSingleEntity)} objects");
             var dtoClassName =
                 $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
 
@@ -156,14 +159,14 @@ namespace ZenPlatform.EntityComponent.Entity
             List<Member> members = new List<Member>();
 
             //Create dto class
-            foreach (var prop in singleEntityType.Properties)
+            foreach (var prop in set.Properties)
             {
                 bool propertyGenerated = false;
 
                 if (string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
-                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {singleEntityType.Name}. Database column is empty!");
+                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
                 }
 
                 if (prop.Types.Count > 1)
@@ -220,7 +223,8 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
             }
 
-            var cls = new Class(null, new TypeBody(members), dtoClassName);
+            var cls = new ComponentClass(CompilationMode.Client, _component, set, null, dtoClassName,
+                new TypeBody(members));
 
             cls.Namespace = @namespace;
 
@@ -230,7 +234,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        private void GenerateObjectClass(XCObjectTypeBase type, Root root)
+        private void GenerateServerObjectClass(XCObjectTypeBase type, Root root)
         {
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
                                        $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -385,8 +389,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
             members.Add(tprop);
 
-            var cls = new Class(null, new TypeBody(members), className);
-            cls.ImplementsReference = true;
+            var cls = new ComponentClass(CompilationMode.Server, _component, singleEntityType, null, className,
+                new TypeBody(members));
             cls.Namespace = @namespace;
 
             GenerateObjectClassUserModules(type, cls);
@@ -396,7 +400,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        private void GenerateObjectClassUserModules(XCObjectTypeBase type, Class cls)
+        private void GenerateObjectClassUserModules(XCObjectTypeBase type, ComponentClass cls)
         {
             foreach (var module in type.GetProgramModules())
             {
@@ -414,6 +418,41 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
 
+        private void EmitMappingSupport(ComponentClass cls, ITypeBuilder tb)
+        {
+            var _ts = tb.Assembly.TypeSystem;
+            var _bindings = _ts.GetSystemBindings();
+
+
+            tb.AddInterfaceImplementation(_ts.FindType<ICanMap>());
+
+            var readerMethod = tb.DefineMethod(nameof(ICanMap.Map), true, false, true);
+            var rg = readerMethod.Generator;
+
+            var readerType = _ts.FindType<DbDataReader>();
+
+            var readerParam =
+                readerMethod.DefineParameter("reader", readerType, false, false);
+
+
+            foreach (var property in cls.TypeBody.Properties)
+            {
+                if (string.IsNullOrEmpty(property.MapTo)) continue;
+
+                var prop = tb.FindProperty(property.Name);
+
+                rg
+                    .LdArg_0()
+                    .LdArg(readerParam.ArgIndex)
+                    .LdStr(property.MapTo)
+                    .EmitCall(readerType.FindMethod("get_Item", _bindings.String))
+                    .Unbox_Any(prop.PropertyType)
+                    .EmitCall(prop.Setter);
+            }
+
+            rg.Ret();
+        }
+
         private void GenerateCommands(XCObjectTypeBase type, Root root)
         {
             var set = type as XCSingleEntity ?? throw new ArgumentException(nameof(type));
@@ -421,16 +460,21 @@ namespace ZenPlatform.EntityComponent.Entity
             foreach (var command in type.GetCommands())
             {
                 var typeBody = ParserHelper.ParseTypeBody(command.Module.ModuleText);
-                var moduleCls = new Module(null, typeBody, $"__cmd_{command.Name}");
+                var serverModule = new ComponentModule(CompilationMode.Server, _component, set, null,
+                    $"__cmd_{command.Name}", typeBody);
+
+                var clientModule = new ComponentModule(CompilationMode.Client, _component, set, null,
+                    $"__cmd_{command.Name}", typeBody);
+
 
                 foreach (var func in typeBody.Functions)
                 {
                     func.SymbolScope = SymbolScope.User;
-                    
-                    //moduleCls.AddFunction(func);
                 }
 
-                var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {moduleCls});
+                var cu = new CompilationUnit(null, new List<NamespaceBase>(),
+                    new List<TypeEntity>() {serverModule, clientModule});
+
                 root.Add(cu);
             }
         }
@@ -443,7 +487,7 @@ namespace ZenPlatform.EntityComponent.Entity
         public void StageServer(XCObjectTypeBase type, Root root)
         {
             GenerateServerDtoClass(type, root);
-            GenerateObjectClass(type, root);
+            GenerateServerObjectClass(type, root);
             GenerateCommands(type, root);
         }
 
@@ -456,6 +500,83 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             GenerateCommands(type, root);
             GenerateClientDtoClass(type, root);
+        }
+
+
+        public void Stage0(ComponentAstBase astTree, ITypeBuilder builder)
+        {
+        }
+
+        public void Stage1(ComponentAstBase astTree, ITypeBuilder builder)
+        {
+            if (astTree is ComponentClass cc && cc.CompilationMode == CompilationMode.Server)
+            {
+                EmitMappingSupport(cc, builder);
+                EmitSavingSupport(cc, builder);
+            }
+        }
+
+        private void EmitSavingSupport(ComponentClass cls, ITypeBuilder tb)
+        {
+            var _ts = tb.Assembly.TypeSystem;
+            var _bindings = _ts.GetSystemBindings();
+
+
+            tb.AddInterfaceImplementation(_ts.FindType<ICanSave>());
+
+            var readerMethod = tb.DefineMethod(nameof(ICanSave.Save), true, false, true);
+
+            var rg = readerMethod.Generator;
+
+            var cmdType = _ts.FindType<DbCommand>();
+            var parameterType = _ts.FindType<DbParameter>();
+
+            var cmdParam =
+                readerMethod.DefineParameter("cmd", cmdType, false, false);
+
+            var p_loc = rg.DefineLocal(_ts.FindType<DbParameter>());
+
+            rg
+                .LdArg(cmdParam.ArgIndex)
+                .LdStr("SELECT * FROM Table")
+                .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter);
+
+//            DbCommand c;
+
+//            var p = c.CreateParameter();
+//            p.ParameterName = "p_0";
+//            p.Value = 1;
+
+            foreach (var property in cls.TypeBody.Properties)
+            {
+                if (string.IsNullOrEmpty(property.MapTo)) continue;
+
+                var prop = tb.FindProperty(property.Name);
+
+                rg.LdArg(cmdParam.ArgIndex)
+                    .EmitCall(cmdType.FindMethod(nameof(DbCommand.CreateParameter)))
+                    .StLoc(p_loc)
+                    .LdLoc(p_loc)
+                    .LdStr("ParamName")
+                    .EmitCall(parameterType.FindProperty(nameof(DbParameter.ParameterName)).Setter)
+                    .LdLoc(p_loc)
+                    .LdArg_0()
+                    .EmitCall(prop.Getter)
+                    .Box(prop.PropertyType)
+                    .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter);
+
+                /*
+                 * void Save(DbCommand cmd)
+                 * {
+                 *
+                 *    cmd.CommandText = "Cmd_Text";
+                 *    cmd.Parameters.Add();
+                 *    cmd.Parameters.Add();
+                 * }
+                 */
+            }
+
+            rg.Ret();
         }
     }
 }

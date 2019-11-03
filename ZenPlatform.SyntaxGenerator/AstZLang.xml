@@ -164,7 +164,7 @@
     <Syntax Name="Call" Base="Expression">
         <Arguments>
             <List Name="Arguments" Type="IList&lt;Argument&gt;"/>
-            <Single Name="Name" Type="String" DenyChildrenFill="true" />
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <!--Test comment-->
@@ -173,7 +173,7 @@
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
-
+    
     <Syntax Name="Class" Base="TypeEntity" IsSymbol="true">
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody"/>

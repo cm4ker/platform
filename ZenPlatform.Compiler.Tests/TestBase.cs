@@ -1,26 +1,20 @@
 using System.Collections.Generic;
 using System.IO;
 using Antlr4.Runtime;
-using Xunit.Sdk;
-using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Generation.NewGenerator;
 using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Language.Ast.Definitions;
-using SyntaxNodeExtensions = Microsoft.CodeAnalysis.SyntaxNodeExtensions;
 
 namespace ZenPlatform.Compiler.Tests
 {
     public abstract class TestBase
     {
-        private VRoslyn _r;
         private ZLanguageVisitor _zlv;
         IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
         public TestBase()
         {
-            _r = new VRoslyn(new CompilationOptions() {Mode = CompilationMode.Client});
             _zlv = new ZLanguageVisitor();
         }
 
@@ -39,8 +33,8 @@ namespace ZenPlatform.Compiler.Tests
 //            AstSymbolVisitor sv = new AstSymbolVisitor();
 //            sv.Visit(glob);
 
-            var t = _r.Visit(result);
-            return SyntaxNodeExtensions.NormalizeWhitespace(t).ToFullString();
+
+            return null;
         }
 
         private ZSharpParser Parse(ITokenStream tokenStream)
