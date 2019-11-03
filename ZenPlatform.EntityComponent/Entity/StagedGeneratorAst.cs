@@ -474,8 +474,13 @@ namespace ZenPlatform.EntityComponent.Entity
             GenerateClientDtoClass(type, root);
         }
 
-        public void PatchType(ComponentAstBase astTree, ITypeBuilder builder)
+        public void Stage0(ComponentAstBase astTree, ITypeBuilder builder)
         {
+        }
+
+        public void Stage1(ComponentAstBase astTree, ITypeBuilder builder)
+        {
+            
         }
     }
 }

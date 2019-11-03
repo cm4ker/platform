@@ -25,9 +25,15 @@ namespace ZenPlatform.Configuration.Data.Contracts
         void StageClient(XCObjectTypeBase type, Root root);
 
         /// <summary>
-        /// Пропатчить тип 
+        /// Сформировать класс
         /// </summary>
         /// <param name="builder"></param>
-        void PatchType(ComponentAstBase astTree, ITypeBuilder builder);
+        void Stage0(ComponentAstBase astTree, ITypeBuilder builder);
+
+        /// <summary>
+        /// Сформировать структуру класса
+        /// </summary>
+        /// <param name="builder"></param>
+        void Stage1(ComponentAstBase astTree, ITypeBuilder builder);
     }
 }

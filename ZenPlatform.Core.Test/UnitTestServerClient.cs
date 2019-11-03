@@ -174,7 +174,7 @@ namespace ZenPlatform.Core.Test
             var env = serverService.GetRequiredService<IWorkEnvironment>();
 
             env.Initialize(new StartupConfig());
-            
+
             var assemblies = new List<AssemblyDescription>()
             {
                 new AssemblyDescription()

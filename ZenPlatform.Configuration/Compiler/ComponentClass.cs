@@ -36,6 +36,11 @@ namespace ZenPlatform.Configuration.Compiler
             Type = type;
         }
 
+        public void AddFunction(Function function)
+        {
+            TypeBody.AddFunction(function);
+        }
+        
         public SymbolScope SymbolScope { get; set; }
     }
 
