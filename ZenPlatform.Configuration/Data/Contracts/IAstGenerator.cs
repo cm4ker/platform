@@ -25,13 +25,13 @@ namespace ZenPlatform.Configuration.Data.Contracts
         void StageClient(XCObjectTypeBase type, Root root);
 
         /// <summary>
-        /// Сформировать класс
+        /// Стадия 0 Формирование класса без структуры
         /// </summary>
         /// <param name="builder"></param>
         void Stage0(ComponentAstBase astTree, ITypeBuilder builder);
 
         /// <summary>
-        /// Сформировать структуру класса
+        /// Стадия 1 формирование внутреннего каркаса класса (Методы + Свойства + Поля + События)
         /// </summary>
         /// <param name="builder"></param>
         void Stage1(ComponentAstBase astTree, ITypeBuilder builder);

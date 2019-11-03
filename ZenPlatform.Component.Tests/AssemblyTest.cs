@@ -36,8 +36,8 @@ namespace ZenPlatform.Component.Tests
             {
                 foreach (var type in component.Types)
                 {
-                    new StagedGeneratorAst(component).StageServer(type, rootServer);
-                    new StagedGeneratorAst(component).StageClient(type, rootClient);
+                    new EntityPlatformGenerator(component).StageServer(type, rootServer);
+                    new EntityPlatformGenerator(component).StageClient(type, rootClient);
                 }
             }
 
