@@ -8,7 +8,7 @@ namespace ZenPlatform.Configuration.Data.Contracts
     /// <summary>
     /// Последовательный механизм для генерации сборки
     /// </summary>
-    public interface IPlatformAstGenerator
+    public interface IPlatformGenerator
     {
         /// <summary>
         ///  Генерация серверного кода

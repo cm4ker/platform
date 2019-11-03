@@ -120,11 +120,11 @@ namespace ZenPlatform.Core.Test
             if (File.Exists("server.bll"))
                 File.Delete("server.bll");
 
-            if (File.Exists("test.bll"))
-                File.Delete("test.bll");
+            if (File.Exists("client.bll"))
+                File.Delete("client.bll");
 
             _assembly2.Write("server.bll");
-            _assembly.Write("test.bll");
+            _assembly.Write("client.bll");
 
             Assert.Equal(_assembly.Name,
                 $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");
