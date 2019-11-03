@@ -110,7 +110,7 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void CompileAndLoadAssembly()
         {
-            var compiller = new XCCompiller();
+            var compiller = new XCCompiler();
 
             var root = Factory.CreateExampleConfiguration();
 
@@ -120,14 +120,14 @@ namespace ZenPlatform.Core.Test
             if (File.Exists("server.bll"))
                 File.Delete("server.bll");
 
-            if (File.Exists("test.bll"))
-                File.Delete("test.bll");
+            if (File.Exists("client.bll"))
+                File.Delete("client.bll");
 
             _assembly2.Write("server.bll");
-            _assembly.Write("test.bll");
+            _assembly.Write("client.bll");
 
             Assert.Equal(_assembly.Name,
-                $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");
+                $"{root.ProjectName}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}");
 
             PlatformAssemblyLoadContext loadContext =
                 new PlatformAssemblyLoadContext(new TestClientAssemblyManager(_assembly));
@@ -145,7 +145,7 @@ namespace ZenPlatform.Core.Test
         public void AssemblyManagerTest()
         {
             var storage = new TestAssemblyStorage();
-            var manager = new AssemblyManager(new XCCompiller(), storage, new SimpleConsoleLogger<AssemblyManager>());
+            var manager = new AssemblyManager(new XCCompiler(), storage, new SimpleConsoleLogger<AssemblyManager>());
 
             var root = Factory.CreateExampleConfiguration();
 
@@ -174,7 +174,7 @@ namespace ZenPlatform.Core.Test
             var env = serverService.GetRequiredService<IWorkEnvironment>();
 
             env.Initialize(new StartupConfig());
-            
+
             var assemblies = new List<AssemblyDescription>()
             {
                 new AssemblyDescription()

@@ -80,7 +80,8 @@ namespace ZenPlatform.Compiler.Tests
 
             AstScopeRegister.Apply(cu);
 
-            var gp = new GeneratorParameters(new List<CompilationUnit>() {cu}, asm, CompilationMode.Server, SqlDatabaseType.SqlServer);
+            var gp = new GeneratorParameters(new List<CompilationUnit>() {cu}, asm, CompilationMode.Server,
+                SqlDatabaseType.SqlServer, null);
 
             var gen = new Generator(gp);
 

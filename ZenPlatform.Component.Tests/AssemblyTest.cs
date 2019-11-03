@@ -36,8 +36,8 @@ namespace ZenPlatform.Component.Tests
             {
                 foreach (var type in component.Types)
                 {
-                    new StagedGeneratorAst(component).StageServer(type, rootServer);
-                    new StagedGeneratorAst(component).StageClient(type, rootClient);
+                    new EntityPlatformGenerator(component).StageServer(type, rootServer);
+                    new EntityPlatformGenerator(component).StageClient(type, rootClient);
                 }
             }
 
@@ -45,10 +45,12 @@ namespace ZenPlatform.Component.Tests
             AstScopeRegister.Apply(rootClient);
 
 
-            var genS = new Generator(new GeneratorParameters(rootServer.Units, server, CompilationMode.Server, SqlDatabaseType.SqlServer));
+            var genS = new Generator(new GeneratorParameters(rootServer.Units, server, CompilationMode.Server,
+                SqlDatabaseType.SqlServer, conf));
             genS.Build();
 
-            var genC = new Generator(new GeneratorParameters(rootClient.Units, client, CompilationMode.Client, SqlDatabaseType.SqlServer));
+            var genC = new Generator(new GeneratorParameters(rootClient.Units, client, CompilationMode.Client,
+                SqlDatabaseType.SqlServer, conf));
             genC.Build();
 
 

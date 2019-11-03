@@ -89,41 +89,5 @@ namespace ZenPlatform.Compiler.Generation
                 propBuilder.WithGetter(getMethod).WithSetter(setMethod);
             }
         }
-
-        private void EmitMappingSupport(Class cls, ITypeBuilder tb)
-        {
-            if (!cls.IsMappable)
-            {
-                return;
-            }
-
-            tb.AddInterfaceImplementation(_ts.FindType<ICanMap>());
-
-            var readerMethod = tb.DefineMethod(nameof(ICanMap.Map), true, false, true);
-            var rg = readerMethod.Generator;
-
-            var readerType = _ts.FindType<DbDataReader>();
-
-            var readerParam =
-                readerMethod.DefineParameter("reader", readerType, false, false);
-
-
-            foreach (var property in cls.TypeBody.Properties)
-            {
-                if (string.IsNullOrEmpty(property.MapTo)) continue;
-
-                var prop = tb.FindProperty(property.Name);
-
-                rg
-                    .LdArg_0()
-                    .LdArg(readerParam.ArgIndex)
-                    .LdStr(property.MapTo)
-                    .EmitCall(readerType.FindMethod("get_Item", _bindings.String))
-                    .Unbox_Any(prop.PropertyType)
-                    .EmitCall(prop.Setter);
-            }
-
-            rg.Ret();
-        }
     }
 }

@@ -33,7 +33,7 @@ namespace ZenPlatform.EntityComponent
 
             QueryInjector = new SingleEntityQueryInjector(Component);
 
-            Generator = new StagedGeneratorAst(Component);
+            Generator = new EntityPlatformGenerator(Component); // new StagedGeneratorAst(Component);
 
             Migrator = new SingleEntityMigrator();
 
