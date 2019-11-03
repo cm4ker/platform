@@ -87,6 +87,8 @@ namespace ZenPlatform.Compiler.Generation
                     }
                     case ComponentModule cm:
                     {
+                        if (cm.CompilationMode != _mode) break;
+
                         var tcm = PreBuildComponentModule(cm);
                         AfterBuild(cm, tcm);
                         cm.Component.ComponentImpl.Generator.Stage0(cm, tcm);
@@ -159,8 +161,10 @@ namespace ZenPlatform.Compiler.Generation
 
                         break;
                     case ComponentAstBase cab:
+                        
+                        if (cab.CompilationMode != _mode) break;
+                        
                         var tcab = _stage0[cab];
-                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab);
 
                         foreach (var function in cab.TypeBody.Functions.FilterFunc(_mode))
                         {
@@ -169,36 +173,37 @@ namespace ZenPlatform.Compiler.Generation
                             cab.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
                         }
 
-                        if (cab is ComponentModule)
-                            break;
-
-                        foreach (var property in cab.TypeBody.Properties)
+                        if (cab is ComponentClass)
                         {
-                            var pp = PrebuildProperty(property, tcab);
-                            cab.TypeBody.SymbolTable.ConnectCodeObject(property, pp);
-                            _stage1Properties.Add(property, pp);
+                            foreach (var property in cab.TypeBody.Properties)
+                            {
+                                var pp = PrebuildProperty(property, tcab);
+                                cab.TypeBody.SymbolTable.ConnectCodeObject(property, pp);
+                                _stage1Properties.Add(property, pp);
+                            }
+
+                            foreach (var field in cab.TypeBody.Fields)
+                            {
+                                var pf = PrebuildField(field, tcab);
+                                cab.TypeBody.SymbolTable.ConnectCodeObject(field, pf);
+                                _stage1Fields.Add(field, pf);
+                                ;
+                            }
+
+                            if (!cab.TypeBody.Constructors.Any())
+                            {
+                                cab.TypeBody.AddConstructor(Constructor.Default);
+                            }
+
+                            foreach (var constructor in cab.TypeBody.Constructors)
+                            {
+                                var pf = PrebuildConstructor(constructor, tcab);
+                                _stage1constructors.Add(constructor, pf);
+                                ;
+                            }
                         }
 
-                        foreach (var field in cab.TypeBody.Fields)
-                        {
-                            var pf = PrebuildField(field, tcab);
-                            cab.TypeBody.SymbolTable.ConnectCodeObject(field, pf);
-                            _stage1Fields.Add(field, pf);
-                            ;
-                        }
-
-                        if (!cab.TypeBody.Constructors.Any())
-                        {
-                            cab.TypeBody.AddConstructor(Constructor.Default);
-                        }
-
-                        foreach (var constructor in cab.TypeBody.Constructors)
-                        {
-                            var pf = PrebuildConstructor(constructor, tcab);
-                            _stage1constructors.Add(constructor, pf);
-                            ;
-                        }
-
+                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab);
                         break;
 
                     default:
@@ -228,8 +233,6 @@ namespace ZenPlatform.Compiler.Generation
                     case Class c:
                         var tbc = _stage0[c];
 
-                        EmitMappingSupport(c, tbc);
-
                         foreach (var function in c.TypeBody.Functions.FilterFunc(_mode))
                         {
                             EmitFunction(function, _stage1Methods[function]);
@@ -246,8 +249,27 @@ namespace ZenPlatform.Compiler.Generation
                         }
 
                         break;
-                    case ComponentClass cc:
-                    case ComponentModule cm:
+                    case ComponentAstBase cab:
+                        
+                        if (cab.CompilationMode != _mode) break;
+                        
+                        var tbcab = _stage0[cab];
+
+                        foreach (var function in cab.TypeBody.Functions.FilterFunc(_mode))
+                        {
+                            EmitFunction(function, _stage1Methods[function]);
+                        }
+
+                        foreach (var property in cab.TypeBody.Properties)
+                        {
+                            BuildProperty(property, tbcab, _stage1Properties[property]);
+                        }
+
+                        foreach (var constructor in cab.TypeBody.Constructors)
+                        {
+                            EmitConstructor(constructor, _stage1constructors[constructor]);
+                        }
+
                         break;
 
                     default:

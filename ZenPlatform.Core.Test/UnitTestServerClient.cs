@@ -127,7 +127,7 @@ namespace ZenPlatform.Core.Test
             _assembly.Write("client.bll");
 
             Assert.Equal(_assembly.Name,
-                $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");
+                $"{root.ProjectName}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}");
 
             PlatformAssemblyLoadContext loadContext =
                 new PlatformAssemblyLoadContext(new TestClientAssemblyManager(_assembly));
