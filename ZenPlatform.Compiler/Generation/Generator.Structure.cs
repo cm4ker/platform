@@ -158,6 +158,10 @@ namespace ZenPlatform.Compiler.Generation
                         }
 
                         break;
+                    case ComponentClass cc:
+                    case ComponentModule cm:
+                        break;
+
                     default:
                         throw new Exception("The type entity not supported");
                 }
@@ -203,6 +207,10 @@ namespace ZenPlatform.Compiler.Generation
                         }
 
                         break;
+                    case ComponentClass cc:
+                    case ComponentModule cm:
+                        break;
+                    
                     default:
                         throw new Exception("The type entity not supported");
                 }

@@ -4,6 +4,7 @@ using System.Linq;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Configuration.Compiler;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -38,7 +39,7 @@ namespace ZenPlatform.EntityComponent.Entity
      * Internal
      */
 
-    public class StagedGeneratorAst : IPlatformAstGenerator
+    public class StagedGeneratorAst : IPlatformGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
         private readonly XCComponent _component;
@@ -150,7 +151,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
             }
 
-            var cls = new EntityAstClass(set, null, new TypeBody(members), dtoClassName, true);
+            var cls = new Class(null, new TypeBody(members), dtoClassName, true);
 
             cls.Namespace = @namespace;
 
@@ -235,7 +236,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
             }
 
-            var cls = new EntityAstClass(set, null, new TypeBody(members), dtoClassName);
+            var cls = new Class(null, new TypeBody(members), dtoClassName);
 
             cls.Namespace = @namespace;
 
@@ -473,27 +474,8 @@ namespace ZenPlatform.EntityComponent.Entity
             GenerateClientDtoClass(type, root);
         }
 
-        public void PatchType(Class cls, ITypeBuilder builder)
+        public void PatchType(ComponentAstBase astTree, ITypeBuilder builder)
         {
-            if (!(cls is EntityAstClass eac)) return;
-
-            var ts = builder.Assembly.TypeSystem;
-
-            var sb = ts.GetSystemBindings();
-
-            builder.DefineMethod(ts.FindType<>());
         }
-    }
-
-    
-    public class EntityAstClass : Class
-    {
-        public EntityAstClass(XCSingleEntity conf, ILineInfo lineInfo, TypeBody typeBody, string name,
-            bool isMappable = false) : base(lineInfo, typeBody, name, isMappable)
-        {
-            Conf = conf;
-        }
-
-        public XCSingleEntity Conf { get; }
     }
 }

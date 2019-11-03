@@ -30,7 +30,7 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// </summary>
         //IEntityGenerator Generator { get; }
 
-        IPlatformAstGenerator Generator { get; }
+        IPlatformGenerator Generator { get; }
 
         /// <summary>
         /// Генератор объектов базы данных
