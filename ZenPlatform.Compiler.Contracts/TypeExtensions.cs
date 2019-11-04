@@ -119,7 +119,7 @@ namespace ZenPlatform.Compiler.Contracts
                                                               && c.Parameters.Count == args.Count))
             {
                 var mismatch = false;
-                
+
                 for (var c = 0; c < args.Count; c++)
                 {
                     mismatch = !ctor.Parameters[c].Type.IsAssignableFrom(args[c]);
@@ -167,7 +167,6 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter EmitCall(this IEmitter emitter, IConstructor method,
             bool swallowResult = false)
         {
-            
             emitter.Emit(OpCodes.Call, method);
             return emitter;
         }

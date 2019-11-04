@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Data.Contracts;
@@ -22,7 +23,7 @@ namespace ZenPlatform.Compiler.Platform
 
         public IAssembly Build(XCRoot configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
         {
-            IAssemblyPlatform pl = new CecilAssemblyPlatform();
+            IAssemblyPlatform pl = new DnlibAssemblyPlatform();
             var assemblyBuilder = pl.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
 
             var root = new Root(null, new List<CompilationUnit>());

@@ -45,6 +45,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public DnlibAssemblyResolver Resolver => _resolver;
 
         public IWellKnownTypes WellKnownTypes { get; }
+
         public IReadOnlyList<IAssembly> Assemblies => _asms;
 
         internal IAssembly RegisterAssembly(AssemblyDef assemblyDef)

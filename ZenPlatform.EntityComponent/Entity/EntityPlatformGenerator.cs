@@ -20,6 +20,7 @@ using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.QueryBuilder.Builders;
 
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -514,13 +515,21 @@ namespace ZenPlatform.EntityComponent.Entity
                 EmitMappingSupport(cc, builder);
                 EmitSavingSupport(cc, builder);
             }
+
+            BuildVersionField(builder);
+        }
+
+        private void BuildVersionField(ITypeBuilder tb)
+        {
+            var _ts = tb.Assembly.TypeSystem;
+            var _b = _ts.GetSystemBindings();
+            var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version");
         }
 
         private void EmitSavingSupport(ComponentClass cls, ITypeBuilder tb)
         {
             var _ts = tb.Assembly.TypeSystem;
             var _bindings = _ts.GetSystemBindings();
-
 
             tb.AddInterfaceImplementation(_ts.FindType<ICanSave>());
 
@@ -534,18 +543,14 @@ namespace ZenPlatform.EntityComponent.Entity
             var cmdParam =
                 readerMethod.DefineParameter("cmd", cmdType, false, false);
 
+            var indexp = 0;
+
             var p_loc = rg.DefineLocal(_ts.FindType<DbParameter>());
 
             rg
                 .LdArg(cmdParam.ArgIndex)
                 .LdStr("SELECT * FROM Table")
                 .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter);
-
-//            DbCommand c;
-
-//            var p = c.CreateParameter();
-//            p.ParameterName = "p_0";
-//            p.Value = 1;
 
             foreach (var property in cls.TypeBody.Properties)
             {
@@ -557,7 +562,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     .EmitCall(cmdType.FindMethod(nameof(DbCommand.CreateParameter)))
                     .StLoc(p_loc)
                     .LdLoc(p_loc)
-                    .LdStr("ParamName")
+                    .LdStr($"P_{indexp}")
                     .EmitCall(parameterType.FindProperty(nameof(DbParameter.ParameterName)).Setter)
                     .LdLoc(p_loc)
                     .LdArg_0()
@@ -565,15 +570,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     .Box(prop.PropertyType)
                     .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter);
 
-                /*
-                 * void Save(DbCommand cmd)
-                 * {
-                 *
-                 *    cmd.CommandText = "Cmd_Text";
-                 *    cmd.Parameters.Add();
-                 *    cmd.Parameters.Add();
-                 * }
-                 */
+                indexp++;
             }
 
             rg.Ret();

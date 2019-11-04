@@ -62,6 +62,9 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
         public IReadOnlyList<IType> GenericArguments { get; }
 
+        public IReadOnlyList<IType> Interfaces =>
+            _interfaces ??= TypeDef.Interfaces.Select(x=>new DnlibType(_ts, x.Interface.ResolveTypeDef(),x.Interface.ToTypeRef(), new DnlibAssembly(_ts, x.Interface.)));
+        
         public bool IsAssignableFrom(IType type)
         {
             throw new NotImplementedException();
@@ -89,7 +92,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public IType BaseType { get; }
         public bool IsValueType { get; }
         public bool IsEnum { get; }
-        public IReadOnlyList<IType> Interfaces { get; }
+  
         public bool IsInterface { get; }
         public bool IsSystem { get; }
 
