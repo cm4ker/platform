@@ -5,56 +5,116 @@ parse
  ;
 
 sql_stmt_list
- : ';'* select_stmt ( ';'+ select_stmt )* ';'*
+ : ';'* query_stmt ( ';'+ query_stmt )* ';'*
  ;
  
 from_stmt 
 : 
- FROM ( table_or_subquery ( ',' table_or_subquery )* | join_clause );
+    FROM ( table_or_subquery ( ',' table_or_subquery )* | join_clause )
+;
 
 where_stmt
-: WHERE expr
+: 
+    WHERE expr
 ; 
+
+group_by_stmt
+:
+    GROUP BY expr ( ',' expr )*
+;
+
+having_stmt
+:
+    HAVING expr
+;
  
-select_stmt
+ select_stmt: 
+    SELECT ( DISTINCT | ALL )? result_column ( ',' result_column )*
+ ;
+ 
+query_stmt
  : ( from_stmt )?
    ( where_stmt )?
-   ( GROUP BY expr ( ',' expr )* ( HAVING expr )? )?
-   SELECT ( DISTINCT | ALL )? result_column ( ',' result_column )*
+   ( group_by_stmt having_stmt? )?
+   select_stmt
  ;
 type_name
  : name+ ( '(' signed_number ')'
          | '(' signed_number ',' signed_number ')' )?
  ;
 
-expr
- : literal_value
- | BIND_PARAMETER
- | ( component_name '.' object_name '.' )? column_name
- | unary_operator expr
- | expr '||' expr
- | expr ( '*' | '/' | '%' ) expr
- | expr ( '+' | '-' ) expr
- | expr ( '<<' | '>>' | '&' | '|' ) expr
- | expr ( '<' | '<=' | '>' | '>=' ) expr
- | expr ( '=' | '==' | '!=' | '<>' | IS | IS NOT | IN | LIKE | GLOB | MATCH | REGEXP ) expr
- | expr AND expr
- | expr OR expr
- | function_name '(' ( DISTINCT? expr ( ',' expr )* | '*' )? ')'
- | '(' expr ')'
- | CAST '(' expr AS type_name ')'
- | expr NOT? ( LIKE | GLOB | REGEXP | MATCH ) expr ( ESCAPE expr )?
- | expr ( ISNULL | NOTNULL | NOT NULL )
- | expr IS NOT? expr
- | expr NOT? BETWEEN expr AND expr
- | expr NOT? IN ( '(' ( select_stmt
-                          | expr ( ',' expr )*
-                          )? 
-                      ')'
-                    | ( component_name '.' )? object_name )
- | ( ( NOT )? EXISTS )? '(' select_stmt ')'
- | CASE expr? ( WHEN expr THEN expr )+ ( ELSE expr )? END
- ;
+expr_case:
+    CASE expr? ( WHEN expr THEN expr )+ ( ELSE expr )? END
+;
+
+
+expr_column:
+    ((component_name '.')? object_name '.' )? column_name
+;
+
+expr:
+    exprBinary
+;
+
+expr_cast: 
+    CAST '(' expr AS type_name ')'
+;
+
+exprBinary:
+    exprEquality
+    | exprBinary OP_AND exprEquality
+    | exprBinary OP_OR exprEquality
+;
+
+exprEquality: 
+    exprRelational
+    | exprEquality OP_EQ exprRelational
+    | exprEquality OP_NE exprRelational
+;
+
+exprRelational:
+       exprAdditive 
+       | exprRelational GT exprAdditive
+       | exprRelational LT exprAdditive
+       | exprRelational OP_GT exprAdditive
+       | exprRelational OP_LE exprAdditive
+       | exprRelational IS exprAdditive
+       | exprRelational IS NOT exprAdditive
+       | exprRelational LIKE exprAdditive
+;
+
+exprAdditive:
+   exprMultiplicative
+        | exprAdditive PLUS exprMultiplicative
+        | exprAdditive MINUS exprMultiplicative
+;
+
+exprMultiplicative:
+    exprUnary
+    | exprMultiplicative STAR exprUnary
+    | exprMultiplicative DIV exprUnary
+    | exprMultiplicative  PERCENT exprUnary
+;
+
+exprUnary:
+    exprPostfix
+    | PLUS exprAtom
+    | MINUS exprAtom
+    | BANG exprAtom
+;
+
+exprPostfix: 
+    exprAtom
+    | expr_cast
+    | expr_case 
+    | '(' expr ')'
+;
+
+exprAtom:
+    literal
+    //| functionCallexpr
+    | expr_column
+;
 
 result_column
  : '*'
@@ -62,9 +122,12 @@ result_column
  | ( column_alias '=')? expr 
  ;
 
+table:
+    component_name '.' object_name ( AS? table_alias )?
+;
  
 table_or_subquery
- : ( component_name '.' object_name ( AS? table_alias )?
+ : ( table
  | '(' ( table_or_subquery ( ',' table_or_subquery )*
        | join_clause )
    ')' ( AS? table_alias )?
@@ -95,7 +158,7 @@ signed_number
  : ( '+' | '-' )? NUMERIC_LITERAL
  ;
 
-literal_value
+literal
  : NUMERIC_LITERAL
  | STRING_LITERAL
  | BLOB_LITERAL
@@ -111,6 +174,11 @@ unary_operator
  | '~'
  | NOT
  ;
+
+binary_operator
+:
+
+;
 
 column_alias
  : IDENTIFIER
