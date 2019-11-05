@@ -68,7 +68,7 @@ namespace ZenPlatform.Compiler.Dnlib
             prop.DeclaringType = ((DnlibType) propertyType).TypeDef;
 
 
-            var propertyBuilder = new DnlibPropertyBuilder(prop);
+            var propertyBuilder = new DnlibPropertyBuilder(_ts, prop);
             ((List<DnlibProperty>) Properties).Add(propertyBuilder);
 
             return propertyBuilder;
