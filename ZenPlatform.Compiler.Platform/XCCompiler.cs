@@ -23,7 +23,7 @@ namespace ZenPlatform.Compiler.Platform
 
         public IAssembly Build(XCRoot configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
         {
-            IAssemblyPlatform pl = new DnlibAssemblyPlatform();
+            IAssemblyPlatform pl = new CecilAssemblyPlatform();
             var assemblyBuilder = pl.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
 
             var root = new Root(null, new List<CompilationUnit>());

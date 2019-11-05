@@ -9,6 +9,7 @@ using MoreLinq.Extensions;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Language.QueryLanguage.Model;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.DML.Select;
@@ -22,16 +23,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage
     /// </summary>
     public class ZSqlGrammarVisitor : ZSqlGrammarBaseVisitor<LTItem>
     {
-        private SqlNode _result;
-        private DataQueryConstructorContext _context;
-        private XCRoot _conf;
-        private Stack<LTItem> _dependencyStack;
+        private QLang _stack;
 
         public ZSqlGrammarVisitor(XCRoot configuration, DataQueryConstructorContext context)
         {
-            _result = new SelectQueryNode();
-            _conf = configuration;
-            _context = context;
+            _stack = new QLang(configuration);
         }
     }
 }

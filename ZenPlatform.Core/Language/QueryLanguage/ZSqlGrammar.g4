@@ -7,9 +7,18 @@ parse
 sql_stmt_list
  : ';'* select_stmt ( ';'+ select_stmt )* ';'*
  ;
+ 
+from_stmt 
+: 
+ FROM ( table_or_subquery ( ',' table_or_subquery )* | join_clause );
+
+where_stmt
+: WHERE expr
+; 
+ 
 select_stmt
- : ( FROM ( table_or_subquery ( ',' table_or_subquery )* | join_clause ) )?
-   ( WHERE expr )?
+ : ( from_stmt )?
+   ( where_stmt )?
    ( GROUP BY expr ( ',' expr )* ( HAVING expr )? )?
    SELECT ( DISTINCT | ALL )? result_column ( ',' result_column )*
  ;

@@ -235,13 +235,13 @@ namespace ZenPlatform.Core.Test.QLang
 
             var query = (QQuery) q.top();
 
-            SQLServerVisitor _visitor = new SQLServerVisitor();
+            SQLServerVisitor visitor = new SQLServerVisitor();
 
-            LogicToReal l2r = new LogicToReal();
+            Logic2QueryTreeConverter l2r = new Logic2QueryTreeConverter();
 
-            var syntaxTree = l2r.Build(query);
+            var syntaxTree = l2r.Convert(query);
 
-            var result = _visitor.Visit(syntaxTree);
+            var result = visitor.Visit(syntaxTree);
         }
     }
 }

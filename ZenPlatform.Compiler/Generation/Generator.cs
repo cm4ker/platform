@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.Language.Ast.Definitions;
 using SreTA = System.Reflection.TypeAttributes;
 
@@ -37,6 +38,7 @@ namespace ZenPlatform.Compiler.Generation
             _conf = parameters.Configuration;
 
             _mode = parameters.Mode;
+
             _bindings = _ts.GetSystemBindings();
         }
 
