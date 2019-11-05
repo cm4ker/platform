@@ -10,15 +10,15 @@ using Q = ZenPlatform.QueryBuilder.Builders.Query;
 
 namespace ZenPlatform.Core.Language.QueryLanguage
 {
-    public class LogicToReal
+    public class Logic2QueryTreeConverter
     {
         private string _context;
 
-        public LogicToReal()
+        public Logic2QueryTreeConverter()
         {
         }
 
-        public QuerySyntaxNode Build(QQuery query)
+        public QuerySyntaxNode Convert(QQuery query)
         {
             var q = Q.New();
             GenerateQuery(q.Select(), query);
