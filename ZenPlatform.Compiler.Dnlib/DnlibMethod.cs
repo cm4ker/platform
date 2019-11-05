@@ -49,12 +49,16 @@ namespace ZenPlatform.Compiler.Dnlib
         public bool IsPublic => MethodDef.IsPublic;
         public bool IsStatic => MethodDef.IsStatic;
 
-        public IReadOnlyList<IParameter> Parameters => MethodDef.Parameters
+        public IReadOnlyList<IParameter> Parameters => 
+            _parameters ??= MethodDef.Parameters
+            .Where(x => !x.IsHiddenThisParameter)
             .Select(p => new DnlibParameter(TypeSystem, MethodDef, p))
             .ToList();
 
 
         private IEmitter _generator;
+        private List<DnlibParameter> _parameters;
+        
         public IEmitter Generator => _generator ??= new DnlibEmitter(TypeSystem, MethodDef);
 
         public bool Equals(IMethod other)
@@ -99,7 +103,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public static TypeRef ToTypeRef(this ITypeDefOrRef type)
         {
-            return type.ToTypeSig().TryGetTypeRef();
+            return new TypeRefUser(type.Module, type.Namespace, type.Name);
         }
     }
 }

@@ -9,6 +9,8 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
+        private readonly GeneratorParameters _parameters;
+
         //private readonly CompilationUnit _cu;
         private readonly IAssemblyBuilder _asm;
         private readonly ITypeSystem _ts;
@@ -27,6 +29,7 @@ namespace ZenPlatform.Compiler.Generation
 
         public Generator(GeneratorParameters parameters)
         {
+            _parameters = parameters;
             _cus = parameters.Units;
             _asm = parameters.Builder;
             _ts = _asm.TypeSystem;
