@@ -19,8 +19,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.7.1-build518-beta" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.7.1-build518-beta" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.7.1-build518-beta" />
+    <PackageReference Include="Avalonia" Version="0.9.0-preview5" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.0-preview5" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.0-preview5" />
+    <PackageReference Include="Portable.Xaml" Version="0.24.0" />
   </ItemGroup>
 </Project>
