@@ -20,7 +20,11 @@
     },
     "frameworks": {
       "netcoreapp3.0": {
-        "projectReferences": {}
+        "projectReferences": {
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
+            "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
+          }
+        }
       }
     },
     "warningProperties": {

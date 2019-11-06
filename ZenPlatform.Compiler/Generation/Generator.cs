@@ -4,6 +4,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.UI.Ast;
 using SreTA = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.Compiler.Generation
@@ -45,6 +46,10 @@ namespace ZenPlatform.Compiler.Generation
         private void Error(string message)
         {
             throw new Exception(message);
+        }
+
+        private void EmitUI(UINode node)
+        {
         }
     }
 }

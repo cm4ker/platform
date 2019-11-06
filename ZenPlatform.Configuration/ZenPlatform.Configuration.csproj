@@ -13,6 +13,7 @@
     <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
     <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+    <ProjectReference Include="..\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="dnlib" Version="3.2.0" />

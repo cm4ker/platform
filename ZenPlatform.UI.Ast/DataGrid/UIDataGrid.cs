@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZenPlatform.UIBuilder.Interface.DataGrid
+namespace ZenPlatform.UI.Ast.DataGrid
 {
     public class UIDataGrid : UINode
     {
@@ -33,17 +33,14 @@ namespace ZenPlatform.UIBuilder.Interface.DataGrid
 
     public class UIDataGridTextColumn : UIDataGridColumn
     {
-
     }
 
     public class UIDataGridObjectColumn : UIDataGridColumn
     {
-
     }
 
     public class UIDataGridDateColumn : UIDataGridColumn
     {
-
     }
 
     public class UIColumnFactory
