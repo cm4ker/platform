@@ -24,4 +24,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.0-preview5" />
     <PackageReference Include="Portable.Xaml" Version="0.24.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interface" />
+  </ItemGroup>
 </Project>
