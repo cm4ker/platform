@@ -1,6 +1,6 @@
 ﻿using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.UIBuilder.Interface
+namespace ZenPlatform.UI.Ast
 {
     public class UINode : Node
     {

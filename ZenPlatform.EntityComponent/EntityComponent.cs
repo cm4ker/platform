@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
 using System.Security.Policy;
+using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Contracts;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.EntityComponent.Configuration;

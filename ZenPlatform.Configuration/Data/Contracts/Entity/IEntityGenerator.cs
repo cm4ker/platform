@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Contracts;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
 {

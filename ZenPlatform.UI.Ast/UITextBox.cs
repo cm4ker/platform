@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-
-namespace ZenPlatform.UIBuilder.Interface
+﻿namespace ZenPlatform.UI.Ast
 {
     /// <summary>
     /// Текстовое поле

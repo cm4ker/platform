@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.UIBuilder.Interface
+﻿namespace ZenPlatform.UI.Ast
 {
     public enum UIGroupOrientation
     {

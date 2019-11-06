@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZenPlatform.UIBuilder.Interface
+namespace ZenPlatform.UI.Ast
 {
     public class UITab : UINode
     {
