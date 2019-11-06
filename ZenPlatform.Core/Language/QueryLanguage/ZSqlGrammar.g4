@@ -49,7 +49,7 @@ expr_case:
 
 
 expr_column:
-    ((component_name '.')? object_name '.' )? column_name
+    ((component_name '.'object_name '.' ) | table_name )? column_name
 ;
 
 expr:
@@ -377,6 +377,10 @@ savepoint_name
 table_alias 
  : any_name
  ;
+
+table_name
+: any_name
+;
 
 transaction_name
  : any_name

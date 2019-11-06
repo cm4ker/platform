@@ -5,9 +5,7 @@ using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
-using Avalonia.Markup.Xaml.Context;
 using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Markup.Xaml.PortableXaml;
 using Avalonia.Markup.Xaml.Styling;
 using Portable.Xaml;
 using Portable.Xaml.Markup;
@@ -15,19 +13,25 @@ using XmlnsDefinitionAttribute = Avalonia.Metadata.XmlnsDefinitionAttribute;
 
 namespace ZenPlatform.UIBuilder.Compilers.Avalonia
 {
+    public class RuntimeTypeProvider
+    {
+        public Type FindType(string @namespace, string name, params Type[] args)
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Контекст схемы данных. Необходим для того, чтобы связать  реальные типы с типами XAML
     /// </summary>
     public class AvaloniaCustomXamlSchemaContext : XamlSchemaContext
     {
-        private readonly IRuntimeTypeProvider _provider;
+        private RuntimeTypeProvider _tp;
 
-        public AvaloniaCustomXamlSchemaContext(IRuntimeTypeProvider provider)
+        public AvaloniaCustomXamlSchemaContext()
         {
-            _provider = provider;
+            _tp = new RuntimeTypeProvider();
         }
-
-        private IRuntimeTypeProvider _avaloniaTypeProvider;
 
         protected override XamlType GetXamlType(string xamlNamespace, string name, params XamlType[] typeArguments)
         {
@@ -46,10 +50,12 @@ namespace ZenPlatform.UIBuilder.Compilers.Avalonia
                 //TODO: log or wrap exception
                 throw e;
             }
+
             return type;
         }
 
-        private XamlType ResolveXamlTypeName(string xmlNamespace, string xmlLocalName, XamlType[] typeArguments, bool required)
+        private XamlType ResolveXamlTypeName(string xmlNamespace, string xmlLocalName, XamlType[] typeArguments,
+            bool required)
         {
             Type[] genArgs = null;
             if (typeArguments != null && typeArguments.Any())
@@ -63,12 +69,12 @@ namespace ZenPlatform.UIBuilder.Compilers.Avalonia
             }
 
             // MarkupExtension type could omit "Extension" part in XML name.
-            Type type = _avaloniaTypeProvider.FindType(xmlNamespace,
-                                                        xmlLocalName,
-                                                        genArgs) ??
-                        _avaloniaTypeProvider.FindType(xmlNamespace,
-                                                        xmlLocalName + "Extension",
-                                                        genArgs);
+            Type type = _tp.FindType(xmlNamespace,
+                            xmlLocalName,
+                            genArgs) ??
+                        _tp.FindType(xmlNamespace,
+                            xmlLocalName + "Extension",
+                            genArgs);
 
             if (type != null)
             {
@@ -92,7 +98,6 @@ namespace ZenPlatform.UIBuilder.Compilers.Avalonia
         }
 
 
-
         public override XamlType GetXamlType(Type type)
         {
             //TODO: Нужно просканировать типы, которые у нас есть и вернуть кастомно собранный
@@ -113,8 +118,8 @@ namespace ZenPlatform.UIBuilder.Compilers.Avalonia
 
         private static readonly Dictionary<Type, Type> _wellKnownExtensionTypes = new Dictionary<Type, Type>()
         {
-            { typeof(Binding), typeof(BindingExtension) },
-            { typeof(StyleInclude), typeof(StyleIncludeExtension) },
+            {typeof(Binding), typeof(BindingExtension)},
+            {typeof(StyleInclude), typeof(StyleIncludeExtension)},
         };
 
         /*
@@ -125,15 +130,16 @@ namespace ZenPlatform.UIBuilder.Compilers.Avalonia
 
         private XamlType GetAvaloniaXamlType(Type type)
         {
-
             //if type is extension get the original type to check
             var origType = _wellKnownExtensionTypes.FirstOrDefault(v => v.Value == type).Key;
 
             if (typeof(IBinding).GetTypeInfo().IsAssignableFrom((origType ?? type).GetTypeInfo()))
             {
-                return new BindingXamlType(type, this);
+                //return new BindingXamlType(type, this);
+
+                return null;
             }
-            
+
             if (origType != null ||
                 typeof(AvaloniaObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
             {
@@ -142,7 +148,7 @@ namespace ZenPlatform.UIBuilder.Compilers.Avalonia
 
             return null;
         }
-        
+
         public override ICollection<XamlType> GetAllXamlTypes(string xamlNamespace)
         {
             var asms = AppDomain.CurrentDomain.GetAssemblies();

@@ -59,5 +59,37 @@ namespace ZenPlatform.Core.Language.QueryLanguage
                 context.table_alias()?.GetText());
             return base.VisitTable(context);
         }
+
+        public override LTItem VisitObject_name(ZSqlGrammarParser.Object_nameContext context)
+        {
+            _stack.ld_type(context.GetText());
+            return base.VisitObject_name(context);
+        }
+
+        public override LTItem VisitComponent_name(ZSqlGrammarParser.Component_nameContext context)
+        {
+            _stack.ld_component(context.GetText());
+            return base.VisitComponent_name(context);
+        }
+
+        public override LTItem VisitTable_alias(ZSqlGrammarParser.Table_aliasContext context)
+        {
+            _stack.alias(context.GetText());
+            return base.VisitTable_alias(context);
+        }
+
+        public override LTItem VisitColumn_alias(ZSqlGrammarParser.Column_aliasContext context)
+        {
+            _stack.alias(context.GetText());
+            return base.VisitColumn_alias(context);
+        }
+
+        public override LTItem VisitExpr_column(ZSqlGrammarParser.Expr_columnContext context)
+        {
+            base.VisitExpr_column(context);
+            _stack.ld_field(context.column_name().GetText());
+
+            return null;
+        }
     }
 }
