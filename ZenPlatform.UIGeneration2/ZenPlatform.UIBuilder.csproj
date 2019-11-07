@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj" />
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+    <ProjectReference Include="..\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="App.xaml">

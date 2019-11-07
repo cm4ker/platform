@@ -243,5 +243,36 @@ namespace ZenPlatform.Core.Test.QLang
 
             var result = visitor.Visit(syntaxTree);
         }
+
+        [Fact]
+        public void LookupTest()
+        {
+            var q = new Language.QueryLanguage.Model.QLang(conf);
+            q.begin_query();
+
+            q.m_from();
+
+            q.ld_component("Entity");
+            q.ld_type("Invoice");
+            q.alias("A");
+
+            q.m_select();
+            q.ld_name("A");
+            q.ld_field("Store");
+            var storeField = q.top() as QSourceFieldExpression;
+            Assert.NotNull(storeField);
+
+            q.lookup("Invoice");
+            var field = q.top() as QLookupField;
+            Assert.NotNull(field);
+
+            q.lookup("Store");
+            field = q.top() as QLookupField;
+            Assert.NotNull(field);
+
+            Assert.Equal(storeField.GetRexpressionType(), field.GetRexpressionType());
+
+            q.st_query();
+        }
     }
 }

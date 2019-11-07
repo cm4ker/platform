@@ -20,6 +20,7 @@ using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.QueryBuilder.Builders;
+using ZenPlatform.UI.Ast;
 
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -500,6 +501,11 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             GenerateCommands(type, root);
             GenerateClientDtoClass(type, root);
+        }
+
+        public void StageUI(XCObjectTypeBase type, UINode node)
+        {
+            throw new NotImplementedException();
         }
 
 

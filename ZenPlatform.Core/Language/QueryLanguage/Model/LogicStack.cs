@@ -24,7 +24,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             return (QExpression) this.Pop();
         }
-
+        
         public QOperationExpression PopOpExpression()
         {
             return (QOperationExpression) this.Pop();

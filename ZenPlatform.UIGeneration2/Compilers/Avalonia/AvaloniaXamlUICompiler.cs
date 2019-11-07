@@ -7,9 +7,10 @@ using Portable.Xaml;
 using ZenPlatform.Controls.Avalonia;
 using ZenPlatform.Shared;
 using ZenPlatform.Shared.Tree;
+using ZenPlatform.UI.Ast;
+using ZenPlatform.UI.Ast.DataGrid;
 using ZenPlatform.UIBuilder.Compilers.Avalonia;
-using ZenPlatform.UIBuilder.Interface;
-using ZenPlatform.UIBuilder.Interface.DataGrid;
+
 
 namespace ZenPlatform.UIBuilder.Compilers
 {

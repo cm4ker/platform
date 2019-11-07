@@ -36,6 +36,9 @@ namespace ZenPlatform.ConfigurationExample
             store.Name = "Store";
             store.Description = "This is a store entity";
             store.RelTableName = "Obj_0001";
+            var invoiceProp = store.CreateProperty();
+            invoiceProp.Name = "Invoice";
+            invoiceProp.Types.Add(invoice);
             store.Initialize();
 
             var storeProp = invoice.CreateProperty();
