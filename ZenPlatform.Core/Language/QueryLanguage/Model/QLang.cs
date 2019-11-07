@@ -190,6 +190,15 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             _scope.Push(new LogicScope());
         }
 
+        public void lookup(string propName)
+        {
+            _logicStack.Push(new QLookupField(propName, _logicStack.PopExpression()));
+        }
+
+        public void st_data_request()
+        {
+        }
+
         public void st_query()
         {
             if (CurrentScope.QueryContext != QueryContext.Select)
@@ -236,6 +245,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         public void right_join()
         {
             join_with_type(QJoinType.Right);
+        }
+
+        public void cross_join()
+        {
+            join_with_type(QJoinType.Cross);
         }
 
         /// <summary>

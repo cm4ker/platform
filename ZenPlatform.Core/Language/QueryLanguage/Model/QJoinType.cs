@@ -5,6 +5,8 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         Inner,
         Left,
         Right,
-        Full
+        Full,
+        Cross
+        
     }
 }
