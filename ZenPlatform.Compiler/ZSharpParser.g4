@@ -185,8 +185,6 @@ expressionAtom:
     literal
     | functionCallExpression
     | name
-    
-    
 ;
 
 variableType: 

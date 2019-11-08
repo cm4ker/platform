@@ -13,7 +13,6 @@ using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Contracts;
 using ZenPlatform.Shared.ParenChildCollection;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;

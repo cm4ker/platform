@@ -10,10 +10,12 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibProperty : IProperty
     {
+        private readonly DnlibTypeSystem _ts;
         protected readonly PropertyDef PropertyDef;
 
-        public DnlibProperty(PropertyDef property)
+        public DnlibProperty(DnlibTypeSystem typeSystem, PropertyDef property)
         {
+            _ts = typeSystem;
             PropertyDef = property;
         }
 
@@ -22,8 +24,9 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new NotImplementedException();
         }
 
-        public string Name { get; }
-        public IType PropertyType { get; }
+        public string Name => PropertyDef.Name;
+
+        public IType PropertyType => null;
         public IMethod Getter { get; }
         public IMethod Setter { get; }
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }

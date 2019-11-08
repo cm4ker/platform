@@ -1,3 +1,4 @@
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
@@ -17,4 +18,6 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             return "Unknown";
         }
     }
+
+   
 }

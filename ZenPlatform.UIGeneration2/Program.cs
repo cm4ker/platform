@@ -1,84 +1,83 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Logging.Serilog;
-using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.Context;
-using Portable.Xaml;
-using ZenPlatform.UIBuilder.Compilers;
-using ZenPlatform.UIBuilder.Compilers.Avalonia;
-using ZenPlatform.UIBuilder.Interface;
-using ZenPlatform.UIBuilder.Interface.DataGrid;
 
 namespace ZenPlatform.UIBuilder
 {
     public class Program
     {
-        public static void Main()
+
+        public static void Main(string[] args )
         {
+            var result = AppBuilder.Configure<App>()
+                .UsePlatformDetect();
+
+            result.StartWithClassicDesktopLifetime(args);
+        }
+
+//        public static void Main1()
+//        {
 //            var result = AppBuilder.Configure<App>()
 //                .UsePlatformDetect()
 //                .SetupWithoutStarting();
-
-
-            var window = new UIWindow().With(x =>
-                x.Group()
-//                    .With(gi =>
-//                    {
-//                        var tb = gi.TextBox();
-//                        tb.DataSource = "Person";
-//                        return tb;
-//                    })
-                    .With(l => l.Label("Label component"))
-                    .With(f => f.CheckBox("Checkbox component"))
-//                        .With(f =>
+//
+//
+//            var window = new UIWindow().With(x =>
+//                x.Group()
+////                    .With(gi =>
+////                    {
+////                        var tb = gi.TextBox();
+////                        tb.DataSource = "Person";
+////                        return tb;
+////                    })
+//                    .With(l => l.Label("Label component"))
+//                    .With(f => f.CheckBox("Checkbox component"))
+////                        .With(f =>
+////                        {
+////                            var b = f.Button("Button component");
+////                            b.OnClick = "Click";
+////                            return b;
+////                        })
+////                        .With(new UIObjectPicker())
+////                    .With(new UIDataGrid().WithColumn(g => g.TextColumn()))
+//                    .With(tc => tc.TabControl().WithTab(t =>
 //                        {
-//                            var b = f.Button("Button component");
-//                            b.OnClick = "Click";
-//                            return b;
+//                            t.Header = "Page 1";
+//                            t.With(f => f.Label("This is content on page 1"));
 //                        })
-//                        .With(new UIObjectPicker())
-//                    .With(new UIDataGrid().WithColumn(g => g.TextColumn()))
-                    .With(tc => tc.TabControl().WithTab(t =>
-                        {
-                            t.Header = "Page 1";
-                            t.With(f => f.Label("This is content on page 1"));
-                        })
-                        .WithTab(t =>
-                        {
-                            t.Header = "Page 2";
-                            t.With(f => f.Label("This is content on page 2"));
-                        })));
-
-            window.Height = 400;
-            window.Width = 300;
-
-            AvaloniaXamlUICompiler c = new AvaloniaXamlUICompiler();
-
-            var sb = new StringBuilder();
-            var sw = new StringWriter(sb);
-            var text = c.Compile(window, sw);
-
-            Console.WriteLine(text);
-
-            XamlWriterTest();
-
-
-            Window w = AvaloniaXamlLoader.Parse<Window>(text);
-//            TestObject obj = new TestObject();
-//            obj.Person = "123";
-//            w.DataContext = obj;
+//                        .WithTab(t =>
+//                        {
+//                            t.Header = "Page 2";
+//                            t.With(f => f.Label("This is content on page 2"));
+//                        })));
 //
-//            result.Instance.Run(w);
+//            window.Height = 400;
+//            window.Width = 300;
 //
-//            w.ShowDialog();
+//            AvaloniaXamlUICompiler c = new AvaloniaXamlUICompiler();
 //
-//            //XamlWriterTest();
-//            //Console.Write(obj.Person);
-//            Console.Read();
-        }
+//            var sb = new StringBuilder();
+//            var sw = new StringWriter(sb);
+//            var text = c.Compile(window, sw);
+//
+//            Console.WriteLine(text);
+//
+//            XamlWriterTest();
+//
+//
+//            Window w = AvaloniaXamlLoader.Parse<Window>(text);
+////            TestObject obj = new TestObject();
+////            obj.Person = "123";
+////            w.DataContext = obj;
+////
+////            result.Instance.Run(w);
+////
+//            w.Show();
+////
+////            //XamlWriterTest();
+////            //Console.Write(obj.Person);
+////            Console.Read();
+//        }
 
         public class TestObject
         {

@@ -1,0 +1,62 @@
+expr
+    exprBinary
+;
+
+castExpr: 
+    CAST '(' expr AS type_name ')'
+;
+
+exprBinary:
+    exprEquality
+    | exprBinary OP_AND exprEquality
+    | exprBinary OP_OR exprEquality
+;
+
+exprEquality: 
+    exprRelational
+    | exprEquality OP_EQ exprRelational
+    | exprEquality OP_NE exprRelational
+;
+
+exprRelational:
+       exprAdditive 
+       | exprRelational GT exprAdditive
+       | exprRelational LT exprAdditive
+       | exprRelational OP_GT exprAdditive
+       | exprRelational OP_LE exprAdditive
+       | exprRelational IS exprAdditive
+       | exprRelational IS NOT exprAdditive
+       | exprRelational LIKE exprAdditive
+;
+
+exprAdditive:
+   exprMultiplicative
+        | exprAdditive PLUS exprMultiplicative
+        | exprAdditive MINUS exprMultiplicative
+;
+
+exprMultiplicative:
+    exprUnary
+    | exprMultiplicative STAR exprUnary
+    | exprMultiplicative DIV exprUnary
+    | exprMultiplicative  PERCENT exprUnary
+;
+
+exprUnary:
+    exprPostfix
+    | PLUS exprAtom
+    | MINUS exprAtom
+    | BANG exprAtom
+;
+
+exprPostfix: 
+    exprAtom
+    | castexpr 
+    | '(' expr ')'
+;
+
+exprAtom:
+    literal
+    | functionCallexpr
+    | column_expr
+;

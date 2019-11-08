@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
+using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {
@@ -55,6 +57,8 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public XCObjectPropertyBase Property { get; }
 
+        public QObjectTable Object => Child as QObjectTable;
+
         public override string GetName()
         {
             return Property.Name;
@@ -63,6 +67,38 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         public override IEnumerable<XCTypeBase> GetRexpressionType()
         {
             return Property.Types;
+        }
+    }
+
+    public class QLookupField : QField
+    {
+        public QLookupField(string propName, QExpression child) : base(child)
+        {
+            BaseExpression = child;
+            PropName = propName;
+        }
+
+        public QExpression BaseExpression { get; }
+
+        public string PropName { get; }
+
+        public IEnumerable<XCObjectPropertyBase> GetProperties()
+        {
+            return BaseExpression.GetRexpressionType().Where(x =>
+                    x is XCObjectTypeBase ot && ot.GetProperties().Any(p => p.Name == PropName))
+                .Select(x => ((XCObjectTypeBase) x).GetPropertyByName(PropName));
+        }
+
+        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        {
+            return BaseExpression.GetRexpressionType().Where(x =>
+                    x is XCObjectTypeBase ot && ot.GetProperties().Any(p => p.Name == PropName))
+                .SelectMany(x => ((XCObjectTypeBase) x).GetPropertyByName(PropName).Types);
+        }
+
+        public override string GetName()
+        {
+            return PropName;
         }
     }
 }

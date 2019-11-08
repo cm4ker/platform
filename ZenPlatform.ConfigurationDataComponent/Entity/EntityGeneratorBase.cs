@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Contracts;
 
 namespace ZenPlatform.DataComponent.Entity
 {

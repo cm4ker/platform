@@ -19,7 +19,7 @@ namespace ZenPlatform.Compiler.Dnlib
             return this;
         }
 
-        public DnlibPropertyBuilder(PropertyDef property) : base(property)
+        public DnlibPropertyBuilder(DnlibTypeSystem ts, PropertyDef property) : base(ts, property)
         {
         }
     }

@@ -29,7 +29,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         {
             return (QOperationExpression) this.Pop();
         }
-        
+
         public QFrom PopFrom()
         {
             return (QFrom) this.Pop();
@@ -54,7 +54,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             var result = new List<QField>();
 
             if (Count > 0)
-                while (true)
+                while (true && Count > 0)
                 {
                     if (Peek() is QField item)
                     {
@@ -82,7 +82,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             var result = new List<T>();
 
             if (Count > 0)
-                while (true)
+                while (true && Count > 0)
                 {
                     if (Peek() is T item)
                     {

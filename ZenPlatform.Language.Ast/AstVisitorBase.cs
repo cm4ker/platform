@@ -28,7 +28,6 @@ namespace ZenPlatform.Language.Ast
             return visitable.Accept(this);
         }
 
-
         public virtual T VisitTypeEntity(TypeEntity typeEntity)
         {
             return DefaultVisit(typeEntity);

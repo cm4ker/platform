@@ -32,7 +32,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             _scope = new Stack<LogicScope>();
         }
 
-        public LogicScope CurrentScope => _scope.Peek();
+        public LogicScope CurrentScope => _scope.TryPeek(out var res) ? res : null;
 
         #region Context modifiers
 
@@ -190,6 +190,26 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             _scope.Push(new LogicScope());
         }
 
+        public void begin_data_request()
+        {
+            _scope.Push(new LogicScope());
+        }
+
+        public void lookup(string propName)
+        {
+            _logicStack.Push(new QLookupField(propName, _logicStack.PopExpression()));
+        }
+
+        public void st_data_request()
+        {
+            if (CurrentScope.QueryContext != QueryContext.None)
+                throw new Exception(
+                    $"You can save query only in the 'Select' context. Current context {CurrentScope.QueryContext}");
+            _scope.Pop();
+
+            _logicStack.Push(new QDataRequest(_logicStack.PopItems<QField>()));
+        }
+
         public void st_query()
         {
             if (CurrentScope.QueryContext != QueryContext.Select)
@@ -236,6 +256,11 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         public void right_join()
         {
             join_with_type(QJoinType.Right);
+        }
+
+        public void cross_join()
+        {
+            join_with_type(QJoinType.Cross);
         }
 
         /// <summary>
@@ -293,6 +318,40 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             _logicStack.Push(new QEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
+
+        /// <summary>
+        /// Равно
+        /// </summary>
+        public void gt()
+        {
+            _logicStack.Push(new QGreatThen(_logicStack.PopExpression(), _logicStack.PopExpression()));
+        }
+
+        /// <summary>
+        /// Равно
+        /// </summary>
+        public void gte()
+        {
+            _logicStack.Push(new QGreatThenOrEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
+        }
+
+        /// <summary>
+        /// Равно
+        /// </summary>
+        public void lte()
+        {
+            _logicStack.Push(new QLessThenOrEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
+        }
+
+        /// <summary>
+        /// Равно
+        /// </summary>
+        public void lt()
+        {
+            _logicStack.Push(new QLessThen(_logicStack.PopExpression(), _logicStack.PopExpression()));
+        }
+
+
         /// <summary>
         /// Не равно
         /// </summary>
@@ -304,9 +363,10 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
         /// <summary>
         /// Очистить стэк
         /// </summary>
-        private void clear()
+        public void reset()
         {
             _logicStack.Clear();
+            _scope.Clear();
         }
 
 
