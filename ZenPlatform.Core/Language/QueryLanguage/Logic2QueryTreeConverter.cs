@@ -36,6 +36,34 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         private void GenerateSource(SelectBuilder sb, QObjectTable ot)
         {
+            
+            /*
+             FROM
+                    Invoice i
+                    LEFT JOIN Store s ON i.Store = s.Id AND i.TypeId = 2
+                    LEFT JOIN Department d ON i.Store = d.Id AND i.TypeId = 3
+                    LEFT JOIN Custom c ON i.Store = c.Id AND i.TypeId = 4
+                WHERE
+                    i.Id = @Id
+                SELECT
+                    COALESE(s.Name, d.Name, c.Name) as Name
+                    
+                    
+                    =>
+                    
+                    
+                SELECT
+                    
+                FROM
+                    _Obje AS Expr1 --Invoice i
+                    LEFT JOIN  (SELECT A,B,C  FROM _Obje123) AS Expr2 ON Expr1.A = Expr2                       --
+                    
+                    
+                From(x=> x.TableName("A"))
+                
+                From(x=> x.FromRaw("Select * From Test"))
+             */
+            
             ot.ObjectType.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(sb, ot.ObjectType, null);
         }
 
@@ -128,6 +156,8 @@ namespace ZenPlatform.Core.Language.QueryLanguage
     {
         private SelectBuilder _q;
 
+        private int _tableIndex;
+
         public DataRequestGenerator()
         {
             _q = Query.New().Select();
@@ -153,7 +183,9 @@ namespace ZenPlatform.Core.Language.QueryLanguage
         {
             var ot = sfe.Object.ObjectType;
             // мы находимся на самом нижнем уровне
-            ot.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(_q, ot, null);
+            //(SELECT A FROM TEST)
+            _q.From(ot.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(_q, ot, null));
+            _q.From(s => s.
         }
 
         public void GenerateLookup(QLookupField lookup)
@@ -162,6 +194,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
                 GenerateSourceFieldExp(sfe);
             else if (lookup.BaseExpression is QLookupField lu)
                 GenerateLookup(lu);
+
             /*
                 Генерируем верхний уровень
                 В качестве источника данных должно быть то, что снизу
@@ -174,17 +207,14 @@ namespace ZenPlatform.Core.Language.QueryLanguage
                 
                 FROM
                     Invoice i
-                    JOIN Store s ON i.Store = s.Id AND i.TypeId = 2
-                    JOIN Department d ON i.Store = d.Id AND i.TypeId = 3
-                    JOIN Custom c ON i.Store = c.Id AND i.TypeId = 4
+                    LEFT JOIN Store s ON i.Store = s.Id AND i.TypeId = 2
+                    LEFT JOIN Department d ON i.Store = d.Id AND i.TypeId = 3
+                    LEFT JOIN Custom c ON i.Store = c.Id AND i.TypeId = 4
                 WHERE
                     i.Id = @Id
                 SELECT
                     COALESE(s.Name, d.Name, c.Name) as Name
-                
              */
-            
-            
         }
     }
 }
