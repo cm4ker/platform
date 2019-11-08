@@ -57,6 +57,8 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
 
         public XCObjectPropertyBase Property { get; }
 
+        public QObjectTable Object => Child as QObjectTable;
+
         public override string GetName()
         {
             return Property.Name;
