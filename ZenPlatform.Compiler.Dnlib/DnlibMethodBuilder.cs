@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
 using IMethod = ZenPlatform.Compiler.Contracts.IMethod;
@@ -21,16 +22,15 @@ namespace ZenPlatform.Compiler.Dnlib
         public IParameter DefineParameter(string name, IType type, bool isOut, bool isRef)
         {
             var dtype = (DnlibType) type;
-            
+
             var typeSig = dtype.TypeRef.ToTypeSig();
             MethodDef.MethodSig.Params.Add(typeSig);
-            
-            var a = new ParamDefUser(name);
-            
-            MethodDef.ParamDefs.Add(a);
+
             MethodDef.Parameters.UpdateParameterTypes();
-            
-            var p = MethodDef.Parameters[a.Sequence];
+
+            var p = MethodDef.Parameters.Last();
+            p.CreateParamDef();
+            p.Name = name;
 
             return new DnlibParameter(TypeSystem, MethodDef, p);
         }

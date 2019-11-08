@@ -22,11 +22,14 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         }
 
         /// <inheritdoc />
-        public void GetDataSourceFragment(SelectBuilder builder, XCObjectTypeBase t,
+        public string GetDataSourceFragment(SelectBuilder builder, XCObjectTypeBase t,
             IQueryModelContext logicalTreeNode)
         {
             var set = t as XCSingleEntity ?? throw new Exception($"This component can't host next type: {t.GetType()}");
+
             builder.From(set.RelTableName);
+
+            return set.RelTableName;
         }
     }
 }

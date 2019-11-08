@@ -9,6 +9,7 @@ using MoreLinq.Extensions;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Core.Language.QueryLanguage.Model;
 using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.DML.Select;
@@ -22,16 +23,73 @@ namespace ZenPlatform.Core.Language.QueryLanguage
     /// </summary>
     public class ZSqlGrammarVisitor : ZSqlGrammarBaseVisitor<LTItem>
     {
-        private SqlNode _result;
-        private DataQueryConstructorContext _context;
-        private XCRoot _conf;
-        private Stack<LTItem> _dependencyStack;
+        private readonly QLang _stack;
 
         public ZSqlGrammarVisitor(XCRoot configuration, DataQueryConstructorContext context)
         {
-            _result = new SelectQueryNode();
-            _conf = configuration;
-            _context = context;
+            _stack = new QLang(configuration);
+        }
+
+        public override LTItem VisitQuery_stmt(ZSqlGrammarParser.Query_stmtContext context)
+        {
+            Visit(context.from_stmt());
+            Visit(context.where_stmt());
+            Visit(context.group_by_stmt());
+            Visit(context.having_stmt());
+            Visit(context.select_stmt());
+
+            return null;
+        }
+
+        public override LTItem VisitSelect_stmt(ZSqlGrammarParser.Select_stmtContext context)
+        {
+            _stack.m_select();
+            return base.VisitSelect_stmt(context);
+        }
+
+        public override LTItem VisitFrom_stmt(ZSqlGrammarParser.From_stmtContext context)
+        {
+            _stack.m_from();
+            return base.VisitFrom_stmt(context);
+        }
+
+        public override LTItem VisitTable(ZSqlGrammarParser.TableContext context)
+        {
+            _stack.ld_source(context.component_name().GetText(), context.object_name().GetText(),
+                context.table_alias()?.GetText());
+            return base.VisitTable(context);
+        }
+
+        public override LTItem VisitObject_name(ZSqlGrammarParser.Object_nameContext context)
+        {
+            _stack.ld_type(context.GetText());
+            return base.VisitObject_name(context);
+        }
+
+        public override LTItem VisitComponent_name(ZSqlGrammarParser.Component_nameContext context)
+        {
+            _stack.ld_component(context.GetText());
+            return base.VisitComponent_name(context);
+        }
+
+        public override LTItem VisitTable_alias(ZSqlGrammarParser.Table_aliasContext context)
+        {
+            _stack.alias(context.GetText());
+            return base.VisitTable_alias(context);
+        }
+
+        public override LTItem VisitColumn_alias(ZSqlGrammarParser.Column_aliasContext context)
+        {
+            _stack.alias(context.GetText());
+            return base.VisitColumn_alias(context);
+        }
+
+        public override LTItem VisitExpr_column(ZSqlGrammarParser.Expr_columnContext context)
+        {
+            base.VisitExpr_column(context);
+            _stack.ld_field(context.column_name().GetText());
+
+            return null;
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Data.Contracts;

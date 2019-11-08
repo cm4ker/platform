@@ -23,4 +23,6 @@ namespace ZenPlatform.Core.Language.QueryLanguage.Model
             yield break;
         }
     }
+    
+    
 }
