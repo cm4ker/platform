@@ -10,49 +10,56 @@ namespace ZenPlatform.Core.Test.QLang
 {
     public class QLangTest
     {
-        private XCRoot conf = Factory.CreateExampleConfiguration();
+        private XCRoot conf;
+        private Language.QueryLanguage.Model.QLang _m;
+
+        public QLangTest()
+        {
+            conf = Factory.CreateExampleConfiguration();
+            _m = new Language.QueryLanguage.Model.QLang(conf);
+        }
 
         [Fact]
         public void QlangTest()
         {
-            var q = new Language.QueryLanguage.Model.QLang(conf);
+            _m.reset();
 
-            q.begin_query();
+            _m.begin_query();
 
-            q.m_from();
+            _m.m_from();
 
-            q.ld_component("Entity");
-            q.ld_type("Invoice");
-            q.alias("A");
+            _m.ld_component("Entity");
+            _m.ld_type("Invoice");
+            _m.alias("A");
 
-            q.ld_component("Entity");
-            q.ld_type("Store");
-            q.alias("B");
+            _m.ld_component("Entity");
+            _m.ld_type("Store");
+            _m.alias("B");
 
-            q.ld_name("A");
-            q.ld_field("Store");
+            _m.ld_name("A");
+            _m.ld_field("Store");
 
-            q.ld_name("B");
-            q.ld_field("Id");
+            _m.ld_name("B");
+            _m.ld_field("Id");
 
-            q.eq();
+            _m.eq();
 
-            q.on();
+            _m.on();
 
-            q.join();
+            _m.join();
 
-            q.m_select();
+            _m.m_select();
 
-            q.ld_name("A");
-            q.ld_field("Store");
+            _m.ld_name("A");
+            _m.ld_field("Store");
 
-            var result = (QField) q.top();
+            var result = (QField) _m.top();
 
             Assert.Equal(2, result.GetRexpressionType().Count());
 
-            q.st_query();
+            _m.st_query();
 
-            var query = (QQuery) q.top();
+            var query = (QQuery) _m.top();
 
             Assert.NotNull(query);
         }
@@ -61,34 +68,33 @@ namespace ZenPlatform.Core.Test.QLang
         [Fact]
         public void QlangCaseTest()
         {
-            var q = new Language.QueryLanguage.Model.QLang(conf);
+            _m.reset();
+            _m.begin_query();
 
-            q.begin_query();
+            _m.m_from();
 
-            q.m_from();
+            _m.ld_component("Entity");
+            _m.ld_type("Invoice");
+            _m.alias("A");
 
-            q.ld_component("Entity");
-            q.ld_type("Invoice");
-            q.alias("A");
+            _m.m_select();
 
-            q.m_select();
+            _m.ld_name("A");
+            _m.ld_field("Store");
 
-            q.ld_name("A");
-            q.ld_field("Store");
+            _m.ld_param("Store");
 
-            q.ld_param("Store");
+            _m.eq();
 
-            q.eq();
+            _m.ld_const(1);
 
-            q.ld_const(1);
+            _m.ld_const("Test");
 
-            q.ld_const("Test");
+            _m.case_when();
 
-            q.case_when();
+            _m.@case();
 
-            q.@case();
-
-            var result = (QCase) q.top();
+            var result = (QCase) _m.top();
 
             Assert.NotNull(result);
             Assert.Single(result.Whens);
@@ -100,9 +106,9 @@ namespace ZenPlatform.Core.Test.QLang
 
             Assert.Equal(2, result.GetRexpressionType().Count());
 
-            q.st_query();
+            _m.st_query();
 
-            var query = (QQuery) q.top();
+            var query = (QQuery) _m.top();
 
             Assert.NotNull(query);
         }
@@ -110,91 +116,90 @@ namespace ZenPlatform.Core.Test.QLang
         [Fact]
         public void NastedQueryTest()
         {
-            var q = new Language.QueryLanguage.Model.QLang(conf);
+            _m.reset();
+            _m.begin_query();
 
-            q.begin_query();
+            _m.m_from();
 
-            q.m_from();
-
-            q.ld_component("Entity");
-            q.ld_type("Invoice");
-            q.alias("A");
+            _m.ld_component("Entity");
+            _m.ld_type("Invoice");
+            _m.alias("A");
 
             //start nested query
-            q.begin_query();
-            q.m_from();
+            _m.begin_query();
+            _m.m_from();
 
-            q.ld_component("Entity");
-            q.ld_type("Store");
-            q.alias("B");
+            _m.ld_component("Entity");
+            _m.ld_type("Store");
+            _m.alias("B");
 
-            q.m_select();
+            _m.m_select();
 
-            q.ld_name("B");
-            q.ld_field("Id");
-            q.alias("NestedIdField");
+            _m.ld_name("B");
+            _m.ld_field("Id");
+            _m.alias("NestedIdField");
 
-            q.st_query();
+            _m.st_query();
             //store query on stack
 
-            Assert.True(q.top() is QNestedQuery);
+            Assert.True(_m.top() is QNestedQuery);
 
-            q.alias("NestedQuery");
+            _m.alias("NestedQuery");
 
-            q.ld_name("A");
-            q.ld_field("Store");
+            _m.ld_name("A");
+            _m.ld_field("Store");
 
-            q.ld_name("NestedQuery");
-            q.ld_field("NestedIdField");
+            _m.ld_name("NestedQuery");
+            _m.ld_field("NestedIdField");
 
-            q.eq();
+            _m.eq();
 
-            q.on();
+            _m.on();
 
-            q.join();
+            _m.join();
 
-            q.m_select();
+            _m.m_select();
 
-            q.ld_name("A");
-            q.ld_field("Store");
+            _m.ld_name("A");
+            _m.ld_field("Store");
 
-            q.st_query();
-            var query = q.top();
+            _m.st_query();
+            var query = _m.top();
         }
 
         [Fact]
         public void WhereTest()
         {
-            var q = new Language.QueryLanguage.Model.QLang(conf);
-            q.begin_query();
+            _m.reset();
+            _m.begin_query();
 
-            q.m_from();
+            _m.m_from();
 
-            q.ld_component("Entity");
-            q.ld_type("Invoice");
-            q.alias("A");
+            _m.ld_component("Entity");
+            _m.ld_type("Invoice");
+            _m.alias("A");
 
-            q.m_where();
+            _m.m_where();
 
-            q.ld_name("A");
-            q.ld_field("Id");
+            _m.ld_name("A");
+            _m.ld_field("Id");
 
-            q.ld_param("P_01");
+            _m.ld_param("P_01");
 
-            q.eq();
-            q.m_select();
+            _m.eq();
+            _m.m_select();
 
-            Assert.True(q.top() is QWhere);
-            q.ld_name("A");
-            q.ld_field("Store");
+            Assert.True(_m.top() is QWhere);
+            _m.ld_name("A");
+            _m.ld_field("Store");
 
-            var result = (QField) q.top();
+            var result = (QField) _m.top();
 
             Assert.Equal(2, result.GetRexpressionType().Count());
 
-            q.st_query();
+            _m.st_query();
 
-            var query = (QQuery) q.top();
+            var query = (QQuery) _m.top();
 
             Assert.NotNull(query);
             Assert.NotNull(query.Where);
@@ -203,37 +208,37 @@ namespace ZenPlatform.Core.Test.QLang
         [Fact]
         public void Logic2RealTest()
         {
-            var q = new Language.QueryLanguage.Model.QLang(conf);
-            q.begin_query();
+            _m.reset();
+            _m.begin_query();
 
-            q.m_from();
+            _m.m_from();
 
-            q.ld_component("Entity");
-            q.ld_type("Invoice");
-            q.alias("A");
+            _m.ld_component("Entity");
+            _m.ld_type("Invoice");
+            _m.alias("A");
 
-            q.m_where();
+            _m.m_where();
 
-            q.ld_name("A");
-            q.ld_field("Id");
+            _m.ld_name("A");
+            _m.ld_field("Id");
 
-            q.ld_param("P_01");
+            _m.ld_param("P_01");
 
-            q.eq();
-            q.m_select();
+            _m.eq();
+            _m.m_select();
 
-            Assert.True(q.top() is QWhere);
-            q.ld_name("A");
-            q.ld_field("Store");
-            q.alias("MyStore");
+            Assert.True(_m.top() is QWhere);
+            _m.ld_name("A");
+            _m.ld_field("Store");
+            _m.alias("MyStore");
 
-            var field = (QField) q.top();
+            var field = (QField) _m.top();
 
             Assert.Equal(2, field.GetRexpressionType().Count());
 
-            q.st_query();
+            _m.st_query();
 
-            var query = (QQuery) q.top();
+            var query = (QQuery) _m.top();
 
             SQLServerVisitor visitor = new SQLServerVisitor();
 
@@ -247,32 +252,49 @@ namespace ZenPlatform.Core.Test.QLang
         [Fact]
         public void LookupTest()
         {
-            var q = new Language.QueryLanguage.Model.QLang(conf);
-            q.begin_query();
+            _m.reset();
+            _m.begin_query();
 
-            q.m_from();
+            _m.m_from();
 
-            q.ld_component("Entity");
-            q.ld_type("Invoice");
-            q.alias("A");
+            _m.ld_component("Entity");
+            _m.ld_type("Invoice");
+            _m.alias("A");
 
-            q.m_select();
-            q.ld_name("A");
-            q.ld_field("Store");
-            var storeField = q.top() as QSourceFieldExpression;
+            _m.m_select();
+            _m.ld_name("A");
+            _m.ld_field("Store");
+            var storeField = _m.top() as QSourceFieldExpression;
             Assert.NotNull(storeField);
 
-            q.lookup("Invoice");
-            var field = q.top() as QLookupField;
+            _m.lookup("Invoice");
+            var field = _m.top() as QLookupField;
             Assert.NotNull(field);
 
-            q.lookup("Store");
-            field = q.top() as QLookupField;
+            _m.lookup("Store");
+            field = _m.top() as QLookupField;
             Assert.NotNull(field);
 
             Assert.Equal(storeField.GetRexpressionType(), field.GetRexpressionType());
 
-            q.st_query();
+            _m.st_query();
+        }
+
+
+        [Fact]
+        public void DataRequestTest()
+        {
+            _m.reset();
+
+            _m.begin_data_request();
+            _m.ld_component("Entity");
+            _m.ld_type("Invoice");
+            _m.ld_field("Store");
+            _m.st_data_request();
+
+            var dr = _m.top() as QDataRequest;
+
+            Assert.Single(dr.Source);
         }
     }
 }
