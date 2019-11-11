@@ -8,42 +8,19 @@ namespace ZenPlatform.QueryBuilder.Builders
 {
     public class AlterColumnBuilder : ExpressionBuilderWithColumnOptionsAndTypesBase<AlterColumnBuilder>
     {
-        private Expression _expression;
-        private AlterColumn _alterColumnExpression;
+        private AlterAddColumn _alterColumn;
         
-        public AlterColumnBuilder(string columnName)
+        public AlterColumnBuilder(AlterAddColumn alterColumn)
         {
-            
 
-            var column = new ColumnDefinition()
-            {
-                Column = new Column() { Value = columnName }
-            };
-
-            _alterColumnExpression = new AlterColumn()
-            {
-                Column = column
-            };
-
-            _expression = new Expression();
-            _expression.Add(_alterColumnExpression);
-
+            _alterColumn = alterColumn;
         }
 
-        public AlterColumnBuilder(Expression expression)
-        {
-            _expression = expression;
-
-            _alterColumnExpression = new AlterColumn();
-
-            _expression.Add(_alterColumnExpression);
-
-        }
 
         public AlterColumnBuilder Column(ColumnDefinition column)
         {
 
-            _alterColumnExpression.Column = column;
+            _alterColumn.Column = column;
 
             return this;
 
@@ -51,7 +28,7 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         public AlterColumnBuilder Column(string columnName)
         {
-            _alterColumnExpression.Column = new ColumnDefinition()
+            _alterColumn.Column = new ColumnDefinition()
             {
                 Column = new Column() { Value = columnName }
             };
@@ -60,35 +37,27 @@ namespace ZenPlatform.QueryBuilder.Builders
         }
 
 
-        public QuerySyntaxNode Expression => _expression;
 
         public override ColumnDefinition GetCurrentColumn()
         {
-            return _alterColumnExpression.Column;
-        }
-
-        public override void SetConstraintDefinition(ConstraintDefinition constraint)
-        {
-            
-
-            _expression.Nodes.Add(new AddConstraint()
-            {
-                Constraint = constraint,
-                Table = _alterColumnExpression.Table
-            });
+            return _alterColumn.Column;
         }
 
         public override void SetType(ColumnType columnType)
         {
-            _alterColumnExpression.Column.Type = columnType;
+            _alterColumn.Column.Type = columnType;
         }
 
 
         public AlterColumnBuilder OnTable(string tableName)
         {
-            _alterColumnExpression.Table = new Table() { Value = tableName };
+            _alterColumn.Table = new Table() { Value = tableName };
             return this;
         }
 
+        public override void SetConstraintDefinition(ConstraintDefinition constraint)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

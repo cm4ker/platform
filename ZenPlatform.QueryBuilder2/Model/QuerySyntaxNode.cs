@@ -47,7 +47,7 @@ namespace ZenPlatform.QueryBuilder.Model
 
             foreach (var item in list)
             {
-                result = result ^ func(item);
+                result ^= func(item);
 
 
             }

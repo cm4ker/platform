@@ -366,17 +366,17 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 .Select(b => b
                     .Field("Field1").As("f1")
                     .Field("Field2").As("f2")
-                    .Sum(f=>f.Field("Field3")).As("sum")
+                    .Sum(f => f.Field("Field3")).As("sum")
                 )
-                .From( s=>s.SelectAll().From("MySubTable1") ) //nestedQuery
+                .From(s => s.SelectAll().From("MySubTable1")) //nestedQuery
                     .As("MyTable1")
-                .LeftJoin("Mytable2", 
+                .LeftJoin("Mytable2",
                     e => e.Equal(
-                        f => f.Field("Field1", "MyTable1"), 
+                        f => f.Field("Field1", "MyTable1"),
                         f => f.Field("Field2", "MyTable2")
                         ))
                 .Where(e => e.Equal(
-                    f => f.Field("Field1", "MyTable1"), 
+                    f => f.Field("Field1", "MyTable1"),
                     f => f.Const(10)
                     ))
                 .GroupBy(g => g
@@ -386,6 +386,7 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                     .Field("Field1")
                     .Field("Field2")
                     .Desc());
+                
             return query.Expression;
         }
 
@@ -420,14 +421,9 @@ namespace ZenPlatform.Tests.SqlBuilder.SqlServer
                 .From("dasdasdas")
                 .Where(c =>
                 {
-                    c.And(
-                        e => e.Equal("Field1", 10),
-                        e => e.Equal("Field2", 20),
-                        e => e.Equal(
-                            e => e.Field("sdad"),
-                            e => e.Sum("Field1", "Field2")
-                            ));
-
+                    c.Exists(s => s
+                    .SelectField("sdsad")
+                    .From("sdas"));
                 });
 
 
