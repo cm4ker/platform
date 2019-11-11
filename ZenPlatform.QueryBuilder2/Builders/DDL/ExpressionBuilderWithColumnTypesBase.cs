@@ -24,67 +24,78 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsAnsiString()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsAnsiString(string collationName)
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsAnsiString(int size)
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsAnsiString(int size, string collationName)
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsBinary()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsBinary(int size)
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsBoolean()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsByte()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsCurrency()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsDate()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsDateTime()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
@@ -150,13 +161,15 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsFloat()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsGuid()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
@@ -181,19 +194,22 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsString()
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsString(string collationName)
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsString(int size)
         {
-            throw new NotImplementedException();
+            SetType(new ColumnTypeInt());
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />

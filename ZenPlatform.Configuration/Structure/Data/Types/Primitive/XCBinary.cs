@@ -3,7 +3,7 @@ using System.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCBinary : XCPrimitiveType
+    public class XCBinary : XCPrimitiveType, IEquatable<XCBinary>
     {
         public override uint Id => 1;
 
@@ -15,17 +15,26 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
             get { return "Binary"; }
         }
 
-        public override bool IsNullable { get; set; }
-        public override int ColumnSize { get; set; }
+        public int Size { get; set; }
 
-        public override int Precision { get; set; }
-        public override int Scale { get; set; }
-
-        public override DbType DBType
+        public bool Equals(XCBinary other)
         {
-            get { return DbType.Binary; }
+            if (other == null) return false;
+
+            return this.Guid == other.Guid && this.Size == other.Size
+                && this.IsNullable == other.IsNullable;
         }
 
-        public override Type CLRType => (IsNullable) ? typeof(byte?[]) : typeof(byte[]);
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+
+            return Equals(obj as XCBinary);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Guid, IsNullable, Size);
+        }
     }
 }

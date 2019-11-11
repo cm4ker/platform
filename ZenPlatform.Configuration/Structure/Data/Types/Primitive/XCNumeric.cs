@@ -3,7 +3,7 @@ using System.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCNumeric : XCPrimitiveType
+    public class XCNumeric : XCPrimitiveType, IEquatable<XCNumeric>
     {
         public override uint Id => 5;
 
@@ -15,20 +15,27 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
             get { return "Numeric"; }
         }
 
-        public override bool IsNullable { get; set; }
-        public override int ColumnSize { get; set; }
+        public int Precision { get; set; }
+        public int Scale { get; set; }
 
-        public override DbType DBType
+
+        public bool Equals(XCNumeric other)
         {
-            get { return DbType.Decimal; }
+            if (other == null) return false;
+
+            return this.Guid == other.Guid && this.IsNullable == other.IsNullable &&
+                this.Scale == other.Scale && this.Precision == other.Precision;
         }
 
-        public override Type CLRType
+        public override bool Equals(object obj)
         {
-            get { return (IsNullable) ? typeof(decimal?) : typeof(decimal); }
+            if (obj == null) return false;
+            return Equals(obj as XCBinary);
         }
 
-        public override int Precision { get; set; }
-        public override int Scale { get; set; }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Guid, IsNullable, Scale, Precision);
+        }
     }
 }
