@@ -185,7 +185,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
             // мы находимся на самом нижнем уровне
             //(SELECT A FROM TEST)
             _q.From(ot.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(_q, ot, null));
-            _q.From(s => s.
+
         }
 
         public void GenerateLookup(QLookupField lookup)
