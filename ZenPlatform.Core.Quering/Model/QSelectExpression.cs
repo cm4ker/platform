@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
+
 using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
