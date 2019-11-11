@@ -3,12 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
     </PropertyGroup>
-    <ItemGroup>
-        <Content Include=".\QueryLanguage\Model\ZSqlGrammar.g4" />
-        <Content Include="Model\ZSqlGrammar.g4" />
-    </ItemGroup>
-
-    <ItemGroup>
+     <ItemGroup>
         <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
     </ItemGroup>
 
