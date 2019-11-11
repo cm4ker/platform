@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
 using System.Security.Policy;
+using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Contracts;
 using ZenPlatform.DataComponent;
 using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.EntityComponent.Migrations;
+using ZenPlatform.EntityComponent.QueryBuilders;
 using ZenPlatform.EntityComponent.UIGenerations;
 
 namespace ZenPlatform.EntityComponent
@@ -30,7 +31,9 @@ namespace ZenPlatform.EntityComponent
             InterfaceGenerator = new InterfaceGenerator();
             DatabaseObjectsGenerator = new EntityDatabaseObjectGenerator();
 
-            Generator = new StagedGeneratorAst(Component);
+            QueryInjector = new SingleEntityQueryInjector(Component);
+
+            Generator = new EntityPlatformGenerator(Component); // new StagedGeneratorAst(Component);
 
             Migrator = new SingleEntityMigrator();
 

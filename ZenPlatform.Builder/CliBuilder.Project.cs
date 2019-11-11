@@ -46,11 +46,13 @@ namespace ZenPlatform.Cli
                     Console.WriteLine($"Start building");
 
 
-                    XCCompiller compiller = new XCCompiller();
-                    
+                    XCCompiler compiler = new XCCompiler();
+
+                    SqlDatabaseType dbType;
+
                     throw new NotImplementedException();
                     //TODO : Сделать возможность выбора одного из 3х: Сервер, Клиент, КлиентСервер
-                    compiller.Build(root, CompilationMode.Server);
+                    compiler.Build(root, CompilationMode.Server, dbType);
                 });
             });
 

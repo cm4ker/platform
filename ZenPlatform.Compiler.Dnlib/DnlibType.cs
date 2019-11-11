@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Transactions;
 using dnlib.DotNet;
@@ -31,7 +32,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public bool Equals(IType other)
         {
-            throw new NotImplementedException();
+            return new SigComparer().Equals(TypeRef, ((DnlibType) other).TypeRef);
         }
 
         public object Id => TypeDef.FullName;
@@ -44,9 +45,10 @@ namespace ZenPlatform.Compiler.Dnlib
         private IReadOnlyList<IField> _fields;
         private IReadOnlyList<IMethod> _methods;
         private IReadOnlyList<IConstructor> _constructors;
+        private IReadOnlyList<IType> _interfaces;
 
         public IReadOnlyList<IProperty> Properties =>
-            _properties ??=TypeDef.Properties.Select(x => new DnlibProperty(x)).ToList();
+            _properties ??=TypeDef.Properties.Select(x => new DnlibProperty(_ts, x)).ToList();
 
         public IReadOnlyList<IField> Fields =>
             _fields ??= TypeDef.Fields.Select(x => new DnlibField(x)).ToList();
@@ -61,6 +63,16 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
         public IReadOnlyList<IType> GenericArguments { get; }
+
+        public IReadOnlyList<IType> Interfaces =>
+            _interfaces ??= TypeDef.Interfaces
+                .Where(x => x.Interface.ResolveTypeDef() != null).Select(x =>
+                {
+                    return new DnlibType(_ts, x.Interface.ResolveTypeDef(),
+                        (x.Interface.IsTypeRef) ? (TypeRef) x.Interface : x.Interface.ToTypeRef(),
+                        (DnlibAssembly) _ts.FindAssembly(x.Interface.ResolveTypeDef().DefinitionAssembly.FullName));
+                })
+                .ToList();
 
         public bool IsAssignableFrom(IType type)
         {
@@ -89,7 +101,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public IType BaseType { get; }
         public bool IsValueType { get; }
         public bool IsEnum { get; }
-        public IReadOnlyList<IType> Interfaces { get; }
+
         public bool IsInterface { get; }
         public bool IsSystem { get; }
 

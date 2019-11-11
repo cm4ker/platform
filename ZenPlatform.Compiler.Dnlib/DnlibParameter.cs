@@ -8,10 +8,12 @@ namespace ZenPlatform.Compiler.Dnlib
     public class DnlibParameter : IParameter
     {
         private Parameter _parameter;
+        private DnlibContextResolver _cr;
 
         public DnlibParameter(DnlibTypeSystem typeSystem, MethodDef methodDef, Parameter parameter)
         {
             _parameter = parameter;
+            _cr = new DnlibContextResolver(typeSystem, methodDef.Module);
         }
 
         public bool Equals(IParameter other)
@@ -20,7 +22,7 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public string Name => _parameter.Name;
-        public IType Type => null;
+        public IType Type => _cr.GetType(_parameter.Type);
         public int Sequence => _parameter.Index;
         public int ArgIndex => _parameter.ParamDef.Sequence;
     }

@@ -1,7 +1,8 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:ZenPlatform.UIBuilder"
-        Title="Server management tool">
+        Title="Server management tool"
+        x:Class="ZenPlatform.UIBuilder.MainWindow">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150" />

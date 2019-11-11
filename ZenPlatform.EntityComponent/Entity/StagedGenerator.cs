@@ -3,25 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data.Common;
 using System.Linq;
-using System.Net.Mail;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using dnlib.DotNet.Resources;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editing;
-using Npgsql.TypeHandlers;
-using ServiceStack;
-using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Contracts;
-using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast.Definitions;
@@ -117,7 +104,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var dtoClass = builder.DefineType(@namespace, dtoClassName,
                 TypeAttributes.Public | TypeAttributes.Class);
 
-            dtoClass.AddInterfaceImplementation(builder.TypeSystem.FindType<ICanMapSelfFromDataReader>());
+            dtoClass.AddInterfaceImplementation(builder.TypeSystem.FindType<ICanMap>());
             var readerMethod = dtoClass.DefineMethod("Map", true, false, true);
             var rg = readerMethod.Generator;
 
@@ -133,7 +120,7 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 bool propertyGenerated = false;
 
-                if (prop.DatabaseColumnName.IsNullOrEmpty())
+                if (string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
                         $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {singleEntityType.Name}. Database column is empty!");
@@ -149,7 +136,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         Stage0EmitMap(rg, readerParam, readerType, ts.Int, ts, tProperty.Setter, prop
                             .GetPropertySchemas(prop.DatabaseColumnName)
-                            .First(x => x.SchemaType == XCColumnSchemaType.Type).Name);
+                            .First(x => x.SchemaType == XCColumnSchemaType.Type).FullName);
                     }
                 }
 
@@ -178,7 +165,7 @@ namespace ZenPlatform.EntityComponent.Entity
                             .GetPropertySchemas(prop.DatabaseColumnName)
                             .First(x => x.SchemaType == ((prop.Types.Count > 1)
                                             ? XCColumnSchemaType.Value
-                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).Name);
+                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).FullName);
                     }
                     else if (ctype is XCObjectTypeBase ot)
                     {
@@ -191,7 +178,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                             Stage0EmitMap(rg, readerParam, readerType, ts.Guid, ts, otProperty.Setter, prop
                                 .GetPropertySchemas(prop.DatabaseColumnName)
-                                .First(x => x.SchemaType == XCColumnSchemaType.Ref).Name);
+                                .First(x => x.SchemaType == XCColumnSchemaType.Ref).FullName);
                         }
                     }
                 }

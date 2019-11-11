@@ -125,7 +125,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         {
             return GetProperties().First(x => x.Name == name);
         }
-
+        
         /// <summary>
         /// Получить список доступных комманд у типа 
         /// </summary>

@@ -14,7 +14,6 @@ using ZenPlatform.Data;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Crypto;
 using ZenPlatform.Configuration.Structure;
-
 using ZenPlatform.Initializer;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Environment.Contracts;
@@ -56,7 +55,8 @@ namespace ZenPlatform.Core.Environment
 
         public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
-            IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService, IAssemblyManager assemblyManager) :
+            IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
+            IAssemblyManager assemblyManager) :
             base(contextManager, cacheService)
         {
             _locking = new object();
@@ -81,9 +81,8 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         public override void Initialize(IStartupConfig config)
         {
-
             MigrationRunner.Migrate(config.ConnectionString,
-                                    config.DatabaseType);
+                config.DatabaseType);
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
             base.Initialize(config);
             _logger.Info("Database '{0}' loaded.", Configuration.ProjectName);
@@ -91,8 +90,8 @@ namespace ZenPlatform.Core.Environment
             AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
 
 
-            _assemblyManager.CheckConfiguration(Configuration);
-
+            if (_assemblyManager.CheckConfiguration(Configuration))
+                _assemblyManager.BuildConfiguration(Configuration, StartupConfig.DatabaseType);
 
 
             /*

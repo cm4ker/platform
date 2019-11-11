@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ServiceStack.Text.Pools;
 using Xunit;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Cecil;
@@ -14,6 +13,7 @@ using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.QueryBuilder;
 
 
 namespace ZenPlatform.Component.Tests
@@ -36,8 +36,8 @@ namespace ZenPlatform.Component.Tests
             {
                 foreach (var type in component.Types)
                 {
-                    new StagedGeneratorAst(component).StageServer(type, rootServer);
-                    new StagedGeneratorAst(component).StageClient(type, rootClient);
+                    new EntityPlatformGenerator(component).StageServer(type, rootServer);
+                    new EntityPlatformGenerator(component).StageClient(type, rootClient);
                 }
             }
 
@@ -45,10 +45,12 @@ namespace ZenPlatform.Component.Tests
             AstScopeRegister.Apply(rootClient);
 
 
-            var genS = new Generator(new GeneratorParameters(rootServer.Units, server, CompilationMode.Server));
+            var genS = new Generator(new GeneratorParameters(rootServer.Units, server, CompilationMode.Server,
+                SqlDatabaseType.SqlServer, conf));
             genS.Build();
 
-            var genC = new Generator(new GeneratorParameters(rootClient.Units, client, CompilationMode.Client));
+            var genC = new Generator(new GeneratorParameters(rootClient.Units, client, CompilationMode.Client,
+                SqlDatabaseType.SqlServer, conf));
             genC.Build();
 
 

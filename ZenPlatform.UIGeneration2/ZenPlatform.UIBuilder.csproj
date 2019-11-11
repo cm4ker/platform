@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj" />
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+    <ProjectReference Include="..\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="App.xaml">
@@ -19,8 +20,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.7.1-build518-beta" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.7.1-build518-beta" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.7.1-build518-beta" />
+    <PackageReference Include="Avalonia" Version="0.9.0-preview7" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.0-preview7" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.0-preview7" />
+    <PackageReference Include="Portable.Xaml" Version="0.24.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interface" />
   </ItemGroup>
 </Project>
