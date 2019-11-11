@@ -13,6 +13,7 @@ using ZenPlatform.Core.Sessions;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
 using ZenPlatform.Core.DI;
+using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -69,6 +70,10 @@ namespace ZenPlatform.Core.Environment
                 x => new {component = x.Parent, old = default(XCObjectTypeBase), actual = x},
                 (x, y) => new {component = x.Parent, old = x, actual = y});
 
+            Expression query1 = new Expression();
+            Expression query2 = new Expression();
+            Expression query3 = new Expression();
+            Expression query4 = new Expression();
             foreach (var type in types)
             {
                 /*
@@ -77,16 +82,26 @@ namespace ZenPlatform.Core.Environment
                  *
                  * Необходимо логировать мигрирование каждого объекта 
                  */
-                var migrateScript = type.component.ComponentImpl.Migrator.GetScript(type.old, type.actual);
+                //var migrateScript = type.component.ComponentImpl.Migrator.GetScript(type.old, type.actual);
+                query1.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep1(type.old, type.actual).Expression);
+                query2.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep2(type.old, type.actual).Expression);
+                query3.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep3(type.old, type.actual).Expression);
+                query4.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep4(type.old, type.actual).Expression);
 
-                var cmd = context.CreateCommand();
-
-                foreach (var node in migrateScript)
-                {
-                    cmd.CommandText = DataContextManager.SqlCompiler.Compile(node);
-                    cmd.ExecuteNonQuery();
-                }
             }
+
+            var cmd = context.CreateCommand(query1);
+            cmd.ExecuteNonQuery();
+
+            cmd = context.CreateCommand(query2);
+            cmd.ExecuteNonQuery();
+
+            cmd = context.CreateCommand(query3);
+            cmd.ExecuteNonQuery();
+
+            cmd = context.CreateCommand(query4);
+            cmd.ExecuteNonQuery();
+
 
             //TODO: подменить код сборки и инвалидировать её, чтобы все участники обновили сборку.
         }

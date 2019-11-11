@@ -16,8 +16,7 @@ namespace ZenPlatform.QueryBuilder.Builders
             expressionNode.Nodes.AddRange(exp);
             _expressionNode = expressionNode;
         }
-
-
+       
         public void And(params Action<ExpressionBuilder>[] builders)
         {
             var expressionNode = new ConditionAndNode();
@@ -273,5 +272,14 @@ namespace ZenPlatform.QueryBuilder.Builders
             _expressionNode = expressionNode;
         }
 
+        public void Exists(Action<SelectBuilder> action)
+        {
+            SelectNode selectNode = new SelectNode();
+            SelectBuilder builder = new SelectBuilder(selectNode);
+
+            action(builder);
+
+            _expressionNode = new ExistsNode() { DataSource = selectNode };
+        }
     }
 }
