@@ -1,8 +1,20 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.QueryBuilder.DML.Select;
+using ZenPlatform.QueryBuilder.Model;
+using SelectNode = ZenPlatform.QueryBuilder.Model.SelectNode;
 
 namespace ZenPlatform.QueryBuilder
 {
+    public class SyntaxScope
+    {
+        public SyntaxScope()
+        {
+        }
+
+        public QueryContext QueryContext;
+    }
+
     public enum QueryContext
     {
         None = 0,
@@ -12,7 +24,7 @@ namespace ZenPlatform.QueryBuilder
         Where = 4,
         Select = 5,
     }
-    
+
     public class SyntaxStack : Stack<object>
     {
     }
@@ -20,12 +32,16 @@ namespace ZenPlatform.QueryBuilder
     public class StackMachineQueryBuilder
     {
         private SyntaxStack _logicStack;
+        private Stack<SyntaxScope> _scope;
+
 
         public StackMachineQueryBuilder()
         {
             _logicStack = new SyntaxStack();
         }
 
+
+        public SyntaxScope CurrentScope => _scope.TryPeek(out var res) ? res : null;
 
         #region Context modifiers
 
@@ -51,17 +67,17 @@ namespace ZenPlatform.QueryBuilder
 
         public void m_from_close()
         {
-            _logicStack.Push(new QFrom(_logicStack.PopItems<QFromItem>(), _logicStack.PopDataSource()));
+            _logicStack.Push(new FromNode() { });
         }
 
         public void m_select_close()
         {
-            _logicStack.Push(new QSelect(_logicStack.PopFields()));
+            _logicStack.Push(new SelectNode());
         }
 
         public void m_where_close()
         {
-            _logicStack.Push(new QWhere(_logicStack.PopExpression()));
+            _logicStack.Push(new WhereNode());
         }
 
         public void m_select()
@@ -86,121 +102,28 @@ namespace ZenPlatform.QueryBuilder
 
         #endregion
 
-        #region Load instructions
-
-        public void ld_component(string componentName)
+        public void param(string name)
         {
-            var component = _conf.Data.Components.First(x => x.Info.ComponentName == componentName);
-            _logicStack.Push(component);
         }
 
-        public void ld_type(string typeName)
-        {
-            var type = _logicStack.PopComponent().GetTypeByName(typeName);
-            var ds = new QObjectTable(type);
-            _logicStack.Push(ds);
-            CurrentScope.ScopedDataSources.Add(ds);
-        }
-
-        /// <summary>
-        /// Записать источник данных. Ссылка на него полностью получается из метаданных 
-        /// </summary>
-        /// <param name="componentName"></param>
-        /// <param name="typeName"></param>
-        /// <param name="alias"></param>
-        public void ld_source(string componentName, string typeName, string p_alias = "")
-        {
-            ld_component(componentName);
-            ld_type(typeName);
-
-            if (!string.IsNullOrEmpty(p_alias))
-            {
-                alias(p_alias);
-            }
-        }
-
-        public void ld_param(string name)
-        {
-            _logicStack.Push(new QParameter(name));
-        }
-
-        public void ld_source_context()
-        {
-            _logicStack.Push(new QCombinedDataSource(CurrentScope.ScopedDataSources));
-        }
-
-        public void ld_name(string name)
-        {
-            if (CurrentScope.Scope.TryGetValue(name, out var source))
-            {
-                _logicStack.Push(source);
-            }
-            else
-            {
-                throw new Exception($"The name :'{name}' not found in scope");
-            }
-        }
-
-        public void ld_field(string name)
-        {
-            var ds = _logicStack.PopDataSource();
-
-            var result = ds.GetFields().Where(x => x.GetName() == name).ToList();
-
-            if (result.Count() > 1)
-            {
-                throw new Exception($"Ambiguous field with name {name}");
-            }
-
-            if (!result.Any())
-            {
-                throw new Exception($"Field with name {name} not found");
-            }
-
-            _logicStack.Push(result.First());
-        }
-
-        #endregion
-
-        public void alias(string alias)
+        public void @as(string alias)
         {
             if (CurrentScope.QueryContext == QueryContext.From)
             {
-                var source = _logicStack.PopDataSource();
-                var ds = new QAliasedDataSource(source, alias);
-                _logicStack.Push(ds);
-                CurrentScope.Scope.Add(alias, ds);
             }
             else if (CurrentScope.QueryContext == QueryContext.Select)
             {
-                var expr = _logicStack.PopExpression();
-                _logicStack.Push(new QAliasedSelectExpression(expr, alias));
             }
         }
 
         public void begin_query()
         {
-            _scope.Push(new LogicScope());
+            _scope.Push(new SyntaxScope());
         }
 
         public void begin_data_request()
         {
-            _scope.Push(new LogicScope());
-        }
-
-        public void lookup(string propName)
-        {
-            _logicStack.Push(new QLookupField(propName, _logicStack.PopExpression()));
-        }
-
-        public void st_data_request()
-        {
-            if (CurrentScope.QueryContext != QueryContext.None)
-                throw new Exception(
-                    $"You can save query only in the 'Select' context. Current context {CurrentScope.QueryContext}");
-            _scope.Pop();
-
-            _logicStack.Push(new QDataRequest(_logicStack.PopItems<QField>()));
+            _scope.Push(new SyntaxScope());
         }
 
         public void st_query()
@@ -213,18 +136,14 @@ namespace ZenPlatform.QueryBuilder
 
             _scope.Pop();
 
-            _logicStack.Push(new QQuery(_logicStack.PopItem<QOrderBy>(),
-                _logicStack.PopItem<QSelect>(), _logicStack.PopItem<QHaving>(),
-                _logicStack.PopItem<QGroupBy>(), _logicStack.PopItem<QWhere>(),
-                _logicStack.PopFrom()));
+            _logicStack.Push(new SelectNode());
 
             if (_scope.Count > 0) //мы находимся во внутреннем запросе
-                _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));
+                _logicStack.Push(new SelectNastedQueryNode((SelectQueryNode) _logicStack.Pop()));
         }
 
         public void on()
         {
-            _logicStack.Push(new QOn(_logicStack.PopExpression()));
         }
 
         /// <summary>
@@ -232,7 +151,7 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void join()
         {
-            join_with_type(QJoinType.Inner);
+            join_with_type(JoinType.Inner);
         }
 
         /// <summary>
@@ -240,7 +159,7 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void left_join()
         {
-            join_with_type(QJoinType.Left);
+            join_with_type(JoinType.Left);
         }
 
         /// <summary>
@@ -248,12 +167,12 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void right_join()
         {
-            join_with_type(QJoinType.Right);
+            join_with_type(JoinType.Right);
         }
 
         public void cross_join()
         {
-            join_with_type(QJoinType.Cross);
+            join_with_type(JoinType.Cross);
         }
 
         /// <summary>
@@ -261,12 +180,12 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void full_join()
         {
-            join_with_type(QJoinType.Full);
+            join_with_type(JoinType.Full);
         }
 
-        private void join_with_type(QJoinType type)
+        private void join_with_type(JoinType type)
         {
-            _logicStack.Push(new QFromItem(_logicStack.PopOn(), _logicStack.PopDataSource(), type));
+            //_logicStack.Push();
         }
 
         /// <summary>
@@ -292,7 +211,6 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void and()
         {
-            _logicStack.Push(new QAnd(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
         /// <summary>
@@ -300,7 +218,6 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void add()
         {
-            _logicStack.Push(new QAdd(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
         /// <summary>
@@ -308,7 +225,6 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void eq()
         {
-            _logicStack.Push(new QEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
 
@@ -317,7 +233,6 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void gt()
         {
-            _logicStack.Push(new QGreatThen(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
         /// <summary>
@@ -325,7 +240,6 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void gte()
         {
-            _logicStack.Push(new QGreatThenOrEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
         /// <summary>
@@ -333,7 +247,6 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void lte()
         {
-            _logicStack.Push(new QLessThenOrEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
         /// <summary>
@@ -341,7 +254,6 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void lt()
         {
-            _logicStack.Push(new QLessThen(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
 
@@ -350,7 +262,6 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public void ne()
         {
-            _logicStack.Push(new QNotEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
 
         /// <summary>
@@ -373,24 +284,19 @@ namespace ZenPlatform.QueryBuilder
 
         public void @case()
         {
-            _logicStack.Push(new QCase(_logicStack.PopItems<QCaseWhen>()));
         }
 
         public void case_when()
         {
-            _logicStack.Push(new QCaseWhen(_logicStack.PopExpression(), _logicStack.PopExpression(),
-                _logicStack.PopOpExpression()));
         }
 
 
         public void ld_const(string str)
         {
-            _logicStack.Push(new QConst(new XCString(), str));
         }
 
         public void ld_const(double number)
         {
-            _logicStack.Push(new QConst(new XCNumeric(), number));
         }
     }
 }
