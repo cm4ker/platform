@@ -3,6 +3,7 @@ using Xunit;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Language.QueryLanguage;
+using ZenPlatform.Core.Quering.QueryLanguage;
 
 namespace ZenPlatform.Core.Test
 {
