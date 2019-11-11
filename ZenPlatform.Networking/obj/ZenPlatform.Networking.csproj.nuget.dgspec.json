@@ -207,6 +207,77 @@
         }
       }
     },
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Quering\\ZenPlatform.Core.Quering.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Quering\\ZenPlatform.Core.Quering.csproj",
+        "projectName": "ZenPlatform.Core.Quering",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Quering\\ZenPlatform.Core.Quering.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Quering\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://www.myget.org/F/avalonia-ci/api/v2": {},
+          "https://www.myget.org/F/dock-nightly/api/v2": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
+              },
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder2\\ZenPlatform.QueryBuilder.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder2\\ZenPlatform.QueryBuilder.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "dependencies": {
+            "Antlr4.CodeGenerator": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[4.6.6, )"
+            },
+            "Antlr4.Runtime": {
+              "target": "Package",
+              "version": "[4.6.6, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
     "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -239,6 +310,9 @@
               "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
                 "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
               },
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Quering\\ZenPlatform.Core.Quering.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Quering\\ZenPlatform.Core.Quering.csproj"
+              },
               "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
                 "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
               },
@@ -267,11 +341,11 @@
               "include": "Runtime, Build, Native, ContentFiles, Analyzers",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[4.6.5, )"
+              "version": "[4.6.6, )"
             },
             "Antlr4.Runtime": {
               "target": "Package",
-              "version": "[4.6.5, )"
+              "version": "[4.6.6, )"
             },
             "NLog": {
               "target": "Package",

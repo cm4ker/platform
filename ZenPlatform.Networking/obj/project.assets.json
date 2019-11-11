@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v3.0": {
-      "Antlr4.Runtime/4.6.5": {
+      "Antlr4.Runtime/4.6.6": {
         "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.0"
@@ -1982,9 +1982,10 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.0",
         "dependencies": {
-          "Antlr4.Runtime": "4.6.5",
+          "Antlr4.Runtime": "4.6.6",
           "NLog": "4.6.1",
           "ZenPlatform.Configuration": "1.0.0",
+          "ZenPlatform.Core.Quering": "1.0.0",
           "ZenPlatform.Data": "1.0.0",
           "ZenPlatform.Initializer": "1.0.0",
           "ZenPlatform.QueryBuilder": "1.0.0",
@@ -2009,6 +2010,21 @@
         },
         "runtime": {
           "bin/placeholder/ZenPlatform.Core.Contracts.dll": {}
+        }
+      },
+      "ZenPlatform.Core.Quering/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.0",
+        "dependencies": {
+          "Antlr4.Runtime": "4.6.6",
+          "ZenPlatform.Configuration": "1.0.0",
+          "ZenPlatform.QueryBuilder": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/ZenPlatform.Core.Quering.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ZenPlatform.Core.Quering.dll": {}
         }
       },
       "ZenPlatform.Data/1.0.0": {
@@ -2133,14 +2149,14 @@
     }
   },
   "libraries": {
-    "Antlr4.Runtime/4.6.5": {
-      "sha512": "Drq+VgqdP2723+Hyk1y7P5nLbxX717bmplKubILSX92LYlKqT8DEbaptEN0+AQRnAuzy1QasqkF9MSNRegbE/w==",
+    "Antlr4.Runtime/4.6.6": {
+      "sha512": "7Uo2r9WJcaB2QN4rjmNh8yVKfmVF4bPmBs/6B3A1Hwgkk0vbdaMMga31TGoRMVdjkb/HKzhRn4jrA6cHrrrlKQ==",
       "type": "package",
-      "path": "antlr4.runtime/4.6.5",
+      "path": "antlr4.runtime/4.6.6",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "antlr4.runtime.4.6.5.nupkg.sha512",
+        "antlr4.runtime.4.6.6.nupkg.sha512",
         "antlr4.runtime.nuspec",
         "lib/net20/Antlr4.Runtime.dll",
         "lib/net20/Antlr4.Runtime.xml",
@@ -6863,6 +6879,11 @@
       "type": "project",
       "path": "../ZenPlatform.Core.Contracts/ZenPlatform.Core.Contracts.csproj",
       "msbuildProject": "../ZenPlatform.Core.Contracts/ZenPlatform.Core.Contracts.csproj"
+    },
+    "ZenPlatform.Core.Quering/1.0.0": {
+      "type": "project",
+      "path": "../ZenPlatform.Core.Quering/ZenPlatform.Core.Quering.csproj",
+      "msbuildProject": "../ZenPlatform.Core.Quering/ZenPlatform.Core.Quering.csproj"
     },
     "ZenPlatform.Data/1.0.0": {
       "type": "project",
