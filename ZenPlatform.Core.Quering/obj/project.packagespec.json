@@ -23,9 +23,6 @@
         "projectReferences": {
           "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
             "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
-          },
-          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder2\\ZenPlatform.QueryBuilder.csproj": {
-            "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder2\\ZenPlatform.QueryBuilder.csproj"
           }
         }
       }

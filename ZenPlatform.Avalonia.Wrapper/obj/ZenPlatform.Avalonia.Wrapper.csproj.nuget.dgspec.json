@@ -1,24 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\ZenPlatform.Avalonia.Wrapper\\ZenPlatform.Avalonia.Wrapper.csproj": {}
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Avalonia.Wrapper\\ZenPlatform.Avalonia.Wrapper.csproj": {}
   },
   "projects": {
-    "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\ZenPlatform.Avalonia.Wrapper\\ZenPlatform.Avalonia.Wrapper.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Avalonia.Wrapper\\ZenPlatform.Avalonia.Wrapper.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\ZenPlatform.Avalonia.Wrapper\\ZenPlatform.Avalonia.Wrapper.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Avalonia.Wrapper\\ZenPlatform.Avalonia.Wrapper.csproj",
         "projectName": "ZenPlatform.Avalonia.Wrapper",
-        "projectPath": "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\ZenPlatform.Avalonia.Wrapper\\ZenPlatform.Avalonia.Wrapper.csproj",
-        "packagesPath": "C:\\Users\\maste\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\ZenPlatform.Avalonia.Wrapper\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Avalonia.Wrapper\\ZenPlatform.Avalonia.Wrapper.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Avalonia.Wrapper\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\maste\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -58,13 +58,7 @@
             "net48"
           ],
           "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+          "warn": true
         }
       }
     }
