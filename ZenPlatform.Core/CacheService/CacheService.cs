@@ -1,55 +1,60 @@
 using System;
-using ServiceStack.Redis;
-using ServiceStack.Text;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Runtime.Caching;
 
 namespace ZenPlatform.Core.CacheService
 {
     public interface ICacheService
     {
         void Set(int databaseId, int typeId, Guid entityId, object value);
+
         T Get<T>(int databaseId, int typeId, Guid entityId);
 
         object Get(Type type, int databaseId, int typeId, Guid entityId);
     }
 
-    public class CacheService : ICacheService, IDisposable
+    public class CacheService : ICacheService
     {
-        private RedisManagerPool _manager;
-        private IRedisClient _client;
+        private MemoryCache _cache;
+        private int _secondsCount;
+
 
         public CacheService()
         {
+            _cache = new MemoryCache("AppCache");
+            _secondsCount = 15;
             //TODO: передать параметры подключения к серверу кэширования
-            _manager = new RedisManagerPool("localhost:6379");
-            _client = _manager.GetClient();
+        }
+
+        public CacheService(int secondsCount) : this()
+        {
+            _secondsCount = secondsCount;
         }
 
         public void Set(int databaseId, int typeId, Guid entityId, object value)
         {
             var key = GetKey(databaseId, typeId, entityId);
-            _client.Set(key, value);
+
+            var i = new CacheItemPolicy();
+            i.AbsoluteExpiration = DateTime.Now.AddSeconds(_secondsCount);
+            _cache.AddOrGetExisting(key, value, i);
         }
 
         public T Get<T>(int databaseId, int typeId, Guid entityId)
         {
-            var key = GetKey(databaseId, typeId, entityId);
-            return _client.Get<T>(key);
+            return (T) Get(typeof(T), databaseId, typeId, entityId);
         }
 
         public object Get(Type type, int databaseId, int typeId, Guid entityId)
         {
             var key = GetKey(databaseId, typeId, entityId);
-            return JsonSerializer.DeserializeFromString(_client.GetValue(key), type);
+            return _cache.Get(key);
         }
 
         private string GetKey(int databaseId, int typeId, Guid entityId)
         {
             return $"{databaseId}_{typeId}_{entityId}";
-        }
-
-        public void Dispose()
-        {
-            _client.Dispose();
         }
     }
 }

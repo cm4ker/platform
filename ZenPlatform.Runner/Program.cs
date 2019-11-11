@@ -20,6 +20,7 @@ using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Compiler.Platform;
+using ZenPlatform.Core.Environment.Contracts;
 
 namespace ZenPlatform.Runner
 {
@@ -70,7 +71,7 @@ namespace ZenPlatform.Runner
                     services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
                     services.AddScoped<IAssemblyManager, AssemblyManager>();
                     services.AddScoped<IConfigurationManager, ConfigurationManager>();
-                    services.AddScoped<IXCCompiller, XCCompiller>();
+                    services.AddScoped<IXCCompiller, XCCompiler>();
 
 
                     services.AddSingleton<ITestProxyService, TestProxyService>();

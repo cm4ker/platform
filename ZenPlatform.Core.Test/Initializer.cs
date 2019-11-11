@@ -54,7 +54,7 @@ namespace ZenPlatform.Core.Test
             services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
 
             services.AddScoped<IConfigurationManager, ConfigurationManager>();
-            services.AddScoped<IXCCompiller, XCCompiller>();
+            services.AddScoped<IXCCompiller, XCCompiler>();
 
 
             //services.AddSingleton<ITestProxyService, TestProxyService>();

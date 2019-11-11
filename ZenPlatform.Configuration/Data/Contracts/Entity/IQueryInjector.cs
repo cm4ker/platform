@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Common;
+using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
 {
@@ -12,18 +15,9 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// <summary>
         /// Получить фрагмент источника данных
         /// </summary>
-        /// <param name="objectName"></param>
-        /// <param name="context"></param>
+        /// <param name="logicalTreeNode">Элемент логического дерева, связанный с данным источником данных</param>
         /// <returns></returns>
-        SqlFragment GetDataSourceFragment(IQueryModelContext context);
-
-        /// <summary>
-        /// Получить фрагмент поля
-        /// </summary>
-        /// <param name="fieldName"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        SqlFragment GetColumnFragment(IQueryModelContext context);
+        string GetDataSourceFragment(SelectBuilder builder, XCObjectTypeBase t, IQueryModelContext logicalTreeNode);
     }
 
 

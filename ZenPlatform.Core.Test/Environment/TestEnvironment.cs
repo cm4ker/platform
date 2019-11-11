@@ -48,7 +48,6 @@ namespace ZenPlatform.Core.Test.Environment
             AuthenticationManager.RegisterProvider(new AnonymousAuthenticationProvider());
             InvokeService = invokeService;
             _assemblyManager = assemblyManager;
-            _assemblyManager.CheckConfiguration(Configuration);
             _logger = logger;
         }
 
@@ -64,15 +63,19 @@ namespace ZenPlatform.Core.Test.Environment
             _logger.Info("TEST ENVIRONMENT START.");
 
 
+            if (_assemblyManager.CheckConfiguration(Configuration))
+                _assemblyManager.BuildConfiguration(Configuration, _config.DatabaseType);
+
+
             var asms = _assemblyManager.GetAssemblies(Configuration).First(x => x.Type == AssemblyType.Server);
 
             var bytes = _assemblyManager.GetAssemblyBytes(asms);
             var serverAssembly = Assembly.Load(bytes);
 
             var serviceType = serverAssembly.GetType("Service.ServerInitializer");
-            var initializerInstance = (IServerInitializer)Activator.CreateInstance(serviceType, InvokeService);
+            var initializerInstance = (IServerInitializer) Activator.CreateInstance(serviceType, InvokeService);
             initializerInstance.Init();
-            
+
             InvokeService.Register(new Route("test"), (c, a) => { return (int) a[0] + 1; });
 
             InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>

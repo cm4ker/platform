@@ -8,6 +8,7 @@ using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.QueryBuilder;
 using Module = ZenPlatform.Language.Ast.Definitions.Module;
 
 namespace ZenPlatform.Compiler.Tests
@@ -79,13 +80,13 @@ namespace ZenPlatform.Compiler.Tests
 
             AstScopeRegister.Apply(cu);
 
-            var gp = new GeneratorParameters(cu, asm, CompilationMode.Server);
+            var gp = new GeneratorParameters(new List<CompilationUnit>() {cu}, asm, CompilationMode.Server,
+                SqlDatabaseType.SqlServer, null);
 
             var gen = new Generator(gp);
 
 
             var asmName = $"test.bll";
-
             if (File.Exists(asmName))
                 File.Delete(asmName);
 

@@ -107,7 +107,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             _serializedTypes = GetTypes().ToList();
             return true;
         }
-        
+
         /// <summary>
         /// Получить необработанные типы свойств. Вызывается во время конструирования типа при загрузке конфигурации.
         /// </summary>
@@ -149,18 +149,19 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
                 yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, Types[0], propName, false);
             if (Types.Count > 1)
             {
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, new XCInt(), $"{propName}_Type", false);
+                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, null, propName,
+                    false, "", "_Type");
 
                 foreach (var type in _types)
                 {
                     if (type is XCPrimitiveType)
                         yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
-                            $"{propName}_{type.Name}", false);
+                            propName, false, "", $"_{type.Name}");
 
                     if (type is XCObjectTypeBase obj && !done)
                     {
-                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, type, $"{propName}_Ref",
-                            !obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn);
+                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, type, propName,
+                            !obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn, "", "_Ref");
 
                         done = true;
                     }
@@ -177,12 +178,14 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     {
 
         public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, XCTypeBase platformType, string name,
-            bool isPseudo)
+            bool isPseudo, string prefix = "", string postfix = "")
         {
             SchemaType = schemaType;
             Name = name;
             PlatformType = platformType;
             IsPseudo = isPseudo;
+            Prefix = prefix ?? throw new ArgumentNullException();
+            Postfix = postfix ?? throw new ArgumentNullException();
         }
 
         /// <summary>
@@ -191,10 +194,21 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public XCColumnSchemaType SchemaType { get; set; }
 
         /// <summary>
-        /// Название
+        /// Полное название
         /// </summary>
-        public string Name { get; set; }
+        public string FullName => $"{Prefix}{Name}{Postfix}";
 
+        public string Name { get; }
+
+        /// <summary>
+        /// Префикс
+        /// </summary>
+        public string Prefix { get; }
+
+        /// <summary>
+        /// Постфикс
+        /// </summary>
+        public string Postfix { get; }
 
         /// <summary>
         /// Тип платформы, закреплённый за схемой

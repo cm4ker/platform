@@ -15,5 +15,9 @@ namespace ZenPlatform.Controls.Avalonia
         {
             AvaloniaXamlLoader.Load(this);
         }
+
+        private object _currentObject;
+
+        public int CurrentObjectType { get; set; }
     }
 }

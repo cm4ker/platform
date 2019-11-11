@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
-using Portable.Xaml;
 
 namespace ZenPlatform.Pidl
 {

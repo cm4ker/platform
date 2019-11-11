@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,18 +19,31 @@ namespace ZenPlatform.ServerRPC
     {
         static void Main(string[] args)
         {
-            /*
-            Client client = new Client(new SimpleConsoleLogger<Client>());
+            DbCommand b = new SqlCommand();
+            b.Connection = null;
+            b.Transaction = null;
+            
+            //inside
+            b.CommandText = "test";
+            var p = b.CreateParameter();
+            p.ParameterName = "name";
+            p.Value = null;
+            //inside
+
+            b.ExecuteNonQuery();
 
 
-            ClientPlatformContext clientPlatformContext = new ClientPlatformContext(null, client, null);
+//            Client client = new Client(new SimpleConsoleLogger<Client>());
+//
+//
+//            ClientPlatformContext clientPlatformContext = new ClientPlatformContext(null, client, null);
+//
+//            clientPlatformContext.Connect(new Core.Settings.DatabaseConnectionSettings()
+//                {Address = "127.0.0.1:12345", Database = "testdb"});
+//
+//            clientPlatformContext.Login("admin", "admin");
 
-            clientPlatformContext.Connect(new Core.Settings.DatabaseConnectionSettings()
-                {Address = "127.0.0.1:12345", Database = "testdb"});
 
-            clientPlatformContext.Login("admin", "admin");
-
-            */
             //platformClient.test();
 
 /*

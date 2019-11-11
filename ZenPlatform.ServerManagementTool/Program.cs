@@ -2,8 +2,8 @@
 using System.Security.Cryptography.X509Certificates;
 using Avalonia;
 using Avalonia.Logging.Serilog;
+using Avalonia.ReactiveUI;
 using ZenPlatform.ServerManagementTool.ViewModels;
-using ZenPlatform.ServerManagementTool.Views;
 
 namespace ZenPlatform.ServerManagementTool
 {
@@ -12,8 +12,6 @@ namespace ZenPlatform.ServerManagementTool
         static void Main(string[] args)
         {
             Bootstrapper.Init();
-
-            BuildAvaloniaApp().Start<MainWindow>(IoC.Resolve<IMainWindow>);
         }
 
         public static AppBuilder BuildAvaloniaApp()

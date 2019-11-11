@@ -14,6 +14,7 @@ using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.ConfigurationExample;
+using ZenPlatform.QueryBuilder;
 
 
 namespace ZenPlatform.Tests.Conf
@@ -51,8 +52,8 @@ namespace ZenPlatform.Tests.Conf
             var conf = Factory.CreateExampleConfiguration();
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
 
-            XCCompiller c = new XCCompiller();
-            var asm = c.Build(conf, CompilationMode.Server);
+            XCCompiler c = new XCCompiler();
+            var asm = c.Build(conf, CompilationMode.Server, SqlDatabaseType.SqlServer);
 
             asm.Write("Debug.bll");
         }

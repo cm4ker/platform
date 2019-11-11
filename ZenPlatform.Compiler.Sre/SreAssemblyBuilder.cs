@@ -72,6 +72,11 @@ namespace ZenPlatform.Compiler.Sre
             return type;
         }
 
+        public ITypeBuilder ImportWithCopy(IType type)
+        {
+            throw new NotImplementedException();
+        }
+
         public IAssembly EndBuild()
         {
             foreach (var defType in _definedTypes)

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Contracts;
 
 namespace ZenPlatform.EntityComponent.Entity
 {

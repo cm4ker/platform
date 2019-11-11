@@ -67,17 +67,31 @@ namespace ZenPlatform.Compiler.Dnlib
             TypeDef.Properties.Add(prop);
             prop.DeclaringType = ((DnlibType) propertyType).TypeDef;
 
-            return new DnlibPropertyBuilder(prop);
+
+            var propertyBuilder = new DnlibPropertyBuilder(_ts, prop);
+            ((List<DnlibProperty>) Properties).Add(propertyBuilder);
+
+            return propertyBuilder;
         }
 
         public IConstructorBuilder DefineConstructor(bool isStatic, params IType[] args)
         {
-            var sig = new MethodSig();
+            MethodSig sig;
 
-            sig.HasThis = true;
-            
-           // var c = new MethodDefUser(".ctor",);
-            throw new NotImplementedException();
+            if (isStatic)
+                sig = MethodSig.CreateStatic(new ClassSig(_ts.GetSystemBindings().Void.GetRef()));
+            else
+                sig = MethodSig.CreateInstance(new ClassSig(_ts.GetSystemBindings().Void.GetRef()));
+
+            foreach (var arg in args)
+            {
+                sig.Params.Add(new ClassSig(((DnlibType) arg).TypeRef));
+            }
+
+            var name = (isStatic) ? ".cctor" : ".ctor";
+            var c = new MethodDefUser(name, sig);
+
+            return new DnlibConstructorBuilder(c);
         }
 
         public ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic)

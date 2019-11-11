@@ -15,7 +15,6 @@ namespace ZenPlatform.ServerRuntime
 
         public void Init()
         {
-            _invokeService.Register();
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
-using Avalonia.Markup.Xaml.PortableXaml;
 using Avalonia.Metadata;
 using Portable.Xaml;
 
@@ -51,7 +50,8 @@ namespace ZenPlatform.UIBuilder
     {
         private Type _underlyingType;
 
-        public MyXamlType(Type underlyingType, XamlSchemaContext schemaContext) : base(NsResolver.Do(underlyingType), underlyingType.Name, null, schemaContext)
+        public MyXamlType(Type underlyingType, XamlSchemaContext schemaContext) : base(NsResolver.Do(underlyingType),
+            underlyingType.Name, null, schemaContext)
         {
             _underlyingType = underlyingType;
         }
@@ -66,7 +66,8 @@ namespace ZenPlatform.UIBuilder
     {
         public static string Do(Type type)
         {
-            var attr = type.Assembly.GetCustomAttributes<XmlnsDefinitionAttribute>().FirstOrDefault(x => x.ClrNamespace == type.Namespace);
+            var attr = type.Assembly.GetCustomAttributes<XmlnsDefinitionAttribute>()
+                .FirstOrDefault(x => x.ClrNamespace == type.Namespace);
             return attr?.XmlNamespace ?? "";
         }
     }

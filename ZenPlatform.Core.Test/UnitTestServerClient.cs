@@ -27,6 +27,7 @@ using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Language.QueryLanguage;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Test
 {
@@ -109,24 +110,24 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void CompileAndLoadAssembly()
         {
-            var compiller = new XCCompiller();
+            var compiller = new XCCompiler();
 
             var root = Factory.CreateExampleConfiguration();
 
-            var _assembly2 = compiller.Build(root, CompilationMode.Server);
-            var _assembly = compiller.Build(root, CompilationMode.Client);
+            var _assembly2 = compiller.Build(root, CompilationMode.Server, SqlDatabaseType.SqlServer);
+            var _assembly = compiller.Build(root, CompilationMode.Client, SqlDatabaseType.SqlServer);
 
             if (File.Exists("server.bll"))
                 File.Delete("server.bll");
 
-            if (File.Exists("test.bll"))
-                File.Delete("test.bll");
+            if (File.Exists("client.bll"))
+                File.Delete("client.bll");
 
             _assembly2.Write("server.bll");
-            _assembly.Write("test.bll");
+            _assembly.Write("client.bll");
 
             Assert.Equal(_assembly.Name,
-                $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}");
+                $"{root.ProjectName}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}");
 
             PlatformAssemblyLoadContext loadContext =
                 new PlatformAssemblyLoadContext(new TestClientAssemblyManager(_assembly));
@@ -144,11 +145,12 @@ namespace ZenPlatform.Core.Test
         public void AssemblyManagerTest()
         {
             var storage = new TestAssemblyStorage();
-            var manager = new AssemblyManager(new XCCompiller(), storage, new SimpleConsoleLogger<AssemblyManager>());
+            var manager = new AssemblyManager(new XCCompiler(), storage, new SimpleConsoleLogger<AssemblyManager>());
 
             var root = Factory.CreateExampleConfiguration();
 
-            manager.CheckConfiguration(root);
+            if (manager.CheckConfiguration(root))
+                manager.BuildConfiguration(root, SqlDatabaseType.SqlServer);
 
             var assemblies = storage.GetAssemblies(root.GetHash());
 
@@ -170,6 +172,8 @@ namespace ZenPlatform.Core.Test
             var assemblyManagerClientService = serverService.GetRequiredService<IAssemblyManagerClientService>();
 
             var env = serverService.GetRequiredService<IWorkEnvironment>();
+
+            env.Initialize(new StartupConfig());
 
             var assemblies = new List<AssemblyDescription>()
             {
