@@ -19,7 +19,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
             var ns = SyntaxFactory.NamespaceDeclaration(
                         SyntaxFactory.ParseName(rootNameSpace));
 
-            var name = "QuerySyntaxNode";
+            var name = "SSyntaxNode";
 
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
@@ -50,8 +50,8 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             var cls = SyntaxFactory.ClassDeclaration($"{name}")
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
-               .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
-                    .SimpleBaseType(SyntaxFactory.ParseTypeName("ZenPlatform.QueryBuilder.Common.SqlNode"))))
+             //  .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
+               //     .SimpleBaseType(SyntaxFactory.ParseTypeName("ZenPlatform.QueryBuilder.Common.SqlNode"))))
                 .AddMembers(members.ToArray());
 
 
@@ -91,7 +91,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             var defaultVisitor =
                     (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
-                        $"public virtual T DefaultVisit(QuerySyntaxNode node){{}}");
+                        $"public virtual T DefaultVisit(SSyntaxNode node){{}}");
 
 
             defaultVisitor = defaultVisitor.AddBodyStatements(
@@ -100,7 +100,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             var visit =
                     (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
-                        $"public virtual T Visit(QuerySyntaxNode visitable){{}}");
+                        $"public virtual T Visit(SSyntaxNode visitable){{}}");
 
 
             visit = visit.AddBodyStatements(
@@ -425,7 +425,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
         public Syntax()
         {
             Arguments = new List<SyntaxArgument>();
-            Base = "QuerySyntaxNode";
+            Base = "SSyntaxNode";
         }
 
         /// <summary>
