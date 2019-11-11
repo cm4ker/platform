@@ -23,6 +23,7 @@ using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Network.Contracts;
 using ZenPlatform.Core.Test.Assemblies;
+using ZenPlatform.Networking;
 using ZenPlatform.Shell;
 
 namespace ZenPlatform.Core.Test

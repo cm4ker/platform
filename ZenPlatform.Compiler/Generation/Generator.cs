@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.UI.Ast;
 using SreTA = System.Reflection.TypeAttributes;

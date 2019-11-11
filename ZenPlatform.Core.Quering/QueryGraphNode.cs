@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ZenPlatform.Shared.Tree;
+﻿using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.Core.Language.QueryLanguage
+namespace ZenPlatform.Core.Quering
 {
     public class QueryGraphNode : Node
     {
