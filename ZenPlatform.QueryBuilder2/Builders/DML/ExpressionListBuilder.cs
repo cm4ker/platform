@@ -21,6 +21,24 @@ namespace ZenPlatform.QueryBuilder.Builders
         {
         }
 
+        public SelectFieldsBuilder Cast(Action<CastBuilder> action)
+        {
+            if (_currentNode == null) return this;
+
+            var node = new CastNode();
+            var builder = new CastBuilder(node);
+            action(builder);
+
+            node.Expression = _currentNode;
+
+            _list[_list.IndexOf(_currentNode)] = node;
+
+            _currentNode = null;
+
+            return this;
+
+        }
+
         public SelectFieldsBuilder Sum(Action<ExpressionBuilder> action)
         {
             ExpressionBuilder builder = new ExpressionBuilder();
@@ -34,6 +52,7 @@ namespace ZenPlatform.QueryBuilder.Builders
             
             return this;
         }
+
 
         public SelectFieldsBuilder Count(Action<ExpressionBuilder> action)
         {
