@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.QueryBuilder.Model;
 
-namespace ZenPlatform.QueryBuilder.Builders.DML
+namespace ZenPlatform.QueryBuilder.Builders
 {
     public class InsertBuilder
     {

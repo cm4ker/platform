@@ -21,6 +21,9 @@
       <None Update="sql_syntax.xml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="sql_syntax3.xml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="sql_syntax2.xml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

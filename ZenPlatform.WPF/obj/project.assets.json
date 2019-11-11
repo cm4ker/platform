@@ -8,24 +8,24 @@
     ".NETCoreApp,Version=v3.0": []
   },
   "packageFolders": {
-    "C:\\Users\\n.zenkov\\.nuget\\packages\\": {},
+    "C:\\Users\\maste\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.WPF\\ZenPlatform.WPF.csproj",
+      "projectUniqueName": "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\ZenPlatform.WPF\\ZenPlatform.WPF.csproj",
       "projectName": "ZenPlatform.WPF",
-      "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.WPF\\ZenPlatform.WPF.csproj",
-      "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
-      "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.WPF\\obj\\",
+      "projectPath": "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\ZenPlatform.WPF\\ZenPlatform.WPF.csproj",
+      "packagesPath": "C:\\Users\\maste\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\ZenPlatform.WPF\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
-        "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\maste\\Source\\Repos\\ZenPlatform\\NuGet.Config",
+        "C:\\Users\\maste\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -59,7 +59,16 @@
           "net48"
         ],
         "assetTargetFallback": true,
-        "warn": true
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          },
+          "Microsoft.WindowsDesktop.App.WPF": {
+            "privateAssets": "none"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   }

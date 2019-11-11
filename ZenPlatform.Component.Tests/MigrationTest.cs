@@ -28,20 +28,13 @@ namespace ZenPlatform.Component.Tests
 
             var com = root.Data.Components[0];
             var entity = com.Types.Skip(1).First();
-            var scripts = com.ComponentImpl.Migrator.GetScript(null, entity);
+            var script = com.ComponentImpl.Migrator.GetStep1(null, entity);
 
-            var sqlCompiler = new PostgresCompiller();
+            var sqlCompiler = SqlCompillerBase.FormEnum(SqlDatabaseType.SqlServer);
 
-            var builder = new StringBuilder();
+            var result = sqlCompiler.Compile(script.Expression);
 
-            foreach (var script in scripts)
-            {
-                var result = sqlCompiler.Compile(script);
-                builder.Append(result);
-                builder.Append("\n\n");
-            }
-
-            _testOutputHelper.WriteLine(builder.ToString());
+            _testOutputHelper.WriteLine(result);
         }
     }
 }

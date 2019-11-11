@@ -7,7 +7,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
     /// <summary>
     /// ��� ������� ������
     /// </summary>
-    public class XCString : XCPrimitiveType
+    public class XCString : XCPrimitiveType, IEquatable<XCString>
     {
         public override uint Id => 6;
 
@@ -19,22 +19,25 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
             get { return "String"; }
         }
 
-        public override bool IsNullable { get; set; }
-        public override int ColumnSize { get; set; }
+        public int Size { get; set; }
 
-        public override int Precision { get; set; }
-        public override int Scale { get; set; }
-
-       
-        public override DbType DBType
+        public bool Equals(XCString other)
         {
-            get { return DbType.String; }
+            if (other == null) return false;
+
+            return this.Guid == other.Guid && this.IsNullable == other.IsNullable &&
+                this.Size == other.Size;
         }
 
-       
-        public override Type CLRType
+        public override bool Equals(object obj)
         {
-            get { return typeof(string); }
+            if (obj == null) return false;
+            return Equals(obj as XCBinary);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Guid, IsNullable, Size);
         }
 
     }
