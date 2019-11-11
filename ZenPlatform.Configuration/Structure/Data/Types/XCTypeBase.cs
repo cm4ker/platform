@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types
@@ -48,6 +50,24 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
         protected virtual bool ShouldSerializeDescription()
         {
             return true;
+        }
+    }
+
+
+    public class XCTypeBaseEqualityComparer : IEqualityComparer<XCTypeBase>
+    {
+        public bool Equals([AllowNull] XCTypeBase x, [AllowNull] XCTypeBase y)
+        {
+            if (x == null && y == null)
+                return true;
+            else if (x == null || y == null)
+                return false;
+            return x.Guid == y.Guid;
+        }
+
+        public int GetHashCode([DisallowNull] XCTypeBase obj)
+        {
+            return obj.Guid.GetHashCode();
         }
     }
 }

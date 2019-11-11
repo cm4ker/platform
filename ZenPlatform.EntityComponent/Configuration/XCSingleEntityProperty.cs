@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -9,7 +12,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     /// <summary>
     /// Свойство сущности
     /// </summary>
-    public class XCSingleEntityProperty : XCObjectPropertyBase, IChildItem<XCSingleEntity>
+    public class XCSingleEntityProperty : XCObjectPropertyBase, IChildItem<XCSingleEntity>, IEquatable<XCSingleEntityProperty>
     {
         private XCSingleEntity _parent;
 
@@ -29,6 +32,55 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return !Unique;
         }
+
+        public bool Equals(XCSingleEntityProperty other)
+        {
+            if (other == null) return false;
+
+            return (this.Guid == other.Guid) && (this.Name == other.Name) && SequenceEqual<XCTypeBase>(this.Types, other.Types)
+                    && this.Unique == other.Unique && this.IsSystemProperty == other.IsSystemProperty;
+            
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            return Equals(obj as XCSingleEntityProperty);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Guid, Name, Unique, IsSystemProperty, Types);
+        }
+
+
+        private bool SequenceEqual<T>(IEnumerable<T> list1, IEnumerable<T> list2)
+        {
+            var cnt = new Dictionary<T, int>();
+            foreach (T s in list1)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]++;
+                }
+                else
+                {
+                    cnt.Add(s, 1);
+                }
+            }
+            foreach (T s in list2)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]--;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return cnt.Values.All(c => c == 0);
+        }
     }
 
     internal static class StandardEntityPropertyHelper
@@ -47,4 +99,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             };
         }
     }
+   
+
+
+
 }

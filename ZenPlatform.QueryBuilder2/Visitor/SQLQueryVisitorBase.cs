@@ -326,5 +326,10 @@ namespace ZenPlatform.QueryBuilder.Visitor
         {
             return string.Format("{0} as {1}", node.Node.Accept(this), node.Alias);
         }
+
+        public override string VisitExistsNode(ExistsNode node)
+        {
+            return string.Format("EXISTS({0})", node.DataSource.Accept(this));
+        }
     }
 }
