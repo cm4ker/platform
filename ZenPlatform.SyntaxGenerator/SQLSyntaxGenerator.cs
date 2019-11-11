@@ -167,6 +167,19 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                         SyntaxFactory.ParseStatement($"{argument.Name} = new {argument.Type}();"));
                     
                 }
+
+                if (!argument.Null)
+                {
+                    var parameterSyntax = SyntaxFactory
+                                .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
+                                .WithType(SyntaxFactory.ParseName(argument.Type));
+
+                    if (argument is SyntaxArgumentSingle sas && sas.Default != null)
+                        parameterSyntax = parameterSyntax.WithDefault(
+                            SyntaxFactory.EqualsValueClause(SyntaxFactory.ParseExpression(sas.Default)));
+
+                    constructor = constructor.AddParameterListParameters(parameterSyntax);
+                }
                 /*
                 else if (argument.IsPrimetive() && !argument.Null)
                 {
