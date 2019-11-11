@@ -46,7 +46,7 @@
           "dependencies": {
             "Avalonia": {
               "target": "Package",
-              "version": "[0.9.0-preview5, )"
+              "version": "[0.9.0-preview7, )"
             }
           },
           "imports": [

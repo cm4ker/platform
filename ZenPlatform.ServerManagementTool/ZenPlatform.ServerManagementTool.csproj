@@ -18,5 +18,8 @@
     <PackageReference Include="DryIoc.dll" Version="3.1.0-preview-05" />
     <PackageReference Include="NSubsys" Version="0.7.0-build20180604-0047" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views" />
+  </ItemGroup>
 
 </Project>
