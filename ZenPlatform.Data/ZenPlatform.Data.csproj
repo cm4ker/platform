@@ -6,7 +6,4 @@
     <PackageReference Include="Npgsql" Version="4.0.3" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0-preview3-27014-02" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
-  </ItemGroup>
 </Project>

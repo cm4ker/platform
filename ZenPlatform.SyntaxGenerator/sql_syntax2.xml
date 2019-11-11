@@ -98,18 +98,17 @@
     </Arguments>
   </Syntax>
 
-  
-  <Syntax Name="AddColumn" Base="TableOperation">
+  <Syntax Name="AlterAddColumn" Base="TableOperation">
     <Arguments>
       <Single Name="Column" Type="ColumnDefinition" />
     </Arguments>
   </Syntax>
   
-  <Syntax Name="AlterColumn" Base="TableOperation">
-    <Arguments>
-      <Single Name="Column" Type="ColumnDefinition" />
-    </Arguments>
-  </Syntax>
+  <Syntax Name="AddColumn" Base="AlterAddColumn"/>
+
+  
+  <Syntax Name="AlterColumn" Base="AlterAddColumn"/>
+
   
   <Syntax Name="AddConstraint" Base="TableOperation">
     <Arguments>
@@ -180,6 +179,12 @@
   </Syntax>
 
   <Syntax Name="ConditionNode" Base="ExpressionNode"/>
+
+  <Syntax Name="ExistsNode" Base="ConditionNode">
+    <Arguments>
+      <Single Name="DataSource" Type="DataSourceNode" />
+    </Arguments>
+  </Syntax>
 
   <Syntax Name="ConditionAndNode" Base="ConditionNode">
     <Arguments>
@@ -284,7 +289,14 @@
       <Single Name="Table" Type="Table" />
     </Arguments>
   </Syntax>
-  
+
+
+  <Syntax Name="CastNode" Base="ExpressionNode" >
+    <Arguments>
+      <Single Name="Expression" Type="ExpressionNode" />
+      <Single Name="Type" Type="ColumnType" />
+    </Arguments>
+  </Syntax>
 
   <Syntax Name="FieldList" Base="DataSourceNode">
     <Arguments>
@@ -325,6 +337,13 @@
     <Arguments>
       <Single Name="From" Type="Table" />
       <Single Name="Where" Type="WhereNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="RenameTableNode">
+    <Arguments>
+      <Single Name="From" Type="string" />
+      <Single Name="To" Type="string" />
     </Arguments>
   </Syntax>
 
