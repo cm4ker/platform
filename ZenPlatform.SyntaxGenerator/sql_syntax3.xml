@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+
+  <Syntax Name="ExpressionNode" />
+
+  <Syntax Name="Table" Base="QuerySyntaxNode, IDataSourceNode">
+    <Arguments>
+      <Single Name="Name" Type="string" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="TopNode" >
+    <Arguments>
+      <Single Name="Limit" Type="int" />
+      <Single Name="Offset" Type="int" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="NestedQuery" Base="QuerySyntaxNode, IDataSourceNode">
+    <Arguments>
+      <Single Name="Query" Type="SelectNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SelectExpressionNode">
+    <Arguments>
+      <List Name="Exp" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="SelectNode" >
+    <Arguments>
+      <List Name="Fields" Type="SelectExpressionNode" />
+      <Single Name="From" Type="FromNode" />
+      <Single Name="Where" Type="WhereNode" />
+      <Single Name="GroupBy" Type="GroupByNode" />
+      <Single Name="OrderBy" Type="OrderByNode" />
+      <Single Name="Top" Type="TopNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="OrderByExpressionNode" >
+    <Arguments>
+      <List Name="Exp" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="OrderByNode" >
+    <Arguments>
+      <Single Name="Direction" Type="OrderDirection" />
+      <List Name="Fields" Type="OrderByExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="GroupByExpressionNode" >
+    <Arguments>
+      <List Name="Exp" Type="ExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="GroupByNode" >
+    <Arguments>
+      <List Name="Fields" Type="GroupByExpressionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="JoinNode">
+    <Arguments>
+      <Single Name="DataSource" Type="IDataSourceNode" />
+      <Single Name="Condition" Type="ConditionNode" />
+      <Single Name="JoinType" Type="JoinType" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="WhereNode">
+    <Arguments>
+      <Single Name="Condition" Type="ConditionNode" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="FromNode">
+    <Arguments>
+      <Single Name="DataSource" Type="IDataSourceNode" />
+      <List Name="Join" Type="JoinNode"/>
+    </Arguments>
+  </Syntax>
+  
+  
+</Config>
