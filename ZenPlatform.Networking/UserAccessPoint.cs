@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using ZenPlatform.Core.Logging;
-using ZenPlatform.Core.DI;
 using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Core;
+using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Settings;
 
-namespace ZenPlatform.Core.Network
+namespace ZenPlatform.Networking
 {
     public class UserAccessPoint : IAccessPoint
     {
@@ -33,21 +30,14 @@ namespace ZenPlatform.Core.Network
             foreach (var lisetnercfg in _config.Listener)
             {
                 INetworkListener listener = _serviceProvider.GetRequiredService<INetworkListener>();
-                ServerConnectionFactory connectionFactory = null;
-                switch (lisetnercfg.Type)
+
+                var connectionFactory = lisetnercfg.Type switch
                 {
-                    case ListenerType.User:
-                        connectionFactory = _serviceProvider.GetRequiredService<UserConnectionFactory>();
-                        break;
-                    case ListenerType.Admin:
-                        connectionFactory = _serviceProvider.GetRequiredService<ServerConnectionFactory>();
-                        break;
-                    case ListenerType.Test:
-                        connectionFactory = _serviceProvider.GetRequiredService<ServerConnectionFactory>();
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
+                    ListenerType.User => _serviceProvider.GetRequiredService<UserConnectionFactory>(),
+                    ListenerType.Admin => _serviceProvider.GetRequiredService<ServerConnectionFactory>(),
+                    ListenerType.Test => _serviceProvider.GetRequiredService<ServerConnectionFactory>(),
+                    _ => throw new InvalidOperationException()
+                };
 
                 listener.Start(NetworkUtility.CreateIPEndPoint(lisetnercfg.Address), connectionFactory);
                 _listeners.Add(listener);
