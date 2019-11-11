@@ -6,7 +6,7 @@ using dnlib.DotNet.Writer;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Core.Language.QueryLanguage.ZqlModel;
+
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model
 {

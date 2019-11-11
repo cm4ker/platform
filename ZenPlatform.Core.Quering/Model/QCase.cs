@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog.Filters;
+
 using ZenPlatform.Configuration.Structure.Data.Types;
 
 namespace ZenPlatform.Core.Language.QueryLanguage.Model

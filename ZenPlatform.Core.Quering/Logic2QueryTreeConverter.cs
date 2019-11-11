@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
-using MoreLinq.Extensions;
 using ZenPlatform.Core.Language.QueryLanguage.Model;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Builders;
@@ -36,7 +35,6 @@ namespace ZenPlatform.Core.Language.QueryLanguage
 
         private void GenerateSource(SelectBuilder sb, QObjectTable ot)
         {
-            
             /*
              FROM
                     Invoice i
@@ -63,7 +61,7 @@ namespace ZenPlatform.Core.Language.QueryLanguage
                 
                 From(x=> x.FromRaw("Select * From Test"))
              */
-            
+
             ot.ObjectType.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(sb, ot.ObjectType, null);
         }
 
@@ -184,8 +182,6 @@ namespace ZenPlatform.Core.Language.QueryLanguage
             var ot = sfe.Object.ObjectType;
             // мы находимся на самом нижнем уровне
             //(SELECT A FROM TEST)
-            _q.From(ot.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(_q, ot, null));
-
         }
 
         public void GenerateLookup(QLookupField lookup)
