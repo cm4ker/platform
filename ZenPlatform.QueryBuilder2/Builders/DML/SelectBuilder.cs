@@ -49,7 +49,7 @@ namespace ZenPlatform.QueryBuilder.Builders
             return this;
         }
 
-        public SelectBuilder Select(Action<ExpressionBuilder> exp, string alias = null)
+        public SelectBuilder SelectField(Action<ExpressionBuilder> exp, string alias = null)
         {
             var builder = new ExpressionBuilder();
             exp(builder);

@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
-    <ProjectReference Include="..\ZenPlatform.QueryBuilder2\ZenPlatform.QueryBuilder.csproj" />
   </ItemGroup>
 
 </Project>

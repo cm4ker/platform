@@ -45,6 +45,13 @@ namespace ZenPlatform.QueryBuilder.Builders
             return builder;
         }
 
+        public RenameBuilder Rename()
+        {
+            var builder = new RenameBuilder();
+            _expression.Nodes.Add(builder.Expression);
+            return builder;
+        }
+
 
     }
 
@@ -68,6 +75,27 @@ namespace ZenPlatform.QueryBuilder.Builders
 
 
         }
+
+
+        public InsertBuilder Insert()
+        {
+            InsertNode insertNode = new InsertNode();
+            _expression.Nodes.Add(insertNode);
+
+            return new InsertBuilder(insertNode);
+
+
+        }
+
+        public UpdateBuilder Update()
+        {
+            UpdateNode updateNode = new UpdateNode();
+            _expression.Nodes.Add(updateNode);
+
+            return new UpdateBuilder(updateNode);
+
+
+        }
     }
 
     public class CreateBuilder: IExpression
@@ -86,11 +114,20 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         public CreateColumnBuilder Column(string columnName)
         {
-            var column = new ColumnDefinition()
-            {
-                Column = new Column() { Value = columnName }
-            };
-            return new CreateColumnBuilder(column);
+
+            var add = new AddColumn();
+
+            _expression.Nodes.Add(add);
+            return new CreateColumnBuilder(add).Column(columnName);
+
+        }
+
+        public CreateColumnBuilder Column(ColumnDefinition column)
+        {
+            var add = new AddColumn();
+
+            _expression.Nodes.Add(add);
+            return new CreateColumnBuilder(add).Column(column);
         }
     }
 
@@ -100,14 +137,22 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         private Expression _expression = new Expression();
 
-        public AlterColumnBuilder Column(string columName)
+        public AlterColumnBuilder Column(string columnName)
         {
-            return new AlterColumnBuilder(_expression).Column(columName);
+
+
+            var alter = new AlterColumn();
+
+            _expression.Nodes.Add(alter);
+            return new AlterColumnBuilder(alter).Column(columnName);
         }
 
         public AlterColumnBuilder Column(ColumnDefinition column)
         {
-            return new AlterColumnBuilder(_expression).Column(column);
+            var alter = new AlterColumn();
+
+            _expression.Nodes.Add(alter);
+            return new AlterColumnBuilder(alter).Column(column);
         }
 
     }
@@ -120,8 +165,9 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         public DeleteTableBuilder Table(string tableName)
         {
-            var _dropTable = new DropTable() { Table = new Table() { Value = tableName } };
-            return new DeleteTableBuilder(_dropTable);
+            var dropTable = new DropTable() { Table = new Table() { Value = tableName } };
+            _expression.Nodes.Add(dropTable);
+            return new DeleteTableBuilder(dropTable);
         }
 
         public DeleteColumnBuilder Column(string columnName)
@@ -130,6 +176,8 @@ namespace ZenPlatform.QueryBuilder.Builders
             {
                 Column = new Column() { Value = columnName }
             };
+
+            _expression.Nodes.Add(dropColumn);
             return new DeleteColumnBuilder(dropColumn);
         }
 
@@ -154,6 +202,25 @@ namespace ZenPlatform.QueryBuilder.Builders
             _expression.Nodes.Add(copy);
             return new CopyTableBuilder(copy);
         }
+    }
+
+
+    public class RenameBuilder : IExpression
+    {
+        public QuerySyntaxNode Expression => _expression;
+
+        private Expression _expression = new Expression();
+
+        public RenameTableBuilder Table(string oldName = null)
+        {
+            var node = new RenameTableNode();
+            if (!string.IsNullOrEmpty(oldName)) node.From = oldName;
+
+            var builder = new RenameTableBuilder(node);
+            _expression.Nodes.Add(node);
+            return builder;
+        }
+
     }
 
 }

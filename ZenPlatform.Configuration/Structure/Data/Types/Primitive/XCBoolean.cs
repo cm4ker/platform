@@ -1,9 +1,8 @@
 using System;
-using System.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCBoolean : XCPrimitiveType
+    public class XCBoolean : XCPrimitiveType, IEquatable<XCBoolean>
     {
         public override uint Id => 2;
 
@@ -14,37 +13,25 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
             get { return "Boolean"; }
         }
 
-        public override bool IsNullable { get; set; }
-        
-        public override int ColumnSize { get; set; }
-        
-        public override DbType DBType
+        public bool Equals(XCBoolean other)
         {
-            get { return DbType.Boolean; }
+            if (other == null) return false;
+
+            return this.Guid == other.Guid
+                && this.IsNullable == other.IsNullable;
         }
 
-        public override Type CLRType
+        public override bool Equals(object obj)
         {
-            get { return (IsNullable) ? typeof(bool?) : typeof(bool); }
+            if (obj == null) return false; 
+            return Equals(obj as XCBinary);
         }
-        public override int Precision { get; set; }
-        public override int Scale { get; set; }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Guid, IsNullable);
+        }
 
 
-        private bool ShouldSerializePrecision()
-        {
-            return false;
-        }
-        
-        private bool ShouldSerializeScale()
-        {
-            return false;
-        }
-        
-        
-        private bool ShouldSerializeColumnSize()
-        {
-            return false;
-        }
     }
 }

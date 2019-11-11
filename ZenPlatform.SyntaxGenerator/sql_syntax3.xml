@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+
+  <Syntax Name="SExpression" />
+
+
+  <Syntax Name="SDataSource"/>
+
+  <Syntax Name="STable" Type="SDataSource" >
+    <Arguments>
+      <Single Name="Name" Type="string" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="STop" >
+    <Arguments>
+      <Single Name="Limit" Type="int" />
+      <Single Name="Offset" Type="int" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SDataSourceNestedQueryS" Type="SDataSource">
+    <Arguments>
+      <Single Name="Query" Type="SSelect" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SExpressionNestedQueryNode" Type="SExpression">
+    <Arguments>
+      <Single Name="Query" Type="SSelect" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SSelectFieldExpression">
+    <Arguments>
+      <List Name="Exp" Type="SExpression" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="SSelect" >
+    <Arguments>
+      <List Name="Fields" Type="SSelectFieldExpression" />
+      <Single Name="From" Type="SFrom" />
+      <Single Name="Where" Type="SWhere" />
+      <Single Name="GroupBy" Type="SGroupBy" />
+      <Single Name="OrderBy" Type="SOrderBy" />
+      <Single Name="Top" Type="STop" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SOrderByExpression" >
+    <Arguments>
+      <List Name="Exp" Type="SExpression" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="SOrderBy" >
+    <Arguments>
+      <Single Name="Direction" Type="OrderDirection" />
+      <List Name="Fields" Type="SOrderByExpression" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SGroupByExpression" >
+    <Arguments>
+      <List Name="Exp" Type="SExpression" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SGroupBy" >
+    <Arguments>
+      <List Name="Fields" Type="SGroupByExpression" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SCondition" Base="SExpression"/>
+
+  <Syntax Name="SJoin">
+    <Arguments>
+      <Single Name="DataSource" Type="SDataSource" />
+      <Single Name="Condition" Type="SCondition" />
+      <Single Name="JoinType" Type="JoinType" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SWhere">
+    <Arguments>
+      <Single Name="Condition" Type="SCondition" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SFrom">
+    <Arguments>
+      <Single Name="DataSource" Type="SDataSource" />
+      <List Name="Join" Type="SJoin"/>
+    </Arguments>
+  </Syntax>
+  
+  
+</Config>

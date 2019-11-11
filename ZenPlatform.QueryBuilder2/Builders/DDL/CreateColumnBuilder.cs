@@ -6,41 +6,38 @@ using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.QueryBuilder.Builders
 {
-    public class CreateColumnBuilder : ExpressionBuilderWithColumnOptionsAndTypesBase<CreateTableBuilder>, IExpression
+    public class CreateColumnBuilder : ExpressionBuilderWithColumnOptionsAndTypesBase<CreateTableBuilder>
     {
 
-        private AddColumn _addColumn;
-        private ColumnDefinition _column;
-        public CreateColumnBuilder(string columnName)
+        private AlterAddColumn _alterColumn;
+
+        public CreateColumnBuilder(AlterAddColumn alterColumn)
         {
-            _column = new ColumnDefinition()
+
+            _alterColumn = alterColumn;
+        }
+        public CreateColumnBuilder Column(ColumnDefinition column)
+        {
+
+            _alterColumn.Column = column;
+
+            return this;
+
+        }
+
+        public CreateColumnBuilder Column(string columnName)
+        {
+            _alterColumn.Column = new ColumnDefinition()
             {
                 Column = new Column() { Value = columnName }
             };
 
-            _addColumn = new AddColumn()
-            {
-                Column = _column
-            };
+            return this;
         }
-
-        public CreateColumnBuilder(ColumnDefinition column)
-        {
-            _column = column;
-
-            _addColumn = new AddColumn()
-            {
-                Column = _column
-            };
-        }
-
-
-
-        public QuerySyntaxNode Expression => _addColumn;
 
         public override ColumnDefinition GetCurrentColumn()
         {
-            return _column;
+            return _alterColumn.Column;
         }
 
         public override void SetConstraintDefinition(ConstraintDefinition constraint)
@@ -50,13 +47,13 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         public override void SetType(ColumnType columnType)
         {
-            _column.Type = columnType;
+            _alterColumn.Column.Type = columnType;
         }
     
 
         public CreateColumnBuilder OnTable(string tableName)
         {
-            _addColumn.Table = new Table() { Value = tableName };
+            _alterColumn.Table = new Table() { Value = tableName };
             return this;
         }
 
