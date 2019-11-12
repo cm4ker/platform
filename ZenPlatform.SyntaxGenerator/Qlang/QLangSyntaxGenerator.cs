@@ -142,11 +142,30 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
             var publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
 
+
+            var block = SyntaxFactory.Block().AddStatements();
+
+            foreach (var arg in sqlSyntax.Arguments)
+            {
+                if (arg is SyntaxArgumentSingle)
+                {
+                    block = block.AddStatements(SyntaxFactory.ParseStatement($"Childs.Add({arg.Name.ToCamelCase()});"));
+                }
+                else if (arg is SyntaxArgumentList)
+                {
+                    block = block.AddStatements(
+                        SyntaxFactory.ParseStatement(
+                            $"foreach(var item in {arg.Name.ToCamelCase()}) Childs.Add(item);"));
+                }
+
+                block = block.AddStatements(SyntaxFactory.ParseStatement($"{arg.Name} = {arg.Name.ToCamelCase()} ;"));
+            }
+
             var constructor = SyntaxFactory.ConstructorDeclaration(sqlSyntax.Name)
                 // .WithParameterList(SyntaxFactory.ParameterList()
                 //     .AddParameters(SyntaxFactory.Parameter(
                 //         SyntaxFactory.Identifier("lineInfo")).WithType(SyntaxFactory.ParseName("ILineInfo"))))
-                .WithBody(SyntaxFactory.Block())
+                .WithBody(block)
                 .WithModifiers(SyntaxTokenList.Create(publicToken));
 
             //var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,

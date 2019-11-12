@@ -13,7 +13,6 @@ namespace ZenPlatform.Core.Quering.Model
         public QExpression Right { get; }
     }
     
-    
     public class QNotEquals : QOperationExpression
     {
         public QNotEquals(QExpression left, QExpression right)
