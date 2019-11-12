@@ -1,7 +1,4 @@
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-
-
-namespace ZenPlatform.Core.Language.QueryLanguage.Model
+namespace ZenPlatform.Core.Quering.Model
 {
     /// <summary>
     /// Поле
