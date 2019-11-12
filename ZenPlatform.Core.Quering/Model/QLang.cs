@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
@@ -37,34 +38,68 @@ namespace ZenPlatform.Core.Quering.Model
             if (nContext < CurrentScope.QueryContext && nContext != QueryContext.None)
                 throw new Exception($"Can't change context {CurrentScope.QueryContext} to {nContext}");
 
-            if (CurrentScope.QueryContext == QueryContext.From)
-                m_from_close();
-            else if (CurrentScope.QueryContext == QueryContext.Where)
-                m_where_close();
-            else if (CurrentScope.QueryContext == QueryContext.Select)
-                m_select_close();
+
+            switch (CurrentScope.QueryContext)
+            {
+                case QueryContext.From:
+                    m_from_close();
+                    break;
+                case QueryContext.Where:
+                    m_where_close();
+                    break;
+                case QueryContext.GroupBy:
+                    m_group_by_close();
+                    break;
+                case QueryContext.Having:
+                    m_having_close();
+                    break;
+                case QueryContext.Select:
+                    m_select_close();
+                    break;
+                case QueryContext.OrderBy:
+                    m_order_by_close();
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
 
             CurrentScope.QueryContext = nContext;
         }
+
+        private void m_order_by_close()
+        {
+            _logicStack.Push(new QOrderBy(_logicStack.PopItems<QExpression>()));
+        }
+
+        private void m_having_close()
+        {
+            _logicStack.Push(new QHaving(_logicStack.PopExpression()));
+        }
+
 
         public void m_from()
         {
             ChangeContext(QueryContext.From);
         }
 
-        public void m_from_close()
+        private void m_from_close()
         {
             _logicStack.Push(new QFrom(_logicStack.PopItems<QFromItem>(), _logicStack.PopDataSource()));
         }
 
-        public void m_select_close()
+        private void m_select_close()
         {
             _logicStack.Push(new QSelect(_logicStack.PopFields()));
         }
 
-        public void m_where_close()
+        private void m_where_close()
         {
             _logicStack.Push(new QWhere(_logicStack.PopExpression()));
+        }
+
+        private void m_group_by_close()
+        {
+            _logicStack.Push(new QGroupBy(_logicStack.PopItems<QExpression>()));
         }
 
         public void m_select()
@@ -179,6 +214,10 @@ namespace ZenPlatform.Core.Quering.Model
                 var expr = _logicStack.PopExpression();
                 _logicStack.Push(new QAliasedSelectExpression(expr, alias));
             }
+            else
+            {
+                throw new Exception("In this context alias not available");
+            }
         }
 
         public void begin_query()
@@ -208,9 +247,9 @@ namespace ZenPlatform.Core.Quering.Model
 
         public void st_query()
         {
-            if (CurrentScope.QueryContext != QueryContext.Select)
+            if (CurrentScope.QueryContext != QueryContext.Select && CurrentScope.QueryContext != QueryContext.OrderBy)
                 throw new Exception(
-                    $"You can save query only in the 'Select' context. Current context {CurrentScope.QueryContext}");
+                    $"You can save query only in the 'Select' or 'Order by' context. Current context {CurrentScope.QueryContext}");
 
             ChangeContext(QueryContext.None);
 

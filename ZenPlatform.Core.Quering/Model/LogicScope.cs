@@ -10,6 +10,7 @@ namespace ZenPlatform.Core.Quering.Model
         Having = 3,
         Where = 4,
         Select = 5,
+        OrderBy = 6
     }
 
     public class LogicScope
