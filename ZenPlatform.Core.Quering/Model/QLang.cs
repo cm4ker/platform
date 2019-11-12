@@ -15,7 +15,6 @@ namespace ZenPlatform.Core.Quering.Model
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
 
-
         private enum InstructionContext
         {
             None,

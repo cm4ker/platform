@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ZenPlatform.SyntaxGenerator
+namespace ZenPlatform.SyntaxGenerator.Compiler
 {
     public static class ComilerSyntaxGenerator
     {
@@ -21,7 +21,7 @@ namespace ZenPlatform.SyntaxGenerator
             using (TextReader tr = new StreamReader(args[0]))
             {
                 XmlSerializer xs = new XmlSerializer(typeof(Config));
-                var root = (Config)xs.Deserialize(tr);
+                var root = (Config) xs.Deserialize(tr);
 
 
                 StringBuilder sb = new StringBuilder();
@@ -131,7 +131,7 @@ namespace ZenPlatform.SyntaxGenerator
                     constructor = constructor.WithInitializer(initializer);
 
                     var visitor =
-                        (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
+                        (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
                             "public override T Accept<T>(AstVisitorBase<T> visitor){}");
 
                     if (!syntax.IsAbstract)
@@ -199,102 +199,5 @@ namespace ZenPlatform.SyntaxGenerator
                 }
             }
         }
-    }
-
-
-    public class Config
-    {
-        /// <summary>
-        /// The syntax collection
-        /// </summary>
-        [XmlElement("Syntax")]
-        public List<Syntax> Syntaxes { get; set; }
-    }
-
-    public static class StringExt
-    {
-        public static string ToCamelCase(this string str)
-        {
-            return char.ToLower(str[0]) + str[1..];
-        }
-    }
-
-
-    public abstract class SyntaxArgument
-    {
-        [XmlAttribute] public string Name { get; set; }
-        [XmlAttribute] public string Type { get; set; }
-
-        [XmlAttribute] public bool DenyChildrenFill { get; set; }
-
-        [XmlAttribute] public bool PassBase { get; set; }
-    }
-
-    public sealed class SyntaxArgumentList : SyntaxArgument
-    {
-    }
-
-    public sealed class SyntaxArgumentSingle : SyntaxArgument
-    {
-        /// <summary>
-        /// The default value of the argument. It will be passed to the constructor  
-        /// </summary>
-        [XmlAttribute]
-        public string Default { get; set; }
-    }
-
-    public class Syntax
-    {
-        public Syntax()
-        {
-            Arguments = new List<SyntaxArgument>();
-            Base = nameof(SyntaxNode);
-        }
-
-        /// <summary>
-        /// The name of syntax node
-        /// </summary>
-        [XmlAttribute]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Base of the current syntax by default it is AstNode
-        /// </summary>
-        [XmlAttribute]
-        public string Base { get; set; }
-
-        [XmlArrayItem("List", typeof(SyntaxArgumentList))]
-        [XmlArrayItem("Single", typeof(SyntaxArgumentSingle))]
-        public List<SyntaxArgument> Arguments { get; set; }
-
-        /// <summary>
-        /// Indicate that the syntax is abstract and only can be driven by another syntax
-        /// </summary>
-        [XmlAttribute]
-        public bool IsAbstract { get; set; }
-
-        /// <summary>
-        /// Indicate that the syntax has scope
-        /// </summary>
-        [XmlAttribute]
-        public bool IsScoped { get; set; }
-
-        /// <summary>
-        /// Indicate that the syntax relates to the endpoint symbol at the CST
-        /// </summary>
-        [XmlAttribute]
-        public bool IsSymbol { get; set; }
-
-        /// <summary>
-        /// Namespace relative to root
-        /// </summary>
-        [XmlAttribute]
-        public string NS { get; set; }
-
-        /// <summary>
-        /// Indicates that on generating syntax we not throw the Exceptions relates to the members
-        /// </summary>
-        [XmlAttribute]
-        public bool NotThrowExMembersNotFound { get; set; }
     }
 }
