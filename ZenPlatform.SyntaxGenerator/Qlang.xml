@@ -48,7 +48,20 @@
 
     <Syntax Name="QCase" Base="QExpression"/>
 
-    <Syntax Name="QAnd" Base="QOperationExpression"/>
+    <Syntax Name="QAnd" Base="QOperationExpression">
+        <Arguments>
+            <List Name="Left" Type="QExpression" />
+            <List Name="Right" Type="QExpression" />
+        </Arguments>
+    </Syntax>
+    
+    <Syntax Name="QAdd" Base="QOperationExpression">
+        <Arguments>
+            <List Name="Left" Type="QExpression" />
+            <List Name="Right" Type="QExpression" />
+        </Arguments>
+    </Syntax>
+    
     <Syntax Name="QOr" Base="QOperationExpression"/>
     <Syntax Name="QEquals" Base="QOperationExpression"/>
     <Syntax Name="QNotEquals" Base="QOperationExpression"/>
