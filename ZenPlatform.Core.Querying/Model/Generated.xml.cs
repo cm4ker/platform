@@ -289,13 +289,28 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCombinedDataSource : QDataSource
     {
-        public QCombinedDataSource(): base()
+        public QCombinedDataSource(List<QDataSource> dataSources): base()
         {
+            foreach (var item in dataSources)
+                Childs.Add(item);
+            DataSources = dataSources;
+        }
+
+        public List<QDataSource> DataSources
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( QCombinedDataSource ) obj ;  return  ( SequenceEqual ( this . DataSources ,  node . DataSources ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return Xor(DataSources, i => i.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)

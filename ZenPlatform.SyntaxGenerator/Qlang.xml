@@ -33,7 +33,11 @@
     <!-- DataSource -->
     <Syntax Name="QDataSource" Base="QItem"/>
     <Syntax Name="QAliasedDataSource" Base="QDataSource"/>
-    <Syntax Name="QCombinedDataSource" Base="QDataSource"/>
+    <Syntax Name="QCombinedDataSource" Base="QDataSource">
+        <Arguments>
+            <List Name="DataSources" Type="List&lt;QDataSource&gt;"/>
+        </Arguments>
+    </Syntax>
     <Syntax Name="QNestedQuery" Base="QDataSource"/>
     <Syntax Name="QObjectTable" Base="QDataSource"/>
     <!-- End DataSource -->
