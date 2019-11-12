@@ -9,11 +9,9 @@ namespace ZenPlatform.Core.Test
 {
     public class QueryTests
     {
-
         [Fact]
         public void ParserTest()
         {
-
             var conf = Factory.CreateExampleConfiguration();
             var context = new DataQueryConstructorContext();
 
@@ -33,7 +31,6 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void LogicalTreeTest()
         {
-            
         }
     }
 }
