@@ -1,34 +1,37 @@
 using ZenPlatform.Core.Quering.Model;
-using ZenPlatform.QueryBuilder.Builders;
+using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Model;
-using Q = ZenPlatform.QueryBuilder.Builders.Query;
 
 namespace ZenPlatform.Core.Quering
 {
     public class Logic2QueryTreeConverter
     {
-        private string _context;
+        private QueryMachine _qm;
+
 
         public Logic2QueryTreeConverter()
         {
+            _qm = new QueryMachine();
         }
 
-        public QuerySyntaxNode Convert(QQuery query)
+        public object Convert(QQuery query)
         {
-            var q = Q.New();
-            GenerateQuery(q.Select(), query);
-            return q.Expression;
+            GenerateQuery(query);
+            return _qm.pop();
         }
 
-        private void GenerateQuery(SelectBuilder b, QQuery q)
+        private void GenerateQuery(QQuery q)
         {
-            _context = "from";
-            GenerateFrom(b, q.From);
-            _context = "select";
-            GenerateSelect(b, q.Select);
+            _qm.ct_query();
+
+            _qm.m_from();
+            GenerateFrom(q.From);
+
+            _qm.m_select();
+            GenerateSelect(q.Select);
         }
 
-        private void GenerateSource(SelectBuilder sb, QObjectTable ot)
+        private void GenerateSource(QObjectTable ot)
         {
             /*
              FROM
@@ -57,89 +60,83 @@ namespace ZenPlatform.Core.Quering
                 From(x=> x.FromRaw("Select * From Test"))
              */
 
-            ot.ObjectType.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(sb, ot.ObjectType, null);
+            ot.ObjectType.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(_qm, ot.ObjectType, null);
         }
 
-        private void GenerateFrom(SelectBuilder b, QFrom from)
+        private void GenerateFrom(QFrom from)
         {
-            GenerateDataSource(b, from.Source);
+            GenerateDataSource(from.Source);
 
             //TODO: делаем join
         }
 
-        private void GenerateDataSource(SelectBuilder sb, IQDataSource ds)
+        private void GenerateDataSource(IQDataSource ds)
         {
             if (ds is QNestedQuery nq)
             {
-                sb.From(x => GenerateQuery(x, nq.Nested));
+                GenerateQuery(nq.Nested);
             }
             else if (ds is QObjectTable ot)
             {
-                GenerateSource(sb, ot);
+                GenerateSource(ot);
             }
             else if (ds is QAliasedDataSource ads)
             {
-                GenerateDataSource(sb, ads.Parent);
-                sb.As(ads.Alias);
+                GenerateDataSource(ads.Parent);
+                _qm.@as();
             }
         }
 
-        private void GenerateSelect(SelectBuilder sb, QSelect s)
+        private void GenerateSelect(QSelect s)
         {
             foreach (var field in s.Fields)
             {
-                GenerateField(sb, field);
+                GenerateField(field);
             }
         }
 
-        private void GenerateExpression(SelectBuilder b, QExpression q)
+        private void GenerateExpression(QExpression q)
         {
         }
 
-        private void GenerateItem(SelectBuilder b, QItem item)
+        private void GenerateItem(QItem item)
         {
             switch (item)
             {
                 case QField f:
-                    GenerateField(b, f);
+                    GenerateField(f);
                     break;
             }
         }
 
-        private void GenerateField(SelectBuilder b, QField field)
+        private void GenerateField(QField field)
         {
             if (field is QSourceFieldExpression sf)
             {
-                GenerateSourceField(b, sf);
+                GenerateSourceField(sf);
             }
             else if (field is QAliasedSelectExpression ase)
             {
                 if (ase.Child is QSourceFieldExpression f)
                 {
-                    if (_context == "select")
-                    {
-                        var schema = f.Property.GetPropertySchemas();
+                    var schema = f.Property.GetPropertySchemas();
 
-                        foreach (var def in schema)
-                        {
-                            b.Select((SelectFieldsBuilder x) =>
-                                x.Field($"{def.FullName}").As(def.Prefix + ase.Alias + def.Postfix));
-                        }
+                    foreach (var def in schema)
+                    {
+                        _qm.ld_column(); //def.FullName
+                        _qm.@as(); //def.Prefix + ase.Alias + def.Postfix
                     }
                 }
             }
         }
 
-        private void GenerateSourceField(SelectBuilder sb, QSourceFieldExpression sf)
+        private void GenerateSourceField(QSourceFieldExpression sf)
         {
-            if (_context == "select")
-            {
-                var schema = sf.Property.GetPropertySchemas();
+            var schema = sf.Property.GetPropertySchemas();
 
-                foreach (var def in schema)
-                {
-                    sb.Select((SelectFieldsBuilder x) => x.Field($"{def.FullName}"));
-                }
+            foreach (var def in schema)
+            {
+                _qm.ld_column(); //def.FullName
             }
         }
     }
@@ -147,13 +144,13 @@ namespace ZenPlatform.Core.Quering
 
     public class DataRequestGenerator
     {
-        private SelectBuilder _q;
-
         private int _tableIndex;
+        private QueryMachine _qm;
+
 
         public DataRequestGenerator()
         {
-            _q = Query.New().Select();
+            _qm = new QueryMachine();
         }
 
         public void Gen(QDataRequest dr)
@@ -175,6 +172,7 @@ namespace ZenPlatform.Core.Quering
         public void GenerateSourceFieldExp(QSourceFieldExpression sfe)
         {
             var ot = sfe.Object.ObjectType;
+            ot.Parent.ComponentImpl.QueryInjector.GetDataSourceFragment(_qm, ot, null);
             // мы находимся на самом нижнем уровне
             //(SELECT A FROM TEST)
         }

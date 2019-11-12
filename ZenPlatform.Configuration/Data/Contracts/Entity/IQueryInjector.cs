@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Model;
@@ -17,7 +18,7 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// </summary>
         /// <param name="logicalTreeNode">Элемент логического дерева, связанный с данным источником данных</param>
         /// <returns></returns>
-        string GetDataSourceFragment(SelectBuilder builder, XCObjectTypeBase t, IQueryModelContext logicalTreeNode);
+        string GetDataSourceFragment(QueryMachine qm, XCObjectTypeBase t, IQueryModelContext logicalTreeNode);
     }
 
 
