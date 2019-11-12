@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using dnlib.DotNet;
-using dnlib.DotNet.Writer;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
-
-namespace ZenPlatform.Core.Language.QueryLanguage.Model
+namespace ZenPlatform.Core.Quering.Model
 {
     public class QLang
     {

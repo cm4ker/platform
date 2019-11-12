@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
-
-namespace ZenPlatform.Core.Language.QueryLanguage.Model
+namespace ZenPlatform.Core.Quering.Model
 {
     /// <summary>
     /// Таблица объекта

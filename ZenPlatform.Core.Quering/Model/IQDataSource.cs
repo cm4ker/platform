@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ZenPlatform.Core.Language.QueryLanguage.Model
+namespace ZenPlatform.Core.Quering.Model
 {
     /// <summary>
     /// Интерфейс поддержки источника данных

@@ -1,5 +1,5 @@
 
-namespace ZenPlatform.Core.Language.QueryLanguage.Model
+namespace ZenPlatform.Core.Quering.Model
 {
     public class QEquals : QOperationExpression
     {
