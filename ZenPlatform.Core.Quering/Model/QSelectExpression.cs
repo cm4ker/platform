@@ -3,9 +3,7 @@ using System.Linq;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
-using ZenPlatform.Language.Ast.Definitions;
-
-namespace ZenPlatform.Core.Language.QueryLanguage.Model
+namespace ZenPlatform.Core.Quering.Model
 {
     /// <summary>
     /// Выражение в предложении  SELECT 

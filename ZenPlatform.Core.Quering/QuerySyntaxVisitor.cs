@@ -1,9 +1,9 @@
 ﻿using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Core.Language.QueryLanguage.Model;
+using ZenPlatform.Core.Quering.Model;
 using ZenPlatform.Core.Quering.QueryLanguage;
 
-namespace ZenPlatform.Core.Language.QueryLanguage
+namespace ZenPlatform.Core.Quering
 {
     /// <summary>
     /// Обходит дерево запроса платформы и распарсивает все его части. Также отправляет запросы всем комопнентам на разворот

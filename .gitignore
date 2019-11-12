@@ -21,6 +21,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+**/Debug/*
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -271,3 +272,4 @@ ZenPlatform.ConfigurationExample/tools/*
 /ZenPlatform.Compiler/Debug.dll
 /PrototypePlatformLanguage/debug.dll
 /git
+netcoreapp[23].[01]/

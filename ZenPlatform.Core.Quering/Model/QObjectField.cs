@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
-namespace ZenPlatform.Core.Language.QueryLanguage.Model
+namespace ZenPlatform.Core.Quering.Model
 {
     /// <summary>
     /// Поле объекта имеет конкретную привязку к конкретному объекту
