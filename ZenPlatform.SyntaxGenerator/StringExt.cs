@@ -4,8 +4,12 @@ namespace ZenPlatform.SyntaxGenerator
     {
         public static string ToCamelCase(this string str)
         {
-            return char.ToLower(str[0]) + str[1..];
-            
+            var result = char.ToLower(str[0]) + str[1..];
+
+            if (result == "else" || result == "when")
+                result = '@' + result;
+
+            return result;
         }
 
         public static string ToUpCase(this string str)

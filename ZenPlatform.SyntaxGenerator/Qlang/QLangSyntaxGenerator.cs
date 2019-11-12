@@ -125,7 +125,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
         //public static Dictionary<string, List<SyntaxArgument>> constructors = new Dictionary<string, List<SyntaxArgument>>();
 
-        public static NamespaceDeclarationSyntax MakeSyntax(QLangSyntax sqlSyntax, string rootNameSpace, out bool add)
+        public static NamespaceDeclarationSyntax MakeSyntax(QLangSyntax syntax, string rootNameSpace, out bool add)
         {
             add = false;
             //Если в аргументах есть свойства которые нужно создавать через new, 
@@ -135,7 +135,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
             // syntax.Arguments.Where(a => a.IsNeedInitialize() && a.GetType().Equals(typeof(SyntaxArgumentSingle)) && constructors.ContainsKey(a.Type)))) return null;
 
             var ns = SyntaxFactory.NamespaceDeclaration(
-                SyntaxFactory.ParseName(rootNameSpace + (sqlSyntax.NS != null ? "." : "") + sqlSyntax.NS));
+                SyntaxFactory.ParseName(rootNameSpace + (syntax.NS != null ? "." : "") + syntax.NS));
 
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
@@ -144,14 +144,15 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
 
             var block = SyntaxFactory.Block().AddStatements();
+            var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer);
 
-            foreach (var arg in sqlSyntax.Arguments)
+            foreach (var arg in syntax.Arguments)
             {
-                if (arg is SyntaxArgumentSingle)
+                if (arg is SyntaxArgumentSingle && !arg.DenyChildrenFill)
                 {
                     block = block.AddStatements(SyntaxFactory.ParseStatement($"Childs.Add({arg.Name.ToCamelCase()});"));
                 }
-                else if (arg is SyntaxArgumentList)
+                else if (arg is SyntaxArgumentList && !arg.DenyChildrenFill)
                 {
                     block = block.AddStatements(
                         SyntaxFactory.ParseStatement(
@@ -159,14 +160,22 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                 }
 
                 block = block.AddStatements(SyntaxFactory.ParseStatement($"{arg.Name} = {arg.Name.ToCamelCase()} ;"));
+
+
+                if (arg.PassBase)
+                    initializer = initializer.AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.ParseName(arg.Name.ToCamelCase())));
             }
 
-            var constructor = SyntaxFactory.ConstructorDeclaration(sqlSyntax.Name)
+            var constructor = SyntaxFactory.ConstructorDeclaration(syntax.Name)
                 // .WithParameterList(SyntaxFactory.ParameterList()
                 //     .AddParameters(SyntaxFactory.Parameter(
                 //         SyntaxFactory.Identifier("lineInfo")).WithType(SyntaxFactory.ParseName("ILineInfo"))))
                 .WithBody(block)
                 .WithModifiers(SyntaxTokenList.Create(publicToken));
+
+            constructor = constructor.WithInitializer(initializer);
+
 
             //var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,
             //    SyntaxFactory.ArgumentList()
@@ -178,7 +187,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
             var cond = new List<string>();
             var hash = new List<string>();
 
-            foreach (var argument in sqlSyntax.Arguments)
+            foreach (var argument in syntax.Arguments)
             {
                 if (argument.IsNeedInitialize())
                 {
@@ -260,7 +269,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                         $"public override bool Equals(object obj){{}}");
                 equlse = equlse.AddBodyStatements(
                     SyntaxFactory.ParseStatement(
-                        $"if (!this.GetType().Equals(obj.GetType())) return false;\nvar node = ({sqlSyntax.Name})obj;\nreturn ({string.Join(" && ", cond)});"));
+                        $"if (!this.GetType().Equals(obj.GetType())) return false;\nvar node = ({syntax.Name})obj;\nreturn ({string.Join(" && ", cond)});"));
                 members.Add(equlse);
 
                 var getHash =
@@ -294,20 +303,23 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
 
             visitor = visitor.AddBodyStatements(
-                SyntaxFactory.ParseStatement($"return visitor.Visit{sqlSyntax.Name}(this);"));
+                SyntaxFactory.ParseStatement($"return visitor.Visit{syntax.Name}(this);"));
             members.Add(visitor);
 
 
-            var cls = SyntaxFactory.ClassDeclaration(sqlSyntax.Name)
+            var cls = SyntaxFactory.ClassDeclaration(syntax.Name)
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
                 .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
-                    .SimpleBaseType(SyntaxFactory.ParseTypeName(sqlSyntax.Base))))
+                    .SimpleBaseType(SyntaxFactory.ParseTypeName(syntax.Base))))
                 .AddMembers(constructor)
                 .AddMembers(members.ToArray());
 
 
-            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+            if (syntax.IsAbstract)
+                cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
 
+
+            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
             add = true;
 
@@ -329,14 +341,15 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Linq")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.QueryBuilder.Model")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.QueryBuilder.Visitor")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.QueryBuilder.Contracts"))
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Querying.Model")),
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Querying.Visitor")),
+                        SyntaxFactory.UsingDirective(
+                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Structure.Data.Types.Complex"))
                     );
                 ;
 
 
-                unit = unit.AddMembers(MakeBaseNode("ZenPlatform.QueryBuilder.Model"));
+                unit = unit.AddMembers(MakeBaseNode("ZenPlatform.Core.Querying.Model"));
 
 
                 List<QLangSyntax> compliteSyntaxList = new List<QLangSyntax>();
@@ -344,7 +357,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                     foreach (var syntax in root.Syntaxes.Where(s => !compliteSyntaxList.Contains(s)))
                     {
                         bool add = false;
-                        var ns = MakeSyntax(syntax, "ZenPlatform.QueryBuilder.Model", out add);
+                        var ns = MakeSyntax(syntax, "ZenPlatform.Core.Querying.Model", out add);
                         if (add)
                         {
                             compliteSyntaxList.Add(syntax);
@@ -352,7 +365,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                         }
                     }
 
-                unit = unit.AddMembers(MakeVisitor("ZenPlatform.QueryBuilder.Visitor", root.Syntaxes));
+                unit = unit.AddMembers(MakeVisitor("ZenPlatform.Core.Querying.Visitor", root.Syntaxes));
 
                 if (args.Length == 2)
                 {
