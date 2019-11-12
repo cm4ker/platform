@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace ZenPlatform.Core.Quering.Model
 {
-    public class QCombinedDataSource : IQDataSource
+    public class QCombinedDataSource : QItem, IQDataSource
     {
         public List<IQDataSource> DataSources { get; }
 

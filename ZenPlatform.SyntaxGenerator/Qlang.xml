@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+    <Syntax Name="QExpression" Base="QItem"/>
+
+    <Syntax Name="QQuery" Base="QItem"/>
+
+    <Syntax Name="QSelect" Base="QItem"/>
+    <Syntax Name="QFrom" Base="QItem"/>
+    <Syntax Name="QOrderBy" Base="QItem"/>
+    <Syntax Name="QWhere" Base="QItem"/>
+    <Syntax Name="QHaving" Base="QItem"/>
+
+
+    <!-- DataSource -->
+    <Syntax Name="QAliasedDataSource" Base="QItem"/>
+    <Syntax Name="QCombinedDataSource" Base="QItem"/>
+    <Syntax Name="QNestedQuery" Base="QItem"/>
+    <Syntax Name="QObjectTable" Base="QItem"/>
+    <!-- End DataSource -->
+
+    <!-- Operators -->
+    <Syntax Name="QObjectTable" Base="QItem"/>
+    <Syntax Name="QObjectTable" Base="QItem"/>
+    <Syntax Name="QObjectTable" Base="QItem"/>
+    <!-- End Operators -->
+    
+    <Syntax Name="QConst" Base="QExpression"/>
+
+    <Syntax Name="QCase" Base="QExpression"/>
+
+    <Syntax Name="QAnd" Base="QExpression"/>
+    <Syntax Name="QOr" Base="QExpression"/>
+</Config>
+    

@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ZenPlatform.SyntaxGenerator.Compiler;
+using ZenPlatform.SyntaxGenerator.QLang;
 using ZenPlatform.SyntaxGenerator.SQL;
 
 namespace ZenPlatform.SyntaxGenerator
@@ -16,9 +9,14 @@ namespace ZenPlatform.SyntaxGenerator
     {
         static void Main(string[] args)
         {
-            //ComilerSyntaxGenerator.Main(args);
-            SQLSyntaxGenerator.Main(args);
+            if (args[0] == "compiler")
+                ComilerSyntaxGenerator.Main(args[1..]);
+            if (args[0] == "sql")
+                SQLSyntaxGenerator.Main(args[1..]);
+            if (args[0] == "qlang")
+                QLangSyntaxGenerator.Main(args[1..]);
+            else
+                throw new Exception("No supported: use compiler | sql | qlang arguments before");
         }
     }
-
 }
