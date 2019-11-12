@@ -2,14 +2,27 @@
 <Config>
     <Syntax Name="QExpression" Base="QItem"/>
 
-    <Syntax Name="QQuery" Base="QItem"/>
+    <Syntax Name="QQuery" Base="QItem">
+        <Arguments>
+            <Single Name="OrderBy" Type="QOrderBy"/>
+            <Single Name="Select" Type="QSelect"/>
+            <Single Name="Having" Type="QHaving"/>
+            <Single Name="GroupBy" Type="QGroupBy"/>
+            <Single Name="Where" Type="QWhere"/>
+            <Single Name="From" Type="QFrom"/>
+        </Arguments>
+    </Syntax>
 
-    <Syntax Name="QSelect" Base="QItem"/>
+    <Syntax Name="QSelect" Base="QItem">
+        <Arguments>
+            <List Name="Fields" Type="List&lt;QField&gt;"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="QFrom" Base="QItem"/>
     <Syntax Name="QOrderBy" Base="QItem"/>
     <Syntax Name="QWhere" Base="QItem"/>
     <Syntax Name="QHaving" Base="QItem"/>
-
 
     <!-- DataSource -->
     <Syntax Name="QAliasedDataSource" Base="QItem"/>
@@ -18,17 +31,30 @@
     <Syntax Name="QObjectTable" Base="QItem"/>
     <!-- End DataSource -->
 
-    <!-- Operators -->
-    <Syntax Name="QObjectTable" Base="QItem"/>
-    <Syntax Name="QObjectTable" Base="QItem"/>
-    <Syntax Name="QObjectTable" Base="QItem"/>
-    <!-- End Operators -->
-    
+    <!-- Fields -->
+    <Syntax Name="QField" Base="QExpression"/>
+    <Syntax Name="QLookupField" Base="QField"/>
+    <Syntax Name="QSourceFieldExpression" Base="QField"/>
+    <Syntax Name="QSelectExpression" Base="QField"/>
+    <Syntax Name="QAliasedSelectExpression" Base="QSelectExpression"/>
+    <!-- End Fields -->
+
+    <Syntax Name="QFromItem" Base="QItem"/>
+    <Syntax Name="QOperationExpression" Base="QExpression"/>
+
+    <Syntax Name="QOn" Base="QOperationExpression"/>
     <Syntax Name="QConst" Base="QExpression"/>
+    <Syntax Name="QParameter" Base="QExpression"/>
 
     <Syntax Name="QCase" Base="QExpression"/>
 
-    <Syntax Name="QAnd" Base="QExpression"/>
-    <Syntax Name="QOr" Base="QExpression"/>
+    <Syntax Name="QAnd" Base="QOperationExpression"/>
+    <Syntax Name="QOr" Base="QOperationExpression"/>
+    <Syntax Name="QEquals" Base="QOperationExpression"/>
+    <Syntax Name="QNotEquals" Base="QOperationExpression"/>
+    <Syntax Name="QGreatThen" Base="QOperationExpression"/>
+    <Syntax Name="QLessThen" Base="QOperationExpression"/>
+    <Syntax Name="QLessThenOrEquals" Base="QOperationExpression"/>
+    <Syntax Name="QGreatThenOrEquals" Base="QOperationExpression"/>
 </Config>
     
