@@ -26,7 +26,6 @@ using ZenPlatform.Compiler;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
-using ZenPlatform.Core.Language.QueryLanguage;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Test

@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.Core.Language.QueryLanguage
+﻿namespace ZenPlatform.Core.Quering
 {
 
 }

@@ -1,6 +1,6 @@
 
 
-namespace ZenPlatform.Core.Language.QueryLanguage.Model
+namespace ZenPlatform.Core.Quering.Model
 {
     /// <summary>
     /// Заппрос

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data;
 
-namespace ZenPlatform.Core.Language.QueryLanguage.Model
+namespace ZenPlatform.Core.Quering.Model
 {
     public class LogicStack : Stack<object>
     {

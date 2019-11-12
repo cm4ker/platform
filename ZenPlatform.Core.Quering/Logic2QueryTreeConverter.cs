@@ -1,14 +1,9 @@
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Xml.Serialization;
-using ZenPlatform.Core.Language.QueryLanguage.Model;
-using ZenPlatform.QueryBuilder;
+using ZenPlatform.Core.Quering.Model;
 using ZenPlatform.QueryBuilder.Builders;
-using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Model;
 using Q = ZenPlatform.QueryBuilder.Builders.Query;
 
-namespace ZenPlatform.Core.Language.QueryLanguage
+namespace ZenPlatform.Core.Quering
 {
     public class Logic2QueryTreeConverter
     {
