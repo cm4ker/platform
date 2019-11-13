@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using ZenPlatform.QueryBuilder;
 
 
 namespace ZenPlatform.Data
@@ -31,7 +32,7 @@ namespace ZenPlatform.Data
             _dbType = dbType;
             
             _connectionString = connectionString;
-            SqlCompiler = SqlCompillerBase.FormEnum(dbType);
+             //SqlCompiler = SqlCompillerBase.FormEnum(dbType);
         }
 
         public ISqlCompiler SqlCompiler { get; private set; }

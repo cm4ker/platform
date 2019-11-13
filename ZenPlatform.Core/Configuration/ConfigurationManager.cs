@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Core.Assemblies;
-using ZenPlatform.Core.Crypto;
-using ZenPlatform.Core.Environment;
+﻿using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 
 namespace ZenPlatform.Core.Configuration
 {
@@ -17,12 +9,10 @@ namespace ZenPlatform.Core.Configuration
     {
         public ConfigurationManager()
         {
-
         }
 
         public void CreateConfiguration(string projectName, SqlDatabaseType databaseType, string connectionString)
         {
-
             //Мигрируем...
             MigrationRunner.Migrate(connectionString, databaseType);
 
@@ -35,7 +25,7 @@ namespace ZenPlatform.Core.Configuration
             var dataContext = new DataContext(databaseType, connectionString);
 
             var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext,
-               SqlCompillerBase.FormEnum(databaseType));
+                SqlCompillerBase.FormEnum(databaseType));
 
             var configSaveStorage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext,
                 SqlCompillerBase.FormEnum(databaseType));
@@ -43,19 +33,16 @@ namespace ZenPlatform.Core.Configuration
             //Сохраняем новоиспечённый проект в сохранённую и конфигураци базы данных
             newProject.Save(configStorage);
             newProject.Save(configSaveStorage);
-
         }
 
         public void DeployConfiguration(XCRoot xcRoot, SqlDatabaseType databaseType, string connectionString)
         {
-
-
             MigrationRunner.Migrate(connectionString, databaseType);
 
             var dataContext = new DataContext(databaseType, connectionString);
 
             var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext,
-               SqlCompillerBase.FormEnum(databaseType));
+                SqlCompillerBase.FormEnum(databaseType));
 
             var configSaveStorage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext,
                 SqlCompillerBase.FormEnum(databaseType));
@@ -64,9 +51,5 @@ namespace ZenPlatform.Core.Configuration
             xcRoot.Save(configStorage);
             xcRoot.Save(configSaveStorage);
         }
-
-
-
-
     }
 }

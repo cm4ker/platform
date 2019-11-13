@@ -10,9 +10,9 @@ namespace ZenPlatform.Core.Querying.Model
             return (XCComponent) this.Pop();
         }
 
-        public IQDataSource PopDataSource()
+        public QDataSource PopDataSource()
         {
-            return (IQDataSource) this.Pop();
+            return (QDataSource) this.Pop();
         }
 
         public QField PopField()
