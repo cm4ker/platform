@@ -1,3 +1,4 @@
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
 
@@ -7,7 +8,7 @@ namespace ZenPlatform.Core.Querying
     {
         private int _tableIndex;
         private QueryMachine _qm;
-        private int _lookupDepth = 0;
+        private int _joinIndex = 0;
 
         public DataRequestGenerator()
         {
@@ -28,8 +29,6 @@ namespace ZenPlatform.Core.Querying
                     // мы должны пойти рекурсивно и джоинить таблицу каждый лукап
 
                     GenerateLookup(lf);
-
-                    _qm.ld_column()
                 }
             }
         }
@@ -41,6 +40,11 @@ namespace ZenPlatform.Core.Querying
             var ot = sfe.Object.ObjectType;
             ot.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
 
+
+            foreach (var propType in sfe.GetRexpressionType())
+            {
+            }
+
             _qm.m_select();
             // мы находимся на самом нижнем уровне
             //(SELECT A FROM TEST)
@@ -48,7 +52,7 @@ namespace ZenPlatform.Core.Querying
 
         public void GenerateLookup(QLookupField lookup)
         {
-            _lookupDepth++;
+            _joinIndex++;
 
             if (lookup.BaseExpression is QSourceFieldExpression sfe)
                 GenerateSourceFieldExp(sfe);
@@ -56,28 +60,48 @@ namespace ZenPlatform.Core.Querying
             {
                 GenerateLookup(lu);
 
-                _qm.ld_table();
+                foreach (var type in lu.GetRexpressionType())
+                {
+                    if (type is XCObjectTypeBase ot)
+                    {
+                        ot.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
+
+                        //condition
+                        _qm.ld_column("A1");
+                        _qm.ld_column("A2");
+
+                        _qm.eq();
+
+                        _qm.ld_column("A1");
+                        _qm.ld_const(ot.Id);
+
+                        _qm.left_join();
+                    }
+                }
             }
 
             /*
                 Генерируем верхний уровень
                 В качестве источника данных должно быть то, что снизу
             
-                Document.Invoice.Store.Name    
+                Document.Invoice.Store.Employer.Name    
                 
                 .Name - lookup (Finish lookup)
+                .Employer - Lookup (Intermediate Lookup)
                 .Store - Property (TYPES : Store, Department, Custom)
-                .Inovice - RealObject
+                .Invoice - RealObject
                 
                 FROM
                     Invoice i
                     LEFT JOIN Store s ON i.Store = s.Id AND i.TypeId = 2
                     LEFT JOIN Department d ON i.Store = d.Id AND i.TypeId = 3
                     LEFT JOIN Custom c ON i.Store = c.Id AND i.TypeId = 4
+                    LEFT JOIN Employer e ON e.Id = COALESCE(s.EmpId, d.EmpId, c.EmpId)                    
                 WHERE
                     i.Id = @Id
                 SELECT
-                    COALESE(s.Name, d.Name, c.Name) as Name
+                    e.Name
+                    --COALESCE(s.Name, d.Name, c.Name) as Name
              */
         }
     }
