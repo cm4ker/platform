@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using System.Runtime.InteropServices.WindowsRuntime;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.DataComponent.Helpers;
 using ZenPlatform.EntityComponent.Configuration;
-using ZenPlatform.QueryBuilder.DML.Select;
+
 
 namespace ZenPlatform.EntityComponent
 {
@@ -99,42 +100,41 @@ namespace ZenPlatform.EntityComponent
 
             var conf = def.EntityConfig as XCSingleEntity;
 
-            var q = new SelectQueryNode();
+//            q.From(conf.RelTableName);
+//
+//            foreach (var property in conf.Properties)
+//            {
+//                var cols = ColumnsHelper.GetColumnsFromProperty(property);
+//                foreach (var col in cols)
+//                {
+//                    q.Select(col.DatabaseColumnName);
+//                }
+//            }
+//
+//            q.Where(f => f.Field("Id"), "=", f => f.Parameter("Id"));
+//
+//            //TODO: Сделать RLS в предложении WHERE
+//            //TODO: На основании пользовательского контекста необходимо получить ограничение
+//
+//            //есть несколько путей решения этой задачи
+//
+//            var cmd = context.CreateCommand(q);
 
-            q.From(conf.RelTableName);
+//            var reader = cmd.ExecuteReader();
 
-            foreach (var property in conf.Properties)
-            {
-                var cols = ColumnsHelper.GetColumnsFromProperty(property);
-                foreach (var col in cols)
-                {
-                    q.Select(col.DatabaseColumnName);
-                }
-            }
-
-            q.Where(f => f.Field("Id"), "=", f => f.Parameter("Id"));
-
-            //TODO: Сделать RLS в предложении WHERE
-            //TODO: На основании пользовательского контекста необходимо получить ограничение
-
-            //есть несколько путей решения этой задачи
-
-            var cmd = context.CreateCommand(q);
-
-            var reader = cmd.ExecuteReader();
-
-            if (reader.Read())
-            {
-                var mappedDto = (ICanMap) Activator.CreateInstance(def.DtoType);
-
-                //Вместо рефлексии нужно использовать статический маппер
-                mappedDto.Map(reader);
-                return dto;
-            }
-            else
-            {
-                return null;
-            }
+//            if (reader.Read())
+//            {
+//                var mappedDto = (ICanMap) Activator.CreateInstance(def.DtoType);
+//
+//                //Вместо рефлексии нужно использовать статический маппер
+//                mappedDto.Map(reader);
+//                return dto;
+//            }
+//            else
+//            {
+//                return null;
+//            }
+            return null;
         }
 
         public void Delete(UserSession session, SingleEntity entity)
