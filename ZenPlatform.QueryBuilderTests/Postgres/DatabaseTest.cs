@@ -4,7 +4,6 @@ using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 
 namespace ZenPlatform.Tests.SqlBuilder.Postgres
 {
-
     public class DatabaseTest
     {
         private PostgresCompiller _compiller = new PostgresCompiller();
@@ -30,6 +29,4 @@ namespace ZenPlatform.Tests.SqlBuilder.Postgres
             Assert.Equal("DROP DATABASE \"TestDatabase\"", query);
         }
     }
-
-
 }

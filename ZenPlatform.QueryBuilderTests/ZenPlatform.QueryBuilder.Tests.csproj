@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     </ItemGroup>
 
 </Project>

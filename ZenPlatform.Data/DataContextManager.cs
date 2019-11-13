@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using ZenPlatform.QueryBuilder;
+
 
 namespace ZenPlatform.Data
 {

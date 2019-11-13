@@ -12,20 +12,25 @@ namespace ZenPlatform.Core.Test
         {
             AccessPoint = new AccessPointConfig()
             {
-                Listener = new List<ListenerConfig>() {
-                    new ListenerConfig() {
+                Listener = new List<ListenerConfig>()
+                {
+                    new ListenerConfig()
+                    {
                         Address = "127.0.0.1:12345",
-                        Type = ListenerType.Test }
+                        Type = ListenerType.Test
+                    }
                 }
             },
-            Environments = new List<IStartupConfig>() {
-                new StartupConfig() {
+            Environments = new List<IStartupConfig>()
+            {
+                new StartupConfig()
+                {
                     ConnectionString = "",
                     DatabaseType = QueryBuilder.SqlDatabaseType.SqlServer
                 }
             }
-
         };
+
         public T Get<T>() where T : class, new()
         {
             if (typeof(T).Equals(_appConfig.GetType()))
@@ -36,7 +41,6 @@ namespace ZenPlatform.Core.Test
 
         public void Save()
         {
-           
         }
     }
 }

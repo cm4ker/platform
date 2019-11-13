@@ -15,7 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
-    <ProjectReference Include="..\ZenPlatform.Core.Quering\ZenPlatform.Core.Quering.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Core.Querying\ZenPlatform.Core.Querying.csproj" />
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     <ProjectReference Include="..\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj" />
     <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />

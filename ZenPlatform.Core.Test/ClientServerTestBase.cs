@@ -5,7 +5,7 @@ using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Core.Test
 {
-    public  class ClientServerTestBase
+    public class ClientServerTestBase
     {
         public void InvokeInClientServerContext(InvokeInClientServerContextDelegate action)
         {

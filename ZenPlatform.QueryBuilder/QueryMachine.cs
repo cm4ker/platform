@@ -15,6 +15,10 @@ namespace ZenPlatform.QueryBuilder
         {
         }
 
+        public void ld_column()
+        {
+        }
+
         public void @as()
         {
         }
@@ -159,6 +163,17 @@ namespace ZenPlatform.QueryBuilder
         }
 
         #endregion
+
+        public object top()
+        {
+            return null;
+        }
+
+
+        public object pop()
+        {
+            return null;
+        }
 
         /*
             m_from
