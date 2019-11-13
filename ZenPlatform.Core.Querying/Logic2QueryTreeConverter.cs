@@ -82,7 +82,7 @@ namespace ZenPlatform.Core.Querying
             else if (ds is QAliasedDataSource ads)
             {
                 GenerateDataSource(ads.Parent);
-                _qm.@as();
+                _qm.@as(ads.Alias);
             }
         }
 
@@ -123,7 +123,7 @@ namespace ZenPlatform.Core.Querying
                     foreach (var def in schema)
                     {
                         _qm.ld_column(); //def.FullName
-                        _qm.@as(); //def.Prefix + ase.Alias + def.Postfix
+                        _qm.@as(def.Prefix + ase.Alias + def.Postfix); //def.Prefix + ase.Alias + def.Postfix
                     }
                 }
             }

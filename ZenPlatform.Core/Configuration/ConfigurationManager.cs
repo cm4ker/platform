@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Core.Assemblies;
-using ZenPlatform.Core.Crypto;
-using ZenPlatform.Core.Environment;
+﻿using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
 
 namespace ZenPlatform.Core.Configuration
 {

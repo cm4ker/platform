@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Data.Common;
 using System.IO;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.Serialization.Formatters;
 using ZenPlatform.Core.Helpers;
-using ZenPlatform.Core.Environment;
 using ZenPlatform.Initializer;
-using ZenPlatform.QueryBuilder.DML.Delete;
-using ZenPlatform.QueryBuilder.DML.Select;
-using ZenPlatform.QueryBuilder.DML.Update;
+
 using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Authentication

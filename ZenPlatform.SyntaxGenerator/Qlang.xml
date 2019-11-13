@@ -26,8 +26,18 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="QGroupBy" Base="QItem">
+        <Arguments>
+            <List Name="Expressions" Type="List&lt;QExpression&gt;"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="QOrderBy" Base="QItem"/>
-    <Syntax Name="QWhere" Base="QItem"/>
+    <Syntax Name="QWhere" Base="QItem">
+        <Arguments>
+            <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
     <Syntax Name="QHaving" Base="QItem"/>
 
     <!-- DataSource -->
@@ -82,7 +92,7 @@
     <Syntax Name="QConst" Base="QExpression"/>
     <Syntax Name="QParameter" Base="QExpression">
         <Arguments>
-            <Single Name="Name" Type="String" DenyChildrenFill="true" />
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 

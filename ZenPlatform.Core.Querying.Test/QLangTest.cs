@@ -2,11 +2,9 @@ using System.Linq;
 using Xunit;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
-using ZenPlatform.Core.Querying;
 using ZenPlatform.Core.Querying.Model;
-using ZenPlatform.QueryBuilder.Visitor;
 
-namespace ZenPlatform.Core.Test.QLang
+namespace ZenPlatform.Core.Querying.Test
 {
     public class QLangTest
     {
@@ -240,13 +238,13 @@ namespace ZenPlatform.Core.Test.QLang
 
             var query = (QQuery) _m.top();
 
-            SQLServerVisitor visitor = new SQLServerVisitor();
-
-            Logic2QueryTreeConverter l2r = new Logic2QueryTreeConverter();
-
-            var syntaxTree = l2r.Convert(query);
-
-            var result = visitor.Visit(syntaxTree);
+//            SQLServerVisitor visitor = new SQLServerVisitor();
+//
+//            Logic2QueryTreeConverter l2r = new Logic2QueryTreeConverter();
+//
+//            var syntaxTree = l2r.Convert(query);
+//
+//            var result = visitor.Visit(syntaxTree);
         }
 
         [Fact]
