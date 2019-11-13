@@ -17,14 +17,11 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         }
 
         /// <inheritdoc />
-        public string GetDataSourceFragment(QueryMachine qm, XCObjectTypeBase t,
+        public void InjectDataSource(QueryMachine qm, XCObjectTypeBase t,
             IQueryModelContext logicalTreeNode)
         {
             var set = t as XCSingleEntity ?? throw new Exception($"This component can't host next type: {t.GetType()}");
-
             qm.ld_table(set.RelTableName);
-
-            return null;
         }
     }
 }
