@@ -1,54 +1,172 @@
 using System.Collections.Generic;
+using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.QueryBuilder
 {
+
+    
+
     public class QueryMachine
     {
-        public Stack<object> _syntaxStack;
+
+        private Stack<MachineContext> _contexts;
+        private MachineContext CurrentContext => _contexts.TryPeek(out var res) ? res : null;
+        private Stack<object> _syntaxStack = new Stack<object>();
 
         public QueryMachine()
         {
-            _syntaxStack = new Stack<object>();
+            _contexts = new Stack<MachineContext>();
+            ct_query();
         }
 
-        public void ld_table()
+
+        private bool TryPop<T>(out T obj)
         {
+            if (_syntaxStack.Count > 0)
+                if (_syntaxStack.Peek() is T item)
+                {
+                    _syntaxStack.Pop();
+                    obj = item;
+                    return true;
+                }
+
+            obj = default(T);
+            return false;
         }
 
-        public void @as()
+
+        private bool TryPeek<T>(out T obj)
         {
+            if (_syntaxStack.Count > 0)
+                if (_syntaxStack.Peek() is T item)
+                {
+                    obj = item;
+                    return true;
+                }
+
+            obj = default(T);
+            return false;
+        }
+
+        private T Pop<T>()
+        {
+            return (T)_syntaxStack.Pop();
+        }
+
+        private void Push(object obj)
+        {
+            _syntaxStack.Push(obj);
+        }
+
+        public QueryMachine ld_table(string name)
+        {
+            Push(new STable(name));
+            return this;
+        }
+
+        public QueryMachine ld_column(string columnName)
+        {
+            switch (CurrentContext.Type)
+            {
+                case MachineContextType.select:
+                    Push(new SField(columnName));
+                    break;
+            }
+
+            ld_column();
+            return this;
+        }
+
+        public QueryMachine ld_column()
+        {
+            switch (CurrentContext.Type)
+            {
+                case MachineContextType.select:
+                    Push(new SSelectFieldExpression(Pop<SExpression>()));
+                    break;
+
+            }
+            return this;
+
+        }
+
+        public QueryMachine @as(string name)
+        {
+
+            switch (CurrentContext.Type)
+            {
+                case MachineContextType.select:
+                    if (TryPeek<SAliasedFieldExpression>(out _)) return this ;
+                    Push(new SAliasedFieldExpression(Pop<SSelectFieldExpression>().Exp, name));
+                    break;
+            }
+            return this;
         }
 
         #region Contexts
 
-        public void m_select()
+        private void ChangeContextType(MachineContextType type)
         {
+
+            switch (CurrentContext.Type )
+            {
+                case
+                    MachineContextType.select:
+
+                    break;
+            }
+
+            CurrentContext.Type = type;
+
+
         }
 
-        public void m_having()
+        public QueryMachine m_select()
         {
+            ChangeContextType(MachineContextType.select);
+
+            return this;
         }
 
-        public void m_from()
+        public QueryMachine m_having()
         {
+            ChangeContextType(MachineContextType.having);
+            return this;
         }
 
-        public void m_group_by()
+        public QueryMachine m_from()
         {
+            ChangeContextType(MachineContextType.from);
+            return this;
         }
 
-        public void m_order_by()
+        public QueryMachine m_group_by()
         {
+            ChangeContextType(MachineContextType.groupBy);
+            return this;
+        }
+
+        public QueryMachine m_order_by()
+        {
+            ChangeContextType(MachineContextType.orderBy);
+            return this;
         }
 
         #endregion
 
-        public void st_query()
+        public QueryMachine st_query()
         {
+            
+
+            ChangeContextType(MachineContextType.none);
+            _contexts.Pop();
+            return this;
         }
 
-        public void ct_query()
+        public QueryMachine ct_query()
         {
+            _contexts.Push(new MachineContext());
+            return this;
         }
 
         #region Comparers
