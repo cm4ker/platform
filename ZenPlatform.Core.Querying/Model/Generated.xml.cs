@@ -187,6 +187,41 @@ namespace ZenPlatform.Core.Querying.Model
 
 namespace ZenPlatform.Core.Querying.Model
 {
+    public partial class QGroupBy : QItem
+    {
+        public QGroupBy(List<QExpression> expressions): base()
+        {
+            foreach (var item in expressions)
+                Childs.Add(item);
+            Expressions = expressions;
+        }
+
+        public List<QExpression> Expressions
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( QGroupBy ) obj ;  return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(Expressions, i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitQGroupBy(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
     public partial class QOrderBy : QItem
     {
         public QOrderBy(): base()
@@ -209,13 +244,27 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QWhere : QItem
     {
-        public QWhere(): base()
+        public QWhere(QExpression expression): base()
         {
+            Childs.Add(expression);
+            Expression = expression;
+        }
+
+        public QExpression Expression
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( QWhere ) obj ;  return  ( Compare ( this . Expression ,  node . Expression ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return (Expression == null ? 0 : Expression.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -1152,6 +1201,11 @@ namespace ZenPlatform.Core.Querying.Visitor
         }
 
         public virtual T VisitQFrom(QFrom node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitQGroupBy(QGroupBy node)
         {
             return DefaultVisit(node);
         }

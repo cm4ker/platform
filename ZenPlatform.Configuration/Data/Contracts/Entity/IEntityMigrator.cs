@@ -15,10 +15,10 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// <param name="actual">Текущий объект</param>
         /// <returns></returns>
         //IList<SqlNode> GetScript(XCObjectTypeBase old, XCObjectTypeBase actual);
-        IExpression GetStep1(XCObjectTypeBase old, XCObjectTypeBase actual);
-
-        IExpression GetStep2(XCObjectTypeBase old, XCObjectTypeBase actual);
-        IExpression GetStep3(XCObjectTypeBase old, XCObjectTypeBase actual);
-        IExpression GetStep4(XCObjectTypeBase old, XCObjectTypeBase actual);
+//        IExpression GetStep1(XCObjectTypeBase old, XCObjectTypeBase actual);
+//
+//        IExpression GetStep2(XCObjectTypeBase old, XCObjectTypeBase actual);
+//        IExpression GetStep3(XCObjectTypeBase old, XCObjectTypeBase actual);
+//        IExpression GetStep4(XCObjectTypeBase old, XCObjectTypeBase actual);
     }
 }

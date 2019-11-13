@@ -13,8 +13,6 @@ using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Data;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.DML.Insert;
-using ZenPlatform.QueryBuilder.DML.Select;
 using ZenPlatform.Core.Logging;
 
 

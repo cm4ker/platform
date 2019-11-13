@@ -2,8 +2,6 @@
 using System.Linq.Expressions;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.Builders;
-using ZenPlatform.QueryBuilder.Common;
 using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
@@ -39,20 +37,20 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
     /// </summary>
     public class SqlFragment
     {
-        public SqlFragment(SqlNode sqlNode, Dictionary<string, object> parameters)
-        {
-            SqlNode = sqlNode;
-
-            if (parameters == null)
-                Parameters = new Dictionary<string, object>();
-            else
-                Parameters = parameters;
-        }
-
-        /// <summary>
-        /// Кусок SQL который будет инжектирован
-        /// </summary>
-        public SqlNode SqlNode { get; }
+//        public SqlFragment(SqlNode sqlNode, Dictionary<string, object> parameters)
+//        {
+//            SqlNode = sqlNode;
+//
+//            if (parameters == null)
+//                Parameters = new Dictionary<string, object>();
+//            else
+//                Parameters = parameters;
+//        }
+//
+//        /// <summary>
+//        /// Кусок SQL который будет инжектирован
+//        /// </summary>
+//        public SqlNode SqlNode { get; }
 
         /// <summary>
         /// Если источник данных каким-либо образом зависит от параметров, в таком случае мы можем указать параметры, которые будут внутри запроса

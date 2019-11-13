@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
 using System.IO;
-using System.Text;
 using ZenPlatform.Configuration;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.Common;
-using ZenPlatform.QueryBuilder.DML.Insert;
-using ZenPlatform.QueryBuilder.DML.Select;
-using ZenPlatform.QueryBuilder.DML.Update;
-using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Core.Configuration
 {

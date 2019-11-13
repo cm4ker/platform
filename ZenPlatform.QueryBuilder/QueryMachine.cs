@@ -4,12 +4,8 @@ using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.QueryBuilder
 {
-
-    
-
-    public class QueryMachine: IObserver<MachineContextType>
+    public class QueryMachine : IObserver<MachineContextType>
     {
-
         private MachineContext _currentContext;
 
         private Stack<object> _syntaxStack = new Stack<object>();
@@ -50,7 +46,7 @@ namespace ZenPlatform.QueryBuilder
 
         private T Pop<T>()
         {
-            return (T)_syntaxStack.Pop();
+            return (T) _syntaxStack.Pop();
         }
 
         private void Push(object obj)
@@ -84,30 +80,30 @@ namespace ZenPlatform.QueryBuilder
                 case MachineContextType.Select:
                     Push(new SSelectFieldExpression(Pop<SExpression>()));
                     break;
-
             }
-            return this;
 
+            return this;
         }
 
         public QueryMachine @as(string name)
         {
-
             switch (_currentContext.Type)
             {
                 case MachineContextType.Select:
-                    if (TryPeek<SAliasedFieldExpression>(out _)) return this ;
+                    if (TryPeek<SAliasedFieldExpression>(out _)) return this;
                     Push(new SAliasedFieldExpression(Pop<SSelectFieldExpression>().Exp, name));
                     break;
             }
+
             return this;
         }
 
         #region Contexts
+
         public void ChangeContextType(MachineContextType contextType)
         {
-
         }
+
         public QueryMachine m_select()
         {
             ChangeContextType(MachineContextType.Select);
@@ -143,7 +139,6 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine st_query()
         {
-
             _currentContext = Pop<MachineContext>();
             ChangeContextType(MachineContextType.None);
             return this;

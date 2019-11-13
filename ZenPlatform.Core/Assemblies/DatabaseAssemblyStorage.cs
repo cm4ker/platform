@@ -5,8 +5,6 @@ using System.Linq;
 using ZenPlatform.Compiler;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Data;
-using ZenPlatform.QueryBuilder.DML.Insert;
-using ZenPlatform.QueryBuilder.DML.Select;
 
 namespace ZenPlatform.Core.Assemlies
 {

@@ -3,6 +3,7 @@ using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.QueryBuilder;
 
+
 namespace ZenPlatform.Initializer
 {
     /// <summary>

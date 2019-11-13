@@ -17,7 +17,7 @@ namespace ZenPlatform.Data
 
         private readonly IsolationLevel _isolationLevel;
 
-        //private ISqlCompiler _compiller;
+        private ISqlCompiler _compiller;
         private int _tranCount;
 
         public DataContext(SqlDatabaseType compilerType, string connectionString)
@@ -67,7 +67,7 @@ namespace ZenPlatform.Data
 
             action(machine);
 
-            cmd.CommandText = _compiller.Compile(machine.GetSyntax());
+                //cmd.CommandText = _compiller.Compile(machine.GetSyntax());
 
             return cmd;
         }

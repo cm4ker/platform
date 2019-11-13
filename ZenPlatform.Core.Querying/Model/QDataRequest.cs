@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ZenPlatform.Core.Querying.Visitor;
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -10,5 +11,10 @@ namespace ZenPlatform.Core.Querying.Model
         }
 
         public List<QField> Source { get; }
+        
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
