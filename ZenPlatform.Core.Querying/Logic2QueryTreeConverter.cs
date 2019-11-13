@@ -1,16 +1,6 @@
+using System.Linq;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
-using QAliasedDataSource = ZenPlatform.QueryBuilder.Model.QAliasedDataSource;
-using QAliasedSelectExpression = ZenPlatform.QueryBuilder.Model.QAliasedSelectExpression;
-using QExpression = ZenPlatform.QueryBuilder.Model.QExpression;
-using QField = ZenPlatform.QueryBuilder.Model.QField;
-using QFrom = ZenPlatform.QueryBuilder.Model.QFrom;
-using QLookupField = ZenPlatform.QueryBuilder.Model.QLookupField;
-using QNestedQuery = ZenPlatform.QueryBuilder.Model.QNestedQuery;
-using QObjectTable = ZenPlatform.QueryBuilder.Model.QObjectTable;
-using QQuery = ZenPlatform.QueryBuilder.Model.QQuery;
-using QSelect = ZenPlatform.QueryBuilder.Model.QSelect;
-using QSourceFieldExpression = ZenPlatform.QueryBuilder.Model.QSourceFieldExpression;
 
 namespace ZenPlatform.Core.Querying
 {
@@ -80,7 +70,7 @@ namespace ZenPlatform.Core.Querying
             //TODO: делаем join
         }
 
-        private void GenerateDataSource(IQDataSource ds)
+        private void GenerateDataSource(QDataSource ds)
         {
             if (ds is QNestedQuery nq)
             {
@@ -127,7 +117,7 @@ namespace ZenPlatform.Core.Querying
             }
             else if (field is QAliasedSelectExpression ase)
             {
-                if (ase.Child is QSourceFieldExpression f)
+                if (ase.Childs.First() is QSourceFieldExpression f)
                 {
                     var schema = f.Property.GetPropertySchemas();
 
