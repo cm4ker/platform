@@ -11,10 +11,12 @@ namespace ZenPlatform.Core.Test.Assemblies
     public class TestClientAssemblyManager : IClientAssemblyManager
     {
         private IAssembly _assembly;
+
         public TestClientAssemblyManager(IAssembly assembly)
         {
             _assembly = assembly;
         }
+
         public Stream GetAssembly(string name)
         {
             if (_assembly != null && _assembly.Name == name)
@@ -24,12 +26,12 @@ namespace ZenPlatform.Core.Test.Assemblies
                 stream.Seek(0, SeekOrigin.Begin);
                 return stream;
             }
+
             return new MemoryStream();
         }
 
         public void UpdateAssemblies()
         {
-           
         }
     }
 }

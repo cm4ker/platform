@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
-using ZenPlatform.QueryBuilder.Contracts;
 
 namespace ZenPlatform.QueryBuilder.Model
 {

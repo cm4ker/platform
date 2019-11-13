@@ -129,7 +129,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.WPF", "ZenPlatf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Networking", "ZenPlatform.Networking\ZenPlatform.Networking.csproj", "{82A5BD28-92C2-4EFF-A359-7890B8B60E59}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Quering", "ZenPlatform.Core.Quering\ZenPlatform.Core.Quering.csproj", "{985BF7A3-2D9F-499B-B84B-FE934672BBD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Querying", "ZenPlatform.Core.Querying\ZenPlatform.Core.Querying.csproj", "{985BF7A3-2D9F-499B-B84B-FE934672BBD0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.QueryBuilder", "ZenPlatform.QueryBuilder\ZenPlatform.QueryBuilder.csproj", "{FFDAE447-5C60-4F1A-8E4D-14D33D167BBA}"
 EndProject
