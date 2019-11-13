@@ -1,27 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace ZenPlatform.QueryBuilder
 {
-    internal enum MachineContextType
+
+    public enum MachineContextType
     {
-        none = 0,
-        select,
-        from,
-        where,
-        orderBy,
-        groupBy,
-        having,
+        None = 0,
+        Select,
+        From,
+        Where,
+        OrderBy,
+        GroupBy,
+        Having,
 
 
 
     }
 
-    internal class MachineContext
-    {
-        public MachineContextType Type { get; set; }
 
-        
+
+    public class MachineContext
+    {
+        private MachineContextType _type;
+        public MachineContextType Type {
+            get
+            {
+                return _type;
+            }
+            set
+            {
+                _type = value;
+            }
+        }
+
+        public MachineContext()
+        {
+            Type = MachineContextType.None;
+        }
+
+
     }
 }
