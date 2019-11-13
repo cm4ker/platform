@@ -21,15 +21,11 @@ namespace ZenPlatform.QueryBuilder
 
         private bool TryPop<T>(out T obj)
         {
-            if (_syntaxStack.Count > 0)
-                if (_syntaxStack.Peek() is T item)
-                {
-                    _syntaxStack.Pop();
-                    obj = item;
-                    return true;
-                }
-
-            obj = default(T);
+            if (TryPeek(out obj))
+            {
+                Pop();
+                return true;
+            }
             return false;
         }
 
@@ -37,7 +33,7 @@ namespace ZenPlatform.QueryBuilder
         private bool TryPeek<T>(out T obj)
         {
             if (_syntaxStack.Count > 0)
-                if (_syntaxStack.Peek() is T item)
+                if (Peek() is T item)
                 {
                     obj = item;
                     return true;
@@ -47,38 +43,33 @@ namespace ZenPlatform.QueryBuilder
             return false;
         }
 
-        private object Peek()
+        public object Peek()
         {
             return _syntaxStack.Peek();
         }
 
         private T Pop<T>()
         {
-            return (T) _syntaxStack.Pop();
+            return (T)Pop();
         }
 
         private List<T> TryPopList<T>()
         {
             List<T> result = new List<T>();
 
-            while (_syntaxStack.Peek() is T item)
+            while (TryPop(out T item))
             {
-                _syntaxStack.Pop();
                 result.Add(item);
             }
+
+            TryPop<SMarker>();
 
             return result;
         }
 
         private List<T> PopList<T>()
         {
-            List<T> result = new List<T>();
-
-            while (_syntaxStack.Peek() is T item)
-            {
-                _syntaxStack.Pop();
-                result.Add(item);
-            }
+            List<T> result = TryPopList<T>();
 
             if (result.Count > 0)
                 return result;
@@ -87,20 +78,23 @@ namespace ZenPlatform.QueryBuilder
 
         private T TryPop<T>()
         {
-            if (_syntaxStack.Count > 0)
-                if (_syntaxStack.Peek() is T item)
-                {
-                    _syntaxStack.Pop();
-
-                    return item;
-                }
-
-            return default(T);
+            if (TryPeek(out T item))
+            {
+                _syntaxStack.Pop();
+            }
+        
+            return  item; 
         }
 
         private void Push(object obj)
         {
             _syntaxStack.Push(obj);
+        }
+
+
+        public object Pop()
+        {
+            return _syntaxStack.Pop();
         }
 
         #endregion
@@ -150,7 +144,24 @@ namespace ZenPlatform.QueryBuilder
                 case MachineContextType.Select:
                     break;
             }
+                    return this;
+        }
 
+        public QueryMachine ld_const(object value)
+        {
+            Push(new SConstant(value));
+            return this;
+        }
+
+        public QueryMachine mark()
+        {
+            Push(new SMarker());
+            return this;
+        }
+
+        public QueryMachine coalese()
+        {
+            Push(new SCoalese(PopList<SExpression>()));
             return this;
         }
 
@@ -181,12 +192,31 @@ namespace ZenPlatform.QueryBuilder
                     Push(new SWhere(Pop<SCondition>()));
                     break;
                 case MachineContextType.Having:
-                    Push(new SHaving(PopList<SCondition>()));
+                    Push(new SHaving(Pop<SCondition>()));
                     break;
                 case MachineContextType.GroupBy:
                     Push(new SGroupBy(PopList<SExpression>()));
                     break;
-            }
+                case MachineContextType.Insert:
+                    Push(new SInsert(TryPopList<SField>(), Pop<STable>(), Pop<SDataSource>()));
+                    break;
+                case MachineContextType.Values:
+                    Push(new SValuesSource(PopList<SExpression>()));
+                    break;
+                case MachineContextType.Set:
+                    List<SSetItem> items = new List<SSetItem>();
+                    while (TryPeek(out SExpression exp))
+                    {
+                        Pop();
+                        items.Add(new SSetItem(Pop<SField>(), exp));
+                    }
+
+                    Push(new SSet(items));
+                    break;
+                case MachineContextType.Update:
+                    
+                    Push(new SUpdate(Pop<SDataSource>(),Pop<SSet>(),TryPop<SWhere>(),TryPop<SFrom>()));
+                    break;
 
             _currentContext.Type = contextType;
         }
@@ -225,6 +255,30 @@ namespace ZenPlatform.QueryBuilder
         public QueryMachine m_where()
         {
             ChangeContextType(MachineContextType.Where);
+            return this;
+        }
+
+        public QueryMachine m_insert()
+        {
+            ChangeContextType(MachineContextType.Insert);
+            return this;
+        }
+
+        public QueryMachine m_values()
+        {
+            ChangeContextType(MachineContextType.Values);
+            return this;
+        }
+
+        public QueryMachine m_update()
+        {
+            ChangeContextType(MachineContextType.Update);
+            return this;
+        }
+
+        public QueryMachine m_set()
+        {
+            ChangeContextType(MachineContextType.Set);
             return this;
         }
 
@@ -420,15 +474,6 @@ namespace ZenPlatform.QueryBuilder
         #endregion
 
 
-        public object Top()
-        {
-            return _syntaxStack.Peek();
-        }
-
-        public object Pop()
-        {
-            return _syntaxStack.Pop();
-        }
 
         /*
             m_from

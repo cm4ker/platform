@@ -313,7 +313,7 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SSelect : SSyntaxNode
+    public partial class SSelect : SDataSource
     {
         public SSelect(List<SExpression> fields, STop top, SHaving having, SOrderBy orderBy, SGroupBy groupBy, SWhere where, SFrom from): base()
         {
@@ -388,14 +388,14 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SOrderByExpression : SSyntaxNode
+    public partial class SConstant : SSyntaxNode
     {
-        public SOrderByExpression(List<SExpression> exp): base()
+        public SConstant( object  value): base()
         {
-            Exp = exp;
+            Value = value;
         }
 
-        public List<SExpression> Exp
+        public object Value
         {
             get;
             set;
@@ -404,17 +404,70 @@ namespace ZenPlatform.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SOrderByExpression ) obj ;  return  ( SequenceEqual ( this . Exp ,  node . Exp ) ) ; 
+                return false; var  node  =  ( SConstant ) obj ;  return  ( ( this . Value . Equals ( node . Value ) ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return Xor(Exp, i => i.GetHashCode());
+            return (Value == null ? 0 : Value.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitSOrderByExpression(this);
+            return visitor.VisitSConstant(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SMarker : SSyntaxNode
+    {
+        public SMarker(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSMarker(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SCoalese : SExpression
+    {
+        public SCoalese(List<SExpression> expressions): base()
+        {
+            Expressions = expressions;
+        }
+
+        public List<SExpression> Expressions
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SCoalese ) obj ;  return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(Expressions, i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSCoalese(this);
         }
     }
 }
@@ -423,7 +476,7 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SOrderBy : SSyntaxNode
     {
-        public SOrderBy(OrderDirection direction, List<SOrderByExpression> fields): base()
+        public SOrderBy(OrderDirection direction, List<SExpression> fields): base()
         {
             Direction = direction;
             Fields = fields;
@@ -435,7 +488,7 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
-        public List<SOrderByExpression> Fields
+        public List<SExpression> Fields
         {
             get;
             set;
@@ -496,12 +549,12 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SHaving : SSyntaxNode
     {
-        public SHaving(List<SCondition> condition): base()
+        public SHaving(SCondition condition): base()
         {
             Condition = condition;
         }
 
-        public List<SCondition> Condition
+        public SCondition Condition
         {
             get;
             set;
@@ -510,12 +563,12 @@ namespace ZenPlatform.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SHaving ) obj ;  return  ( SequenceEqual ( this . Condition ,  node . Condition ) ) ; 
+                return false; var  node  =  ( SHaving ) obj ;  return  ( Compare ( this . Condition ,  node . Condition ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return Xor(Condition, i => i.GetHashCode());
+            return (Condition == null ? 0 : Condition.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -1169,6 +1222,213 @@ namespace ZenPlatform.QueryBuilder.Model
     }
 }
 
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SInsert : SSyntaxNode
+    {
+        public SInsert(List<SField> fields, STable into, SDataSource dataSource): base()
+        {
+            Fields = fields;
+            Into = into;
+            DataSource = dataSource;
+        }
+
+        public List<SField> Fields
+        {
+            get;
+            set;
+        }
+
+        public STable Into
+        {
+            get;
+            set;
+        }
+
+        public SDataSource DataSource
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SInsert ) obj ;  return  ( SequenceEqual ( this . Fields ,  node . Fields ) && Compare ( this . Into ,  node . Into ) && Compare ( this . DataSource ,  node . DataSource ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(Fields, i => i.GetHashCode()) ^ (Into == null ? 0 : Into.GetHashCode()) ^ (DataSource == null ? 0 : DataSource.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSInsert(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SValuesSource : SDataSource
+    {
+        public SValuesSource(List<SExpression> values): base()
+        {
+            Values = values;
+        }
+
+        public List<SExpression> Values
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SValuesSource ) obj ;  return  ( SequenceEqual ( this . Values ,  node . Values ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(Values, i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSValuesSource(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SSetItem : SSyntaxNode
+    {
+        public SSetItem(SField field, SExpression value): base()
+        {
+            Field = field;
+            Value = value;
+        }
+
+        public SField Field
+        {
+            get;
+            set;
+        }
+
+        public SExpression Value
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SSetItem ) obj ;  return  ( Compare ( this . Field ,  node . Field ) && Compare ( this . Value ,  node . Value ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Field == null ? 0 : Field.GetHashCode()) ^ (Value == null ? 0 : Value.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSSetItem(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SSet : SSyntaxNode
+    {
+        public SSet(List<SSetItem> items): base()
+        {
+            Items = items;
+        }
+
+        public List<SSetItem> Items
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SSet ) obj ;  return  ( SequenceEqual ( this . Items ,  node . Items ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(Items, i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSSet(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SUpdate : SSyntaxNode
+    {
+        public SUpdate(SDataSource update, SSet set, SWhere where, SFrom from): base()
+        {
+            Update = update;
+            Set = set;
+            Where = where;
+            From = from;
+        }
+
+        public SDataSource Update
+        {
+            get;
+            set;
+        }
+
+        public SSet Set
+        {
+            get;
+            set;
+        }
+
+        public SWhere Where
+        {
+            get;
+            set;
+        }
+
+        public SFrom From
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SUpdate ) obj ;  return  ( Compare ( this . Update ,  node . Update ) && Compare ( this . Set ,  node . Set ) && Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Update == null ? 0 : Update.GetHashCode()) ^ (Set == null ? 0 : Set.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSUpdate(this);
+        }
+    }
+}
+
 namespace ZenPlatform.QueryBuilder.Visitor
 {
     public abstract partial class QueryVisitorBase<T>
@@ -1227,7 +1487,17 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return DefaultVisit(node);
         }
 
-        public virtual T VisitSOrderByExpression(SOrderByExpression node)
+        public virtual T VisitSConstant(SConstant node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSMarker(SMarker node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSCoalese(SCoalese node)
         {
             return DefaultVisit(node);
         }
@@ -1333,6 +1603,31 @@ namespace ZenPlatform.QueryBuilder.Visitor
         }
 
         public virtual T VisitSFrom(SFrom node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSInsert(SInsert node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSValuesSource(SValuesSource node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSSetItem(SSetItem node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSSet(SSet node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSUpdate(SUpdate node)
         {
             return DefaultVisit(node);
         }
