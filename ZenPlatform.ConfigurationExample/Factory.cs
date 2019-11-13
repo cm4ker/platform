@@ -32,6 +32,23 @@ namespace ZenPlatform.ConfigurationExample
 
             var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            var department = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            var custom = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+
+
+            department.Name = "Department";
+            department.Description = "Some department";
+            department.RelTableName = "Obj_0003";
+
+            department.Initialize();
+
+
+            custom.Name = "Custom";
+            custom.Description = "Some custom";
+            custom.RelTableName = "Obj_0004";
+
+            custom.Initialize();
+
 
             store.Name = "Store";
             store.Description = "This is a store entity";
@@ -44,7 +61,8 @@ namespace ZenPlatform.ConfigurationExample
             var storeProp = invoice.CreateProperty();
             storeProp.Name = "Store";
             storeProp.Types.Add(store);
-            storeProp.Types.Add(new XCGuid());
+            storeProp.Types.Add(department);
+            storeProp.Types.Add(custom);
             storeProp.DatabaseColumnName = "Fld_0002";
 
             var prop = invoice.CreateProperty();

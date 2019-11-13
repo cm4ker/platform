@@ -12,7 +12,8 @@ namespace ZenPlatform.EntityComponent.Configuration
     /// <summary>
     /// Свойство сущности
     /// </summary>
-    public class XCSingleEntityProperty : XCObjectPropertyBase, IChildItem<XCSingleEntity>, IEquatable<XCSingleEntityProperty>
+    public class XCSingleEntityProperty : XCObjectPropertyBase, IChildItem<XCSingleEntity>,
+        IEquatable<XCSingleEntityProperty>
     {
         private XCSingleEntity _parent;
 
@@ -37,9 +38,9 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             if (other == null) return false;
 
-            return (this.Guid == other.Guid) && (this.Name == other.Name) && SequenceEqual<XCTypeBase>(this.Types, other.Types)
-                    && this.Unique == other.Unique && this.IsSystemProperty == other.IsSystemProperty;
-            
+            return (this.Guid == other.Guid) && (this.Name == other.Name) &&
+                   SequenceEqual<XCTypeBase>(this.Types, other.Types)
+                   && this.Unique == other.Unique && this.IsSystemProperty == other.IsSystemProperty;
         }
 
         public override bool Equals(object obj)
@@ -68,6 +69,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                     cnt.Add(s, 1);
                 }
             }
+
             foreach (T s in list2)
             {
                 if (cnt.ContainsKey(s))
@@ -79,6 +81,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                     return false;
                 }
             }
+
             return cnt.Values.All(c => c == 0);
         }
     }
@@ -98,9 +101,19 @@ namespace ZenPlatform.EntityComponent.Configuration
                 IsReadOnly = true
             };
         }
+
+        public static XCSingleEntityProperty CreateNameProperty()
+        {
+            return new XCSingleEntityProperty()
+            {
+                Name = "Name",
+                Guid = Guid.Parse("905208c8-e892-414f-bd48-acd70b2a901b"),
+                DatabaseColumnName = "Id",
+                Types = {PlatformTypes.GetString(150)},
+                IsSystemProperty = false,
+                Unique = true,
+                IsReadOnly = true
+            };
+        }
     }
-   
-
-
-
 }

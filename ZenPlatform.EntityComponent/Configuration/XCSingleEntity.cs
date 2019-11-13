@@ -125,6 +125,9 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             if (Properties.FirstOrDefault(x => x.Unique) == null)
                 Properties.Add(StandardEntityPropertyHelper.CreateUniqueProperty());
+
+            if (Properties.FirstOrDefault(x => x.Name == "Name") == null)
+                Properties.Add(StandardEntityPropertyHelper.CreateNameProperty());
         }
 
         public override IEnumerable<XCObjectPropertyBase> GetProperties()
@@ -173,7 +176,6 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <returns></returns>
         private void InitPredefinedCommands()
         {
-            
         }
     }
 }

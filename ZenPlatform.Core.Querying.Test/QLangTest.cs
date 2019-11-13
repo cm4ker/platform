@@ -282,17 +282,31 @@ namespace ZenPlatform.Core.Querying.Test
         [Fact]
         public void DataRequestTest()
         {
+            /*
+             
+                Entity.Invoice.Store.Name
+                ^      ^       ^     ^
+                Component      Field
+                       Type          Lookup
+                             
+             */
             _m.reset();
 
             _m.begin_data_request();
             _m.ld_component("Entity");
             _m.ld_type("Invoice");
             _m.ld_field("Store");
+            _m.lookup("Name");
             _m.st_data_request();
 
             var dr = _m.top() as QDataRequest;
 
             Assert.Single(dr.Source);
+
+
+            DataRequestGenerator drg = new DataRequestGenerator();
+
+            drg.Gen(dr);
         }
     }
 }
