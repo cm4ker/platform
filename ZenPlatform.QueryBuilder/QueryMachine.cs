@@ -278,6 +278,17 @@ namespace ZenPlatform.QueryBuilder
 
         #endregion
 
+        public object top()
+        {
+            return null;
+        }
+
+
+        public object pop()
+        {
+            return null;
+        }
+
         /*
             m_from
                 ld_table     (Schema) "T1"

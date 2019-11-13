@@ -2,8 +2,6 @@
 using System.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
-using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.Common;
 
 namespace ZenPlatform.Data
 {

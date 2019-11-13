@@ -25,11 +25,9 @@ namespace ZenPlatform.Tests.Database
             }
             catch
             {
-
             }
 
             Assert.True(test.State == ConnectionState.Open);
-
         }
 
         [Fact]
@@ -55,7 +53,6 @@ namespace ZenPlatform.Tests.Database
             Assert.Equal("localhost", sb2.Server);
             Assert.Equal(10, sb2.Port);
             Assert.Equal("db", sb2.Database);
-
         }
     }
 }

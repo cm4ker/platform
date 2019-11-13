@@ -84,7 +84,7 @@ namespace ZenPlatform.Core.Test
             services.AddSingleton<ClientPlatformContext>();
             //services.AddSingleton<IProtocolClient, Network.Client>();
             services.AddSingleton<IPlatformClient, Network.Client>();
-            
+
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
             services.AddSingleton<IClientAssemblyManager, PlatformClientAssemblyManager>();

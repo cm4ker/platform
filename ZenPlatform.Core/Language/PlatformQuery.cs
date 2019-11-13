@@ -8,8 +8,8 @@ using Antlr4.Runtime;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Helpers;
-using ZenPlatform.Core.Quering;
 using ZenPlatform.Core.Quering.QueryLanguage;
+using ZenPlatform.Core.Querying;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.QueryBuilder.Common;
 
