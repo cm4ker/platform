@@ -52,7 +52,7 @@
   </Syntax>
 
 
-    <Syntax Name="SSelect">
+    <Syntax Name="SSelect" Base="SDataSource">
         <Arguments>
             <List Name="Fields" Type="SExpression"/>
             <Single Name="Top" Type="STop"/>
@@ -64,16 +64,25 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="SOrderByExpression">
-        <Arguments>
-            <List Name="Exp" Type="SExpression"/>
-        </Arguments>
+    <Syntax Name="SConstant">
+      <Arguments>
+        <Single Name="Value" Type="object"/>
+      </Arguments>
+    </Syntax>
+
+    <Syntax Name="SMarker" />
+
+
+    <Syntax Name="SCoalese" Base="SExpression">
+      <Arguments>
+        <List Name="Expressions" Type="SExpression"/>
+      </Arguments>
     </Syntax>
 
     <Syntax Name="SOrderBy">
         <Arguments>
             <Single Name="Direction" Type="OrderDirection"/>
-            <List Name="Fields" Type="SOrderByExpression"/>
+            <List Name="Fields" Type="SExpression"/>
         </Arguments>
     </Syntax>
 
@@ -85,7 +94,7 @@
 
   <Syntax Name="SHaving">
     <Arguments>
-      <List Name="Condition" Type="SCondition"/>
+      <Single Name="Condition" Type="SCondition"/>
     </Arguments>
   </Syntax>
 
@@ -202,5 +211,40 @@
         </Arguments>
     </Syntax>
 
+  <Syntax Name="SInsert">
+    <Arguments>
+      <List Name="Fields" Type="SField" />
+      <Single Name="Into" Type="STable" />
+      <Single Name="DataSource" Type="SDataSource" />
+    </Arguments>
+  </Syntax>
+  
+  <Syntax Name="SValuesSource" Base="SDataSource">
+    <Arguments>
+      <List Name="Values" Type="SExpression" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SSetItem">
+    <Arguments>
+      <Single Name="Field" Type="SField" />
+      <Single Name="Value" Type="SExpression" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SSet">
+    <Arguments>
+      <List Name="Items" Type="SSetItem" />
+    </Arguments>
+  </Syntax>
+
+  <Syntax Name="SUpdate">
+    <Arguments>
+      <Single Name="Update" Type="SDataSource" />
+      <Single Name="Set" Type="SSet" />
+      <Single Name="Where" Type="SWhere" />
+      <Single Name="From" Type="SFrom" />
+    </Arguments>
+  </Syntax>
 
 </Config>
