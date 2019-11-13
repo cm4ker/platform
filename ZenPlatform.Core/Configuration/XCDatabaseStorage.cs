@@ -58,18 +58,31 @@ namespace ZenPlatform.Core.Configuration
 
         public void SaveBlob(string name, string route, Stream stream)
         {
-            var searchQuery = new SelectQueryNode()
-                .From(_tableName)
-                .SelectRaw("1")
-                .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
-                    x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
+            void Gen(QueryMachine qm)
+            {
+                qm.ct_query()
+                    .m_from()
+                    .ld_table(_tableName)
+                    .m_where()
+                    .ld_column(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
+                    .ld_param(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
+                    .eq()
+                    .m_select()
+                    .ld_const(1)
+                    .st_query();
+
+//                var searchQuery = new SelectQueryNode()
+//                    .From(_tableName)
+//                    .SelectRaw("1")
+//                    .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
+//                        x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
+            }
+
 
             route = route + ":";
 
-            var cmdText = _compiler.Compile(searchQuery);
-            using (var cmd = _context.CreateCommand())
+            using (var cmd = _context.CreateCommand(Gen))
             {
-                cmd.CommandText = cmdText;
                 //Первый параметр мы здесь добавляем
                 cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD, $"{route}{name}");
 

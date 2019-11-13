@@ -16,7 +16,9 @@ namespace ZenPlatform.Core.Querying
         public object Convert(QQuery query)
         {
             GenerateQuery(query);
-            return _qm.pop();
+            //return _qm.pop();
+
+            return null;
         }
 
         private void GenerateQuery(QQuery q)
@@ -122,7 +124,7 @@ namespace ZenPlatform.Core.Querying
 
                     foreach (var def in schema)
                     {
-                        _qm.ld_column(); //def.FullName
+                        _qm.ld_column(def.FullName);
                         _qm.@as(def.Prefix + ase.Alias + def.Postfix); //def.Prefix + ase.Alias + def.Postfix
                     }
                 }
@@ -135,7 +137,7 @@ namespace ZenPlatform.Core.Querying
 
             foreach (var def in schema)
             {
-                _qm.ld_column(); //def.FullName
+                _qm.ld_column(def.FullName);
             }
         }
     }
