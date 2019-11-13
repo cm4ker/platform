@@ -56,6 +56,22 @@ namespace ZenPlatform.Data
             }
         }
 
+        public DbCommand CreateCommand(Action<QueryMachine> action)
+        {
+            var cmd = _connection.CreateCommand();
+            if (_activeTransaction != null)
+                cmd.Transaction = _activeTransaction;
+
+
+            var machine = new QueryMachine();
+
+            action(machine);
+
+            cmd.CommandText = _compiller.Compile(machine.GetSyntax());
+
+            return cmd;
+        }
+
         public DbCommand CreateCommand()
         {
             var cmd = _connection.CreateCommand();
