@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using FluentMigrator;
-using ZenPlatform.QueryBuilder.DDL.CreateTable;
+
 
 namespace ZenPlatform.Initializer.InternalDatabaseStructureMigrations
 {

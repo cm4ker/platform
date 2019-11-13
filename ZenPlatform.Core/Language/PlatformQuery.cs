@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Text;
-using System.Threading;
 using Antlr4.Runtime;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Helpers;
-using ZenPlatform.Core.Quering.QueryLanguage;
 using ZenPlatform.Core.Querying;
 using ZenPlatform.Core.Sessions;
-using ZenPlatform.QueryBuilder.Common;
 
 namespace ZenPlatform.Core.Language
 {
@@ -68,7 +62,7 @@ namespace ZenPlatform.Core.Language
 
             var sqlNode = Evaluate();
             var dataContext = ((PlatformEnvironment) _session.Environment).DataContextManager.GetContext();
-            var command = dataContext.CreateCommand(sqlNode);
+            var command = dataContext.CreateCommand();
 
             foreach (var parameter in _parameters)
             {
@@ -135,7 +129,7 @@ namespace ZenPlatform.Core.Language
         /// <summary>
         /// Обсчитать текст запроса. Здесь происходит превращение запроса из текста в объектную модель
         /// </summary>
-        private SqlNode Evaluate()
+        private object Evaluate()
         {
             var context = new DataQueryConstructorContext();
             context.Parameters = _parameters;
