@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ZenPlatform.QueryBuilder.Model;
 
@@ -6,17 +7,16 @@ namespace ZenPlatform.QueryBuilder
 
     
 
-    public class QueryMachine
+    public class QueryMachine: IObserver<MachineContextType>
     {
 
-        private Stack<MachineContext> _contexts;
-        private MachineContext CurrentContext => _contexts.TryPeek(out var res) ? res : null;
+        private MachineContext _currentContext;
+
         private Stack<object> _syntaxStack = new Stack<object>();
 
         public QueryMachine()
         {
-            _contexts = new Stack<MachineContext>();
-            ct_query();
+            _currentContext = new MachineContext();
         }
 
 
@@ -66,9 +66,9 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine ld_column(string columnName)
         {
-            switch (CurrentContext.Type)
+            switch (_currentContext.Type)
             {
-                case MachineContextType.select:
+                case MachineContextType.Select:
                     Push(new SField(columnName));
                     break;
             }
@@ -79,9 +79,9 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine ld_column()
         {
-            switch (CurrentContext.Type)
+            switch (_currentContext.Type)
             {
-                case MachineContextType.select:
+                case MachineContextType.Select:
                     Push(new SSelectFieldExpression(Pop<SExpression>()));
                     break;
 
@@ -93,9 +93,9 @@ namespace ZenPlatform.QueryBuilder
         public QueryMachine @as(string name)
         {
 
-            switch (CurrentContext.Type)
+            switch (_currentContext.Type)
             {
-                case MachineContextType.select:
+                case MachineContextType.Select:
                     if (TryPeek<SAliasedFieldExpression>(out _)) return this ;
                     Push(new SAliasedFieldExpression(Pop<SSelectFieldExpression>().Exp, name));
                     break;
@@ -104,51 +104,38 @@ namespace ZenPlatform.QueryBuilder
         }
 
         #region Contexts
-
-        private void ChangeContextType(MachineContextType type)
+        public void ChangeContextType(MachineContextType contextType)
         {
-
-            switch (CurrentContext.Type )
-            {
-                case
-                    MachineContextType.select:
-
-                    break;
-            }
-
-            CurrentContext.Type = type;
-
 
         }
-
         public QueryMachine m_select()
         {
-            ChangeContextType(MachineContextType.select);
+            ChangeContextType(MachineContextType.Select);
 
             return this;
         }
 
         public QueryMachine m_having()
         {
-            ChangeContextType(MachineContextType.having);
+            ChangeContextType(MachineContextType.Having);
             return this;
         }
 
         public QueryMachine m_from()
         {
-            ChangeContextType(MachineContextType.from);
+            ChangeContextType(MachineContextType.From);
             return this;
         }
 
         public QueryMachine m_group_by()
         {
-            ChangeContextType(MachineContextType.groupBy);
+            ChangeContextType(MachineContextType.GroupBy);
             return this;
         }
 
         public QueryMachine m_order_by()
         {
-            ChangeContextType(MachineContextType.orderBy);
+            ChangeContextType(MachineContextType.OrderBy);
             return this;
         }
 
@@ -156,16 +143,18 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine st_query()
         {
-            
 
-            ChangeContextType(MachineContextType.none);
-            _contexts.Pop();
+            _currentContext = Pop<MachineContext>();
+            ChangeContextType(MachineContextType.None);
             return this;
         }
 
         public QueryMachine ct_query()
         {
-            _contexts.Push(new MachineContext());
+            Push(_currentContext);
+
+            _currentContext = new MachineContext();
+
             return this;
         }
 
@@ -287,6 +276,21 @@ namespace ZenPlatform.QueryBuilder
         public object pop()
         {
             return null;
+        }
+
+        public void OnCompleted()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNext(MachineContextType value)
+        {
+            throw new NotImplementedException();
         }
 
         /*
