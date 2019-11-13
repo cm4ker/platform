@@ -25,19 +25,32 @@ namespace ZenPlatform.Core.Configuration
 
         public Stream GetBlob(string name, string route)
         {
-            var query = new SelectQueryNode().From(_tableName).Select(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
-                .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
-                    x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
+            void Gen(QueryMachine qm)
+            {
+                qm.ct_query()
+                    .m_from()
+                    .ld_table(_tableName)
+                    .m_where()
+                    .ld_column(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
+                    .ld_param(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
+                    .eq()
+                    .m_select()
+                    .ld_column(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
+                    .st_query();
+
+//                var query = new SelectQueryNode().From(_tableName).Select(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
+//                    .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
+//                        x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
+            }
+
 
             route = route + ":";
 
-            var cmdText = _compiler.Compile(query);
-            using (var cmd = _context.CreateCommand())
+            using (var cmd = _context.CreateCommand(Gen))
             {
-                cmd.CommandText = cmdText;
                 cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD, $"{route}{name}");
 
-                MemoryStream ms = new MemoryStream((byte[])cmd.ExecuteScalar());
+                MemoryStream ms = new MemoryStream((byte[]) cmd.ExecuteScalar());
 
                 return ms;
             }
@@ -84,7 +97,7 @@ namespace ZenPlatform.Core.Configuration
                 cmd.CommandText = _compiler.Compile(query);
 
                 byte[] buffer = new byte[stream.Length];
-                stream.Read(buffer, 0, (int)stream.Length);
+                stream.Read(buffer, 0, (int) stream.Length);
 
                 cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD, buffer);
 
@@ -92,7 +105,6 @@ namespace ZenPlatform.Core.Configuration
             }
         }
 
-        
 
         public Stream GetRootBlob()
         {
@@ -106,7 +118,6 @@ namespace ZenPlatform.Core.Configuration
 
         public void GetId(Guid confId, ref uint uid)
         {
-
             if (uid != 0)
                 return;
 

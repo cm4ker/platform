@@ -2,8 +2,8 @@
 using System.IO;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Initializer;
-
 using ZenPlatform.Data;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Authentication
 {
@@ -40,6 +40,7 @@ namespace ZenPlatform.Core.Authentication
         */
 
         private readonly IDataContextManager _dataContextManager;
+
         public UserManager(IDataContextManager dataContextManager)
         {
             _dataContextManager = dataContextManager;
@@ -52,7 +53,6 @@ namespace ZenPlatform.Core.Authentication
 
         public void Update(IPlatformUser user)
         {
-            
             var cmd = _dataContextManager.GetContext().CreateCommand();
 
             var query = new UpdateQueryNode();
@@ -72,8 +72,6 @@ namespace ZenPlatform.Core.Authentication
 
         public void Delete(IPlatformUser user)
         {
-
-
             var cmd = _dataContextManager.GetContext().CreateCommand();
 
             var query = new DeleteQueryNode();
@@ -90,16 +88,28 @@ namespace ZenPlatform.Core.Authentication
 
         public IUser Get(Guid id)
         {
+            void Gen(QueryMachine m)
+            {
+                m.m_from()
+                    .ld_table(DatabaseConstantNames.USER_TABLE_NAME)
+                    .m_where()
+                    .ld_column(DatabaseConstantNames.USER_TABLE_ID_FIELD)
+                    .ld_param("p0")
+                    .eq()
+                    .m_select()
+                    .ld_column(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
+                    .st_query();
 
-            var cmd = _dataContextManager.GetContext().CreateCommand();
+//                var query = new SelectQueryNode();
+//
+//                query
+//                    .From(DatabaseConstantNames.USER_TABLE_NAME)
+//                    .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_ID_FIELD), "=", x => x.Parameter("p0"))
+//                    .Select(DatabaseConstantNames.USER_TABLE_NAME_FIELD);
+            }
 
-            var query = new SelectQueryNode();
 
-            query
-                .From(DatabaseConstantNames.USER_TABLE_NAME)
-                .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_ID_FIELD), "=", x => x.Parameter("p0"))
-                .Select(DatabaseConstantNames.USER_TABLE_NAME_FIELD);
-
+            var cmd = _dataContextManager.GetContext().CreateCommand(Gen);
             cmd.AddParameterWithValue("p0", id);
 
             //cmd.CommandText = _session.Environment.SqlCompiler.Compile(query);
@@ -121,37 +131,49 @@ namespace ZenPlatform.Core.Authentication
 
         public IUser FindUserByName(string name)
         {
-            using (var cmd = _dataContextManager.GetContext().CreateCommand())
+            void Gen(QueryMachine m)
             {
+                m.m_from()
+                    .ld_table(DatabaseConstantNames.USER_TABLE_NAME)
+                    .m_where()
+                    .ld_column(DatabaseConstantNames.USER_TABLE_ID_FIELD)
+                    .ld_param("p0")
+                    .eq()
+                    .m_select()
+                    .ld_column(DatabaseConstantNames.USER_TABLE_ID_FIELD)
+                    .ld_column(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
+                    .ld_column(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD)
+                    .st_query();
 
-                var query = new SelectQueryNode();
+//                var query = new SelectQueryNode();
+//
+//                query
+//                    .From(DatabaseConstantNames.USER_TABLE_NAME)
+//                    .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), "=", x => x.Parameter("p0"))
+//                    .Select(DatabaseConstantNames.USER_TABLE_ID_FIELD)
+//                    .Select(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
+//                    .Select(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD);
+            }
 
-                query
-                    .From(DatabaseConstantNames.USER_TABLE_NAME)
-                    .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), "=", x => x.Parameter("p0"))
-                    .Select(DatabaseConstantNames.USER_TABLE_ID_FIELD)
-                    .Select(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
-                    .Select(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD);
-
+            using (var cmd = _dataContextManager.GetContext().CreateCommand(Gen))
+            {
                 cmd.AddParameterWithValue("p0", name);
 
-                cmd.CommandText = _dataContextManager.SqlCompiler.Compile(query);
                 using (var reader = cmd.ExecuteReader())
                 {
-
                     if (reader.Read())
                     {
                         var user = new PlatformUser
                         {
                             Id = reader.GetGuid(0),
                             Name = reader.GetString(1),
-
                         };
 
                         return user;
                     }
                 }
             }
+
             throw new UserNotFoundException();
         }
 
@@ -163,22 +185,32 @@ namespace ZenPlatform.Core.Authentication
         /// <returns></returns>
         public bool Authenticate(string userName, string password)
         {
-
-            using (var cmd = _dataContextManager.GetContext().CreateCommand())
+            void Gen(QueryMachine m)
             {
+                m.m_from()
+                    .ld_table(DatabaseConstantNames.USER_TABLE_NAME)
+                    .m_where()
+                    .ld_column(DatabaseConstantNames.USER_TABLE_ID_FIELD)
+                    .ld_param("p0")
+                    .eq()
+                    .m_select()
+                    .ld_column(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD)
+                    .st_query();
 
-                var query = new SelectQueryNode();
+//                var query = new SelectQueryNode();
+//
+//                query
+//                    .From(DatabaseConstantNames.USER_TABLE_NAME)
+//                    .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), "=", x => x.Parameter("p0"))
+//                    .Select(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD);
+            }
 
-                query
-                    .From(DatabaseConstantNames.USER_TABLE_NAME)
-                    .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), "=", x => x.Parameter("p0"))
-                    .Select(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD);
 
+            using (var cmd = _dataContextManager.GetContext().CreateCommand(Gen))
+            {
                 cmd.AddParameterWithValue("p0", userName);
 
-                cmd.CommandText = _dataContextManager.SqlCompiler.Compile(query);
-
-                using (StreamReader reader = new StreamReader(new MemoryStream((byte[])cmd.ExecuteScalar())))
+                using (StreamReader reader = new StreamReader(new MemoryStream((byte[]) cmd.ExecuteScalar())))
                 {
                     var pass = reader.ReadToEnd();
 
