@@ -1,3 +1,6 @@
+using ZenPlatform.QueryBuilder.Model;
+using ZenPlatform.QueryBuilder.Visitor;
+
 namespace ZenPlatform.QueryBuilder
 {
     public enum SqlDatabaseType
@@ -8,11 +11,26 @@ namespace ZenPlatform.QueryBuilder
         Oracle
     }
 
-    public class SqlCompillerBase
+    public class SqlCompillerBase: ISqlCompiler
     {
+        private QueryVisitorBase<string> _visitor;
+        private SqlCompillerBase(QueryVisitorBase<string> visitor)
+        {
+            _visitor = visitor;
+        }
         public static ISqlCompiler FormEnum(SqlDatabaseType dbtype)
         {
-            return null;
+            return new SqlCompillerBase(new SQLVisitorBase());
+        }
+
+        public string Compile(SSyntaxNode node)
+        {
+            return _visitor.Visit(node);
+        }
+
+        public string Compile(QueryMachine queryMachine)
+        {
+            return _visitor.Visit((SSyntaxNode)queryMachine.Peek());
         }
     }
 }
