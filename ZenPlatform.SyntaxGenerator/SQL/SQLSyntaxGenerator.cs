@@ -148,27 +148,38 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                 .WithBody(SyntaxFactory.Block())
                 .WithModifiers(SyntaxTokenList.Create(publicToken));
 
-            //var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,
-            //    SyntaxFactory.ArgumentList()
-            //       .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseName("lineInfo"))));
+            var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer);
 
             //var argForConstructor = new List<SyntaxArgument>();
 
-            
             var cond = new List<string>();
             var hash = new List<string>();
 
             foreach (var argument in sqlSyntax.Arguments)
             {
+                if (argument.Base)
+                {
+                    initializer = initializer.AddArgumentListArguments(
+                                SyntaxFactory.Argument(SyntaxFactory.ParseName(argument.Name.ToCamelCase())));
+                }
+                if (argument.IsNeedCreated())
+                {
+
+                    constructor = constructor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"{argument.Name} = new {argument.Type}();"));
+
+                }
+
+
                 if (argument.IsNeedInitialize())
                 {
 
-                        constructor = constructor.AddBodyStatements(
-                        SyntaxFactory.ParseStatement($"{argument.Name} = new {argument.Type}();"));
-                    
+                    constructor = constructor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"{argument.Name} = {argument.Name.ToCamelCase()};"));
+
                 }
 
-                if (!argument.Null)
+                if (!(argument.Null || argument is SyntaxArgumentList) || argument.Base)
                 {
                     var parameterSyntax = SyntaxFactory
                                 .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
@@ -180,6 +191,9 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
                     constructor = constructor.AddParameterListParameters(parameterSyntax);
                 }
+                
+                
+
                 /*
                 else if (argument.IsPrimetive() && !argument.Null)
                 {
@@ -204,7 +218,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
                 }
                 */
-
+                if (!argument.Base)
                 members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
                                 argument.Name).AddModifiers(publicToken)
                             .WithAccessorList(SyntaxFactory.AccessorList()
@@ -235,6 +249,8 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                 }
                 
             }
+
+            constructor = constructor.WithInitializer(initializer);
             if (cond.Count > 0)
             {
                 var equlse =
@@ -313,8 +329,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Linq")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.QueryBuilder.Model")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.QueryBuilder.Visitor")),
-                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.QueryBuilder.Contracts"))
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.QueryBuilder.Visitor"))
                     );
                 ;
 
