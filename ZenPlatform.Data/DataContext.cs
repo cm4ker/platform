@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Data
 {
@@ -13,14 +14,16 @@ namespace ZenPlatform.Data
     {
         private readonly DbConnection _connection;
         private DbTransaction _activeTransaction;
+
         private readonly IsolationLevel _isolationLevel;
-        private ISqlCompiler _compiller;
+
+        //private ISqlCompiler _compiller;
         private int _tranCount;
 
         public DataContext(SqlDatabaseType compilerType, string connectionString)
         {
             _connection = DatabaseFactory.Get(compilerType, connectionString);
-            _compiller = SqlCompillerBase.FormEnum(compilerType);
+            //_compiller = SqlCompillerBase.FormEnum(compilerType);
             _connection.Open();
             _isolationLevel = IsolationLevel.Snapshot;
         }
@@ -62,13 +65,13 @@ namespace ZenPlatform.Data
             return cmd;
         }
 
-        public DbCommand CreateCommand(SqlNode query)
-        {
-            var cmd = CreateCommand();
-            cmd.CommandText = _compiller.Compile(query);
-
-            return cmd;
-        }
+//        public DbCommand CreateCommand(SqlNode query)
+//        {
+//            var cmd = CreateCommand();
+//            cmd.CommandText = _compiller.Compile(query);
+//
+//            return cmd;
+//        }
 
         public void Dispose()
         {

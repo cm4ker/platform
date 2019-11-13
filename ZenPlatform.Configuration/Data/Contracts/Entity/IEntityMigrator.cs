@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.QueryBuilder.Common;
-using ZenPlatform.QueryBuilder.Contracts;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
 {
@@ -17,12 +15,10 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// <param name="actual">Текущий объект</param>
         /// <returns></returns>
         //IList<SqlNode> GetScript(XCObjectTypeBase old, XCObjectTypeBase actual);
-
-
         IExpression GetStep1(XCObjectTypeBase old, XCObjectTypeBase actual);
+
         IExpression GetStep2(XCObjectTypeBase old, XCObjectTypeBase actual);
         IExpression GetStep3(XCObjectTypeBase old, XCObjectTypeBase actual);
         IExpression GetStep4(XCObjectTypeBase old, XCObjectTypeBase actual);
-
     }
 }

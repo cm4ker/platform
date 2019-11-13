@@ -8,7 +8,6 @@ namespace ZenPlatform.Core.Querying
     {
         private QueryMachine _qm;
 
-
         public Logic2QueryTreeConverter()
         {
             _qm = new QueryMachine();
