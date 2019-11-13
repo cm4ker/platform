@@ -7,7 +7,7 @@ namespace ZenPlatform.QueryBuilder
 
     
 
-    public class QueryMachine: IObserver<MachineContextType>
+    public class QueryMachine
     {
 
         private MachineContext _currentContext;
@@ -16,10 +16,13 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine()
         {
-            _currentContext = new MachineContext();
+           // _currentContext = new MachineContext();
+            ///ct_query();
         }
 
+         
 
+        #region Stack function
         private bool TryPop<T>(out T obj)
         {
             if (_syntaxStack.Count > 0)
@@ -48,9 +51,54 @@ namespace ZenPlatform.QueryBuilder
             return false;
         }
 
+        private object Peek()
+        {
+            return _syntaxStack.Peek();
+        }
+
         private T Pop<T>()
         {
             return (T)_syntaxStack.Pop();
+        }
+
+        private List<T> TryPopList<T>()
+        {
+            List<T> result = new List<T>();
+
+            while (_syntaxStack.Peek() is T item)
+            {
+                _syntaxStack.Pop();
+                result.Add(item);
+            }
+            return result;
+        }
+
+        private List<T> PopList<T>()
+        {
+            List<T> result = new List<T>();
+
+            while (_syntaxStack.Peek() is T item)
+            {
+                _syntaxStack.Pop();
+                result.Add(item);
+            }
+
+            if (result.Count > 0)
+                return result;
+            else throw new InvalidOperationException($"Stack must be contain at least one type of '{typeof(T)}'");
+        }
+
+        private T TryPop<T>()
+        {
+            if (_syntaxStack.Count > 0)
+                if (_syntaxStack.Peek() is T item)
+                {
+                    _syntaxStack.Pop();
+
+                    return item;
+                }
+        
+            return default(T);
         }
 
         private void Push(object obj)
@@ -58,55 +106,91 @@ namespace ZenPlatform.QueryBuilder
             _syntaxStack.Push(obj);
         }
 
+        #endregion
+
+
+        #region Other
+
         public QueryMachine ld_table(string name)
         {
             Push(new STable(name));
             return this;
         }
 
-        public QueryMachine ld_column(string columnName)
+        public QueryMachine ld_column(string columnName, string tableName = null)
         {
-            switch (_currentContext.Type)
-            {
-                case MachineContextType.Select:
-                    Push(new SField(columnName));
-                    break;
-            }
-
-            ld_column();
+            Push(new SField(columnName, tableName));
             return this;
         }
 
-        public QueryMachine ld_column()
+        public QueryMachine ld_param(string name)
         {
-            switch (_currentContext.Type)
-            {
-                case MachineContextType.Select:
-                    Push(new SSelectFieldExpression(Pop<SExpression>()));
-                    break;
-
-            }
+            Push(new SParameter(name));
             return this;
-
         }
 
         public QueryMachine @as(string name)
         {
+            
 
-            switch (_currentContext.Type)
+            switch (Pop())
             {
-                case MachineContextType.Select:
-                    if (TryPeek<SAliasedFieldExpression>(out _)) return this ;
-                    Push(new SAliasedFieldExpression(Pop<SSelectFieldExpression>().Exp, name));
+                case SExpression exp:
+                    Push(new SAliasedExpression(exp, name));
                     break;
+                case SDataSource source:
+                    Push(new SAliasedDataSource(source, name));
+                    break;
+                default:
+                    throw new InvalidOperationException();
             }
             return this;
         }
 
-        #region Contexts
-        public void ChangeContextType(MachineContextType contextType)
+        public QueryMachine limit(int limint, int offset)
         {
+            switch (_currentContext.Type)
+            {
+                case MachineContextType.Select:
+                    break;
+            }
+                    return this;
+        }
 
+        #endregion
+
+        #region Contexts
+        private void ChangeContextType(MachineContextType contextType)
+        {
+            switch (_currentContext.Type)
+            {
+                case MachineContextType.Select:
+                    
+                    Push(new SSelect(
+                        TryPopList<SExpression>(), 
+                        TryPop<STop>(),
+                        TryPop<SHaving>(),
+                        TryPop<SOrderBy>(), 
+                        TryPop<SGroupBy>(), 
+                        TryPop<SWhere>(), 
+                        TryPop<SFrom>()
+                        ));
+                    break;
+                case MachineContextType.From:
+                    Push(new SFrom(TryPopList<SJoin>(), TryPop<SDataSource>()));
+                    break;
+                case MachineContextType.Where:
+                    Push(new SWhere(Pop<SCondition>()));
+                    break;
+                case MachineContextType.Having:
+                    Push(new SHaving(PopList<SCondition>()));
+                    break;
+                case MachineContextType.GroupBy:
+                    Push(new SGroupBy(PopList<SExpression>()));
+                    break;
+
+            }
+            _currentContext.Type = contextType;
         }
         public QueryMachine m_select()
         {
@@ -139,158 +223,211 @@ namespace ZenPlatform.QueryBuilder
             return this;
         }
 
+        public QueryMachine m_where()
+        {
+            ChangeContextType(MachineContextType.Where);
+            return this;
+        }
+
         #endregion
 
+        #region Query
         public QueryMachine st_query()
         {
-
-            _currentContext = Pop<MachineContext>();
             ChangeContextType(MachineContextType.None);
+
+            var result = Pop<object>();
+            _currentContext = TryPop<MachineContext>();
+
+            if (_currentContext != null && result is SSelect select)
+                result = new SDataSourceNestedQuery(select);
+
+            Push(result);
+            
             return this;
         }
 
         public QueryMachine ct_query()
         {
-            Push(_currentContext);
+            if (_currentContext != null)
+                Push(_currentContext);
 
             _currentContext = new MachineContext();
 
             return this;
         }
+        #endregion
 
         #region Comparers
 
         /// <summary>
         /// Great then
         /// </summary>
-        public void gt()
+        public QueryMachine gt()
         {
+            Push(new SGreatThen(Pop<SExpression>(), Pop<SExpression>()));
+            return this;
         }
 
         /// <summary>
         /// Less then
         /// </summary>
-        public void lt()
+        public QueryMachine lt()
         {
+            Push(new SLessThen(Pop<SExpression>(), Pop<SExpression>()));
+            return this;
         }
 
         /// <summary>
         /// Great then or equals
         /// </summary>
-        public void gte()
+        public QueryMachine gte()
         {
+
+            Push(new SGreatThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
+            return this;
         }
 
         /// <summary>
         /// Less then or equals
         /// </summary>
-        public void lte()
+        public QueryMachine lte()
         {
+            Push(new SLessThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
+            return this;
         }
 
 
         /// <summary>
         /// Not equals
         /// </summary>
-        public void ne()
+        public QueryMachine ne()
         {
+
+            Push(new SNotEquals(Pop<SExpression>(), Pop<SExpression>()));
+            return this;
+        }
+
+        /// <summary>
+        /// Equals
+        /// </summary>
+        public QueryMachine eq()
+        {
+            Push(new SEquals(Pop<SExpression>(), Pop<SExpression>()));
+            return this;
         }
 
         #endregion
 
-        public void on()
-        {
-        }
-
         #region Logical operators
 
-        public void and()
+        public QueryMachine and()
         {
+            Push(new SAnd(PopList<SExpression>()));
+            return this;
         }
 
 
         public void or()
         {
+            Push(new SOr(PopList<SExpression>()));
         }
 
         #endregion
 
         #region Arithmetic operations
 
-        public void add()
+        public QueryMachine add()
         {
+            Push(new SAdd(PopList<SExpression>()));
+            return this;
         }
 
-        public void sub()
+        public QueryMachine sub()
         {
+            Push(new SSub(PopList<SExpression>()));
+            return this;
         }
 
         #endregion
 
         #region Aggregate functions
 
-        public void sum()
+        public QueryMachine sum()
         {
+            Push(new SSum(Pop<SExpression>()));
+
+
+            return this;
         }
 
-        public void avg()
+        public QueryMachine avg()
         {
+            Push(new SAvg(Pop<SExpression>()));
+
+            return this;
+        }
+
+        public QueryMachine count()
+        {
+            Push(new SCount(Pop<SExpression>()));
+
+            return this;
         }
 
         #endregion
 
         #region Joins
 
-        public void @join()
+        private void join_with_type(JoinType joinType)
         {
+            Push(new SJoin(Pop<SCondition>(), Pop<SDataSource>(), joinType));
+        }
+        public QueryMachine @join()
+        {
+            inner_join();
+            return this;
         }
 
-        public void inner_join()
+        public QueryMachine inner_join()
         {
+            join_with_type(JoinType.Inner);
+            return this;
         }
 
-        public void left_join()
+        public QueryMachine left_join()
         {
+            join_with_type(JoinType.Left);
+            return this;
         }
 
-        public void right_join()
+        public QueryMachine right_join()
         {
+            join_with_type(JoinType.Right);
+            return this;
         }
 
-        public void full_join()
+        public QueryMachine full_join()
         {
+            throw new NotSupportedException();
         }
 
-        public void cross_join()
+        public QueryMachine cross_join()
         {
+            throw new NotSupportedException();
         }
 
         #endregion
 
-        public object top()
+
+        public object Top()
         {
-            return null;
+            return _syntaxStack.Peek();
         }
 
-
-        public object pop()
+        public object Pop()
         {
-            return null;
-        }
-
-        public void OnCompleted()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnError(Exception error)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnNext(MachineContextType value)
-        {
-            throw new NotImplementedException();
+            return _syntaxStack.Pop();
         }
 
         /*
@@ -302,6 +439,7 @@ namespace ZenPlatform.QueryBuilder
                                 
                 ld_const     4
                 ld_column    "A", "F1"
+                eq
                 on
                 join
                 ct_query
