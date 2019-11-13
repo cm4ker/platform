@@ -1,58 +1,161 @@
+using System;
 using System.Collections.Generic;
+using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.QueryBuilder
 {
-    public class QueryMachine
+
+    
+
+    public class QueryMachine: IObserver<MachineContextType>
     {
-        public Stack<object> _syntaxStack;
+
+        private MachineContext _currentContext;
+
+        private Stack<object> _syntaxStack = new Stack<object>();
 
         public QueryMachine()
         {
-            _syntaxStack = new Stack<object>();
+            _currentContext = new MachineContext();
         }
 
-        public void ld_table()
+
+        private bool TryPop<T>(out T obj)
         {
+            if (_syntaxStack.Count > 0)
+                if (_syntaxStack.Peek() is T item)
+                {
+                    _syntaxStack.Pop();
+                    obj = item;
+                    return true;
+                }
+
+            obj = default(T);
+            return false;
         }
 
-        public void ld_column()
+
+        private bool TryPeek<T>(out T obj)
         {
+            if (_syntaxStack.Count > 0)
+                if (_syntaxStack.Peek() is T item)
+                {
+                    obj = item;
+                    return true;
+                }
+
+            obj = default(T);
+            return false;
         }
 
-        public void @as()
+        private T Pop<T>()
         {
+            return (T)_syntaxStack.Pop();
+        }
+
+        private void Push(object obj)
+        {
+            _syntaxStack.Push(obj);
+        }
+
+        public QueryMachine ld_table(string name)
+        {
+            Push(new STable(name));
+            return this;
+        }
+
+        public QueryMachine ld_column(string columnName)
+        {
+            switch (_currentContext.Type)
+            {
+                case MachineContextType.Select:
+                    Push(new SField(columnName));
+                    break;
+            }
+
+            ld_column();
+            return this;
+        }
+
+        public QueryMachine ld_column()
+        {
+            switch (_currentContext.Type)
+            {
+                case MachineContextType.Select:
+                    Push(new SSelectFieldExpression(Pop<SExpression>()));
+                    break;
+
+            }
+            return this;
+
+        }
+
+        public QueryMachine @as(string name)
+        {
+
+            switch (_currentContext.Type)
+            {
+                case MachineContextType.Select:
+                    if (TryPeek<SAliasedFieldExpression>(out _)) return this ;
+                    Push(new SAliasedFieldExpression(Pop<SSelectFieldExpression>().Exp, name));
+                    break;
+            }
+            return this;
         }
 
         #region Contexts
-
-        public void m_select()
+        public void ChangeContextType(MachineContextType contextType)
         {
+
+        }
+        public QueryMachine m_select()
+        {
+            ChangeContextType(MachineContextType.Select);
+
+            return this;
         }
 
-        public void m_having()
+        public QueryMachine m_having()
         {
+            ChangeContextType(MachineContextType.Having);
+            return this;
         }
 
-        public void m_from()
+        public QueryMachine m_from()
         {
+            ChangeContextType(MachineContextType.From);
+            return this;
         }
 
-        public void m_group_by()
+        public QueryMachine m_group_by()
         {
+            ChangeContextType(MachineContextType.GroupBy);
+            return this;
         }
 
-        public void m_order_by()
+        public QueryMachine m_order_by()
         {
+            ChangeContextType(MachineContextType.OrderBy);
+            return this;
         }
 
         #endregion
 
-        public void st_query()
+        public QueryMachine st_query()
         {
+
+            _currentContext = Pop<MachineContext>();
+            ChangeContextType(MachineContextType.None);
+            return this;
         }
 
-        public void ct_query()
+        public QueryMachine ct_query()
         {
+            Push(_currentContext);
+
+            _currentContext = new MachineContext();
+
+            return this;
         }
 
         #region Comparers
@@ -173,6 +276,21 @@ namespace ZenPlatform.QueryBuilder
         public object pop()
         {
             return null;
+        }
+
+        public void OnCompleted()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNext(MachineContextType value)
+        {
+            throw new NotImplementedException();
         }
 
         /*

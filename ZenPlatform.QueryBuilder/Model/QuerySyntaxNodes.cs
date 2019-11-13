@@ -16,7 +16,7 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SExpression : SSyntaxNode
     {
-        public SExpression()
+        public SExpression(): base()
         {
         }
 
@@ -36,7 +36,7 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SDataSource : SSyntaxNode
     {
-        public SDataSource()
+        public SDataSource(): base()
         {
         }
 
@@ -54,10 +54,11 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class STable : SSyntaxNode
+    public partial class STable : SDataSource
     {
-        public STable( string  name)
+        public STable( string  name): base()
         {
+            Name = name;
         }
 
         public string Name
@@ -88,8 +89,10 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class STop : SSyntaxNode
     {
-        public STop( int  limit,  int  offset)
+        public STop( int  limit,  int  offset): base()
         {
+            Limit = limit;
+            Offset = offset;
         }
 
         public int Limit
@@ -124,10 +127,11 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SDataSourceNestedQueryS : SSyntaxNode
+    public partial class SDataSourceNestedQuery : SDataSource
     {
-        public SDataSourceNestedQueryS(SSelect query)
+        public SDataSourceNestedQuery(SSelect query): base()
         {
+            Query = query;
         }
 
         public SSelect Query
@@ -139,7 +143,7 @@ namespace ZenPlatform.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SDataSourceNestedQueryS ) obj ;  return  ( Compare ( this . Query ,  node . Query ) ) ; 
+                return false; var  node  =  ( SDataSourceNestedQuery ) obj ;  return  ( Compare ( this . Query ,  node . Query ) ) ; 
         }
 
         public override int GetHashCode()
@@ -149,17 +153,18 @@ namespace ZenPlatform.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitSDataSourceNestedQueryS(this);
+            return visitor.VisitSDataSourceNestedQuery(this);
         }
     }
 }
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SExpressionNestedQueryNode : SSyntaxNode
+    public partial class SExpressionNestedQueryNode : SExpression
     {
-        public SExpressionNestedQueryNode(SSelect query)
+        public SExpressionNestedQueryNode(SSelect query): base()
         {
+            Query = query;
         }
 
         public SSelect Query
@@ -188,14 +193,14 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SSelectFieldExpression : SSyntaxNode
+    public partial class SField : SExpression
     {
-        public SSelectFieldExpression(List<SExpression> exp)
+        public SField( string  name): base()
         {
-            Exp = new List<SExpression>();
+            Name = name;
         }
 
-        public List<SExpression> Exp
+        public string Name
         {
             get;
             set;
@@ -204,12 +209,78 @@ namespace ZenPlatform.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SSelectFieldExpression ) obj ;  return  ( SequenceEqual ( this . Exp ,  node . Exp ) ) ; 
+                return false; var  node  =  ( SField ) obj ;  return  ( ( this . Name == node . Name ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return Xor(Exp, i => i.GetHashCode());
+            return (Name.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSField(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SAliasedFieldExpression : SSelectFieldExpression
+    {
+        public SAliasedFieldExpression(SExpression exp,  string  name): base(exp)
+        {
+            Name = name;
+        }
+
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SAliasedFieldExpression ) obj ;  return  ( Compare ( this . Exp ,  node . Exp ) && ( this . Name == node . Name ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Exp == null ? 0 : Exp.GetHashCode()) ^ (Name.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSAliasedFieldExpression(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SSelectFieldExpression : SSyntaxNode
+    {
+        public SSelectFieldExpression(SExpression exp): base()
+        {
+            Exp = exp;
+        }
+
+        public SExpression Exp
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SSelectFieldExpression ) obj ;  return  ( Compare ( this . Exp ,  node . Exp ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Exp == null ? 0 : Exp.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -223,9 +294,14 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SSelect : SSyntaxNode
     {
-        public SSelect(List<SSelectFieldExpression> fields, SFrom from, SWhere where, SGroupBy groupBy, SOrderBy orderBy, STop top)
+        public SSelect(SFrom from, SWhere where, SGroupBy groupBy, SOrderBy orderBy, STop top): base()
         {
             Fields = new List<SSelectFieldExpression>();
+            From = from;
+            Where = where;
+            GroupBy = groupBy;
+            OrderBy = orderBy;
+            Top = top;
         }
 
         public List<SSelectFieldExpression> Fields
@@ -286,7 +362,7 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SOrderByExpression : SSyntaxNode
     {
-        public SOrderByExpression(List<SExpression> exp)
+        public SOrderByExpression(): base()
         {
             Exp = new List<SExpression>();
         }
@@ -319,8 +395,9 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SOrderBy : SSyntaxNode
     {
-        public SOrderBy(OrderDirection direction, List<SOrderByExpression> fields)
+        public SOrderBy(OrderDirection direction): base()
         {
+            Direction = direction;
             Fields = new List<SOrderByExpression>();
         }
 
@@ -358,7 +435,7 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SGroupByExpression : SSyntaxNode
     {
-        public SGroupByExpression(List<SExpression> exp)
+        public SGroupByExpression(): base()
         {
             Exp = new List<SExpression>();
         }
@@ -391,7 +468,7 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SGroupBy : SSyntaxNode
     {
-        public SGroupBy(List<SGroupByExpression> fields)
+        public SGroupBy(): base()
         {
             Fields = new List<SGroupByExpression>();
         }
@@ -424,7 +501,7 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SCondition : SExpression
     {
-        public SCondition()
+        public SCondition(): base()
         {
         }
 
@@ -444,8 +521,11 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SJoin : SSyntaxNode
     {
-        public SJoin(SDataSource dataSource, SCondition condition, JoinType joinType)
+        public SJoin(SDataSource dataSource, SCondition condition, JoinType joinType): base()
         {
+            DataSource = dataSource;
+            Condition = condition;
+            JoinType = joinType;
         }
 
         public SDataSource DataSource
@@ -488,8 +568,9 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SWhere : SSyntaxNode
     {
-        public SWhere(SCondition condition)
+        public SWhere(SCondition condition): base()
         {
+            Condition = condition;
         }
 
         public SCondition Condition
@@ -520,8 +601,9 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SFrom : SSyntaxNode
     {
-        public SFrom(SDataSource dataSource, List<SJoin> join)
+        public SFrom(SDataSource dataSource): base()
         {
+            DataSource = dataSource;
             Join = new List<SJoin>();
         }
 
@@ -583,12 +665,22 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return DefaultVisit(node);
         }
 
-        public virtual T VisitSDataSourceNestedQueryS(SDataSourceNestedQueryS node)
+        public virtual T VisitSDataSourceNestedQuery(SDataSourceNestedQuery node)
         {
             return DefaultVisit(node);
         }
 
         public virtual T VisitSExpressionNestedQueryNode(SExpressionNestedQueryNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSField(SField node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSAliasedFieldExpression(SAliasedFieldExpression node)
         {
             return DefaultVisit(node);
         }
