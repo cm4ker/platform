@@ -10,5 +10,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
         public static XCBoolean Boolean = new XCBoolean();
         public static XCNumeric Numeric = new XCNumeric();
         public static XCGuid Guid = new XCGuid();
+
+
+        public static XCString GetString(int size) => new XCString {Size = size};
     }
 }
