@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.Builders;
-using ZenPlatform.QueryBuilder.Common;
-using ZenPlatform.QueryBuilder.Common.Columns;
-using ZenPlatform.QueryBuilder.DML.Select;
 
 namespace ZenPlatform.EntityComponent.QueryBuilders
 {
@@ -28,9 +22,9 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         {
             var set = t as XCSingleEntity ?? throw new Exception($"This component can't host next type: {t.GetType()}");
 
-            qm.ld_table();
+            qm.ld_table(set.RelTableName);
 
-            return set.RelTableName;
+            return null;
         }
     }
 }

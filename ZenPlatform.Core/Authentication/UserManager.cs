@@ -55,12 +55,12 @@ namespace ZenPlatform.Core.Authentication
         {
             var cmd = _dataContextManager.GetContext().CreateCommand();
 
-            var query = new UpdateQueryNode();
-
-            query
-                .From(DatabaseConstantNames.USER_TABLE_NAME)
-                .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_ID_FIELD), "=", x => x.Parameter("p0"))
-                .Set(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), x => x.Parameter("p1"));
+//            var query = new UpdateQueryNode();
+//
+//            query
+//                .From(DatabaseConstantNames.USER_TABLE_NAME)
+//                .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_ID_FIELD), "=", x => x.Parameter("p0"))
+//                .Set(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), x => x.Parameter("p1"));
 
             cmd.AddParameterWithValue("p0", user.Id);
             cmd.AddParameterWithValue("p1", user.Name);
@@ -74,11 +74,11 @@ namespace ZenPlatform.Core.Authentication
         {
             var cmd = _dataContextManager.GetContext().CreateCommand();
 
-            var query = new DeleteQueryNode();
-
-            query
-                .From(DatabaseConstantNames.USER_TABLE_NAME)
-                .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_ID_FIELD), "=", x => x.Parameter("p0"));
+//            var query = new DeleteQueryNode();
+//
+//            query
+//                .From(DatabaseConstantNames.USER_TABLE_NAME)
+//                .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_ID_FIELD), "=", x => x.Parameter("p0"));
 
             cmd.AddParameterWithValue("p0", user.Id);
 

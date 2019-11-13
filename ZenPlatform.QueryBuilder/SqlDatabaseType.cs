@@ -7,4 +7,12 @@ namespace ZenPlatform.QueryBuilder
         MySql,
         Oracle
     }
+
+    public class SqlCompillerBase
+    {
+        public static ISqlCompiler FormEnum(SqlDatabaseType dbtype)
+        {
+            return null;
+        }
+    }
 }

@@ -39,6 +39,8 @@ namespace ZenPlatform.Core.Querying.Model
 
             switch (CurrentScope.QueryContext)
             {
+                case QueryContext.None:
+                    break;
                 case QueryContext.From:
                     m_from_close();
                     break;

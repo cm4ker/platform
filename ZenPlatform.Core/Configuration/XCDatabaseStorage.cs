@@ -68,7 +68,7 @@ namespace ZenPlatform.Core.Configuration
                     .ld_param(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
                     .eq()
                     .m_select()
-                    .ld_const(1)
+                   // .ld_const(1)
                     .st_query();
 
 //                var searchQuery = new SelectQueryNode()
@@ -86,28 +86,28 @@ namespace ZenPlatform.Core.Configuration
                 //Первый параметр мы здесь добавляем
                 cmd.AddParameterWithValue(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD, $"{route}{name}");
 
-                SqlNode query;
+                //SqlNode query;
                 //Если такой ключ удалось найти, значит всё ок, обновляем его, иначе вставляем
                 if (cmd.ExecuteScalar() is null)
                 {
-                    query = new InsertQueryNode()
-                        .InsertInto(_tableName)
-                        .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD),
-                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD))
-                        .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
-                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD));
+//                    query = new InsertQueryNode()
+//                        .InsertInto(_tableName)
+//                        .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD),
+//                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD))
+//                        .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
+//                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD));
                 }
                 else
                 {
-                    query = new UpdateQueryNode()
-                        .Update(_tableName)
-                        .Set(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
-                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD))
-                        .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
-                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
+//                    query = new UpdateQueryNode()
+//                        .Update(_tableName)
+//                        .Set(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
+//                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD))
+//                        .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
+//                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
                 }
 
-                cmd.CommandText = _compiler.Compile(query);
+                //cmd.CommandText = _compiler.Compile(query);
 
                 byte[] buffer = new byte[stream.Length];
                 stream.Read(buffer, 0, (int) stream.Length);
