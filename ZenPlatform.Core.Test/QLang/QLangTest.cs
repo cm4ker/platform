@@ -2,8 +2,8 @@ using System.Linq;
 using Xunit;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
-using ZenPlatform.Core.Quering;
-using ZenPlatform.Core.Quering.Model;
+using ZenPlatform.Core.Querying;
+using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder.Visitor;
 
 namespace ZenPlatform.Core.Test.QLang
@@ -11,12 +11,12 @@ namespace ZenPlatform.Core.Test.QLang
     public class QLangTest
     {
         private XCRoot conf;
-        private Quering.Model.QLang _m;
+        private Querying.Model.QLang _m;
 
         public QLangTest()
         {
             conf = Factory.CreateExampleConfiguration();
-            _m = new Quering.Model.QLang(conf);
+            _m = new Querying.Model.QLang(conf);
         }
 
         [Fact]

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+    <Syntax Name="QExpression" Base="QItem"/>
+
+    <Syntax Name="QQuery" Base="QItem">
+        <Arguments>
+            <Single Name="OrderBy" Type="QOrderBy"/>
+            <Single Name="Select" Type="QSelect"/>
+            <Single Name="Having" Type="QHaving"/>
+            <Single Name="GroupBy" Type="QGroupBy"/>
+            <Single Name="Where" Type="QWhere"/>
+            <Single Name="From" Type="QFrom"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QSelect" Base="QItem">
+        <Arguments>
+            <List Name="Fields" Type="List&lt;QField&gt;"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QFrom" Base="QItem">
+        <Arguments>
+            <List Name="Joins" Type="IEnumerable&lt;QFromItem&gt;"/>
+            <Single Name="Source" Type="QDataSource"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QOrderBy" Base="QItem"/>
+    <Syntax Name="QWhere" Base="QItem"/>
+    <Syntax Name="QHaving" Base="QItem"/>
+
+    <!-- DataSource -->
+    <Syntax Name="QDataSource" Base="QItem"/>
+    <Syntax Name="QAliasedDataSource" Base="QDataSource"/>
+    <Syntax Name="QCombinedDataSource" Base="QDataSource">
+        <Arguments>
+            <List Name="DataSources" Type="List&lt;QDataSource&gt;"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QNestedQuery" Base="QDataSource"/>
+    <Syntax Name="QObjectTable" Base="QDataSource"/>
+    <!-- End DataSource -->
+
+    <!-- Fields -->
+    <Syntax Name="QField" Base="QExpression" IsAbstract="true">
+        <Arguments>
+            <Single Name="Element" Type="QItem"/>
+        </Arguments>
+    </Syntax>
+
+
+    <Syntax Name="QLookupField" Base="QField">
+        <Arguments>
+            <Single Name="PropName" Type="String" DenyChildrenFill="true"/>
+            <Single Name="BaseExpression" Type="QExpression" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QSourceFieldExpression" Base="QField">
+        <Arguments>
+            <Single Name="ObjectTable" Type="QObjectTable" PassBase="true"/>
+            <Single Name="Property" Type="XCObjectPropertyBase" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QSelectExpression" Base="QField">
+        <Arguments>
+            <Single Name="Expression" Type="QExpression" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QAliasedSelectExpression" Base="QSelectExpression">
+        <Arguments>
+            <Single Name="Expression" Type="QExpression" PassBase="true"/>
+            <Single Name="Alias" Type="String"/>
+        </Arguments>
+    </Syntax>
+    <!-- End Fields -->
+
+    <Syntax Name="QFromItem" Base="QItem"/>
+    <Syntax Name="QOperationExpression" Base="QExpression"/>
+
+    <Syntax Name="QOn" Base="QOperationExpression"/>
+    <Syntax Name="QConst" Base="QExpression"/>
+    <Syntax Name="QParameter" Base="QExpression">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true" />
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QCase" Base="QExpression">
+        <Arguments>
+            <List Name="Whens" Type="List&lt;QCaseWhen&gt;"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QCaseWhen" Base="QItem">
+        <Arguments>
+            <Single Name="Else" Type="QExpression"/>
+            <Single Name="Then" Type="QExpression"/>
+            <Single Name="When" Type="QOperationExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QAnd" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Left" Type="QExpression"/>
+            <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QAdd" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Left" Type="QExpression"/>
+            <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QOr" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Left" Type="QExpression"/>
+            <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QEquals" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Left" Type="QExpression"/>
+            <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QNotEquals" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Left" Type="QExpression"/>
+            <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QGreatThen" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Left" Type="QExpression"/>
+            <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QLessThen" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Left" Type="QExpression"/>
+            <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QLessThenOrEquals" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Left" Type="QExpression"/>
+            <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QGreatThenOrEquals" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Left" Type="QExpression"/>
+            <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+</Config>
+    

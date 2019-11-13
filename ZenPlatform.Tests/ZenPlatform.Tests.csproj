@@ -1,27 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.11.1" />
-    <PackageReference Include="dotnet-ildasm" Version="0.7.8-beta-build-0070" />
-    <PackageReference Include="xunit" Version="2.4.1-pre.build.4059" />
-    <PackageReference Include="xunit.core" Version="2.4.1-pre.build.4059" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1-pre.build.4059" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Cli.csproj" />
-    <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
-    <ProjectReference Include="..\ZenPlatform.ConfigurationExample\ZenPlatform.ConfigurationExample.csproj" />
-    <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
-    <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-ildasm" Version="0.7.8-beta-build-0070" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common" />
-    <Folder Include="Core" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.11.1" />
+        <PackageReference Include="dotnet-ildasm" Version="0.7.8-beta-build-0070" />
+        <PackageReference Include="xunit" Version="2.4.1-pre.build.4059" />
+        <PackageReference Include="xunit.core" Version="2.4.1-pre.build.4059" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1-pre.build.4059" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Cli.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ConfigurationExample\ZenPlatform.ConfigurationExample.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
+        <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <DotNetCliToolReference Include="dotnet-ildasm" Version="0.7.8-beta-build-0070" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Common" />
+        <Folder Include="Core" />
+    </ItemGroup>
 </Project>
