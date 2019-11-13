@@ -14,6 +14,11 @@ namespace ZenPlatform.QueryBuilder
         OrderBy,
         GroupBy,
         Having,
+        Insert,
+        Values,
+        Update,
+        Set
+
 
 
 
