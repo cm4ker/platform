@@ -16,14 +16,14 @@ namespace ZenPlatform.SyntaxGenerator.SQL
         public bool IsNeedInitialize()
         {
 
-            return !Base && !Null && !IsNeedCreated();
+            return !Base && !Null && !IsNeedCreate();
         }
 
 
-        public bool IsNeedCreated()
+        public bool IsNeedCreate()
         {
 
-            return this.GetType().Equals(typeof(SyntaxArgumentList)) && !Null;
+            return false;
         }
     }
 }
