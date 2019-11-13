@@ -162,7 +162,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                     initializer = initializer.AddArgumentListArguments(
                                 SyntaxFactory.Argument(SyntaxFactory.ParseName(argument.Name.ToCamelCase())));
                 }
-                if (argument.IsNeedCreated())
+                if (argument.IsNeedCreate())
                 {
 
                     constructor = constructor.AddBodyStatements(
@@ -179,7 +179,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
                 }
 
-                if (!(argument.Null || argument is SyntaxArgumentList) || argument.Base)
+                if (!(argument.Null || argument.IsNeedCreate()) || argument.Base)
                 {
                     var parameterSyntax = SyntaxFactory
                                 .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
