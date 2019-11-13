@@ -1,24 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MoreLinq.Extensions;
-using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Data;
 using ZenPlatform.EntityComponent.Configuration;
-using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.Builders;
-using ZenPlatform.QueryBuilder.Common;
-using ZenPlatform.QueryBuilder.Contracts;
-using ZenPlatform.QueryBuilder.DDL.Table;
-using ZenPlatform.QueryBuilder.DML.Update;
-using ZenPlatform.QueryBuilder.Model;
-using ZenPlatform.Shared;
-using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Migrations
 {
@@ -44,7 +31,7 @@ namespace ZenPlatform.EntityComponent.Migrations
         {
         }
 
-
+/*
         public IExpression GetStep1(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
@@ -149,6 +136,7 @@ namespace ZenPlatform.EntityComponent.Migrations
 
             return query;
         }
+        
         public IExpression GetStep3(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
@@ -161,7 +149,6 @@ namespace ZenPlatform.EntityComponent.Migrations
             }
             return query;
         }
-
 
         public IExpression GetStep4(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
         {
@@ -178,9 +165,9 @@ namespace ZenPlatform.EntityComponent.Migrations
 
 
         
+*/
 
-
-
+/*
 
         public ColumnDefinition GetColumnDefenitionBySchema(XCColumnSchemaDefinition schema)
         { 
@@ -228,7 +215,6 @@ namespace ZenPlatform.EntityComponent.Migrations
             return builder.ColumnDefinition;
         }
 
-
         public List<ColumnDefinition> GetColumnDefenition(XCSingleEntityProperty property)
         {
             List<ColumnDefinition> columns = new List<ColumnDefinition>();
@@ -242,5 +228,8 @@ namespace ZenPlatform.EntityComponent.Migrations
  
             return columns;
         }
+        
+        */
+
     }
 }

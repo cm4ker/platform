@@ -567,7 +567,6 @@ namespace ZenPlatform.Core.Querying.Model
         {
             Childs.Add(expression);
             Expression = expression;
-            Childs.Add(alias);
             Alias = alias;
         }
 

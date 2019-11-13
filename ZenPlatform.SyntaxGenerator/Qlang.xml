@@ -80,7 +80,7 @@
     <Syntax Name="QAliasedSelectExpression" Base="QSelectExpression">
         <Arguments>
             <Single Name="Expression" Type="QExpression" PassBase="true"/>
-            <Single Name="Alias" Type="String"/>
+            <Single Name="Alias" Type="String" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <!-- End Fields -->
