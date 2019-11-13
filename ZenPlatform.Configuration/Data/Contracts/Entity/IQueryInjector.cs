@@ -16,7 +16,7 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// </summary>
         /// <param name="logicalTreeNode">Элемент логического дерева, связанный с данным источником данных</param>
         /// <returns></returns>
-        string GetDataSourceFragment(QueryMachine qm, XCObjectTypeBase t, IQueryModelContext logicalTreeNode);
+        void InjectDataSource(QueryMachine qm, XCObjectTypeBase t, IQueryModelContext logicalTreeNode);
     }
 
 
