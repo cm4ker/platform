@@ -5,7 +5,7 @@
 
     <Syntax Name="SDataSource"/>
 
-    <Syntax Name="STable" Type="SDataSource">
+    <Syntax Name="STable" Base="SDataSource">
         <Arguments>
             <Single Name="Name" Type="string"/>
         </Arguments>
@@ -18,21 +18,34 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="SDataSourceNestedQueryS" Type="SDataSource">
+    <Syntax Name="SDataSourceNestedQuery" Base="SDataSource">
         <Arguments>
             <Single Name="Query" Type="SSelect"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="SExpressionNestedQueryNode" Type="SExpression">
+    <Syntax Name="SExpressionNestedQueryNode" Base="SExpression">
         <Arguments>
             <Single Name="Query" Type="SSelect"/>
         </Arguments>
+    </Syntax>
+
+  <Syntax Name="SField" Base="SExpression">
+    <Arguments>
+      <Single Name="Name" Type="string"/>
+    </Arguments>
+  </Syntax>
+
+    <Syntax Name="SAliasedFieldExpression" Base="SSelectFieldExpression">
+      <Arguments>
+        <Single Name="Exp" Base="true" Type="SExpression"/>
+        <Single Name="Name" Type="string"/>
+      </Arguments>
     </Syntax>
 
     <Syntax Name="SSelectFieldExpression">
         <Arguments>
-            <List Name="Exp" Type="SExpression"/>
+          <Single Name="Exp" Type="SExpression"/>
         </Arguments>
     </Syntax>
 
