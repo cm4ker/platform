@@ -117,6 +117,12 @@ namespace ZenPlatform.QueryBuilder
             return this;
         }
 
+        public QueryMachine m_where()
+        {
+            ChangeContextType(MachineContextType.Where);
+            return this;
+        }
+
         public QueryMachine m_from()
         {
             ChangeContextType(MachineContextType.From);
