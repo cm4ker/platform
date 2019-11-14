@@ -14,6 +14,8 @@ namespace ZenPlatform.SyntaxGenerator.QLang
     public static class QLangSyntaxGenerator
     {
         private static string NameBase = "QItem";
+        private static string VisitorClassName = "QLangVisitorBase";
+
 
         public static NamespaceDeclarationSyntax MakeBaseNode(string rootNameSpace)
         {
@@ -33,7 +35,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
             var accept =
                 (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                    $"public abstract T Accept<T>(QueryVisitorBase<T> visitor);");
+                    $"public abstract T Accept<T>({VisitorClassName}<T> visitor);");
             members.Add(accept);
 
             /*
@@ -68,13 +70,12 @@ namespace ZenPlatform.SyntaxGenerator.QLang
             var ns = SyntaxFactory.NamespaceDeclaration(
                 SyntaxFactory.ParseName(rootNameSpace));
 
-            var name = "QueryVisitorBase";
-
+          
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
             var publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
 
-            var constructor = SyntaxFactory.ConstructorDeclaration(name)
+            var constructor = SyntaxFactory.ConstructorDeclaration(VisitorClassName)
                 .WithBody(SyntaxFactory.Block())
                 .WithModifiers(SyntaxTokenList.Create(publicToken));
 
@@ -110,7 +111,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                     SyntaxFactory.ParseStatement($"return visitable.Accept(this);"));
             members.Add(visit);
 
-            var cls = SyntaxFactory.ClassDeclaration($"{name}<T>")
+            var cls = SyntaxFactory.ClassDeclaration($"{VisitorClassName}<T>")
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
                 .AddMembers(constructor)
                 .AddMembers(members.ToArray());
@@ -299,7 +300,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
             var visitor =
                 (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                    "public override T Accept<T>(QueryVisitorBase<T> visitor){}");
+                    $"public override T Accept<T>({VisitorClassName}<T> visitor){{}}");
 
 
             visitor = visitor.AddBodyStatements(

@@ -15,7 +15,7 @@ namespace ZenPlatform.Core.Querying.Model
             _baseType = baseType;
         }
 
-        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        public override IEnumerable<XCTypeBase> GetExpressionType()
         {
             yield return _baseType;
         }
