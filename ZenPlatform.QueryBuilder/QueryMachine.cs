@@ -103,6 +103,13 @@ namespace ZenPlatform.QueryBuilder
 
         #region Other
 
+        public QueryMachine reset()
+        {
+            _syntaxStack.Clear();
+            _currentContext = null;
+            return this;
+        }
+
         public QueryMachine ld_table(string name)
         {
             push(new STable(name));

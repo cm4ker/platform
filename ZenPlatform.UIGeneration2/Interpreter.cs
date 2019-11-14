@@ -7,6 +7,8 @@ using SharpGen.Runtime.Win32;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Querying;
 using ZenPlatform.Core.Querying.Model;
+using ZenPlatform.QueryBuilder.Model;
+using ZenPlatform.QueryBuilder.Visitor;
 
 namespace ZenPlatform.UIBuilder
 {
@@ -36,7 +38,7 @@ namespace ZenPlatform.UIBuilder
             _m = new QLang(Factory.CreateExampleConfiguration());
         }
 
-        public string Run(string code)
+        public (string Output1, string Output2) Run(string code)
         {
             try
             {
@@ -53,21 +55,36 @@ namespace ZenPlatform.UIBuilder
                     }
                     catch (Exception ex)
                     {
-                        return $"Command: {cmd}\nMessage: {ex.Message}\nST:{ex.StackTrace}";
+                        return ($"Command: {cmd}\nMessage: {ex.Message}\nST:{ex.StackTrace}", "");
                     }
 
                     cmd = sr.ReadLine();
                 }
 
                 var output = new StringWriter();
-                var walker = new CustomWalker(output);
-                walker.Visit(_m.top() as QItem);
+                string sqlString = "";
 
-                return output.ToString();
+                try
+                {
+                    var walker = new CustomWalker(output);
+                    walker.Visit(_m.top() as QItem);
+                    var realWalker = new RealWalker();
+                    realWalker.Visit(_m.top() as QItem);
+
+                    var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
+                    sqlString = new SQLVisitorBase().Visit(syntax);
+                }
+                catch (Exception ex)
+                {
+                    sqlString = $"MSG: {ex.Message}\nST: {ex.StackTrace}";
+                }
+
+
+                return (output.ToString(), sqlString);
             }
             catch (Exception ex)
             {
-                return "Runtime error: " + ex.Message;
+                return ($"Runtime error: {ex.Message}\nST: {ex.StackTrace}", "");
             }
         }
 

@@ -97,7 +97,7 @@
     </Syntax>
     <Syntax Name="QAliasedSelectExpression" Base="QSelectExpression">
         <Arguments>
-            <Single Name="Expression" Type="QExpression" PassBase="true"/>
+            <Single Name="Expression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
             <Single Name="Alias" Type="String" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
