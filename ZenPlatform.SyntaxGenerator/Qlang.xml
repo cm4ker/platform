@@ -54,13 +54,13 @@
             <List Name="DataSources" Type="List&lt;QDataSource&gt;"/>
         </Arguments>
     </Syntax>
-    
+
     <Syntax Name="QNestedQuery" Base="QDataSource">
         <Arguments>
             <Single Name="Nested" Type="QQuery"/>
         </Arguments>
     </Syntax>
-    
+
     <Syntax Name="QObjectTable" Base="QDataSource"/>
     <!-- End DataSource -->
 
@@ -103,10 +103,20 @@
     </Syntax>
     <!-- End Fields -->
 
-    <Syntax Name="QFromItem" Base="QItem"/>
+    <Syntax Name="QFromItem" Base="QItem">
+        <Arguments>
+            <Single Name="Condition" Type="QOn"/>
+            <Single Name="Joined" Type="QDataSource"/>
+            <Single Name="JoinType" Type="QJoinType" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
     <Syntax Name="QOperationExpression" Base="QExpression"/>
 
-    <Syntax Name="QOn" Base="QOperationExpression"/>
+    <Syntax Name="QOn" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
     <Syntax Name="QConst" Base="QExpression"/>
     <Syntax Name="QParameter" Base="QExpression">
         <Arguments>
