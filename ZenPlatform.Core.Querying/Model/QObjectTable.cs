@@ -25,5 +25,10 @@ namespace ZenPlatform.Core.Querying.Model
                 yield return new QSourceFieldExpression(this, prop);
             }
         }
+
+        public override string? ToString()
+        {
+            return "Object: " + ObjectType.Name;
+        }
     }
 }

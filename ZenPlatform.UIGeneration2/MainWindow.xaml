@@ -5,10 +5,11 @@
         x:Class="ZenPlatform.UIBuilder.MainWindow">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150" />
+            <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Column="0" Content="{Binding Text}" />
+        <TextBox Grid.Column="0" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Input, Mode=TwoWay}" />
+        <TextBox Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Output, Mode=TwoWay}" />
     </Grid>
 </Window>

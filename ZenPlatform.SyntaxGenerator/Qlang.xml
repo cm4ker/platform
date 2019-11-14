@@ -42,13 +42,25 @@
 
     <!-- DataSource -->
     <Syntax Name="QDataSource" Base="QItem"/>
-    <Syntax Name="QAliasedDataSource" Base="QDataSource"/>
+    <Syntax Name="QAliasedDataSource" Base="QDataSource">
+        <Arguments>
+            <Single Type="QDataSource" Name="Parent"/>
+            <Single Type="String" Name="Alias" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="QCombinedDataSource" Base="QDataSource">
         <Arguments>
             <List Name="DataSources" Type="List&lt;QDataSource&gt;"/>
         </Arguments>
     </Syntax>
-    <Syntax Name="QNestedQuery" Base="QDataSource"/>
+    
+    <Syntax Name="QNestedQuery" Base="QDataSource">
+        <Arguments>
+            <Single Name="Nested" Type="QQuery"/>
+        </Arguments>
+    </Syntax>
+    
     <Syntax Name="QObjectTable" Base="QDataSource"/>
     <!-- End DataSource -->
 
@@ -59,22 +71,28 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="QIntermediateSourceField" Base="QField">
+        <Arguments>
+            <Single Name="Field" Type="QField" DenyChildrenFill="true" PassBase="true"/>
+            <Single Name="DataSource" Type="QDataSource" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
 
     <Syntax Name="QLookupField" Base="QField">
         <Arguments>
             <Single Name="PropName" Type="String" DenyChildrenFill="true"/>
-            <Single Name="BaseExpression" Type="QExpression" PassBase="true"/>
+            <Single Name="BaseExpression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QSourceFieldExpression" Base="QField">
         <Arguments>
-            <Single Name="ObjectTable" Type="QObjectTable" PassBase="true"/>
+            <Single Name="ObjectTable" Type="QObjectTable" PassBase="true" DenyChildrenFill="true"/>
             <Single Name="Property" Type="XCObjectPropertyBase" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QSelectExpression" Base="QField">
         <Arguments>
-            <Single Name="Expression" Type="QExpression" PassBase="true"/>
+            <Single Name="Expression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QAliasedSelectExpression" Base="QSelectExpression">

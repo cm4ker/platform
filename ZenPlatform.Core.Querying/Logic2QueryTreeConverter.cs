@@ -1,4 +1,5 @@
 using System.Linq;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
 
@@ -16,9 +17,7 @@ namespace ZenPlatform.Core.Querying
         public object Convert(QQuery query)
         {
             GenerateQuery(query);
-            //return _qm.pop();
-
-            return null;
+            return _qm.pop();
         }
 
         private void GenerateQuery(QQuery q)
@@ -30,6 +29,7 @@ namespace ZenPlatform.Core.Querying
 
             _qm.m_select();
             GenerateSelect(q.Select);
+            _qm.st_query();
         }
 
         private void GenerateSource(QObjectTable ot)
@@ -110,6 +110,10 @@ namespace ZenPlatform.Core.Querying
             }
         }
 
+        private void GenerateExpression()
+        {
+        }
+
         private void GenerateField(QField field)
         {
             if (field is QSourceFieldExpression sf)
@@ -120,24 +124,41 @@ namespace ZenPlatform.Core.Querying
             {
                 if (ase.Childs.First() is QSourceFieldExpression f)
                 {
-                    var schema = f.Property.GetPropertySchemas();
-
-                    foreach (var def in schema)
-                    {
-                        _qm.ld_column(def.FullName);
-                        _qm.@as(def.Prefix + ase.Alias + def.Postfix);
-                    }
+                    GenerateSourceField(f, ase.Alias);
+                }
+                else
+                {
+                }
+            }
+            else if (field is QIntermediateSourceField isf)
+            {
+                if (isf.DataSource is QAliasedDataSource qads)
+                {
+                    _qm.ld_str(qads.Alias);
+                }
+                else
+                {
+                    _qm.ld_str(null);
                 }
             }
         }
 
-        private void GenerateSourceField(QSourceFieldExpression sf)
+        private void GenerateFieldSchema(XCColumnSchemaDefinition def, string alias = null)
+        {
+            _qm.ld_str(def.FullName);
+            _qm.ld_column();
+
+            if (alias != null)
+                _qm.@as(def.Prefix + alias + def.Postfix);
+        }
+
+        private void GenerateSourceField(QSourceFieldExpression sf, string alias = null)
         {
             var schema = sf.Property.GetPropertySchemas();
 
             foreach (var def in schema)
             {
-                _qm.ld_column(def.FullName);
+                GenerateFieldSchema(def, alias);
             }
         }
     }

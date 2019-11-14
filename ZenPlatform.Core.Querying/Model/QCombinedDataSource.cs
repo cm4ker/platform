@@ -8,6 +8,8 @@ namespace ZenPlatform.Core.Querying.Model
         {
             foreach (var source in DataSources)
             {
+                if (source is QAliasedDataSource) continue;
+
                 foreach (var field in source.GetFields())
                 {
                     yield return field;

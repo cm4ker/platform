@@ -16,7 +16,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public XCObjectPropertyBase Property { get; set; }
 
-        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        public override IEnumerable<XCTypeBase> GetExpressionType()
         {
             return Property.Types;
         }

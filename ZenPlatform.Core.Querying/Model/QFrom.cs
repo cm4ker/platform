@@ -7,5 +7,9 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QFrom : QItem
     {
+        public override string? ToString()
+        {
+            return "From";
+        }
     }
 }

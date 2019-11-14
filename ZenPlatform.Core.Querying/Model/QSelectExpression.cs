@@ -10,9 +10,9 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QSelectExpression : QField
     {
-        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        public override IEnumerable<XCTypeBase> GetExpressionType()
         {
-            return ((QExpression) Childs.First()).GetRexpressionType();
+            return ((QExpression) Childs.First()).GetExpressionType();
         }
 
         public override string GetName()
@@ -20,13 +20,10 @@ namespace ZenPlatform.Core.Querying.Model
             if (Childs.First() is QField ase) return ase.GetName();
             return base.GetName();
         }
-    }
 
-    public partial class QAliasedSelectExpression : QSelectExpression
-    {
-        public override string GetName()
+        public override string? ToString()
         {
-            return Alias;
+            return "Expr";
         }
     }
 
@@ -42,9 +39,14 @@ namespace ZenPlatform.Core.Querying.Model
             return Property.Name;
         }
 
-        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        public override IEnumerable<XCTypeBase> GetExpressionType()
         {
             return Property.Types;
+        }
+
+        public override string? ToString()
+        {
+            return "Field: " + Property.Name;
         }
     }
 
@@ -52,14 +54,14 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public IEnumerable<XCObjectPropertyBase> GetProperties()
         {
-            return BaseExpression.GetRexpressionType().Where(x =>
+            return BaseExpression.GetExpressionType().Where(x =>
                     x is XCObjectTypeBase ot && ot.GetProperties().Any(p => p.Name == PropName))
                 .Select(x => ((XCObjectTypeBase) x).GetPropertyByName(PropName));
         }
 
-        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        public override IEnumerable<XCTypeBase> GetExpressionType()
         {
-            return BaseExpression.GetRexpressionType().Where(x =>
+            return BaseExpression.GetExpressionType().Where(x =>
                     x is XCObjectTypeBase ot && ot.GetProperties().Any(p => p.Name == PropName))
                 .SelectMany(x => ((XCObjectTypeBase) x).GetPropertyByName(PropName).Types);
         }

@@ -19,7 +19,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public object Value { get; }
 
-        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        public override IEnumerable<XCTypeBase> GetExpressionType()
         {
             yield return _baseType;
         }

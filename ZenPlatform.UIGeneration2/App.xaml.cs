@@ -15,7 +15,7 @@ namespace ZenPlatform.UIBuilder
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
-                desktopLifetime.MainWindow = new MainWindow2();
+                desktopLifetime.MainWindow = new MainWindow();
             
             base.OnFrameworkInitializationCompleted();
         }
