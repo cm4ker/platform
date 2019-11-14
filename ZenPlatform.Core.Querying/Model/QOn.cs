@@ -5,11 +5,5 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QOn : QOperationExpression
     {
-        public QExpression Expression { get; }
-
-        public QOn(QExpression expression)
-        {
-            Expression = expression;
-        }
     }
 }

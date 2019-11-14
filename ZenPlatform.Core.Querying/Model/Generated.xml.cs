@@ -675,13 +675,42 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QFromItem : QItem
     {
-        public QFromItem(): base()
+        public QFromItem(QOn condition, QDataSource joined, QJoinType joinType): base()
         {
+            Childs.Add(condition);
+            Condition = condition;
+            Childs.Add(joined);
+            Joined = joined;
+            JoinType = joinType;
+        }
+
+        public QOn Condition
+        {
+            get;
+            set;
+        }
+
+        public QDataSource Joined
+        {
+            get;
+            set;
+        }
+
+        public QJoinType JoinType
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( QFromItem ) obj ;  return  ( Compare ( this . Condition ,  node . Condition ) && Compare ( this . Joined ,  node . Joined ) && Compare ( this . JoinType ,  node . JoinType ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return (Condition == null ? 0 : Condition.GetHashCode()) ^ (Joined == null ? 0 : Joined.GetHashCode()) ^ (JoinType == null ? 0 : JoinType.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -715,13 +744,27 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QOn : QOperationExpression
     {
-        public QOn(): base()
+        public QOn(QExpression expression): base()
         {
+            Childs.Add(expression);
+            Expression = expression;
+        }
+
+        public QExpression Expression
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( QOn ) obj ;  return  ( Compare ( this . Expression ,  node . Expression ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return (Expression == null ? 0 : Expression.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
