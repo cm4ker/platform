@@ -9,7 +9,16 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            
+            <TextBox Grid.Row="0" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Output1, Mode=TwoWay}" />
+            <TextBox Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Output2, Mode=TwoWay}" />
+        </Grid>
         <TextBox Grid.Column="0" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Input, Mode=TwoWay}" />
-        <TextBox Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Output, Mode=TwoWay}" />
+        
     </Grid>
 </Window>

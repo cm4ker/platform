@@ -10,7 +10,8 @@ namespace ZenPlatform.UIBuilder
     public class VM : INotifyPropertyChanged
     {
         private string _input;
-        private string _output;
+        private string _output1;
+        private string _output2;
 
         public string Input
         {
@@ -27,17 +28,30 @@ namespace ZenPlatform.UIBuilder
         private void InputChanged()
         {
             Interpreter i = new Interpreter();
-            Output = i.Run(_input);
+            var o = i.Run(_input);
+            Output1 = o.Output1;
+            Output2 = o.Output2;
         }
 
 
-        public string Output
+        public string Output1
         {
-            get => _output;
+            get => _output1;
             set
             {
-                if (value == _output) return;
-                _output = value;
+                if (value == _output1) return;
+                _output1 = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Output2
+        {
+            get => _output2;
+            set
+            {
+                if (value == _output2) return;
+                _output2 = value;
                 OnPropertyChanged();
             }
         }
