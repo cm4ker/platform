@@ -100,7 +100,6 @@ namespace ZenPlatform.QueryBuilder
 
         #endregion
 
-
         #region Other
 
         public QueryMachine reset()
