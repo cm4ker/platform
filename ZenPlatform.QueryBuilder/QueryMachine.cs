@@ -44,10 +44,6 @@ namespace ZenPlatform.QueryBuilder
             return false;
         }
 
-        public object peek()
-        {
-            return _syntaxStack.Peek();
-        }
 
         private T Pop<T>()
         {
@@ -92,10 +88,19 @@ namespace ZenPlatform.QueryBuilder
             _syntaxStack.Push(obj);
         }
 
+        public object peek()
+        {
+            return _syntaxStack.Peek();
+        }
 
         public object pop()
         {
             return _syntaxStack.Pop();
+        }
+
+        public void dup()
+        {
+            push(_syntaxStack.Peek());
         }
 
         #endregion
