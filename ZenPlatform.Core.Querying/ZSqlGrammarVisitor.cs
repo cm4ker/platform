@@ -46,6 +46,34 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
+        public override object VisitExprEquality(ZSqlGrammarParser.ExprEqualityContext context)
+        {
+            base.VisitExprEquality(context);
+            
+            if (context.exprEquality() != null)
+                _stack.eq();
+
+            return null;
+        }
+
+        public override object VisitJoin_constraint(ZSqlGrammarParser.Join_constraintContext context)
+        {
+            base.VisitJoin_constraint(context);
+
+            _stack.@on();
+
+            return null;
+        }
+
+        public override object VisitJoin_clause(ZSqlGrammarParser.Join_clauseContext context)
+        {
+            base.VisitJoin_clause(context);
+
+            _stack.@join();
+
+            return null;
+        }
+
         public override object VisitSelect_stmt(ZSqlGrammarParser.Select_stmtContext context)
         {
             _stack.m_select();
