@@ -2,11 +2,13 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Antlr4.Runtime;
 using MoreLinq.Extensions;
 using SharpGen.Runtime.Win32;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Querying;
 using ZenPlatform.Core.Querying.Model;
+using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
 
@@ -43,6 +45,52 @@ namespace ZenPlatform.UIBuilder
         public Interpreter()
         {
             _m = new QLang(Factory.CreateExampleConfiguration());
+        }
+
+        public (string Output1, string Output2) RunQuery(string sql)
+        {
+            try
+            {
+                _m.reset();
+
+                AntlrInputStream inputStream = new AntlrInputStream(sql);
+                ZSqlGrammarLexer speakLexer = new ZSqlGrammarLexer(inputStream);
+                CommonTokenStream commonTokenStream = new CommonTokenStream(speakLexer);
+                ZSqlGrammarParser parser = new ZSqlGrammarParser(commonTokenStream);
+                ZSqlGrammarVisitor visitor = new ZSqlGrammarVisitor(_m);
+
+                visitor.Visit(parser.parse());
+
+                var output = new StringWriter();
+                string sqlString = "";
+
+                try
+                {
+                    var pwalker = new PhysicalNameWalker();
+                    pwalker.Visit(_m.top() as QItem);
+
+                    var walker = new CustomWalker(output);
+                    walker.Visit(_m.top() as QItem);
+
+                    var realWalker = new RealWalker();
+                    realWalker.Visit(_m.top() as QItem);
+
+
+                    var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
+                    sqlString = new SQLVisitorBase().Visit(syntax);
+                }
+                catch (Exception ex)
+                {
+                    sqlString = $"MSG: {ex.Message}\nST: {ex.StackTrace}";
+                }
+
+
+                return (output.ToString(), sqlString);
+            }
+            catch (Exception ex)
+            {
+                return ($"Runtime error: {ex.Message}\nST: {ex.StackTrace}", "");
+            }
         }
 
         public (string Output1, string Output2) Run(string code)

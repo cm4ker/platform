@@ -49,7 +49,7 @@ expr_case:
 
 
 expr_column:
-    ((component_name '.'object_name '.' ) | table_name )? column_name
+    ((component_name '.'object_name '.' ) | (table_name '.') )? column_name
 ;
 
 expr:
@@ -131,7 +131,7 @@ table_or_subquery
  | '(' ( table_or_subquery ( ',' table_or_subquery )*
        | join_clause )
    ')' ( AS? table_alias )?
- | '(' select_stmt ')' AS? table_alias);
+ | '(' query_stmt ')' AS? table_alias);
 
 join_clause
  : table_or_subquery ( join_operator table_or_subquery join_constraint )*
