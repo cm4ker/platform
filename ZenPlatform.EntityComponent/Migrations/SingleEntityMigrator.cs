@@ -6,6 +6,8 @@ using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.QueryBuilder.Builders;
+using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.EntityComponent.Migrations
 {
@@ -31,8 +33,8 @@ namespace ZenPlatform.EntityComponent.Migrations
         {
         }
 
-/*
-        public IExpression GetStep1(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
+
+        public SSyntaxNode GetStep1(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
@@ -64,10 +66,10 @@ namespace ZenPlatform.EntityComponent.Migrations
             else
             query.Copy().Table().FromTable(old.RelTableName).ToTable($"{actual.RelTableName}_tmp");
 
-            return query;
+            return query.Expression;
         }
 
-        public IExpression GetStep2(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
+        public SSyntaxNode GetStep2(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
@@ -97,7 +99,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                     }
                     else if (property.old == null)
                     {
-                        GetColumnDefenition(property.actual).ForEach(c => query.Alter().Column(c));
+                        GetColumnDefenition(property.actual).ForEach(c => { query.Alter().Column(c); });
 
                     }
                     else
@@ -118,13 +120,14 @@ namespace ZenPlatform.EntityComponent.Migrations
                                 && !oldSchema.PlatformType.Equals(newSchema.PlatformType))
                             {
                                 query.Alter().Column(GetColumnDefenitionBySchema(newSchema));
-
                             }
 
                             if (oldSchema == null) // если раньше колонки небыло - создаем
                             {
                                 query.Create().Column(GetColumnDefenitionBySchema(newSchema));
                             }
+
+                            
 
                         }
 
@@ -134,10 +137,10 @@ namespace ZenPlatform.EntityComponent.Migrations
                 }
             }
 
-            return query;
+            return query.Expression;
         }
         
-        public IExpression GetStep3(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
+        public SSyntaxNode GetStep3(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
@@ -147,10 +150,10 @@ namespace ZenPlatform.EntityComponent.Migrations
             {
                 query.Delete().Table($"{actual.RelTableName}_tmp");
             }
-            return query;
+            return query.Expression;
         }
 
-        public IExpression GetStep4(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
+        public SSyntaxNode GetStep4(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
@@ -160,23 +163,22 @@ namespace ZenPlatform.EntityComponent.Migrations
             {
                 query.Rename().Table($"{actual.RelTableName}_tmp").To(old.RelTableName);
             }
-            return query;
+            return query.Expression;
         }
 
 
         
-*/
 
-/*
 
         public ColumnDefinition GetColumnDefenitionBySchema(XCColumnSchemaDefinition schema)
         { 
 
             ColumnDefinitionBuilder builder = new ColumnDefinitionBuilder();
-            builder.WithColumnName(schema.Name);
-
+            builder.WithColumnName(schema.FullName);
+            
             if (schema.SchemaType == XCColumnSchemaType.Value
-                || schema.SchemaType == XCColumnSchemaType.Type)
+                || schema.SchemaType == XCColumnSchemaType.Type
+                 || schema.SchemaType == XCColumnSchemaType.NoSpecial)
             {
 
                 var type = schema.PlatformType as XCPrimitiveType ??
@@ -220,7 +222,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             List<ColumnDefinition> columns = new List<ColumnDefinition>();
             
 
-            property.DatabaseColumnName = $"fld{property.Id}";
+            //property.DatabaseColumnName = $"fld{property.Id}";
 
             var columnSchemas = property.GetPropertySchemas(property.DatabaseColumnName);
 
@@ -229,7 +231,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             return columns;
         }
         
-        */
+        
 
     }
 }

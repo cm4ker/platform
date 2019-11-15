@@ -108,7 +108,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             {
                 Name = "Name",
                 Guid = Guid.Parse("905208c8-e892-414f-bd48-acd70b2a901b"),
-                DatabaseColumnName = "Id",
+                DatabaseColumnName = "Name",
                 Types = {PlatformTypes.GetString(150)},
                 IsSystemProperty = false,
                 Unique = true,
