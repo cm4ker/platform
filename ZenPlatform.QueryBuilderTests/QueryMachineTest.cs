@@ -35,6 +35,51 @@ namespace ZenPlatform.QueryBuilder.Tests
         }
 
         [Fact]
+        public void SimpleJoinTest()
+        {
+            var machine = new QueryMachine();
+
+            machine
+                .bg_query()
+                .m_from()
+                .ld_table("Table")
+                .ld_table("Table2")
+                .ld_const(1)
+                .ld_const(1)
+                .eq()
+                .@join()
+                .m_select()
+                .ld_column("Column")
+                .st_query();
+
+            Assert.Equal("SELECT Column\nFROM\nTable\nJOIN Table2 ON 1 = 1\n", Compile(machine));
+        }
+
+        [Fact]
+        public void SimpleCaseTest()
+        {
+            var machine = new QueryMachine();
+
+            machine
+                .bg_query()
+                .m_from()
+                .ld_table("Table")
+                .m_select()
+                .ld_const(2)
+                .ld_const(1)
+                .ld_const(1)
+                .eq()
+                .when()
+                .@case()
+                
+                .ld_column("Column")
+                .st_query();
+
+            Assert.Equal("SELECT Column,\nCASE WHEN  1 = 1 THEN 2 \n  END\nFROM\nTable\n", Compile(machine));
+        }
+
+
+        [Fact]
         public void SelectTest()
         {
             var machine = new QueryMachine();

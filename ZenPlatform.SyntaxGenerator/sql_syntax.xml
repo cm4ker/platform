@@ -64,7 +64,7 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="SConstant">
+    <Syntax Name="SConstant" Base="SExpression">
       <Arguments>
         <Single Name="Value" Type="object"/>
       </Arguments>
@@ -254,7 +254,7 @@
     </Arguments>
   </Syntax>
 
-  <Syntax Name="SCase">
+  <Syntax Name="SCase" Base="SExpression">
     <Arguments>
       <Single Name="Else" Type="SExpression" />
       <List Name="Whens" Type="SWhen" />
