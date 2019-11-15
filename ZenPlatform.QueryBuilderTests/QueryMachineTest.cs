@@ -10,11 +10,28 @@ namespace ZenPlatform.QueryBuilder.Tests
 {
     public class QueryMachineTest
     {
+        private string Compile(QueryMachine m)
+        {
+            var syntax = m.peek();
+            var visitor = new SQLVisitorBase();
+
+            return visitor.Visit((SSyntaxNode) m.pop());
+        }
+
+        [Fact]
         public void SimpleSelectTest()
         {
             var machine = new QueryMachine();
-            
-            machine.peek()
+
+            machine
+                .bg_query()
+                .m_from()
+                .ld_table("Table")
+                .m_select()
+                .ld_column("Column")
+                .st_query();
+
+            Assert.Equal("SELECT Column\nFROM\nTable\n", Compile(machine));
         }
 
         [Fact]
@@ -23,8 +40,8 @@ namespace ZenPlatform.QueryBuilder.Tests
             var machine = new QueryMachine();
 
             machine
-           .bg_query()
-             .m_from()
+                .bg_query()
+                .m_from()
                 .ld_table("T1")
                 .@as("A")
                 .ld_table("T2")
@@ -34,18 +51,18 @@ namespace ZenPlatform.QueryBuilder.Tests
                 .eq()
                 .join()
                 .bg_query()
-                    .m_select()
-                        .ld_param("param2")
-                        .ld_param("param3")
-                        .add()
-                        .@as("Summ")
+                .m_select()
+                .ld_param("param2")
+                .ld_param("param3")
+                .add()
+                .@as("Summ")
                 .st_query()
                 .@as("subQuery")
                 .ld_column("Summ", "subQuery")
                 .ld_column("F2", "A")
                 .eq()
                 .left_join()
-            .m_where()
+                .m_where()
                 .ld_column("F1", "A")
                 .ld_column("F1", "B")
                 .eq()
@@ -53,24 +70,22 @@ namespace ZenPlatform.QueryBuilder.Tests
                 .ld_column("F2", "B")
                 .eq()
                 .and()
-            .m_group_by()
+                .m_group_by()
                 .ld_column("F1", "A")
-            .m_having()
+                .m_having()
                 .ld_column("F1", "A")
                 .sum()
                 .ld_param("param4")
                 .gt()
-            .m_select()
+                .m_select()
                 .ld_column("F1", "A")
                 .@as("MyColumn")
-            .st_query()
-            ;
+                .st_query()
+                ;
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.pop());
-
-           
+            var res = visitor.Visit((SSyntaxNode) machine.pop());
         }
 
         [Fact]
@@ -79,27 +94,25 @@ namespace ZenPlatform.QueryBuilder.Tests
             var machine = new QueryMachine();
             machine.bg_query()
                 .m_from()
-                    .ld_table("table1")
-                    .@as("t1")
+                .ld_table("table1")
+                .@as("t1")
                 .m_where()
-                    .ld_column("column1", "t1")
-                    .ld_param("value1")
-                    .eq()
+                .ld_column("column1", "t1")
+                .ld_param("value1")
+                .eq()
                 .m_set()
-                    .ld_column("column1","t2")
-                    .ld_column("column1", "t1")
-                    .ld_column("column2", "t2")
-                    .ld_column("column2", "t1")
+                .ld_column("column1", "t2")
+                .ld_column("column1", "t1")
+                .ld_column("column2", "t2")
+                .ld_column("column2", "t1")
                 .m_update()
-                    .ld_table("table2")
-                    .@as("t2")
+                .ld_table("table2")
+                .@as("t2")
                 .st_query();
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.pop());
-
-            
+            var res = visitor.Visit((SSyntaxNode) machine.pop());
         }
 
         [Fact]
@@ -108,29 +121,23 @@ namespace ZenPlatform.QueryBuilder.Tests
             var machine = new QueryMachine();
             machine.bg_query()
                 .m_from()
-                    .ld_table("table1")
-                    .@as("t1")
+                .ld_table("table1")
+                .@as("t1")
                 .m_where()
-                    .ld_column("column1", "t1")
-                    .ld_param("value1")
-                    .eq()
+                .ld_column("column1", "t1")
+                .ld_param("value1")
+                .eq()
                 .m_select()
-                    .ld_column("column1", "t1")
+                .ld_column("column1", "t1")
                 .m_insert()
-                    .ld_table("table2")
-                    .ld_column("column1")
-                    
+                .ld_table("table2")
+                .ld_column("column1")
                 .st_query();
 
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.pop());
-
-           
-
-
-
+            var res = visitor.Visit((SSyntaxNode) machine.pop());
         }
 
         [Fact]
@@ -139,27 +146,20 @@ namespace ZenPlatform.QueryBuilder.Tests
             var machine = new QueryMachine();
             machine.bg_query()
                 .m_values()
-                    .ld_param("value1")
-                    .ld_param("value2")
-                    .ld_param("value3")
+                .ld_param("value1")
+                .ld_param("value2")
+                .ld_param("value3")
                 .m_insert()
-                    .ld_table("table2")
-                    .ld_column("column1")
-                    .ld_column("column2")
-                    .ld_column("column3")
-                    
+                .ld_table("table2")
+                .ld_column("column1")
+                .ld_column("column2")
+                .ld_column("column3")
                 .st_query();
 
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.pop());
-
-            
-
-
-
+            var res = visitor.Visit((SSyntaxNode) machine.pop());
         }
-
     }
 }
