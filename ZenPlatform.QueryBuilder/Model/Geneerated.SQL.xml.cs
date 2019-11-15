@@ -388,7 +388,7 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SConstant : SSyntaxNode
+    public partial class SConstant : SExpression
     {
         public SConstant( object  value): base()
         {
@@ -1471,7 +1471,7 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SCase : SSyntaxNode
+    public partial class SCase : SExpression
     {
         public SCase(SExpression @else, List<SWhen> whens): base()
         {

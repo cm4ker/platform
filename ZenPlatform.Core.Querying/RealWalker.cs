@@ -118,6 +118,13 @@ namespace ZenPlatform.Core.Querying
             return base.VisitQObjectTable(node);
         }
 
+        public override object VisitQEquals(QEquals node)
+        {
+            base.VisitQEquals(node);
+            _qm.eq();
+
+            return null;
+        }
 
         public override object VisitQFrom(QFrom node)
         {
@@ -130,6 +137,16 @@ namespace ZenPlatform.Core.Querying
             {
                 VisitQFromItem(nodeJoin);
             }
+
+            return null;
+        }
+
+        public override object VisitQFromItem(QFromItem node)
+        {
+            Visit(node.Joined);
+            Visit(node.Condition);
+
+            _qm.@join();
 
             return null;
         }
