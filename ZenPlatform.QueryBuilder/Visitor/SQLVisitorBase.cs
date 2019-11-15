@@ -7,6 +7,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 {
     public class SQLVisitorBase : QueryVisitorBase<string>
     {
+        #region DML
         public override string VisitSAdd(SAdd node)
         {
             return string.Join(" + ", node.Expressions.Select(n => n.Accept(this)));
@@ -216,5 +217,203 @@ namespace ZenPlatform.QueryBuilder.Visitor
                     node.Condition.Accept(this)
                 );
         }
+
+        public override string VisitSCase(SCase node)
+        {
+
+            return string.Format("CASE {0} \n {1} END",
+                    string.Join("\n", node.Whens.Select(w => w.Accept(this))),
+                    node.Else != null ? $"ELSE {node.Else.Accept(this)}\n" : ""
+                ) ;
+        }
+
+        public override string VisitSWhen(SWhen node)
+        {
+
+            return string.Format("WHEN  {0} THEN {1}",
+                    node.Condition.Accept(this),
+                    node.Then.Accept(this)
+                );
+        }
+
+
+        #endregion
+
+        public override string VisitQuerys(Querys node)
+        {
+            return string.Join(";\n", node.QueryList.Select(q => q.Accept(this)));
+        }
+
+        #region DDL
+
+
+
+        public override string VisitAddColumn(AddColumn node)
+        {
+            return string.Format("ALTER TABLE {0}\n ADD COLUMN {1}",
+                node.Table.Accept(this),
+                node.Column.Accept(this)
+                );
+        }
+
+        public override string VisitAddConstraint(AddConstraint node)
+        {
+            return string.Format("ALTER TABLE {0}\n ADD {1}",
+                node.Table.Accept(this),
+                node.Constraint.Accept(this)
+                );
+        }
+
+        public override string VisitAlterColumn(AlterColumn node)
+        {
+            return string.Format("ALTER TABLE {0}\n ALTER COLUMN {1}",
+                node.Table.Accept(this),
+                node.Column.Accept(this)
+                );
+        }
+
+        public override string VisitColumn(Column node)
+        {
+
+            return node.Value;
+        }
+
+        public override string VisitColumnDefinition(ColumnDefinition node)
+        {
+            return string.Format("{0} {1}{2}{3}",
+                node.Column.Accept(this),
+                node.Type.Accept(this),
+                node.IsNotNull ? " NOT NULL" : "",
+                node.DefaultValue != null ? $" DEFAULT {node.DefaultValue}" : ""
+                );
+        }
+
+        public override string VisitColumnTypeInt(ColumnTypeInt node)
+        {
+            return "INT";
+        }
+
+        public override string VisitColumnTypeBigInt(ColumnTypeBigInt node)
+        {
+            return "BIGINT";
+        }
+
+        public override string VisitColumnTypeSmallInt(ColumnTypeSmallInt node)
+        {
+            return "SMALLINT";
+        }
+
+        public override string VisitColumnTypeBlob(ColumnTypeBlob node)
+        {
+            return $"BLOB({node.Size})";
+        }
+
+        public override string VisitColumnTypeBool(ColumnTypeBool node)
+        {
+            return "BOOL";
+        }
+
+        public override string VisitColumnTypeChar(ColumnTypeChar node)
+        {
+            return "CHAR";
+        }
+
+        public override string VisitColumnTypeDataTime(ColumnTypeDataTime node)
+        {
+            return "DATETIME";
+        }
+
+        public override string VisitColumnTypeDecimal(ColumnTypeDecimal node)
+        {
+            return $"DECIMAL({node.Precision},{node.Scale})";
+        }
+
+
+        public override string VisitColumnTypeFloat(ColumnTypeFloat node)
+        {
+            return "FLOAT";
+        }
+
+        public override string VisitColumnTypeNumeric(ColumnTypeNumeric node)
+        {
+            return $"NUMERIC({node.Precision},{node.Scale})";
+        }
+
+        public override string VisitColumnTypeGuid(ColumnTypeGuid node)
+        {
+            return "GUID";
+        }
+
+        public override string VisitColumnTypeText(ColumnTypeText node)
+        {
+            return $"TEXT({node.Size})";
+        }
+
+        public override string VisitColumnTypeBynary(ColumnTypeBynary node)
+        {
+            return $"BINARY({node.Size})";
+        }
+
+        public override string VisitConstraint(Constraint node)
+        {
+            return node.Value;
+        }
+
+
+        public override string VisitCreateTable(CreateTable node)
+        {
+
+            return string.Format("CREATE TABLE {0} \n(\n{1}{2}{3}\n)",
+                node.Table.Accept(this),
+                string.Join(",\n", node.Columns.Select(c => c.Accept(this))),
+                node.Constraints.Count > 0 ? ",\n" : "",
+                string.Join(",\n", node.Constraints.Select(c => c.Accept(this)))
+                );
+        }
+
+        public override string VisitConstraintDefinitionForeignKey(ConstraintDefinitionForeignKey node)
+        {
+
+            return string.Format("{0}FOREIGN KEY ({1}) REFERENCES {2}({3})",
+                string.IsNullOrEmpty(node.Name) ? "" : $"CONSTRAINT {node.Name} ",
+                string.Join(",", node.Columns.Select(c => c.Accept(this))),
+                node.ForeignTable.Accept(this),
+                string.Join(",", node.ForeignColumns.Select(c => c.Accept(this)))
+                );
+        }
+
+        public override string VisitConstraintDefinitionPrimaryKey(ConstraintDefinitionPrimaryKey node)
+        {
+            return string.Format("{0}PRIMARY KEY ({1})",
+                string.IsNullOrEmpty(node.Name) ? "" : $"CONSTRAINT {node.Name} ",
+                string.Join(",", node.Columns.Select(c => c.Accept(this)))
+                );
+        }
+
+        public override string VisitConstraintDefinitionUnique(ConstraintDefinitionUnique node)
+        {
+            return string.Format("{0}UNIQUE ({1})",
+                string.IsNullOrEmpty(node.Name) ? "" : $"CONSTRAINT {node.Name} ",
+                string.Join(",", node.Columns.Select(c => c.Accept(this)))
+                );
+        }
+
+        public override string VisitDropColumn(DropColumn node)
+        {
+            return string.Format("ALTER TABLE {0} DROP COLUMN {1}",
+                node.Table.Accept(this),
+                node.Column.Accept(this)
+                );
+        }
+
+        public override string VisitDropConstraint(DropConstraint node)
+        {
+            return string.Format("ALTER TABLE {0} DROP CONSTRAINT {1}",
+                node.Table.Accept(this),
+                node.Constraint.Accept(this)
+                );
+        }
+
+        #endregion
     }
 }

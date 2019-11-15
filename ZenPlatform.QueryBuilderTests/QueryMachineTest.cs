@@ -62,7 +62,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var res = visitor.Visit((SSyntaxNode)machine.Pop());
 
-            var a = 10;
+           
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var res = visitor.Visit((SSyntaxNode)machine.Pop());
 
-            var a = 10;
+            
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var res = visitor.Visit((SSyntaxNode)machine.Pop());
 
-            var a = 10;
+           
 
 
 
@@ -147,10 +147,11 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var res = visitor.Visit((SSyntaxNode)machine.Pop());
 
-            var a = 10;
+            
 
 
 
         }
+
     }
 }
