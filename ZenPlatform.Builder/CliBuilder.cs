@@ -16,7 +16,7 @@ using ZenPlatform.Data.Tools;
 using ZenPlatform.Initializer;
 using ZenPlatform.Initializer.InternalDatabaseStructureMigrations;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.DDL.CreateDatabase;
+
 
 namespace ZenPlatform.Cli
 {
