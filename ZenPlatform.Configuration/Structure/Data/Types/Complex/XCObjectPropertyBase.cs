@@ -149,7 +149,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
                 yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, Types[0], propName, false);
             if (Types.Count > 1)
             {
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, null, propName,
+                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, new XCInt(), propName,
                     false, "", "_Type");
 
                 foreach (var type in _types)

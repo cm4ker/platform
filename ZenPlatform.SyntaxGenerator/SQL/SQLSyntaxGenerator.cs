@@ -157,12 +157,12 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             foreach (var argument in sqlSyntax.Arguments)
             {
-                if (argument.Base)
+                if (argument.Base )
                 {
                     initializer = initializer.AddArgumentListArguments(
                                 SyntaxFactory.Argument(SyntaxFactory.ParseName(argument.Name.ToCamelCase())));
                 }
-                if (argument.IsNeedCreate())
+                if (argument.IsNeedCreate() || (sqlSyntax.Ddl && argument is SyntaxArgumentList))
                 {
 
                     constructor = constructor.AddBodyStatements(
@@ -171,15 +171,15 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                 }
 
 
-                if (argument.IsNeedInitialize())
-                {
+                if (argument.IsNeedInitialize() && !sqlSyntax.Ddl)
+                { 
 
                     constructor = constructor.AddBodyStatements(
                     SyntaxFactory.ParseStatement($"{argument.Name} = {argument.Name.ToCamelCase()};"));
 
                 }
 
-                if (!(argument.Null || argument.IsNeedCreate()) || argument.Base)
+                if ((!(argument.Null || argument.IsNeedCreate()) || argument.Base ) && !sqlSyntax.Ddl)
                 {
                     var parameterSyntax = SyntaxFactory
                                 .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))

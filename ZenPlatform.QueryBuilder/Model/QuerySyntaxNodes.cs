@@ -1429,6 +1429,1215 @@ namespace ZenPlatform.QueryBuilder.Model
     }
 }
 
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SWhen : SSyntaxNode
+    {
+        public SWhen(SCondition condition, SExpression then): base()
+        {
+            Condition = condition;
+            Then = then;
+        }
+
+        public SCondition Condition
+        {
+            get;
+            set;
+        }
+
+        public SExpression Then
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SWhen ) obj ;  return  ( Compare ( this . Condition ,  node . Condition ) && Compare ( this . Then ,  node . Then ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Condition == null ? 0 : Condition.GetHashCode()) ^ (Then == null ? 0 : Then.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSWhen(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SCase : SSyntaxNode
+    {
+        public SCase(SExpression @else, List<SWhen> whens): base()
+        {
+            Else = @else;
+            Whens = whens;
+        }
+
+        public SExpression Else
+        {
+            get;
+            set;
+        }
+
+        public List<SWhen> Whens
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SCase ) obj ;  return  ( Compare ( this . Else ,  node . Else ) && SequenceEqual ( this . Whens ,  node . Whens ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Else == null ? 0 : Else.GetHashCode()) ^ Xor(Whens, i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSCase(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Querys : SSyntaxNode
+    {
+        public Querys(): base()
+        {
+            QueryList = new List<SSyntaxNode>();
+        }
+
+        public List<SSyntaxNode> QueryList
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( Querys ) obj ;  return  ( SequenceEqual ( this . QueryList ,  node . QueryList ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(QueryList, i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitQuerys(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class StringValue : SSyntaxNode
+    {
+        public StringValue(): base()
+        {
+        }
+
+        public string Value
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( StringValue ) obj ;  return  ( ( this . Value == node . Value ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Value.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitStringValue(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Scheme : StringValue
+    {
+        public Scheme(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitScheme(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Database : StringValue
+    {
+        public Database(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDatabase(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Table : StringValue
+    {
+        public Table(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitTable(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Column : StringValue
+    {
+        public Column(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class Constraint : StringValue
+    {
+        public Constraint(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstraint(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SchemeOperation : SSyntaxNode
+    {
+        public SchemeOperation(): base()
+        {
+        }
+
+        public Scheme Scheme
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SchemeOperation ) obj ;  return  ( Compare ( this . Scheme ,  node . Scheme ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Scheme == null ? 0 : Scheme.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSchemeOperation(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class DatabaseOperation : SchemeOperation
+    {
+        public DatabaseOperation(): base()
+        {
+        }
+
+        public Database Database
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( DatabaseOperation ) obj ;  return  ( Compare ( this . Database ,  node . Database ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Database == null ? 0 : Database.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDatabaseOperation(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class TableOperation : DatabaseOperation
+    {
+        public TableOperation(): base()
+        {
+        }
+
+        public Table Table
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( TableOperation ) obj ;  return  ( Compare ( this . Table ,  node . Table ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Table == null ? 0 : Table.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitTableOperation(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnType : SSyntaxNode
+    {
+        public ColumnType(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnType(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SizableType : ColumnType
+    {
+        public SizableType(): base()
+        {
+        }
+
+        public int Size
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SizableType ) obj ;  return  ( ( this . Size == node . Size ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Size.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSizableType(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class PrecisionType : ColumnType
+    {
+        public PrecisionType(): base()
+        {
+        }
+
+        public int Scale
+        {
+            get;
+            set;
+        }
+
+        public int Precision
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( PrecisionType ) obj ;  return  ( ( this . Scale == node . Scale ) && ( this . Precision == node . Precision ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Scale.GetHashCode()) ^ (Precision.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitPrecisionType(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeChar : ColumnType
+    {
+        public ColumnTypeChar(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeChar(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeVarChar : SizableType
+    {
+        public ColumnTypeVarChar(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeVarChar(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeBlob : SizableType
+    {
+        public ColumnTypeBlob(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeBlob(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeBynary : SizableType
+    {
+        public ColumnTypeBynary(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeBynary(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeGuid : ColumnType
+    {
+        public ColumnTypeGuid(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeGuid(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeText : SizableType
+    {
+        public ColumnTypeText(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeText(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeInt : ColumnType
+    {
+        public ColumnTypeInt(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeInt(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeSmallInt : ColumnType
+    {
+        public ColumnTypeSmallInt(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeSmallInt(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeBigInt : ColumnType
+    {
+        public ColumnTypeBigInt(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeBigInt(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeBool : ColumnType
+    {
+        public ColumnTypeBool(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeBool(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeFloat : SizableType
+    {
+        public ColumnTypeFloat(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeFloat(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeDecimal : PrecisionType
+    {
+        public ColumnTypeDecimal(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeDecimal(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeNumeric : PrecisionType
+    {
+        public ColumnTypeNumeric(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeNumeric(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeDataTime : ColumnType
+    {
+        public ColumnTypeDataTime(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeDataTime(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnDefinition : SSyntaxNode
+    {
+        public ColumnDefinition(): base()
+        {
+        }
+
+        public Column Column
+        {
+            get;
+            set;
+        }
+
+        public ColumnType Type
+        {
+            get;
+            set;
+        }
+
+        public bool IsNotNull
+        {
+            get;
+            set;
+        }
+
+        public object DefaultValue
+        {
+            get;
+            set;
+        }
+
+        public SystemMethods DefaultMethod
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( ColumnDefinition ) obj ;  return  ( Compare ( this . Column ,  node . Column ) && Compare ( this . Type ,  node . Type ) && ( this . IsNotNull == node . IsNotNull ) && ( this . DefaultValue . Equals ( node . DefaultValue ) ) && ( this . DefaultMethod == node . DefaultMethod ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Column == null ? 0 : Column.GetHashCode()) ^ (Type == null ? 0 : Type.GetHashCode()) ^ (IsNotNull.GetHashCode()) ^ (DefaultValue == null ? 0 : DefaultValue.GetHashCode()) ^ (DefaultMethod.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnDefinition(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConstraintDefinition : SSyntaxNode
+    {
+        public ConstraintDefinition(): base()
+        {
+        }
+
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( ConstraintDefinition ) obj ;  return  ( ( this . Name == node . Name ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Name.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstraintDefinition(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConstraintDefinitionUnique : ConstraintDefinition
+    {
+        public ConstraintDefinitionUnique(): base()
+        {
+            Columns = new List<Column>();
+        }
+
+        public List<Column> Columns
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( ConstraintDefinitionUnique ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(Columns, i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstraintDefinitionUnique(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConstraintDefinitionPrimaryKey : ConstraintDefinition
+    {
+        public ConstraintDefinitionPrimaryKey(): base()
+        {
+            Columns = new List<Column>();
+        }
+
+        public List<Column> Columns
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( ConstraintDefinitionPrimaryKey ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(Columns, i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstraintDefinitionPrimaryKey(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ConstraintDefinitionForeignKey : ConstraintDefinition
+    {
+        public ConstraintDefinitionForeignKey(): base()
+        {
+            Columns = new List<Column>();
+            ForeignColumns = new List<Column>();
+        }
+
+        public List<Column> Columns
+        {
+            get;
+            set;
+        }
+
+        public List<Column> ForeignColumns
+        {
+            get;
+            set;
+        }
+
+        public Table ForeignTable
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( ConstraintDefinitionForeignKey ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) && SequenceEqual ( this . ForeignColumns ,  node . ForeignColumns ) && Compare ( this . ForeignTable ,  node . ForeignTable ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(Columns, i => i.GetHashCode()) ^ Xor(ForeignColumns, i => i.GetHashCode()) ^ (ForeignTable == null ? 0 : ForeignTable.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitConstraintDefinitionForeignKey(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class CreateTable : TableOperation
+    {
+        public CreateTable(): base()
+        {
+            Columns = new List<ColumnDefinition>();
+            Constraints = new List<ConstraintDefinition>();
+        }
+
+        public List<ColumnDefinition> Columns
+        {
+            get;
+            set;
+        }
+
+        public List<ConstraintDefinition> Constraints
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( CreateTable ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) && SequenceEqual ( this . Constraints ,  node . Constraints ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return Xor(Columns, i => i.GetHashCode()) ^ Xor(Constraints, i => i.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitCreateTable(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class DropTable : TableOperation
+    {
+        public DropTable(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDropTable(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class DropColumn : TableOperation
+    {
+        public DropColumn(): base()
+        {
+        }
+
+        public Column Column
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( DropColumn ) obj ;  return  ( Compare ( this . Column ,  node . Column ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Column == null ? 0 : Column.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDropColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class CopyTable : TableOperation
+    {
+        public CopyTable(): base()
+        {
+        }
+
+        public Table DstTable
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( CopyTable ) obj ;  return  ( Compare ( this . DstTable ,  node . DstTable ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (DstTable == null ? 0 : DstTable.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitCopyTable(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AlterAddColumn : TableOperation
+    {
+        public AlterAddColumn(): base()
+        {
+        }
+
+        public ColumnDefinition Column
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( AlterAddColumn ) obj ;  return  ( Compare ( this . Column ,  node . Column ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Column == null ? 0 : Column.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAlterAddColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AddColumn : AlterAddColumn
+    {
+        public AddColumn(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAddColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AlterColumn : AlterAddColumn
+    {
+        public AlterColumn(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAlterColumn(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class AddConstraint : TableOperation
+    {
+        public AddConstraint(): base()
+        {
+        }
+
+        public ConstraintDefinition Constraint
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( AddConstraint ) obj ;  return  ( Compare ( this . Constraint ,  node . Constraint ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Constraint == null ? 0 : Constraint.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitAddConstraint(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class DropConstraint : TableOperation
+    {
+        public DropConstraint(): base()
+        {
+        }
+
+        public Constraint Constraint
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( DropConstraint ) obj ;  return  ( Compare ( this . Constraint ,  node . Constraint ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Constraint == null ? 0 : Constraint.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitDropConstraint(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class RenameTableNode : SSyntaxNode
+    {
+        public RenameTableNode(): base()
+        {
+        }
+
+        public string From
+        {
+            get;
+            set;
+        }
+
+        public string To
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( RenameTableNode ) obj ;  return  ( ( this . From == node . From ) && ( this . To == node . To ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (From.GetHashCode()) ^ (To.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitRenameTableNode(this);
+        }
+    }
+}
+
 namespace ZenPlatform.QueryBuilder.Visitor
 {
     public abstract partial class QueryVisitorBase<T>
@@ -1628,6 +2837,226 @@ namespace ZenPlatform.QueryBuilder.Visitor
         }
 
         public virtual T VisitSUpdate(SUpdate node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSWhen(SWhen node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSCase(SCase node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitQuerys(Querys node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitStringValue(StringValue node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitScheme(Scheme node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitDatabase(Database node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitTable(Table node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumn(Column node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConstraint(Constraint node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSchemeOperation(SchemeOperation node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitDatabaseOperation(DatabaseOperation node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitTableOperation(TableOperation node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnType(ColumnType node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSizableType(SizableType node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitPrecisionType(PrecisionType node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeChar(ColumnTypeChar node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeVarChar(ColumnTypeVarChar node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeBlob(ColumnTypeBlob node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeBynary(ColumnTypeBynary node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeGuid(ColumnTypeGuid node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeText(ColumnTypeText node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeInt(ColumnTypeInt node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeSmallInt(ColumnTypeSmallInt node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeBigInt(ColumnTypeBigInt node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeBool(ColumnTypeBool node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeFloat(ColumnTypeFloat node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeDecimal(ColumnTypeDecimal node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeNumeric(ColumnTypeNumeric node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeDataTime(ColumnTypeDataTime node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnDefinition(ColumnDefinition node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConstraintDefinition(ConstraintDefinition node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConstraintDefinitionUnique(ConstraintDefinitionUnique node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConstraintDefinitionPrimaryKey(ConstraintDefinitionPrimaryKey node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitConstraintDefinitionForeignKey(ConstraintDefinitionForeignKey node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitCreateTable(CreateTable node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitDropTable(DropTable node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitDropColumn(DropColumn node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitCopyTable(CopyTable node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitAlterAddColumn(AlterAddColumn node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitAddColumn(AddColumn node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitAlterColumn(AlterColumn node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitAddConstraint(AddConstraint node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitDropConstraint(DropConstraint node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitRenameTableNode(RenameTableNode node)
         {
             return DefaultVisit(node);
         }
