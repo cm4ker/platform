@@ -24,15 +24,25 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void CreateTest()
         {
+
+            
             var root = Factory.CreateExampleConfiguration();
 
             var com = root.Data.Components[0];
             var entity = com.Types.Skip(1).First();
-            var script = com.ComponentImpl.Migrator.GetStep1(null, entity);
+
+
+            var rootOld = Factory.CreateExampleConfiguration();
+
+            var comOld = root.Data.Components[0];
+            var entityOld = com.Types.Skip(1).First();
+
+
+            var script = com.ComponentImpl.Migrator.GetStep1(entityOld, entity);
 
             var sqlCompiler = SqlCompillerBase.FormEnum(SqlDatabaseType.SqlServer);
 
-            var result = sqlCompiler.Compile(script.Expression);
+            var result = sqlCompiler.Compile(script);
 
             _testOutputHelper.WriteLine(result);
         }

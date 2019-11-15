@@ -23,7 +23,7 @@ namespace ZenPlatform.QueryBuilder
         {
             if (TryPeek(out obj))
             {
-                pop();
+                Pop();
                 return true;
             }
 
@@ -34,7 +34,7 @@ namespace ZenPlatform.QueryBuilder
         private bool TryPeek<T>(out T obj)
         {
             if (_syntaxStack.Count > 0)
-                if (peek() is T item)
+                if (Peek() is T item)
                 {
                     obj = item;
                     return true;
@@ -44,19 +44,24 @@ namespace ZenPlatform.QueryBuilder
             return false;
         }
 
+        public object Peek()
+        {
+            return _syntaxStack.Peek();
+        }
 
         private T Pop<T>()
         {
-            return (T) pop();
+            return (T)Pop();
         }
 
-        private List<T> TryPopList<T>()
+        private List<T> TryPopList<T>(int count = 0)
         {
             List<T> result = new List<T>();
-
-            while (TryPop(out T item))
+            int i = 0;
+            while (TryPop(out T item) && ++i<count && count>0)
             {
                 result.Add(item);
+                
             }
 
             TryPop<SMarker>();
@@ -64,9 +69,9 @@ namespace ZenPlatform.QueryBuilder
             return result;
         }
 
-        private List<T> PopList<T>()
+        private List<T> PopList<T>(int count = 0)
         {
-            List<T> result = TryPopList<T>();
+            List<T> result = TryPopList<T>(count);
 
             if (result.Count > 0)
                 return result;
@@ -79,11 +84,11 @@ namespace ZenPlatform.QueryBuilder
             {
                 _syntaxStack.Pop();
             }
-
-            return item;
+        
+            return  item; 
         }
 
-        private void push(object obj)
+        private void Push(object obj)
         {
             _syntaxStack.Push(obj);
         }
@@ -93,17 +98,18 @@ namespace ZenPlatform.QueryBuilder
             return _syntaxStack.Peek();
         }
 
-        public object pop()
+        public object Pop()
         {
             return _syntaxStack.Pop();
         }
 
         public void dup()
         {
-            push(_syntaxStack.Peek());
+            Push(_syntaxStack.Peek());
         }
 
         #endregion
+
 
         #region Other
 
@@ -116,13 +122,13 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine ld_table(string name)
         {
-            push(new STable(name));
+            Push(new STable(name));
             return this;
         }
 
         public QueryMachine ld_column()
         {
-            push(new SField(Pop<string>(), Pop<string>()));
+            Push(new SField(Pop<string>(), Pop<string>()));
             return this;
         }
 
@@ -137,19 +143,19 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine ld_param(string name)
         {
-            push(new SParameter(name));
+            Push(new SParameter(name));
             return this;
         }
 
         public QueryMachine @as(string name)
         {
-            switch (pop())
+            switch (Pop())
             {
                 case SExpression exp:
-                    push(new SAliasedExpression(exp, name));
+                    Push(new SAliasedExpression(exp, name));
                     break;
                 case SDataSource source:
-                    push(new SAliasedDataSource(source, name));
+                    Push(new SAliasedDataSource(source, name));
                     break;
                 default:
                     throw new InvalidOperationException();
@@ -165,25 +171,36 @@ namespace ZenPlatform.QueryBuilder
                 case MachineContextType.Select:
                     break;
             }
-
-            return this;
+                    return this;
         }
 
         public QueryMachine ld_const(object value)
         {
-            push(new SConstant(value));
+            Push(new SConstant(value));
             return this;
         }
 
         public QueryMachine mark()
         {
-            push(new SMarker());
+            Push(new SMarker());
             return this;
         }
 
         public QueryMachine coalese()
         {
-            push(new SCoalese(PopList<SExpression>()));
+            Push(new SCoalese(PopList<SExpression>()));
+            return this;
+        }
+
+        public QueryMachine @case()
+        {
+            Push(new SCase(TryPop<SExpression>(),PopList<SWhen>()));
+            return this;
+        }
+
+        public QueryMachine when()
+        {
+            Push(new SWhen(Pop<SCondition>(),Pop<SExpression>()));
             return this;
         }
 
@@ -197,7 +214,7 @@ namespace ZenPlatform.QueryBuilder
             {
                 case MachineContextType.Select:
 
-                    push(new SSelect(
+                    Push(new SSelect(
                         TryPopList<SExpression>(),
                         TryPop<STop>(),
                         TryPop<SHaving>(),
@@ -208,39 +225,38 @@ namespace ZenPlatform.QueryBuilder
                     ));
                     break;
                 case MachineContextType.From:
-                    push(new SFrom(TryPopList<SJoin>(), TryPop<SDataSource>()));
+                    Push(new SFrom(TryPopList<SJoin>(), TryPop<SDataSource>()));
                     break;
                 case MachineContextType.Where:
-                    push(new SWhere(Pop<SCondition>()));
+                    Push(new SWhere(Pop<SCondition>()));
                     break;
                 case MachineContextType.Having:
-                    push(new SHaving(Pop<SCondition>()));
+                    Push(new SHaving(Pop<SCondition>()));
                     break;
                 case MachineContextType.GroupBy:
-                    push(new SGroupBy(PopList<SExpression>()));
+                    Push(new SGroupBy(PopList<SExpression>()));
                     break;
                 case MachineContextType.Insert:
-                    push(new SInsert(TryPopList<SField>(), Pop<STable>(), Pop<SDataSource>()));
+                    Push(new SInsert(TryPopList<SField>(), Pop<STable>(), Pop<SDataSource>()));
                     break;
                 case MachineContextType.Values:
-                    push(new SValuesSource(PopList<SExpression>()));
+                    Push(new SValuesSource(PopList<SExpression>()));
                     break;
                 case MachineContextType.Set:
                     List<SSetItem> items = new List<SSetItem>();
                     while (TryPeek(out SExpression exp))
                     {
-                        pop();
+                        Pop();
                         items.Add(new SSetItem(Pop<SField>(), exp));
                     }
 
-                    push(new SSet(items));
+                    Push(new SSet(items));
                     break;
                 case MachineContextType.Update:
 
-                    push(new SUpdate(Pop<SDataSource>(), Pop<SSet>(), TryPop<SWhere>(), TryPop<SFrom>()));
+                    Push(new SUpdate(Pop<SDataSource>(), Pop<SSet>(), TryPop<SWhere>(), TryPop<SFrom>()));
                     break;
             }
-
             _currentContext.Type = contextType;
         }
 
@@ -319,7 +335,7 @@ namespace ZenPlatform.QueryBuilder
             if (_currentContext != null && result is SSelect select)
                 result = new SDataSourceNestedQuery(select);
 
-            push(result);
+            Push(result);
 
             return this;
         }
@@ -327,7 +343,7 @@ namespace ZenPlatform.QueryBuilder
         public QueryMachine ct_query()
         {
             if (_currentContext != null)
-                push(_currentContext);
+                Push(_currentContext);
 
             _currentContext = new MachineContext();
 
@@ -343,7 +359,7 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public QueryMachine gt()
         {
-            push(new SGreatThen(Pop<SExpression>(), Pop<SExpression>()));
+            Push(new SGreatThen(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -352,7 +368,7 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public QueryMachine lt()
         {
-            push(new SLessThen(Pop<SExpression>(), Pop<SExpression>()));
+            Push(new SLessThen(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -361,7 +377,7 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public QueryMachine gte()
         {
-            push(new SGreatThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
+            Push(new SGreatThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -370,7 +386,7 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public QueryMachine lte()
         {
-            push(new SLessThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
+            Push(new SLessThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -380,7 +396,7 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public QueryMachine ne()
         {
-            push(new SNotEquals(Pop<SExpression>(), Pop<SExpression>()));
+            Push(new SNotEquals(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -389,7 +405,7 @@ namespace ZenPlatform.QueryBuilder
         /// </summary>
         public QueryMachine eq()
         {
-            push(new SEquals(Pop<SExpression>(), Pop<SExpression>()));
+            Push(new SEquals(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -399,29 +415,41 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine and()
         {
-            push(new SAnd(PopList<SExpression>()));
+            Push(new SAnd(PopList<SExpression>()));
             return this;
         }
 
 
         public void or()
         {
-            push(new SOr(PopList<SExpression>()));
+            Push(new SOr(PopList<SExpression>()));
         }
 
         #endregion
 
         #region Arithmetic operations
 
+        public QueryMachine madd()
+        {
+            Push(new SAdd(PopList<SExpression>()));
+            return this;
+        }
+
+        public QueryMachine msub()
+        {
+            Push(new SSub(PopList<SExpression>()));
+            return this;
+        }
+
         public QueryMachine add()
         {
-            push(new SAdd(PopList<SExpression>()));
+            Push(new SAdd(PopList<SExpression>(2)));
             return this;
         }
 
         public QueryMachine sub()
         {
-            push(new SSub(PopList<SExpression>()));
+            Push(new SSub(PopList<SExpression>(2)));
             return this;
         }
 
@@ -431,7 +459,7 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine sum()
         {
-            push(new SSum(Pop<SExpression>()));
+            Push(new SSum(Pop<SExpression>()));
 
 
             return this;
@@ -439,14 +467,14 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine avg()
         {
-            push(new SAvg(Pop<SExpression>()));
+            Push(new SAvg(Pop<SExpression>()));
 
             return this;
         }
 
         public QueryMachine count()
         {
-            push(new SCount(Pop<SExpression>()));
+            Push(new SCount(Pop<SExpression>()));
 
             return this;
         }
@@ -457,7 +485,7 @@ namespace ZenPlatform.QueryBuilder
 
         private void join_with_type(JoinType joinType)
         {
-            push(new SJoin(Pop<SCondition>(), Pop<SDataSource>(), joinType));
+            Push(new SJoin(Pop<SCondition>(), Pop<SDataSource>(), joinType));
         }
 
         public QueryMachine @join()
@@ -505,7 +533,7 @@ namespace ZenPlatform.QueryBuilder
 
         #endregion
 
-        /*
+        /* DML
             m_from
                 ld_table     (Schema) "T1"
                 as "A"
