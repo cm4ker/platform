@@ -3,6 +3,9 @@ using ZenPlatform.Configuration.Structure.Data.Types;
 
 namespace ZenPlatform.Core.Querying.Model
 {
+    /// <summary>
+    /// Оборачивает поле при смене источника данных
+    /// </summary>
     public partial class QIntermediateSourceField
     {
         public override string GetName()

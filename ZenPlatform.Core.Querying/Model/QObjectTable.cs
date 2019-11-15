@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Core.Querying.Model
@@ -8,6 +9,9 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QObjectTable : QDataSource
     {
+        private List<QField> _fields;
+
+
         public QObjectTable(XCObjectTypeBase type)
         {
             ObjectType = type;
@@ -20,10 +24,8 @@ namespace ZenPlatform.Core.Querying.Model
 
         public override IEnumerable<QField> GetFields()
         {
-            foreach (var prop in ObjectType.GetProperties())
-            {
-                yield return new QSourceFieldExpression(this, prop);
-            }
+            return _fields ??= ObjectType.GetProperties().Select(x => (QField) new QSourceFieldExpression(this, x))
+                .ToList();
         }
 
         public override string? ToString()

@@ -27,7 +27,14 @@ namespace ZenPlatform.UIBuilder
 
             public override object Visit(QItem visitable)
             {
-                _output.WriteLine(new String(' ', Depth * 4) + visitable.ToString());
+                _output.Write(new String(' ', Depth * 4) + visitable.ToString());
+
+                if (visitable is QField)
+                {
+                    _output.Write($"(Name : {visitable.GetDbName()})");
+                }
+
+                _output.WriteLine();
 
                 return base.Visit(visitable);
             }
@@ -66,10 +73,15 @@ namespace ZenPlatform.UIBuilder
 
                 try
                 {
+                    var pwalker = new PhysicalNameWalker();
+                    pwalker.Visit(_m.top() as QItem);
+
                     var walker = new CustomWalker(output);
                     walker.Visit(_m.top() as QItem);
+
                     var realWalker = new RealWalker();
                     realWalker.Visit(_m.top() as QItem);
+
 
                     var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
                     sqlString = new SQLVisitorBase().Visit(syntax);

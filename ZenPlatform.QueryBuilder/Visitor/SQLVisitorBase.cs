@@ -14,7 +14,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSAliasedDataSource(SAliasedDataSource node)
         {
-            return string.Format("{0} as {1}", 
+            return string.Format("{0} as {1}",
                 node.DataSource.Accept(this),
                 node.Name);
         }
@@ -38,7 +38,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSCoalese(SCoalese node)
         {
-            return string.Format("coalease({0})", string.Join(", ", node.Expressions.Select(e=>e.Accept(this))));
+            return string.Format("coalease({0})", string.Join(", ", node.Expressions.Select(e => e.Accept(this))));
         }
 
         public override string VisitSConstant(SConstant node)
@@ -63,18 +63,18 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSField(SField node)
         {
-            return string.Format("{0}{1}",  
-                string.IsNullOrEmpty(node.Table) ? "" : node.Table+".", 
+            return string.Format("{0}{1}",
+                string.IsNullOrEmpty(node.Table) ? "" : node.Table + ".",
                 node.Name
-                );
+            );
         }
 
         public override string VisitSFrom(SFrom node)
         {
-            return string.Format("FROM\n{0}{1}{2}\n", 
-                node.DataSource.Accept(this), 
-                node.Join.Count >0 ? "\n" : "",
-                string.Join("\n",node.Join.Select(j=>j.Accept(this))));
+            return string.Format("FROM\n{0}{1}{2}\n",
+                node.DataSource.Accept(this),
+                node.Join.Count > 0 ? "\n" : "",
+                string.Join("\n", node.Join.Select(j => j.Accept(this))));
         }
 
         public override string VisitSGreatThen(SGreatThen node)
@@ -91,14 +91,12 @@ namespace ZenPlatform.QueryBuilder.Visitor
         {
             return string.Format("GROUP BY\n{0}\n",
                 string.Join(", ", node.Fields.Select(f => f.Accept(this))));
-
         }
 
         public override string VisitSHaving(SHaving node)
         {
             return string.Format("HAVING\n{0}\n",
                 node.Condition.Accept(this));
-                 
         }
 
         public override string VisitSInsert(SInsert node)
@@ -106,16 +104,15 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("INSERT INTO {0}\n{1}",
                 node.Into.Accept(this),
                 node.DataSource.Accept(this)
-                );
+            );
         }
 
         public override string VisitSJoin(SJoin node)
         {
             return string.Format("JOIN {0} ON {1}",
-                       node.DataSource.Accept(this),
-                       node.Condition.Accept(this)
-                );
-
+                node.DataSource.Accept(this),
+                node.Condition.Accept(this)
+            );
         }
 
         public override string VisitSLessThen(SLessThen node)
@@ -125,7 +122,6 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSLessThenOrEquals(SLessThenOrEquals node)
         {
-
             return string.Format("({0} <= {1})", node.Left.Accept(this), node.Right.Accept(this));
         }
 
@@ -136,10 +132,9 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSOr(SOr node)
         {
-
             return string.Format("({0})",
                 string.Join(" OR ", node.Expressions.Select(e => e.Accept(this)))
-                );
+            );
         }
 
         public override string VisitSOrderBy(SOrderBy node)
@@ -147,7 +142,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("ORDER BY {0}{1}\n",
                 string.Join(", ", node.Fields.Select(f => f.Accept(this))),
                 node.Direction == OrderDirection.DESC ? " DESC" : ""
-                );
+            );
         }
 
         public override string VisitSParameter(SParameter node)
@@ -173,7 +168,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("{0} = {1}",
                 node.Field.Accept(this),
                 node.Value.Accept(this)
-                );
+            );
         }
 
         public override string VisitSSub(SSub node)
@@ -185,7 +180,6 @@ namespace ZenPlatform.QueryBuilder.Visitor
         public override string VisitSSum(SSum node)
         {
             return string.Format("sum({0})", node.Argument.Accept(this));
-                
         }
 
         public override string VisitSTable(STable node)
@@ -200,21 +194,21 @@ namespace ZenPlatform.QueryBuilder.Visitor
                 string.Join(", ", node.Set.Items.Select(s => s.Accept(this))),
                 node.From == null ? "" : node.From.Accept(this),
                 node.Where == null ? "" : node.Where.Accept(this)
-                );
+            );
         }
 
         public override string VisitSValuesSource(SValuesSource node)
         {
             return string.Format("VALUES\n({0})\n",
                 string.Join(", ", node.Values.Select(s => s.Accept(this)))
-                );
+            );
         }
 
         public override string VisitSWhere(SWhere node)
         {
             return string.Format("WHERE\n{0}\n",
-                    node.Condition.Accept(this)
-                );
+                node.Condition.Accept(this)
+            );
         }
     }
 }
