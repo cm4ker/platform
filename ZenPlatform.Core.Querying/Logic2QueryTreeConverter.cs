@@ -17,12 +17,12 @@ namespace ZenPlatform.Core.Querying
         public object Convert(QQuery query)
         {
             GenerateQuery(query);
-            return _qm.Pop();
+            return _qm.pop();
         }
 
         private void GenerateQuery(QQuery q)
         {
-            _qm.ct_query();
+            _qm.bg_query();
 
             _qm.m_from();
             GenerateFrom(q.From);

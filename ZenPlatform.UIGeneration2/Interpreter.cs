@@ -76,7 +76,7 @@ namespace ZenPlatform.UIBuilder
                     realWalker.Visit(_m.top() as QItem);
 
 
-                    var syntax = (realWalker.QueryMachine.Pop() as SSyntaxNode);
+                    var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
                     sqlString = new SQLVisitorBase().Visit(syntax);
                 }
                 catch (Exception ex)
@@ -131,7 +131,7 @@ namespace ZenPlatform.UIBuilder
                     realWalker.Visit(_m.top() as QItem);
 
 
-                    var syntax = (realWalker.QueryMachine.Pop() as SSyntaxNode);
+                    var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
                     sqlString = new SQLVisitorBase().Visit(syntax);
                 }
                 catch (Exception ex)

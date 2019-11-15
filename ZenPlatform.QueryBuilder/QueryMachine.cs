@@ -23,7 +23,7 @@ namespace ZenPlatform.QueryBuilder
         {
             if (TryPeek(out obj))
             {
-                Pop();
+                pop();
                 return true;
             }
 
@@ -51,7 +51,7 @@ namespace ZenPlatform.QueryBuilder
 
         private T Pop<T>()
         {
-            return (T)Pop();
+            return (T)pop();
         }
 
         private List<T> TryPopList<T>(int count = 0)
@@ -98,7 +98,7 @@ namespace ZenPlatform.QueryBuilder
             return _syntaxStack.Peek();
         }
 
-        public object Pop()
+        public object pop()
         {
             return _syntaxStack.Pop();
         }
@@ -149,7 +149,7 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine @as(string name)
         {
-            switch (Pop())
+            switch (pop())
             {
                 case SExpression exp:
                     Push(new SAliasedExpression(exp, name));
@@ -246,7 +246,7 @@ namespace ZenPlatform.QueryBuilder
                     List<SSetItem> items = new List<SSetItem>();
                     while (TryPeek(out SExpression exp))
                     {
-                        Pop();
+                        pop();
                         items.Add(new SSetItem(Pop<SField>(), exp));
                     }
 
@@ -340,7 +340,7 @@ namespace ZenPlatform.QueryBuilder
             return this;
         }
 
-        public QueryMachine ct_query()
+        public QueryMachine bg_query()
         {
             if (_currentContext != null)
                 Push(_currentContext);

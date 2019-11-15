@@ -27,7 +27,7 @@ namespace ZenPlatform.Core.Configuration
         {
             void Gen(QueryMachine qm)
             {
-                qm.ct_query()
+                qm.bg_query()
                     .m_from()
                     .ld_table(_tableName)
                     .m_where()
@@ -60,7 +60,7 @@ namespace ZenPlatform.Core.Configuration
         {
             void Gen(QueryMachine qm)
             {
-                qm.ct_query()
+                qm.bg_query()
                     .m_from()
                     .ld_table(_tableName)
                     .m_where()
