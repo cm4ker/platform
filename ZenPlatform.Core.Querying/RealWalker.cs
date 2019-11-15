@@ -87,7 +87,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQQuery(QQuery node)
         {
-            _qm.ct_query();
+            _qm.bg_query();
             _l.WriteLine("ct_query");
 
             Visit(node.From);
@@ -214,10 +214,10 @@ namespace ZenPlatform.Core.Querying
             string alias = null;
 
             if (_hasNamedSource)
-                tabName = (string) _qm.Pop();
+                tabName = (string) _qm.pop();
 
             if (_hasAlias)
-                alias = (string) _qm.Pop();
+                alias = (string) _qm.pop();
 
             foreach (var def in schema)
             {

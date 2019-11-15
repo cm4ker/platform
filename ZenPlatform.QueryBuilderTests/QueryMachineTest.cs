@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Serialization;
 using Xunit;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
@@ -9,13 +10,20 @@ namespace ZenPlatform.QueryBuilder.Tests
 {
     public class QueryMachineTest
     {
+        public void SimpleSelectTest()
+        {
+            var machine = new QueryMachine();
+            
+            machine.peek()
+        }
+
         [Fact]
         public void SelectTest()
         {
             var machine = new QueryMachine();
 
             machine
-           .ct_query()
+           .bg_query()
              .m_from()
                 .ld_table("T1")
                 .@as("A")
@@ -25,7 +33,7 @@ namespace ZenPlatform.QueryBuilder.Tests
                 .ld_column("F1", "A")
                 .eq()
                 .join()
-                .ct_query()
+                .bg_query()
                     .m_select()
                         .ld_param("param2")
                         .ld_param("param3")
@@ -60,7 +68,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.Pop());
+            var res = visitor.Visit((SSyntaxNode)machine.pop());
 
            
         }
@@ -69,7 +77,7 @@ namespace ZenPlatform.QueryBuilder.Tests
         public void UpdateTest()
         {
             var machine = new QueryMachine();
-            machine.ct_query()
+            machine.bg_query()
                 .m_from()
                     .ld_table("table1")
                     .@as("t1")
@@ -89,7 +97,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.Pop());
+            var res = visitor.Visit((SSyntaxNode)machine.pop());
 
             
         }
@@ -98,7 +106,7 @@ namespace ZenPlatform.QueryBuilder.Tests
         public void InsertIntoSelectTest()
         {
             var machine = new QueryMachine();
-            machine.ct_query()
+            machine.bg_query()
                 .m_from()
                     .ld_table("table1")
                     .@as("t1")
@@ -117,7 +125,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.Pop());
+            var res = visitor.Visit((SSyntaxNode)machine.pop());
 
            
 
@@ -129,7 +137,7 @@ namespace ZenPlatform.QueryBuilder.Tests
         public void InsertIntoValuesTest()
         {
             var machine = new QueryMachine();
-            machine.ct_query()
+            machine.bg_query()
                 .m_values()
                     .ld_param("value1")
                     .ld_param("value2")
@@ -145,7 +153,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.Pop());
+            var res = visitor.Visit((SSyntaxNode)machine.pop());
 
             
 
