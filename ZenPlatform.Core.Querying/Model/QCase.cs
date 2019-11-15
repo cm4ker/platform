@@ -18,17 +18,17 @@ namespace ZenPlatform.Core.Querying.Model
                 {
                     yield return typeBase;
                 }
+            }
 
-                foreach (var typeBase in when.Else.GetExpressionType())
-                {
-                    yield return typeBase;
-                }
+            foreach (var typeBase in Else.GetExpressionType())
+            {
+                yield return typeBase;
             }
         }
     }
 
 
-    public partial class QCaseWhen : QItem
+    public partial class QWhen : QItem
     {
     }
 }

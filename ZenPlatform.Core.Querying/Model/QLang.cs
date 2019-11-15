@@ -209,10 +209,10 @@ namespace ZenPlatform.Core.Querying.Model
                 var ds = new QAliasedDataSource(source, alias);
 
                 _logicStack.Push(ds);
-                
+
                 CurrentScope.ScopedDataSources.Remove(source);
                 CurrentScope.ScopedDataSources.Add(ds);
-                
+
                 CurrentScope.Scope.Add(alias, ds);
             }
             else if (CurrentScope.QueryContext == QueryContext.Select)
@@ -421,12 +421,12 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void @case()
         {
-            _logicStack.Push(new QCase(_logicStack.PopItems<QCaseWhen>()));
+            _logicStack.Push(new QCase(_logicStack.PopExpression(), _logicStack.PopItems<QWhen>()));
         }
 
-        public void case_when()
+        public void when()
         {
-            _logicStack.Push(new QCaseWhen(_logicStack.PopExpression(), _logicStack.PopExpression(),
+            _logicStack.Push(new QWhen(_logicStack.PopExpression(),
                 _logicStack.PopOpExpression()));
         }
 
