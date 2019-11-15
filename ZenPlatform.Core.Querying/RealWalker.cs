@@ -17,6 +17,12 @@ namespace ZenPlatform.Core.Querying
             item.AttachedPropery["DbName"] = name;
         }
 
+        public static void SetDbNameIfEmpty(this QItem item, string name)
+        {
+            if (!item.AttachedPropery.ContainsKey("DbName"))
+                item.AttachedPropery["DbName"] = name;
+        }
+
         public static string GetDbName(this QItem item)
         {
             if (item.AttachedPropery.TryGetValue("DbName", out var result))
@@ -38,6 +44,18 @@ namespace ZenPlatform.Core.Querying
             VisitQSelect(node.Select);
 
             return null;
+        }
+
+        public override object VisitQObjectTable(QObjectTable node)
+        {
+            node.SetDbNameIfEmpty($"T{_tableCount++}");
+            return base.VisitQObjectTable(node);
+        }
+
+        public override object VisitQAliasedDataSource(QAliasedDataSource node)
+        {
+            node.SetDbNameIfEmpty($"T{_tableCount++}");
+            return base.VisitQAliasedDataSource(node);
         }
 
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
@@ -115,6 +133,11 @@ namespace ZenPlatform.Core.Querying
 
             ot.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
 
+            if (!_hasAlias)
+                _qm.@as(node.GetDbName());
+
+            _hasAlias = false;
+
             return base.VisitQObjectTable(node);
         }
 
@@ -163,53 +186,35 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQAliasedDataSource(QAliasedDataSource node)
         {
+            _hasAlias = true;
+
             base.VisitQAliasedDataSource(node);
 
-            _qm.@as(node.Alias);
+            _qm.@as(node.GetDbName());
+
             return null;
         }
 
-        private IEnumerable<XCColumnSchemaDefinition> Get(string name, List<XCTypeBase> types)
+        private void LoadNamedSource(string arg)
         {
-            var done = false;
+            if (_hasNamedSource) return;
 
-            if (types.Count == 1)
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, types[0], name, false);
-            if (types.Count > 1)
-            {
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, null, name,
-                    false, "", "_Type");
-
-                foreach (var type in types)
-                {
-                    if (type is XCPrimitiveType)
-                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
-                            name, false, "", $"_{type.Name}");
-
-                    if (type is XCObjectTypeBase obj && !done)
-                    {
-                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, type, name,
-                            !obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn, "", "_Ref");
-
-                        done = true;
-                    }
-                }
-            }
+            _qm.ld_str(arg);
+            _hasNamedSource = true;
         }
 
         public override object VisitQIntermediateSourceField(QIntermediateSourceField node)
         {
+            LoadNamedSource(node.DataSource.GetDbName());
+
+
             if (node.DataSource is QAliasedDataSource ads)
             {
-                _qm.ld_str(ads.Alias);
-                _hasNamedSource = true;
-                _l.WriteLine($"ld_str({ads.Alias})");
-
                 base.VisitQIntermediateSourceField(node);
             }
             else if (node.DataSource is QNestedQuery)
             {
-                var schema = Get(node.GetDbName(), node.GetExpressionType().ToList());
+                var schema = PropertyHelper.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
                 GenColumn(schema);
             }
 
@@ -219,6 +224,8 @@ namespace ZenPlatform.Core.Querying
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
             var schema = node.Property.GetPropertySchemas();
+
+            LoadNamedSource(node.ObjectTable.GetDbName());
 
             GenColumn(schema);
 

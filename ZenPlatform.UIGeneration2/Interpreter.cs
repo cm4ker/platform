@@ -36,6 +36,11 @@ namespace ZenPlatform.UIBuilder
                     _output.Write($"(Name : {visitable.GetDbName()})");
                 }
 
+                if (visitable is QDataSource)
+                {
+                    _output.Write($"(DS : {visitable.GetDbName()})");
+                }
+                
                 _output.WriteLine();
 
                 return base.Visit(visitable);
