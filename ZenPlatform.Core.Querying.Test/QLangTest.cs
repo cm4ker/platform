@@ -26,7 +26,7 @@ namespace ZenPlatform.Core.Querying.Test
         {
             _m.reset();
 
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -71,7 +71,7 @@ namespace ZenPlatform.Core.Querying.Test
         public void QlangCaseTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -119,7 +119,7 @@ namespace ZenPlatform.Core.Querying.Test
         public void NastedQueryTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -128,7 +128,7 @@ namespace ZenPlatform.Core.Querying.Test
             _m.alias("A");
 
             //start nested query
-            _m.begin_query();
+            _m.bg_query();
             _m.m_from();
 
             _m.ld_component("Entity");
@@ -173,7 +173,7 @@ namespace ZenPlatform.Core.Querying.Test
         public void WhereTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -211,7 +211,7 @@ namespace ZenPlatform.Core.Querying.Test
         public void Logic2RealTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -258,7 +258,7 @@ namespace ZenPlatform.Core.Querying.Test
         public void LookupTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 

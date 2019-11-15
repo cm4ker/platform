@@ -222,7 +222,7 @@ namespace ZenPlatform.Core.Querying.Model
             }
         }
 
-        public void begin_query()
+        public void bg_query()
         {
             _scope.Push(new LogicScope());
         }

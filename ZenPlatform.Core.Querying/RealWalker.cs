@@ -192,36 +192,8 @@ namespace ZenPlatform.Core.Querying
             }
             else if (node.DataSource is QNestedQuery)
             {
-                string tabName = null;
-                string alias = null;
-
-                if (_hasNamedSource)
-                    tabName = (string) _qm.pop();
-
-                if (_hasAlias)
-                    alias = (string) _qm.pop();
-
-                foreach (var def in Get(node.GetDbName(), node.GetExpressionType().ToList()))
-                {
-                    _qm.ld_str(tabName);
-                    _qm.ld_str(def.FullName);
-                    _qm.ld_column();
-
-                    if (_hasAlias)
-                        _qm.@as(def.Prefix + alias + def.Postfix);
-                }
-
-                _hasAlias = false;
-                _hasNamedSource = false;
-
-                /*
-                 SELECT
-                     (SELECT
-                        Store (Int, Ref, Type, Guid)
-                      FROM
-                        Invoice)
-                  
-                 */
+                var schema = Get(node.GetDbName(), node.GetExpressionType().ToList());
+                GenColumn(schema);
             }
 
             return null;
@@ -231,6 +203,13 @@ namespace ZenPlatform.Core.Querying
         {
             var schema = node.Property.GetPropertySchemas();
 
+            GenColumn(schema);
+
+            return null;
+        }
+
+        private void GenColumn(IEnumerable<XCColumnSchemaDefinition> schema)
+        {
             string tabName = null;
             string alias = null;
 
@@ -252,8 +231,6 @@ namespace ZenPlatform.Core.Querying
 
             _hasNamedSource = false;
             _hasAlias = false;
-
-            return null;
         }
 
         public override object VisitQAliasedSelectExpression(QAliasedSelectExpression node)
