@@ -17,7 +17,7 @@ namespace ZenPlatform.Core.Querying
         public object Convert(QQuery query)
         {
             GenerateQuery(query);
-            return _qm.pop();
+            return _qm.Pop();
         }
 
         private void GenerateQuery(QQuery q)

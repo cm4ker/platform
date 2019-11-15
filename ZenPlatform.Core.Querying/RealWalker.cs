@@ -214,10 +214,10 @@ namespace ZenPlatform.Core.Querying
             string alias = null;
 
             if (_hasNamedSource)
-                tabName = (string) _qm.pop();
+                tabName = (string) _qm.Pop();
 
             if (_hasAlias)
-                alias = (string) _qm.pop();
+                alias = (string) _qm.Pop();
 
             foreach (var def in schema)
             {
