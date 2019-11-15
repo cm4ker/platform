@@ -34,7 +34,7 @@ namespace ZenPlatform.QueryBuilder
         private bool TryPeek<T>(out T obj)
         {
             if (_syntaxStack.Count > 0)
-                if (Peek() is T item)
+                if (peek() is T item)
                 {
                     obj = item;
                     return true;
@@ -44,24 +44,19 @@ namespace ZenPlatform.QueryBuilder
             return false;
         }
 
-        public object Peek()
-        {
-            return _syntaxStack.Peek();
-        }
 
         private T Pop<T>()
         {
-            return (T)pop();
+            return (T) pop();
         }
 
         private List<T> TryPopList<T>(int count = 0)
         {
             List<T> result = new List<T>();
             int i = 0;
-            while (TryPop(out T item) && ++i<count && count>0)
+            while (TryPop(out T item) && (++i < count && count > 0 || count == 0))
             {
                 result.Add(item);
-                
             }
 
             TryPop<SMarker>();
@@ -84,8 +79,8 @@ namespace ZenPlatform.QueryBuilder
             {
                 _syntaxStack.Pop();
             }
-        
-            return  item; 
+
+            return item;
         }
 
         private void Push(object obj)
@@ -171,7 +166,8 @@ namespace ZenPlatform.QueryBuilder
                 case MachineContextType.Select:
                     break;
             }
-                    return this;
+
+            return this;
         }
 
         public QueryMachine ld_const(object value)
@@ -194,13 +190,13 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine @case()
         {
-            Push(new SCase(TryPop<SExpression>(),PopList<SWhen>()));
+            Push(new SCase(TryPop<SExpression>(), PopList<SWhen>()));
             return this;
         }
 
         public QueryMachine when()
         {
-            Push(new SWhen(Pop<SCondition>(),Pop<SExpression>()));
+            Push(new SWhen(Pop<SCondition>(), Pop<SExpression>()));
             return this;
         }
 
@@ -257,6 +253,7 @@ namespace ZenPlatform.QueryBuilder
                     Push(new SUpdate(Pop<SDataSource>(), Pop<SSet>(), TryPop<SWhere>(), TryPop<SFrom>()));
                     break;
             }
+
             _currentContext.Type = contextType;
         }
 
