@@ -26,6 +26,7 @@ namespace ZenPlatform.QueryBuilder
                 Pop();
                 return true;
             }
+
             return false;
         }
 
@@ -92,10 +93,19 @@ namespace ZenPlatform.QueryBuilder
             _syntaxStack.Push(obj);
         }
 
+        public object peek()
+        {
+            return _syntaxStack.Peek();
+        }
 
         public object Pop()
         {
             return _syntaxStack.Pop();
+        }
+
+        public void dup()
+        {
+            Push(_syntaxStack.Peek());
         }
 
         #endregion
@@ -103,15 +113,31 @@ namespace ZenPlatform.QueryBuilder
 
         #region Other
 
+        public QueryMachine reset()
+        {
+            _syntaxStack.Clear();
+            _currentContext = null;
+            return this;
+        }
+
         public QueryMachine ld_table(string name)
         {
             Push(new STable(name));
             return this;
         }
 
+        public QueryMachine ld_column()
+        {
+            Push(new SField(Pop<string>(), Pop<string>()));
+            return this;
+        }
+
         public QueryMachine ld_column(string columnName, string tableName = null)
         {
-            Push(new SField(columnName, tableName));
+            ld_str(tableName);
+            ld_str(columnName);
+
+            ld_column();
             return this;
         }
 
@@ -498,7 +524,14 @@ namespace ZenPlatform.QueryBuilder
 
         #endregion
 
+        #region Premitives
 
+        public void ld_str(string arg)
+        {
+            _syntaxStack.Push(arg);
+        }
+
+        #endregion
 
         /* DML
             m_from

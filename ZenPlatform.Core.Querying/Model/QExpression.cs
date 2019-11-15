@@ -8,7 +8,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QExpression : QItem
     {
-        public virtual IEnumerable<XCTypeBase> GetRexpressionType()
+        public virtual IEnumerable<XCTypeBase> GetExpressionType()
         {
             yield break;
         }

@@ -10,16 +10,16 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QCase : QExpression
     {
-        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        public override IEnumerable<XCTypeBase> GetExpressionType()
         {
             foreach (var when in Whens)
             {
-                foreach (var typeBase in when.Then.GetRexpressionType())
+                foreach (var typeBase in when.Then.GetExpressionType())
                 {
                     yield return typeBase;
                 }
 
-                foreach (var typeBase in when.Else.GetRexpressionType())
+                foreach (var typeBase in when.Else.GetExpressionType())
                 {
                     yield return typeBase;
                 }

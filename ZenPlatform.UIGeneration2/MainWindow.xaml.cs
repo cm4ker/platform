@@ -12,11 +12,17 @@ namespace ZenPlatform.UIBuilder
 #if DEBUG
             this.AttachDevTools();
 #endif
+
+            DataContext = new VM();
         }
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        public void Changed()
+        {
         }
     }
 }

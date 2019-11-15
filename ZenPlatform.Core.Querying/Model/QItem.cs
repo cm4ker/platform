@@ -11,6 +11,11 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public abstract partial class QItem : Node
     {
+        protected QItem()
+        {
+            AttachedPropery = new Dictionary<string, object>();
+        }
+
         public static bool SequenceEqual<T>(IEnumerable<T> list1, IEnumerable<T> list2)
         {
             var cnt = new Dictionary<T, int>();
@@ -25,6 +30,7 @@ namespace ZenPlatform.Core.Querying.Model
                     cnt.Add(s, 1);
                 }
             }
+
             foreach (T s in list2)
             {
                 if (cnt.ContainsKey(s))
@@ -36,21 +42,21 @@ namespace ZenPlatform.Core.Querying.Model
                     return false;
                 }
             }
+
             return cnt.Values.All(c => c == 0);
         }
 
-        
-        public bool Compare(QItem node1, QItem node2) 
+        public bool Compare(QItem node1, QItem node2)
         {
-            if (node1 == null && node2 == null) return true; 
-            if (node1 == null || node2 == null) return false; 
+            if (node1 == null && node2 == null) return true;
+            if (node1 == null || node2 == null) return false;
             return node1.Equals(node2);
         }
-        
-        public bool Compare<T1>(T1 node1, T1 node2) 
+
+        public bool Compare<T1>(T1 node1, T1 node2)
         {
-            if (node1 == null && node2 == null) return true; 
-            if (node1 == null || node2 == null) return false; 
+            if (node1 == null && node2 == null) return true;
+            if (node1 == null || node2 == null) return false;
             return node1.Equals(node2);
         }
 
@@ -61,11 +67,12 @@ namespace ZenPlatform.Core.Querying.Model
             foreach (var item in list)
             {
                 result ^= func(item);
-
-
             }
 
             return result;
         }
+
+
+        public Dictionary<string, object> AttachedPropery { get; }
     }
 }

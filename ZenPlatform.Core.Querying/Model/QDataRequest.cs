@@ -12,7 +12,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public List<QField> Source { get; }
         
-        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             throw new System.NotImplementedException();
         }

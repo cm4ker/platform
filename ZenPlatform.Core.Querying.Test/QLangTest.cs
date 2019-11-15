@@ -1,8 +1,12 @@
+using System;
 using System.Linq;
+using MoreLinq.Extensions;
 using Xunit;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Querying.Model;
+using ZenPlatform.QueryBuilder.Model;
+using ZenPlatform.QueryBuilder.Visitor;
 
 namespace ZenPlatform.Core.Querying.Test
 {
@@ -22,7 +26,7 @@ namespace ZenPlatform.Core.Querying.Test
         {
             _m.reset();
 
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -53,7 +57,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             var result = (QField) _m.top();
 
-            Assert.Equal(2, result.GetRexpressionType().Count());
+            Assert.Equal(2, result.GetExpressionType().Count());
 
             _m.st_query();
 
@@ -67,7 +71,7 @@ namespace ZenPlatform.Core.Querying.Test
         public void QlangCaseTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -102,7 +106,7 @@ namespace ZenPlatform.Core.Querying.Test
             Assert.NotNull(result.Whens[0].Else);
             Assert.NotNull(result.Whens[0].Then);
 
-            Assert.Equal(2, result.GetRexpressionType().Count());
+            Assert.Equal(2, result.GetExpressionType().Count());
 
             _m.st_query();
 
@@ -115,7 +119,7 @@ namespace ZenPlatform.Core.Querying.Test
         public void NastedQueryTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -124,7 +128,7 @@ namespace ZenPlatform.Core.Querying.Test
             _m.alias("A");
 
             //start nested query
-            _m.begin_query();
+            _m.bg_query();
             _m.m_from();
 
             _m.ld_component("Entity");
@@ -169,7 +173,7 @@ namespace ZenPlatform.Core.Querying.Test
         public void WhereTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -193,7 +197,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             var result = (QField) _m.top();
 
-            Assert.Equal(2, result.GetRexpressionType().Count());
+            Assert.Equal(2, result.GetExpressionType().Count());
 
             _m.st_query();
 
@@ -207,7 +211,7 @@ namespace ZenPlatform.Core.Querying.Test
         public void Logic2RealTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -232,26 +236,29 @@ namespace ZenPlatform.Core.Querying.Test
 
             var field = (QField) _m.top();
 
-            Assert.Equal(2, field.GetRexpressionType().Count());
+            Assert.Equal(3, field.GetExpressionType().Count());
 
             _m.st_query();
 
             var query = (QQuery) _m.top();
 
-//            SQLServerVisitor visitor = new SQLServerVisitor();
-//
-//            Logic2QueryTreeConverter l2r = new Logic2QueryTreeConverter();
-//
-//            var syntaxTree = l2r.Convert(query);
-//
-//            var result = visitor.Visit(syntaxTree);
+            CustomWalker w = new CustomWalker();
+            w.Visit(query);
+
+            SQLVisitorBase visitor = new SQLVisitorBase();
+
+            Logic2QueryTreeConverter l2r = new Logic2QueryTreeConverter();
+
+            var syntaxTree = l2r.Convert(query) as SSyntaxNode;
+
+            var result = visitor.Visit(syntaxTree);
         }
 
         [Fact]
         public void LookupTest()
         {
             _m.reset();
-            _m.begin_query();
+            _m.bg_query();
 
             _m.m_from();
 
@@ -273,7 +280,7 @@ namespace ZenPlatform.Core.Querying.Test
             field = _m.top() as QLookupField;
             Assert.NotNull(field);
 
-            Assert.Equal(storeField.GetRexpressionType(), field.GetRexpressionType());
+            Assert.Equal(storeField.GetExpressionType(), field.GetExpressionType());
 
             _m.st_query();
         }

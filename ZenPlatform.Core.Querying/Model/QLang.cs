@@ -205,7 +205,9 @@ namespace ZenPlatform.Core.Querying.Model
             if (CurrentScope.QueryContext == QueryContext.From)
             {
                 var source = _logicStack.PopDataSource();
+
                 var ds = new QAliasedDataSource(source, alias);
+
                 _logicStack.Push(ds);
                 CurrentScope.Scope.Add(alias, ds);
             }
@@ -220,7 +222,7 @@ namespace ZenPlatform.Core.Querying.Model
             }
         }
 
-        public void begin_query()
+        public void bg_query()
         {
             _scope.Push(new LogicScope());
         }

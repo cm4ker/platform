@@ -1,3 +1,5 @@
+using System;
+
 namespace ZenPlatform.Core.Querying.Model
 {
     /// <summary>
