@@ -9,7 +9,9 @@ namespace ZenPlatform.Core.Querying.Model
 
         public override IEnumerable<QField> GetFields()
         {
-            return _fields ??= DataSources.Where(x => !(x is QAliasedDataSource)).SelectMany(x => x.GetFields())
+            return _fields ??= DataSources
+                .SelectMany(x => x.GetFields())
+               // .Select()
                 .ToList();
         }
     }

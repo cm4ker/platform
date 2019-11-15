@@ -209,6 +209,10 @@ namespace ZenPlatform.Core.Querying.Model
                 var ds = new QAliasedDataSource(source, alias);
 
                 _logicStack.Push(ds);
+                
+                CurrentScope.ScopedDataSources.Remove(source);
+                CurrentScope.ScopedDataSources.Add(ds);
+                
                 CurrentScope.Scope.Add(alias, ds);
             }
             else if (CurrentScope.QueryContext == QueryContext.Select)
