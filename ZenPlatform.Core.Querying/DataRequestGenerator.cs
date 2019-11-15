@@ -41,7 +41,7 @@ namespace ZenPlatform.Core.Querying
             ot.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
 
 
-            foreach (var propType in sfe.GetRexpressionType())
+            foreach (var propType in sfe.GetExpressionType())
             {
             }
 
@@ -60,7 +60,7 @@ namespace ZenPlatform.Core.Querying
             {
                 GenerateLookup(lu);
 
-                foreach (var type in lu.GetRexpressionType())
+                foreach (var type in lu.GetExpressionType())
                 {
                     if (type is XCObjectTypeBase ot)
                     {

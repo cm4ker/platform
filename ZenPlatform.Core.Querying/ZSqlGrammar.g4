@@ -49,7 +49,7 @@ expr_case:
 
 
 expr_column:
-    ((component_name '.'object_name '.' ) | table_name )? column_name
+    ((component_name '.'object_name '.' ) | (table_name '.') )? column_name
 ;
 
 expr:
@@ -62,22 +62,22 @@ expr_cast:
 
 exprBinary:
     exprEquality
-    | exprBinary OP_AND exprEquality
-    | exprBinary OP_OR exprEquality
+    | exprBinary AND exprEquality
+    | exprBinary OR exprEquality
 ;
 
 exprEquality: 
     exprRelational
-    | exprEquality OP_EQ exprRelational
-    | exprEquality OP_NE exprRelational
+    | exprEquality ASSIGN exprRelational
+    | exprEquality NOT_EQ2 exprRelational
 ;
 
 exprRelational:
        exprAdditive 
        | exprRelational GT exprAdditive
        | exprRelational LT exprAdditive
-       | exprRelational OP_GT exprAdditive
-       | exprRelational OP_LE exprAdditive
+       | exprRelational GT_EQ exprAdditive
+       | exprRelational LT_EQ exprAdditive
        | exprRelational IS exprAdditive
        | exprRelational IS NOT exprAdditive
        | exprRelational LIKE exprAdditive
@@ -93,7 +93,7 @@ exprMultiplicative:
     exprUnary
     | exprMultiplicative STAR exprUnary
     | exprMultiplicative DIV exprUnary
-    | exprMultiplicative  PERCENT exprUnary
+    | exprMultiplicative MOD exprUnary
 ;
 
 exprUnary:
@@ -131,7 +131,7 @@ table_or_subquery
  | '(' ( table_or_subquery ( ',' table_or_subquery )*
        | join_clause )
    ')' ( AS? table_alias )?
- | '(' select_stmt ')' AS? table_alias);
+ | '(' query_stmt ')' AS? table_alias);
 
 join_clause
  : table_or_subquery ( join_operator table_or_subquery join_constraint )*
@@ -404,6 +404,7 @@ PLUS : '+';
 MINUS : '-';
 TILDE : '~';
 PIPE2 : '||';
+BANG : '!';
 DIV : '/';
 MOD : '%';
 LT2 : '<<';

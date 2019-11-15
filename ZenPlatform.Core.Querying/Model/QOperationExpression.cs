@@ -6,7 +6,7 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QOperationExpression : QExpression
     {
-        public override IEnumerable<XCTypeBase> GetRexpressionType()
+        public override IEnumerable<XCTypeBase> GetExpressionType()
         {
             yield return new XCBoolean();
         }

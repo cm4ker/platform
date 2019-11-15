@@ -58,7 +58,7 @@ namespace ZenPlatform.Core.Querying.Model
                 {
                     if (Peek() is QField item)
                     {
-                        result.Add(item);
+                        result.Add(new QSelectExpression(item));
                         Pop();
                     }
                     else if (Peek() is QExpression exp)
