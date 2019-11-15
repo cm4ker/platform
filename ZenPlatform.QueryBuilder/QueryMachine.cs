@@ -53,13 +53,14 @@ namespace ZenPlatform.QueryBuilder
             return (T)Pop();
         }
 
-        private List<T> TryPopList<T>()
+        private List<T> TryPopList<T>(int count = 0)
         {
             List<T> result = new List<T>();
-
-            while (TryPop(out T item))
+            int i = 0;
+            while (TryPop(out T item) && ++i<count && count>0)
             {
                 result.Add(item);
+                
             }
 
             TryPop<SMarker>();
@@ -67,9 +68,9 @@ namespace ZenPlatform.QueryBuilder
             return result;
         }
 
-        private List<T> PopList<T>()
+        private List<T> PopList<T>(int count = 0)
         {
-            List<T> result = TryPopList<T>();
+            List<T> result = TryPopList<T>(count);
 
             if (result.Count > 0)
                 return result;
@@ -165,6 +166,18 @@ namespace ZenPlatform.QueryBuilder
             return this;
         }
 
+        public QueryMachine @case()
+        {
+            Push(new SCase(TryPop<SExpression>(),PopList<SWhen>()));
+            return this;
+        }
+
+        public QueryMachine when()
+        {
+            Push(new SWhen(Pop<SCondition>(),Pop<SExpression>()));
+            return this;
+        }
+
         #endregion
 
         #region Contexts
@@ -214,10 +227,10 @@ namespace ZenPlatform.QueryBuilder
                     Push(new SSet(items));
                     break;
                 case MachineContextType.Update:
-                    
-                    Push(new SUpdate(Pop<SDataSource>(),Pop<SSet>(),TryPop<SWhere>(),TryPop<SFrom>()));
-                    break;
 
+                    Push(new SUpdate(Pop<SDataSource>(), Pop<SSet>(), TryPop<SWhere>(), TryPop<SFrom>()));
+                    break;
+            }
             _currentContext.Type = contextType;
         }
 
@@ -390,15 +403,27 @@ namespace ZenPlatform.QueryBuilder
 
         #region Arithmetic operations
 
-        public QueryMachine add()
+        public QueryMachine madd()
         {
             Push(new SAdd(PopList<SExpression>()));
             return this;
         }
 
-        public QueryMachine sub()
+        public QueryMachine msub()
         {
             Push(new SSub(PopList<SExpression>()));
+            return this;
+        }
+
+        public QueryMachine add()
+        {
+            Push(new SAdd(PopList<SExpression>(2)));
+            return this;
+        }
+
+        public QueryMachine sub()
+        {
+            Push(new SSub(PopList<SExpression>(2)));
             return this;
         }
 
@@ -475,7 +500,7 @@ namespace ZenPlatform.QueryBuilder
 
 
 
-        /*
+        /* DML
             m_from
                 ld_table     (Schema) "T1"
                 as "A"

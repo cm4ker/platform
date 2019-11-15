@@ -23,6 +23,9 @@ namespace ZenPlatform.SyntaxGenerator.SQL
         [XmlAttribute]
         public string Base { get; set; }
 
+
+        [XmlAttribute] public bool Ddl { get; set; }
+
         [XmlArrayItem("List", typeof(SyntaxArgumentList))]
         [XmlArrayItem("Single", typeof(SyntaxArgumentSingle))]
         public List<SyntaxArgument> Arguments { get; set; }
