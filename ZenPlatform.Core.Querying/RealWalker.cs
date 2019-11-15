@@ -207,7 +207,6 @@ namespace ZenPlatform.Core.Querying
         {
             LoadNamedSource(node.DataSource.GetDbName());
 
-
             if (node.DataSource is QAliasedDataSource ads)
             {
                 base.VisitQIntermediateSourceField(node);
