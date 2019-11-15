@@ -60,7 +60,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.pop());
+            var res = visitor.Visit((SSyntaxNode)machine.Pop());
 
            
         }
@@ -89,7 +89,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.pop());
+            var res = visitor.Visit((SSyntaxNode)machine.Pop());
 
             
         }
@@ -117,7 +117,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.pop());
+            var res = visitor.Visit((SSyntaxNode)machine.Pop());
 
            
 
@@ -145,7 +145,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var visitor = new SQLVisitorBase();
 
-            var res = visitor.Visit((SSyntaxNode)machine.pop());
+            var res = visitor.Visit((SSyntaxNode)machine.Pop());
 
             
 
