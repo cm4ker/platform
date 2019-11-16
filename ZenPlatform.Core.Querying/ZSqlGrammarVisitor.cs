@@ -109,7 +109,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitTable_alias(ZSqlGrammarParser.Table_aliasContext context)
         {
-            _stack.alias(context.GetText());
+            _stack.@as(context.GetText());
             return base.VisitTable_alias(context);
         }
 
@@ -132,7 +132,7 @@ namespace ZenPlatform.Core.Querying
             base.VisitResult_column(context);
 
             if (context.column_alias() != null)
-                _stack.alias(context.column_alias().GetText());
+                _stack.@as(context.column_alias().GetText());
 
             return null;
         }

@@ -32,11 +32,11 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
-            _m.alias("A");
+            _m.@as("A");
 
             _m.ld_component("Entity");
             _m.ld_object_type("Store");
-            _m.alias("B");
+            _m.@as("B");
 
             _m.ld_name("A");
             _m.ld_field("Store");
@@ -77,7 +77,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
-            _m.alias("A");
+            _m.@as("A");
 
             _m.m_select();
 
@@ -136,7 +136,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
-            _m.alias("A");
+            _m.@as("A");
 
             //start nested query
             _m.bg_query();
@@ -144,20 +144,20 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.ld_component("Entity");
             _m.ld_object_type("Store");
-            _m.alias("B");
+            _m.@as("B");
 
             _m.m_select();
 
             _m.ld_name("B");
             _m.ld_field("Id");
-            _m.alias("NestedIdField");
+            _m.@as("NestedIdField");
 
             _m.st_query();
             //store query on stack
 
             Assert.True(_m.top() is QNestedQuery);
 
-            _m.alias("NestedQuery");
+            _m.@as("NestedQuery");
 
             _m.ld_name("A");
             _m.ld_field("Store");
@@ -190,7 +190,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
-            _m.alias("A");
+            _m.@as("A");
 
             _m.m_where();
 
@@ -228,7 +228,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
-            _m.alias("A");
+            _m.@as("A");
 
             _m.m_select();
             _m.ld_name("A");

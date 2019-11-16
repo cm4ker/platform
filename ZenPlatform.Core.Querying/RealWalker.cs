@@ -10,81 +10,6 @@ using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Querying
 {
-    public static class QLangExtensions
-    {
-        public static void SetDbName(this QItem item, string name)
-        {
-            item.AttachedPropery["DbName"] = name;
-        }
-
-        public static void SetDbNameIfEmpty(this QItem item, string name)
-        {
-            if (!item.AttachedPropery.ContainsKey("DbName"))
-                item.AttachedPropery["DbName"] = name;
-        }
-
-        public static string GetDbName(this QItem item)
-        {
-            if (item.AttachedPropery.TryGetValue("DbName", out var result))
-                return (string) result;
-            else
-                return null;
-        }
-    }
-
-    public class PhysicalNameWalker : QLangWalker
-    {
-        public int _aliasCount;
-        public int _fieldCount;
-        public int _tableCount;
-
-        public override object VisitQQuery(QQuery node)
-        {
-            VisitQFrom(node.From);
-            VisitQSelect(node.Select);
-
-            return null;
-        }
-
-        public override object VisitQObjectTable(QObjectTable node)
-        {
-            node.SetDbNameIfEmpty($"T{_tableCount++}");
-            return base.VisitQObjectTable(node);
-        }
-
-        public override object VisitQAliasedDataSource(QAliasedDataSource node)
-        {
-            node.SetDbNameIfEmpty($"T{_tableCount++}");
-            return base.VisitQAliasedDataSource(node);
-        }
-
-        public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
-        {
-            node.SetDbName($"{node.Property.DatabaseColumnName}");
-            return base.VisitQSourceFieldExpression(node);
-        }
-
-        public override object VisitQAliasedSelectExpression(QAliasedSelectExpression node)
-        {
-            node.SetDbName($"A{_aliasCount++}");
-            return base.VisitQAliasedSelectExpression(node);
-        }
-
-        public override object VisitQIntermediateSourceField(QIntermediateSourceField node)
-        {
-            base.VisitQIntermediateSourceField(node);
-            node.SetDbName(node.Field.GetDbName());
-            return null;
-        }
-
-        public override object VisitQSelectExpression(QSelectExpression node)
-        {
-            base.VisitQSelectExpression(node);
-            node.SetDbName(node.Element.GetDbName());
-            return null;
-        }
-    }
-
     public class RealWalker : QLangWalker
     {
         private QueryMachine _qm;
@@ -113,6 +38,13 @@ namespace ZenPlatform.Core.Querying
 
             _qm.st_query();
             _l.WriteLine("st_query");
+
+            return null;
+        }
+
+        public override object VisitQCast(QCast node)
+        {
+            base.VisitQCast(node);
 
             return null;
         }
