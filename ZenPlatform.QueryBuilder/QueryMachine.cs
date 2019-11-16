@@ -200,6 +200,26 @@ namespace ZenPlatform.QueryBuilder
             return this;
         }
 
+        public QueryMachine ld_col_type(string type)
+        {
+            ColumnType colType = type switch
+            {
+                "numeric" => (ColumnType) new ColumnTypeNumeric {Precision = 2, Scale = 10},
+                "string" => new ColumnTypeVarChar {Size = 150},
+                "bool" => new ColumnTypeBool(),
+                _ => throw new NotSupportedException()
+            };
+
+            Push(colType);
+            return this;
+        }
+
+        public QueryMachine cast()
+        {
+            Push(new SCast(Pop<ColumnType>(), Pop<SExpression>()));
+            return this;
+        }
+
         #endregion
 
         #region Contexts

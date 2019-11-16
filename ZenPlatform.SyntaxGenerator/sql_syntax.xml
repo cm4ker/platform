@@ -260,7 +260,15 @@
       <List Name="Whens" Type="SWhen" />
     </Arguments>
   </Syntax>
-  
+
+  <Syntax Name="SCast" Base="SExpression">
+    <Arguments>
+      <Single Name="Type" Type="ColumnType" />
+      <Single Name="Expression" Type="SExpression" />
+    </Arguments>
+  </Syntax>
+
+
   <!--DDL-->
 
   <Syntax Name="Querys" Ddl="true" >
