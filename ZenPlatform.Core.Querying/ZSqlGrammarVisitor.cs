@@ -97,7 +97,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitObject_name(ZSqlGrammarParser.Object_nameContext context)
         {
-            _stack.ld_type(context.GetText());
+            _stack.ld_object_type(context.GetText());
             return base.VisitObject_name(context);
         }
 

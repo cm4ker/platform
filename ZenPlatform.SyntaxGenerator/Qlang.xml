@@ -133,7 +133,7 @@
 
     <Syntax Name="QWhen" Base="QItem">
         <Arguments>
-            
+
             <Single Name="Then" Type="QExpression"/>
             <Single Name="When" Type="QOperationExpression"/>
         </Arguments>
@@ -190,10 +190,18 @@
             <Single Name="Right" Type="QExpression"/>
         </Arguments>
     </Syntax>
+
     <Syntax Name="QGreatThenOrEquals" Base="QOperationExpression">
         <Arguments>
             <Single Name="Left" Type="QExpression"/>
             <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QCast" Base="QExpression">
+        <Arguments>
+            <Single Name="Type" Type="XCTypeBase" DenyChildrenFill="true"/>
+            <Single Name="BaseExpression" Type="QExpression"/>
         </Arguments>
     </Syntax>
 </Config>

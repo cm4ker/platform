@@ -31,11 +31,11 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
+            _m.ld_object_type("Invoice");
             _m.alias("A");
 
             _m.ld_component("Entity");
-            _m.ld_type("Store");
+            _m.ld_object_type("Store");
             _m.alias("B");
 
             _m.ld_name("A");
@@ -76,7 +76,7 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
+            _m.ld_object_type("Invoice");
             _m.alias("A");
 
             _m.m_select();
@@ -135,7 +135,7 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
+            _m.ld_object_type("Invoice");
             _m.alias("A");
 
             //start nested query
@@ -143,7 +143,7 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Store");
+            _m.ld_object_type("Store");
             _m.alias("B");
 
             _m.m_select();
@@ -189,7 +189,7 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
+            _m.ld_object_type("Invoice");
             _m.alias("A");
 
             _m.m_where();
@@ -227,7 +227,7 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
+            _m.ld_object_type("Invoice");
             _m.alias("A");
 
             _m.m_select();
@@ -265,7 +265,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.begin_data_request();
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
+            _m.ld_object_type("Invoice");
             _m.ld_field("Store");
             _m.lookup("Name");
             _m.st_data_request();
