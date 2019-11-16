@@ -1,0 +1,12 @@
+Int = 1
+            A = B
+
+1. A(Link, Int) B(Link, Int)
+    A.Type = B.Type && A.Ref = B.Ref && A.Int = B.Int
+2. A(Link, Int) B(Int)
+    A.Type = Const(10) && A.Int = B.Int
+3. A(DateTime, Int) B(Link, String)
+    1 = 0 
+
+ 
+ 

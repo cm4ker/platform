@@ -2,7 +2,7 @@
   "profiles": {
     "ZenPlatform.SyntaxGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "sql SQL_Syntax.xml QuerySyntaxNodes.cs"
+      "commandLineArgs": "qlang qlang.xml Generated.xml.cs"
     }
   }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.Core.Querying.Visitor;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data.Types;
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -1290,6 +1291,47 @@ namespace ZenPlatform.Core.Querying.Model
     }
 }
 
+namespace ZenPlatform.Core.Querying.Model
+{
+    public partial class QCast : QExpression
+    {
+        public QCast(XCTypeBase type, QExpression baseExpression): base()
+        {
+            Type = type;
+            Childs.Add(baseExpression);
+            BaseExpression = baseExpression;
+        }
+
+        public XCTypeBase Type
+        {
+            get;
+            set;
+        }
+
+        public QExpression BaseExpression
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( QCast ) obj ;  return  ( Compare ( this . Type ,  node . Type ) && Compare ( this . BaseExpression ,  node . BaseExpression ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Type == null ? 0 : Type.GetHashCode()) ^ (BaseExpression == null ? 0 : BaseExpression.GetHashCode());
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQCast(this);
+        }
+    }
+}
+
 namespace ZenPlatform.Core.Querying.Visitor
 {
     public abstract partial class QLangVisitorBase<T>
@@ -1469,6 +1511,11 @@ namespace ZenPlatform.Core.Querying.Visitor
         }
 
         public virtual T VisitQGreatThenOrEquals(QGreatThenOrEquals node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitQCast(QCast node)
         {
             return DefaultVisit(node);
         }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Structure.Data.Types;
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -110,6 +111,11 @@ namespace ZenPlatform.Core.Querying.Model
                 }
 
             return default;
+        }
+
+        public XCTypeBase PopType()
+        {
+            return (XCTypeBase) this.Pop();
         }
     }
 }
