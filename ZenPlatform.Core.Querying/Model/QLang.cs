@@ -163,7 +163,7 @@ namespace ZenPlatform.Core.Querying.Model
 
             if (!string.IsNullOrEmpty(p_alias))
             {
-                alias(p_alias);
+                @as(p_alias);
             }
         }
 
@@ -210,7 +210,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         #endregion
 
-        public void alias(string alias)
+        public void @as(string alias)
         {
             if (CurrentScope.QueryContext == QueryContext.From)
             {
