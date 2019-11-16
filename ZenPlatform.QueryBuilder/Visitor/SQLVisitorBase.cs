@@ -8,6 +8,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
     public class SQLVisitorBase : QueryVisitorBase<string>
     {
         #region DML
+
         public override string VisitSAdd(SAdd node)
         {
             return string.Join(" + ", node.Expressions.Select(n => n.Accept(this)));
@@ -68,6 +69,11 @@ namespace ZenPlatform.QueryBuilder.Visitor
                 string.IsNullOrEmpty(node.Table) ? "" : node.Table + ".",
                 node.Name
             );
+        }
+
+        public override string VisitSCast(SCast node)
+        {
+            return string.Format("CAST({0} AS {1})", Visit(node.Expression), Visit(node.Type));
         }
 
         public override string VisitSFrom(SFrom node)
@@ -214,22 +220,19 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSCase(SCase node)
         {
-
             return string.Format("CASE {0} \n {1} END",
-                    string.Join("\n", node.Whens.Select(w => w.Accept(this))),
-                    node.Else != null ? $"ELSE {node.Else.Accept(this)}\n" : ""
-                ) ;
+                string.Join("\n", node.Whens.Select(w => w.Accept(this))),
+                node.Else != null ? $"ELSE {node.Else.Accept(this)}\n" : ""
+            );
         }
 
         public override string VisitSWhen(SWhen node)
         {
-
             return string.Format("WHEN  {0} THEN {1}",
-                    node.Condition.Accept(this),
-                    node.Then.Accept(this)
-                );
+                node.Condition.Accept(this),
+                node.Then.Accept(this)
+            );
         }
-
 
         #endregion
 
@@ -240,14 +243,12 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         #region DDL
 
-
-
         public override string VisitAddColumn(AddColumn node)
         {
             return string.Format("ALTER TABLE {0}\n ADD COLUMN {1}",
                 node.Table.Accept(this),
                 node.Column.Accept(this)
-                );
+            );
         }
 
         public override string VisitAddConstraint(AddConstraint node)
@@ -255,7 +256,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("ALTER TABLE {0}\n ADD {1}",
                 node.Table.Accept(this),
                 node.Constraint.Accept(this)
-                );
+            );
         }
 
         public override string VisitAlterColumn(AlterColumn node)
@@ -263,12 +264,11 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("ALTER TABLE {0}\n ALTER COLUMN {1}",
                 node.Table.Accept(this),
                 node.Column.Accept(this)
-                );
+            );
         }
 
         public override string VisitColumn(Column node)
         {
-
             return node.Value;
         }
 
@@ -279,12 +279,17 @@ namespace ZenPlatform.QueryBuilder.Visitor
                 node.Type.Accept(this),
                 node.IsNotNull ? " NOT NULL" : "",
                 node.DefaultValue != null ? $" DEFAULT {node.DefaultValue}" : ""
-                );
+            );
         }
 
         public override string VisitColumnTypeInt(ColumnTypeInt node)
         {
             return "INT";
+        }
+
+        public override string VisitColumnTypeVarChar(ColumnTypeVarChar node)
+        {
+            return $"VARCHAR({((node.Size == 0) ? "MAX" : node.Size.ToString())})";
         }
 
         public override string VisitColumnTypeBigInt(ColumnTypeBigInt node)
@@ -356,24 +361,22 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitCreateTable(CreateTable node)
         {
-
             return string.Format("CREATE TABLE {0} \n(\n{1}{2}{3}\n)",
                 node.Table.Accept(this),
                 string.Join(",\n", node.Columns.Select(c => c.Accept(this))),
                 node.Constraints.Count > 0 ? ",\n" : "",
                 string.Join(",\n", node.Constraints.Select(c => c.Accept(this)))
-                );
+            );
         }
 
         public override string VisitConstraintDefinitionForeignKey(ConstraintDefinitionForeignKey node)
         {
-
             return string.Format("{0}FOREIGN KEY ({1}) REFERENCES {2}({3})",
                 string.IsNullOrEmpty(node.Name) ? "" : $"CONSTRAINT {node.Name} ",
                 string.Join(",", node.Columns.Select(c => c.Accept(this))),
                 node.ForeignTable.Accept(this),
                 string.Join(",", node.ForeignColumns.Select(c => c.Accept(this)))
-                );
+            );
         }
 
         public override string VisitConstraintDefinitionPrimaryKey(ConstraintDefinitionPrimaryKey node)
@@ -381,7 +384,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("{0}PRIMARY KEY ({1})",
                 string.IsNullOrEmpty(node.Name) ? "" : $"CONSTRAINT {node.Name} ",
                 string.Join(",", node.Columns.Select(c => c.Accept(this)))
-                );
+            );
         }
 
         public override string VisitConstraintDefinitionUnique(ConstraintDefinitionUnique node)
@@ -389,7 +392,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("{0}UNIQUE ({1})",
                 string.IsNullOrEmpty(node.Name) ? "" : $"CONSTRAINT {node.Name} ",
                 string.Join(",", node.Columns.Select(c => c.Accept(this)))
-                );
+            );
         }
 
         public override string VisitDropColumn(DropColumn node)
@@ -397,7 +400,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("ALTER TABLE {0} DROP COLUMN {1}",
                 node.Table.Accept(this),
                 node.Column.Accept(this)
-                );
+            );
         }
 
         public override string VisitDropConstraint(DropConstraint node)
@@ -405,7 +408,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return string.Format("ALTER TABLE {0} DROP CONSTRAINT {1}",
                 node.Table.Accept(this),
                 node.Constraint.Accept(this)
-                );
+            );
         }
 
         #endregion
