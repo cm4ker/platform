@@ -10,6 +10,25 @@ using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Querying
 {
+    
+    
+    /*
+     1) Сопоставить типы обеих сторон
+        String        String
+        Int           Int
+        Data
+     2) 
+     
+     A = CASE 1 > 0 THEN A ELSE B (Types(A) + Types(B))
+      V
+     AI = BI
+     AND AS = BS
+     AND AD = BD
+     AND AB = BB
+     AND AType = BType 
+     
+     
+     */
     public class RealWalker : QLangWalker
     {
         private QueryMachine _qm;
@@ -48,7 +67,7 @@ namespace ZenPlatform.Core.Querying
 
             _qm.ld_col_type("string");
             _qm.cast();
-            
+
             return null;
         }
 
