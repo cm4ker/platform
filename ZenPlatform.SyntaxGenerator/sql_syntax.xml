@@ -64,7 +64,7 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="SConstant">
+    <Syntax Name="SConstant" Base="SExpression">
       <Arguments>
         <Single Name="Value" Type="object"/>
       </Arguments>
@@ -254,13 +254,21 @@
     </Arguments>
   </Syntax>
 
-  <Syntax Name="SCase">
+  <Syntax Name="SCase" Base="SExpression">
     <Arguments>
       <Single Name="Else" Type="SExpression" />
       <List Name="Whens" Type="SWhen" />
     </Arguments>
   </Syntax>
-  
+
+  <Syntax Name="SCast" Base="SExpression">
+    <Arguments>
+      <Single Name="Type" Type="ColumnType" />
+      <Single Name="Expression" Type="SExpression" />
+    </Arguments>
+  </Syntax>
+
+
   <!--DDL-->
 
   <Syntax Name="Querys" Ddl="true" >

@@ -36,6 +36,11 @@ namespace ZenPlatform.UIBuilder
                     _output.Write($"(Name : {visitable.GetDbName()})");
                 }
 
+                if (visitable is QDataSource)
+                {
+                    _output.Write($"(DS : {visitable.GetDbName()})");
+                }
+                
                 _output.WriteLine();
 
                 return base.Visit(visitable);
@@ -76,7 +81,7 @@ namespace ZenPlatform.UIBuilder
                     realWalker.Visit(_m.top() as QItem);
 
 
-                    var syntax = (realWalker.QueryMachine.Pop() as SSyntaxNode);
+                    var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
                     sqlString = new SQLVisitorBase().Visit(syntax);
                 }
                 catch (Exception ex)
@@ -131,7 +136,7 @@ namespace ZenPlatform.UIBuilder
                     realWalker.Visit(_m.top() as QItem);
 
 
-                    var syntax = (realWalker.QueryMachine.Pop() as SSyntaxNode);
+                    var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
                     sqlString = new SQLVisitorBase().Visit(syntax);
                 }
                 catch (Exception ex)

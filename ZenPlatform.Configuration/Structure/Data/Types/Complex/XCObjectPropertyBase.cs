@@ -64,7 +64,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Длина только для Двоичных\Числовых\Строковых данных
         /// </summary>
-       // public int Length { get; set; }
+        // public int Length { get; set; }
 
         /// <summary>
         /// Точность, только для числовых типов
@@ -143,16 +143,27 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         {
             if (string.IsNullOrEmpty(propName)) propName = this.DatabaseColumnName;
 
+            return PropertyHelper.GetPropertySchemas(propName, _types);
+        }
+    }
+
+    public static class PropertyHelper
+    {
+        public static IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(
+            string propName, IList<XCTypeBase> types)
+        {
+            if (string.IsNullOrEmpty(propName)) throw new ArgumentNullException(nameof(propName));
+
             var done = false;
 
-            if (Types.Count == 1)
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, Types[0], propName, false);
-            if (Types.Count > 1)
+            if (types.Count == 1)
+                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, types[0], propName, false);
+            if (types.Count > 1)
             {
                 yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, new XCInt(), propName,
                     false, "", "_Type");
 
-                foreach (var type in _types)
+                foreach (var type in types)
                 {
                     if (type is XCPrimitiveType)
                         yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
@@ -176,7 +187,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// </summary>
     public class XCColumnSchemaDefinition
     {
-
         public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, XCTypeBase platformType, string name,
             bool isPseudo, string prefix = "", string postfix = "")
         {

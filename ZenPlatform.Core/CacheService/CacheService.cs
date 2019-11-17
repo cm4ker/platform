@@ -18,8 +18,7 @@ namespace ZenPlatform.Core.CacheService
     {
         private MemoryCache _cache;
         private int _secondsCount;
-
-
+        
         public CacheService()
         {
             _cache = new MemoryCache("AppCache");

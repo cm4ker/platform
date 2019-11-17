@@ -137,5 +137,11 @@ namespace ZenPlatform.Configuration.Structure
         {
             _platformTypes.Add(type);
         }
+
+        public XCComponent GetComponentByName(string name)
+        {
+            return Components.FirstOrDefault(x => x.Info.ComponentName == name) ??
+                   throw new Exception($"Component with name {name} not found");
+        }
     }
 }
