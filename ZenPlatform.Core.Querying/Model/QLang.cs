@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
@@ -13,6 +14,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
+        private QLangTypeBuilder _tb;
 
         private enum InstructionContext
         {
@@ -25,6 +27,7 @@ namespace ZenPlatform.Core.Querying.Model
             _conf = conf;
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
+            _tb = new QLangTypeBuilder(_conf);
         }
 
         public LogicScope CurrentScope => _scope.TryPeek(out var res) ? res : null;
@@ -134,10 +137,17 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void ld_type(string typeName)
         {
+            _logicStack.Push(_tb.Parse(typeName));
+        }
+
+
+        public void ld_object_type(string typeName)
+        {
             var type = _logicStack.PopComponent().GetTypeByName(typeName);
             var ds = new QObjectTable(type);
             _logicStack.Push(ds);
-            CurrentScope.ScopedDataSources.Add(ds);
+            if (CurrentScope != null)
+                CurrentScope.ScopedDataSources.Add(ds);
         }
 
         /// <summary>
@@ -149,11 +159,11 @@ namespace ZenPlatform.Core.Querying.Model
         public void ld_source(string componentName, string typeName, string p_alias = "")
         {
             ld_component(componentName);
-            ld_type(typeName);
+            ld_object_type(typeName);
 
             if (!string.IsNullOrEmpty(p_alias))
             {
-                alias(p_alias);
+                @as(p_alias);
             }
         }
 
@@ -200,7 +210,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         #endregion
 
-        public void alias(string alias)
+        public void @as(string alias)
         {
             if (CurrentScope.QueryContext == QueryContext.From)
             {
@@ -209,6 +219,10 @@ namespace ZenPlatform.Core.Querying.Model
                 var ds = new QAliasedDataSource(source, alias);
 
                 _logicStack.Push(ds);
+
+                CurrentScope.ScopedDataSources.Remove(source);
+                CurrentScope.ScopedDataSources.Add(ds);
+
                 CurrentScope.Scope.Add(alias, ds);
             }
             else if (CurrentScope.QueryContext == QueryContext.Select)
@@ -417,15 +431,19 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void @case()
         {
-            _logicStack.Push(new QCase(_logicStack.PopItems<QCaseWhen>()));
+            _logicStack.Push(new QCase(_logicStack.PopExpression(), _logicStack.PopItems<QWhen>()));
         }
 
-        public void case_when()
+        public void when()
         {
-            _logicStack.Push(new QCaseWhen(_logicStack.PopExpression(), _logicStack.PopExpression(),
+            _logicStack.Push(new QWhen(_logicStack.PopExpression(),
                 _logicStack.PopOpExpression()));
         }
 
+        public void cast()
+        {
+            _logicStack.Push(new QCast(_logicStack.PopType(), _logicStack.PopExpression()));
+        }
 
         public void ld_const(string str)
         {

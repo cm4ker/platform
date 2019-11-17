@@ -31,12 +31,12 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
-            _m.alias("A");
+            _m.ld_object_type("Invoice");
+            _m.@as("A");
 
             _m.ld_component("Entity");
-            _m.ld_type("Store");
-            _m.alias("B");
+            _m.ld_object_type("Store");
+            _m.@as("B");
 
             _m.ld_name("A");
             _m.ld_field("Store");
@@ -57,7 +57,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             var result = (QField) _m.top();
 
-            Assert.Equal(2, result.GetExpressionType().Count());
+            Assert.Equal(3, result.GetExpressionType().Count());
 
             _m.st_query();
 
@@ -76,8 +76,8 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
-            _m.alias("A");
+            _m.ld_object_type("Invoice");
+            _m.@as("A");
 
             _m.m_select();
 
@@ -90,23 +90,34 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.ld_const(1);
 
-            _m.ld_const("Test");
+            _m.when();
 
-            _m.case_when();
+            _m.ld_name("A");
+            _m.ld_field("Store");
+
+            _m.ld_param("Store");
+
+            _m.eq();
+
+            _m.ld_const(1);
+
+            _m.when();
+
+            _m.ld_const("Test");
 
             _m.@case();
 
             var result = (QCase) _m.top();
 
             Assert.NotNull(result);
-            Assert.Single(result.Whens);
+            Assert.Equal(2, result.Whens.Count);
 
             Assert.NotNull(result.Whens[0]);
             Assert.NotNull(result.Whens[0].Then);
-            Assert.NotNull(result.Whens[0].Else);
-            Assert.NotNull(result.Whens[0].Then);
+            Assert.NotNull(result.Else);
 
-            Assert.Equal(2, result.GetExpressionType().Count());
+
+            Assert.Equal(3, result.GetExpressionType().Count());
 
             _m.st_query();
 
@@ -124,29 +135,29 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
-            _m.alias("A");
+            _m.ld_object_type("Invoice");
+            _m.@as("A");
 
             //start nested query
             _m.bg_query();
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Store");
-            _m.alias("B");
+            _m.ld_object_type("Store");
+            _m.@as("B");
 
             _m.m_select();
 
             _m.ld_name("B");
             _m.ld_field("Id");
-            _m.alias("NestedIdField");
+            _m.@as("NestedIdField");
 
             _m.st_query();
             //store query on stack
 
             Assert.True(_m.top() is QNestedQuery);
 
-            _m.alias("NestedQuery");
+            _m.@as("NestedQuery");
 
             _m.ld_name("A");
             _m.ld_field("Store");
@@ -178,8 +189,8 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
-            _m.alias("A");
+            _m.ld_object_type("Invoice");
+            _m.@as("A");
 
             _m.m_where();
 
@@ -197,7 +208,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             var result = (QField) _m.top();
 
-            Assert.Equal(2, result.GetExpressionType().Count());
+            Assert.Equal(3, result.GetExpressionType().Count());
 
             _m.st_query();
 
@@ -205,53 +216,6 @@ namespace ZenPlatform.Core.Querying.Test
 
             Assert.NotNull(query);
             Assert.NotNull(query.Where);
-        }
-
-        [Fact]
-        public void Logic2RealTest()
-        {
-            _m.reset();
-            _m.bg_query();
-
-            _m.m_from();
-
-            _m.ld_component("Entity");
-            _m.ld_type("Invoice");
-            _m.alias("A");
-
-            _m.m_where();
-
-            _m.ld_name("A");
-            _m.ld_field("Id");
-
-            _m.ld_param("P_01");
-
-            _m.eq();
-            _m.m_select();
-
-            Assert.True(_m.top() is QWhere);
-            _m.ld_name("A");
-            _m.ld_field("Store");
-            _m.alias("MyStore");
-
-            var field = (QField) _m.top();
-
-            Assert.Equal(3, field.GetExpressionType().Count());
-
-            _m.st_query();
-
-            var query = (QQuery) _m.top();
-
-            CustomWalker w = new CustomWalker();
-            w.Visit(query);
-
-            SQLVisitorBase visitor = new SQLVisitorBase();
-
-            Logic2QueryTreeConverter l2r = new Logic2QueryTreeConverter();
-
-            var syntaxTree = l2r.Convert(query) as SSyntaxNode;
-
-            var result = visitor.Visit(syntaxTree);
         }
 
         [Fact]
@@ -263,13 +227,13 @@ namespace ZenPlatform.Core.Querying.Test
             _m.m_from();
 
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
-            _m.alias("A");
+            _m.ld_object_type("Invoice");
+            _m.@as("A");
 
             _m.m_select();
             _m.ld_name("A");
             _m.ld_field("Store");
-            var storeField = _m.top() as QSourceFieldExpression;
+            var storeField = _m.top() as QField;
             Assert.NotNull(storeField);
 
             _m.lookup("Invoice");
@@ -301,7 +265,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.begin_data_request();
             _m.ld_component("Entity");
-            _m.ld_type("Invoice");
+            _m.ld_object_type("Invoice");
             _m.ld_field("Store");
             _m.lookup("Name");
             _m.st_data_request();
@@ -311,9 +275,9 @@ namespace ZenPlatform.Core.Querying.Test
             Assert.Single(dr.Source);
 
 
-            DataRequestGenerator drg = new DataRequestGenerator();
+            // DataRequestGenerator drg = new DataRequestGenerator();
 
-            drg.Gen(dr);
+            // drg.Gen(dr);
         }
     }
 }

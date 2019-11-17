@@ -388,7 +388,7 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SConstant : SSyntaxNode
+    public partial class SConstant : SExpression
     {
         public SConstant( object  value): base()
         {
@@ -1471,7 +1471,7 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SCase : SSyntaxNode
+    public partial class SCase : SExpression
     {
         public SCase(SExpression @else, List<SWhen> whens): base()
         {
@@ -1505,6 +1505,46 @@ namespace ZenPlatform.QueryBuilder.Model
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitSCase(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class SCast : SExpression
+    {
+        public SCast(ColumnType type, SExpression expression): base()
+        {
+            Type = type;
+            Expression = expression;
+        }
+
+        public ColumnType Type
+        {
+            get;
+            set;
+        }
+
+        public SExpression Expression
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SCast ) obj ;  return  ( Compare ( this . Type ,  node . Type ) && Compare ( this . Expression ,  node . Expression ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Type == null ? 0 : Type.GetHashCode()) ^ (Expression == null ? 0 : Expression.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSCast(this);
         }
     }
 }
@@ -2847,6 +2887,11 @@ namespace ZenPlatform.QueryBuilder.Visitor
         }
 
         public virtual T VisitSCase(SCase node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSCast(SCast node)
         {
             return DefaultVisit(node);
         }

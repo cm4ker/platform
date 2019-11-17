@@ -23,7 +23,7 @@ namespace ZenPlatform.QueryBuilder
         {
             if (TryPeek(out obj))
             {
-                Pop();
+                pop();
                 return true;
             }
 
@@ -34,7 +34,7 @@ namespace ZenPlatform.QueryBuilder
         private bool TryPeek<T>(out T obj)
         {
             if (_syntaxStack.Count > 0)
-                if (Peek() is T item)
+                if (peek() is T item)
                 {
                     obj = item;
                     return true;
@@ -44,24 +44,19 @@ namespace ZenPlatform.QueryBuilder
             return false;
         }
 
-        public object Peek()
-        {
-            return _syntaxStack.Peek();
-        }
 
         private T Pop<T>()
         {
-            return (T)Pop();
+            return (T) pop();
         }
 
         private List<T> TryPopList<T>(int count = 0)
         {
             List<T> result = new List<T>();
             int i = 0;
-            while (TryPop(out T item) && ++i<count && count>0)
+            while (TryPop(out T item) && (++i < count && count > 0 || count == 0))
             {
                 result.Add(item);
-                
             }
 
             TryPop<SMarker>();
@@ -84,8 +79,8 @@ namespace ZenPlatform.QueryBuilder
             {
                 _syntaxStack.Pop();
             }
-        
-            return  item; 
+
+            return item;
         }
 
         private void Push(object obj)
@@ -98,7 +93,7 @@ namespace ZenPlatform.QueryBuilder
             return _syntaxStack.Peek();
         }
 
-        public object Pop()
+        public object pop()
         {
             return _syntaxStack.Pop();
         }
@@ -149,7 +144,7 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine @as(string name)
         {
-            switch (Pop())
+            switch (pop())
             {
                 case SExpression exp:
                     Push(new SAliasedExpression(exp, name));
@@ -171,7 +166,8 @@ namespace ZenPlatform.QueryBuilder
                 case MachineContextType.Select:
                     break;
             }
-                    return this;
+
+            return this;
         }
 
         public QueryMachine ld_const(object value)
@@ -194,13 +190,33 @@ namespace ZenPlatform.QueryBuilder
 
         public QueryMachine @case()
         {
-            Push(new SCase(TryPop<SExpression>(),PopList<SWhen>()));
+            Push(new SCase(TryPop<SExpression>(), PopList<SWhen>()));
             return this;
         }
 
         public QueryMachine when()
         {
-            Push(new SWhen(Pop<SCondition>(),Pop<SExpression>()));
+            Push(new SWhen(Pop<SCondition>(), Pop<SExpression>()));
+            return this;
+        }
+
+        public QueryMachine ld_col_type(string type)
+        {
+            ColumnType colType = type switch
+            {
+                "numeric" => (ColumnType) new ColumnTypeNumeric {Precision = 2, Scale = 10},
+                "string" => new ColumnTypeVarChar {Size = 150},
+                "bool" => new ColumnTypeBool(),
+                _ => throw new NotSupportedException()
+            };
+
+            Push(colType);
+            return this;
+        }
+
+        public QueryMachine cast()
+        {
+            Push(new SCast(Pop<ColumnType>(), Pop<SExpression>()));
             return this;
         }
 
@@ -246,7 +262,7 @@ namespace ZenPlatform.QueryBuilder
                     List<SSetItem> items = new List<SSetItem>();
                     while (TryPeek(out SExpression exp))
                     {
-                        Pop();
+                        pop();
                         items.Add(new SSetItem(Pop<SField>(), exp));
                     }
 
@@ -257,6 +273,7 @@ namespace ZenPlatform.QueryBuilder
                     Push(new SUpdate(Pop<SDataSource>(), Pop<SSet>(), TryPop<SWhere>(), TryPop<SFrom>()));
                     break;
             }
+
             _currentContext.Type = contextType;
         }
 
@@ -340,7 +357,7 @@ namespace ZenPlatform.QueryBuilder
             return this;
         }
 
-        public QueryMachine ct_query()
+        public QueryMachine bg_query()
         {
             if (_currentContext != null)
                 Push(_currentContext);

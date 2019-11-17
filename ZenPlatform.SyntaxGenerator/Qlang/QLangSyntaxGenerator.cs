@@ -70,7 +70,7 @@ namespace ZenPlatform.SyntaxGenerator.QLang
             var ns = SyntaxFactory.NamespaceDeclaration(
                 SyntaxFactory.ParseName(rootNameSpace));
 
-          
+
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
             var publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
@@ -345,7 +345,9 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Querying.Model")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Querying.Visitor")),
                         SyntaxFactory.UsingDirective(
-                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Structure.Data.Types.Complex"))
+                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Structure.Data.Types.Complex")),
+                        SyntaxFactory.UsingDirective(
+                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Structure.Data.Types"))
                     );
                 ;
 

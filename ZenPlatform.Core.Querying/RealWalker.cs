@@ -10,63 +10,6 @@ using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Querying
 {
-    public static class QLangExtensions
-    {
-        public static void SetDbName(this QItem item, string name)
-        {
-            item.AttachedPropery["DbName"] = name;
-        }
-
-        public static string GetDbName(this QItem item)
-        {
-            if (item.AttachedPropery.TryGetValue("DbName", out var result))
-                return (string) result;
-            else
-                return null;
-        }
-    }
-
-    public class PhysicalNameWalker : QLangWalker
-    {
-        public int _aliasCount;
-        public int _fieldCount;
-        public int _tableCount;
-
-        public override object VisitQQuery(QQuery node)
-        {
-            VisitQFrom(node.From);
-            VisitQSelect(node.Select);
-
-            return null;
-        }
-
-        public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
-        {
-            node.SetDbName($"{node.Property.DatabaseColumnName}");
-            return base.VisitQSourceFieldExpression(node);
-        }
-
-        public override object VisitQAliasedSelectExpression(QAliasedSelectExpression node)
-        {
-            node.SetDbName($"A{_aliasCount++}");
-            return base.VisitQAliasedSelectExpression(node);
-        }
-
-        public override object VisitQIntermediateSourceField(QIntermediateSourceField node)
-        {
-            base.VisitQIntermediateSourceField(node);
-            node.SetDbName(node.Field.GetDbName());
-            return null;
-        }
-
-        public override object VisitQSelectExpression(QSelectExpression node)
-        {
-            base.VisitQSelectExpression(node);
-            node.SetDbName(node.Element.GetDbName());
-            return null;
-        }
-    }
-
     public class RealWalker : QLangWalker
     {
         private QueryMachine _qm;
@@ -87,7 +30,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQQuery(QQuery node)
         {
-            _qm.ct_query();
+            _qm.bg_query();
             _l.WriteLine("ct_query");
 
             Visit(node.From);
@@ -96,6 +39,16 @@ namespace ZenPlatform.Core.Querying
             _qm.st_query();
             _l.WriteLine("st_query");
 
+            return null;
+        }
+
+        public override object VisitQCast(QCast node)
+        {
+            base.VisitQCast(node);
+
+            _qm.ld_col_type("string");
+            _qm.cast();
+            
             return null;
         }
 
@@ -115,9 +68,21 @@ namespace ZenPlatform.Core.Querying
 
             ot.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
 
+            if (!_hasAlias)
+                _qm.@as(node.GetDbName());
+
+            _hasAlias = false;
+
             return base.VisitQObjectTable(node);
         }
 
+        public override object VisitQEquals(QEquals node)
+        {
+            base.VisitQEquals(node);
+            _qm.eq();
+
+            return null;
+        }
 
         public override object VisitQFrom(QFrom node)
         {
@@ -134,6 +99,16 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
+        public override object VisitQFromItem(QFromItem node)
+        {
+            Visit(node.Joined);
+            Visit(node.Condition);
+
+            _qm.@join();
+
+            return null;
+        }
+
         public override object VisitQNestedQuery(QNestedQuery node)
         {
             return base.VisitQNestedQuery(node);
@@ -146,53 +121,34 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQAliasedDataSource(QAliasedDataSource node)
         {
+            _hasAlias = true;
+
             base.VisitQAliasedDataSource(node);
 
-            _qm.@as(node.Alias);
+            _qm.@as(node.GetDbName());
+
             return null;
         }
 
-        private IEnumerable<XCColumnSchemaDefinition> Get(string name, List<XCTypeBase> types)
+        private void LoadNamedSource(string arg)
         {
-            var done = false;
+            if (_hasNamedSource) return;
 
-            if (types.Count == 1)
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, types[0], name, false);
-            if (types.Count > 1)
-            {
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, null, name,
-                    false, "", "_Type");
-
-                foreach (var type in types)
-                {
-                    if (type is XCPrimitiveType)
-                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
-                            name, false, "", $"_{type.Name}");
-
-                    if (type is XCObjectTypeBase obj && !done)
-                    {
-                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, type, name,
-                            !obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn, "", "_Ref");
-
-                        done = true;
-                    }
-                }
-            }
+            _qm.ld_str(arg);
+            _hasNamedSource = true;
         }
 
         public override object VisitQIntermediateSourceField(QIntermediateSourceField node)
         {
+            LoadNamedSource(node.DataSource.GetDbName());
+
             if (node.DataSource is QAliasedDataSource ads)
             {
-                _qm.ld_str(ads.Alias);
-                _hasNamedSource = true;
-                _l.WriteLine($"ld_str({ads.Alias})");
-
                 base.VisitQIntermediateSourceField(node);
             }
             else if (node.DataSource is QNestedQuery)
             {
-                var schema = Get(node.GetDbName(), node.GetExpressionType().ToList());
+                var schema = PropertyHelper.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
                 GenColumn(schema);
             }
 
@@ -202,6 +158,8 @@ namespace ZenPlatform.Core.Querying
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
             var schema = node.Property.GetPropertySchemas();
+
+            LoadNamedSource(node.ObjectTable.GetDbName());
 
             GenColumn(schema);
 
@@ -214,10 +172,10 @@ namespace ZenPlatform.Core.Querying
             string alias = null;
 
             if (_hasNamedSource)
-                tabName = (string) _qm.Pop();
+                tabName = (string) _qm.pop();
 
             if (_hasAlias)
-                alias = (string) _qm.Pop();
+                alias = (string) _qm.pop();
 
             foreach (var def in schema)
             {

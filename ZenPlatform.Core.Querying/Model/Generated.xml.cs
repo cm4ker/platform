@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.Core.Querying.Visitor;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure.Data.Types;
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -831,14 +832,22 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCase : QExpression
     {
-        public QCase(List<QCaseWhen> whens): base()
+        public QCase(QExpression @else, List<QWhen> whens): base()
         {
+            Childs.Add(@else);
+            Else = @else;
             foreach (var item in whens)
                 Childs.Add(item);
             Whens = whens;
         }
 
-        public List<QCaseWhen> Whens
+        public QExpression Else
+        {
+            get;
+            set;
+        }
+
+        public List<QWhen> Whens
         {
             get;
             set;
@@ -847,12 +856,12 @@ namespace ZenPlatform.Core.Querying.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QCase ) obj ;  return  ( SequenceEqual ( this . Whens ,  node . Whens ) ) ; 
+                return false; var  node  =  ( QCase ) obj ;  return  ( Compare ( this . Else ,  node . Else ) && SequenceEqual ( this . Whens ,  node . Whens ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return Xor(Whens, i => i.GetHashCode());
+            return (Else == null ? 0 : Else.GetHashCode()) ^ Xor(Whens, i => i.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -864,22 +873,14 @@ namespace ZenPlatform.Core.Querying.Model
 
 namespace ZenPlatform.Core.Querying.Model
 {
-    public partial class QCaseWhen : QItem
+    public partial class QWhen : QItem
     {
-        public QCaseWhen(QExpression @else, QExpression then, QOperationExpression @when): base()
+        public QWhen(QExpression then, QOperationExpression @when): base()
         {
-            Childs.Add(@else);
-            Else = @else;
             Childs.Add(then);
             Then = then;
             Childs.Add(@when);
             When = @when;
-        }
-
-        public QExpression Else
-        {
-            get;
-            set;
         }
 
         public QExpression Then
@@ -897,17 +898,17 @@ namespace ZenPlatform.Core.Querying.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QCaseWhen ) obj ;  return  ( Compare ( this . Else ,  node . Else ) && Compare ( this . Then ,  node . Then ) && Compare ( this . When ,  node . When ) ) ; 
+                return false; var  node  =  ( QWhen ) obj ;  return  ( Compare ( this . Then ,  node . Then ) && Compare ( this . When ,  node . When ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Else == null ? 0 : Else.GetHashCode()) ^ (Then == null ? 0 : Then.GetHashCode()) ^ (When == null ? 0 : When.GetHashCode());
+            return (Then == null ? 0 : Then.GetHashCode()) ^ (When == null ? 0 : When.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitQCaseWhen(this);
+            return visitor.VisitQWhen(this);
         }
     }
 }
@@ -1290,6 +1291,47 @@ namespace ZenPlatform.Core.Querying.Model
     }
 }
 
+namespace ZenPlatform.Core.Querying.Model
+{
+    public partial class QCast : QExpression
+    {
+        public QCast(XCTypeBase type, QExpression baseExpression): base()
+        {
+            Type = type;
+            Childs.Add(baseExpression);
+            BaseExpression = baseExpression;
+        }
+
+        public XCTypeBase Type
+        {
+            get;
+            set;
+        }
+
+        public QExpression BaseExpression
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( QCast ) obj ;  return  ( Compare ( this . Type ,  node . Type ) && Compare ( this . BaseExpression ,  node . BaseExpression ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Type == null ? 0 : Type.GetHashCode()) ^ (BaseExpression == null ? 0 : BaseExpression.GetHashCode());
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQCast(this);
+        }
+    }
+}
+
 namespace ZenPlatform.Core.Querying.Visitor
 {
     public abstract partial class QLangVisitorBase<T>
@@ -1423,7 +1465,7 @@ namespace ZenPlatform.Core.Querying.Visitor
             return DefaultVisit(node);
         }
 
-        public virtual T VisitQCaseWhen(QCaseWhen node)
+        public virtual T VisitQWhen(QWhen node)
         {
             return DefaultVisit(node);
         }
@@ -1469,6 +1511,11 @@ namespace ZenPlatform.Core.Querying.Visitor
         }
 
         public virtual T VisitQGreatThenOrEquals(QGreatThenOrEquals node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitQCast(QCast node)
         {
             return DefaultVisit(node);
         }

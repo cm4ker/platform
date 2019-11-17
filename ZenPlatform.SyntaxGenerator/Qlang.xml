@@ -126,13 +126,14 @@
 
     <Syntax Name="QCase" Base="QExpression">
         <Arguments>
-            <List Name="Whens" Type="List&lt;QCaseWhen&gt;"/>
+            <Single Name="Else" Type="QExpression"/>
+            <List Name="Whens" Type="List&lt;QWhen&gt;"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QCaseWhen" Base="QItem">
+    <Syntax Name="QWhen" Base="QItem">
         <Arguments>
-            <Single Name="Else" Type="QExpression"/>
+
             <Single Name="Then" Type="QExpression"/>
             <Single Name="When" Type="QOperationExpression"/>
         </Arguments>
@@ -189,10 +190,18 @@
             <Single Name="Right" Type="QExpression"/>
         </Arguments>
     </Syntax>
+
     <Syntax Name="QGreatThenOrEquals" Base="QOperationExpression">
         <Arguments>
             <Single Name="Left" Type="QExpression"/>
             <Single Name="Right" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QCast" Base="QExpression">
+        <Arguments>
+            <Single Name="Type" Type="XCTypeBase" DenyChildrenFill="true"/>
+            <Single Name="BaseExpression" Type="QExpression"/>
         </Arguments>
     </Syntax>
 </Config>
