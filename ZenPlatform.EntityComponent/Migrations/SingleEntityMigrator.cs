@@ -99,7 +99,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                     }
                     else if (property.old == null)
                     {
-                        GetColumnDefenition(property.actual).ForEach(c => { query.Alter().Column(c); });
+                        GetColumnDefenition(property.actual).ForEach(c => { query.Alter().Column(c).OnTable(tableName); });
 
                     }
                     else
@@ -119,12 +119,12 @@ namespace ZenPlatform.EntityComponent.Migrations
                                 && newSchema.SchemaType == XCColumnSchemaType.Value
                                 && !oldSchema.PlatformType.Equals(newSchema.PlatformType))
                             {
-                                query.Alter().Column(GetColumnDefenitionBySchema(newSchema));
+                                query.Alter().Column(GetColumnDefenitionBySchema(newSchema)).OnTable(tableName);
                             }
 
                             if (oldSchema == null) // если раньше колонки небыло - создаем
                             {
-                                query.Create().Column(GetColumnDefenitionBySchema(newSchema));
+                                query.Create().Column(GetColumnDefenitionBySchema(newSchema)).OnTable(tableName);
                             }
 
                             

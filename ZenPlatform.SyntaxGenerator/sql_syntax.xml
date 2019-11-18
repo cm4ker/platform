@@ -325,7 +325,8 @@
   <Syntax Name="ColumnTypeChar" Base="ColumnType" Ddl="true" />
   <Syntax Name="ColumnTypeVarChar" Base="SizableType" Ddl="true" />
   <Syntax Name="ColumnTypeBlob" Base="SizableType" Ddl="true" />
-  <Syntax Name="ColumnTypeBynary" Base="SizableType" Ddl="true" />
+  <Syntax Name="ColumnTypeBinary" Base="SizableType" Ddl="true" />
+  <Syntax Name="ColumnTypeVarBinary" Base="SizableType" Ddl="true" />
   <Syntax Name="ColumnTypeGuid" Base="ColumnType" Ddl="true" />
   <Syntax Name="ColumnTypeText" Base="SizableType" Ddl="true" />
 

@@ -1962,9 +1962,9 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class ColumnTypeBynary : SizableType
+    public partial class ColumnTypeBinary : SizableType
     {
-        public ColumnTypeBynary(): base()
+        public ColumnTypeBinary(): base()
         {
         }
 
@@ -1975,7 +1975,27 @@ namespace ZenPlatform.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitColumnTypeBynary(this);
+            return visitor.VisitColumnTypeBinary(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class ColumnTypeVarBinary : SizableType
+    {
+        public ColumnTypeVarBinary(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitColumnTypeVarBinary(this);
         }
     }
 }
@@ -2976,7 +2996,12 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return DefaultVisit(node);
         }
 
-        public virtual T VisitColumnTypeBynary(ColumnTypeBynary node)
+        public virtual T VisitColumnTypeBinary(ColumnTypeBinary node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitColumnTypeVarBinary(ColumnTypeVarBinary node)
         {
             return DefaultVisit(node);
         }
