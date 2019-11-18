@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using dnlib.DotNet;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -10,8 +12,6 @@ using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Querying
 {
-    
-    
     /*
      1) Сопоставить типы обеих сторон
         String        String
@@ -27,7 +27,59 @@ namespace ZenPlatform.Core.Querying
      AND AB = BB
      AND AType = BType 
      
+     E1:
+     A (int, string) = B (int, string) => 
      
+     A.Type = B.Type
+     AND A.Int = B.Int
+     AND A.String = B.String
+     
+     E2:
+     A(int, string) = B(int) =>
+     
+     A.Type = 1
+     AND A.Int = B.Int
+     
+     E3:
+     Cast(A (int, string) as int) = B (int, string) => 
+     
+     CASE When A.Type = 1 THEN A.Int
+          When A.Type = 2 THEN CAST(A.String AS int) END = B.Int
+     
+     E4:
+     Case 1 > n Then A (int, string) 
+                Else B (date, string, Ref) End = C (int, Ref) => 
+          
+     Case 1 > n Then
+                    A.Type
+                Else
+                    B.Type 
+     End = C.Type
+     AND     
+     Case 1 > n Then
+                    A.Int
+                Else
+                    default(int) 
+     End = C.Int
+     AND
+     Case 1 > n Then
+                    default(ref)
+                Else
+                    B.Ref End = C.Ref
+     End
+          
+     E5:
+     Cast(Case 1 > n Then A (int, string) 
+                Else B (date, string, Ref) End as int) = C (int, Ref) =>    
+     
+     Case when 1 > n Then 
+                        Case
+                            When A.Type = 1 Then A.Int
+                            When A.Type = 2 Then CAST(A.String AS int) 
+                        End 
+                     Else
+                      Cast(B.String AS int)
+     End = C.Int
      */
     public class RealWalker : QLangWalker
     {
@@ -95,9 +147,57 @@ namespace ZenPlatform.Core.Querying
             return base.VisitQObjectTable(node);
         }
 
+        private enum TypesComparerOp
+        {
+        }
+
+        private List<XCTypeBase> CommonTypes(List<XCTypeBase> types1, List<XCTypeBase> types2)
+        {
+            var result = new List<XCTypeBase>();
+            foreach (var t1 in types1)
+            {
+                foreach (var t2 in types2)
+                {
+                    if (t1.IsAssignableFrom(t2))
+                    {
+                        result.Add(t1);
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public override object VisitQEquals(QEquals node)
         {
-            base.VisitQEquals(node);
+            var leftTypes = node.Left.GetExpressionType().ToList();
+            var rightTypes = node.Right.GetExpressionType().ToList();
+
+            if (!leftTypes.Any() || !rightTypes.Any())
+            {
+                throw new Exception("Can't optimize expression with empty types");
+            }
+
+            if (leftTypes.Count == 1 && rightTypes.Count == 1)
+            {
+                //Если количество типов одно и тоже мы просто визитируем дальше
+                base.VisitQEquals(node);
+            }
+            else
+            {
+                //Нужно понять, какая у нас ситуация
+                //1: Pure equals
+                if (node.Left is QObjectField leftField && node.Right is QObjectField rightField)
+                {
+                    var commonTypes = CommonTypes(leftTypes, rightTypes);
+
+                    foreach (var type in commonTypes)
+                    {
+                        leftField.Property.GetPropertySchemas().Where(x => x.PlatformType == type);
+                    }
+                }
+            }
+
             _qm.eq();
 
             return null;
