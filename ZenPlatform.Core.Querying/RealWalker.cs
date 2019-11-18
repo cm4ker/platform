@@ -193,7 +193,17 @@ namespace ZenPlatform.Core.Querying
 
                     foreach (var type in commonTypes)
                     {
-                        leftField.Property.GetPropertySchemas().Where(x => x.PlatformType == type);
+                        var leftSchema =
+                            leftField.Property.GetPropertySchemas().FirstOrDefault(x => x.PlatformType == type) ??
+                            throw new Exception($"Can't find in Property: {leftField.Property.Name} type {type}");
+
+                        var rightSchema =
+                            rightField.Property.GetPropertySchemas().FirstOrDefault(x => x.PlatformType == type) ??
+                            throw new Exception($"Can't find in Property: {rightField.Property.Name} type {type}");
+
+                        _qm.ld_column(leftSchema.FullName);
+                        _qm.ld_column(leftSchema.FullName);
+                        _qm.eq();
                     }
                 }
             }
