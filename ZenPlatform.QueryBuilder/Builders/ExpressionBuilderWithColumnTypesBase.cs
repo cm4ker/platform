@@ -53,7 +53,7 @@ namespace ZenPlatform.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsBinary(int size)
         {
-            SetType(new ColumnTypeBynary() { Size = size });
+            SetType(new ColumnTypeBinary() { Size = size });
             return (TNext)(object)this;
         }
 
