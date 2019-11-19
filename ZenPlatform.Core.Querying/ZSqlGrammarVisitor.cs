@@ -1,4 +1,5 @@
 ﻿using dnlib.DotNet.Resources;
+using Mono.Cecil;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Querying.Model;
@@ -49,7 +50,7 @@ namespace ZenPlatform.Core.Querying
         public override object VisitExprEquality(ZSqlGrammarParser.ExprEqualityContext context)
         {
             base.VisitExprEquality(context);
-            
+
             if (context.exprEquality() != null)
                 _stack.eq();
 
@@ -123,6 +124,20 @@ namespace ZenPlatform.Core.Querying
                 _stack.ld_source_context();
 
             _stack.ld_field(context.column_name().GetText());
+
+            return null;
+        }
+
+        public override object VisitType_name(ZSqlGrammarParser.Type_nameContext context)
+        {
+            _stack.ld_type(context.GetText());
+            return null;
+        }
+
+        public override object VisitExpr_cast(ZSqlGrammarParser.Expr_castContext context)
+        {
+            base.VisitExpr_cast(context);
+            _stack.cast();
 
             return null;
         }

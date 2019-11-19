@@ -56,6 +56,15 @@ namespace ZenPlatform.ConfigurationExample
             var invoiceProp = store.CreateProperty();
             invoiceProp.Name = "Invoice";
             invoiceProp.Types.Add(invoice);
+
+            var storeCompositeProp = store.CreateProperty();
+            storeCompositeProp.Name = "CompositeProperty";
+            storeCompositeProp.DatabaseColumnName = "Fld_0004";
+            storeCompositeProp.Types.Add(new XCBinary());
+            storeCompositeProp.Types.Add(new XCBoolean());
+            storeCompositeProp.Types.Add(new XCString());
+            storeCompositeProp.Types.Add(new XCDateTime());
+
             store.Initialize();
 
             var storeProp = invoice.CreateProperty();
@@ -122,10 +131,10 @@ public void OnClientClientCallProc()
 
             root.Data.Components.Add(component);
 
-            var store = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
-            var invoice = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
-            var department = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
-            var custom = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            var department = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            var custom = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
 
 
             department.Name = "Department";

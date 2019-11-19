@@ -2,7 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using Antlr4.Runtime.Atn;
 using dnlib.DotNet;
+using MoreLinq.Extensions;
+using Portable.Xaml;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -115,10 +119,66 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQCast(QCast node)
         {
-            base.VisitQCast(node);
+            QSourceFieldExpression sf = null;
+            string fieldName = null;
 
-            _qm.ld_col_type("string");
-            _qm.cast();
+            if (node.BaseExpression is QSourceFieldExpression)
+            {
+                sf = (QSourceFieldExpression) node.BaseExpression;
+            }
+            else if ((node.BaseExpression is QIntermediateSourceField ife && ife.Field is QSourceFieldExpression))
+            {
+                fieldName = ife.DataSource.GetDbName();
+                sf = (QSourceFieldExpression) ife.Field;
+            }
+
+            if (sf != null)
+            {
+                var schemas = sf.Property.GetPropertySchemas();
+
+                if (sf.Property.Types.Count > 1)
+                {
+                    var typeSchema = schemas.First(x => x.SchemaType == XCColumnSchemaType.Type);
+
+                    foreach (var schema in schemas.Where(x => x.SchemaType != XCColumnSchemaType.Type))
+                    {
+                        if (string.IsNullOrEmpty(fieldName))
+                            _qm.ld_column(schema.FullName);
+                        else
+                        {
+                            _qm.ld_str(fieldName);
+                            _qm.ld_str(schema.FullName);
+                            _qm.ld_column();
+                        }
+
+                        _qm.ld_col_type("string");
+                        _qm.cast();
+
+                        if (string.IsNullOrEmpty(fieldName))
+                            _qm.ld_column(typeSchema.FullName);
+                        else
+                        {
+                            _qm.ld_str(fieldName);
+                            _qm.ld_str(typeSchema.FullName);
+                            _qm.ld_column();
+                        }
+
+                        _qm.ld_const(schema.PlatformType.Id);
+                        _qm.eq();
+
+                        _qm.when();
+                    }
+
+                    _qm.@case();
+                }
+            }
+            else
+            {
+                base.VisitQCast(node);
+
+                _qm.ld_col_type("string");
+                _qm.cast();
+            }
 
             return null;
         }
@@ -182,12 +242,14 @@ namespace ZenPlatform.Core.Querying
             {
                 //Если количество типов одно и тоже мы просто визитируем дальше
                 base.VisitQEquals(node);
+                _qm.eq();
             }
             else
             {
-                //Нужно понять, какая у нас ситуация
+                //Нужно понять, какая у нас ситуация 
+
                 //1: Pure equals
-                if (node.Left is QObjectField leftField && node.Right is QObjectField rightField)
+                if (node.Left is QSourceFieldExpression leftField && node.Right is QSourceFieldExpression rightField)
                 {
                     var commonTypes = CommonTypes(leftTypes, rightTypes);
 
@@ -206,12 +268,95 @@ namespace ZenPlatform.Core.Querying
                         _qm.eq();
                     }
                 }
-            }
 
-            _qm.eq();
+                //2: Pure equals with intermediate field
+                else if (node.Left is QIntermediateSourceField ileft &&
+                         node.Right is QIntermediateSourceField iright &&
+                         ileft.Field is QSourceFieldExpression l && iright.Field is QSourceFieldExpression r)
+                {
+                    var commonTypes = CommonTypes(leftTypes, rightTypes);
+
+                    var lpropSchema = l.Property.GetPropertySchemas();
+                    var rpropSchema = r.Property.GetPropertySchemas();
+
+                    var tr = rpropSchema.First(x => x.SchemaType == XCColumnSchemaType.Type);
+                    var tl = lpropSchema.First(x => x.SchemaType == XCColumnSchemaType.Type);
+
+                    _qm.ld_str(ileft.DataSource.GetDbName());
+                    _qm.ld_str(tl.FullName);
+                    _qm.ld_column();
+
+                    _qm.ld_str(iright.DataSource.GetDbName());
+                    _qm.ld_str(tr.FullName);
+                    _qm.ld_column();
+
+                    _qm.eq();
+
+                    foreach (var type in commonTypes)
+                    {
+                        var leftSchema =
+                            lpropSchema.FirstOrDefault(x => x.PlatformType.Equals(type)) ??
+                            throw new Exception($"Can't find in Property: {l.Property.Name} type {type}");
+
+                        var rightSchema =
+                            rpropSchema.FirstOrDefault(x => x.PlatformType.Equals(type)) ??
+                            throw new Exception($"Can't find in Property: {r.Property.Name} type {type}");
+
+                        _qm.ld_str(ileft.DataSource.GetDbName());
+                        _qm.ld_str(leftSchema.FullName);
+                        _qm.ld_column();
+
+                        _qm.ld_str(iright.DataSource.GetDbName());
+                        _qm.ld_str(rightSchema.FullName);
+                        _qm.ld_column();
+
+                        _qm.eq();
+
+                        _qm.and();
+                    }
+                }
+
+                else if (node.Left is QCast cast)
+                {
+                    Visit(node.Left);
+
+                    if (node.Right is QSourceFieldExpression ||
+                        (node.Right is QIntermediateSourceField ifs && ifs.Field is QSourceFieldExpression))
+                    {
+                        string tableName = "";
+
+                        if (node.Right is QIntermediateSourceField qsf)
+                        {
+                            tableName = qsf.DataSource.GetDbName();
+                        }
+
+                        var sfield =
+                            (QSourceFieldExpression) ((node.Right as QIntermediateSourceField)?.Field) ??
+                            (node.Right as QSourceFieldExpression);
+
+                        var schema = sfield.Property.GetPropertySchemas()
+                            .FirstOrDefault(x => x.PlatformType.Equals(cast.GetExpressionType().First()));
+
+                        if (schema != null)
+                        {
+                            if (string.IsNullOrEmpty(tableName))
+                                _qm.ld_column(schema.FullName);
+                            else
+                            {
+                                _qm.ld_str(tableName);
+                                _qm.ld_str(schema.FullName);
+                                _qm.ld_column();
+                            }
+
+                            _qm.eq();
+                        }
+                    }
+                }
+            }
 
             return null;
         }
+
 
         public override object VisitQFrom(QFrom node)
         {
