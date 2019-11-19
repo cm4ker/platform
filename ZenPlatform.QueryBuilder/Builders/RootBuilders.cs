@@ -19,53 +19,52 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         public CreateBuilder Create()
         {
-            var builder = new CreateBuilder();
-            _expression.QueryList.Add(builder.Expression);
+            var builder = new CreateBuilder(_expression);
             return builder;
         }
 
         public AlterBuilder Alter()
         {
-            var builder = new AlterBuilder();
-            _expression.QueryList.Add(builder.Expression);
+            var builder = new AlterBuilder(_expression);
             return builder;
         }
 
         public DeleteBuilder Delete()
         {
-            var builder = new DeleteBuilder();
-            _expression.QueryList.Add(builder.Expression);
+            var builder = new DeleteBuilder(_expression);
             return builder;
         }
         
         public CopyBuilder Copy()
         {
-            var builder = new CopyBuilder();
-            _expression.QueryList.Add(builder.Expression);
+            var builder = new CopyBuilder(_expression);
             return builder;
         }
 
         public RenameBuilder Rename()
         {
-            var builder = new RenameBuilder();
-            _expression.QueryList.Add(builder.Expression);
+            var builder = new RenameBuilder(_expression);
             return builder;
         }
 
 
     }
 
-    public class CreateBuilder: IExpression
+    public class CreateBuilder
     {
-        public SSyntaxNode Expression => _expression;
-        private Querys _expression = new Querys();
+        private Querys _querys ;
+
+        public CreateBuilder(Querys querys)
+        {
+            _querys = querys;
+        }
 
 
         public CreateTableBuilder Table(string tableName)
         {
 
             CreateTable createTable = new CreateTable() { Table = new Table() { Value = tableName } };
-            _expression.QueryList.Add(createTable);
+            _querys.QueryList.Add(createTable);
             return new CreateTableBuilder(createTable);
         }
 
@@ -74,7 +73,7 @@ namespace ZenPlatform.QueryBuilder.Builders
 
             var add = new AddColumn();
 
-            _expression.QueryList.Add(add);
+            _querys.QueryList.Add(add);
             return new CreateColumnBuilder(add).Column(columnName);
 
         }
@@ -83,16 +82,19 @@ namespace ZenPlatform.QueryBuilder.Builders
         {
             var add = new AddColumn();
 
-            _expression.QueryList.Add(add);
+            _querys.QueryList.Add(add);
             return new CreateColumnBuilder(add).Column(column);
         }
     }
 
-    public class AlterBuilder : IExpression
+    public class AlterBuilder 
     {
-        public SSyntaxNode Expression => _expression;
+        private Querys _querys;
 
-        private Querys _expression = new Querys();
+        public AlterBuilder(Querys querys)
+        {
+            _querys = querys;
+        }
 
         public AlterColumnBuilder Column(string columnName)
         {
@@ -100,7 +102,7 @@ namespace ZenPlatform.QueryBuilder.Builders
 
             var alter = new AlterColumn();
 
-            _expression.QueryList.Add(alter);
+            _querys.QueryList.Add(alter);
             return new AlterColumnBuilder(alter).Column(columnName);
         }
 
@@ -108,22 +110,25 @@ namespace ZenPlatform.QueryBuilder.Builders
         {
             var alter = new AlterColumn();
 
-            _expression.QueryList.Add(alter);
+            _querys.QueryList.Add(alter);
             return new AlterColumnBuilder(alter).Column(column);
         }
 
     }
 
-    public class DeleteBuilder : IExpression
+    public class DeleteBuilder 
     {
-        public SSyntaxNode Expression => _expression;
+        private Querys _querys;
 
-        private Querys _expression = new Querys();
+        public DeleteBuilder(Querys querys)
+        {
+            _querys = querys;
+        }
 
         public DeleteTableBuilder Table(string tableName)
         {
             var dropTable = new DropTable() { Table = new Table() { Value = tableName } };
-            _expression.QueryList.Add(dropTable);
+            _querys.QueryList.Add(dropTable);
             return new DeleteTableBuilder(dropTable);
         }
 
@@ -134,39 +139,45 @@ namespace ZenPlatform.QueryBuilder.Builders
                 Column = new Column() { Value = columnName }
             };
 
-            _expression.QueryList.Add(dropColumn);
+            _querys.QueryList.Add(dropColumn);
             return new DeleteColumnBuilder(dropColumn);
         }
 
     }
 
-    public class CopyBuilder : IExpression
+    public class CopyBuilder 
     {
-        public SSyntaxNode Expression => _expression;
+        private Querys _querys;
 
-        private Querys _expression = new Querys();
+        public CopyBuilder(Querys querys)
+        {
+            _querys = querys;
+        }
 
         public CopyTableBuilder Table(string tableName)
         {
             var copy = new CopyTable();
-            _expression.QueryList.Add(copy);
+            _querys.QueryList.Add(copy);
             return new CopyTableBuilder(copy).FromTable(tableName);
         }
 
         public CopyTableBuilder Table()
         {
             var copy = new CopyTable();
-            _expression.QueryList.Add(copy);
+            _querys.QueryList.Add(copy);
             return new CopyTableBuilder(copy);
         }
     }
 
 
-    public class RenameBuilder : IExpression
+    public class RenameBuilder 
     {
-        public SSyntaxNode Expression => _expression;
+        private Querys _querys;
 
-        private Querys _expression = new Querys();
+        public RenameBuilder(Querys querys)
+        {
+            _querys = querys;
+        }
 
         public RenameTableBuilder Table(string oldName = null)
         {
@@ -174,7 +185,7 @@ namespace ZenPlatform.QueryBuilder.Builders
             if (!string.IsNullOrEmpty(oldName)) node.From = oldName;
 
             var builder = new RenameTableBuilder(node);
-            _expression.QueryList.Add(node);
+            _querys.QueryList.Add(node);
             return builder;
         }
 
