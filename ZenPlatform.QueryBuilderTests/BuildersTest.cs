@@ -68,8 +68,8 @@ namespace ZenPlatform.QueryBuilder.Tests
             var query = DDLQuery.New();
                 query
                 .Create().Table("MyTable")
-                .WithColumn("Column1").AsInt32().PrimaryKey().NotNullable()
-                .WithColumn("Column2").AsInt32().WithDefaultValue(10).Unique().ForeignKey("ForeignTable", "ForeignColumn")
+                .WithColumn("Column1").AsInt().PrimaryKey().NotNullable()
+                .WithColumn("Column2").AsInt().WithDefaultValue(10).Unique().ForeignKey("ForeignTable", "ForeignColumn")
                 ;
 
 
@@ -101,7 +101,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
 
             var query = DDLQuery.New();
-            query.Alter().Column("Column1").AsInt32().NotNullable().OnTable("MyTable");
+            query.Alter().Column("Column1").AsInt().NotNullable().OnTable("MyTable");
 
 
             var result2 = _visitor.Visit(query.Expression);

@@ -25,7 +25,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return Equals(obj as XCBinary);
+            return Equals(obj as XCInt);
         }
 
         public override int GetHashCode()

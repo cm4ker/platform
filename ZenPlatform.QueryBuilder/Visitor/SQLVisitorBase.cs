@@ -251,6 +251,14 @@ namespace ZenPlatform.QueryBuilder.Visitor
             );
         }
 
+        public override string VisitCopyTable(CopyTable node)
+        {
+            return string.Format("INSERT INTO {0} SELECT * FROM {1}",
+                node.DstTable.Accept(this),
+                node.Table.Accept(this)
+            );
+        }
+
         public override string VisitAddConstraint(AddConstraint node)
         {
             return string.Format("ALTER TABLE {0}\n ADD {1}",
@@ -348,9 +356,14 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return $"TEXT({node.Size})";
         }
 
-        public override string VisitColumnTypeBynary(ColumnTypeBynary node)
+        public override string VisitColumnTypeBinary(ColumnTypeBinary node)
         {
             return $"BINARY({node.Size})";
+        }
+
+        public override string VisitColumnTypeVarBinary(ColumnTypeVarBinary node)
+        {
+            return $"VARBINARY({node.Size})";
         }
 
         public override string VisitConstraint(Constraint node)
