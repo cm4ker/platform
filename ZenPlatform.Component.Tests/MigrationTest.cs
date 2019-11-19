@@ -32,17 +32,22 @@ namespace ZenPlatform.Component.Tests
             var entity = com.Types.Skip(1).First();
 
 
-            var rootOld = Factory.CreateExampleConfiguration();
+            var rootOld = Factory.CreateChangedExampleConfiguration();
 
-            var comOld = root.Data.Components[0];
-            var entityOld = com.Types.Skip(1).First();
+            var comOld = rootOld.Data.Components[0];
+            var entityOld = comOld.Types.Skip(1).First();
 
 
-            var script = com.ComponentImpl.Migrator.GetStep1(entityOld, entity);
+            
 
             var sqlCompiler = SqlCompillerBase.FormEnum(SqlDatabaseType.SqlServer);
 
+            var script = com.ComponentImpl.Migrator.GetStep1(entityOld, entity);
             var result = sqlCompiler.Compile(script);
+
+
+            script = com.ComponentImpl.Migrator.GetStep2(entityOld, entity);
+            result = sqlCompiler.Compile(script);
 
             _testOutputHelper.WriteLine(result);
         }

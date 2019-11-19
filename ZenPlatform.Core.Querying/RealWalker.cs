@@ -46,7 +46,7 @@ namespace ZenPlatform.Core.Querying
         {
             base.VisitQCast(node);
 
-            _qm.ld_col_type("string");
+            _qm.ld_type("string");
             _qm.cast();
             
             return null;

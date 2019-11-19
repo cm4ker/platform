@@ -11,42 +11,17 @@ namespace ZenPlatform.QueryBuilder.Contracts
     /// <typeparam name="TNext">The interface to return after a type was specified</typeparam>
     public interface IColumnTypeSyntax<TNext>
     {
-        /// <summary>
-        /// Defines the column type as ANSI string (single byte character set)
-        /// </summary>
-        /// <returns>The next step</returns>
-        TNext AsAnsiString();
+
+
 
         /// <summary>
-        /// Defines the column type as ANSI string (single byte character set) with the given <paramref name="collationName"/>
-        /// </summary>
-        /// <param name="collationName">The collation to use for this column</param>
-        /// <returns>The next step</returns>
-        TNext AsAnsiString(string collationName);
-
-        /// <summary>
-        /// Defines the column type as ANSI string (single byte character set) with the given <paramref name="size"/>
-        /// </summary>
-        /// <param name="size">The maximum size (usually in bytes) of the ansi string</param>
-        /// <returns>The next step</returns>
-        TNext AsAnsiString(int size);
-
-        /// <summary>
-        /// Defines the column type as ANSI string (single byte character set) with the given <paramref name="size"/> and <paramref name="collationName"/>
-        /// </summary>
-        /// <param name="size">The maximum size (usually in bytes) of the ansi string</param>
-        /// <param name="collationName">The collation to use for this column</param>
-        /// <returns>The next step</returns>
-        TNext AsAnsiString(int size, string collationName);
-
-        /// <summary>
-        /// Defines the column type as BLOB
+        /// Defines the column type as VarBinary
         /// </summary>
         /// <returns>The next step</returns>
-        TNext AsBinary();
+        TNext AsVarBinary(int size);
 
         /// <summary>
-        /// Defines the column type as BLOB
+        /// Defines the column type as Binary
         /// </summary>
         /// <param name="size">The maximum size of the BLOB (in bytes)</param>
         /// <returns>The next step</returns>
@@ -83,24 +58,7 @@ namespace ZenPlatform.QueryBuilder.Contracts
         TNext AsDateTime();
 
 
-        /// <summary>
-        /// Defines the column type as <see cref="DateTime"/> with extended range and precision
-        /// </summary>
-        /// <returns>The next step</returns>
-        TNext AsDateTime2();
 
-        /// <summary>
-        /// Defines the column type as <see cref="DateTimeOffset"/>
-        /// </summary>
-        /// <returns>The next step</returns>
-        TNext AsDateTimeOffset();
-
-        /// <summary>
-        /// Defines the column type as <see cref="DateTimeOffset"/>
-        /// </summary>
-        /// <param name="precision">The number of digits for the fraction of a second</param>
-        /// <returns>The next step</returns>
-        TNext AsDateTimeOffset(int precision);
 
         /// <summary>
         /// Defines the column type as <see cref="decimal"/>
@@ -116,11 +74,6 @@ namespace ZenPlatform.QueryBuilder.Contracts
         /// <returns>The next step</returns>
         TNext AsDecimal(int size, int precision);
 
-        /// <summary>
-        /// Defines the column type as <see cref="double"/>
-        /// </summary>
-        /// <returns>The next step</returns>
-        TNext AsDouble();
 
         /// <summary>
         /// Defines the column type as a <see cref="System.Guid"/>
@@ -129,58 +82,28 @@ namespace ZenPlatform.QueryBuilder.Contracts
         TNext AsGuid();
 
         /// <summary>
-        /// Defines the column type as unicode string with a fixed length
-        /// </summary>
-        /// <param name="size">The maximum length of the string in code points</param>
-        /// <returns>The next step</returns>
-        TNext AsFixedLengthString(int size);
-
-        /// <summary>
-        /// Defines the column type as unicode string with a fixed length
-        /// </summary>
-        /// <param name="size">The length of the string in code points</param>
-        /// <param name="collationName">The name of the collation to use</param>
-        /// <returns>The next step</returns>
-        TNext AsFixedLengthString(int size, string collationName);
-
-        /// <summary>
-        /// Defines the column type as ANSI string with fixed length
-        /// </summary>
-        /// <param name="size">The length of the string in bytes</param>
-        /// <returns>The next step</returns>
-        TNext AsFixedLengthAnsiString(int size);
-
-        /// <summary>
-        /// Defines the column type as ANSI string with fixed length
-        /// </summary>
-        /// <param name="size">The length of the string in bytes</param>
-        /// <param name="collationName">The name of the collation to use</param>
-        /// <returns>The next step</returns>
-        TNext AsFixedLengthAnsiString(int size, string collationName);
-
-        /// <summary>
         /// Defines the column type as a <see cref="float"/>
         /// </summary>
         /// <returns>The next step</returns>
-        TNext AsFloat();
+        TNext AsFloat(int size, int precision);
 
         /// <summary>
         /// Defines the column type as a <see cref="short"/>
         /// </summary>
         /// <returns>The next step</returns>
-        TNext AsInt16();
+        TNext AsSmallInt();
 
         /// <summary>
         /// Defines the column type as a <see cref="int"/>
         /// </summary>
         /// <returns>The next step</returns>
-        TNext AsInt32();
+        TNext AsInt();
 
         /// <summary>
         /// Defines the column type as a <see cref="long"/>
         /// </summary>
         /// <returns>The next step</returns>
-        TNext AsInt64();
+        TNext AsBigInt();
 
         /// <summary>
         /// Defines the column type as unicode string
@@ -188,12 +111,6 @@ namespace ZenPlatform.QueryBuilder.Contracts
         /// <returns>The next step</returns>
         TNext AsString();
 
-        /// <summary>
-        /// Defines the column type as unicode string
-        /// </summary>
-        /// <param name="collationName">The name of the collation</param>
-        /// <returns>The next step</returns>
-        TNext AsString(string collationName);
 
         /// <summary>
         /// Defines the column type as unicode string
@@ -202,13 +119,7 @@ namespace ZenPlatform.QueryBuilder.Contracts
         /// <returns>The next step</returns>
         TNext AsString(int size);
 
-        /// <summary>
-        /// Defines the column type as unicode string
-        /// </summary>
-        /// <param name="size">The maximum length in code points</param>
-        /// <param name="collationName">The name of the collation</param>
-        /// <returns>The next step</returns>
-        TNext AsString(int size, string collationName);
+
 
         /// <summary>
         /// Defines the column type as <see cref="TimeSpan"/>
