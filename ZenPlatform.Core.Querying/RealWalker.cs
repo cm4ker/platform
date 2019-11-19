@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -117,6 +118,24 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
+        private string ConvertType(XCTypeBase type)
+        {
+            if (type is XCPrimitiveType)
+            {
+                if (type is XCBinary b) return $"varbinary{b.Size}";
+                if (type is XCGuid) return "guid";
+                if (type is XCInt) return "int";
+                if (type is XCNumeric n) return $"numeric({n.Scale}, {n.Precision})";
+                if (type is XCDateTime) return "datetime";
+                if (type is XCBoolean) return "bool";
+                if (type is XCString s) return $"varchar({s.Size})";
+            }
+
+            if (type is XCObjectTypeBase) return "guid";
+
+            throw new Exception("Unknown type");
+        }
+
         public override object VisitQCast(QCast node)
         {
             QSourceFieldExpression sf = null;
@@ -151,7 +170,7 @@ namespace ZenPlatform.Core.Querying
                             _qm.ld_column();
                         }
 
-                        _qm.ld_col_type("string");
+                        _qm.ld_type(ConvertType(node.Type));
                         _qm.cast();
 
                         if (string.IsNullOrEmpty(fieldName))
@@ -176,7 +195,7 @@ namespace ZenPlatform.Core.Querying
             {
                 base.VisitQCast(node);
 
-                _qm.ld_col_type("string");
+                _qm.ld_type(ConvertType(node.Type));
                 _qm.cast();
             }
 
@@ -347,9 +366,13 @@ namespace ZenPlatform.Core.Querying
                                 _qm.ld_str(schema.FullName);
                                 _qm.ld_column();
                             }
-
-                            _qm.eq();
                         }
+                        else
+                        {
+                            _qm.ld_null();
+                        }
+
+                        _qm.eq();
                     }
                 }
             }

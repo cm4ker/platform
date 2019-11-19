@@ -48,6 +48,11 @@ namespace ZenPlatform.QueryBuilder
             return new ColumnTypeDataTime() ;
         }
 
+        public ColumnTypeBool Bool()
+        {
+            return new ColumnTypeBool() ;
+        }
+
         public ColumnType Parse(string typeName)
         {
 
@@ -78,6 +83,7 @@ namespace ZenPlatform.QueryBuilder
                 "varbinary" => VarBinary(int.Parse(args[0])),
                 "varchar" => Varchar(int.Parse(args[0])),
                 "numeric" => Numeric(int.Parse(args[0]), int.Parse(args[1])),
+                "bool" => Bool(), 
                 "datetime" => Date(),
                 _ => throw new Exception($"Type def: {typeName} can't be resolved")
             };

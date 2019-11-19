@@ -268,7 +268,9 @@
     </Arguments>
   </Syntax>
 
-
+  <Syntax Name="SNull" Base="SExpression">
+  </Syntax>
+  
   <!--DDL-->
 
   <Syntax Name="Querys" Ddl="true" >

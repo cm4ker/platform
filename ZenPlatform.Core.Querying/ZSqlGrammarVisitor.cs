@@ -127,7 +127,7 @@ namespace ZenPlatform.Core.Querying
 
             return null;
         }
-
+        
         public override object VisitType_name(ZSqlGrammarParser.Type_nameContext context)
         {
             _stack.ld_type(context.GetText());
