@@ -200,17 +200,10 @@ namespace ZenPlatform.QueryBuilder
             return this;
         }
 
-        public QueryMachine ld_col_type(string type)
+        public QueryMachine ld_type(string type)
         {
-            ColumnType colType = type switch
-            {
-                "numeric" => (ColumnType) new ColumnTypeNumeric {Precision = 2, Scale = 10},
-                "string" => new ColumnTypeVarChar {Size = 150},
-                "bool" => new ColumnTypeBool(),
-                _ => throw new NotSupportedException()
-            };
-
-            Push(colType);
+            SQLTypeBuilder tb = new SQLTypeBuilder();
+            Push(tb.Parse(type));
             return this;
         }
 

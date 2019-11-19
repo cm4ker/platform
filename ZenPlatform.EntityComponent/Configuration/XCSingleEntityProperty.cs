@@ -107,7 +107,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             return new XCSingleEntityProperty()
             {
                 Name = "Name",
-                Guid = Guid.Parse("905208c8-e892-414f-bd48-acd70b2a901b"),
+                Guid = Guid.Parse("7976d8c6-ce1a-4ec4-b965-be394e215689"),
                 DatabaseColumnName = "Name",
                 Types = {PlatformTypes.GetString(150)},
                 IsSystemProperty = false,
