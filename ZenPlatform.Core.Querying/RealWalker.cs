@@ -1,18 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using Antlr4.Runtime.Atn;
-using dnlib.DotNet;
-using MoreLinq.Extensions;
-using Portable.Xaml;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Core.Querying.Model;
-using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Querying
@@ -337,47 +330,56 @@ namespace ZenPlatform.Core.Querying
 
                 else if (node.Left is QCast cast)
                 {
-                    Visit(node.Left);
-
-                    if (node.Right is QSourceFieldExpression ||
-                        (node.Right is QIntermediateSourceField ifs && ifs.Field is QSourceFieldExpression))
-                    {
-                        string tableName = "";
-
-                        if (node.Right is QIntermediateSourceField qsf)
-                        {
-                            tableName = qsf.DataSource.GetDbName();
-                        }
-
-                        var sfield =
-                            (QSourceFieldExpression) ((node.Right as QIntermediateSourceField)?.Field) ??
-                            (node.Right as QSourceFieldExpression);
-
-                        var schema = sfield.Property.GetPropertySchemas()
-                            .FirstOrDefault(x => x.PlatformType.Equals(cast.GetExpressionType().First()));
-
-                        if (schema != null)
-                        {
-                            if (string.IsNullOrEmpty(tableName))
-                                _qm.ld_column(schema.FullName);
-                            else
-                            {
-                                _qm.ld_str(tableName);
-                                _qm.ld_str(schema.FullName);
-                                _qm.ld_column();
-                            }
-                        }
-                        else
-                        {
-                            _qm.ld_null();
-                        }
-
-                        _qm.eq();
-                    }
+                    CastHandling(node.Right, cast);
+                }
+                else if (node.Right is QCast cast1)
+                {
+                    CastHandling(node.Left, cast1);
                 }
             }
 
             return null;
+        }
+
+        private void CastHandling(QExpression left, QCast cast)
+        {
+            Visit(cast);
+
+            if (left is QSourceFieldExpression ||
+                (left is QIntermediateSourceField ifs && ifs.Field is QSourceFieldExpression))
+            {
+                string tableName = "";
+
+                if (left is QIntermediateSourceField qsf)
+                {
+                    tableName = qsf.DataSource.GetDbName();
+                }
+
+                var sfield =
+                    (QSourceFieldExpression) ((left as QIntermediateSourceField)?.Field) ??
+                    (left as QSourceFieldExpression);
+
+                var schema = sfield.Property.GetPropertySchemas()
+                    .FirstOrDefault(x => x.PlatformType.Equals(cast.GetExpressionType().First()));
+
+                if (schema != null)
+                {
+                    if (string.IsNullOrEmpty(tableName))
+                        _qm.ld_column(schema.FullName);
+                    else
+                    {
+                        _qm.ld_str(tableName);
+                        _qm.ld_str(schema.FullName);
+                        _qm.ld_column();
+                    }
+                }
+                else
+                {
+                    _qm.ld_null();
+                }
+
+                _qm.eq();
+            }
         }
 
 
@@ -496,6 +498,17 @@ namespace ZenPlatform.Core.Querying
             var res = base.VisitQAliasedSelectExpression(node);
 
             return res;
+        }
+    }
+
+    public class OperatorTrnasform
+    {
+        public void NeedOperatorTransform(QOperationExpression op)
+        {
+        }
+
+        public void EqualsTransform(QEquals node, QueryMachine qm)
+        {
         }
     }
 }
