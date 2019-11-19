@@ -46,8 +46,6 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.eq();
 
-            _m.on();
-
             _m.join();
 
             _m.m_select();
@@ -166,8 +164,6 @@ namespace ZenPlatform.Core.Querying.Test
             _m.ld_field("NestedIdField");
 
             _m.eq();
-
-            _m.on();
 
             _m.join();
 

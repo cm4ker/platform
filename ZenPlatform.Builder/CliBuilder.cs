@@ -76,7 +76,6 @@ namespace ZenPlatform.Cli
 
                 DataContext dc = new DataContext(databaseType, connectionString);
 
-                CreateDatabaseQueryNode cDatabase = new CreateDatabaseQueryNode();
             }
 
 
