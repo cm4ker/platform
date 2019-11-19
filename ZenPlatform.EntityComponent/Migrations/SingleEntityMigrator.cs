@@ -55,9 +55,9 @@ namespace ZenPlatform.EntityComponent.Migrations
 
                 foreach (var property in actual.Properties)
                 {
-                    GetColumnDefenition(property).ForEach(c =>
+                    property.GetPropertySchemas().ForEach(s =>
                     {
-                        tableBuilder.WithColumnDefinition(c);
+                        tableBuilder.WithColumnDefinition(GetColumnDefenitionBySchema(s));
                     });
                 }
                     
@@ -79,67 +79,93 @@ namespace ZenPlatform.EntityComponent.Migrations
             if (old != null && actual != null)
             {
 
-                var props = old.Properties
-                   .FullJoin(
-                       actual.Properties, x => x.Guid, x => new { old = x, actual = default(XCSingleEntityProperty) },
-                       x => new { old = default(XCSingleEntityProperty), actual = x },
-                       (x, y) => new { old = x, actual = y });
-
                 string tableName = $"{actual.RelTableName}_tmp";
+
+                var props = old.GetProperties()
+                   .FullJoin(
+                       actual.GetProperties(), x => x.Guid, 
+                       x => new { old = x, actual = default(XCObjectPropertyBase) },
+                       x => new { old = default(XCObjectPropertyBase), actual = x },
+                       (x, y) => new { old = x, actual = y });
 
                 foreach (var property in props)
                 {
+                    if (property.old == null)
+                    {
+                        CreateProperty(query, property.actual, tableName);
+                    } else
                     if (property.actual == null)
                     {
-                        foreach (var s in property.old.GetPropertySchemas())
-                        {
-                            query.Delete().Column(s.Name).OnTable(tableName);
-                        }
-
-                    }
-                    else if (property.old == null)
+                        DeleteProperty(query, property.old, tableName);
+                    } else
                     {
-                        GetColumnDefenition(property.actual).ForEach(c => { query.Alter().Column(c).OnTable(tableName); });
-
-                    }
-                    else
-                    {
-                        var oldSchemas = property.old.GetPropertySchemas();
-
-
-                        foreach (var newSchema in property.actual.GetPropertySchemas())
-                        {
-
-
-                            var oldSchema = oldSchemas.FirstOrDefault(a => a.PlatformType.Guid == newSchema.PlatformType.Guid);
-
-
-                            // Если поле уже было раньше и там лежит значение (приметивный тип) и они разные - меняем
-                            if (oldSchema != null
-                                && newSchema.SchemaType == XCColumnSchemaType.Value
-                                && !oldSchema.PlatformType.Equals(newSchema.PlatformType))
-                            {
-                                query.Alter().Column(GetColumnDefenitionBySchema(newSchema)).OnTable(tableName);
-                            }
-
-                            if (oldSchema == null) // если раньше колонки небыло - создаем
-                            {
-                                query.Create().Column(GetColumnDefenitionBySchema(newSchema)).OnTable(tableName);
-                            }
-
-                            
-
-                        }
-
-
-
+                        ChangeProperty(query, property.old, property.actual, tableName);
                     }
                 }
+                
             }
 
             return query.Expression;
         }
-        
+
+        private void DeleteSchema(DDLQuery query, XCColumnSchemaDefinition schema, string tableName)
+        {
+            query.Delete().Column(schema.FullName).OnTable(tableName);
+        }
+
+        private void ChangeSchema(DDLQuery query, XCColumnSchemaDefinition schema, string tableName)
+        {
+            query.Alter().Column(GetColumnDefenitionBySchema(schema)).OnTable(tableName);
+        }
+
+        private void CreateSchema(DDLQuery query, XCColumnSchemaDefinition schema, string tableName)
+        {
+            query.Create().Column(GetColumnDefenitionBySchema(schema)).OnTable(tableName);
+        }
+
+        public void CreateProperty(DDLQuery query, XCObjectPropertyBase property, string tableName)
+        {
+            property.GetPropertySchemas().ForEach(s => { CreateSchema(query, s, tableName); });
+        }
+
+        public void DeleteProperty(DDLQuery query, XCObjectPropertyBase property, string tableName)
+        {
+            property.GetPropertySchemas().ForEach(s => DeleteSchema(query, s, tableName));
+        }
+
+        public void ChangeProperty(DDLQuery query, XCObjectPropertyBase old, XCObjectPropertyBase actual, string tableName)
+        {
+            var schemas = old.GetPropertySchemas()
+                            .FullJoin(
+                           actual.GetPropertySchemas(),
+                           x => x.FullName,
+                           x => new { old = x, actual = default(XCColumnSchemaDefinition) },
+                           x => new { old = default(XCColumnSchemaDefinition), actual = x },
+                           (x, y) => new { old = x, actual = y });
+
+            foreach (var schema in schemas)
+            {
+                if (schema.old == null)
+                {
+                    CreateSchema(query, schema.actual, tableName);
+                } 
+                else if (schema.actual == null)
+                {
+                    DeleteSchema(query, schema.old, tableName);
+                } else
+                {
+                    if (schema.old.PlatformType is XCObjectTypeBase || schema.actual.PlatformType is XCObjectTypeBase)
+                    {
+                        if (schema.old.PlatformType.Guid != schema.actual.PlatformType.Guid)
+                            ChangeSchema(query, schema.actual, tableName);
+                    } else
+                    if (!schema.old.PlatformType.Equals(schema.actual.PlatformType))
+                        ChangeSchema(query, schema.actual, tableName);
+                }
+            }
+        }
+
+
         public SSyntaxNode GetStep3(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
@@ -177,7 +203,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             builder.WithColumnName(schema.FullName);
             
             if (schema.SchemaType == XCColumnSchemaType.Value
-                || schema.SchemaType == XCColumnSchemaType.Type
+                
                  || schema.SchemaType == XCColumnSchemaType.NoSpecial)
             {
 
@@ -187,48 +213,41 @@ namespace ZenPlatform.EntityComponent.Migrations
                 switch (type)
                 {
                     case XCBoolean t:
-                        builder.AsBoolean();
+                        builder.AsBoolean().NotNullable().WithDefaultValue(false);
                         break;
                     case XCString t:
-                        builder.AsString(t.Size);
+                        builder.AsString(t.Size).NotNullable().WithDefaultValue("");
                         break;
                     case XCDateTime t:
-                        builder.AsDateTime();
+                        builder.AsDateTime().NotNullable().WithDefaultValue(DateTime.MinValue);
                         break;
                     case XCGuid t:
-                        builder.AsGuid();
+                        builder.AsGuid().NotNullable().WithDefaultValue(Guid.Empty);
                         break;
                     case XCNumeric t:
-                        builder.AsFloat();
+                        builder.AsFloat(t.Scale, t.Precision).NotNullable().WithDefaultValue(0.0);
                         break;
                     case XCBinary t:
-                        builder.AsBinary(t.Size);
+                        builder.AsVarBinary(t.Size).NotNullable().WithDefaultValue(0);
                         break;
                     case XCInt t:
-                        builder.AsInt32();
+                        builder.AsInt().NotNullable().WithDefaultValue(0);
                         break;
                 }
             }
-            else if (schema.SchemaType == XCColumnSchemaType.Ref)
+            else 
+            if (schema.SchemaType == XCColumnSchemaType.Type)
+            {
+                builder.AsInt().Nullable();
+            } else
+            if (schema.SchemaType == XCColumnSchemaType.Ref)
             {
                 builder.AsGuid();
             }
 
-            return builder.ColumnDefinition;
-        }
-
-        public List<ColumnDefinition> GetColumnDefenition(XCSingleEntityProperty property)
-        {
-            List<ColumnDefinition> columns = new List<ColumnDefinition>();
             
 
-            //property.DatabaseColumnName = $"fld{property.Id}";
-
-            var columnSchemas = property.GetPropertySchemas(property.DatabaseColumnName);
-
-            columnSchemas.ForEach(c => columns.Add(GetColumnDefenitionBySchema(c)));
- 
-            return columns;
+            return builder.ColumnDefinition;
         }
         
         

@@ -21,33 +21,10 @@ namespace ZenPlatform.QueryBuilder.Builders
 
 
         /// <inheritdoc />
-        public TNext AsAnsiString()
+        public TNext AsVarBinary(int size)
         {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        public TNext AsAnsiString(string collationName)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        public TNext AsAnsiString(int size)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        public TNext AsAnsiString(int size, string collationName)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        public TNext AsBinary()
-        {
-            throw new NotSupportedException();
+            SetType(new ColumnTypeVarBinary() { Size = size });
+            return (TNext)(object)this;
         }
 
         /// <inheritdoc />
@@ -89,23 +66,8 @@ namespace ZenPlatform.QueryBuilder.Builders
             return (TNext)(object)this;
         }
 
-        /// <inheritdoc />
-        public TNext AsDateTime2()
-        {
-            throw new NotImplementedException();
-        }
 
-        /// <inheritdoc />
-        public TNext AsDateTimeOffset()
-        {
-            throw new NotImplementedException();
-        }
 
-        /// <inheritdoc />
-        public TNext AsDateTimeOffset(int precision)
-        {
-            throw new NotImplementedException();
-        }
 
         /// <inheritdoc />
         public TNext AsDecimal()
@@ -122,39 +84,9 @@ namespace ZenPlatform.QueryBuilder.Builders
         }
 
         /// <inheritdoc />
-        public TNext AsDouble()
+        public TNext AsFloat(int size, int precision)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public TNext AsFixedLengthString(int size)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public TNext AsFixedLengthString(int size, string collationName)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public TNext AsFixedLengthAnsiString(int size)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public TNext AsFixedLengthAnsiString(int size, string collationName)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public TNext AsFloat()
-        {
-            SetType(new ColumnTypeFloat());
+            SetType(new ColumnTypeFloat() { Scale = size, Precision = precision} );
             return (TNext)(object)this;
         }
 
@@ -166,21 +98,21 @@ namespace ZenPlatform.QueryBuilder.Builders
         }
 
         /// <inheritdoc />
-        public TNext AsInt16()
+        public TNext AsSmallInt()
         {
             SetType(new ColumnTypeSmallInt());
             return (TNext)(object)this;
         }
 
         /// <inheritdoc />
-        public TNext AsInt32()
+        public TNext AsInt()
         {
             SetType(new ColumnTypeInt());
             return (TNext)(object)this;
         }
 
         /// <inheritdoc />
-        public TNext AsInt64()
+        public TNext AsBigInt()
         {
             SetType(new ColumnTypeBigInt());
             return (TNext)(object)this;
@@ -194,22 +126,10 @@ namespace ZenPlatform.QueryBuilder.Builders
         }
 
         /// <inheritdoc />
-        public TNext AsString(string collationName)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
         public TNext AsString(int size)
         {
             SetType(new ColumnTypeText() {  Size = size });
             return (TNext)(object)this;
-        }
-
-        /// <inheritdoc />
-        public TNext AsString(int size, string collationName)
-        {
-            throw new NotImplementedException();
         }
 
         /// <inheritdoc />

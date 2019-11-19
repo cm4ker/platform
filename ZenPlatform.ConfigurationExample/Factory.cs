@@ -31,9 +31,13 @@ namespace ZenPlatform.ConfigurationExample
             root.Data.Components.Add(component);
 
             var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            store.Guid = Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5");
             var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            store.Guid = Guid.Parse("b9fee6cd-a834-4d72-9de5-1fc2087467e5");
             var department = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            store.Guid = Guid.Parse("953120f4-6e30-4056-9b8b-6eb0c8d406f0");
             var custom = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
+            store.Guid = Guid.Parse("0265f6cd-dccc-4a85-8e14-af65e2c0066f");
 
 
             department.Name = "Department";
@@ -54,11 +58,13 @@ namespace ZenPlatform.ConfigurationExample
             store.Description = "This is a store entity";
             store.RelTableName = "Obj_0001";
             var invoiceProp = store.CreateProperty();
+            invoiceProp.Guid = Guid.Parse("9d865473-58a7-42ff-b4de-17451202064b");
             invoiceProp.Name = "Invoice";
             invoiceProp.Types.Add(invoice);
             store.Initialize();
 
             var storeProp = invoice.CreateProperty();
+            storeProp.Guid = Guid.Parse("175d1ade-75f0-416e-bd18-67793f79f176");
             storeProp.Name = "Store";
             storeProp.Types.Add(store);
             storeProp.Types.Add(department);
@@ -66,6 +72,7 @@ namespace ZenPlatform.ConfigurationExample
             storeProp.DatabaseColumnName = "Fld_0002";
 
             var prop = invoice.CreateProperty();
+            prop.Guid = Guid.Parse("4925d3ee-d858-4a96-a65f-1f87c2cf1357");
             prop.Name = "CompositeProperty";
             prop.Types.Add(new XCBinary());
             prop.Types.Add(new XCBoolean());
@@ -106,7 +113,7 @@ public void OnClientClientCallProc()
             return root;
         }
 
-        public static XCRoot CreateChangeExampleConfiguration()
+        public static XCRoot CreateChangedExampleConfiguration()
         {
             var root = new XCRoot();
 
@@ -123,9 +130,13 @@ public void OnClientClientCallProc()
             root.Data.Components.Add(component);
 
             var store = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            store.Guid = Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5");
             var invoice = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            store.Guid = Guid.Parse("b9fee6cd-a834-4d72-9de5-1fc2087467e5");
             var department = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            store.Guid = Guid.Parse("953120f4-6e30-4056-9b8b-6eb0c8d406f0");
             var custom = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            store.Guid = Guid.Parse("0265f6cd-dccc-4a85-8e14-af65e2c0066f");
 
 
             department.Name = "Department";
@@ -146,11 +157,13 @@ public void OnClientClientCallProc()
             store.Description = "This is a store entity";
             store.RelTableName = "Obj_0001";
             var invoiceProp = store.CreateProperty();
+            invoiceProp.Guid = Guid.Parse("9d865473-58a7-42ff-b4de-17451202064b");
             invoiceProp.Name = "Invoice";
             invoiceProp.Types.Add(invoice);
             store.Initialize();
 
             var storeProp = invoice.CreateProperty();
+            storeProp.Guid = Guid.Parse("175d1ade-75f0-416e-bd18-67793f79f176");
             storeProp.Name = "Store";
             storeProp.Types.Add(store);
             storeProp.Types.Add(department);
@@ -158,6 +171,7 @@ public void OnClientClientCallProc()
             storeProp.DatabaseColumnName = "Fld_0002";
 
             var prop = invoice.CreateProperty();
+            prop.Guid = Guid.Parse("4925d3ee-d858-4a96-a65f-1f87c2cf1357");
             prop.Name = "CompositeProperty";
             prop.Types.Add(new XCBinary());
             prop.Types.Add(new XCBoolean());

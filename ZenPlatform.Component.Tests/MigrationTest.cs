@@ -32,10 +32,10 @@ namespace ZenPlatform.Component.Tests
             var entity = com.Types.Skip(1).First();
 
 
-            var rootOld = Factory.CreateExampleConfiguration();
+            var rootOld = Factory.CreateChangedExampleConfiguration();
 
-            var comOld = root.Data.Components[0];
-            var entityOld = com.Types.Skip(1).First();
+            var comOld = rootOld.Data.Components[0];
+            var entityOld = comOld.Types.Skip(1).First();
 
 
             

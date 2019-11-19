@@ -2122,7 +2122,7 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class ColumnTypeFloat : SizableType
+    public partial class ColumnTypeFloat : PrecisionType
     {
         public ColumnTypeFloat(): base()
         {
