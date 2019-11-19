@@ -335,7 +335,7 @@
   <Syntax Name="ColumnTypeBigInt" Base="ColumnType" Ddl="true" />
   
   <Syntax Name="ColumnTypeBool" Base="ColumnType" Ddl="true" />
-  <Syntax Name="ColumnTypeFloat" Base="SizableType" Ddl="true" />
+  <Syntax Name="ColumnTypeFloat" Base="PrecisionType" Ddl="true" />
   <Syntax Name="ColumnTypeDecimal" Base="PrecisionType" Ddl="true" />
   <Syntax Name="ColumnTypeNumeric" Base="PrecisionType" Ddl="true" />
 
