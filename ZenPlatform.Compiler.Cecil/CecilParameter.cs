@@ -16,7 +16,6 @@ namespace ZenPlatform.Compiler.Cecil
             _ts = ts;
             _md = md;
             _pd = pi.Resolve();
-
             _cr = new CecilContextResolver(ts, md.Module);
 
             _pd.ParameterType = _cr.Import(_pd.ParameterType);
