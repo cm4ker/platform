@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZenPlatform.Shell.Ansi
+namespace ZenPlatform.Shell.Contracts.Ansi
 {
     public struct CharAttributes : IEquatable<CharAttributes>
     {

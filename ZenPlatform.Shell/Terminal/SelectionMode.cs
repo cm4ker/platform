@@ -1,6 +1,6 @@
 ﻿namespace ZenPlatform.Shell.Terminal
 {
-    internal enum SelectionMode
+    public enum SelectionMode
     {
         Stream,
         Block,

@@ -1,83 +1,63 @@
-﻿using System;
+﻿using McMaster.Extensions.CommandLineUtils;
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
-using System.Reflection;
-using FluentMigrator.Runner.Initialization;
-using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
-//using ZenPlatform.Cli.Builder;
-using ZenPlatform.Compiler.Platform;
-using ZenPlatform.Configuration;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Data;
 using ZenPlatform.Data.Tools;
 using ZenPlatform.Initializer;
-using ZenPlatform.Initializer.InternalDatabaseStructureMigrations;
 using ZenPlatform.QueryBuilder;
 
-
-namespace ZenPlatform.Cli
+namespace ZenPlatform.Cli.Commands.Db
 {
-    public static partial class CliBuilder
+    
+    [Command("create")]
+    public  class CommandDbCreate
     {
-        public static void BuildApplicationServerCommands(CommandLineApplication app)
+        [Option("--project_name", "Name of new project", CommandOptionType.SingleValue)]
+        [Required]
+        public string ProjectName { get; }
+
+        [Option("-s|--server", "Database server", CommandOptionType.SingleValue)]
+        public string Server { get; }
+
+        [Option("-t|--type", "Type of database within will be create solution", CommandOptionType.SingleValue)]
+        public SqlDatabaseType DatabaseType { get; }
+
+        [Option("-d|--database", "Database", CommandOptionType.SingleValue)]
+        public string Database { get; }
+
+        [Option("-u|--username", "User name", CommandOptionType.SingleValue)]
+        public string Username { get; }
+
+        [Option("-p|--password", "Password", CommandOptionType.SingleValue)]
+        public string Password { get; }
+
+        [Option("--port ", "Database server port", CommandOptionType.SingleValue)]
+        public int Port { get; }
+
+        [Option("--connString", "Connection string", CommandOptionType.SingleValue)]
+        public string ConnectionString { get; }
+
+        [Option("-c|--create", "Create database if not exists", CommandOptionType.NoValue)]
+        public bool Create { get; }
+
+        public void OnExecute()
         {
-            //Команда для подключения к серверу приложения в режиме интерпретатора
-            app.Command("connect", publishCmd => { });
-        }
-    }
-
-    public static partial class CliBuilder
-    {
-        /*
-         * Для тулзы будут доступны следующие режимы
-         * 
-         * zenbuilder build "project filename"
-         *
-         * zenbuilder deploy "project filename" server "address" port "port" user "userName" password "password"
-         *
-         * zenbuilder run "project filename"
-         *
-         * zenbuilder run server "address" port "port" user "userName" password "password"
-         * 
-         */
-
-        public static CommandLineApplication Build(IConsole console)
-        {
-            var app = new CommandLineApplication(console);
-
-            BuildProjectCommands(app);
-            BuildServiceCommands(app);
-
-            return app;
-        }
-
-        public static int Build(params string[] args)
-        {
-            var app = new CommandLineApplication();
-
-            BuildProjectCommands(app);
-            BuildServiceCommands(app);
-
-            return app.Execute(args);
+            if (string.IsNullOrEmpty(ConnectionString))
+                OnCreateDbCommand(ProjectName, DatabaseType, Server,
+                    Port, Database, Username, Password,
+                    Create);
+            else
+                OnCreateDbCommand(ProjectName, DatabaseType, ConnectionString, Create);
         }
 
-        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType,
+        private void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType,
             UniversalConnectionStringBuilder stringBuilder, bool createIfNotExists)
         {
             var connectionString = stringBuilder.GetConnectionString();
-
-            // Если базы данных нет - её необходимо создать
-            if (createIfNotExists)
-            {
-                var sqlCompiller = SqlCompillerBase.FormEnum(databaseType);
-
-                DataContext dc = new DataContext(databaseType, connectionString);
-
-            }
-
 
             //Мигрируем...
             MigrationRunner.Migrate(connectionString, databaseType);
@@ -103,7 +83,7 @@ namespace ZenPlatform.Cli
             Console.WriteLine($"Done!");
         }
 
-        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string connectionString,
+        private void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string connectionString,
             bool createIfNotExists)
         {
             OnCreateDbCommand(projectName, databaseType,
@@ -111,7 +91,7 @@ namespace ZenPlatform.Cli
                 createIfNotExists);
         }
 
-        private static void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port,
+        private void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port,
             string database, string userName, string password, bool createIfNotExists)
         {
             Console.WriteLine($"Start creating new project {projectName}");

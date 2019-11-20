@@ -4,20 +4,14 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using ZenPlatform.Compiler.Platform;
-using ZenPlatform.Configuration.Data.Contracts;
-using ZenPlatform.Core.Assemblies;
-using ZenPlatform.Core.Authentication;
-using ZenPlatform.Core.CacheService;
-using ZenPlatform.Core.ClientServices;
-using ZenPlatform.Core.Configuration;
-using ZenPlatform.Core.Environment;
+
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Serialisers;
 using ZenPlatform.Core.Settings;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.Data;
+using ZenPlatform.Shell.Contracts;
 using ZenPlatform.Shell.Terminal;
 using ZenPlatform.SSH;
 using ZenPlatform.SSH.Services;
@@ -26,22 +20,22 @@ using Channel = ZenPlatform.Core.Network.Channel;
 
 namespace ZenPlatform.Shell
 {
-    public class SSHListener : INetworkListener
+    public class SSHListener : ITerminalNetworkListener
     {
         private SshServer _server;
 
         private int _windowWidth, _windowHeight;
-        private IServiceProvider _provider;
-        private ServerConnectionFactory _cFactory;
-
-        public SSHListener(IServiceProvider provider)
+        private ILogger _logger;
+        private IServiceProvider _serviceProvider;
+        public SSHListener(ILogger<SSHListener> logger, IServiceProvider serviceProvider)
         {
-            _provider = provider;
+            _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
-        public void Start(IPEndPoint endPoint, ServerConnectionFactory connectionFactory)
+        public void Start(IPEndPoint endPoint)
         {
-            _cFactory = connectionFactory;
+          
             _server = new SshServer(new StartingInfo(endPoint.Address, endPoint.Port));
 
             _server.AddHostKey("ssh-rsa",
@@ -61,7 +55,7 @@ namespace ZenPlatform.Shell
 
         void server_ConnectionAccepted(object sender, Session e)
         {
-            Console.WriteLine("Accepted a client.");
+            _logger.Info("Accepted a client.");
 
             e.ServiceRegistered += e_ServiceRegistered;
             e.KeysExchanged += e_KeysExchanged;
@@ -71,14 +65,14 @@ namespace ZenPlatform.Shell
         {
             foreach (var keyExchangeAlg in e.KeyExchangeAlgorithms)
             {
-                Console.WriteLine("Key exchange algorithm: {0}", keyExchangeAlg);
+                _logger.Info("Key exchange algorithm: {0}", keyExchangeAlg);
             }
         }
 
         void e_ServiceRegistered(object sender, SshService e)
         {
             var session = (Session) sender;
-            Console.WriteLine("Session {0} requesting {1}.",
+            _logger.Info("Session {0} requesting {1}.",
                 BitConverter.ToString(session.SessionId).Replace("-", ""), e.GetType().Name);
 
             if (e is UserauthService)
@@ -96,9 +90,9 @@ namespace ZenPlatform.Shell
             }
         }
 
-        static void service_TcpForwardRequest(object sender, TcpRequestArgs e)
+        void service_TcpForwardRequest(object sender, TcpRequestArgs e)
         {
-            Console.WriteLine("Received a request to forward data to {0}:{1}", e.Host, e.Port);
+            _logger.Info("Received a request to forward data to {0}:{1}", e.Host, e.Port);
 
             var allow = true; // func(e.Host, e.Port, e.AttachedUserauthArgs);
 
@@ -115,19 +109,19 @@ namespace ZenPlatform.Shell
 
         void service_PtyReceived(object sender, PtyArgs e)
         {
-            Console.WriteLine("Request to create a PTY received for terminal type {0}", e.Terminal);
+            _logger.Info("Request to create a PTY received for terminal type {0}", e.Terminal);
             _windowWidth = (int) e.WidthChars;
             _windowHeight = (int) e.HeightRows;
         }
 
         void service_EnvReceived(object sender, EnvironmentArgs e)
         {
-            Console.WriteLine("Received environment variable {0}:{1}", e.Name, e.Value);
+            _logger.Info("Received environment variable {0}:{1}", e.Name, e.Value);
         }
 
         void service_Userauth(object sender, UserauthArgs e)
         {
-            Console.WriteLine("Client {0} fingerprint: {1}.", e.KeyAlgorithm, e.Fingerprint);
+            _logger.Info("Client {0} fingerprint: {1}.", e.KeyAlgorithm, e.Fingerprint);
 
             //Auth provider here
             e.Result = true;
@@ -135,7 +129,7 @@ namespace ZenPlatform.Shell
 
         void service_CommandOpened(object sender, CommandRequestedArgs e)
         {
-            Console.WriteLine($"Channel {e.Channel.ServerChannelId} runs {e.ShellType}: \"{e.CommandText}\".");
+            _logger.Info($"Channel {e.Channel.ServerChannelId} runs {e.ShellType}: \"{e.CommandText}\".");
 
             var allow = true; // func(e.ShellType, e.CommandText, e.AttachedUserauthArgs);
 
@@ -144,23 +138,28 @@ namespace ZenPlatform.Shell
 
             if (e.ShellType == "shell")
             {
+                /*
                 var sshTransportServer = new SSHTransportServer(e.Channel);
 
                 var connection = _cFactory.CreateConnection(sshTransportServer);
 
                 connection.Open();
+                */
+                //ITerminal terminal = new Terminal("cmd.exe", windowWidth, windowHeight);
 
-//                //ITerminal terminal = new Terminal("cmd.exe", windowWidth, windowHeight);
-//                ITerminalSession terminal = new TerminalSession(new TerminalSize(_windowWidth, _windowHeight));
-//
-//                e.Channel.DataReceived += (ss, ee) => terminal.ConsumeData(ee);
-//                e.Channel.CloseReceived += (ss, ee) => terminal.Close();
-//                e.Channel.SizeChanged += (ss, ee) => terminal.ChangeSize(ee);
-//
-//                terminal.DataReceived += (ss, ee) => e.Channel.SendData(ee);
-//                terminal.CloseReceived += (ss, ee) => e.Channel.SendClose(ee);
-//
-//                terminal.Run();
+                var scope = _serviceProvider.CreateScope();
+                var session = scope.ServiceProvider.GetRequiredService<ITerminalSession>();
+                session.ChangeSize(new TerminalSize(_windowWidth, _windowHeight));
+
+
+                e.Channel.DataReceived += (ss, ee) => session.ConsumeData(ee);
+                e.Channel.CloseReceived += (ss, ee) => session.Close();
+                e.Channel.SizeChanged += (ss, ee) => session.ChangeSize(ee);
+
+                session.DataReceived += (ss, ee) => e.Channel.SendData(ee);
+                session.CloseReceived += (ss, ee) => e.Channel.SendClose(ee);
+
+                session.Run(scope.ServiceProvider.GetRequiredService<ITerminalApplication>());
             }
             else if (e.ShellType == "exec")
             {
@@ -181,11 +180,13 @@ namespace ZenPlatform.Shell
             }
             else if (e.ShellType == "client")
             {
+                /*
                 var sshTransportServer = new SSHTransportServer(e.Channel);
 
                 var connection = _cFactory.CreateConnection(sshTransportServer);
 
                 connection.Open();
+                */
             }
             else if (e.ShellType == "subsystem")
             {

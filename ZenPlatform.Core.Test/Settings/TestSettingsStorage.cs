@@ -17,7 +17,12 @@ namespace ZenPlatform.Core.Test
                     new ListenerConfig()
                     {
                         Address = "127.0.0.1:12345",
-                        Type = ListenerType.Test
+                        Type = ListenerType.User
+                    },
+                    new ListenerConfig()
+                    {
+                        Address = "127.0.0.1:22",
+                        Type = ListenerType.Admin
                     }
                 }
             },

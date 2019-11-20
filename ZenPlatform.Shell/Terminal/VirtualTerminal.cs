@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Channels;
 using TextCopy;
 using ZenPlatform.Shell.Ansi;
+using ZenPlatform.Shell.Contracts;
+using ZenPlatform.Shell.Contracts.Ansi;
 using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal
@@ -29,13 +31,8 @@ namespace ZenPlatform.Shell.Terminal
      * 
      */
 
-    internal partial class VirtualTerminal
+    public partial class VirtualTerminal: ITerminal
     {
-    }
-
-    internal partial class VirtualTerminal
-    {
-        private ExtendedStack<ITerminalApplication> _apps;
 
         private const int MaxHistorySize = 1024;
 
@@ -54,6 +51,8 @@ namespace ZenPlatform.Shell.Terminal
         /// </summary>
         private int _cursorY;
 
+        private ITerminalApplication _application;
+
 
 //        public bool ShowCursor { get; set; }
 
@@ -61,19 +60,30 @@ namespace ZenPlatform.Shell.Terminal
 
         public TerminalSelection Selection { get; set; }
 
-        public VirtualTerminal(TerminalSize size)
+        public VirtualTerminal(ITerminalApplication application)//(TerminalSize size)
         {
-            _apps = new ExtendedStack<ITerminalApplication>();
-            _buffer = new TerminalBufferChar[size.HeightRows * size.WidthColumns];
-
-            _size = size;
+            
             _cursorX = 0;
             _cursorY = 0;
         }
 
-        private void Initialise(TerminalSize size)
+        public void Initialize(ITerminalApplication application)
         {
+            _application = application;
+
+            
         }
+
+        public void Consume(TerminalCode code)
+        {
+            _application?.Consume(code);
+        }
+
+        public void Send(byte[] data)
+        {
+            OnData?.Invoke(this, data);
+        }
+
 
         public event EventHandler<byte[]> OnData;
 
@@ -93,7 +103,13 @@ namespace ZenPlatform.Shell.Terminal
             get => _size;
             set
             {
-                if (value != _size)
+                if (_buffer==null)
+                {
+                    _buffer = new TerminalBufferChar[value.HeightRows * value.WidthColumns];
+
+                    _size = value;
+                } else
+                if (value != _size )
                 {
                     var srcSize = _size;
                     var dstSize = value;
@@ -117,7 +133,9 @@ namespace ZenPlatform.Shell.Terminal
                     _cursorY = Math.Min(_cursorY, (int) _size.HeightRows - 1);
 
                     
-                }
+                } 
+                
+                 
             }
         }
 

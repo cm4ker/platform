@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Builder\ZenPlatform.Cli.csproj" />
     <ProjectReference Include="..\ZenPlatform.Networking\ZenPlatform.Networking.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Shell.Contracts\ZenPlatform.Shell.Contracts.csproj" />
     <ProjectReference Include="..\ZenPlatform.SSH\ZenPlatform.SSH.csproj" />
   </ItemGroup>
 

@@ -1,17 +1,19 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using McMaster.Extensions.CommandLineUtils;
+using ZenPlatform.Shell.Contracts;
 
 namespace ZenPlatform.Shell.Terminal
 {
-    /// <summary>
-    /// An implementation of <see cref="T:McMaster.Extensions.CommandLineUtils.IConsole" /> that does nothing.
-    /// </summary>
-    public class FakeConsole : McMaster.Extensions.CommandLineUtils.IConsole
+    public class TerminalConsole : McMaster.Extensions.CommandLineUtils.IConsole
     {
-        public FakeConsole()
+        private ITerminal _terminal;
+        public TerminalConsole(ITerminal terminal)
         {
-            this.Error = this.Out = new StringWriter();
+            _terminal = terminal;
+            this.Error = this.Out = new TerminalWriter(_terminal);
         }
 
         /// <summary>
@@ -24,7 +26,7 @@ namespace ZenPlatform.Shell.Terminal
         public TextWriter Error { get; }
 
         /// <summary>An empty reader.</summary>
-        public TextReader In { get; } = (TextReader) new StringReader(string.Empty);
+        public TextReader In { get; } = (TextReader)new StringReader(string.Empty);
 
         /// <summary>
         /// Always <c>false</c>.

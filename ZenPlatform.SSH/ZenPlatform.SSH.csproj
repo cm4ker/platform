@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Aimeast</Authors>
     <PackageLicenseUrl>https://github.com/Aimeast/FxSsh/blob/master/LICENSE.md</PackageLicenseUrl>
@@ -12,5 +12,9 @@
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <AssemblyOriginatorKeyFile>FxSsh.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.Shell.Contracts\ZenPlatform.Shell.Contracts.csproj" />
+  </ItemGroup>
 
 </Project>
