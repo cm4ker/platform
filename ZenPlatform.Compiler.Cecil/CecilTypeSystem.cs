@@ -11,7 +11,7 @@ namespace ZenPlatform.Compiler.Cecil
     {
         private List<CecilAssembly> _asms = new List<CecilAssembly>();
 
-        private CustomAssemblyResolver _asmResolver;
+        internal CustomAssemblyResolver _asmResolver;
 
         private Dictionary<string, CecilAssembly> _assemblyCache = new Dictionary<string, CecilAssembly>();
 
@@ -70,7 +70,7 @@ namespace ZenPlatform.Compiler.Cecil
                     SymbolReaderProvider = isTarget ? new DefaultSymbolReaderProvider(true) : null,
                     ReadSymbols = isTarget
                 });
-                
+
                 var wrapped = RegisterAssembly(asm);
                 if (path == targetPath)
                 {
@@ -118,6 +118,13 @@ namespace ZenPlatform.Compiler.Cecil
         internal CecilAssembly FindAsm(AssemblyDefinition d)
         {
             _assemblyDic.TryGetValue(d, out var asm);
+
+            if (asm == null)
+            {
+                RegisterAssembly(d);
+                asm = _assemblyDic[d];
+            }
+
             return asm;
         }
 
@@ -159,6 +166,8 @@ namespace ZenPlatform.Compiler.Cecil
             var wrapped = new CecilAssembly(this, asm);
             _asms.Add(wrapped);
             _assemblyDic[asm] = wrapped;
+            _asmResolver.RegisterCustom(asm.Name.Name, asm);
+            
             return wrapped;
         }
 
