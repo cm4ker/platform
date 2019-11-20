@@ -6,11 +6,28 @@ using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Core.Querying.Model;
+using ZenPlatform.Core.Querying.Optimizers;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Querying
 {
     /*
+     Invoice
+     (
+        MyProperty  (int, string, ContractRef)
+        MyProperty2 (int) = 0;
+
+        struct Prop10
+        {
+            public int Type;
+            public int Int;
+            public string String;
+            public ContractLink ContractRef;
+        }
+       
+        Invoice.MyProperty
+     )
+          
      1) Сопоставить типы обеих сторон
         String        String
         Int           Int
@@ -111,87 +128,10 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
-        private string ConvertType(XCTypeBase type)
-        {
-            if (type is XCPrimitiveType)
-            {
-                if (type is XCBinary b) return $"varbinary{b.Size}";
-                if (type is XCGuid) return "guid";
-                if (type is XCInt) return "int";
-                if (type is XCNumeric n) return $"numeric({n.Scale}, {n.Precision})";
-                if (type is XCDateTime) return "datetime";
-                if (type is XCBoolean) return "bool";
-                if (type is XCString s) return $"varchar({s.Size})";
-            }
-
-            if (type is XCObjectTypeBase) return "guid";
-
-            throw new Exception("Unknown type");
-        }
 
         public override object VisitQCast(QCast node)
         {
-            QSourceFieldExpression sf = null;
-            string fieldName = null;
-
-            if (node.BaseExpression is QSourceFieldExpression)
-            {
-                sf = (QSourceFieldExpression) node.BaseExpression;
-            }
-            else if ((node.BaseExpression is QIntermediateSourceField ife && ife.Field is QSourceFieldExpression))
-            {
-                fieldName = ife.DataSource.GetDbName();
-                sf = (QSourceFieldExpression) ife.Field;
-            }
-
-            if (sf != null)
-            {
-                var schemas = sf.Property.GetPropertySchemas();
-
-                if (sf.Property.Types.Count > 1)
-                {
-                    var typeSchema = schemas.First(x => x.SchemaType == XCColumnSchemaType.Type);
-
-                    foreach (var schema in schemas.Where(x => x.SchemaType != XCColumnSchemaType.Type))
-                    {
-                        if (string.IsNullOrEmpty(fieldName))
-                            _qm.ld_column(schema.FullName);
-                        else
-                        {
-                            _qm.ld_str(fieldName);
-                            _qm.ld_str(schema.FullName);
-                            _qm.ld_column();
-                        }
-
-                        _qm.ld_type(ConvertType(node.Type));
-                        _qm.cast();
-
-                        if (string.IsNullOrEmpty(fieldName))
-                            _qm.ld_column(typeSchema.FullName);
-                        else
-                        {
-                            _qm.ld_str(fieldName);
-                            _qm.ld_str(typeSchema.FullName);
-                            _qm.ld_column();
-                        }
-
-                        _qm.ld_const(schema.PlatformType.Id);
-                        _qm.eq();
-
-                        _qm.when();
-                    }
-
-                    _qm.@case();
-                }
-            }
-            else
-            {
-                base.VisitQCast(node);
-
-                _qm.ld_type(ConvertType(node.Type));
-                _qm.cast();
-            }
-
+            TypedExprFactory.CreateSingleTypeExpr(node, _qm, this).Emit();
             return null;
         }
 
@@ -223,6 +163,29 @@ namespace ZenPlatform.Core.Querying
         {
         }
 
+
+        public override object VisitQEquals(QEquals node)
+        {
+            if (!OptimizeOperation(node, () => _qm.eq(), () => _qm.and()))
+            {
+                base.VisitQEquals(node);
+                _qm.eq();
+            }
+
+            return null;
+        }
+
+        public override object VisitQNotEquals(QNotEquals node)
+        {
+            if (!OptimizeOperation(node, () => _qm.ne(), () => _qm.or()))
+            {
+                base.VisitQNotEquals(node);
+                _qm.ne();
+            }
+
+            return null;
+        }
+
         private List<XCTypeBase> CommonTypes(List<XCTypeBase> types1, List<XCTypeBase> types2)
         {
             var result = new List<XCTypeBase>();
@@ -240,10 +203,10 @@ namespace ZenPlatform.Core.Querying
             return result;
         }
 
-        public override object VisitQEquals(QEquals node)
+        public bool OptimizeOperation(QOperationExpression op, Action compareAction, Action concatAction)
         {
-            var leftTypes = node.Left.GetExpressionType().ToList();
-            var rightTypes = node.Right.GetExpressionType().ToList();
+            var leftTypes = op.Left.GetExpressionType().ToList();
+            var rightTypes = op.Right.GetExpressionType().ToList();
 
             if (!leftTypes.Any() || !rightTypes.Any())
             {
@@ -252,134 +215,95 @@ namespace ZenPlatform.Core.Querying
 
             if (leftTypes.Count == 1 && rightTypes.Count == 1)
             {
-                //Если количество типов одно и тоже мы просто визитируем дальше
-                base.VisitQEquals(node);
-                _qm.eq();
+                return false;
             }
-            else
+
+            if (leftTypes.Count > 1 && rightTypes.Count > 1)
             {
-                //Нужно понять, какая у нас ситуация 
+                MultiTypedExpr left = TypedExprFactory.CreateMultiTypedExpr(op.Left, _qm, this);
+                MultiTypedExpr right = TypedExprFactory.CreateMultiTypedExpr(op.Right, _qm, this);
 
-                //1: Pure equals
-                if (node.Left is QSourceFieldExpression leftField && node.Right is QSourceFieldExpression rightField)
+                var commonTypes = CommonTypes(leftTypes, rightTypes);
+
+                var refEmitted = false;
+                bool hasCompareTop = false;
+                foreach (var type in commonTypes)
                 {
-                    var commonTypes = CommonTypes(leftTypes, rightTypes);
-
-                    foreach (var type in commonTypes)
+                    if (type is XCPrimitiveType pt)
                     {
-                        var leftSchema =
-                            leftField.Property.GetPropertySchemas().FirstOrDefault(x => x.PlatformType == type) ??
-                            throw new Exception($"Can't find in Property: {leftField.Property.Name} type {type}");
-
-                        var rightSchema =
-                            rightField.Property.GetPropertySchemas().FirstOrDefault(x => x.PlatformType == type) ??
-                            throw new Exception($"Can't find in Property: {rightField.Property.Name} type {type}");
-
-                        _qm.ld_column(leftSchema.FullName);
-                        _qm.ld_column(leftSchema.FullName);
-                        _qm.eq();
+                        left.EmitValueColumn(pt);
+                        right.EmitValueColumn(pt);
                     }
-                }
 
-                //2: Pure equals with intermediate field
-                else if (node.Left is QIntermediateSourceField ileft &&
-                         node.Right is QIntermediateSourceField iright &&
-                         ileft.Field is QSourceFieldExpression l && iright.Field is QSourceFieldExpression r)
-                {
-                    var commonTypes = CommonTypes(leftTypes, rightTypes);
-
-                    var lpropSchema = l.Property.GetPropertySchemas();
-                    var rpropSchema = r.Property.GetPropertySchemas();
-
-                    var tr = rpropSchema.First(x => x.SchemaType == XCColumnSchemaType.Type);
-                    var tl = lpropSchema.First(x => x.SchemaType == XCColumnSchemaType.Type);
-
-                    _qm.ld_str(ileft.DataSource.GetDbName());
-                    _qm.ld_str(tl.FullName);
-                    _qm.ld_column();
-
-                    _qm.ld_str(iright.DataSource.GetDbName());
-                    _qm.ld_str(tr.FullName);
-                    _qm.ld_column();
-
-                    _qm.eq();
-
-                    foreach (var type in commonTypes)
+                    if (!refEmitted && type is XCObjectTypeBase)
                     {
-                        var leftSchema =
-                            lpropSchema.FirstOrDefault(x => x.PlatformType.Equals(type)) ??
-                            throw new Exception($"Can't find in Property: {l.Property.Name} type {type}");
+                        left.EmitRefColumn();
+                        right.EmitRefColumn();
 
-                        var rightSchema =
-                            rpropSchema.FirstOrDefault(x => x.PlatformType.Equals(type)) ??
-                            throw new Exception($"Can't find in Property: {r.Property.Name} type {type}");
-
-                        _qm.ld_str(ileft.DataSource.GetDbName());
-                        _qm.ld_str(leftSchema.FullName);
-                        _qm.ld_column();
-
-                        _qm.ld_str(iright.DataSource.GetDbName());
-                        _qm.ld_str(rightSchema.FullName);
-                        _qm.ld_column();
-
-                        _qm.eq();
-
-                        _qm.and();
+                        refEmitted = true;
                     }
+
+                    compareAction();
+
+                    if (hasCompareTop)
+                        concatAction();
+
+                    hasCompareTop = true;
                 }
 
-                else if (node.Left is QCast cast)
-                {
-                    CastHandling(node.Right, cast);
-                }
-                else if (node.Right is QCast cast1)
-                {
-                    CastHandling(node.Left, cast1);
-                }
+                left.EmitTypeColumn();
+                right.EmitTypeColumn();
+                compareAction();
+                concatAction();
+            }
+            else if (leftTypes.Count == 1 && rightTypes.Count > 1)
+            {
+                IfLeftOrRightOneType(op.Left, op.Right, compareAction, concatAction, leftTypes, true);
+            }
+            else if (rightTypes.Count == 1 && leftTypes.Count > 1)
+            {
+                IfLeftOrRightOneType(op.Right, op.Left, compareAction, concatAction, rightTypes);
             }
 
-            return null;
+
+            return true;
         }
 
-        private void CastHandling(QExpression left, QCast cast)
+        void IfLeftOrRightOneType(QExpression left, QExpression right, Action compareAction, Action concatAction,
+            List<XCTypeBase> leftTypes,
+            bool flip = false)
         {
-            Visit(cast);
+            var mt = TypedExprFactory.CreateMultiTypedExpr(right, _qm, this);
 
-            if (left is QSourceFieldExpression ||
-                (left is QIntermediateSourceField ifs && ifs.Field is QSourceFieldExpression))
+            var leftType = leftTypes[0];
+
+            if (flip)
+                Visit(left);
+
+            if (leftType is XCPrimitiveType pType)
             {
-                string tableName = "";
-
-                if (left is QIntermediateSourceField qsf)
-                {
-                    tableName = qsf.DataSource.GetDbName();
-                }
-
-                var sfield =
-                    (QSourceFieldExpression) ((left as QIntermediateSourceField)?.Field) ??
-                    (left as QSourceFieldExpression);
-
-                var schema = sfield.Property.GetPropertySchemas()
-                    .FirstOrDefault(x => x.PlatformType.Equals(cast.GetExpressionType().First()));
-
-                if (schema != null)
-                {
-                    if (string.IsNullOrEmpty(tableName))
-                        _qm.ld_column(schema.FullName);
-                    else
-                    {
-                        _qm.ld_str(tableName);
-                        _qm.ld_str(schema.FullName);
-                        _qm.ld_column();
-                    }
-                }
-                else
-                {
-                    _qm.ld_null();
-                }
-
-                _qm.eq();
+                mt.EmitValueColumn(pType);
             }
+            else if (leftType is XCObjectTypeBase)
+            {
+                mt.EmitRefColumn();
+            }
+
+            if (!flip)
+                Visit(left);
+
+            compareAction();
+
+            if (flip)
+                _qm.ld_const(leftType.Id);
+
+            mt.EmitTypeColumn();
+
+            if (!flip)
+                _qm.ld_const(leftType.Id);
+            compareAction();
+
+            concatAction();
         }
 
 
@@ -408,16 +332,6 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
-        public override object VisitQNestedQuery(QNestedQuery node)
-        {
-            return base.VisitQNestedQuery(node);
-        }
-
-        public override object VisitQSelectExpression(QSelectExpression node)
-        {
-            return base.VisitQSelectExpression(node);
-        }
-
         public override object VisitQAliasedDataSource(QAliasedDataSource node)
         {
             _hasAlias = true;
@@ -444,6 +358,23 @@ namespace ZenPlatform.Core.Querying
             if (node.DataSource is QAliasedDataSource ads)
             {
                 base.VisitQIntermediateSourceField(node);
+            }
+            else if (node.DataSource is QNestedQuery)
+            {
+                var schema = PropertyHelper.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
+                GenColumn(schema);
+            }
+
+            return null;
+        }
+
+        public override object VisitQNestedQueryField(QNestedQueryField node)
+        {
+            LoadNamedSource(node.DataSource.GetDbName());
+
+            if (node.DataSource is QAliasedDataSource ads)
+            {
+                base.VisitQNestedQueryField(node);
             }
             else if (node.DataSource is QNestedQuery)
             {
@@ -498,17 +429,6 @@ namespace ZenPlatform.Core.Querying
             var res = base.VisitQAliasedSelectExpression(node);
 
             return res;
-        }
-    }
-
-    public class OperatorTrnasform
-    {
-        public void NeedOperatorTransform(QOperationExpression op)
-        {
-        }
-
-        public void EqualsTransform(QEquals node, QueryMachine qm)
-        {
         }
     }
 }

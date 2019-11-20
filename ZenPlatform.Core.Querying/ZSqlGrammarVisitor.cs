@@ -51,8 +51,14 @@ namespace ZenPlatform.Core.Querying
         {
             base.VisitExprEquality(context);
 
-            if (context.exprEquality() != null)
+            if (context.ASSIGN() != null)
+            {
                 _stack.eq();
+            }
+            else if (context.NOT_EQ2() != null)
+            {
+                _stack.ne();
+            }
 
             return null;
         }

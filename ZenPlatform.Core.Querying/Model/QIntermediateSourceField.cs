@@ -4,7 +4,7 @@ using ZenPlatform.Configuration.Structure.Data.Types;
 namespace ZenPlatform.Core.Querying.Model
 {
     /// <summary>
-    /// Оборачивает поле при смене источника данных
+    /// Оборачивает поле при смене источника данных, кроме вложенных запросов
     /// </summary>
     public partial class QIntermediateSourceField
     {
@@ -21,6 +21,27 @@ namespace ZenPlatform.Core.Querying.Model
         public override string? ToString()
         {
             return $"In-ate: {Field} From {DataSource}";
+        }
+    }
+    
+    /// <summary>
+    /// Поле вложенного запроса
+    /// </summary>
+    public partial class QNestedQueryField
+    {
+        public override string GetName()
+        {
+            return Field.GetName();
+        }
+
+        public override IEnumerable<XCTypeBase> GetExpressionType()
+        {
+            return Field.GetExpressionType();
+        }
+
+        public override string? ToString()
+        {
+            return $"Nested: {Field} From {DataSource}";
         }
     }
 }

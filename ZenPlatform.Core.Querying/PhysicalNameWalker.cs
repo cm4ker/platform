@@ -1,3 +1,4 @@
+using MoreLinq.Extensions;
 using ZenPlatform.Core.Querying.Model;
 
 namespace ZenPlatform.Core.Querying
@@ -11,6 +12,9 @@ namespace ZenPlatform.Core.Querying
         public override object VisitQQuery(QQuery node)
         {
             VisitQFrom(node.From);
+//            VisitQWhere(node.Where);
+//            VisitQGroupBy(node.GroupBy);
+//            VisitQHaving(node.Having);
             VisitQSelect(node.Select);
 
             return null;
@@ -30,14 +34,21 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
-            node.SetDbName($"{node.Property.DatabaseColumnName}");
+            node.SetDbNameIfEmpty($"{node.Property.DatabaseColumnName}");
             return base.VisitQSourceFieldExpression(node);
         }
 
         public override object VisitQAliasedSelectExpression(QAliasedSelectExpression node)
         {
-            node.SetDbName($"A{_aliasCount++}");
+            node.SetDbNameIfEmpty($"A{_aliasCount++}");
             return base.VisitQAliasedSelectExpression(node);
+        }
+
+        public override object VisitQNestedQueryField(QNestedQueryField node)
+        {
+            base.VisitQNestedQueryField(node);
+            node.SetDbName(node.Field.GetDbName());
+            return null;
         }
 
         public override object VisitQIntermediateSourceField(QIntermediateSourceField node)
