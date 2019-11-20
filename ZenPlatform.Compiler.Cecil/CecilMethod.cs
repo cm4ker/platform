@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using Mono.Cecil;
@@ -32,8 +33,8 @@ namespace ZenPlatform.Compiler.Cecil
                 gim.GenericArguments.Add(_md.ImportReference(TypeSystem.GetTypeReference(type)));
             }
 
-            if(gim.Resolve() == null) throw new NullReferenceException();
-            
+            if (gim.Resolve() == null) throw new NullReferenceException();
+
             return new CecilMethod(TypeSystem, gim, DeclaringTypeReference, _md);
         }
     }
@@ -67,9 +68,13 @@ namespace ZenPlatform.Compiler.Cecil
             var param = new ParameterDefinition(name, ParameterAttributes.None,
                 _md.ImportReference(TypeSystem.GetTypeReference(type)));
 
+           
+            var cecilParam = new CecilParameter(TypeSystem, _methodDef, param);
+            ((List<CecilParameter>) this.Parameters).Add(cecilParam);
+            
             _methodDef.Parameters.Add(param);
-
-            return new CecilParameter(TypeSystem, _methodDef, param);
+            
+            return cecilParam;
         }
 
         public IMethodBuilder WithReturnType(IType type)

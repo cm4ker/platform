@@ -49,7 +49,11 @@ namespace ZenPlatform.Compiler.Cecil
         public bool IsPublic => Definition.IsPublic;
         public bool IsStatic => Definition.IsStatic;
 
-        public IReadOnlyList<IParameter> Parameters => Definition.Parameters
+
+        private List<CecilParameter> _parameters;
+        
+        public IReadOnlyList<IParameter> Parameters =>
+            _parameters ??= Definition.Parameters
             .Select(p => new CecilParameter(TypeSystem, Definition,
                 new ParameterDefinition(p.Name, p.Attributes, ContextResolver.Import(p.ParameterType))))
             .ToList();
