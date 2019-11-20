@@ -524,13 +524,16 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void Stage1(ComponentAstBase astTree, ITypeBuilder builder)
         {
-            if (astTree is ComponentClass cc && cc.CompilationMode == CompilationMode.Server)
+            if (astTree is ComponentClass cc)
             {
-                EmitMappingSupport(cc, builder);
-                EmitSavingSupport(cc, builder);
-            }
+                if (cc.CompilationMode == CompilationMode.Server)
+                {
+                    EmitMappingSupport(cc, builder);
+                    EmitSavingSupport(cc, builder);
+                }
 
-            BuildVersionField(builder);
+                BuildVersionField(builder);
+            }
         }
 
         private void BuildVersionField(ITypeBuilder tb)
