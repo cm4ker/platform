@@ -28,7 +28,7 @@ namespace ZenPlatform.Compiler.Cecil
         public CecilType(CecilTypeSystem typeSystem, CecilAssembly assembly, TypeDefinition definition,
             TypeReference reference)
         {
-            _assembly = assembly;
+            _assembly = assembly ?? throw new NullReferenceException(nameof(assembly));
             TypeSystem = typeSystem;
             Reference = reference;
             Definition = definition;
@@ -59,10 +59,10 @@ namespace ZenPlatform.Compiler.Cecil
         protected IReadOnlyList<IConstructor> _constructors;
 
         public IReadOnlyList<IConstructor> Constructors =>
-            _constructors ??= Definition.GetConstructors().Select(c => 
+            _constructors ??= Definition.GetConstructors().Select(c =>
                     new CecilConstructor(TypeSystem, c,
-                    new MethodReference(c.Name, TypeSystem.GetTypeReference(c.ReturnType.FullName), Reference),
-                    Reference))
+                        new MethodReference(c.Name, TypeSystem.GetTypeReference(c.ReturnType.FullName), Reference),
+                        Reference))
                 .ToList();
 
         protected IReadOnlyList<IField> _fields;

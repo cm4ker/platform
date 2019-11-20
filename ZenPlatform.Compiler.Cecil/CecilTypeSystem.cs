@@ -118,6 +118,15 @@ namespace ZenPlatform.Compiler.Cecil
         internal CecilAssembly FindAsm(AssemblyDefinition d)
         {
             _assemblyDic.TryGetValue(d, out var asm);
+
+            if (asm == null)
+            {
+                RegisterAssembly(d);
+                asm = _assemblyDic[d];
+            }
+            
+            
+            
             return asm;
         }
 
