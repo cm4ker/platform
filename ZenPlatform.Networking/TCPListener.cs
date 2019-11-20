@@ -1,32 +1,34 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Logging;
 
 namespace ZenPlatform.Core.Network
 {
-    public class TCPListener : INetworkListener
+    public class TCPListener : IDatabaseNetworkListener
     {
         private readonly ILogger _logger;
         private readonly IConnectionManager _connectionManager;
         private TcpListener _listener;
         private bool _running;
         private Thread _thread;
-        private ServerConnectionFactory _connectionFactory;
+        IServiceProvider _serviceProvider;
 
-        public TCPListener(ILogger<TCPListener> logger, IConnectionManager connectionManager)
+        public TCPListener(ILogger<TCPListener> logger, IServiceProvider serviceProvider, IConnectionManager connectionManager)
         {
             _logger = logger;
             _connectionManager = connectionManager;
+            _serviceProvider = serviceProvider;
         }
 
-        public void Start(IPEndPoint endPoint, ServerConnectionFactory connectionFactory)
+        public void Start(IPEndPoint endPoint)
         {
             try
             {
-                _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
 
                 _logger.Info("Started listening: {0}:{1}", endPoint.Address, endPoint.Port);
 
@@ -80,7 +82,7 @@ namespace ZenPlatform.Core.Network
                 {
                     if (client != null)
                     {
-                        var connection = _connectionFactory.CreateConnection(client);
+                        var connection = CreateConnection(client);
                         _connectionManager.AddConnection(connection);
                         connection.Open();
                     }
@@ -92,9 +94,19 @@ namespace ZenPlatform.Core.Network
             }
         }
 
+        private Connection CreateConnection(ITransportClient client)
+        {
+            return new ServerConnection(
+                _serviceProvider.GetRequiredService<ILogger<ServerConnection>>(),
+                _serviceProvider.GetRequiredService<IChannelFactory>(),
+                client,
+                _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>()
+            );
+        }
+
         public void Dispose()
         {
-            
+            Stop();
         }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -9,47 +10,47 @@ using System.Text;
 using System.Xml.Serialization;
 using ZenPlatform.Cli;
 using ZenPlatform.Shell.Ansi;
+using ZenPlatform.Shell.Contracts;
+using ZenPlatform.Shell.Contracts.Ansi;
 using ZenPlatform.SSH;
+
 
 namespace ZenPlatform.Shell.Terminal
 {
     /// <summary>
     /// Обычное коммандное приложение с коммандной строкой
     /// </summary>
-    internal class CommandApplication : ITerminalApplication
+    public class CommandApplication : ITerminalApplication
     {
-        private readonly ITerminal _terminal;
+        private ITerminal _terminal;
 
         private bool _isInitialized = false;
 
         private int _cursorX;
         private int _cursorY;
-        private IConsole _c;
+       
+        
 
-        private TerminalSize _size;
-
-        private TerminalBufferChar[] _buffer;
         private List<TerminalBufferChar> _line;
 
         private List<string> _commandStory;
         private int _currentCommandStoryIndex = -1;
 
         private int _currentLineIndex = -1;
-
-        public CommandApplication(ITerminal terminal)
+        private IServiceProvider _serviceProvider;
+        public CommandApplication(IServiceProvider serviceProvider)
         {
-            _terminal = terminal;
-            _c = (IConsole) terminal;
-            _buffer = new TerminalBufferChar[_size.HeightRows * _size.WidthColumns];
+            _serviceProvider = serviceProvider;
+
             _line = new List<TerminalBufferChar>();
             _commandStory = new List<string>();
         }
 
-        public void Open(TerminalSize size)
+        public void Open(ITerminal terminal)
         {
-            _size = size;
+            _terminal = terminal;
 
-            _c.WriteLine(@"
+            WriteLine(@"
  _____               ___ _       _    __                      
 / _  / ___ _ __     / _ \ | __ _| |_ / _| ___  _ __ _ __ ___  
 \// / / _ \ '_ \   / /_)/ |/ _` | __| |_ / _ \| '__| '_ ` _ \ 
@@ -62,12 +63,36 @@ namespace ZenPlatform.Shell.Terminal
  / / |  __/ |  | | | | | | | | | | (_| | |                    
  \/   \___|_|  |_| |_| |_|_|_| |_|\__,_|_|                    ");
 
-            _c.WriteLine();
-            _c.CursorPositionRequest();
+            WriteLine();
+            _terminal.Send(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.DeviceStatusRequest)));
         }
 
         public void Close()
         {
+        }
+
+        private void WriteLine()
+        {
+            _cursorY += 1;
+            _cursorY = Math.Min((int)_terminal.Size.HeightRows, _cursorY);
+            _cursorX = 0;
+            _terminal.Send(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.LineFeed)));
+        }
+        private void WriteLine(string text)
+        {
+            Write(text);
+            WriteLine();
+        }
+
+        private void Write(string text)
+        {
+            _terminal.Send(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.Text, text)));
+            _cursorX += text.Length;
+        }
+
+        private void SetCursorPosition(int x, int y)
+        {
+            _terminal.Send(AnsiBuilder.SetCursorPosCommand(y, x));
         }
 
         public void Consume(TerminalCode code)
@@ -85,11 +110,11 @@ namespace ZenPlatform.Shell.Terminal
 
                     break;
                 case TerminalCodeType.Text:
-                    _cursorX += code.Text.Length;
+                    //_cursorX += code.Text.Length;
 
-                    if (_cursorX >= _size.WidthColumns)
+                    if (_cursorX >= _terminal.Size.WidthColumns)
                     {
-                        _c.WriteLine();
+                        WriteLine();
                         _cursorX = 0;
                         SyncCursor();
                     }
@@ -108,13 +133,13 @@ namespace ZenPlatform.Shell.Terminal
                         _currentLineIndex++;
                     }
 
-                    _c.Write(code.Text);
+                    Write(code.Text);
                     SyncCursor();
                     break;
                 case TerminalCodeType.LineFeed:
-                    _cursorY += 1;
-                    _cursorX = 0;
-                    _c.WriteLine();
+                    //_cursorY += 1;
+                    //_cursorX = 0;
+                    WriteLine();
                     break;
 
                 case TerminalCodeType.CarriageReturn:
@@ -124,7 +149,7 @@ namespace ZenPlatform.Shell.Terminal
 
                     var cmd = new string(_line.Select(x => x.Char).ToArray());
                     _commandStory.Add(cmd);
-                    WriteLine($"The command is: {cmd}");
+                    //WriteLine($"The command is: {cmd}");
 
                     RunCommand(cmd);
 
@@ -146,7 +171,8 @@ namespace ZenPlatform.Shell.Terminal
                     {
                         _cursorX--;
                         SyncCursor();
-                        _c.Write(" ");
+                        Write(" ");
+                        _cursorX--;
                         SyncCursor();
                         _line.RemoveAt(_currentLineIndex);
                         _currentLineIndex--;
@@ -218,13 +244,6 @@ namespace ZenPlatform.Shell.Terminal
             }
         }
 
-        private void WriteLine(string text = "")
-        {
-            _cursorY += 1;
-            _cursorY = Math.Min((int) _size.HeightRows, _cursorY);
-            _cursorX = 0;
-            _c.WriteLine(text);
-        }
 
         private void WriteProposal()
         {
@@ -235,95 +254,33 @@ namespace ZenPlatform.Shell.Terminal
         {
             _cursorX = 0;
             SyncCursor();
-            Write(new string(' ', (int) _size.WidthColumns));
+            Write(new string(' ', (int)_terminal.Size.WidthColumns));
             _cursorX = 0;
             SyncCursor();
         }
 
-        private void Write(string text = "")
-        {
-            _c.Write(text);
-            _cursorX += text.Length;
-            //TODO: Если команда длиннее строки
-        }
+  
 
-        private void RedrawCurrentLine()
-        {
-        }
-
-        public void SetSize(TerminalSize size)
-        {
-            _size = size;
-//            if (size != _size)
-//            {
-//                var srcSize = _size;
-//                var dstSize = size;
-//
-//                var srcBuffer = _buffer;
-//                var dstBuffer = new TerminalBufferChar[dstSize.HeightRows * dstSize.WidthColumns];
-//
-//                int srcLeft = 0;
-//                int srcRight = Math.Min((int) srcSize.WidthColumns, (int) dstSize.WidthColumns) - 1;
-//                int srcTop = Math.Max(0, _cursorY - (int) dstSize.HeightRows + 1);
-//                int srcBottom = srcTop + Math.Min((int) srcSize.HeightRows, (int) dstSize.HeightRows) - 1;
-//                int dstLeft = 0;
-//                int dstTop = 0;
-//
-//                srcBuffer.CopyBufferToBuffer(srcSize, srcLeft, srcTop, srcRight, srcBottom,
-//                    dstBuffer, dstSize, dstLeft, dstTop);
-//
-//                _buffer = dstBuffer;
-//                _size = dstSize;
-//
-//                _cursorY = Math.Min(_cursorY, (int) _size.HeightRows - 1);
-//                _cursorX = Math.Min(_cursorX, (int) _size.WidthColumns - 1);
-//                
-//                SyncCursor();
-//            }
-        }
 
         private void SyncCursor()
         {
-            _c.SetCursorPosition(_cursorX + 1, _cursorY + 1);
+            SetCursorPosition(_cursorX + 1, _cursorY + 1);
         }
 
         private void RunCommand(string cmd)
         {
             var args = cmd.Split(' ');
 
-            var fakeConsole = new FakeConsole();
+            //var fakeConsole = _serviceProvider.GetRequiredService<McMaster.Extensions.CommandLineUtils.IConsole>();
 
-            var app = CliBuilder.Build(fakeConsole);
+            //var app = CliBuilder.Build(fakeConsole);
+            var app = _serviceProvider.GetRequiredService<ICommandLineInterface>();
 
-            app.ThrowOnUnexpectedArgument = false;
+            var result = app.Execute(args);
 
-            app.Execute(args);
-
-            fakeConsole.Out.Flush();
-            Write(fakeConsole.Out.ToString());
-        }
-
-        private void RunApp()
-        {
-            using (Process process = new Process())
-            {
-                process.StartInfo.FileName = "ipconfig.exe";
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.Start();
-
-                // Synchronously read the standard output of the spawned process. 
-                StreamReader reader = process.StandardOutput;
-                string output = reader.ReadToEnd();
-
-                byte[] bytes = Encoding.Default.GetBytes(output);
-                output = Encoding.UTF8.GetString(bytes);
-
-                // Write the redirected output to this application's window.
-                WriteLine(output);
-
-                process.WaitForExit();
-            }
+           // fakeConsole.Out.Flush();
+           /// Write(fakeConsole.Out.ToString());
+            
         }
     }
 }

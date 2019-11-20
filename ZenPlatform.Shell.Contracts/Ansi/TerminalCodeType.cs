@@ -1,6 +1,6 @@
-﻿namespace ZenPlatform.Shell.Ansi
+﻿namespace ZenPlatform.Shell.Contracts.Ansi
 {
-    internal enum TerminalCodeType
+    public enum TerminalCodeType
     {
         Text,
         Bell,

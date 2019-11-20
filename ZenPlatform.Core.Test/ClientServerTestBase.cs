@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using Xunit.Abstractions;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Network;
 
@@ -7,10 +8,16 @@ namespace ZenPlatform.Core.Test
 {
     public class ClientServerTestBase
     {
+        private ITestOutputHelper _testOutput;
+        public ClientServerTestBase(ITestOutputHelper testOutput)
+        {
+            _testOutput = testOutput;
+        }
+
         public void InvokeInClientServerContext(InvokeInClientServerContextDelegate action)
         {
-            var serverServices = Initializer.GetServerService();
-            var clientServices = Initializer.GetClientService();
+            var serverServices = Initializer.GetServerService(_testOutput);
+            var clientServices = Initializer.GetClientService(_testOutput);
 
 
             var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();

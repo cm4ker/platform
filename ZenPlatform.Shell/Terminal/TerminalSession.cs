@@ -1,14 +1,17 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using System.IO.Pipes;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TextCopy;
+using ZenPlatform.Core.Logging;
 using ZenPlatform.Shell.Ansi;
-using ZenPlatform.Shell.MiniTerm;
+using ZenPlatform.Shell.Contracts.Ansi;
+using ZenPlatform.Shell.Contracts;
 using ZenPlatform.Shell.Utility;
 using ZenPlatform.SSH;
 using ZenPlatform.SSH.Messages.Connection;
@@ -16,24 +19,26 @@ using Process = System.Diagnostics.Process;
 
 namespace ZenPlatform.Shell.Terminal
 {
-    internal class TerminalSession : ITerminalSession
+    public class TerminalSession : ITerminalSession
     {
         PipeStream _reader;
         AnonymousPipeServerStream _writer;
-        private Process _cmdProcess;
-        
+
         private readonly object _bufferSync = new object();
         private bool _disposed;
-
-
-        public TerminalSession(TerminalSize size)
+        private IServiceProvider _serviceProvider;
+        private ILogger _logger;
+        public TerminalSession(ITerminal terminal, IServiceProvider serviceProvider, ILogger<TerminalSession> logger)
         {
-            VTerminal = new VirtualTerminal(size);
+            VTerminal = terminal;
+            VTerminal.OnData += (s, a) => OnDataReceived(a);
+
+            _serviceProvider = serviceProvider;
+            _logger = logger;
 
             _writer = new AnonymousPipeServerStream(PipeDirection.Out);
             _reader = new AnonymousPipeClientStream(PipeDirection.In, _writer.GetClientHandleAsString());
-
-            VTerminal.OnData += (s, a) => OnDataReceived(a);
+            
         }
 
 
@@ -41,7 +46,7 @@ namespace ZenPlatform.Shell.Terminal
 
         public Exception Exception { get; private set; }
 
-        public VirtualTerminal VTerminal { get; }
+        public ITerminal VTerminal { get; private set; }
 
         public event EventHandler<uint> CloseReceived;
         public event EventHandler<byte[]> DataReceived;
@@ -49,7 +54,8 @@ namespace ZenPlatform.Shell.Terminal
 
         public void Close()
         {
-            _writer.WriteByte(0x03);
+            
+            SessionClosed();
         }
 
         public void ConsumeData(byte[] data)
@@ -59,13 +65,16 @@ namespace ZenPlatform.Shell.Terminal
 
         public void ChangeSize(TerminalSize size)
         {
-            VTerminal.SetSize(size);
+            VTerminal.Size = size;
         }
 
-        public void Run()
+        public void Run(ITerminalApplication application)
         {
-            VTerminal.Open(new CommandApplication(VTerminal));
+            
+            VTerminal?.Initialize(application);
+            application.Open(VTerminal);
             RunOutputLoop();
+
         }
 
 
@@ -137,16 +146,23 @@ namespace ZenPlatform.Shell.Terminal
             DataReceived?.Invoke(this, data);
         }
 
+        private void OnCloseReceived(uint e)
+        {
+            CloseReceived?.Invoke(this, e);
+        }
+
 
         private void SessionErrored(Exception ex)
         {
             Connected = false;
             Exception = ex;
+            OnCloseReceived(1);
         }
 
         private void SessionClosed()
         {
             Connected = false;
+            OnCloseReceived(0x00);
         }
     }
 

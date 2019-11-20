@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZenPlatform.SSH
+namespace ZenPlatform.Shell
 {
     /// <summary>
     /// Represents a terminal size in columns and rows.

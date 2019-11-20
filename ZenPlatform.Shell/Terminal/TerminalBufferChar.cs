@@ -1,4 +1,5 @@
 ﻿using ZenPlatform.Shell.Ansi;
+using ZenPlatform.Shell.Contracts.Ansi;
 
 namespace ZenPlatform.Shell.Terminal
 {

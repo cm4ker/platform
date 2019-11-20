@@ -29,17 +29,16 @@ namespace ZenPlatform.Networking
             //_config.Listener.Add(new ListenerConfig() { Address = "127.0.0.1:12345", Type = ListenerType.Test });
             foreach (var lisetnercfg in _config.Listener)
             {
-                INetworkListener listener = _serviceProvider.GetRequiredService<INetworkListener>();
 
-                var connectionFactory = lisetnercfg.Type switch
+                INetworkListener listener = lisetnercfg.Type switch
                 {
-                    ListenerType.User => _serviceProvider.GetRequiredService<UserConnectionFactory>(),
-                    ListenerType.Admin => _serviceProvider.GetRequiredService<ServerConnectionFactory>(),
-                    ListenerType.Test => _serviceProvider.GetRequiredService<ServerConnectionFactory>(),
+                    ListenerType.User =>  _serviceProvider.GetRequiredService<IDatabaseNetworkListener>(),
+                    ListenerType.Admin => _serviceProvider.GetRequiredService<ITerminalNetworkListener>(),
+                    ListenerType.Test =>  _serviceProvider.GetRequiredService<IDatabaseNetworkListener>(),
                     _ => throw new InvalidOperationException()
                 };
 
-                listener.Start(NetworkUtility.CreateIPEndPoint(lisetnercfg.Address), connectionFactory);
+                listener.Start(NetworkUtility.CreateIPEndPoint(lisetnercfg.Address));
                 _listeners.Add(listener);
             }
         }

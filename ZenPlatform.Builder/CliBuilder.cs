@@ -6,6 +6,8 @@ using System.Reflection;
 using FluentMigrator.Runner.Initialization;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Cli.Commands;
+using ZenPlatform.Cli.Commands.Db;
 //using ZenPlatform.Cli.Builder;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration;
@@ -20,6 +22,53 @@ using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Cli
 {
+
+    public interface ICommandLineInterface
+    {
+        int Execute(string[] args);
+    }
+
+
+    public class McMasterCommandLineInterface: ICommandLineInterface
+    {
+        private IConsole _console;
+        IServiceProvider _serviceProvider;
+        public McMasterCommandLineInterface(IConsole console, IServiceProvider serviceProvider)
+        {
+            _console = console;
+            _serviceProvider = serviceProvider;
+        }
+
+        private int RunCommand<T>(string[] args) where  T: class
+        {
+            var cmd = new CommandLineApplication<T>(false);
+            cmd.Conventions
+                .UseDefaultConventions()
+                .UseConstructorInjection(_serviceProvider);
+            
+
+            return cmd.Execute(args.Length > 1 ? args[1..] : new string[0]);
+        }
+
+        private int Unknown()
+        {
+            _console.WriteLine("Unknown command");
+            return 0;
+        }
+        public int Execute(string[] args)
+        {
+
+
+            return args[0] switch
+            {
+            "exit" => RunCommand<CommandExit>(args),
+            "db" => RunCommand<CommandDb>(args),
+            _ => Unknown()
+            };
+            
+        }
+    }
+
     public static partial class CliBuilder
     {
         public static void BuildApplicationServerCommands(CommandLineApplication app)
@@ -44,15 +93,7 @@ namespace ZenPlatform.Cli
          * 
          */
 
-        public static CommandLineApplication Build(IConsole console)
-        {
-            var app = new CommandLineApplication(console);
 
-            BuildProjectCommands(app);
-            BuildServiceCommands(app);
-
-            return app;
-        }
 
         public static int Build(params string[] args)
         {
@@ -76,7 +117,7 @@ namespace ZenPlatform.Cli
 
                 DataContext dc = new DataContext(databaseType, connectionString);
 
-                CreateDatabaseQueryNode cDatabase = new CreateDatabaseQueryNode();
+                //CreateDatabaseQueryNode cDatabase = new CreateDatabaseQueryNode();
             }
 
 

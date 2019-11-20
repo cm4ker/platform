@@ -26,5 +26,6 @@
         <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
         <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
         <ProjectReference Include="..\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Shell.Contracts\ZenPlatform.Shell.Contracts.csproj" />
     </ItemGroup>
 </Project>

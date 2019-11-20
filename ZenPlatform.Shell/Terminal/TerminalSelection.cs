@@ -1,6 +1,6 @@
 ﻿namespace ZenPlatform.Shell.Terminal
 {
-    internal class TerminalSelection
+    public class TerminalSelection
     {
         public SelectionMode Mode { get; }
         public TerminalPoint Start { get; }
