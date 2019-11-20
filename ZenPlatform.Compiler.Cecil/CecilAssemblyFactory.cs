@@ -18,8 +18,8 @@ namespace ZenPlatform.Compiler.Cecil
                     MetadataResolver = cecilTs.MetadataResolver,
                     Kind = ModuleKind.Dll
                 });
-            var wrapped = new CecilAssembly(cecilTs, def);
 
+            var wrapped = (CecilAssembly) cecilTs.RegisterAssembly(def);
             return wrapped;
         }
     }

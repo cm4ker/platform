@@ -49,7 +49,8 @@ namespace ZenPlatform.EntityComponent.Entity
                 XCNumeric b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Double),
                 XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
                 XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type),
-                XCObjectTypeBase b => (TypeSyntax) new SingleTypeSyntax(null, b.Name, TypeNodeKind.Type),
+                XCObjectTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
+                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name, TypeNodeKind.Type),
                 XCGuid b => (TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
             };
         }
@@ -121,7 +122,7 @@ namespace ZenPlatform.EntityComponent.Entity
                                 .GetPropertySchemas(prop.DatabaseColumnName)
                                 .First(x => x.SchemaType == ((prop.Types.Count > 1)
                                                 ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial)/* && x.PlatformType == ot*/).FullName;
+                                                : XCColumnSchemaType.NoSpecial) /* && x.PlatformType == ot*/).FullName;
 
                             var propName = prop
                                 .GetPropertySchemas(prop.Name)
@@ -203,17 +204,22 @@ namespace ZenPlatform.EntityComponent.Entity
                         {
                             propertyGenerated = true;
 
+
                             var dbColName = prop
                                 .GetPropertySchemas(prop.DatabaseColumnName)
                                 .First(x => x.SchemaType == ((prop.Types.Count > 1)
                                                 ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) && x.PlatformType == ot).FullName;
+                                                : XCColumnSchemaType.NoSpecial) && (prop.Types.Count > 1)
+                                    ? x.PlatformType == PlatformTypesFactory.Guid
+                                    : x.PlatformType == ot).FullName;
 
                             var propName = prop
                                 .GetPropertySchemas(prop.Name)
                                 .First(x => x.SchemaType == ((prop.Types.Count > 1)
                                                 ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) && x.PlatformType == ot).FullName;
+                                                : XCColumnSchemaType.NoSpecial) && (prop.Types.Count > 1)
+                                    ? x.PlatformType == PlatformTypesFactory.Guid
+                                    : x.PlatformType == ot).FullName;
 
                             var astProp = new Property(null, propName,
                                 new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type), true, true, dbColName);
@@ -318,7 +324,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         var schemaTyped = ctype switch
                         {
-                            XCObjectTypeBase obj => prop.GetPropertySchemas(prop.Name).First(x => x.SchemaType == XCColumnSchemaType.Ref),
+                            XCObjectTypeBase obj => prop.GetPropertySchemas(prop.Name)
+                                .First(x => x.SchemaType == XCColumnSchemaType.Ref),
                             _ => prop.GetPropertySchemas(prop.Name).First(x => x.PlatformType == ctype),
                         };
 
