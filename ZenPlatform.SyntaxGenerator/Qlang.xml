@@ -78,6 +78,13 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="QNestedQueryField" Base="QField">
+        <Arguments>
+            <Single Name="Field" Type="QField" DenyChildrenFill="true" PassBase="true"/>
+            <Single Name="DataSource" Type="QDataSource" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="QLookupField" Base="QField">
         <Arguments>
             <Single Name="PropName" Type="String" DenyChildrenFill="true"/>

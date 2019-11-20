@@ -521,6 +521,46 @@ namespace ZenPlatform.Core.Querying.Model
 
 namespace ZenPlatform.Core.Querying.Model
 {
+    public partial class QNestedQueryField : QField
+    {
+        public QNestedQueryField(QField field, QDataSource dataSource): base(field)
+        {
+            Field = field;
+            DataSource = dataSource;
+        }
+
+        public QField Field
+        {
+            get;
+            set;
+        }
+
+        public QDataSource DataSource
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( QNestedQueryField ) obj ;  return  ( Compare ( this . Field ,  node . Field ) && Compare ( this . DataSource ,  node . DataSource ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Field == null ? 0 : Field.GetHashCode()) ^ (DataSource == null ? 0 : DataSource.GetHashCode());
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQNestedQueryField(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
     public partial class QLookupField : QField
     {
         public QLookupField(String propName, QExpression baseExpression): base(baseExpression)
@@ -1201,6 +1241,11 @@ namespace ZenPlatform.Core.Querying.Visitor
         }
 
         public virtual T VisitQIntermediateSourceField(QIntermediateSourceField node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitQNestedQueryField(QNestedQueryField node)
         {
             return DefaultVisit(node);
         }
