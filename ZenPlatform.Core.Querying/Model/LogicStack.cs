@@ -36,11 +36,6 @@ namespace ZenPlatform.Core.Querying.Model
             return (QFrom) this.Pop();
         }
 
-        public QOn PopOn()
-        {
-            return (QOn) this.Pop();
-        }
-
         public QQuery PopQuery()
         {
             return (QQuery) this.Pop();

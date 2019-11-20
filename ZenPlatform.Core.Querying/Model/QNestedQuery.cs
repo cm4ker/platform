@@ -12,10 +12,11 @@ namespace ZenPlatform.Core.Querying.Model
 
         public override IEnumerable<QField> GetFields()
         {
-            return _fields ??= Nested.Select.Fields.Select(x => (QField)new QIntermediateSourceField(x, this)).ToList();
+            return _fields ??= Nested.Select.Fields.Select(x => (QField) new QNestedQueryField(x, this))
+                .ToList();
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Nested Query";
         }

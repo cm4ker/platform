@@ -541,6 +541,11 @@ namespace ZenPlatform.QueryBuilder
             _syntaxStack.Push(arg);
         }
 
+        public void ld_null()
+        {
+            _syntaxStack.Push(new SNull());
+        }
+
         #endregion
 
         /* DML

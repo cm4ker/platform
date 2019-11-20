@@ -62,6 +62,16 @@ namespace ZenPlatform.ConfigurationExample
             invoiceProp.Name = "Invoice";
             invoiceProp.Types.Add(invoice);
             invoiceProp.DatabaseColumnName = "Fld_0003";
+
+            var storeCompositeProp = store.CreateProperty();
+            storeCompositeProp.Guid = Guid.NewGuid();
+            storeCompositeProp.Name = "CompositeProperty";
+            storeCompositeProp.DatabaseColumnName = "Fld_0004";
+            storeCompositeProp.Types.Add(new XCBinary());
+            storeCompositeProp.Types.Add(new XCBoolean());
+            storeCompositeProp.Types.Add(new XCString());
+            storeCompositeProp.Types.Add(new XCDateTime());
+
             store.Initialize();
 
             var storeProp = invoice.CreateProperty();

@@ -1551,6 +1551,26 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
+    public partial class SNull : SExpression
+    {
+        public SNull(): base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSNull(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
     public partial class Querys : SSyntaxNode
     {
         public Querys(): base()
@@ -2912,6 +2932,11 @@ namespace ZenPlatform.QueryBuilder.Visitor
         }
 
         public virtual T VisitSCast(SCast node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSNull(SNull node)
         {
             return DefaultVisit(node);
         }

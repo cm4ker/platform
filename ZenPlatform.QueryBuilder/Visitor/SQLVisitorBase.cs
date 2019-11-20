@@ -371,6 +371,10 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return node.Value;
         }
 
+        public override string VisitSNull(SNull node)
+        {
+            return "NULL";
+        }
 
         public override string VisitCreateTable(CreateTable node)
         {

@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types
 {
-    public abstract class XCTypeBase
+    public abstract class XCTypeBase : IEquatable<XCTypeBase>
     {
         protected XCTypeBase()
         {
@@ -36,20 +36,50 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
         [XmlElement]
         public virtual string Description { get; set; }
 
-        
+
         protected virtual bool ShouldSerializeName()
         {
             return true;
         }
-        
+
         protected virtual bool ShouldSerializeId()
         {
             return true;
         }
-        
+
         protected virtual bool ShouldSerializeDescription()
         {
             return true;
+        }
+
+        public virtual bool IsAssignableFrom(XCTypeBase tb)
+        {
+            return tb.Guid == this.Guid;
+        }
+
+        public virtual bool Equals(XCTypeBase other)
+        {
+            return Guid.Equals(other?.Guid) && Id == other?.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((XCTypeBase) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Guid.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int) Id;
+                hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
+                return hashCode;
+            }
         }
     }
 
