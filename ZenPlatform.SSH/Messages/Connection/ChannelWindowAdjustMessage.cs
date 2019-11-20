@@ -1,4 +1,6 @@
-﻿namespace ZenPlatform.SSH.Messages.Connection
+﻿using ZenPlatform.Shell;
+
+namespace ZenPlatform.SSH.Messages.Connection
 {
     [Message("SSH_MSG_CHANNEL_WINDOW_ADJUST", MessageNumber)]
     public class ChannelWindowAdjustMessage : ConnectionServiceMessage

@@ -1,6 +1,6 @@
-﻿namespace ZenPlatform.Shell.Ansi
+﻿namespace ZenPlatform.Shell.Contracts.Ansi
 {
-    internal struct TerminalCode
+    public struct TerminalCode
     {
         public TerminalCodeType Type { get; }
 

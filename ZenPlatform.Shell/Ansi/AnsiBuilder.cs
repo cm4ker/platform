@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using ZenPlatform.Shell.Contracts.Ansi;
 
 namespace ZenPlatform.Shell.Ansi
 {
@@ -30,12 +31,12 @@ namespace ZenPlatform.Shell.Ansi
         }
 
 
-        private static byte[] Conv(params char[] data)
+        public static byte[] Conv(params char[] data)
         {
             return Encoding.UTF8.GetBytes(data);
         }
 
-        private static byte[] Conv(string data)
+        public static byte[] Conv(string data)
         {
             return Encoding.UTF8.GetBytes(data);
         }

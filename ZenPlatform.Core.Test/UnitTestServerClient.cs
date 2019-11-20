@@ -27,6 +27,7 @@ using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.Core.Test.Logging;
 
 namespace ZenPlatform.Core.Test
 {
@@ -35,13 +36,18 @@ namespace ZenPlatform.Core.Test
 
     public class UnitTestServerClient : ClientServerTestBase
     {
+        private ITestOutputHelper _testOutput;
+        public UnitTestServerClient(ITestOutputHelper testOutput):base(testOutput)
+        {
+            _testOutput = testOutput;
+        }
         [Fact]
         public void Connecting()
         {
             for (int i = 0; i < 3; i++)
             {
-                var serverServices = Initializer.GetServerService();
-                var clientServices = Initializer.GetClientService();
+                var serverServices = Initializer.GetServerService(_testOutput);
+                var clientServices = Initializer.GetClientService(_testOutput);
 
                 var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
                 Assert.NotEmpty(environmentManager.GetEnvironmentList());
@@ -67,8 +73,8 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void ConnectingAndLogin()
         {
-            var serverServices = Initializer.GetServerService();
-            var clientServices = Initializer.GetClientService();
+            var serverServices = Initializer.GetServerService(_testOutput);
+            var clientServices = Initializer.GetClientService(_testOutput);
 
 
             var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
@@ -144,7 +150,7 @@ namespace ZenPlatform.Core.Test
         public void AssemblyManagerTest()
         {
             var storage = new TestAssemblyStorage();
-            var manager = new AssemblyManager(new XCCompiler(), storage, new SimpleConsoleLogger<AssemblyManager>());
+            var manager = new AssemblyManager(new XCCompiler(), storage, new XUnitLogger<AssemblyManager>(_testOutput));
 
             var root = Factory.CreateExampleConfiguration();
 
@@ -166,7 +172,7 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void AssemblyManagerClientServiceTest()
         {
-            var serverService = Initializer.GetServerService();
+            var serverService = Initializer.GetServerService(_testOutput);
 
             var assemblyManagerClientService = serverService.GetRequiredService<IAssemblyManagerClientService>();
 

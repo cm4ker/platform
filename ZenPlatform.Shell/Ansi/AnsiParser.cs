@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Windows.Markup;
+using ZenPlatform.Shell.Contracts.Ansi;
 using ZenPlatform.Shell.Utility;
 
 namespace ZenPlatform.Shell.Ansi

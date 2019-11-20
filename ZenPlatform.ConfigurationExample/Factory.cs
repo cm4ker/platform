@@ -61,6 +61,7 @@ namespace ZenPlatform.ConfigurationExample
             invoiceProp.Guid = Guid.Parse("9d865473-58a7-42ff-b4de-17451202064b");
             invoiceProp.Name = "Invoice";
             invoiceProp.Types.Add(invoice);
+            invoiceProp.DatabaseColumnName = "Fld_0003";
             store.Initialize();
 
             var storeProp = invoice.CreateProperty();
@@ -160,6 +161,7 @@ public void OnClientClientCallProc()
             invoiceProp.Guid = Guid.Parse("9d865473-58a7-42ff-b4de-17451202064b");
             invoiceProp.Name = "Invoice";
             invoiceProp.Types.Add(invoice);
+            invoiceProp.DatabaseColumnName = "Fld_0003";
             store.Initialize();
 
             var storeProp = invoice.CreateProperty();

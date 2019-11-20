@@ -172,7 +172,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
                     if (type is XCObjectTypeBase obj && !done)
                     {
-                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, type, propName,
+                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, new XCGuid(), propName,
                             !obj.Parent.ComponentImpl.DatabaseObjectsGenerator.HasForeignColumn, "", "_Ref");
 
                         done = true;
