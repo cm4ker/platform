@@ -16,6 +16,7 @@ using Process = System.Diagnostics.Process;
 
 namespace ZenPlatform.Shell.Terminal
 {
+    /*
     internal class TerminalCmdSession : ITerminalSession
     {
         PipeStream _reader;
@@ -154,7 +155,7 @@ namespace ZenPlatform.Shell.Terminal
         }
     }
 
-
+    */
     public class ExtendedStack<T>
     {
         private List<T> items = new List<T>();
@@ -211,4 +212,5 @@ namespace ZenPlatform.Shell.Terminal
             }
         }
     }
+    
 }

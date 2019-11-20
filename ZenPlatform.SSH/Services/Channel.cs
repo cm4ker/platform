@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Threading;
 using ZenPlatform.SSH.Messages.Connection;
+using ZenPlatform.Shell;
 
 namespace ZenPlatform.SSH.Services
 {

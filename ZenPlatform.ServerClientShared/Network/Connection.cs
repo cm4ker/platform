@@ -79,7 +79,7 @@ namespace ZenPlatform.Core.Network
         public virtual void OnCompleted()
         {
             _logger.Info("Client '{0}' disconnected. {1}", _client.RemoteEndPoint, "Cause: COMPLETED");
-            throw new Exception();
+            //throw new Exception();
             Close();
         }
 

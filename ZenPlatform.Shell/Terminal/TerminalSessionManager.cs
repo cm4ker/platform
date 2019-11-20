@@ -18,7 +18,7 @@ namespace ZenPlatform.Shell.Terminal
         {
             PrepareTTermEnvironment();
 
-            var session = new TerminalSession(size);
+            TerminalSession session = null;// new TerminalSession(size);
             //session.Finished += OnSessionFinished;
 
             _sessions.Add(session);

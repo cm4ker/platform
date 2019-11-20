@@ -1,5 +1,6 @@
 using System;
 using ZenPlatform.Shell.Ansi;
+using ZenPlatform.Shell.Contracts.Ansi;
 using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal
@@ -23,7 +24,7 @@ namespace ZenPlatform.Shell.Terminal
         }
     }
 
-    internal partial class VirtualTerminal
+    public partial class VirtualTerminal
     {
         private static bool CanContinueTag(CharAttributes previous, CharAttributes next, char nextC)
         {

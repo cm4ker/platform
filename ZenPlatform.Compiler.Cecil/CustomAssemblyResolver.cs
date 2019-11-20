@@ -50,7 +50,7 @@ namespace ZenPlatform.Compiler.Cecil
 
             List<string> paths = new List<string>();
             paths.Add(BaseDirectory);
-            //paths.Add(NetstandardDirectory);
+            paths.Add(NetstandardDirectory);
             paths.Add(MacNetstandardDirectory);
             paths.Add(RuntimeDirectory);
             paths.Add("");

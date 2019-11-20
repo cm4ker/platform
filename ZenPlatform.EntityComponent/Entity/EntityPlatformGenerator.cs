@@ -121,13 +121,13 @@ namespace ZenPlatform.EntityComponent.Entity
                                 .GetPropertySchemas(prop.DatabaseColumnName)
                                 .First(x => x.SchemaType == ((prop.Types.Count > 1)
                                                 ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) && x.PlatformType == ot).FullName;
+                                                : XCColumnSchemaType.NoSpecial)/* && x.PlatformType == ot*/).FullName;
 
                             var propName = prop
                                 .GetPropertySchemas(prop.Name)
                                 .First(x => x.SchemaType == ((prop.Types.Count > 1)
                                                 ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) && x.PlatformType == ot).FullName;
+                                                : XCColumnSchemaType.NoSpecial) /* && x.PlatformType == ot*/).FullName;
 
                             var astProp = new Property(null, propName,
                                 new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type), true, true, dbColName);
@@ -316,8 +316,11 @@ namespace ZenPlatform.EntityComponent.Entity
                             , BinaryOperatorType.Equal);
 
 
-                        var schemaTyped = prop.GetPropertySchemas(prop.Name)
-                            .First(x => x.PlatformType == ctype);
+                        var schemaTyped = ctype switch
+                        {
+                            XCObjectTypeBase obj => prop.GetPropertySchemas(prop.Name).First(x => x.SchemaType == XCColumnSchemaType.Ref),
+                            _ => prop.GetPropertySchemas(prop.Name).First(x => x.PlatformType == ctype),
+                        };
 
                         var feTypedProp = new GetFieldExpression(new Name(null, "_dto"), schemaTyped.FullName);
 

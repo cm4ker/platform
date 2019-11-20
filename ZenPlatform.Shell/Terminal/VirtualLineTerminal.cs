@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using ZenPlatform.Shell.Ansi;
+using ZenPlatform.Shell.Contracts.Ansi;
 using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal
