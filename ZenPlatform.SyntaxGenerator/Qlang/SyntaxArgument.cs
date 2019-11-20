@@ -9,6 +9,8 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
         [XmlAttribute] public bool DenyChildrenFill { get; set; }
 
+        [XmlAttribute] public bool DenyDeclare { get; set; }
+
         [XmlAttribute] public bool PassBase { get; set; }
         public bool Null { get; set; }
 
