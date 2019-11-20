@@ -95,7 +95,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 Name = "Id",
                 Guid = Guid.Parse("905208c8-e892-414f-bd48-acd70b2a901b"),
                 DatabaseColumnName = "Id",
-                Types = {PlatformTypes.Guid},
+                Types = {PlatformTypesFactory.Guid},
                 IsSystemProperty = true,
                 Unique = true,
                 IsReadOnly = true
@@ -109,7 +109,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 Name = "Name",
                 Guid = Guid.Parse("7976d8c6-ce1a-4ec4-b965-be394e215689"),
                 DatabaseColumnName = "Name",
-                Types = {PlatformTypes.GetString(150)},
+                Types = {PlatformTypesFactory.GetString(150)},
                 IsSystemProperty = false,
                 Unique = true,
                 IsReadOnly = true

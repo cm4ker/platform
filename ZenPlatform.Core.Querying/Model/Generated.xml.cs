@@ -521,6 +521,46 @@ namespace ZenPlatform.Core.Querying.Model
 
 namespace ZenPlatform.Core.Querying.Model
 {
+    public partial class QNestedQueryField : QField
+    {
+        public QNestedQueryField(QField field, QDataSource dataSource): base(field)
+        {
+            Field = field;
+            DataSource = dataSource;
+        }
+
+        public QField Field
+        {
+            get;
+            set;
+        }
+
+        public QDataSource DataSource
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( QNestedQueryField ) obj ;  return  ( Compare ( this . Field ,  node . Field ) && Compare ( this . DataSource ,  node . DataSource ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Field == null ? 0 : Field.GetHashCode()) ^ (DataSource == null ? 0 : DataSource.GetHashCode());
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQNestedQueryField(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
     public partial class QLookupField : QField
     {
         public QLookupField(String propName, QExpression baseExpression): base(baseExpression)
@@ -676,7 +716,7 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QFromItem : QItem
     {
-        public QFromItem(QOn condition, QDataSource joined, QJoinType joinType): base()
+        public QFromItem(QExpression condition, QDataSource joined, QJoinType joinType): base()
         {
             Childs.Add(condition);
             Condition = condition;
@@ -685,7 +725,7 @@ namespace ZenPlatform.Core.Querying.Model
             JoinType = joinType;
         }
 
-        public QOn Condition
+        public QExpression Condition
         {
             get;
             set;
@@ -717,60 +757,6 @@ namespace ZenPlatform.Core.Querying.Model
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQFromItem(this);
-        }
-    }
-}
-
-namespace ZenPlatform.Core.Querying.Model
-{
-    public partial class QOperationExpression : QExpression
-    {
-        public QOperationExpression(): base()
-        {
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public override T Accept<T>(QLangVisitorBase<T> visitor)
-        {
-            return visitor.VisitQOperationExpression(this);
-        }
-    }
-}
-
-namespace ZenPlatform.Core.Querying.Model
-{
-    public partial class QOn : QOperationExpression
-    {
-        public QOn(QExpression expression): base()
-        {
-            Childs.Add(expression);
-            Expression = expression;
-        }
-
-        public QExpression Expression
-        {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QOn ) obj ;  return  ( Compare ( this . Expression ,  node . Expression ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Expression == null ? 0 : Expression.GetHashCode());
-        }
-
-        public override T Accept<T>(QLangVisitorBase<T> visitor)
-        {
-            return visitor.VisitQOn(this);
         }
     }
 }
@@ -915,9 +901,9 @@ namespace ZenPlatform.Core.Querying.Model
 
 namespace ZenPlatform.Core.Querying.Model
 {
-    public partial class QAnd : QOperationExpression
+    public partial class QOperationExpression : QExpression
     {
-        public QAnd(QExpression left, QExpression right): base()
+        public QOperationExpression(QExpression left, QExpression right): base()
         {
             Childs.Add(left);
             Left = left;
@@ -940,12 +926,32 @@ namespace ZenPlatform.Core.Querying.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QAnd ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
+                return false; var  node  =  ( QOperationExpression ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
         }
 
         public override int GetHashCode()
         {
             return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQOperationExpression(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
+    public partial class QAnd : QOperationExpression
+    {
+        public QAnd(QExpression left, QExpression right): base(left, right)
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -959,35 +965,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QAdd : QOperationExpression
     {
-        public QAdd(QExpression left, QExpression right): base()
+        public QAdd(QExpression left, QExpression right): base(left, right)
         {
-            Childs.Add(left);
-            Left = left;
-            Childs.Add(right);
-            Right = right;
-        }
-
-        public QExpression Left
-        {
-            get;
-            set;
-        }
-
-        public QExpression Right
-        {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QAdd ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1001,35 +985,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QOr : QOperationExpression
     {
-        public QOr(QExpression left, QExpression right): base()
+        public QOr(QExpression left, QExpression right): base(left, right)
         {
-            Childs.Add(left);
-            Left = left;
-            Childs.Add(right);
-            Right = right;
-        }
-
-        public QExpression Left
-        {
-            get;
-            set;
-        }
-
-        public QExpression Right
-        {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QOr ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1043,35 +1005,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QEquals : QOperationExpression
     {
-        public QEquals(QExpression left, QExpression right): base()
+        public QEquals(QExpression left, QExpression right): base(left, right)
         {
-            Childs.Add(left);
-            Left = left;
-            Childs.Add(right);
-            Right = right;
-        }
-
-        public QExpression Left
-        {
-            get;
-            set;
-        }
-
-        public QExpression Right
-        {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QEquals ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1085,35 +1025,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QNotEquals : QOperationExpression
     {
-        public QNotEquals(QExpression left, QExpression right): base()
+        public QNotEquals(QExpression left, QExpression right): base(left, right)
         {
-            Childs.Add(left);
-            Left = left;
-            Childs.Add(right);
-            Right = right;
-        }
-
-        public QExpression Left
-        {
-            get;
-            set;
-        }
-
-        public QExpression Right
-        {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QNotEquals ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1127,35 +1045,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QGreatThen : QOperationExpression
     {
-        public QGreatThen(QExpression left, QExpression right): base()
+        public QGreatThen(QExpression left, QExpression right): base(left, right)
         {
-            Childs.Add(left);
-            Left = left;
-            Childs.Add(right);
-            Right = right;
-        }
-
-        public QExpression Left
-        {
-            get;
-            set;
-        }
-
-        public QExpression Right
-        {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QGreatThen ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1169,35 +1065,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QLessThen : QOperationExpression
     {
-        public QLessThen(QExpression left, QExpression right): base()
+        public QLessThen(QExpression left, QExpression right): base(left, right)
         {
-            Childs.Add(left);
-            Left = left;
-            Childs.Add(right);
-            Right = right;
-        }
-
-        public QExpression Left
-        {
-            get;
-            set;
-        }
-
-        public QExpression Right
-        {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QLessThen ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1211,35 +1085,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QLessThenOrEquals : QOperationExpression
     {
-        public QLessThenOrEquals(QExpression left, QExpression right): base()
+        public QLessThenOrEquals(QExpression left, QExpression right): base(left, right)
         {
-            Childs.Add(left);
-            Left = left;
-            Childs.Add(right);
-            Right = right;
-        }
-
-        public QExpression Left
-        {
-            get;
-            set;
-        }
-
-        public QExpression Right
-        {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QLessThenOrEquals ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1253,35 +1105,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QGreatThenOrEquals : QOperationExpression
     {
-        public QGreatThenOrEquals(QExpression left, QExpression right): base()
+        public QGreatThenOrEquals(QExpression left, QExpression right): base(left, right)
         {
-            Childs.Add(left);
-            Left = left;
-            Childs.Add(right);
-            Right = right;
-        }
-
-        public QExpression Left
-        {
-            get;
-            set;
-        }
-
-        public QExpression Right
-        {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QGreatThenOrEquals ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            return base.GetHashCode();
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1415,6 +1245,11 @@ namespace ZenPlatform.Core.Querying.Visitor
             return DefaultVisit(node);
         }
 
+        public virtual T VisitQNestedQueryField(QNestedQueryField node)
+        {
+            return DefaultVisit(node);
+        }
+
         public virtual T VisitQLookupField(QLookupField node)
         {
             return DefaultVisit(node);
@@ -1440,16 +1275,6 @@ namespace ZenPlatform.Core.Querying.Visitor
             return DefaultVisit(node);
         }
 
-        public virtual T VisitQOperationExpression(QOperationExpression node)
-        {
-            return DefaultVisit(node);
-        }
-
-        public virtual T VisitQOn(QOn node)
-        {
-            return DefaultVisit(node);
-        }
-
         public virtual T VisitQConst(QConst node)
         {
             return DefaultVisit(node);
@@ -1466,6 +1291,11 @@ namespace ZenPlatform.Core.Querying.Visitor
         }
 
         public virtual T VisitQWhen(QWhen node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitQOperationExpression(QOperationExpression node)
         {
             return DefaultVisit(node);
         }
