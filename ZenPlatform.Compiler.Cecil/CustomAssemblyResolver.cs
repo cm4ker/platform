@@ -20,6 +20,12 @@ namespace ZenPlatform.Compiler.Cecil
 
         Dictionary<string, AssemblyDefinition> libraries;
 
+
+        public void RegisterCustom(string name, AssemblyDefinition def)
+        {
+            libraries[name] = def;
+        }
+
         public CustomAssemblyResolver(CecilTypeSystem cts)
         {
             _cts = cts;
