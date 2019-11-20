@@ -149,18 +149,20 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
             foreach (var arg in syntax.Arguments)
             {
-                if (arg is SyntaxArgumentSingle && !arg.DenyChildrenFill)
+                if (arg is SyntaxArgumentSingle && (!arg.DenyChildrenFill && !arg.DenyDeclare))
                 {
                     block = block.AddStatements(SyntaxFactory.ParseStatement($"Childs.Add({arg.Name.ToCamelCase()});"));
                 }
-                else if (arg is SyntaxArgumentList && !arg.DenyChildrenFill)
+                else if (arg is SyntaxArgumentList && !arg.DenyChildrenFill && !arg.DenyDeclare)
                 {
                     block = block.AddStatements(
                         SyntaxFactory.ParseStatement(
                             $"foreach(var item in {arg.Name.ToCamelCase()}) Childs.Add(item);"));
                 }
 
-                block = block.AddStatements(SyntaxFactory.ParseStatement($"{arg.Name} = {arg.Name.ToCamelCase()} ;"));
+                if (!arg.DenyDeclare)
+                    block = block.AddStatements(
+                        SyntaxFactory.ParseStatement($"{arg.Name} = {arg.Name.ToCamelCase()} ;"));
 
 
                 if (arg.PassBase)
@@ -190,12 +192,9 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
             foreach (var argument in syntax.Arguments)
             {
-                if (argument.IsNeedInitialize())
-                {
-                    constructor = constructor.AddBodyStatements(
-                        SyntaxFactory.ParseStatement($"{argument.Name} = new {argument.Type}();"));
-                }
+                
 
+              
                 if (!argument.Null)
                 {
                     var parameterSyntax = SyntaxFactory
@@ -208,6 +207,17 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
                     constructor = constructor.AddParameterListParameters(parameterSyntax);
                 }
+                
+                
+                
+                if (argument.DenyDeclare) continue;
+                
+                if (argument.IsNeedInitialize())
+                {
+                    constructor = constructor.AddBodyStatements(
+                        SyntaxFactory.ParseStatement($"{argument.Name} = new {argument.Type}();"));
+                }
+
                 /*
                 else if (argument.IsPrimetive() && !argument.Null)
                 {

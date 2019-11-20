@@ -280,11 +280,6 @@ namespace ZenPlatform.Core.Querying.Model
                 _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));
         }
 
-        public void on()
-        {
-            _logicStack.Push(new QOn(_logicStack.PopExpression()));
-        }
-
         /// <summary>
         /// Внутреннее соединение 
         /// </summary>
@@ -324,7 +319,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         private void join_with_type(QJoinType type)
         {
-            _logicStack.Push(new QFromItem(_logicStack.PopOn(), _logicStack.PopDataSource(), type));
+            _logicStack.Push(new QFromItem(_logicStack.PopExpression(), _logicStack.PopDataSource(), type));
         }
 
         /// <summary>
