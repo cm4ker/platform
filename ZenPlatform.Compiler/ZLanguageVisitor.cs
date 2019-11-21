@@ -774,5 +774,12 @@ namespace ZenPlatform.Compiler
 
             return tryNode;
         }
+
+
+        public override SyntaxNode VisitGlobalVar(ZSharpParser.GlobalVarContext context)
+        {
+            _syntaxStack.Push(new GlobalVar(context.start.ToLineInfo()));
+            return null;
+        }
     }
 }
