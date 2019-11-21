@@ -294,7 +294,9 @@
 
 
     <Syntax Name="GlobalVar" Base="Expression" NS="Expressions">
-        
+        <Arguments>
+            <Single Name="Expression" Type="Expression" />
+        </Arguments>
     </Syntax>
     
 </Config>

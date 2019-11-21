@@ -1476,8 +1476,17 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class GlobalVar : Expression
     {
-        public GlobalVar(ILineInfo lineInfo): base(lineInfo)
+        public GlobalVar(ILineInfo lineInfo, Expression expression): base(lineInfo)
         {
+            var slot = 0;
+            Expression = expression;
+            if (Expression != null)
+                Childs.Add(Expression);
+        }
+
+        public Expression Expression
+        {
+            get;
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)

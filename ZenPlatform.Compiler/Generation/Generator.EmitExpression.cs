@@ -257,6 +257,49 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitAssignment(e, asg, symbolTable);
             }
+            else if (expression is GlobalVar gv)
+            {
+                /*
+                 Глобальное адрессное пространство.
+                 
+                 
+                 Необходимо для того, чтобы компоненты могли свободно добавлять свою функциональность
+                 и её удобно было использовать в коде
+                 
+                 
+                 для прмера, чтобы создать элекмент используется следующая команда
+                
+                           FieldLookup
+                   FieldLookup    FieldLookup
+                   V       V      V            
+                 $.Entity.Invoice.Create();  
+                   ^              ^         
+                   ComponentName  Method          
+                          ^       
+                          Object                          
+                 => 
+                 
+                 $.Entity.Invoice.MyOwnStaticMethod();
+                 $.MyModule.Test();
+                 
+                 SomeManager.Create(Type : 10);
+                 
+                 var Invoice = 
+                 
+                 ld_manager
+                 ldc.i4.5
+                 Create(int typeId)
+                 
+                 GlobalMap
+                    Fild Or Method Syntax, CodeObject 
+                                  
+                 В переменную $ необходимо для этого зарегистрировать Свойство "Entity"
+                 У которого есть свойство "Create"                 
+                                  
+                 
+                 
+                 */
+            }
         }
     }
 }
