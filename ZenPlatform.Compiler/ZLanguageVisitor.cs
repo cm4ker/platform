@@ -514,42 +514,42 @@ namespace ZenPlatform.Compiler
             return null;
         }
 
-        public override SyntaxNode VisitExtensionExpression(ZSharpParser.ExtensionExpressionContext context)
-        {
-            base.VisitExtensionExpression(context);
-            Extension result;
-
-            var extensionObj = _syntaxStack.Pop();
-            if (extensionObj is Block ib)
-            {
-                result = new Extension(context.start.ToLineInfo(), _syntaxStack.PopString(),
-                    ExtensionKind.Instructions);
-                result.Block = ib;
-            }
-            else
-            {
-                var path = _syntaxStack.PopString();
-                var extensionName = path.Split('.')[0];
-                result = new Extension(context.start.ToLineInfo(), extensionName);
-                result.Path = path;
-            }
-
-            // Вот тут мы должны сделать следующее: 
-            // 1) Установить, какой хендлер это обрабатывает
-            // 2) Вызвать обработчик. Он должен переопределить дерево вызовов.
-
-            //_syntaxStack.Push();
-
-
-            if (!ExtensionManager.Managers.TryGetValue(result.ExtensionName, out var ext))
-            {
-                throw new Exception($"The extension {result.ExtensionName} not found or not loaded");
-            }
-
-            //TODO: Закончить разработку расширений
-            //_syntaxStack.Push();
-            return null;
-        }
+//        public override SyntaxNode VisitExtensionExpression(ZSharpParser.ExtensionExpressionContext context)
+//        {
+//            base.VisitExtensionExpression(context);
+//            Extension result;
+//
+//            var extensionObj = _syntaxStack.Pop();
+//            if (extensionObj is Block ib)
+//            {
+//                result = new Extension(context.start.ToLineInfo(), _syntaxStack.PopString(),
+//                    ExtensionKind.Instructions);
+//                result.Block = ib;
+//            }
+//            else
+//            {
+//                var path = _syntaxStack.PopString();
+//                var extensionName = path.Split('.')[0];
+//                result = new Extension(context.start.ToLineInfo(), extensionName);
+//                result.Path = path;
+//            }
+//
+//            // Вот тут мы должны сделать следующее: 
+//            // 1) Установить, какой хендлер это обрабатывает
+//            // 2) Вызвать обработчик. Он должен переопределить дерево вызовов.
+//
+//            //_syntaxStack.Push();
+//
+//
+//            if (!ExtensionManager.Managers.TryGetValue(result.ExtensionName, out var ext))
+//            {
+//                throw new Exception($"The extension {result.ExtensionName} not found or not loaded");
+//            }
+//
+//            //TODO: Закончить разработку расширений
+//            //_syntaxStack.Push();
+//            return null;
+//        }
 
         public override SyntaxNode VisitExpressionEquality(ZSharpParser.ExpressionEqualityContext context)
         {
@@ -778,7 +778,8 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitGlobalVar(ZSharpParser.GlobalVarContext context)
         {
-            _syntaxStack.Push(new GlobalVar(context.start.ToLineInfo()));
+            base.VisitGlobalVar(context);
+            _syntaxStack.Push(new GlobalVar(context.start.ToLineInfo(), _syntaxStack.PopExpression()));
             return null;
         }
     }
