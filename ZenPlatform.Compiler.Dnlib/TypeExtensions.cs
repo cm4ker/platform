@@ -1,4 +1,5 @@
 using dnlib.DotNet;
+using Microsoft.VisualBasic.CompilerServices;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib

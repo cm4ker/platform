@@ -45,5 +45,11 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// <param name="astTree"></param>
         /// <param name="builder"></param>
         void Stage1(ComponentAstBase astTree, ITypeBuilder builder);
+
+        /// <summary>
+        /// Инфраструктурная стадия
+        /// </summary>
+        /// <param name="builder"></param>
+        void StageInfrastructure(IAssemblyBuilder builder);
     }
 }

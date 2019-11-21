@@ -68,7 +68,7 @@ namespace ZenPlatform.Compiler.Cecil
                     AssemblyResolver = this,
                     MetadataResolver = _metadataResolver,
                     SymbolReaderProvider = isTarget ? new DefaultSymbolReaderProvider(true) : null,
-                    ReadSymbols = isTarget
+                    ReadSymbols = isTarget,
                 });
 
                 var wrapped = RegisterAssembly(asm);

@@ -29,10 +29,19 @@ namespace ZenPlatform.Compiler.Generation
             if (_mode == CompilationMode.Server)
                 _serviceScope = new ServerAssemblyServiceScope(_asm);
 
+            BuildInfrastructure();
             BuildStructure();
             BuildCode();
         }
 
+        
+        /// <summary>
+        /// Построение структуры. Происходит в два этапа
+        /// <br />
+        /// 1) Построение типов
+        /// <br />
+        /// 2) Построение методов
+        /// </summary>
         public void BuildStructure()
         {
             foreach (var cu in _cus)
@@ -46,11 +55,26 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
+        /// <summary>
+        /// Построение непосредственно кода
+        /// </summary>
         public void BuildCode()
         {
             foreach (var cu in _cus)
             {
                 BuildStage2(cu);
+            }
+        }
+
+        
+        /// <summary>
+        /// Создание инфраструктуры всеми компонентами, для последующего использования внутри компонентов
+        /// </summary>
+        private void BuildInfrastructure()
+        {
+            foreach (var dataComponent in _conf.Data.Components)
+            {
+                dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm);
             }
         }
 
@@ -60,7 +84,7 @@ namespace ZenPlatform.Compiler.Generation
         /// <exception cref="Exception"></exception>
         private void BuildStage0(CompilationUnit cu)
         {
-            void AfterBuild<T>(T sym, ITypeBuilder tb) where T : TypeEntity, IAstSymbol
+            void AfterPreBuild<T>(T sym, ITypeBuilder tb) where T : TypeEntity, IAstSymbol
             {
                 sym.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(sym, tb);
                 _stage0.Add(sym, tb);
@@ -72,16 +96,16 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     case Module m:
                         var tm = PreBuildModule(m);
-                        AfterBuild(m, tm);
+                        AfterPreBuild(m, tm);
                         break;
                     case Class c:
                         var tc = PreBuildClass(c);
-                        AfterBuild(c, tc);
+                        AfterPreBuild(c, tc);
                         break;
                     case ComponentClass co:
                     {
                         var tco = PreBuildComponentClass(co);
-                        AfterBuild(co, tco);
+                        AfterPreBuild(co, tco);
                         co.Component.ComponentImpl.Generator.Stage0(co, tco);
                         break;
                     }
@@ -90,7 +114,7 @@ namespace ZenPlatform.Compiler.Generation
                         if (cm.CompilationMode != _mode) break;
 
                         var tcm = PreBuildComponentModule(cm);
-                        AfterBuild(cm, tcm);
+                        AfterPreBuild(cm, tcm);
                         cm.Component.ComponentImpl.Generator.Stage0(cm, tcm);
                         break;
                     }
@@ -161,9 +185,9 @@ namespace ZenPlatform.Compiler.Generation
 
                         break;
                     case ComponentAstBase cab:
-                        
+
                         if (cab.CompilationMode != _mode) break;
-                        
+
                         var tcab = _stage0[cab];
 
                         foreach (var function in cab.TypeBody.Functions.FilterFunc(_mode))
@@ -250,9 +274,9 @@ namespace ZenPlatform.Compiler.Generation
 
                         break;
                     case ComponentAstBase cab:
-                        
+
                         if (cab.CompilationMode != _mode) break;
-                        
+
                         var tbcab = _stage0[cab];
 
                         foreach (var function in cab.TypeBody.Functions.FilterFunc(_mode))

@@ -144,7 +144,6 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
-
         public override object VisitQObjectTable(QObjectTable node)
         {
             var ot = node.ObjectType;
