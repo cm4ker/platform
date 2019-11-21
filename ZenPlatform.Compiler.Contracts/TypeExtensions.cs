@@ -248,23 +248,40 @@ namespace ZenPlatform.Compiler.Contracts
         public static IPropertyBuilder DefineProperty(this ITypeBuilder tb, IType type, string name,
             IField backingField)
         {
-            var getMethod = tb.DefineMethod($"{name}_get", true, false, false).WithReturnType(type);
+            return DefineProperty(tb, type, name, backingField, true, true);
+        }
 
-            getMethod.Generator
-                .LdArg_0()
-                .LdFld(backingField)
-                .Ret();
+        public static IPropertyBuilder DefineProperty(this ITypeBuilder tb, IType type, string name,
+            IField backingField, bool hasGet, bool hasSet)
+        {
+            var result = tb.DefineProperty(type, name);
+            if (hasGet)
+            {
+                var getMethod = tb.DefineMethod($"{name}_get", true, false, false).WithReturnType(type);
 
-            var setMethod = tb.DefineMethod($"{name}_set", true, false, false);
-            setMethod.DefineParameter("value", type, false, false);
-            setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField).Ret();
+                getMethod.Generator
+                    .LdArg_0()
+                    .LdFld(backingField)
+                    .Ret();
 
-            return tb.DefineProperty(type, name).WithGetter(getMethod).WithSetter(setMethod);
+                result = result.WithGetter(getMethod);
+            }
+
+            if (hasSet)
+            {
+                var setMethod = tb.DefineMethod($"{name}_set", true, false, false);
+                setMethod.DefineParameter("value", type, false, false);
+                setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField).Ret();
+
+                result = result.WithGetter(setMethod);
+            }
+
+            return result;
         }
 
         public static IPropertyBuilder DefinePropertyWithBackingField(this ITypeBuilder tb, IType type, string name)
         {
-            var backingField = tb.DefineField(type, $"<{name}>k__BackingField", false, false);
+            var backingField = tb.DefineField(type, СonventionsHelper.GetBackingFieldName(name), false, false);
             return tb.DefineProperty(type, name, backingField);
         }
 
@@ -273,5 +290,10 @@ namespace ZenPlatform.Compiler.Contracts
         {
             return ab.DefineType(@namespace, name, attrs, ab.TypeSystem.GetSystemBindings().Object);
         }
+    }
+
+    public static class СonventionsHelper
+    {
+        public static string GetBackingFieldName(string name) => $"<{name}>k__BackingField";
     }
 }

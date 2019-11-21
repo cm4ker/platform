@@ -1471,3 +1471,18 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         }
     }
 }
+
+namespace ZenPlatform.Language.Ast.Definitions.Expressions
+{
+    public partial class GlobalVar : Expression
+    {
+        public GlobalVar(ILineInfo lineInfo): base(lineInfo)
+        {
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitGlobalVar(this);
+        }
+    }
+}

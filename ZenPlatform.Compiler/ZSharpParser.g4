@@ -185,6 +185,7 @@ expressionAtom:
     literal
     | functionCallExpression
     | name
+    | globalVar
 ;
 
 variableType: 
@@ -225,10 +226,8 @@ name:
     | name '.' IDENTIFIER
     ;
 
-extensionExpression:
-    '$' 
-        (name ('{'statements'}')?)
-        | functionCall;  
+globalVar:
+    '$' ('.' (name | functionCall))*;  
         
 ifStatement:
     IF '(' expression ')' instructionsOrSingleStatement (ELSE instructionsOrSingleStatement)?;

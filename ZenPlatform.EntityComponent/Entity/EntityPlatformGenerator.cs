@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -12,6 +13,7 @@ using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using ZenPlatform.Core.Querying;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -534,6 +536,43 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 BuildVersionField(builder);
             }
+        }
+
+        public void StageInfrastructure(IAssemblyBuilder builder)
+        {
+            var ts = builder.TypeSystem;
+            var b = ts.GetSystemBindings();
+
+            var linkType = builder.DefineType(_component.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule),
+                "EntityLink",
+                TypeAttributes.Class | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit,
+                b.Object);
+
+            linkType.AddInterfaceImplementation(ts.FindType<ILink>());
+
+            var idBack = linkType.DefineField(b.Guid, СonventionsHelper.GetBackingFieldName("Id"), false, false);
+            linkType.DefineProperty(b.Guid, "Id", idBack, true, false);
+
+            var typeBack = linkType.DefineField(b.Int, СonventionsHelper.GetBackingFieldName("Type"), false, false);
+            linkType.DefineProperty(b.Int, "Type", typeBack, true, false);
+
+            var presentationBack = linkType.DefineField(b.String, СonventionsHelper.GetBackingFieldName("Presentation"),
+                false, false);
+            linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false);
+
+            var ctor = linkType.DefineConstructor(false, b.Int, b.Guid);
+
+            var e = ctor.Generator;
+
+            e.LdArg_0()
+                .EmitCall(b.Object.Constructors[0])
+                .LdArg_0()
+                .LdArg(1)
+                .StFld(typeBack)
+                .LdArg_0()
+                .LdArg(2)
+                .StFld(idBack)
+                .Ret();
         }
 
         private void BuildVersionField(ITypeBuilder tb)
