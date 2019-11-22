@@ -82,7 +82,7 @@ assigment:
 ;   
 
 functionCall: 
-    name '(' arguments? ')' ( '.' propertyExpression = name )* ('.' functionCall)*
+    ((nameLookup | name) '.')? name '(' arguments? ')' ('.' lookupFunction=functionCall)?
 ;
 
 functionCallExpression:
@@ -222,9 +222,10 @@ arrayType:
     (structureType | primitiveType )'[' ']';
 
 name:
-    IDENTIFIER
-    | name '.' IDENTIFIER
-    ;
+    IDENTIFIER;
+
+nameLookup:
+    name ('.' name)+;
 
 globalVar:
     '$' ('.' (name | functionCall))*;  

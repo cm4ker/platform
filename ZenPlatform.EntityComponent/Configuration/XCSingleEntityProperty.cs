@@ -54,6 +54,11 @@ namespace ZenPlatform.EntityComponent.Configuration
             return HashCode.Combine(Guid, Name, Unique, IsSystemProperty, Types);
         }
 
+        /// <summary>
+        /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
+        /// </summary>
+        [XmlIgnore]
+        public string DatabaseColumnName { get; set; }
 
         private bool SequenceEqual<T>(IEnumerable<T> list1, IEnumerable<T> list2)
         {
