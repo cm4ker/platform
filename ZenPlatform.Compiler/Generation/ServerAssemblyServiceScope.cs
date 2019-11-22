@@ -50,4 +50,20 @@ namespace ZenPlatform.Compiler.Generation
 
         public IField InvokeServiceField { get; private set; }
     }
+
+
+    public class GlobalVarManager
+    {
+
+
+        public void Register()
+        {
+            
+        }
+
+        public void Emit()
+        {
+            
+        }
+    }
 }
