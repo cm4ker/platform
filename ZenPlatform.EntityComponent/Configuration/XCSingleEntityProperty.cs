@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Shared.ParenChildCollection;
@@ -39,7 +40,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             if (other == null) return false;
 
             return (this.Guid == other.Guid) && (this.Name == other.Name) &&
-                   SequenceEqual<XCTypeBase>(this.Types, other.Types)
+                   SequenceEqual<IXCType>(this.Types, other.Types)
                    && this.Unique == other.Unique && this.IsSystemProperty == other.IsSystemProperty;
         }
 
@@ -54,11 +55,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             return HashCode.Combine(Guid, Name, Unique, IsSystemProperty, Types);
         }
 
-        /// <summary>
-        /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
-        /// </summary>
-        [XmlIgnore]
-        public string DatabaseColumnName { get; set; }
+        
 
         private bool SequenceEqual<T>(IEnumerable<T> list1, IEnumerable<T> list2)
         {
@@ -89,6 +86,14 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             return cnt.Values.All(c => c == 0);
         }
+        
+        public override IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
+        {
+            if (string.IsNullOrEmpty(propName)) propName = this.DatabaseColumnName;
+
+            return PropertyHelper.GetPropertySchemas(propName, Types);
+        }
+
     }
 
     internal static class StandardEntityPropertyHelper

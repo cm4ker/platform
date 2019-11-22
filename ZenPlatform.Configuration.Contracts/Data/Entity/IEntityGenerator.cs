@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts;
 
-namespace ZenPlatform.Configuration.Contracts.Entity
+namespace ZenPlatform.Configuration.Data.Contracts.Entity
 {
     /// <summary>
     /// Отвечает за генерацию кода сущности

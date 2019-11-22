@@ -1,48 +1,19 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
     /// <summary>
     /// Примитивный тип данных
     /// </summary>
-    public abstract class XCPrimitiveType : XCTypeBase
+    public abstract class XCPrimitiveType : XCTypeBase, IXCPrimitiveType
     {
-        /// <summary>
-        /// Размер колонки
-        /// </summary>
-        //public abstract int ColumnSize { get; set; }
-
-        /// <summary>
-        /// Точность
-        /// </summary>
-        //public abstract int Precision { get; set; }
-
-        /// <summary>
-        /// Значимость
-        /// </summary>
-        //public abstract int Scale { get; set; }
-
         /// <summary>
         /// Может быть равна NULL
         /// </summary>
         public bool IsNullable { get; set; }
-
-        /// <summary>
-        /// Тип базы данных
-        /// </summary>
-        //[XmlIgnore]
-       // public abstract DbType DBType { get; }
-
-        /// <summary>
-        /// Соответствующий тип CLR
-        /// </summary>
-        //[XmlIgnore]
-        //public abstract Type CLRType { get; }
     }
-
-   
 }

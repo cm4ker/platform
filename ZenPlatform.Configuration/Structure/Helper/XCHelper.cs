@@ -1,4 +1,5 @@
 ﻿using System;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -7,7 +8,7 @@ namespace ZenPlatform.Configuration.Structure.Helper
 {
     public static class XCHelper
     {
-        public static string ConvertToDbType(this XCTypeBase type)
+        public static string ConvertToDbType(this IXCType type)
         {
             if (type is XCPrimitiveType)
             {

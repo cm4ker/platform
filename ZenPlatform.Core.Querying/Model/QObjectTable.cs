@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Core.Querying.Model
@@ -12,7 +13,7 @@ namespace ZenPlatform.Core.Querying.Model
         private List<QField> _fields;
 
 
-        public QObjectTable(XCObjectTypeBase type)
+        public QObjectTable(IXCObjectType type)
         {
             ObjectType = type;
         }
@@ -20,7 +21,7 @@ namespace ZenPlatform.Core.Querying.Model
         /// <summary>
         /// Ссылка на тип объекта
         /// </summary>
-        public XCObjectTypeBase ObjectType { get; }
+        public IXCObjectType ObjectType { get; }
 
         public override IEnumerable<QField> GetFields()
         {
@@ -28,7 +29,7 @@ namespace ZenPlatform.Core.Querying.Model
                 .ToList();
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Object: " + ObjectType.Name;
         }

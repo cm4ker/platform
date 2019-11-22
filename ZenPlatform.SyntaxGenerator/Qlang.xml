@@ -44,7 +44,7 @@
     <Syntax Name="QDataSource" Base="QItem"/>
     <Syntax Name="QAliasedDataSource" Base="QDataSource">
         <Arguments>
-            <Single Type="QDataSource" Name="Parent"/>
+            <Single Type="QDataSource" Name="ParentSource"/>
             <Single Type="String" Name="Alias" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
@@ -94,7 +94,7 @@
     <Syntax Name="QSourceFieldExpression" Base="QField">
         <Arguments>
             <Single Name="ObjectTable" Type="QObjectTable" PassBase="true" DenyChildrenFill="true"/>
-            <Single Name="Property" Type="XCObjectPropertyBase" DenyChildrenFill="true"/>
+            <Single Name="Property" Type="IXCObjectProperty" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QSelectExpression" Base="QField">
@@ -104,7 +104,7 @@
     </Syntax>
     <Syntax Name="QAliasedSelectExpression" Base="QSelectExpression">
         <Arguments>
-            <Single Name="Expression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="AliasedExpression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
             <Single Name="Alias" Type="String" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
@@ -210,7 +210,7 @@
 
     <Syntax Name="QCast" Base="QExpression">
         <Arguments>
-            <Single Name="Type" Type="XCTypeBase" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="IXCType" DenyChildrenFill="true"/>
             <Single Name="BaseExpression" Type="QExpression"/>
         </Arguments>
     </Syntax>

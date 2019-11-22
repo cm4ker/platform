@@ -80,19 +80,6 @@ namespace ZenPlatform.EntityComponent.Configuration
         [XmlArrayItem(ElementName = "Commands", Type = typeof(XCCommand))]
         public List<XCCommand> Commands { get; }
 
-        /// <summary>
-        /// Имя связанной таблицы документа
-        /// 
-        /// При миграции присваивается движком. В последствии хранится в служебных структурах конкретной базы.
-        /// </summary>
-        //TODO: Продумать структуру, в которой будут храниться сопоставление Тип -> Дополнительные настройки компонента 
-        /*
-         * Результаты раздумий: Все мапинги должны быть в БД, а не в конфигурации. Оставляю TODO
-         * выше просто для того, чтобы можно было поразмышлять,  вдруг я был не прав
-         */
-        [XmlIgnore]
-        public string RelTableName { get; set; }
-
         /// <inheritdoc />
         public override void LoadDependencies()
         {

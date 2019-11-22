@@ -78,7 +78,8 @@ namespace ZenPlatform.Compiler.Helpers
                     TypeNodeKind.Byte => _stb.Byte,
                     TypeNodeKind.Object => _stb.Object,
                     TypeNodeKind.Void => _stb.Void,
-                    TypeNodeKind.Session => _stb.Session
+                    TypeNodeKind.Session => _stb.Session,
+                    _ => throw new Exception($"This type is not primitive {ptn.Kind}")
                 };
             }
 

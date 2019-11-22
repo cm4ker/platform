@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
@@ -10,13 +11,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// Описание типа компонента
     /// Не забываем также реализовать свойсва, они загружаются в IComponentLoader
     /// </summary>
-    public abstract class XCObjectTypeBase : XCTypeBase, IChildItem<XCComponent>
+    public abstract class XCObjectTypeBase : XCTypeBase, IXCObjectType
     {
-        public XCObjectTypeBase()
-        {
-        }
-
-        private XCComponent _parent;
+        private IXCComponent _parent;
 
         /// <summary>
         /// Это абстрактный тип
@@ -38,32 +35,45 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Родительский компонент
         /// </summary>
-        public XCComponent Parent => _parent;
+        public IXCComponent Parent => _parent;
 
         /// <summary>
         /// Корень
         /// </summary>
-        protected XCRoot Root => _parent.Root;
+        protected IXCRoot Root => _parent.Root;
 
         /// <summary>
         /// Раздел данных
         /// </summary>
-        protected XCData Data => Root.Data;
+        protected IXCData Data => Root.Data;
 
         /// <summary>
         /// Присоединённые файлы
         /// </summary>
-        public XCBlob AttachedBlob { get; set; }
+        public IXCBlob AttachedBlob { get; set; }
 
         /// <summary>
         /// Родительский компонент
         /// </summary>
-        XCComponent IChildItem<XCComponent>.Parent
+        IXCComponent IChildItem<IXCComponent>.Parent
         {
             get => _parent;
             set => _parent = value;
         }
 
+        
+        /// <summary>
+        /// Имя связанной таблицы документа
+        /// 
+        /// При миграции присваивается движком. В последствии хранится в служебных структурах конкретной базы.
+        /// </summary>
+        //TODO: Продумать структуру, в которой будут храниться сопоставление Тип -> Дополнительные настройки компонента 
+        /*
+         * Результаты раздумий: Все мапинги должны быть в БД, а не в конфигурации. Оставляю TODO
+         * выше просто для того, чтобы можно было поразмышлять,  вдруг я был не прав
+         */
+        [XmlIgnore]
+        public string RelTableName { get; set; }
 
         /// <summary>
         /// Инициализировать сущность.
@@ -95,7 +105,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         /// <returns>Только что созданное свойство</returns>
         /// <exception cref="NotImplementedException"></exception>
-        public virtual XCObjectPropertyBase CreateProperty()
+        public virtual IXCObjectProperty CreateProperty()
         {
             throw new NotImplementedException();
         }
@@ -104,7 +114,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<XCObjectPropertyBase> GetProperties()
+        public virtual IEnumerable<IXCObjectProperty> GetProperties()
         {
             throw new NotSupportedException();
         }
@@ -115,23 +125,23 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         /// <returns>Список программных модулей</returns>
         /// <exception cref="NotSupportedException">Выдается в случае, если программные модули не поддерживаются компонентом</exception>
-        public virtual IEnumerable<XCProgramModuleBase> GetProgramModules()
+        public virtual IEnumerable<IXCProgramModule> GetProgramModules()
         {
             throw new NotSupportedException();
         }
 
 
-        public virtual XCObjectPropertyBase GetPropertyByName(string name)
+        public virtual IXCObjectProperty GetPropertyByName(string name)
         {
             return GetProperties().First(x => x.Name == name);
         }
-        
+
         /// <summary>
         /// Получить список доступных комманд у типа 
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
-        public virtual IEnumerable<XCCommand> GetCommands()
+        public virtual IEnumerable<IXCCommand> GetCommands()
         {
             throw new NotSupportedException();
         }
@@ -141,7 +151,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         /// <returns>Возвращается новая проинициализированная комманда</returns>
         /// <exception cref="NotSupportedException">Данная функция не поддерживается компонентом</exception>
-        public virtual XCCommand CreateCommand()
+        public virtual IXCCommand CreateCommand()
         {
             throw new NotSupportedException();
         }

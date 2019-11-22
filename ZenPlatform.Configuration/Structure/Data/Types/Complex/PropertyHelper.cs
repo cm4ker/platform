@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
@@ -7,7 +8,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     public static class PropertyHelper
     {
         public static IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(
-            string propName, IList<XCTypeBase> types)
+            string propName, IList<IXCType> types)
         {
             if (string.IsNullOrEmpty(propName)) throw new ArgumentNullException(nameof(propName));
 

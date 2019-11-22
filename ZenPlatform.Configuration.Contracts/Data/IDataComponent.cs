@@ -1,6 +1,9 @@
-﻿using ZenPlatform.Configuration.Contracts.Entity;
+﻿using System.Dynamic;
+using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Data.Contracts.Entity;
 
-namespace ZenPlatform.Configuration.Contracts
+namespace ZenPlatform.Configuration.Data.Contracts
 {
     /// <summary>
     /// Интерфейс комопнента данных

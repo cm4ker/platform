@@ -1,8 +1,9 @@
 ﻿using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.QueryBuilder;
 
-namespace ZenPlatform.Configuration.Contracts
+namespace ZenPlatform.Configuration.Data.Contracts
 {
     public interface IXCCompiller
     {

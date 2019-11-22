@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Structure
 {
+ 
     /// <summary>
     /// Комманда
     /// </summary>
-    public class XCCommand
+    public class XCCommand : IXCCommand
     {
         public XCCommand(bool predefined)
         {
@@ -43,11 +46,11 @@ namespace ZenPlatform.Configuration.Structure
          * Module.MyInterestedCommand()
          */
 
-        public XCProgramModuleBase Module { get; set; }
+        public IXCProgramModule Module { get; set; }
 
         /// <summary>
         /// Аргументы команды
         /// </summary>
-        public List<XCDataExpression> Arguments { get; }
+        public List<IXCDataExpression> Arguments { get; }
     }
 }

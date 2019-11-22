@@ -3,11 +3,13 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
+
+
     /// <summary>
     /// Правла для роли на уровне платформы
     /// Эти правила общедоступны
     /// </summary>
-    public class XCPlatformRule : IChildItem<XCRole>
+    public class XCPlatformRule : IChildItem<XCRole>, IXCPlatformRule
     {
         private XCRole _parent;
 
@@ -29,7 +31,7 @@ namespace ZenPlatform.Configuration.Structure
 
         [XmlElement] public bool CanOpenExternalModules { get; set; }
 
-        [XmlIgnore] public XCRole Parent => _parent;
+        [XmlIgnore] public IXCRole Parent => _parent;
 
         XCRole IChildItem<XCRole>.Parent
         {

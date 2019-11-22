@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 
 namespace ZenPlatform.Core.Querying.Model
@@ -10,7 +11,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QCase : QExpression
     {
-        public override IEnumerable<XCTypeBase> GetExpressionType()
+        public override IEnumerable<IXCType> GetExpressionType()
         {
             foreach (var when in Whens)
             {
