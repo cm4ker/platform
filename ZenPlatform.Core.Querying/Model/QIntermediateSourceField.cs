@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types;
+
 
 namespace ZenPlatform.Core.Querying.Model
 {

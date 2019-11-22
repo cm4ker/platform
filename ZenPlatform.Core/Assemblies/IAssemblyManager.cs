@@ -14,16 +14,16 @@ namespace ZenPlatform.Core.Assemblies
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="dbType">Тип базы данных</param>
-        void BuildConfiguration(XCRoot configuration , SqlDatabaseType dbType);
+        void BuildConfiguration(IXCRoot configuration , SqlDatabaseType dbType);
 
         /// <summary>
         /// Проверяет, нужно ли пересобирать конфигурацию
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns>True - Необходимо пересобрать конфигурацию; False - Всё ок</returns>
-        bool CheckConfiguration(XCRoot configuration);
+        bool CheckConfiguration(IXCRoot configuration);
 
-        IEnumerable<AssemblyDescription> GetAssemblies(XCRoot conf);
+        IEnumerable<AssemblyDescription> GetAssemblies(IXCRoot conf);
 
         byte[] GetAssemblyBytes(AssemblyDescription description);
     }

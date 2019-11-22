@@ -1,7 +1,5 @@
 ﻿using System;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
 namespace ZenPlatform.Configuration.Structure.Helper
@@ -10,7 +8,7 @@ namespace ZenPlatform.Configuration.Structure.Helper
     {
         public static string ConvertToDbType(this IXCType type)
         {
-            if (type is XCPrimitiveType)
+            if (type is IXCPrimitiveType)
             {
                 if (type is XCBinary b) return $"varbinary{b.Size}";
                 if (type is XCGuid) return "guid";
@@ -21,7 +19,7 @@ namespace ZenPlatform.Configuration.Structure.Helper
                 if (type is XCString s) return $"varchar({s.Size})";
             }
 
-            if (type is XCObjectTypeBase) return "guid";
+            if (type is IXCObjectType) return "guid";
 
             throw new Exception("Unknown type");
         }

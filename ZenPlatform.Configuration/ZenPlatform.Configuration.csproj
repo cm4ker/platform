@@ -5,11 +5,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Class\" />
+    <Folder Include="Compiler" />
     <Folder Include="Contracts" />
     <Folder Include="Role\" />
     <Folder Include="Scheduler\" />
+    <Folder Include="Structure\Data\Types\Primitive" />
+    <Folder Include="Structure\Helper" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ZenPlatform.Configuration.Common\ZenPlatform.Configuration.Common.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration.Contracts\ZenPlatform.Configuration.Contracts.csproj" />
     <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
     <ProjectReference Include="..\ZenPlatform.QueryBuilder\ZenPlatform.QueryBuilder.csproj" />

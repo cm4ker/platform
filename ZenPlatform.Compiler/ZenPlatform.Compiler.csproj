@@ -30,7 +30,6 @@
         <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
-        <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
         <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
         <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
         <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />

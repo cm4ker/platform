@@ -1,11 +1,12 @@
 ﻿using System;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Core
 {
     public class EntityMetadata
     {
-        public EntityMetadata(XCObjectTypeBase entityConfig, Type entityType, Type dtoType)
+        public EntityMetadata(IXCObjectType entityConfig, Type entityType, Type dtoType)
         {
             EntityConfig = entityConfig;
             EntityType = entityType;
@@ -13,7 +14,7 @@ namespace ZenPlatform.Core
         }
 
         public Guid Key => EntityConfig.Guid;
-        public XCObjectTypeBase EntityConfig { get; }
+        public IXCObjectType EntityConfig { get; }
         public Type EntityType { get; }
         public Type DtoType { get; }
     }

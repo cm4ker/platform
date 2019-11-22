@@ -1,6 +1,4 @@
-﻿using dnlib.DotNet.Resources;
-using Mono.Cecil;
-using ZenPlatform.Configuration.Contracts.Data.Entity;
+﻿using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Querying.Model;
@@ -14,7 +12,7 @@ namespace ZenPlatform.Core.Querying
     {
         private readonly QLang _stack;
 
-        public ZSqlGrammarVisitor(XCRoot configuration, DataQueryConstructorContext context)
+        public ZSqlGrammarVisitor(IXCRoot configuration, DataQueryConstructorContext context)
         {
             _stack = new QLang(configuration);
         }

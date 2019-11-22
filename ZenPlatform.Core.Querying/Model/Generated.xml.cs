@@ -3,8 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.Core.Querying.Visitor;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Configuration.Structure.Data.Types;
+
 using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Core.Querying.Model

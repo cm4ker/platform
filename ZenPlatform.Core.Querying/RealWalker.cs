@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Core.Querying.Model;
@@ -235,7 +234,7 @@ namespace ZenPlatform.Core.Querying
                         right.EmitValueColumn(pt);
                     }
 
-                    if (!refEmitted && type is XCObjectTypeBase)
+                    if (!refEmitted && type is IXCObjectType)
                     {
                         left.EmitRefColumn();
                         right.EmitRefColumn();
@@ -284,7 +283,7 @@ namespace ZenPlatform.Core.Querying
             {
                 mt.EmitValueColumn(pType);
             }
-            else if (leftType is XCObjectTypeBase)
+            else if (leftType is IXCObjectType)
             {
                 mt.EmitRefColumn();
             }
