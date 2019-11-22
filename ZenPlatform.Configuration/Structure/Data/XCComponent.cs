@@ -22,9 +22,9 @@ namespace ZenPlatform.Configuration.Structure.Data
     /// <summary>
     /// Компонент конфигурации
     /// </summary>
-    public class XCComponent : IChildItem<XCData>
+    public class XCComponent : IXCComponent
     {
-        private XCData _parent;
+        private IXCData _parent;
         private bool _isLoaded;
         private XCComponentInformation _info;
         private IXComponentLoader _loader;
@@ -38,13 +38,13 @@ namespace ZenPlatform.Configuration.Structure.Data
             _codeGenRules = new ConcurrentDictionary<CodeGenRuleType, CodeGenRule>();
             Include = new XCBlobCollection();
             AttachedComponentIds = new List<Guid>();
-            AttachedComponents = new List<XCComponent>();
+            AttachedComponents = new List<IXCComponent>();
         }
 
         /// <summary>
         /// Информация о компоненте
         /// </summary>
-        public XCComponentInformation Info
+        public IXCComponentInformation Info
         {
             get => _info;
         }
@@ -57,7 +57,7 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// <summary>
         /// Хранилище компонента
         /// </summary>
-        public XCBlob Blob { get; set; }
+        public IXCBlob Blob { get; set; }
 
         /// <summary>
         /// Список идентификаторов присоединённых компонентов
@@ -67,12 +67,12 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// <summary>
         /// Присоединённые компоненты. Это свойство инициализируется после загрузки всех компонентов
         /// </summary>
-        public List<XCComponent> AttachedComponents { get; private set; }
+        public List<IXCComponent> AttachedComponents { get; private set; }
 
         /// <summary>
         /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
         /// </summary>
-        public XCBlobCollection Include { get; set; }
+        public IXCBlobCollection Include { get; set; }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Assembly ComponentAssembly
@@ -173,17 +173,17 @@ namespace ZenPlatform.Configuration.Structure.Data
             }
         }
 
-        [XmlIgnore] public XCRoot Root => _parent.Parent;
+        [XmlIgnore] public IXCRoot Root => _parent.Parent;
 
-        [XmlIgnore] public XCData Parent => _parent;
+        [XmlIgnore] public IXCData Parent => _parent;
 
         [XmlIgnore] public IXComponentLoader Loader => _loader;
 
         [XmlIgnore] public IDataComponent ComponentImpl => _componentImpl;
 
-        [XmlIgnore] public IEnumerable<XCObjectTypeBase> Types => _parent.ComponentTypes.Where(x => x.Parent == this);
+        [XmlIgnore] public IEnumerable<IXCObjectType> Types => _parent.ComponentTypes.Where(x => x.Parent == this);
 
-        XCData IChildItem<XCData>.Parent
+        IXCData IChildItem<IXCData>.Parent
         {
             get => _parent;
             set => _parent = value;
@@ -219,15 +219,15 @@ namespace ZenPlatform.Configuration.Structure.Data
         }
 
 
-        public XCObjectTypeBase GetTypeByName(string typeName)
+        public IXCObjectType GetTypeByName(string typeName)
         {
             return Types.FirstOrDefault(x => x.Name == typeName) ??
                    throw new Exception($"Type with name {typeName} not found");
         }
     }
 
-
-    public class XCBlobCollection : List<XCBlob>
+ 
+    public class XCBlobCollection : List<IXCBlob>, IXCBlobCollection
     {
     }
 }

@@ -1,6 +1,8 @@
-namespace ZenPlatform.Configuration.Contracts
+using ZenPlatform.Shared.ParenChildCollection;
+
+namespace ZenPlatform.Configuration.Structure
 {
-    public interface IXCDataRule
+    public interface IXCDataRule : IChildItem<IXCDataRuleContent>
     {
     }
 }

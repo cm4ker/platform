@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ZenPlatform.Configuration.Contracts.Entity
+namespace ZenPlatform.Configuration.Contracts.Data.Entity
 {
     /// <summary>
     /// Генерация инструкций базы данных для других компоннетов 
@@ -26,7 +26,7 @@ namespace ZenPlatform.Configuration.Contracts.Entity
         /// Key - Имя столбца
         /// Value - Тип столбца
         /// </summary>
-        Dictionary<string, IXCType> GetColumnOptions();
+        Dictionary<string, IXCPrimitiveType> GetColumnOptions();
 
         /// <summary>
         /// Колонка относится к основному объекту, как принимающая сторона.

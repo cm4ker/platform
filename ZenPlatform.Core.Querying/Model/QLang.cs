@@ -10,8 +10,7 @@ namespace ZenPlatform.Core.Querying.Model
     public class QLang
     {
         private readonly XCRoot _conf;
-        private InstructionContext _iContext = InstructionContext.None;
-
+        
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;

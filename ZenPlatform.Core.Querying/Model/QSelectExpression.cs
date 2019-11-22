@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
@@ -10,7 +11,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QSelectExpression : QField
     {
-        public override IEnumerable<XCTypeBase> GetExpressionType()
+        public override IEnumerable<IXCType> GetExpressionType()
         {
             return ((QExpression) Childs.First()).GetExpressionType();
         }
@@ -21,7 +22,7 @@ namespace ZenPlatform.Core.Querying.Model
             return base.GetName();
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Expr";
         }
@@ -39,12 +40,12 @@ namespace ZenPlatform.Core.Querying.Model
             return Property.Name;
         }
 
-        public override IEnumerable<XCTypeBase> GetExpressionType()
+        public override IEnumerable<IXCType> GetExpressionType()
         {
             return Property.Types;
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Field: " + Property.Name;
         }
@@ -52,14 +53,14 @@ namespace ZenPlatform.Core.Querying.Model
 
     public partial class QLookupField : QField
     {
-        public IEnumerable<XCObjectPropertyBase> GetProperties()
+        public IEnumerable<IXCObjectProperty> GetProperties()
         {
             return BaseExpression.GetExpressionType().Where(x =>
                     x is XCObjectTypeBase ot && ot.GetProperties().Any(p => p.Name == PropName))
                 .Select(x => ((XCObjectTypeBase) x).GetPropertyByName(PropName));
         }
 
-        public override IEnumerable<XCTypeBase> GetExpressionType()
+        public override IEnumerable<IXCType> GetExpressionType()
         {
             return BaseExpression.GetExpressionType().Where(x =>
                     x is XCObjectTypeBase ot && ot.GetProperties().Any(p => p.Name == PropName))

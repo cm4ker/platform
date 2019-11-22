@@ -2,7 +2,8 @@
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCLanguage
+
+    public class XCLanguage : IXCLanguage
     {
         [XmlElement]
         public string Name { get; set; }

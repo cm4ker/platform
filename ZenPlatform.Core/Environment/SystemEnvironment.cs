@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using MoreLinq;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -66,8 +67,8 @@ namespace ZenPlatform.Core.Environment
             var dbTypes = Configuration.Data.ComponentTypes;
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
-                x => new {component = x.Parent, old = x, actual = default(XCObjectTypeBase)},
-                x => new {component = x.Parent, old = default(XCObjectTypeBase), actual = x},
+                x => new {component = x.Parent, old = x, actual = default(IXCObjectType)},
+                x => new {component = x.Parent, old = default(IXCObjectType), actual = x},
                 (x, y) => new {component = x.Parent, old = x, actual = y});
 
 //            Expression query1 = new Expression();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 
 namespace ZenPlatform.Core.Querying.Model
@@ -19,7 +20,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public object Value { get; }
 
-        public override IEnumerable<XCTypeBase> GetExpressionType()
+        public override IEnumerable<IXCType> GetExpressionType()
         {
             yield return _baseType;
         }

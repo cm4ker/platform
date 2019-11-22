@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -13,15 +14,16 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCData : IChildItem<XCRoot>
+    public class XCData : IXCData
     {
-        private XCRoot _parent;
-        private ObservableCollection<XCTypeBase> _platformTypes;
+        private IXCRoot _parent;
+        private ObservableCollection<IXCType> _platformTypes;
+        private ChildItemCollection<IXCData, IXCComponent> _components;
 
         public XCData()
         {
-            Components = new ChildItemCollection<XCData, XCComponent>(this);
-            _platformTypes = new ObservableCollection<XCTypeBase>();
+            _components = new ChildItemCollection<IXCData, IXCComponent>(this);
+            _platformTypes = new ObservableCollection<IXCType>();
 
             //Инициализируем каждый тип, присваеваем ему идентификатор базы данных
             _platformTypes.CollectionChanged += (o, e) =>
@@ -41,7 +43,7 @@ namespace ZenPlatform.Configuration.Structure
             };
         }
 
-        public ChildItemCollection<XCData, XCComponent> Components { get; }
+        public ChildItemCollection<IXCData, IXCComponent> Components => _components;
 
         /// <summary>
         /// Загрузить дерективу и все зависимости
@@ -76,7 +78,7 @@ namespace ZenPlatform.Configuration.Structure
         private void LoadDependencies()
         {
             //Загружаем присоединённые компоненты, чтобы можно было корректно генерировать зависимости
-            foreach (var component in Components)
+            foreach (XCComponent component in Components)
             {
                 foreach (var attachedComponentId in component.AttachedComponentIds)
                 {
@@ -112,18 +114,18 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Все типы платформы
         /// </summary>
-        public IEnumerable<XCTypeBase> PlatformTypes => _platformTypes;
+        public IEnumerable<IXCType> PlatformTypes => _platformTypes;
 
         /// <summary>
         /// Все типы, которые относятся к компонентам
         /// </summary>
-        public IEnumerable<XCObjectTypeBase> ComponentTypes =>
+        public IEnumerable<IXCObjectType> ComponentTypes =>
             PlatformTypes.Where(x => x is XCObjectTypeBase).Cast<XCObjectTypeBase>();
 
-        public XCRoot Parent => _parent;
+        public IXCRoot Parent => _parent;
 
 
-        XCRoot IChildItem<XCRoot>.Parent
+        IXCRoot IChildItem<IXCRoot>.Parent
         {
             get => _parent;
             set => _parent = value;
@@ -133,12 +135,12 @@ namespace ZenPlatform.Configuration.Structure
         /// Зарегистрировать тип данных на уровне конфигурации платформы
         /// </summary>
         /// <param name="type"></param>
-        public void RegisterType(XCObjectTypeBase type)
+        public void RegisterType(IXCObjectType type)
         {
             _platformTypes.Add(type);
         }
 
-        public XCComponent GetComponentByName(string name)
+        public IXCComponent GetComponentByName(string name)
         {
             return Components.FirstOrDefault(x => x.Info.ComponentName == name) ??
                    throw new Exception($"Component with name {name} not found");

@@ -5,16 +5,17 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
     [XmlRoot("Root")]
-    public class XCRoot
+    public class XCRoot : IXCRoot
     {
-        private XCData _data;
-        private XCRoles _roles;
+        private IXCData _data;
+        private IXCRoles _roles;
         private IXCConfigurationStorage _storage;
         private IXCConfigurationUniqueCounter _counter;
 
@@ -29,7 +30,7 @@ namespace ZenPlatform.Configuration.Structure
             Modules = new XCModules();
             Schedules = new XCSchedules();
             Languages = new XCLanguageList();
-            SessionSettings = new ChildItemCollection<XCRoot, XCSessionSetting>(this);
+            SessionSettings = new ChildItemCollection<IXCRoot, IXCSessionSetting>(this);
 
             //Берем счетчик по умолчанию
             _counter = new XCSimpleCounter();
@@ -56,13 +57,13 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Настройки сессии
         /// </summary>
-        public ChildItemCollection<XCRoot, XCSessionSetting> SessionSettings { get; }
+        public ChildItemCollection<IXCRoot, IXCSessionSetting> SessionSettings { get; }
 
 
         /// <summary>
         /// Раздел данных
         /// </summary>
-        public XCData Data
+        public IXCData Data
         {
             get => _data;
 
@@ -76,13 +77,13 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Раздел  интерфейсов (UI)
         /// </summary>
-        public XCInterface Interface { get; set; }
+        public IXCInterface Interface { get; set; }
 
 
         /// <summary>
         /// Раздел ролей
         /// </summary>
-        public XCRoles Roles
+        public IXCRoles Roles
         {
             get => _roles;
             set
@@ -95,19 +96,19 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Раздел модулей
         /// </summary>
-        public XCModules Modules { get; set; }
+        public IXCModules Modules { get; set; }
 
         
         /// <summary>
         /// Раздел переодических заданий
         /// </summary>
-        public XCSchedules Schedules { get; set; }
+        public IXCSchedules Schedules { get; set; }
 
         
         /// <summary>
         /// Раздел языков
         /// </summary>
-        public XCLanguageList Languages { get; set; }
+        public IXCLanguageList Languages { get; set; }
 
         /// <summary>
         /// Загрузить концигурацию
@@ -141,7 +142,7 @@ namespace ZenPlatform.Configuration.Structure
         {
             foreach (var setting in SessionSettings)
             {
-                var configurationTypes = new List<XCTypeBase>();
+                var configurationTypes = new List<IXCType>();
 
                 foreach (var propertyType in setting.Types)
                 {
@@ -217,7 +218,7 @@ namespace ZenPlatform.Configuration.Structure
         /// <param name="another"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public object CompareConfiguration(XCRoot another)
+        public object CompareConfiguration(IXCRoot another)
         {
             //TODO: Сделать механизм сравнения двух конфигураций
             throw new NotImplementedException();

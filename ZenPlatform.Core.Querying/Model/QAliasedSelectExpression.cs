@@ -7,7 +7,7 @@ namespace ZenPlatform.Core.Querying.Model
             return Alias;
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return $"{Expression} AS {Alias}";
         }

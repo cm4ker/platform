@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -30,7 +31,7 @@ namespace ZenPlatform.Core.Querying.Model
             return new XCDateTime();
         }
 
-        public XCTypeBase Parse(string typeName)
+        public IXCType Parse(string typeName)
         {
             if (typeName.Contains("."))
             {

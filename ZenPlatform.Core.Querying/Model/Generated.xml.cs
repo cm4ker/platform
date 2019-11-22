@@ -5,6 +5,7 @@ using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.Core.Querying.Visitor;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -319,14 +320,14 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QAliasedDataSource : QDataSource
     {
-        public QAliasedDataSource(QDataSource parent, String alias): base()
+        public QAliasedDataSource(QDataSource parentSource, String alias): base()
         {
-            Childs.Add(parent);
-            Parent = parent;
+            Childs.Add(parentSource);
+            ParentSource = parentSource;
             Alias = alias;
         }
 
-        public QDataSource Parent
+        public QDataSource ParentSource
         {
             get;
             set;
@@ -341,12 +342,12 @@ namespace ZenPlatform.Core.Querying.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QAliasedDataSource ) obj ;  return  ( Compare ( this . Parent ,  node . Parent ) && Compare ( this . Alias ,  node . Alias ) ) ; 
+                return false; var  node  =  ( QAliasedDataSource ) obj ;  return  ( Compare ( this . ParentSource ,  node . ParentSource ) && Compare ( this . Alias ,  node . Alias ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Parent == null ? 0 : Parent.GetHashCode()) ^ (Alias == null ? 0 : Alias.GetHashCode());
+            return (ParentSource == null ? 0 : ParentSource.GetHashCode()) ^ (Alias == null ? 0 : Alias.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -603,7 +604,7 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QSourceFieldExpression : QField
     {
-        public QSourceFieldExpression(QObjectTable objectTable, XCObjectPropertyBase property): base(objectTable)
+        public QSourceFieldExpression(QObjectTable objectTable, IXCObjectProperty property): base(objectTable)
         {
             ObjectTable = objectTable;
             Property = property;
@@ -615,7 +616,7 @@ namespace ZenPlatform.Core.Querying.Model
             set;
         }
 
-        public XCObjectPropertyBase Property
+        public IXCObjectProperty Property
         {
             get;
             set;
@@ -676,13 +677,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QAliasedSelectExpression : QSelectExpression
     {
-        public QAliasedSelectExpression(QExpression expression, String alias): base(expression)
+        public QAliasedSelectExpression(QExpression aliasedExpression, String alias): base(aliasedExpression)
         {
-            Expression = expression;
+            AliasedExpression = aliasedExpression;
             Alias = alias;
         }
 
-        public QExpression Expression
+        public QExpression AliasedExpression
         {
             get;
             set;
@@ -697,12 +698,12 @@ namespace ZenPlatform.Core.Querying.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QAliasedSelectExpression ) obj ;  return  ( Compare ( this . Expression ,  node . Expression ) && Compare ( this . Alias ,  node . Alias ) ) ; 
+                return false; var  node  =  ( QAliasedSelectExpression ) obj ;  return  ( Compare ( this . AliasedExpression ,  node . AliasedExpression ) && Compare ( this . Alias ,  node . Alias ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Expression == null ? 0 : Expression.GetHashCode()) ^ (Alias == null ? 0 : Alias.GetHashCode());
+            return (AliasedExpression == null ? 0 : AliasedExpression.GetHashCode()) ^ (Alias == null ? 0 : Alias.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1125,14 +1126,14 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCast : QExpression
     {
-        public QCast(XCTypeBase type, QExpression baseExpression): base()
+        public QCast(IXCType type, QExpression baseExpression): base()
         {
             Type = type;
             Childs.Add(baseExpression);
             BaseExpression = baseExpression;
         }
 
-        public XCTypeBase Type
+        public IXCType Type
         {
             get;
             set;

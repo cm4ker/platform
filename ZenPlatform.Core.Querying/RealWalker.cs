@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -185,9 +186,9 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
-        private List<XCTypeBase> CommonTypes(List<XCTypeBase> types1, List<XCTypeBase> types2)
+        private List<IXCType> CommonTypes(List<IXCType> types1, List<IXCType> types2)
         {
-            var result = new List<XCTypeBase>();
+            var result = new List<IXCType>();
             foreach (var t1 in types1)
             {
                 foreach (var t2 in types2)
@@ -269,7 +270,7 @@ namespace ZenPlatform.Core.Querying
         }
 
         void IfLeftOrRightOneType(QExpression left, QExpression right, Action compareAction, Action concatAction,
-            List<XCTypeBase> leftTypes,
+            List<IXCType> leftTypes,
             bool flip = false)
         {
             var mt = TypedExprFactory.CreateMultiTypedExpr(right, _qm, this);

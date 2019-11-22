@@ -5,7 +5,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QQuery : QItem
     {
-        public override string? ToString()
+        public override string ToString()
         {
             return "Query";
         }
