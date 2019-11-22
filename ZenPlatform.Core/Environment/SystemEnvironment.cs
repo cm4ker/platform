@@ -1,11 +1,7 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using MoreLinq;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Core.Annotations;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Configuration;
@@ -13,8 +9,6 @@ using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
-using ZenPlatform.Core.DI;
-using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -23,9 +17,12 @@ namespace ZenPlatform.Core.Environment
     /// </summary>
     public class SystemEnvironment : PlatformEnvironment
     {
-        public SystemEnvironment(IDataContextManager dataContextManager, ICacheService cacheService) :
-            base(dataContextManager, cacheService)
+        private readonly IConfigurationManipulator _manipulator;
+
+        public SystemEnvironment(IDataContextManager dataContextManager, ICacheService cacheService,
+            IConfigurationManipulator manipulator) : base(dataContextManager, cacheService, manipulator)
         {
+            _manipulator = manipulator;
         }
 
         public override void Initialize(IStartupConfig config)
@@ -35,7 +32,7 @@ namespace ZenPlatform.Core.Environment
             var storage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
                 this.DataContextManager.GetContext(), DataContextManager.SqlCompiler);
 
-            SavedConfiguration = XCRoot.Load(storage);
+            SavedConfiguration = _manipulator.Load(storage);
         }
 
         /// <summary>
@@ -43,7 +40,7 @@ namespace ZenPlatform.Core.Environment
         /// После того, как сохранённая конфигурация будет отличаться от конфигурации базы данных <see cref="PlatformEnvironment.Configuration"/> Выполняется применение.
         /// Причем при этом за кулисами происходит генерирование скрипта миграции
         /// </summary>
-        public XCRoot SavedConfiguration { get; private set; }
+        public IXCRoot SavedConfiguration { get; private set; }
 
         public override IInvokeService InvokeService => throw new NotImplementedException();
 
@@ -85,12 +82,11 @@ namespace ZenPlatform.Core.Environment
                  * Необходимо логировать мигрирование каждого объекта 
                  */
                 //var migrateScript = type.component.ComponentImpl.Migrator.GetScript(type.old, type.actual);
-                
+
 //                query1.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep1(type.old, type.actual).Expression);
 //                query2.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep2(type.old, type.actual).Expression);
 //                query3.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep3(type.old, type.actual).Expression);
 //                query4.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep4(type.old, type.actual).Expression);
-
             }
 
 //            var cmd = context.CreateCommand(query1);

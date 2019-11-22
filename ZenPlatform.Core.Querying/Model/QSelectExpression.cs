@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -56,15 +55,15 @@ namespace ZenPlatform.Core.Querying.Model
         public IEnumerable<IXCObjectProperty> GetProperties()
         {
             return BaseExpression.GetExpressionType().Where(x =>
-                    x is XCObjectTypeBase ot && ot.GetProperties().Any(p => p.Name == PropName))
-                .Select(x => ((XCObjectTypeBase) x).GetPropertyByName(PropName));
+                    x is IXCObjectType ot && ot.GetProperties().Any(p => p.Name == PropName))
+                .Select(x => ((IXCObjectType) x).GetPropertyByName(PropName));
         }
 
         public override IEnumerable<IXCType> GetExpressionType()
         {
             return BaseExpression.GetExpressionType().Where(x =>
-                    x is XCObjectTypeBase ot && ot.GetProperties().Any(p => p.Name == PropName))
-                .SelectMany(x => ((XCObjectTypeBase) x).GetPropertyByName(PropName).Types);
+                    x is IXCObjectType ot && ot.GetProperties().Any(p => p.Name == PropName))
+                .SelectMany(x => ((IXCObjectType) x).GetPropertyByName(PropName).Types);
         }
 
         public override string GetName()

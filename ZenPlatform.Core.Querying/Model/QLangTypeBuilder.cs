@@ -2,31 +2,31 @@ using System;
 using System.Text.RegularExpressions;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+
 
 namespace ZenPlatform.Core.Querying.Model
 {
     public class QLangTypeBuilder
     {
-        private readonly XCRoot _conf;
+        private readonly IXCRoot _conf;
 
-        public QLangTypeBuilder(XCRoot conf)
+        public QLangTypeBuilder(IXCRoot conf)
         {
             _conf = conf;
         }
 
-        public XCTypeBase String(int size)
+        public IXCType String(int size)
         {
             return new XCString {Size = size};
         }
 
-        public XCTypeBase Numeric(int scale, int precision)
+        public IXCType Numeric(int scale, int precision)
         {
             return new XCNumeric {Scale = scale, Precision = precision};
         }
 
-        public XCTypeBase Date()
+        public IXCType Date()
         {
             return new XCDateTime();
         }

@@ -56,8 +56,8 @@ namespace ZenPlatform.Core.Environment
         public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
-            IAssemblyManager assemblyManager) :
-            base(contextManager, cacheService)
+            IAssemblyManager assemblyManager, IConfigurationManipulator manipulator) :
+            base(contextManager, cacheService, manipulator)
         {
             _locking = new object();
             _serviceProvider = serviceProvider;

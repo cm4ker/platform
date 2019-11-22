@@ -1,5 +1,5 @@
 using System.Linq;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Configuration.Structure.Helper;
 using ZenPlatform.Core.Querying.Model;
@@ -31,7 +31,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
             var mte = TypedExprFactory.CreateMultiTypedExpr(_cast.BaseExpression, Qm, Rw);
 
             var valueTypes = baseTypes.Where(x => x is XCPrimitiveType).Cast<XCPrimitiveType>().ToList();
-            var refTypes = baseTypes.Where(x => x is XCObjectTypeBase).ToList();
+            var refTypes = baseTypes.Where(x => x is IXCObjectType).ToList();
 
             foreach (var type in valueTypes)
             {

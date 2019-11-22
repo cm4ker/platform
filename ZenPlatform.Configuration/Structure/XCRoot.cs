@@ -98,13 +98,13 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public IXCModules Modules { get; set; }
 
-        
+
         /// <summary>
         /// Раздел переодических заданий
         /// </summary>
         public IXCSchedules Schedules { get; set; }
 
-        
+
         /// <summary>
         /// Раздел языков
         /// </summary>
@@ -115,7 +115,7 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         /// <param name="storage"></param>
         /// <returns></returns>
-        public static XCRoot Load(IXCConfigurationStorage storage)
+        public static IXCRoot Load(IXCConfigurationStorage storage)
         {
             XCRoot conf;
             using (var stream = storage.GetRootBlob())

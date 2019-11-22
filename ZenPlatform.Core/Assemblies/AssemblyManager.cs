@@ -23,19 +23,21 @@ namespace ZenPlatform.Core.Assemblies
         private IAssemblyStorage _assemblyStorage;
         private IXCCompiller _compiller;
         private ILogger _logger;
+        private readonly IConfigurationManipulator _m;
 
         public AssemblyManager(IXCCompiller compiller, IAssemblyStorage assemblyStorage,
-            ILogger<AssemblyManager> logger)
+            ILogger<AssemblyManager> logger, IConfigurationManipulator m)
         {
             _assemblyStorage = assemblyStorage;
             _compiller = compiller;
             _logger = logger;
+            _m = m;
         }
 
 
-        public bool CheckConfiguration(XCRoot configuration)
+        public bool CheckConfiguration(IXCRoot configuration)
         {
-            var hash = HashHelper.HashMD5(configuration.SerializeToStream());
+            var hash = HashHelper.HashMD5(_m.SaveToStream(configuration));
 
             var assemblies = _assemblyStorage.GetAssemblies(hash);
 
@@ -49,9 +51,9 @@ namespace ZenPlatform.Core.Assemblies
             return false;
         }
 
-        public IEnumerable<AssemblyDescription> GetAssemblies(XCRoot conf)
+        public IEnumerable<AssemblyDescription> GetAssemblies(IXCRoot conf)
         {
-            return _assemblyStorage.GetAssemblies(conf.GetHash());
+            return _assemblyStorage.GetAssemblies(_m.GetHash(conf));
         }
 
         public byte[] GetAssemblyBytes(AssemblyDescription description)
@@ -59,7 +61,7 @@ namespace ZenPlatform.Core.Assemblies
             return _assemblyStorage.GetAssembly(description);
         }
 
-        public void BuildConfiguration(XCRoot configuration, SqlDatabaseType dbType)
+        public void BuildConfiguration(IXCRoot configuration, SqlDatabaseType dbType)
         {
             _logger.Info("Build configuration.");
             var assembly = _compiller.Build(configuration, CompilationMode.Server, dbType);
@@ -70,7 +72,7 @@ namespace ZenPlatform.Core.Assemblies
             var description = new AssemblyDescription()
             {
                 AssemblyHash = HashHelper.HashMD5(stream),
-                ConfigurationHash = configuration.GetHash(),
+                ConfigurationHash = _m.GetHash(configuration),
                 Name = assembly.Name,
                 Type = AssemblyType.Server,
             };
@@ -85,7 +87,7 @@ namespace ZenPlatform.Core.Assemblies
             description = new AssemblyDescription()
             {
                 AssemblyHash = HashHelper.HashMD5(clientStream),
-                ConfigurationHash = configuration.GetHash(),
+                ConfigurationHash = _m.GetHash(configuration),
                 Name = assembly.Name,
                 Type = AssemblyType.Client,
             };

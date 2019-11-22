@@ -1,5 +1,5 @@
 using System.Linq;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
@@ -51,7 +51,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
         {
             var texpr = exp.GetExpressionType().ToList();
 
-            if (texpr.Any(x => x is XCObjectTypeBase))
+            if (texpr.Any(x => x is IXCObjectType))
                 if (texpr.Count > 1)
                 {
                     TypedExprFactory.CreateMultiTypedExpr(exp, Qm, Rw).EmitRefColumn();

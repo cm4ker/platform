@@ -1,9 +1,22 @@
 using System;
+using System.IO;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
+    public interface IConfigurationManipulator
+    {
+        IXCRoot Load(IXCConfigurationStorage storage);
+
+        IXCRoot Create(string projectName);
+        
+        Stream SaveToStream(IXCRoot root);
+
+        string GetHash(IXCRoot root);
+    }
+
+
     public interface IXCRoot
     {
         IXCConfigurationStorage Storage { get; }

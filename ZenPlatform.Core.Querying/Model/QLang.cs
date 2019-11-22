@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+
 
 namespace ZenPlatform.Core.Querying.Model
 {
     public class QLang
     {
-        private readonly XCRoot _conf;
+        private readonly IXCRoot _conf;
         
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
@@ -21,7 +21,7 @@ namespace ZenPlatform.Core.Querying.Model
             Component
         }
 
-        public QLang(XCRoot conf)
+        public QLang(IXCRoot conf)
         {
             _conf = conf;
             _logicStack = new LogicStack();

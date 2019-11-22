@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types;
+
 
 namespace ZenPlatform.Core.Querying.Model
 {

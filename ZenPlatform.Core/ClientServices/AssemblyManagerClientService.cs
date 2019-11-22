@@ -14,28 +14,33 @@ using ZenPlatform.Core.Tools;
 
 namespace ZenPlatform.Core.ClientServices
 {
-    public class AssemblyManagerClientService: IAssemblyManagerClientService
+    public class AssemblyManagerClientService : IAssemblyManagerClientService
     {
         private readonly IAssemblyStorage _assemblyStorage;
         private readonly IWorkEnvironment _environment;
-        public AssemblyManagerClientService(IAssemblyStorage assemblyStorage, IWorkEnvironment environment)
+        private readonly IConfigurationManipulator _m;
+
+        public AssemblyManagerClientService(IAssemblyStorage assemblyStorage, IWorkEnvironment environment,
+            IConfigurationManipulator m)
         {
             _assemblyStorage = assemblyStorage;
             _environment = environment;
+            _m = m;
         }
+
         public List<AssemblyDescription> GetDiffAssemblies(List<AssemblyDescription> assemblies)
         {
+            var actualAssemblies = _assemblyStorage.GetAssemblies(_m.GetHash(_environment.Configuration));
 
-            var actualAssemblies = _assemblyStorage.GetAssemblies(_environment.Configuration.GetHash());
-
-            return actualAssemblies.Where(a => assemblies.FirstOrDefault(s => 
-            s.Name.Equals(a.Name) && s.AssemblyHash.Equals(a.AssemblyHash)) is null && a.Type == AssemblyType.Client).ToList();
-
+            return actualAssemblies.Where(a => assemblies.FirstOrDefault(s =>
+                                                       s.Name.Equals(a.Name) &&
+                                                       s.AssemblyHash.Equals(a.AssemblyHash)) is
+                                                   null && a.Type == AssemblyType.Client).ToList();
         }
 
         public Stream GetAssembly(AssemblyDescription assembly)
         {
-            return new MemoryStream(_assemblyStorage.GetAssembly(assembly));       
+            return new MemoryStream(_assemblyStorage.GetAssembly(assembly));
         }
     }
 }
