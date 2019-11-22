@@ -82,7 +82,7 @@ assigment:
 ;   
 
 functionCall: 
-    ((nameLookup | name) '.')? name '(' arguments? ')' ('.' lookupFunction=functionCall)?
+    ((nameLookup | ownerName=name) '.')? functionName=name '(' arguments? ')' ('.' lookupFunction=functionCall)?
 ;
 
 functionCallExpression:
