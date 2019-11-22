@@ -883,7 +883,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Call : Expression
     {
-        public Call(ILineInfo lineInfo, IList<Argument> arguments, String name): base(lineInfo)
+        public Call(ILineInfo lineInfo, IList<Argument> arguments, String name, Expression expression): base(lineInfo)
         {
             var slot = 0;
             Arguments = arguments;
@@ -895,6 +895,9 @@ namespace ZenPlatform.Language.Ast.Definitions
                 }
 
             Name = name;
+            Expression = expression;
+            if (Expression != null)
+                Childs.Add(Expression);
         }
 
         public IList<Argument> Arguments
@@ -903,6 +906,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public String Name
+        {
+            get;
+        }
+
+        public Expression Expression
         {
             get;
         }

@@ -24,6 +24,8 @@ namespace ZenPlatform.Compiler.Generation
         private Dictionary<Constructor, IConstructorBuilder> _stage1constructors =
             new Dictionary<Constructor, IConstructorBuilder>();
 
+        private GlobalVarManager _varManager;
+
         public void Build()
         {
             if (_mode == CompilationMode.Server)
@@ -34,7 +36,11 @@ namespace ZenPlatform.Compiler.Generation
             BuildCode();
         }
 
-        
+        public void BuildGlobalVar()
+        {
+            
+        }
+
         /// <summary>
         /// Построение структуры. Происходит в два этапа
         /// <br />
@@ -66,7 +72,7 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        
+
         /// <summary>
         /// Создание инфраструктуры всеми компонентами, для последующего использования внутри компонентов
         /// </summary>

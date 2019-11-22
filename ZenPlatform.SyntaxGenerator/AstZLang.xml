@@ -165,6 +165,7 @@
         <Arguments>
             <List Name="Arguments" Type="IList&lt;Argument&gt;"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
     <!--Test comment-->

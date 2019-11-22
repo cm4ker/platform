@@ -1,5 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -52,18 +59,115 @@ namespace ZenPlatform.Compiler.Generation
     }
 
 
-    public class GlobalVarManager
+    public enum VarTreeLeafType
     {
+        Root,
+        None,
+        Prop,
+        Func
+    }
 
+    public enum ValueType
+    {
+        String,
+        Int,
+        DateTime,
+        Long,
+        Double,
+        Byte
+    }
 
-        public void Register()
+    public class GlobalVarTreeItem : Node
+    {
+        private List<object> _args;
+        private object _codeObject;
+
+        public GlobalVarTreeItem(VarTreeLeafType type, string name)
         {
-            
+            Type = type;
+            Name = name;
+            _args = new List<object>();
         }
 
-        public void Emit()
+        public string Name { get; }
+
+        public VarTreeLeafType Type { get; }
+
+
+        public object CodeObject => _codeObject;
+
+        public void SetCodeObject(IField field)
         {
-            
+            _codeObject = field;
+        }
+
+        public void SetCodeObject(IMethod method)
+        {
+            _codeObject = method;
+        }
+
+        public void SetCodeObject(IProperty prop)
+        {
+            _codeObject = prop;
+        }
+
+        public void AddArgument(string arg)
+        {
+            _args.Add(arg);
+        }
+
+        public void AddArgument(int arg)
+        {
+            _args.Add(arg);
+        }
+
+        private IReadOnlyList<object> Args => _args.AsReadOnly();
+    }
+
+    public class GlobalVarManager
+    {
+        public GlobalVarManager()
+        {
+            Root = new GlobalVarTreeItem(VarTreeLeafType.Root, "NoName");
+        }
+
+        private GlobalVarTreeItem Root { get; }
+
+        public void Register(GlobalVarTreeItem node)
+        {
+            node.Attach(Root);
+        }
+
+        public void Emit(IEmitter e, GlobalVar exp, Action<object> onUnknown)
+        {
+            EmitInternal(e, exp.Expression, Root, onUnknown);
+        }
+
+        private void EmitInternal(IEmitter e, Expression exp, GlobalVarTreeItem currentItem,
+            Action<object> onUnknown)
+        {
+            if (exp is Call c)
+            { 
+                var node = currentItem.Childs.Select(x => x as GlobalVarTreeItem)
+                               .FirstOrDefault(x => x.Name == c.Name && x.Type == VarTreeLeafType.Func) ??
+                           throw new Exception(
+                               $"Node with name {c.Name} not found in global var. Component must register this name.");
+
+                onUnknown(c.Expression);
+                onUnknown(c.Arguments);
+                
+                e.EmitCall((IMethod) node.CodeObject);
+            }
+            else if (exp is GetFieldExpression fe)
+            {
+                //emit field lookup
+                var node = currentItem.Childs.Select(x => x as GlobalVarTreeItem)
+                               .FirstOrDefault(x => x.Name == fe.FieldName && x.Type == VarTreeLeafType.Prop) ??
+                           throw new Exception(
+                               $"Node with name {fe.FieldName} not found in global var. Component must register this name.");
+
+                EmitInternal(e, fe.Expression, node, onUnknown);
+            }
         }
     }
 }

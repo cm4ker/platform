@@ -408,7 +408,8 @@ namespace ZenPlatform.Compiler
             base.VisitFunctionCall(context);
 
             var result = new Call(context.start.ToLineInfo(), _syntaxStack.PopList<Argument>().ToImmutableList(),
-                _syntaxStack.PopString());
+                _syntaxStack.PopString(),
+                (context.name() != null || context.nameLookup() != null) ? _syntaxStack.PopExpression() : null);
 
             _syntaxStack.Push(result);
 

@@ -115,12 +115,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <returns></returns>
         public IEnumerable<XCTypeBase> GetUnprocessedPropertyTypes() => _serializedTypes;
 
-        /// <summary>
-        /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
-        /// </summary>
-        [XmlIgnore]
-        public string DatabaseColumnName { get; set; }
-
         /*
          * Ниже представлен алгоритм, как будет колонка разворачиваться в базу данных:
          *
