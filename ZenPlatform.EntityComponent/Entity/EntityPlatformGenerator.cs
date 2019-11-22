@@ -22,6 +22,7 @@ using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Shared.Tree;
 using ZenPlatform.UI.Ast;
 
 
@@ -30,10 +31,10 @@ namespace ZenPlatform.EntityComponent.Entity
     public class EntityPlatformGenerator : IPlatformGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
-        private readonly XCComponent _component;
+        private readonly IXCComponent _component;
         private GeneratorRules _rules;
 
-        public EntityPlatformGenerator(XCComponent component)
+        public EntityPlatformGenerator(IXCComponent component)
         {
             _component = component;
             _rules = new GeneratorRules(component);
@@ -41,7 +42,7 @@ namespace ZenPlatform.EntityComponent.Entity
         }
 
 
-        private TypeSyntax GetAstFromPlatformType(XCTypeBase pt)
+        private TypeSyntax GetAstFromPlatformType(IXCType pt)
         {
             return pt switch
             {
@@ -58,7 +59,7 @@ namespace ZenPlatform.EntityComponent.Entity
             };
         }
 
-        private void GenerateServerDtoClass(XCObjectTypeBase type, Root root)
+        private void GenerateServerDtoClass(IXCObjectType type, Root root)
         {
             var set = type as XCSingleEntity ?? throw new InvalidOperationException(
                           $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -151,7 +152,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        private void GenerateClientDtoClass(XCObjectTypeBase type, Root root)
+        private void GenerateClientDtoClass(IXCObjectType type, Root root)
         {
             var set = type as XCSingleEntity ?? throw new InvalidOperationException(
                           $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -243,7 +244,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        private void GenerateServerObjectClass(XCObjectTypeBase type, Root root)
+        private void GenerateServerObjectClass(IXCObjectType type, Root root)
         {
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
                                        $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -413,7 +414,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        private void GenerateObjectClassUserModules(XCObjectTypeBase type, ComponentClass cls)
+        private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)
         {
             foreach (var module in type.GetProgramModules())
             {
@@ -466,7 +467,7 @@ namespace ZenPlatform.EntityComponent.Entity
             rg.Ret();
         }
 
-        private void GenerateCommands(XCObjectTypeBase type, Root root)
+        private void GenerateCommands(IXCObjectType type, Root root)
         {
             var set = type as XCSingleEntity ?? throw new ArgumentException(nameof(type));
 
@@ -497,11 +498,14 @@ namespace ZenPlatform.EntityComponent.Entity
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        public void StageServer(XCObjectTypeBase type, Root root)
+        public void StageServer(IXCObjectType type, Node root)
         {
-            GenerateServerDtoClass(type, root);
-            GenerateServerObjectClass(type, root);
-            GenerateCommands(type, root);
+            if (root is Root r)
+            {
+                GenerateServerDtoClass(type, r);
+                GenerateServerObjectClass(type, r);
+                GenerateCommands(type, r);
+            }
         }
 
         /// <summary>
@@ -509,23 +513,26 @@ namespace ZenPlatform.EntityComponent.Entity
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        public void StageClient(XCObjectTypeBase type, Root root)
+        public void StageClient(IXCObjectType type, Node node)
         {
-            GenerateCommands(type, root);
-            GenerateClientDtoClass(type, root);
+            if (node is Root root)
+            {
+                GenerateCommands(type, root);
+                GenerateClientDtoClass(type, root);
+            }
         }
 
-        public void StageUI(XCObjectTypeBase type, UINode node)
+        public void StageUI(IXCObjectType type, Node node)
         {
             throw new NotImplementedException();
         }
 
 
-        public void Stage0(ComponentAstBase astTree, ITypeBuilder builder)
+        public void Stage0(Node astTree, ITypeBuilder builder)
         {
         }
 
-        public void Stage1(ComponentAstBase astTree, ITypeBuilder builder)
+        public void Stage1(Node astTree, ITypeBuilder builder)
         {
             if (astTree is ComponentClass cc)
             {

@@ -70,7 +70,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _data = value;
-                ((IChildItem<XCRoot>) _data).Parent = this;
+                _data.Parent = this;
             }
         }
 
@@ -89,7 +89,7 @@ namespace ZenPlatform.Configuration.Structure
             set
             {
                 _roles = value;
-                ((IChildItem<XCRoot>) _roles).Parent = this;
+                _roles.Parent = this;
             }
         }
 
