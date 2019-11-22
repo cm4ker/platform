@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
@@ -9,12 +10,12 @@ namespace ZenPlatform.EntityComponent.Entity
 {
     public class GeneratorRules : IEntityGenerator
     {
-        public GeneratorRules(XCComponent component)
+        public GeneratorRules(IXCComponent component)
         {
             Component = component;
         }
 
-        protected XCComponent Component { get; }
+        protected IXCComponent Component { get; }
 
         /// <summary>
         /// Префикс объектов DTO, необходим для внутренних нужд класса
@@ -23,12 +24,12 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public virtual string DtoPrivateFieldName { get; } = "_dto";
 
-        public virtual string GetDtoClassName(XCObjectTypeBase obj)
+        public virtual string GetDtoClassName(IXCObjectType obj)
         {
             return $"{obj.Name}{DtoPrefix}";
         }
 
-        public virtual string GetEntityClassName(XCObjectTypeBase obj)
+        public virtual string GetEntityClassName(IXCObjectType obj)
         {
             var preffix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
             var postfix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
@@ -36,12 +37,12 @@ namespace ZenPlatform.EntityComponent.Entity
             return $"{preffix}{obj.Name}{postfix}";
         }
 
-        public virtual string GetMultiDataStorageClassName(XCObjectPropertyBase property)
+        public virtual string GetMultiDataStorageClassName(IXCObjectProperty property)
         {
             return $"MultiDataStorage_{property.DatabaseColumnName}";
         }
 
-        public virtual string GetMultiDataStoragePrivateFieldName(XCObjectPropertyBase property)
+        public virtual string GetMultiDataStoragePrivateFieldName(IXCObjectProperty property)
         {
             return $"_mds{property.DatabaseColumnName}";
         }

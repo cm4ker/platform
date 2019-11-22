@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
 using System.Security.Policy;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
@@ -18,7 +19,7 @@ namespace ZenPlatform.EntityComponent
 {
     public class EntityComponent : DataComponentBase
     {
-        public EntityComponent(XCComponent component) : base(component)
+        public EntityComponent(IXCComponent component) : base(component)
         {
         }
 
@@ -81,7 +82,7 @@ namespace ZenPlatform.EntityComponent
 
     public class EntityDatabaseObjectGenerator : IDatabaseObjectsGenerator
     {
-        public Dictionary<string, XCPrimitiveType> GetColumnOptions()
+        public Dictionary<string, IXCPrimitiveType> GetColumnOptions()
         {
             throw new System.NotImplementedException();
         }
