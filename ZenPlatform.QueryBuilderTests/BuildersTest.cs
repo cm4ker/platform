@@ -60,9 +60,6 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var result = _visitor.Visit(createTable);
 
-            //Check(result);
-
-
 
 
             var query = DDLQuery.New();

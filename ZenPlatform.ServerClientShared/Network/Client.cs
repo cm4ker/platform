@@ -27,6 +27,7 @@ namespace ZenPlatform.Core.Network
         private readonly ITransportClientFactory _tcFactory;
         private ClientConnection _connection;
         private IDisposable _unsubscriber;
+        private int _timeout = 3000;
         
         //TODO: Сделать клиента потокобезопасным
 
@@ -115,7 +116,7 @@ namespace ZenPlatform.Core.Network
         {
             var req = new RequestAuthenticationNetworkMessage(token);
 
-            _logger.Info("Try send RequestAuthenticationNetworkMessage");
+            _logger.Debug("Try send RequestAuthenticationNetworkMessage");
 
             var wait = RequestAsync(req, msg =>
             {
@@ -131,7 +132,7 @@ namespace ZenPlatform.Core.Network
                         break;
                 }
             });
-            wait.WaitOne();
+            if (!wait.WaitOne(_timeout)) throw new TimeoutException();
             return IsAuthenticated;
         }
 
@@ -166,7 +167,8 @@ namespace ZenPlatform.Core.Network
                         break;
                 }
             });
-            wait.WaitOne();
+
+            if (!wait.WaitOne(_timeout)) throw new TimeoutException();
             return IsUse;
         }
 
@@ -203,7 +205,8 @@ namespace ZenPlatform.Core.Network
                 }
             });
 
-            wait.WaitOne();
+
+            if (!wait.WaitOne(_timeout)) throw new TimeoutException();
             if (exception != null) throw exception;
 
             return responce;

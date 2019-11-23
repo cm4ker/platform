@@ -14,6 +14,7 @@ namespace ZenPlatform.Shell.Terminal
         {
             _terminal = terminal;
             this.Error = this.Out = new TerminalWriter(_terminal);
+            this.In = new StreamReader(_terminal.GetInputStream());// (TextReader)new StringReader(string.Empty);
         }
 
         /// <summary>
@@ -26,7 +27,7 @@ namespace ZenPlatform.Shell.Terminal
         public TextWriter Error { get; }
 
         /// <summary>An empty reader.</summary>
-        public TextReader In { get; } = (TextReader)new StringReader(string.Empty);
+        public TextReader In { get; } 
 
         /// <summary>
         /// Always <c>false</c>.

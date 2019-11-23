@@ -19,6 +19,7 @@
         <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
         <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
         <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Migration\ZenPlatform.Migration.csproj" />
         <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
         <ProjectReference Include="..\ZenPlatform.Shell\ZenPlatform.Shell.csproj" />
     </ItemGroup>

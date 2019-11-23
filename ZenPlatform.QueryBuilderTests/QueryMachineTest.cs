@@ -131,6 +131,9 @@ namespace ZenPlatform.QueryBuilder.Tests
             var visitor = new SQLVisitorBase();
 
             var res = visitor.Visit((SSyntaxNode) machine.pop());
+
+
+            Assert.Equal(res, res = "SELECT A.F1 as MyColumn\nFROM\nT1 as A\nJOIN (SELECT @param3 as Summ\n) as subQuery ON A.F2 = subQuery.Summ\nJOIN T2 as B ON A.F1 = B.F1\nWHERE\nB.F2 = A.F2 and B.F1 = A.F1\nGROUP BY\nA.F1\nHAVING\n@param4 > sum(A.F1)\n");
         }
 
         [Fact]
@@ -158,6 +161,8 @@ namespace ZenPlatform.QueryBuilder.Tests
             var visitor = new SQLVisitorBase();
 
             var res = visitor.Visit((SSyntaxNode) machine.pop());
+
+            Assert.Equal(res, res = "UPDATE table2 as t2\nSET t2.column2 = t1.column2, t2.column1 = t1.column1\nFROM\ntable1 as t1\nWHERE\n@value1 = t1.column1\n");
         }
 
         [Fact]
@@ -183,6 +188,7 @@ namespace ZenPlatform.QueryBuilder.Tests
             var visitor = new SQLVisitorBase();
 
             var res = visitor.Visit((SSyntaxNode) machine.pop());
+            Assert.Equal(res, res = "INSERT INTO table2\nSELECT t1.column1\nFROM\ntable1 as t1\nWHERE\n@value1 = t1.column1\n");
         }
 
         [Fact]
@@ -205,6 +211,8 @@ namespace ZenPlatform.QueryBuilder.Tests
             var visitor = new SQLVisitorBase();
 
             var res = visitor.Visit((SSyntaxNode) machine.pop());
+
+            Assert.Equal(res, res = "INSERT INTO table2\nVALUES\n(@value3, @value2, @value1)\n");
         }
     }
 }

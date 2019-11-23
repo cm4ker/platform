@@ -41,10 +41,12 @@ namespace ZenPlatform.Core.Test
         {
             _testOutput = testOutput;
         }
+
+
         [Fact]
         public void Connecting()
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var serverServices = Initializer.GetServerService(_testOutput);
                 var clientServices = Initializer.GetClientService(_testOutput);
@@ -94,7 +96,9 @@ namespace ZenPlatform.Core.Test
             var assembly = platformClient.LoadMainAssembly();
             Assert.NotNull(assembly);
 
-            accessPoint.Stop();
+
+            //Task.Delay(1000000).Wait();
+             accessPoint.Stop();
         }
 
         [Fact]
