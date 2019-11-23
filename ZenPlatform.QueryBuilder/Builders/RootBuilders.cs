@@ -182,7 +182,7 @@ namespace ZenPlatform.QueryBuilder.Builders
         public RenameTableBuilder Table(string oldName = null)
         {
             var node = new RenameTableNode();
-            if (!string.IsNullOrEmpty(oldName)) node.From = oldName;
+            if (!string.IsNullOrEmpty(oldName)) node.From = new Table() { Value = oldName };
 
             var builder = new RenameTableBuilder(node);
             _querys.QueryList.Add(node);

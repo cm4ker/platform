@@ -108,8 +108,9 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSInsert(SInsert node)
         {
-            return string.Format("INSERT INTO {0}\n{1}",
+            return string.Format("INSERT INTO {0}{1}\n{2}",
                 node.Into.Accept(this),
+                node.Fields.Count > 0 ? $"({string.Join(", ", node.Fields.Select(f=>f.Accept(this)))})": "",
                 node.DataSource.Accept(this)
             );
         }
@@ -317,7 +318,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitColumnTypeBool(ColumnTypeBool node)
         {
-            return "BOOL";
+            return "BIT";
         }
 
         public override string VisitColumnTypeChar(ColumnTypeChar node)
@@ -338,7 +339,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitColumnTypeFloat(ColumnTypeFloat node)
         {
-            return "FLOAT";
+            return "FLOAT"; 
         }
 
         public override string VisitColumnTypeNumeric(ColumnTypeNumeric node)
@@ -348,22 +349,25 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitColumnTypeGuid(ColumnTypeGuid node)
         {
-            return "GUID";
+            return "UNIQUEIDENTIFIER";
         }
 
         public override string VisitColumnTypeText(ColumnTypeText node)
         {
-            return $"TEXT({node.Size})";
+            return string.Format("VARCHAR{0}", node.Size > 0 ? $"({node.Size})" : "");
         }
 
         public override string VisitColumnTypeBinary(ColumnTypeBinary node)
         {
-            return $"BINARY({node.Size})";
+
+            return string.Format("BINARY{0}", node.Size > 0 ? $"({node.Size})" : "");
+            
         }
 
         public override string VisitColumnTypeVarBinary(ColumnTypeVarBinary node)
         {
-            return $"VARBINARY({node.Size})";
+            return string.Format("VARBINARY{0}", node.Size > 0 ? $"({node.Size})" : "");
+            
         }
 
         public override string VisitConstraint(Constraint node)
@@ -426,6 +430,21 @@ namespace ZenPlatform.QueryBuilder.Visitor
                 node.Table.Accept(this),
                 node.Constraint.Accept(this)
             );
+        }
+
+        public override string VisitTable(Table node)
+        {
+            return node.Value;
+        }
+
+        public override string VisitDropTable(DropTable node)
+        {
+            return string.Format("DROP TABLE {0}", node.Table.Accept(this));
+        }
+
+        public override string VisitRenameTableNode(RenameTableNode node)
+        {
+            return string.Format("EXEC sp_rename '{0}', '{1}'", node.From.Accept(this), node.To.Accept(this));
         }
 
         #endregion

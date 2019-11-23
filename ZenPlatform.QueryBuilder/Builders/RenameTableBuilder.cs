@@ -16,13 +16,13 @@ namespace ZenPlatform.QueryBuilder.Builders
 
         public RenameTableBuilder From(string oldName)
         {
-            _node.From = oldName;
+            _node.From = new Table() { Value = oldName };
             return this;
         }
 
         public RenameTableBuilder To(string newName)
         {
-            _node.To = newName;
+            _node.To = new Table() { Value = newName };
             return this;
         }
 

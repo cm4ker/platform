@@ -9,5 +9,7 @@ namespace ZenPlatform.Data
         void Initialize(SqlDatabaseType dbType, string connectionString);
 
         ISqlCompiler SqlCompiler { get; }
+
+        SqlDatabaseType DatabaseType { get; }
     }
 }

@@ -30,7 +30,7 @@ namespace ZenPlatform.Core.Test
             {
                 new StartupConfig()
                 {
-                    ConnectionString = "",
+                    ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=testdb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
                     DatabaseType = QueryBuilder.SqlDatabaseType.SqlServer
                 }
             }

@@ -426,8 +426,8 @@
 
   <Syntax Name="RenameTableNode" Ddl="true" >
     <Arguments>
-      <Single Name="From" Type="string" />
-      <Single Name="To" Type="string" />
+      <Single Name="From" Type="Table" />
+      <Single Name="To" Type="Table" />
     </Arguments>
   </Syntax>
 
