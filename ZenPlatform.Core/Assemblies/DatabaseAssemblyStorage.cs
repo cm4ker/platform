@@ -33,7 +33,9 @@ namespace ZenPlatform.Core.Assemlies
         {
             void Gen(QueryMachine qm)
             {
-                qm.m_from()
+                qm
+                    .bg_query()
+                    .m_from()
                     .ld_table("assemblies")
                     .m_where()
                     .ld_column("name")
@@ -44,7 +46,8 @@ namespace ZenPlatform.Core.Assemlies
                     .eq()
                     .and()
                     .m_select()
-                    .ld_column("data");
+                    .ld_column("data")
+                    .st_query();
 //                
 //                var query = new SelectQueryNode()
 //                    .From("assemblies")
@@ -67,7 +70,9 @@ namespace ZenPlatform.Core.Assemlies
         {
             void Gen(QueryMachine qm)
             {
-                qm.m_from()
+                qm
+                    .bg_query()
+                    .m_from()
                     .ld_table("assemblies")
                     .m_where()
                     .ld_column("assembly_hash")
@@ -75,7 +80,8 @@ namespace ZenPlatform.Core.Assemlies
                     .eq()
                     .and()
                     .m_select()
-                    .ld_column("data");
+                    .ld_column("data")
+                    .st_query();
 
 //                var query = new SelectQueryNode()
 //                    .From("assemblies")
@@ -106,7 +112,9 @@ namespace ZenPlatform.Core.Assemlies
 
             void Gen(QueryMachine qm)
             {
-                qm.m_from()
+                qm
+                    .bg_query()
+                    .m_from()
                     .ld_table("assemblies")
                     .m_where()
                     .ld_column("configuration_hash")
@@ -117,7 +125,8 @@ namespace ZenPlatform.Core.Assemlies
                     .ld_column("assembly_hash")
                     .ld_column("configuration_hash")
                     .ld_column("type")
-                    .ld_column("name");
+                    .ld_column("name")
+                    .st_query();
 
 
 //                var query = new SelectQueryNode()
@@ -150,18 +159,21 @@ namespace ZenPlatform.Core.Assemlies
         {
             void Gen(QueryMachine qm)
             {
-                qm.m_from()
-                    .ld_table("assemblies")
-                    .m_where()
-                    .ld_column("configuration_hash")
-                    .ld_param("configuration_hash")
-                    .eq()
-                    .and()
+                qm.
+                    bg_query()
+                    .m_from()
+                        .ld_table("assemblies")
+                        .m_where()
+                        .ld_column("configuration_hash")
+                        .ld_param("configuration_hash")
+                        .eq()
+                        .and()
                     .m_select()
-                    .ld_column("assembly_hash")
-                    .ld_column("configuration_hash")
-                    .ld_column("type")
-                    .ld_column("name");
+                        .ld_column("assembly_hash")
+                        .ld_column("configuration_hash")
+                        .ld_column("type")
+                        .ld_column("name")
+                    .st_query();
 
 //                var query = new InsertQueryNode()
 //                    .InsertInto("assemblies")

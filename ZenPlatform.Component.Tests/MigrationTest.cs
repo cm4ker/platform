@@ -1,3 +1,4 @@
+using MoreLinq;
 using System;
 using System.Collections.Immutable;
 using System.Linq;
@@ -6,9 +7,10 @@ using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 using ZenPlatform.Compiler;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.QueryBuilder;
-
+using ZenPlatform.QueryBuilder.Builders;
 
 namespace ZenPlatform.Component.Tests
 {
@@ -24,32 +26,49 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void CreateTest()
         {
-
-            
-            var root = Factory.CreateExampleConfiguration();
-
-            var com = root.Data.Components[0];
-            var entity = com.Types.Skip(1).First();
+            var actual = Factory.CreateExampleConfiguration();
 
 
-            var rootOld = Factory.CreateChangedExampleConfiguration();
-
-            var comOld = rootOld.Data.Components[0];
-            var entityOld = comOld.Types.Skip(1).First();
+            var savedTypes = actual.Data.ComponentTypes;
 
 
-            
+ 
+            var query = DDLQuery.New();
+            savedTypes.ForEach(a => a.Parent.ComponentImpl.Migrator.GetStep1(null, a, query));
+            savedTypes.ForEach(a => a.Parent.ComponentImpl.Migrator.GetStep2(null, a, query));
+            savedTypes.ForEach(a => a.Parent.ComponentImpl.Migrator.GetStep3(null, a, query));
+            savedTypes.ForEach(a => a.Parent.ComponentImpl.Migrator.GetStep4(null, a, query));
+
 
             var sqlCompiler = SqlCompillerBase.FormEnum(SqlDatabaseType.SqlServer);
+            var result = sqlCompiler.Compile(query.Expression);
+        }
 
-            var script = com.ComponentImpl.Migrator.GetStep1(entityOld, entity);
-            var result = sqlCompiler.Compile(script);
+        [Fact]
+        public void MultiTest()
+        {
+            var actual = Factory.CreateExampleConfiguration();
 
 
-            script = com.ComponentImpl.Migrator.GetStep2(entityOld, entity);
-            result = sqlCompiler.Compile(script);
+            var old = Factory.CreateChangedExampleConfiguration();
 
-            _testOutputHelper.WriteLine(result);
+            var savedTypes = actual.Data.ComponentTypes;
+            var dbTypes = old.Data.ComponentTypes;
+
+            var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
+                x => new { component = x.Parent, old = x, actual = default(XCObjectTypeBase) },
+                x => new { component = x.Parent, old = default(XCObjectTypeBase), actual = x },
+                (x, y) => new { component = x.Parent, old = x, actual = y });
+
+            var query = DDLQuery.New();
+            types.ForEach(a => a.component.ComponentImpl.Migrator.GetStep1(a.old, a.actual, query));
+            types.ForEach(a => a.component.ComponentImpl.Migrator.GetStep2(a.old, a.actual, query));
+            types.ForEach(a => a.component.ComponentImpl.Migrator.GetStep3(a.old, a.actual, query));
+            types.ForEach(a => a.component.ComponentImpl.Migrator.GetStep4(a.old, a.actual, query));
+
+
+            var sqlCompiler = SqlCompillerBase.FormEnum(SqlDatabaseType.SqlServer);
+            var result = sqlCompiler.Compile(query.Expression);
         }
     }
 }

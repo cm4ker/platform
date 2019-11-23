@@ -47,7 +47,7 @@ namespace ZenPlatform.Tests.Component.EntityComponent
             var prop = entity.GetProperties().First();
 
             Assert.NotNull(entity);
-
+            /*
             SingleEntityGenerator gen = new SingleEntityGenerator(entity.Parent);
 
             var extension = gen.GenerateExtension();
@@ -59,6 +59,7 @@ namespace ZenPlatform.Tests.Component.EntityComponent
             var multidataStorage = gen.GenerateMultiDataStorage(entity, prop);
 
             var expected = "";
+            */
 
             //Assert.Equal(expected, result.ToString());
         }

@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Channels;
+using System.Threading.Tasks;
 using TextCopy;
 using ZenPlatform.Shell.Ansi;
 using ZenPlatform.Shell.Contracts;
 using ZenPlatform.Shell.Contracts.Ansi;
+using ZenPlatform.Shell.Utility;
 using ZenPlatform.SSH;
 
 namespace ZenPlatform.Shell.Terminal
@@ -37,10 +41,11 @@ namespace ZenPlatform.Shell.Terminal
         private const int MaxHistorySize = 1024;
 
         private TerminalBufferChar[] _buffer;
-
+        private readonly object _bufferSync = new object();
         private TerminalSize _size;
         private readonly List<TerminalBufferLine> _history = new List<TerminalBufferLine>();
-
+        private ManualResetEvent _lookInput = new ManualResetEvent(true);
+        private Stream _inputStream;
         /// <summary>
         /// Текущая позиция по оси Х
         /// </summary>
@@ -72,6 +77,54 @@ namespace ZenPlatform.Shell.Terminal
             _application = application;
 
             
+        }
+
+        public void LookInput()
+        {
+            _lookInput.Reset();
+        }
+
+        public void UnLookInput()
+        {
+            _lookInput.Set();
+        }
+
+        public Stream GetInputStream()
+        {
+            return _inputStream;
+        }
+
+        public Task ConsoleOutputAsync(Stream stream)
+        {
+            _inputStream = stream;
+            return Task.Run(async delegate
+            {
+                var ansiParser = new AnsiParser();
+                var sr = new StreamReader(stream);
+                do
+                {
+                    int offset = 0;
+                    var buffer = new char[1024];
+                    int readChars = await sr.ReadAsync(buffer, offset, buffer.Length - offset);
+                    if (readChars > 0)
+                    {
+                        var reader = new ArrayReader<char>(buffer, 0, readChars);
+                        var codes = ansiParser.Parse(reader);
+                        ReceiveOutput(codes);
+                    }
+                } while (!sr.EndOfStream && _lookInput.WaitOne());
+            });
+        }
+
+        private void ReceiveOutput(IEnumerable<TerminalCode> codes)
+        {
+            lock (_bufferSync)
+            {
+                foreach (var code in codes)
+                {
+                    Consume(code);
+                }
+            }
         }
 
         public void Consume(TerminalCode code)
