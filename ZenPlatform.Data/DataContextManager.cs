@@ -13,7 +13,7 @@ namespace ZenPlatform.Data
     /// </summary>
     public class DataContextManager : IDataContextManager
     {
-        private SqlDatabaseType? _dbType;
+        private SqlDatabaseType _dbType;
         private string _connectionString;
         private readonly Dictionary<int, DataContext> _contexts;
 
@@ -27,12 +27,14 @@ namespace ZenPlatform.Data
  
         }
 
+        public SqlDatabaseType DatabaseType { get => _dbType; }
+
         public void Initialize(SqlDatabaseType dbType, string connectionString)
         {
             _dbType = dbType;
             
             _connectionString = connectionString;
-             //SqlCompiler = SqlCompillerBase.FormEnum(dbType);
+             SqlCompiler = SqlCompillerBase.FormEnum(dbType);
         }
 
         public ISqlCompiler SqlCompiler { get; private set; }
@@ -45,10 +47,10 @@ namespace ZenPlatform.Data
         /// <returns></returns>
         public DataContext GetContext()
         {
-            if (_dbType == null || _connectionString == null) throw new NotSupportedException("DataContextManager not initialized!");
+            if (_dbType == SqlDatabaseType.Unknown || _connectionString == null) throw new NotSupportedException("DataContextManager not initialized!");
             if (!_contexts.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var context))
             {
-                context = new DataContext(_dbType.Value, _connectionString);
+                context = new DataContext(_dbType, _connectionString);
                 _contexts.Add(Thread.CurrentThread.ManagedThreadId, context);
             }
 

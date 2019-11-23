@@ -35,12 +35,10 @@ namespace ZenPlatform.EntityComponent.Migrations
         }
 
 
-        public SSyntaxNode GetStep1(IXCObjectType oldBase, IXCObjectType actualBase)
+        public SSyntaxNode GetStep1(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
-
-            DDLQuery query = new DDLQuery();
 
             if (old == null && actual == null)
             {
@@ -70,12 +68,11 @@ namespace ZenPlatform.EntityComponent.Migrations
             return query.Expression;
         }
 
-        public SSyntaxNode GetStep2(IXCObjectType oldBase, IXCObjectType actualBase)
+        public SSyntaxNode GetStep2(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
 
-            DDLQuery query = new DDLQuery();
 
             if (old != null && actual != null)
             {
@@ -167,25 +164,23 @@ namespace ZenPlatform.EntityComponent.Migrations
         }
 
 
-        public SSyntaxNode GetStep3(IXCObjectType oldBase, IXCObjectType actualBase)
+        public SSyntaxNode GetStep3(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
 
-            DDLQuery query = new DDLQuery();
             if (old != null && actual != null)
             {
-                query.Delete().Table($"{actual.RelTableName}_tmp");
+                query.Delete().Table($"{actual.RelTableName}");
             }
             return query.Expression;
         }
 
-        public SSyntaxNode GetStep4(IXCObjectType oldBase, IXCObjectType actualBase)
+        public SSyntaxNode GetStep4(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
 
-            DDLQuery query = new DDLQuery();
             if (old != null && actual != null)
             {
                 query.Rename().Table($"{actual.RelTableName}_tmp").To(old.RelTableName);
@@ -204,31 +199,33 @@ namespace ZenPlatform.EntityComponent.Migrations
                  || schema.SchemaType == XCColumnSchemaType.NoSpecial)
             {
 
-                var type = schema.PlatformType as XCPrimitiveType ??
-                           throw new Exception("The value can be only primitive type");
+                var type = schema.PlatformType;
 
                 switch (type)
                 {
                     case XCBoolean t:
-                        builder.AsBoolean().NotNullable().WithDefaultValue(false);
+                        builder.AsBoolean().NotNullable();
                         break;
                     case XCString t:
-                        builder.AsString(t.Size).NotNullable().WithDefaultValue("");
+                        builder.AsString(t.Size).NotNullable();
                         break;
                     case XCDateTime t:
-                        builder.AsDateTime().NotNullable().WithDefaultValue(DateTime.MinValue);
+                        builder.AsDateTime().NotNullable();
                         break;
                     case XCGuid t:
-                        builder.AsGuid().NotNullable().WithDefaultValue(Guid.Empty);
+                        builder.AsGuid().NotNullable();
                         break;
                     case XCNumeric t:
-                        builder.AsFloat(t.Scale, t.Precision).NotNullable().WithDefaultValue(0.0);
+                        builder.AsFloat(t.Scale, t.Precision).NotNullable();
                         break;
                     case XCBinary t:
-                        builder.AsVarBinary(t.Size).NotNullable().WithDefaultValue(0);
+                        builder.AsVarBinary(t.Size).NotNullable();
                         break;
                     case XCInt t:
-                        builder.AsInt().NotNullable().WithDefaultValue(0);
+                        builder.AsInt().NotNullable();
+                        break;
+                    case XCObjectTypeBase t:
+                        builder.AsGuid().NotNullable();
                         break;
                 }
             }

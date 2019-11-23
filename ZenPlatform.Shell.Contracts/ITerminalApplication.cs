@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using ZenPlatform.Shell.Contracts.Ansi;
 
@@ -10,6 +11,8 @@ namespace ZenPlatform.Shell.Contracts
         void Open(ITerminal terminal);
 
         void Close();
+
+       
 
         void Consume(TerminalCode code);
 
