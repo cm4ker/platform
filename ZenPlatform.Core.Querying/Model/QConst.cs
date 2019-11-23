@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Configuration.Contracts;
+
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -8,10 +9,10 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QConst : QExpression
     {
-        private readonly XCTypeBase _baseType;
+        private readonly IXCType _baseType;
 
 
-        public QConst(XCTypeBase baseType, object value)
+        public QConst(IXCType baseType, object value)
         {
             Value = value;
             _baseType = baseType;
@@ -19,7 +20,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public object Value { get; }
 
-        public override IEnumerable<XCTypeBase> GetExpressionType()
+        public override IEnumerable<IXCType> GetExpressionType()
         {
             yield return _baseType;
         }

@@ -29,6 +29,7 @@ using Xunit.Abstractions;
 using ZenPlatform.Shell.Terminal;
 using McMaster.Extensions.CommandLineUtils;
 using ZenPlatform.Cli;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Shell.Contracts;
 using ZenPlatform.Migration;
 
@@ -63,7 +64,7 @@ namespace ZenPlatform.Core.Test
             services.AddTransient<IChannelFactory, ChannelFactory>();
             services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
             services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
-
+            services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
             services.AddScoped<IAssemblyManager, AssemblyManager>();
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
             services.AddSingleton<IXCConfigurationStorage, XCTestStorage>();

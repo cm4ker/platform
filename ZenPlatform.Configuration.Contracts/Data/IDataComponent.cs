@@ -1,7 +1,7 @@
 ﻿using System.Dynamic;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Data.Contracts
 {

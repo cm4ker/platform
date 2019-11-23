@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types
 {
-    public abstract class XCTypeBase : IEquatable<XCTypeBase>
+    public abstract class XCTypeBase : IXCType
     {
         protected XCTypeBase()
         {
@@ -52,12 +53,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
             return true;
         }
 
-        public virtual bool IsAssignableFrom(XCTypeBase tb)
+        public virtual bool IsAssignableFrom(IXCType tb)
         {
             return tb.Guid == this.Guid;
         }
 
-        public virtual bool Equals(XCTypeBase other)
+        public virtual bool Equals(IXCType other)
         {
             return Guid.Equals(other?.Guid) && Id == other?.Id;
         }
@@ -67,7 +68,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((XCTypeBase) obj);
+            return Equals((IXCType) obj);
         }
 
         public override int GetHashCode()
@@ -84,9 +85,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
     }
 
 
-    public class XCTypeBaseEqualityComparer : IEqualityComparer<XCTypeBase>
+    public class XCTypeBaseEqualityComparer : IEqualityComparer<IXCType>
     {
-        public bool Equals([AllowNull] XCTypeBase x, [AllowNull] XCTypeBase y)
+        public bool Equals([AllowNull] IXCType x, [AllowNull] IXCType y)
         {
             if (x == null && y == null)
                 return true;
@@ -95,7 +96,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
             return x.Guid == y.Guid;
         }
 
-        public int GetHashCode([DisallowNull] XCTypeBase obj)
+        public int GetHashCode([DisallowNull] IXCType obj)
         {
             return obj.Guid.GetHashCode();
         }

@@ -1,10 +1,14 @@
+using ZenPlatform.Configuration.Contracts;
+
 namespace ZenPlatform.Configuration.Structure
 {
+
+
     /// <summary>
     /// Программный модуль. Если необходимо организовать поддержку программных модулей на языке платформы
     /// В таком случае необходимо наследоваться от этого класса
     /// </summary>
-    public abstract class XCProgramModuleBase
+    public abstract class XCProgramModuleBase : IXCProgramModule
     {
         /// <summary>
         /// Имя модуля

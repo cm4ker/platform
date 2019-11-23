@@ -12,7 +12,7 @@ using ZenPlatform.Shared.ParenChildCollection;
 namespace ZenPlatform.DataComponent.Configuration
 {
     public abstract class ConfigurationLoaderBase<TObjectType> : IXComponentLoader
-        where TObjectType : XCObjectTypeBase
+        where TObjectType : class, IXCObjectType 
     {
         #region Events
 
@@ -44,12 +44,12 @@ namespace ZenPlatform.DataComponent.Configuration
 
         #endregion
 
-        protected virtual XCDataRuleBase LoadRuleAction(XCDataRuleContent content)
+        protected virtual XCDataRuleBase LoadRuleAction(IXCDataRuleContent content)
         {
             throw new NotImplementedException();
         }
 
-        public virtual IDataComponent GetComponentImpl(XCComponent component)
+        public virtual IDataComponent GetComponentImpl(IXCComponent component)
         {
             throw new NotImplementedException();
         }
@@ -61,7 +61,7 @@ namespace ZenPlatform.DataComponent.Configuration
         /// <param name="blob"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public virtual XCObjectTypeBase LoadObject(XCComponent component, XCBlob blob)
+        public virtual IXCObjectType LoadObject(IXCComponent component, IXCBlob blob)
         {
             TObjectType conf;
             using (var stream = component.Root.Storage.GetBlob(blob.Name, $"Data/{component.Info.ComponentName}"))
@@ -76,7 +76,7 @@ namespace ZenPlatform.DataComponent.Configuration
             AfterObjectLoad(conf);
 
             //Сразу же указываем родителя
-            ((IChildItem<XCComponent>) conf).Parent = component;
+            conf.Parent = component;
 
             component.Parent.RegisterType(conf);
 
@@ -91,11 +91,11 @@ namespace ZenPlatform.DataComponent.Configuration
         /// Сохранить объект. Эта функция входит в обязательный набор API для реализации компонента
         /// </summary>
         /// <param name="conf"></param>
-        public virtual void SaveObject(XCObjectTypeBase conf)
+        public virtual void SaveObject(IXCObjectType conf)
         {
             var storage = conf.Parent.Root.Storage;
             var component = conf.Parent;
-            XCBlob blob;
+            IXCBlob blob;
             if (conf.AttachedBlob is null)
             {
                 blob = new XCBlob(conf.Name);
@@ -110,12 +110,12 @@ namespace ZenPlatform.DataComponent.Configuration
                 storage.SaveBlob(blob.Name, $"Data/{component.Info.ComponentName}", stream);
         }
 
-        public XCDataRuleBase LoadRule(XCDataRuleContent content)
+        public IXCDataRule LoadRule(IXCDataRuleContent content)
         {
             return LoadRuleAction(content);
         }
 
-        public void SaveRule(XCDataRuleBase rule)
+        public void SaveRule(IXCDataRule rule)
         {
         }
     }

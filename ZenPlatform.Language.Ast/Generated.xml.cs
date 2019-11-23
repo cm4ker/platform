@@ -883,7 +883,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Call : Expression
     {
-        public Call(ILineInfo lineInfo, IList<Argument> arguments, String name): base(lineInfo)
+        public Call(ILineInfo lineInfo, IList<Argument> arguments, String name, Expression expression): base(lineInfo)
         {
             var slot = 0;
             Arguments = arguments;
@@ -895,6 +895,9 @@ namespace ZenPlatform.Language.Ast.Definitions
                 }
 
             Name = name;
+            Expression = expression;
+            if (Expression != null)
+                Childs.Add(Expression);
         }
 
         public IList<Argument> Arguments
@@ -903,6 +906,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public String Name
+        {
+            get;
+        }
+
+        public Expression Expression
         {
             get;
         }
@@ -1468,6 +1476,30 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitMatch(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions.Expressions
+{
+    public partial class GlobalVar : Expression
+    {
+        public GlobalVar(ILineInfo lineInfo, Expression expression): base(lineInfo)
+        {
+            var slot = 0;
+            Expression = expression;
+            if (Expression != null)
+                Childs.Add(Expression);
+        }
+
+        public Expression Expression
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitGlobalVar(this);
         }
     }
 }

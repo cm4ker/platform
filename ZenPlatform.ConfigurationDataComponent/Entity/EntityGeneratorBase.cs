@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
@@ -36,7 +37,7 @@ namespace ZenPlatform.DataComponent.Entity
 
         public virtual string DtoPrivateFieldName { get; } = "_dto";
 
-        public virtual string GetDtoClassName(XCObjectTypeBase obj)
+        public virtual string GetDtoClassName(IXCObjectType obj)
         {
             return $"{obj.Name}{DtoPrefix}";
         }
@@ -68,12 +69,12 @@ namespace ZenPlatform.DataComponent.Entity
          * 
          */
 
-        public virtual string GetMultiDataStorageClassName(XCObjectPropertyBase property)
+        public virtual string GetMultiDataStorageClassName(IXCObjectProperty property)
         {
             return $"MultiDataStorage_{property.DatabaseColumnName}";
         }
 
-        public virtual string GetMultiDataStoragePrivateFieldName(XCObjectPropertyBase property)
+        public virtual string GetMultiDataStoragePrivateFieldName(IXCObjectProperty property)
         {
             return $"_mds{property.DatabaseColumnName}";
         }

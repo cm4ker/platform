@@ -9,6 +9,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using Portable.Xaml.Schema;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
@@ -17,16 +18,16 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public abstract class XCObjectPropertyBase
+    public abstract class XCObjectPropertyBase : IXCObjectProperty
     {
-        private List<XCTypeBase> _serializedTypes;
-        private readonly List<XCTypeBase> _types;
+        private List<IXCType> _serializedTypes;
+        private readonly List<IXCType> _types;
 
         protected XCObjectPropertyBase()
         {
-            _types = new List<XCTypeBase>();
+            _types = new List<IXCType>();
             Guid = Guid.NewGuid();
-            _serializedTypes = new List<XCTypeBase>();
+            _serializedTypes = new List<IXCType>();
         }
 
         /// <summary>
@@ -79,22 +80,28 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
 
         /// <summary>
+        /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
+        /// </summary>
+        [XmlIgnore]
+        public string DatabaseColumnName { get; set; }
+        
+        /// <summary>
         /// Типы, описывающие поле
         /// </summary>
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public List<XCTypeBase> Types => _types;
+        public List<IXCType> Types => _types;
 
         /// <summary>
         /// Поля для выгрузки конфигурации здесь происходит подмена XCObjectType на XCUnknownType
         /// </summary>
         [XCDecoratedForSerialization]
-        internal List<XCTypeBase> SerializedTypes => _serializedTypes;
+        internal List<IXCType> SerializedTypes => _serializedTypes;
 
-        private IEnumerable<XCTypeBase> GetTypes()
+        private IEnumerable<IXCType> GetTypes()
         {
             foreach (var type in Types)
             {
-                if (type is XCPrimitiveType) yield return type;
+                if (type is IXCPrimitiveType) yield return type;
                 if (type is XCObjectTypeBase objType) yield return new XCUnknownType() {Guid = objType.Guid};
             }
         }
@@ -113,13 +120,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// Получить необработанные типы свойств. Вызывается во время конструирования типа при загрузке конфигурации.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<XCTypeBase> GetUnprocessedPropertyTypes() => _serializedTypes;
-
-        /// <summary>
-        /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
-        /// </summary>
-        [XmlIgnore]
-        public string DatabaseColumnName { get; set; }
+        public IEnumerable<IXCType> GetUnprocessedPropertyTypes() => _serializedTypes;
 
         /*
          * Ниже представлен алгоритм, как будет колонка разворачиваться в базу данных:
@@ -140,11 +141,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
          *      не хитрым мапированием: Свойство, Тип -> Колонка
          */
 
-        public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
+        public virtual IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
-            if (string.IsNullOrEmpty(propName)) propName = this.DatabaseColumnName;
-
-            return PropertyHelper.GetPropertySchemas(propName, _types);
+           throw new NotImplementedException();
         }
     }
 }

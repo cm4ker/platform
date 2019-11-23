@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data;
@@ -30,7 +31,7 @@ namespace ZenPlatform.DataComponent
         /// Базовый компонент данных. Является основой для всех компонентов.
         /// </summary>
         /// <param name="component">Настройки компонента, сюда компонент может публиковать какие-то структуры для общения с другими компонентами</param>
-        protected DataComponentBase(XCComponent component)
+        protected DataComponentBase(IXCComponent component)
         {
             Component = component;
 
@@ -43,7 +44,7 @@ namespace ZenPlatform.DataComponent
             //SupportedTypesManager = new SupportedTypeManager();
         }
 
-        protected XCComponent Component { get; }
+        protected IXCComponent Component { get; }
 
 
         /// <summary>

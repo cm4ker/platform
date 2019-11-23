@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq.Expressions;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.QueryBuilder.Model;
 
-namespace ZenPlatform.Configuration.Data.Contracts.Entity
+namespace ZenPlatform.Configuration.Contracts.Data.Entity
 {
     /// <summary>
     /// Интерфейс обязательный для реализации, если мы хотим, чтобы компонент учавствовал в запросах
@@ -16,7 +13,7 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// </summary>
         /// <param name="logicalTreeNode">Элемент логического дерева, связанный с данным источником данных</param>
         /// <returns></returns>
-        void InjectDataSource(QueryMachine qm, XCObjectTypeBase t, IQueryModelContext logicalTreeNode);
+        void InjectDataSource(QueryMachine qm, IXCObjectType t, IQueryModelContext logicalTreeNode);
     }
 
 

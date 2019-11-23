@@ -1,8 +1,8 @@
-﻿
-using MoreLinq;
+﻿using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Assemblies;
@@ -16,15 +16,18 @@ namespace ZenPlatform.Migration
     {
         private readonly IDataContextManager _dataContextManager;
         private readonly IAssemblyManager _assemblyManager;
-        public MigrationManager(IDataContextManager dataContextManager, IAssemblyManager assemblyManager)
+        private readonly IConfigurationManipulator _m;
+
+        public MigrationManager(IDataContextManager dataContextManager, IAssemblyManager assemblyManager,
+            IConfigurationManipulator m)
         {
             _assemblyManager = assemblyManager;
+            _m = m;
             _dataContextManager = dataContextManager;
         }
 
-        public void Migrate(XCRoot old, XCRoot actual)
+        public void Migrate(IXCRoot old, IXCRoot actual)
         {
-
             _assemblyManager.BuildConfiguration(actual, _dataContextManager.DatabaseType);
 
             var savedTypes = actual.Data.ComponentTypes;
@@ -32,9 +35,9 @@ namespace ZenPlatform.Migration
 
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
-                x => new { component = x.Parent, old = x, actual = default(XCObjectTypeBase) },
-                x => new { component = x.Parent, old = default(XCObjectTypeBase), actual = x },
-                (x, y) => new { component = x.Parent, old = x, actual = y });
+                x => new {component = x.Parent, old = x, actual = default(IXCObjectType)},
+                x => new {component = x.Parent, old = default(IXCObjectType), actual = x},
+                (x, y) => new {component = x.Parent, old = x, actual = y});
 
             var query = DDLQuery.New();
 
@@ -45,12 +48,11 @@ namespace ZenPlatform.Migration
 
 
             var context = _dataContextManager.GetContext();
-            
+
             using (var cmd = context.CreateCommand(query.Expression))
             {
                 cmd.ExecuteNonQuery();
             }
-            
         }
 
 
@@ -60,10 +62,9 @@ namespace ZenPlatform.Migration
         /// <param name="old"></param>
         /// <param name="actual"></param>
         /// <returns></returns>
-        public bool CheckMigration(XCRoot old, XCRoot actual)
+        public bool CheckMigration(IXCRoot old, IXCRoot actual)
         {
-
-            return old.GetHash() != actual.GetHash();
+            return _m.GetHash(old) != _m.GetHash(actual);
         }
     }
 }

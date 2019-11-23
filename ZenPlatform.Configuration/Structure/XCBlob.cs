@@ -1,11 +1,14 @@
 ﻿using System.Xml.Serialization;
+using ZenPlatform.Configuration.Structure.Data;
 
 namespace ZenPlatform.Configuration.Structure
 {
+
+
     /// <summary>
     /// Включение данных в компонент
     /// </summary>
-    public class XCBlob
+    public class XCBlob : IXCBlob
     {
         public XCBlob()
         {

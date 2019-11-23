@@ -23,6 +23,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Compiler;
+using ZenPlatform.Configuration;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
@@ -37,10 +38,12 @@ namespace ZenPlatform.Core.Test
     public class UnitTestServerClient : ClientServerTestBase
     {
         private ITestOutputHelper _testOutput;
-        public UnitTestServerClient(ITestOutputHelper testOutput):base(testOutput)
+
+        public UnitTestServerClient(ITestOutputHelper testOutput) : base(testOutput)
         {
             _testOutput = testOutput;
         }
+
 
 
         [Fact]
@@ -154,7 +157,8 @@ namespace ZenPlatform.Core.Test
         public void AssemblyManagerTest()
         {
             var storage = new TestAssemblyStorage();
-            var manager = new AssemblyManager(new XCCompiler(), storage, new XUnitLogger<AssemblyManager>(_testOutput));
+            var manager =
+                new AssemblyManager(new XCCompiler(), storage, new XUnitLogger<AssemblyManager>(_testOutput),new XCConfManipulator());
 
             var root = Factory.CreateExampleConfiguration();
 
@@ -179,7 +183,7 @@ namespace ZenPlatform.Core.Test
             var serverService = Initializer.GetServerService(_testOutput);
 
             var assemblyManagerClientService = serverService.GetRequiredService<IAssemblyManagerClientService>();
-
+            var manipulator = serverService.GetRequiredService<IConfigurationManipulator>();
             var env = serverService.GetRequiredService<IWorkEnvironment>();
 
             env.Initialize(new StartupConfig());
@@ -198,7 +202,7 @@ namespace ZenPlatform.Core.Test
 
             var result = assemblyManagerClientService.GetDiffAssemblies(assemblies);
 
-            Assert.NotNull(result.FirstOrDefault(a => a.ConfigurationHash == env.Configuration.GetHash()
+            Assert.NotNull(result.FirstOrDefault(a => a.ConfigurationHash == manipulator.GetHash(env.Configuration)
                                                       && a.Name ==
                                                       $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
 

@@ -1,7 +1,6 @@
 ﻿using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Contracts
 {
@@ -17,7 +16,7 @@ namespace ZenPlatform.Configuration.Contracts
         ///         <cref>DataComponentBase</cref>
         ///     </see>
         /// </summary>
-        IDataComponent GetComponentImpl(XCComponent component);
+        IDataComponent GetComponentImpl(IXCComponent component);
 
         /// <summary>
         /// Загрузить тип компонента
@@ -25,26 +24,26 @@ namespace ZenPlatform.Configuration.Contracts
         /// <param name="com">Компонент</param>
         /// <param name="blob">Хранилище сериализованного объекта</param>
         /// <returns></returns>
-        XCObjectTypeBase LoadObject(XCComponent com, XCBlob blob);
+        IXCObjectType LoadObject(IXCComponent com, IXCBlob blob);
 
         /// <summary>
         /// Сохранить обхект
         /// </summary>
         /// <param name="conf"></param>
-        void SaveObject(XCObjectTypeBase conf);
+        void SaveObject(IXCObjectType conf);
 
         /// <summary>
         /// Загрузить правила компонента, необходимо для RLS
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        XCDataRuleBase LoadRule(XCDataRuleContent content);
+        IXCDataRule LoadRule(IXCDataRuleContent content);
 
         /// <summary>
         /// Сохранить правило 
         /// </summary>
         /// <param name="rule"></param>
-        void SaveRule(XCDataRuleBase rule);
+        void SaveRule(IXCDataRule rule);
     }
 
 
@@ -58,12 +57,12 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         /// <param name="parent">Родитель этой сущности</param>
         /// <returns>Новый объект конфигурации</returns>
-        XCObjectTypeBase Create(XCObjectTypeBase baseType = null);
+        IXCObjectType Create(IXCObjectType baseType = null);
 
         /// <summary>
         /// Удалить объект конфигурации. Причём конфигурация остаётся в целостном состоянии до и после удаления
         /// </summary>
         /// <param name="type"></param>
-        void Delete(XCObjectTypeBase type);
+        void Delete(IXCObjectType type);
     }
 }
