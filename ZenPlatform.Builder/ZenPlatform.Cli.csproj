@@ -3,7 +3,7 @@
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <AssemblyName>ZenPlatform.Cli</AssemblyName>
         <RootNamespace>ZenPlatform.Cli</RootNamespace>
-        <LangVersion>default</LangVersion>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.1" />

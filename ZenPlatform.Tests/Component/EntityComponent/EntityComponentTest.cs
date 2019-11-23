@@ -37,30 +37,5 @@ namespace ZenPlatform.Tests.Component.EntityComponent
             Assert.Equal("ТестоваяСущность", conf.Name);
             Assert.True(conf.Properties.Any());
         }
-
-        [Fact]
-        public void TestEntityDtoLoad()
-        {
-            var conf = Factory.CreateExampleConfiguration();
-
-            var entity = conf.Data.PlatformTypes.FirstOrDefault(x => x.Name == "ТестоваяСущность") as XCObjectTypeBase;
-            var prop = entity.GetProperties().First();
-
-            Assert.NotNull(entity);
-
-            SingleEntityGenerator gen = new SingleEntityGenerator(entity.Parent);
-
-            var extension = gen.GenerateExtension();
-            var dto = gen.GenerateDtoClass(entity);
-            var mainClass = gen.GenerateEntityClass(entity);
-            var intf = gen.GenerateInterface();
-            var helpers = gen.GenerateHelpersForEntity();
-
-            var multidataStorage = gen.GenerateMultiDataStorage(entity, prop);
-
-            var expected = "";
-
-            //Assert.Equal(expected, result.ToString());
-        }
     }
 }

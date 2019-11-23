@@ -6,12 +6,15 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.Structure
 {
- 
     /// <summary>
     /// Комманда
     /// </summary>
     public class XCCommand : IXCCommand
     {
+        public XCCommand()
+        {
+        }
+
         public XCCommand(bool predefined)
         {
             IsPredefined = predefined;
