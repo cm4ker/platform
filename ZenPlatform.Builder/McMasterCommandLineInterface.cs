@@ -38,8 +38,6 @@ namespace ZenPlatform.Cli
         }
         public int Execute(string[] args)
         {
-
-
             return args[0] switch
             {
                 "exit" => RunCommand<CommandExit>(args),
