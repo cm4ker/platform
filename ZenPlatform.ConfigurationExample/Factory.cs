@@ -72,8 +72,9 @@ namespace ZenPlatform.ConfigurationExample
             storeCompositeProp.Types.Add(new XCBoolean());
             storeCompositeProp.Types.Add(new XCString());
             storeCompositeProp.Types.Add(new XCDateTime());
-
+ 
             store.Initialize();
+
 
             var storeProp = invoice.CreateProperty();
             storeProp.Guid = Guid.Parse("175d1ade-75f0-416e-bd18-67793f79f176");

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
@@ -16,10 +18,10 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// <param name="actual">Текущий объект</param>
         /// <returns></returns>
         //IList<SqlNode> GetScript(XCObjectTypeBase old, XCObjectTypeBase actual);
-        SSyntaxNode GetStep1(IXCObjectType old, IXCObjectType actual);
+        SSyntaxNode GetStep1(IXCObjectType old, IXCObjectType actual, DDLQuery query);
 
-        SSyntaxNode GetStep2(IXCObjectType old, IXCObjectType actual);
-        SSyntaxNode GetStep3(IXCObjectType old, IXCObjectType actual);
-        SSyntaxNode GetStep4(IXCObjectType old, IXCObjectType actual);
+        SSyntaxNode GetStep2(IXCObjectType old, IXCObjectType actual, DDLQuery query);
+        SSyntaxNode GetStep3(IXCObjectType old, IXCObjectType actual, DDLQuery query);
+        SSyntaxNode GetStep4(IXCObjectType old, IXCObjectType actual, DDLQuery query);
     }
 }

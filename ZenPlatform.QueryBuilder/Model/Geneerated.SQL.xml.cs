@@ -2688,13 +2688,13 @@ namespace ZenPlatform.QueryBuilder.Model
         {
         }
 
-        public string From
+        public Table From
         {
             get;
             set;
         }
 
-        public string To
+        public Table To
         {
             get;
             set;

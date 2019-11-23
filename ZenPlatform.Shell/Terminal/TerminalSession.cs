@@ -88,7 +88,7 @@ namespace ZenPlatform.Shell.Terminal
 
         private async void RunOutputLoop()
         {
-            await ConsoleOutputAsync(_reader);
+            await VTerminal.ConsoleOutputAsync(_reader);
             
 //            try
 //            {
@@ -102,39 +102,6 @@ namespace ZenPlatform.Shell.Terminal
 
             SessionClosed();
         }
-
-        private Task ConsoleOutputAsync(Stream stream)
-        {
-            return Task.Run(async delegate
-            {
-                var ansiParser = new AnsiParser();
-                var sr = new StreamReader(stream);
-                do
-                {
-                    int offset = 0;
-                    var buffer = new char[1024];
-                    int readChars = await sr.ReadAsync(buffer, offset, buffer.Length - offset);
-                    if (readChars > 0)
-                    {
-                        var reader = new ArrayReader<char>(buffer, 0, readChars);
-                        var codes = ansiParser.Parse(reader);
-                        ReceiveOutput(codes);
-                    }
-                } while (!sr.EndOfStream);
-            });
-        }
-
-        private void ReceiveOutput(IEnumerable<TerminalCode> codes)
-        {
-            lock (_bufferSync)
-            {
-                foreach (var code in codes)
-                {
-                    VTerminal.Consume(code);
-                }
-            }
-        }
-
         private void OnDataReceived(string text)
         {
             var data = Encoding.UTF8.GetBytes(text);

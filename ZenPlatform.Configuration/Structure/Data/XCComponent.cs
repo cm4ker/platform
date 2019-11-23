@@ -168,6 +168,7 @@ namespace ZenPlatform.Configuration.Structure.Data
             using (var ms = new MemoryStream())
             {
                 module.Write(ms);
+                ms.Seek(0, SeekOrigin.Begin);
 
                 Root.Storage.SaveBlob(Blob.Name, nameof(XCComponent), ms);
             }

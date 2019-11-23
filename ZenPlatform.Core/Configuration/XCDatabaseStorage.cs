@@ -5,6 +5,7 @@ using ZenPlatform.Core.Helpers;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.Core.Configuration
 {
@@ -12,15 +13,13 @@ namespace ZenPlatform.Core.Configuration
     {
         private readonly string _tableName;
         private readonly DataContext _context;
-        private readonly ISqlCompiler _compiler;
         private uint _maxId = 100;
 
         //TODO: Посмотерть использование класса InternalDbContext в качестве аргумента конструктора
-        public XCDatabaseStorage(string tableName, DataContext context, ISqlCompiler compiler)
+        public XCDatabaseStorage(string tableName, DataContext context, ISqlCompiler compiler = null)
         {
             _tableName = tableName;
             _context = context;
-            _compiler = compiler;
         }
 
         public Stream GetBlob(string name, string route)
@@ -68,7 +67,7 @@ namespace ZenPlatform.Core.Configuration
                     .ld_param(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
                     .eq()
                     .m_select()
-                   // .ld_const(1)
+                    .ld_const(1)
                     .st_query();
 
 //                var searchQuery = new SelectQueryNode()
@@ -88,8 +87,21 @@ namespace ZenPlatform.Core.Configuration
 
                 //SqlNode query;
                 //Если такой ключ удалось найти, значит всё ок, обновляем его, иначе вставляем
+                QueryMachine qm = new QueryMachine();
                 if (cmd.ExecuteScalar() is null)
                 {
+                    qm
+                        .bg_query()
+                        .m_values()
+                        .ld_param(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
+                        .ld_param(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
+                        .m_insert()
+                        .ld_table(_tableName)
+                        .ld_column(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
+                        .ld_column(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
+                        .st_query();
+
+
 //                    query = new InsertQueryNode()
 //                        .InsertInto(_tableName)
 //                        .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD),
@@ -99,6 +111,18 @@ namespace ZenPlatform.Core.Configuration
                 }
                 else
                 {
+                    qm
+                        .bg_query()
+                        .m_where()
+                        .ld_column(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
+                        .ld_param(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
+                        .eq()
+                        .m_set()
+                        .ld_column(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
+                        .ld_param(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
+                        .m_update()
+                        .ld_table(_tableName)
+                        .st_query();
 //                    query = new UpdateQueryNode()
 //                        .Update(_tableName)
 //                        .Set(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
@@ -107,7 +131,7 @@ namespace ZenPlatform.Core.Configuration
 //                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
                 }
 
-                //cmd.CommandText = _compiler.Compile(query);
+                cmd.CommandText = _context.SqlCompiller.Compile((SSyntaxNode)qm.pop());
 
                 byte[] buffer = new byte[stream.Length];
                 stream.Read(buffer, 0, (int) stream.Length);
