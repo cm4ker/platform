@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
 using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
@@ -10,10 +11,13 @@ using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
+    [DebuggerDisplay("{" + nameof(TypeRef) + "}")]
     public class UnresolvedDnlibType : IType
     {
-        public UnresolvedDnlibType(TypeRef reference)
+        public UnresolvedDnlibType(TypeRef typeRef)
         {
+            
+            TypeRef = typeRef;
         }
 
         public bool Equals(IType other)
@@ -33,6 +37,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<IConstructor> Constructors { get; }
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
         public IReadOnlyList<IType> GenericArguments { get; }
+
         public bool IsAssignableFrom(IType type)
         {
             throw new NotImplementedException();
@@ -46,6 +51,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public IType GenericTypeDefinition { get; }
         public bool IsArray { get; }
         public IType ArrayElementType { get; }
+
         public IType MakeArrayType()
         {
             throw new NotImplementedException();
@@ -62,11 +68,14 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<IType> Interfaces { get; }
         public bool IsInterface { get; }
         public bool IsSystem { get; }
+
         public IType GetEnumUnderlyingType()
         {
             throw new NotImplementedException();
         }
 
         public IReadOnlyList<IType> GenericParameters { get; }
+
+        public TypeRef TypeRef { get; }
     }
 }

@@ -1,5 +1,5 @@
 using System.Linq;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
 
@@ -83,7 +83,7 @@ namespace ZenPlatform.Core.Querying
             }
             else if (ds is QAliasedDataSource ads)
             {
-                GenerateDataSource(ads.Parent);
+                GenerateDataSource(ads.ParentSource);
                 _qm.@as(ads.Alias);
             }
         }

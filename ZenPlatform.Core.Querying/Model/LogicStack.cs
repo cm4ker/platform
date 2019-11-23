@@ -1,14 +1,14 @@
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types;
 
 namespace ZenPlatform.Core.Querying.Model
 {
     public class LogicStack : Stack<object>
     {
-        public XCComponent PopComponent()
+        public IXCComponent PopComponent()
         {
-            return (XCComponent) this.Pop();
+            return (IXCComponent) this.Pop();
         }
 
         public QDataSource PopDataSource()
@@ -108,9 +108,9 @@ namespace ZenPlatform.Core.Querying.Model
             return default;
         }
 
-        public XCTypeBase PopType()
+        public IXCType PopType()
         {
-            return (XCTypeBase) this.Pop();
+            return (IXCType) this.Pop();
         }
     }
 }

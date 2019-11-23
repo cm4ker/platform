@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration.Data.Contracts.Entity
 {
@@ -46,10 +46,10 @@ namespace ZenPlatform.Configuration.Data.Contracts.Entity
         /// </summary>
         /// <param name="property">Свойство для которого нужно сгенерировать мультикласс</param>
         /// <returns>Название класса</returns>
-        string GetMultiDataStorageClassName(XCObjectPropertyBase property);
+        string GetMultiDataStorageClassName(IXCObjectProperty property);
 
 
-        string GetMultiDataStoragePrivateFieldName(XCObjectPropertyBase property);
+        string GetMultiDataStoragePrivateFieldName(IXCObjectProperty property);
 
         /// <summary>
         /// Получить код для setter'a в свойстве чужого объекта

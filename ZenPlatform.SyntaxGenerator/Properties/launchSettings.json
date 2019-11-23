@@ -1,8 +1,16 @@
 {
   "profiles": {
-    "ZenPlatform.SyntaxGenerator": {
+    "ZLang": {
       "commandName": "Project",
-      "commandLineArgs": "qlang qlang.xml Geneerated.Qlang.xml.cs"
+      "commandLineArgs": "compiler AstZlang.xml Geneerated.ZLang.xml.cs"
+    },
+     "QLang": {
+      "commandName": "Project",
+      "commandLineArgs": "qlang QLang.xml Geneerated.QLang.xml.cs"
+    },
+     "SQL": {
+      "commandName": "Project",
+      "commandLineArgs": "compiler AstZlang.xml Geneerated.ZLang.xml.cs"
     }
   }
 }

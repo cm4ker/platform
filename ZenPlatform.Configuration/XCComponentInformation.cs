@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ZenPlatform.Configuration
 {
-    public class XCComponentInformation
+    public class XCComponentInformation : IXCComponentInformation
     {
         /// <summary>
         /// Имя компонента, обязано быть одним словом и латинскими буквами

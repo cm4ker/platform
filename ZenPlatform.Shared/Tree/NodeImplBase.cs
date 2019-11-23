@@ -137,22 +137,22 @@ namespace ZenPlatform.Shared.Tree
         /// <summary>
         /// Прикрепить элемент. Внимание сначала будет выполнена процедура <see cref="Detach"/> а затем уже элемент будет добавлен в качесте дочернего
         /// </summary>
-        /// <param name="node"></param>
-        public virtual void Attach(Node node)
+        /// <param name="parentNode">Родительская нода</param>
+        public virtual void Attach(Node parentNode)
         {
             Detach();
-            node.Childs.Add(this);
+            parentNode.Childs.Add(this);
         }
 
         /// <summary>
         /// Прикрепить элемент в определённое место. Внимание сначала будет выполнена процедура <see cref="Detach"/> а затем уже элемент будет добавлен в качесте дочернего
         /// </summary>
         /// <param name="index"></param>
-        /// <param name="node"></param>
-        public virtual void Attach(int index, Node node)
+        /// <param name="parentNode"></param>
+        public virtual void Attach(int index, Node parentNode)
         {
             Detach();
-            node.Childs.Insert(index, this);
+            parentNode.Childs.Insert(index, this);
         }
     }
 }

@@ -20,13 +20,16 @@ namespace ZenPlatform.Core.Environment
     public abstract class PlatformEnvironment : IPlatformEnvironment
     {
         protected ICacheService CacheService;
+        private readonly IConfigurationManipulator _m;
         protected IServiceProvider ServiceProvider;
 
-        protected PlatformEnvironment(IDataContextManager dataContextManager, ICacheService cacheService)
+        protected PlatformEnvironment(IDataContextManager dataContextManager, ICacheService cacheService,
+            IConfigurationManipulator m)
         {
             Sessions = new List<ISession>();
             DataContextManager = dataContextManager;
             CacheService = cacheService;
+            _m = m;
         }
 
         protected SystemSession SystemSession { get; private set; }
@@ -46,7 +49,7 @@ namespace ZenPlatform.Core.Environment
                 DataContextManager.GetContext(),
                 DataContextManager.SqlCompiler);
 
-            Configuration = XCRoot.Load(storage);
+            Configuration = _m.Load(storage);
         }
 
         public abstract ISession CreateSession(IUser user);
@@ -54,7 +57,7 @@ namespace ZenPlatform.Core.Environment
         /// <summary>
         /// Конфигурация базы данных
         /// </summary>
-        public XCRoot Configuration { get; private set; }
+        public IXCRoot Configuration { get; private set; }
 
         /// <summary>
         /// Сессии

@@ -7,6 +7,7 @@ using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 using ZenPlatform.Compiler;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.QueryBuilder;
@@ -56,8 +57,8 @@ namespace ZenPlatform.Component.Tests
             var dbTypes = old.Data.ComponentTypes;
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
-                x => new { component = x.Parent, old = x, actual = default(XCObjectTypeBase) },
-                x => new { component = x.Parent, old = default(XCObjectTypeBase), actual = x },
+                x => new { component = x.Parent, old = x, actual = default(IXCObjectType) },
+                x => new { component = x.Parent, old = default(IXCObjectType), actual = x },
                 (x, y) => new { component = x.Parent, old = x, actual = y });
 
             var query = DDLQuery.New();

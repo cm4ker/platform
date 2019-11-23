@@ -51,7 +51,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
             var resolved = tref.Resolve(Assembly.ManifestModule);
             if (resolved != null)
-                return _typeCache[fullName] = _ts.GetTypeFromReference(resolved);
+                return _typeCache[fullName] = _ts.GetTypeFromReference(tref);
 
             return null;
         }

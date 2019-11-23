@@ -1,30 +1,33 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCRoles : IChildItem<XCRoot>
+
+
+    public class XCRoles : IXCRoles
     {
         private const string StandardRoleFolder = "Roles";
 
-        private XCRoot _parent;
+        private IXCRoot _parent;
 
         public XCRoles()
         {
-            Items = new ChildItemCollection<XCRoles, XCRole>(this);
+            Items = new ChildItemCollection<IXCRoles, IXCRole>(this);
         }
 
         [XmlArray("Include")]
         [XmlArrayItem(ElementName = "Blob", Type = typeof(XCBlob))]
-        public List<XCBlob> Blobs { get; set; }
+        public List<IXCBlob> Blobs { get; set; }
 
-        public ChildItemCollection<XCRoles, XCRole> Items { get; }
+        public ChildItemCollection<IXCRoles, IXCRole> Items { get; }
 
-        [XmlIgnore] public XCRoot Parent => _parent;
+        [XmlIgnore] public IXCRoot Parent => _parent;
 
-        XCRoot IChildItem<XCRoot>.Parent
+        IXCRoot IChildItem<IXCRoot>.Parent
         {
             get => _parent;
             set => _parent = value;
@@ -41,7 +44,7 @@ namespace ZenPlatform.Configuration.Structure
                     Parent.Storage.SaveBlob(role.Name, StandardRoleFolder, stream);
             }
         }
-        
+
         /// <summary>
         /// Загрузить роли
         /// </summary>
@@ -60,6 +63,5 @@ namespace ZenPlatform.Configuration.Structure
                     role.Load();
                 }
         }
-
     }
 }

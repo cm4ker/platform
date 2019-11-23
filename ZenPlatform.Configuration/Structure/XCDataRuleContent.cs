@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
+
     /// <summary>
     /// Контент, содержащий в себе правила.
     /// Служит премежуточным звеном между правилами компонента и конфигурацией
     ///
     /// Это сделано для того, чтобы абстрагировать правила от компонента и предоставить единый интерфейс
     /// </summary>
-    public class XCDataRuleContent : IChildItem<XCRole>
+    public class XCDataRuleContent :  IXCDataRuleContent
     {
-        private XCRole _parent;
+        private IXCRole _parent;
         private string _content;
 
         /// <summary>
@@ -40,19 +42,19 @@ namespace ZenPlatform.Configuration.Structure
         /// Привязанные правила к контенту
         /// </summary>
         [XmlIgnore]
-        public XCDataRuleBase Rule { get; private set; }
+        public IXCDataRule Rule { get; private set; }
 
         /// <summary>
         /// Объект к которому принадлежит правило
         /// </summary>
         [XmlIgnore]
-        public XCObjectTypeBase Object =>
-            Role.Root.Data.PlatformTypes.First(x => x.Guid == ObjectId) as XCObjectTypeBase;
+        public IXCObjectType Object =>
+            Role.Root.Data.PlatformTypes.First(x => x.Guid == ObjectId) as IXCObjectType;
 
-        [XmlIgnore] public XCRole Role => _parent;
+        [XmlIgnore] public IXCRole Role => _parent;
 
         [XmlIgnore]
-        XCRole IChildItem<XCRole>.Parent
+        IXCRole IChildItem<IXCRole>.Parent
         {
             get => _parent;
             set { _parent = value; }
