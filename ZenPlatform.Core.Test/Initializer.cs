@@ -30,11 +30,14 @@ using ZenPlatform.Shell.Terminal;
 using McMaster.Extensions.CommandLineUtils;
 using ZenPlatform.Cli;
 using ZenPlatform.Shell.Contracts;
+using ZenPlatform.Migration;
 
 namespace ZenPlatform.Core.Test
 {
     public static class Initializer
     {
+        
+
         
 
         public static ServiceProvider GetServerService(ITestOutputHelper testOutput)
@@ -88,12 +91,64 @@ namespace ZenPlatform.Core.Test
 
             ///SSH
             ///
-            services.AddScoped<ITerminalSession, TerminalSession>();
-            services.AddScoped<ITerminalApplication, CommandApplication>();
-            services.AddScoped<ITerminal, VirtualTerminal>();
-            services.AddScoped<IConsole, TerminalConsole>();
-            services.AddScoped<ICommandLineInterface, McMasterCommandLineInterface>();
-            
+
+            return services.BuildServiceProvider();
+        }
+
+        public static ServiceProvider GetServerServiceWithDatabase(ITestOutputHelper testOutput)
+        {
+            IServiceCollection services = new ServiceCollection();
+
+            services.AddTransient<IConnectionManager, ConnectionManager>();
+            services.AddSingleton(testOutput);
+            //services.AddTransient(typeof(ILogger<>), typeof(XUnitLogger<>));
+            services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
+            services.AddScoped<IInvokeService, InvokeService>();
+
+            services.AddTransient<ITerminalNetworkListener, SSHListener>();
+            services.AddTransient<IDatabaseNetworkListener, TCPListener>();
+
+            services.AddTransient<IChannel, Channel>();
+            services.AddSingleton<IAccessPoint, UserAccessPoint>();
+            services.AddSingleton<ITaskManager, TaskManager>();
+            services.AddTransient<IMessagePackager, SimpleMessagePackager>();
+            services.AddTransient<ISerializer, ApexSerializer>();
+            services.AddTransient<UserConnectionFactory>();
+            services.AddTransient<ServerConnectionFactory>();
+            services.AddTransient<IChannelFactory, ChannelFactory>();
+            services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
+            services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
+
+            services.AddScoped<IAssemblyManager, AssemblyManager>();
+            services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
+            services.AddSingleton<IXCConfigurationStorage, XCTestStorage>();
+            //services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
+            services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
+
+            services.AddScoped<IConfigurationManager, ConfigurationManager>();
+            services.AddScoped<IXCCompiller, XCCompiler>();
+
+
+            services.AddScoped<IMigrationManager, MigrationManager>();
+            services.AddSingleton<IPlatformEnvironmentManager, EnvironmentManager>();
+
+            //services.AddScoped<ITestEnvironment, TestEnvironment>();
+            //services.AddScoped<IAdminEnvironment, AdminEnvironment>();
+            services.AddScoped<IWorkEnvironment, DatabaseTestEnvironment>();
+
+            services.AddSingleton<ICacheService, DictionaryCacheService>();
+
+
+            //services.AddTransient<IUserMessageHandler, UserMessageHandler>();
+            services.AddScoped<IAuthenticationManager, AuthenticationManager>();
+            services.AddScoped<IDataContextManager, DataContextManager>();
+            services.AddScoped<IUserManager, UserManager>();
+
+
+            ///SSH
+            ///
+
+
 
             return services.BuildServiceProvider();
         }

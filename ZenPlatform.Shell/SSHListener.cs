@@ -3,8 +3,10 @@ using System.ComponentModel.Design;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
-
+using ZenPlatform.Cli;
+using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Serialisers;
@@ -136,18 +138,24 @@ namespace ZenPlatform.Shell
             if (!allow)
                 return;
 
+            IServiceCollection services = new ServiceCollection();
+
+            
+            services.AddScoped<ICommandLineInterface, McMasterCommandLineInterface>();
+            services.AddSingleton(f => _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>());
+            services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
+
+
             if (e.ShellType == "shell")
             {
-                /*
-                var sshTransportServer = new SSHTransportServer(e.Channel);
+                services.AddScoped<ITerminalSession, TerminalSession>();
+                services.AddScoped<ITerminalApplication, CommandApplication>();
+                services.AddScoped<ITerminal, VirtualTerminal>();
+                services.AddScoped<IConsole, TerminalConsole>();
 
-                var connection = _cFactory.CreateConnection(sshTransportServer);
+                var serviceProvider = services.BuildServiceProvider();
 
-                connection.Open();
-                */
-                //ITerminal terminal = new Terminal("cmd.exe", windowWidth, windowHeight);
-
-                var scope = _serviceProvider.CreateScope();
+                var scope = serviceProvider.CreateScope();
                 var session = scope.ServiceProvider.GetRequiredService<ITerminalSession>();
                 session.ChangeSize(new TerminalSize(_windowWidth, _windowHeight));
 
@@ -163,20 +171,31 @@ namespace ZenPlatform.Shell
             }
             else if (e.ShellType == "exec")
             {
-                var parser =
-                    new Regex(@"(?<cmd>git-receive-pack|git-upload-pack|git-upload-archive) \'/?(?<proj>.+)\.git\'");
-                var match = parser.Match(e.CommandText);
-                var command = match.Groups["cmd"].Value;
-                var project = match.Groups["proj"].Value;
 
-                var git = new GitService(command, project);
 
-                e.Channel.DataReceived += (ss, ee) => git.OnData(ee);
-                e.Channel.CloseReceived += (ss, ee) => git.OnClose();
-                git.DataReceived += (ss, ee) => e.Channel.SendData(ee);
-                git.CloseReceived += (ss, ee) => e.Channel.SendClose(ee);
+                
 
-                git.Start();
+                services.AddScoped<IConsole>((f) =>
+                {
+                    ExecConsole execConsole = new ExecConsole();
+                    e.Channel.DataReceived += (ss, ee) => execConsole.ConsumeData(ee);
+                    e.Channel.CloseReceived += (ss, ee) => 
+                    execConsole.Close();
+                    execConsole.DataReceived += (ss, ee) => e.Channel.SendData(ee);
+
+
+                    return execConsole;
+                });
+                
+                var serviceProvider = services.BuildServiceProvider();
+
+                var scope = serviceProvider.CreateScope();
+                var runner = scope.ServiceProvider.GetRequiredService<ICommandLineInterface>();
+           
+                e.Channel.SendClose((uint)runner.Execute(e.CommandText.Split(' ')));
+
+
+
             }
             else if (e.ShellType == "client")
             {

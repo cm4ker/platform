@@ -7,11 +7,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ZenPlatform.Cli;
 using ZenPlatform.Shell.Ansi;
 using ZenPlatform.Shell.Contracts;
 using ZenPlatform.Shell.Contracts.Ansi;
+using ZenPlatform.Shell.Utility;
 using ZenPlatform.SSH;
 
 
@@ -94,6 +96,7 @@ namespace ZenPlatform.Shell.Terminal
         {
             _terminal.Send(AnsiBuilder.SetCursorPosCommand(y, x));
         }
+
 
         public void Consume(TerminalCode code)
         {
@@ -267,6 +270,7 @@ namespace ZenPlatform.Shell.Terminal
             SetCursorPosition(_cursorX + 1, _cursorY + 1);
         }
 
+
         private void RunCommand(string cmd)
         {
             var args = cmd.Split(' ');
@@ -276,11 +280,12 @@ namespace ZenPlatform.Shell.Terminal
             //var app = CliBuilder.Build(fakeConsole);
             var app = _serviceProvider.GetRequiredService<ICommandLineInterface>();
 
+            _terminal.LookInput();
             var result = app.Execute(args);
+            _terminal.UnLookInput();
+            // fakeConsole.Out.Flush();
+            /// Write(fakeConsole.Out.ToString());
 
-           // fakeConsole.Out.Flush();
-           /// Write(fakeConsole.Out.ToString());
-            
         }
     }
 }

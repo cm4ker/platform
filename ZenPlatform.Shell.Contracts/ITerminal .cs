@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using ZenPlatform.Shell.Contracts.Ansi;
 
 namespace ZenPlatform.Shell.Contracts
@@ -20,6 +22,14 @@ namespace ZenPlatform.Shell.Contracts
         void Send(byte[] data);
 
         void Initialize(ITerminalApplication application);
+
+        Task ConsoleOutputAsync(Stream stream);
+
+        void LookInput();
+
+        void UnLookInput();
+
+        Stream GetInputStream();
 
     }
 }

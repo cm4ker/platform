@@ -9,6 +9,8 @@ namespace ZenPlatform.Cli.Commands
     [Command("db")]
     [HelpOption]
     [Subcommand(typeof(CommandDbCreate))]
+    [Subcommand(typeof(CommandDbDeploy))]
+    [Subcommand(typeof(CommandDBList))]
     public class CommandDb
     {
         public int OnExecute()

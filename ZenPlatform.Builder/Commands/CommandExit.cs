@@ -1,6 +1,7 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using ZenPlatform.Shell.Contracts;
 
@@ -20,7 +21,7 @@ namespace ZenPlatform.Cli.Commands
         public void OnExecute()
         {
             _console.WriteLine("Bye!");
-
+            
             _terminalSession.Close();
         }
     }
