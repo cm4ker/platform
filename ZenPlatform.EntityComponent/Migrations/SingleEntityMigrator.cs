@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MoreLinq.Extensions;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -34,7 +35,7 @@ namespace ZenPlatform.EntityComponent.Migrations
         }
 
 
-        public SSyntaxNode GetStep1(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase, DDLQuery query)
+        public SSyntaxNode GetStep1(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
@@ -67,7 +68,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             return query.Expression;
         }
 
-        public SSyntaxNode GetStep2(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase, DDLQuery query)
+        public SSyntaxNode GetStep2(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
@@ -81,8 +82,8 @@ namespace ZenPlatform.EntityComponent.Migrations
                 var props = old.GetProperties()
                    .FullJoin(
                        actual.GetProperties(), x => x.Guid, 
-                       x => new { old = x, actual = default(XCObjectPropertyBase) },
-                       x => new { old = default(XCObjectPropertyBase), actual = x },
+                       x => new { old = x, actual = default(IXCObjectProperty) },
+                       x => new { old = default(IXCObjectProperty), actual = x },
                        (x, y) => new { old = x, actual = y });
 
                 foreach (var property in props)
@@ -120,17 +121,17 @@ namespace ZenPlatform.EntityComponent.Migrations
             query.Create().Column(GetColumnDefenitionBySchema(schema)).OnTable(tableName);
         }
 
-        public void CreateProperty(DDLQuery query, XCObjectPropertyBase property, string tableName)
+        public void CreateProperty(DDLQuery query, IXCObjectProperty property, string tableName)
         {
             property.GetPropertySchemas().ForEach(s => { CreateSchema(query, s, tableName); });
         }
 
-        public void DeleteProperty(DDLQuery query, XCObjectPropertyBase property, string tableName)
+        public void DeleteProperty(DDLQuery query, IXCObjectProperty property, string tableName)
         {
             property.GetPropertySchemas().ForEach(s => DeleteSchema(query, s, tableName));
         }
 
-        public void ChangeProperty(DDLQuery query, XCObjectPropertyBase old, XCObjectPropertyBase actual, string tableName)
+        public void ChangeProperty(DDLQuery query, IXCObjectProperty old, IXCObjectProperty actual, string tableName)
         {
             var schemas = old.GetPropertySchemas()
                             .FullJoin(
@@ -163,7 +164,7 @@ namespace ZenPlatform.EntityComponent.Migrations
         }
 
 
-        public SSyntaxNode GetStep3(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase, DDLQuery query)
+        public SSyntaxNode GetStep3(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
@@ -175,7 +176,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             return query.Expression;
         }
 
-        public SSyntaxNode GetStep4(XCObjectTypeBase oldBase, XCObjectTypeBase actualBase, DDLQuery query)
+        public SSyntaxNode GetStep4(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
         {
             XCSingleEntity old = (XCSingleEntity)oldBase;
             XCSingleEntity actual = (XCSingleEntity)actualBase;
@@ -186,10 +187,6 @@ namespace ZenPlatform.EntityComponent.Migrations
             }
             return query.Expression;
         }
-
-
-        
-
 
         public ColumnDefinition GetColumnDefenitionBySchema(XCColumnSchemaDefinition schema)
         { 

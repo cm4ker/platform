@@ -2,17 +2,19 @@
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCDataRuleBase : IChildItem<XCDataRuleContent>
+   
+
+    public class XCDataRuleBase : IXCDataRule
     {
-        private XCDataRuleContent _parent;
+        private IXCDataRuleContent _parent;
 
         public XCDataRuleBase()
         {
         }
 
-        public XCDataRuleContent Parent => _parent;
+        public IXCDataRuleContent Parent => _parent;
 
-        XCDataRuleContent IChildItem<XCDataRuleContent>.Parent
+        IXCDataRuleContent IChildItem<IXCDataRuleContent>.Parent
         {
             get => _parent;
             set => _parent = value;

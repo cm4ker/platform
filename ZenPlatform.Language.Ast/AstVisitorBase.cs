@@ -317,6 +317,11 @@ namespace ZenPlatform.Language.Ast
         {
             return DefaultVisit(obj);
         }
+
+        public virtual T VisitGlobalVar(GlobalVar obj)
+        {
+            return DefaultVisit(obj);
+        }
     }
 
     public class AstWalker<T> : AstVisitorBase<T>

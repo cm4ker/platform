@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -49,32 +50,46 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (call.Arguments != null)
                 {
-                    foreach (Argument argument in call.Arguments)
+                    EmitArguments(e, call.Arguments, symbolTable);
+                }
+
+                Hack:
+                e.EmitCall((IMethod) symbol.CodeObject);
+            }
+            else
+            {
+                Error("Unknown function name. [" + call.Name + "]");
+            }
+        }
+
+        private void EmitArguments(IEmitter e, IList<Argument> args, SymbolTable symbolTable)
+        {
+            foreach (Argument argument in args)
+            {
+                if (argument.PassMethod == PassMethod.ByReference)
+                {
+                    // Regular value
+                    if (argument.Expression is Name arg)
                     {
-                        if (argument.PassMethod == PassMethod.ByReference)
+                        var variable = symbolTable.Find(arg.Value, SymbolType.Variable, arg.GetScope());
+                        if (variable.CodeObject is ILocal vd)
                         {
-                            // Regular value
-                            if (argument.Expression is Name arg)
-                            {
-                                var variable = symbolTable.Find(arg.Value, SymbolType.Variable, arg.GetScope());
-                                if (variable.CodeObject is ILocal vd)
-                                {
-                                    e.LdLocA(vd);
-                                }
-                                else if (variable.CodeObject is IField fd)
-                                {
-                                    e.LdsFldA(fd);
-                                }
-                                else if (variable.CodeObject is IParameter pb)
-                                {
-                                    e.LdArgA(pb);
-                                }
-                            }
-                            else if (argument.Expression is IndexerExpression ue)
-                            {
-                                if (ue.Expression is Name uen)
-                                {
-                                    var variable = symbolTable.Find(uen.Value, SymbolType.Variable, uen.GetScope());
+                            e.LdLocA(vd);
+                        }
+                        else if (variable.CodeObject is IField fd)
+                        {
+                            e.LdsFldA(fd);
+                        }
+                        else if (variable.CodeObject is IParameter pb)
+                        {
+                            e.LdArgA(pb);
+                        }
+                    }
+                    else if (argument.Expression is IndexerExpression ue)
+                    {
+                        if (ue.Expression is Name uen)
+                        {
+                            var variable = symbolTable.Find(uen.Value, SymbolType.Variable, uen.GetScope());
 //                                    
 //                                    if (variable.CodeObject is ILocal codeObject)
 //                                    {
@@ -95,28 +110,19 @@ namespace ZenPlatform.Compiler.Generation
 //                                        e.LdArgA(pd);
 //                                    }
 
-                                    EmitExpression(e, ue.Indexer, symbolTable);
-                                    e.LdElemA();
-                                }
-                            }
-                            else
-                            {
-                                Error("ref may only be applied to variables");
-                            }
-                        }
-                        else
-                        {
-                            EmitExpression(e, argument.Expression, symbolTable);
+                            EmitExpression(e, ue.Indexer, symbolTable);
+                            e.LdElemA();
                         }
                     }
+                    else
+                    {
+                        Error("ref may only be applied to variables");
+                    }
                 }
-
-                Hack:
-                e.EmitCall((IMethod) symbol.CodeObject);
-            }
-            else
-            {
-                Error("Unknown function name. [" + call.Name + "]");
+                else
+                {
+                    EmitExpression(e, argument.Expression, symbolTable);
+                }
             }
         }
     }

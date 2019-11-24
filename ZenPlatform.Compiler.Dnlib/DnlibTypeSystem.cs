@@ -14,8 +14,8 @@ namespace ZenPlatform.Compiler.Dnlib
         private List<DnlibAssembly> _asms;
         private DnlibAssemblyResolver _resolver;
 
-        private Dictionary<TypeRef, IType> _typeReferenceCache =
-            new Dictionary<TypeRef, IType>();
+        private Dictionary<ITypeDefOrRef, IType> _typeReferenceCache =
+            new Dictionary<ITypeDefOrRef, IType>();
 
         private Dictionary<AssemblyDef, DnlibAssembly> _assemblyDic
             = new Dictionary<AssemblyDef, DnlibAssembly>();
@@ -91,14 +91,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             if (!_typeReferenceCache.TryGetValue(reference, out var rv))
             {
-                TypeDef resolved = null;
-                try
-                {
-                    resolved = reference.ResolveThrow();
-                }
-                catch (AssemblyResolveException)
-                {
-                }
+                TypeDef resolved = reference.Resolve();
 
                 if (resolved != null)
                 {

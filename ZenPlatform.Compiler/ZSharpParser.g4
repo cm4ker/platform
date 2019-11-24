@@ -82,7 +82,7 @@ assigment:
 ;   
 
 functionCall: 
-    name '(' arguments? ')' ( '.' propertyExpression = name )* ('.' functionCall)*
+    ((nameLookup | ownerName=name) '.')? functionName=name '(' arguments? ')' ('.' lookupFunction=functionCall)?
 ;
 
 functionCallExpression:
@@ -185,6 +185,7 @@ expressionAtom:
     literal
     | functionCallExpression
     | name
+    | globalVar
 ;
 
 variableType: 
@@ -221,14 +222,13 @@ arrayType:
     (structureType | primitiveType )'[' ']';
 
 name:
-    IDENTIFIER
-    | name '.' IDENTIFIER
-    ;
+    IDENTIFIER;
 
-extensionExpression:
-    '$' 
-        (name ('{'statements'}')?)
-        | functionCall;  
+nameLookup:
+    name ('.' name)+;
+
+globalVar:
+    '$' ('.' (name | functionCall))*;  
         
 ifStatement:
     IF '(' expression ')' instructionsOrSingleStatement (ELSE instructionsOrSingleStatement)?;

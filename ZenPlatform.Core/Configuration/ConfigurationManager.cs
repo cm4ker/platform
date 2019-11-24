@@ -7,8 +7,11 @@ namespace ZenPlatform.Core.Configuration
 {
     public class ConfigurationManager : IConfigurationManager
     {
-        public ConfigurationManager()
+        private readonly IConfigurationManipulator _m;
+
+        public ConfigurationManager(IConfigurationManipulator m)
         {
+            _m = m;
         }
 
         public void CreateConfiguration(string projectName, SqlDatabaseType databaseType, string connectionString)
@@ -18,7 +21,7 @@ namespace ZenPlatform.Core.Configuration
 
             //Создаём пустой проект с именем Project Name
 
-            var newProject = XCRoot.Create(projectName);
+            var newProject = _m.Create(projectName);
 
             // Необходимо создать контекст данных
 
@@ -35,7 +38,7 @@ namespace ZenPlatform.Core.Configuration
             newProject.Save(configSaveStorage);
         }
 
-        public void DeployConfiguration(XCRoot xcRoot, SqlDatabaseType databaseType, string connectionString)
+        public void DeployConfiguration(IXCRoot xcRoot, SqlDatabaseType databaseType, string connectionString)
         {
             MigrationRunner.Migrate(connectionString, databaseType);
 

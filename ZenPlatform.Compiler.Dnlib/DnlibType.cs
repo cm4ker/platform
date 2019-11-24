@@ -13,6 +13,7 @@ using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
+    [DebuggerDisplay("{" + nameof(TypeRef) + "}")]
     public class DnlibType : IType
     {
         private readonly DnlibTypeSystem _ts;
@@ -26,9 +27,18 @@ namespace ZenPlatform.Compiler.Dnlib
             TypeRef = typeRef ?? throw new ArgumentNullException(nameof(typeRef));
         }
 
+
+        public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, TypeRef typeRef, TypeSpec typeSpec,
+            DnlibAssembly assembly) : this(typeSystem, typeDef, typeRef, assembly)
+        {
+            TypeSpec = typeSpec;
+        }
+
         public TypeDef TypeDef { get; }
 
         public TypeRef TypeRef { get; }
+
+        public TypeSpec TypeSpec { get; }
 
         public bool Equals(IType other)
         {
@@ -89,7 +99,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public IType ArrayElementType { get; }
 
         public IType MakeArrayType()
-        {
+        { 
             throw new NotImplementedException();
         }
 
@@ -111,5 +121,10 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IReadOnlyList<IType> GenericParameters { get; }
+    }
+
+
+    public class DnlibArrayType
+    {
     }
 }

@@ -1,0 +1,81 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Shared.ParenChildCollection;
+
+namespace ZenPlatform.Configuration.Structure.Data
+{
+    public interface IXCBlob
+    {
+        string Name { get; set; }
+    }
+    
+    public interface IXCBlobCollection : IList<IXCBlob>
+    {
+    }
+
+    
+    public interface IXCComponent : IChildItem<IXCData>
+    {
+        /// <summary>
+        /// Информация о компоненте
+        /// </summary>
+        IXCComponentInformation Info { get; }
+
+        bool IsLoaded { get; }
+
+        /// <summary>
+        /// Хранилище компонента
+        /// </summary>
+        IXCBlob Blob { get; set; }
+
+        /// <summary>
+        /// Присоединённые компоненты. Это свойство инициализируется после загрузки всех компонентов
+        /// </summary>
+        List<IXCComponent> AttachedComponents { get; }
+
+        /// <summary>
+        /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
+        /// </summary>
+        IXCBlobCollection Include { get; set; }
+
+        Assembly ComponentAssembly { get; set; }
+        IXCRoot Root { get; }
+        IXComponentLoader Loader { get; }
+        IDataComponent ComponentImpl { get; }
+        IEnumerable<IXCObjectType> Types { get; }
+
+        /// <summary>
+        /// Загрузить все данные компонента из хранилища
+        /// </summary>
+        void LoadComponent();
+
+        /// <summary>
+        /// Сохрнить все данные компонента в хранилище
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        void SaveComponent();
+
+        /// <summary>
+        /// Зарегистрировать правило для генерации кода
+        /// Это действие иммутабельно. В последствии нельзя отменить регистрацию.
+        /// Нельзя создавать два одинаковых правила генерации кода с одним типом. Это приведёт к ошибке
+        /// </summary>
+        /// <param name="rule"></param>
+        void RegisterCodeRule(CodeGenRule rule);
+
+        /// <summary>
+        ///  Получить правило генерации кода по его типу.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        CodeGenRule GetCodeRule(CodeGenRuleType type);
+
+        string GetCodeRuleExpression(CodeGenRuleType type);
+
+
+        IXCObjectType GetTypeByName(string typeName);
+    }
+}

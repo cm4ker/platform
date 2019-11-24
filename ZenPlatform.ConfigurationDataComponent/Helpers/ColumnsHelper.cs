@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Shared;
@@ -16,7 +17,7 @@ namespace ZenPlatform.DataComponent.Helpers
     /// </summary>
     public static class ColumnsHelper
     {
-        public static List<DatabaseColumnDefinitionItem> GetColumnsFromProperty(this XCObjectPropertyBase prop)
+        public static List<DatabaseColumnDefinitionItem> GetColumnsFromProperty(this IXCObjectProperty prop)
         {
             var result = new List<DatabaseColumnDefinitionItem>();
 
@@ -61,7 +62,7 @@ namespace ZenPlatform.DataComponent.Helpers
     /// </summary>
     public class DatabaseColumnDefinitionItem
     {
-        public DatabaseColumnDefinitionItem(XCObjectPropertyBase property, string databaseColumnName,
+        public DatabaseColumnDefinitionItem(IXCObjectProperty property, string databaseColumnName,
             XCPrimitiveType type)
         {
             Property = property;
@@ -70,7 +71,7 @@ namespace ZenPlatform.DataComponent.Helpers
         }
 
         //К какому свойству колонка относится
-        public XCObjectPropertyBase Property { get; set; }
+        public IXCObjectProperty Property { get; set; }
 
         /// <summary>
         /// Реальное имя колонки с префиксами и постфиксами

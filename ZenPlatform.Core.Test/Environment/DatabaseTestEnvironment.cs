@@ -37,8 +37,8 @@ namespace ZenPlatform.Core.Environment
         public DatabaseTestEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
-            IAssemblyManager assemblyManager, IMigrationManager migrationManager) :
-            base(contextManager, cacheService)
+            IAssemblyManager assemblyManager, IMigrationManager migrationManager, IConfigurationManipulator manipulator) :
+            base(contextManager, cacheService, manipulator)
         {
             _locking = new object();
             _serviceProvider = serviceProvider;

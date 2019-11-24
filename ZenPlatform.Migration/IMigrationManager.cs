@@ -4,7 +4,7 @@ namespace ZenPlatform.Migration
 {
     public interface IMigrationManager
     {
-        bool CheckMigration(XCRoot old, XCRoot actual);
-        void Migrate(XCRoot old, XCRoot actual);
+        bool CheckMigration(IXCRoot old, IXCRoot actual);
+        void Migrate(IXCRoot old, IXCRoot actual);
     }
 }

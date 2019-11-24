@@ -3,10 +3,10 @@ using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCSchedules
+    public class XCSchedules : IXCSchedules
     {
         [XmlArray]
         [XmlArrayItem(Type = typeof(XCFile))]
-        public List<XCFile> IncludedFiles { get; set; }
+        public List<IXCFile> IncludedFiles { get; set; }
     }
 }

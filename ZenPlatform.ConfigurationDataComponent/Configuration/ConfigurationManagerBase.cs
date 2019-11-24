@@ -12,10 +12,9 @@ namespace ZenPlatform.DataComponent.Configuration
     /// </summary>
     public abstract class ConfigurationManagerBase : IXComponentManager
     {
-        private readonly XCComponent _component;
+        private readonly IXCComponent _component;
 
-
-        protected ConfigurationManagerBase(XCComponent component)
+        protected ConfigurationManagerBase(IXCComponent component)
         {
             _component = component;
         }
@@ -23,16 +22,16 @@ namespace ZenPlatform.DataComponent.Configuration
         /// <summary>
         /// Компонент
         /// </summary>
-        protected XCComponent Component => _component;
+        protected IXCComponent Component => _component;
 
         /// <inheritdoc />
-        public virtual XCObjectTypeBase Create(XCObjectTypeBase parentType = null)
+        public virtual IXCObjectType Create(IXCObjectType parentType = null)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
-        public virtual void Delete(XCObjectTypeBase type)
+        public virtual void Delete(IXCObjectType type)
         {
             throw new NotImplementedException();
         }

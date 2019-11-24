@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.Generation
         public SqlDatabaseType TargetDatabaseType { get; }
 
 
-        public XCRoot Configuration { get; }
+        public IXCRoot Configuration { get; }
 
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace ZenPlatform.Compiler.Generation
 
 
         public GeneratorParameters(List<CompilationUnit> units, IAssemblyBuilder builder, CompilationMode mode,
-            SqlDatabaseType targetDatabaseType, XCRoot configuration)
+            SqlDatabaseType targetDatabaseType, IXCRoot configuration)
         {
             TargetDatabaseType = targetDatabaseType;
             Configuration = configuration;
