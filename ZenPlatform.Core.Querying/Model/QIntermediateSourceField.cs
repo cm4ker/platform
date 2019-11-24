@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Configuration.Contracts;
+
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -13,12 +14,12 @@ namespace ZenPlatform.Core.Querying.Model
             return Field.GetName();
         }
 
-        public override IEnumerable<XCTypeBase> GetExpressionType()
+        public override IEnumerable<IXCType> GetExpressionType()
         {
             return Field.GetExpressionType();
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return $"In-ate: {Field} From {DataSource}";
         }
@@ -34,12 +35,12 @@ namespace ZenPlatform.Core.Querying.Model
             return Field.GetName();
         }
 
-        public override IEnumerable<XCTypeBase> GetExpressionType()
+        public override IEnumerable<IXCType> GetExpressionType()
         {
             return Field.GetExpressionType();
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return $"Nested: {Field} From {DataSource}";
         }

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -8,7 +8,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QExpression : QItem
     {
-        public virtual IEnumerable<XCTypeBase> GetExpressionType()
+        public virtual IEnumerable<IXCType> GetExpressionType()
         {
             yield break;
         }

@@ -7,6 +7,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Configuration.Contracts\ZenPlatform.Configuration.Contracts.csproj" />
         <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
     </ItemGroup>
 

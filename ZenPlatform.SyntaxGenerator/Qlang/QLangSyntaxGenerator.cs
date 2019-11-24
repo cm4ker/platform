@@ -357,7 +357,11 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                         SyntaxFactory.UsingDirective(
                             SyntaxFactory.ParseName("ZenPlatform.Configuration.Structure.Data.Types.Complex")),
                         SyntaxFactory.UsingDirective(
-                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Structure.Data.Types"))
+                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Structure.Data.Types")),
+                        SyntaxFactory.UsingDirective(
+                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Contracts"))
+                        
+                
                     );
                 ;
 

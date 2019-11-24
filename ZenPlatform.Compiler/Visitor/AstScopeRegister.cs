@@ -2,6 +2,7 @@ using System;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
@@ -217,6 +218,11 @@ namespace ZenPlatform.Compiler.Visitor
             }
 
             return base.VisitRoot(root);
+        }
+
+        public override object VisitGlobalVar(GlobalVar obj)
+        {
+            return base.VisitGlobalVar(obj);
         }
     }
 }

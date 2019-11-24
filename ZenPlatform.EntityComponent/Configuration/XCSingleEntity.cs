@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -80,19 +81,6 @@ namespace ZenPlatform.EntityComponent.Configuration
         [XmlArrayItem(ElementName = "Commands", Type = typeof(XCCommand))]
         public List<XCCommand> Commands { get; }
 
-        /// <summary>
-        /// Имя связанной таблицы документа
-        /// 
-        /// При миграции присваивается движком. В последствии хранится в служебных структурах конкретной базы.
-        /// </summary>
-        //TODO: Продумать структуру, в которой будут храниться сопоставление Тип -> Дополнительные настройки компонента 
-        /*
-         * Результаты раздумий: Все мапинги должны быть в БД, а не в конфигурации. Оставляю TODO
-         * выше просто для того, чтобы можно было поразмышлять,  вдруг я был не прав
-         */
-        [XmlIgnore]
-        public string RelTableName { get; set; }
-
         /// <inheritdoc />
         public override void LoadDependencies()
         {
@@ -130,25 +118,25 @@ namespace ZenPlatform.EntityComponent.Configuration
                 Properties.Add(StandardEntityPropertyHelper.CreateNameProperty());
         }
 
-        public override IEnumerable<XCObjectPropertyBase> GetProperties()
+        public override IEnumerable<IXCObjectProperty> GetProperties()
         {
             return Properties;
         }
 
         /// <inheritdoc />
-        public override IEnumerable<XCProgramModuleBase> GetProgramModules()
+        public override IEnumerable<IXCProgramModule> GetProgramModules()
         {
             return Modules;
         }
 
-        public override XCObjectPropertyBase CreateProperty()
+        public override IXCObjectProperty CreateProperty()
         {
             var prop = new XCSingleEntityProperty();
             Properties.Add(prop);
             return prop;
         }
 
-        public override IEnumerable<XCCommand> GetCommands()
+        public override IEnumerable<IXCCommand> GetCommands()
         {
             //Предопределенные комманды
             foreach (var command in _predefinedCommands)
@@ -162,7 +150,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             }
         }
 
-        public override XCCommand CreateCommand()
+        public override IXCCommand CreateCommand()
         {
             var cmd = new XCCommand(false);
             Commands.Add(cmd);

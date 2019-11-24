@@ -1,4 +1,3 @@
-using MoreLinq.Extensions;
 using ZenPlatform.Core.Querying.Model;
 
 namespace ZenPlatform.Core.Querying

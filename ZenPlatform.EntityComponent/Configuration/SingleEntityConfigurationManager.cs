@@ -1,4 +1,5 @@
 ﻿using System;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.DataComponent.Configuration;
@@ -9,16 +10,16 @@ namespace ZenPlatform.EntityComponent.Configuration
     /// <inheritdoc />
     public class SingleEntityConfigurationManager : ConfigurationManagerBase
     {
-        public SingleEntityConfigurationManager(XCComponent component) : base(component)
+        public SingleEntityConfigurationManager(IXCComponent component) : base(component)
         {
         }
 
-        public override XCObjectTypeBase Create(XCObjectTypeBase parentType = null)
+        public override IXCObjectType Create(IXCObjectType parentType = null)
         {
             var newItem = new XCSingleEntity();
             newItem.Guid = Guid.NewGuid();
 
-            ((IChildItem<XCComponent>) newItem).Parent = Component;
+            ((IChildItem<IXCComponent>) newItem).Parent = Component;
             Component.Parent.RegisterType(newItem);
 
             //TODO: Обработать базовый тип
@@ -27,7 +28,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         }
 
         /// <inheritdoc />
-        public override void Delete(XCObjectTypeBase type)
+        public override void Delete(IXCObjectType type)
         {
             //TODO: Сделать удаление сущности. Для этого необходимо сделать следующие задачи
             // 1) Проверка ссылочной целостности по объектам, т.е. узнать, нет ли ссылки на этот объект в других объектах

@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Compiler;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using ZenPlatform.Core.Querying;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -19,6 +22,7 @@ using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Shared.Tree;
 using ZenPlatform.UI.Ast;
 
 
@@ -27,10 +31,10 @@ namespace ZenPlatform.EntityComponent.Entity
     public class EntityPlatformGenerator : IPlatformGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
-        private readonly XCComponent _component;
+        private readonly IXCComponent _component;
         private GeneratorRules _rules;
 
-        public EntityPlatformGenerator(XCComponent component)
+        public EntityPlatformGenerator(IXCComponent component)
         {
             _component = component;
             _rules = new GeneratorRules(component);
@@ -38,7 +42,7 @@ namespace ZenPlatform.EntityComponent.Entity
         }
 
 
-        private TypeSyntax GetAstFromPlatformType(XCTypeBase pt)
+        private TypeSyntax GetAstFromPlatformType(IXCType pt)
         {
             return pt switch
             {
@@ -55,7 +59,7 @@ namespace ZenPlatform.EntityComponent.Entity
             };
         }
 
-        private void GenerateServerDtoClass(XCObjectTypeBase type, Root root)
+        private void GenerateServerDtoClass(IXCObjectType type, Root root)
         {
             var set = type as XCSingleEntity ?? throw new InvalidOperationException(
                           $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -148,7 +152,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        private void GenerateClientDtoClass(XCObjectTypeBase type, Root root)
+        private void GenerateClientDtoClass(IXCObjectType type, Root root)
         {
             var set = type as XCSingleEntity ?? throw new InvalidOperationException(
                           $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -240,7 +244,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        private void GenerateServerObjectClass(XCObjectTypeBase type, Root root)
+        private void GenerateServerObjectClass(IXCObjectType type, Root root)
         {
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
                                        $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -410,7 +414,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        private void GenerateObjectClassUserModules(XCObjectTypeBase type, ComponentClass cls)
+        private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)
         {
             foreach (var module in type.GetProgramModules())
             {
@@ -463,7 +467,7 @@ namespace ZenPlatform.EntityComponent.Entity
             rg.Ret();
         }
 
-        private void GenerateCommands(XCObjectTypeBase type, Root root)
+        private void GenerateCommands(IXCObjectType type, Root root)
         {
             var set = type as XCSingleEntity ?? throw new ArgumentException(nameof(type));
 
@@ -494,11 +498,14 @@ namespace ZenPlatform.EntityComponent.Entity
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        public void StageServer(XCObjectTypeBase type, Root root)
+        public void StageServer(IXCObjectType type, Node root)
         {
-            GenerateServerDtoClass(type, root);
-            GenerateServerObjectClass(type, root);
-            GenerateCommands(type, root);
+            if (root is Root r)
+            {
+                GenerateServerDtoClass(type, r);
+                GenerateServerObjectClass(type, r);
+                GenerateCommands(type, r);
+            }
         }
 
         /// <summary>
@@ -506,23 +513,26 @@ namespace ZenPlatform.EntityComponent.Entity
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        public void StageClient(XCObjectTypeBase type, Root root)
+        public void StageClient(IXCObjectType type, Node node)
         {
-            GenerateCommands(type, root);
-            GenerateClientDtoClass(type, root);
+            if (node is Root root)
+            {
+                GenerateCommands(type, root);
+                GenerateClientDtoClass(type, root);
+            }
         }
 
-        public void StageUI(XCObjectTypeBase type, UINode node)
+        public void StageUI(IXCObjectType type, Node node)
         {
             throw new NotImplementedException();
         }
 
 
-        public void Stage0(ComponentAstBase astTree, ITypeBuilder builder)
+        public void Stage0(Node astTree, ITypeBuilder builder)
         {
         }
 
-        public void Stage1(ComponentAstBase astTree, ITypeBuilder builder)
+        public void Stage1(Node astTree, ITypeBuilder builder)
         {
             if (astTree is ComponentClass cc)
             {
@@ -534,6 +544,43 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 BuildVersionField(builder);
             }
+        }
+
+        public void StageInfrastructure(IAssemblyBuilder builder)
+        {
+            var ts = builder.TypeSystem;
+            var b = ts.GetSystemBindings();
+
+            var linkType = builder.DefineType(_component.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule),
+                "EntityLink",
+                TypeAttributes.Class | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit,
+                b.Object);
+
+            linkType.AddInterfaceImplementation(ts.FindType<ILink>());
+
+            var idBack = linkType.DefineField(b.Guid, СonventionsHelper.GetBackingFieldName("Id"), false, false);
+            linkType.DefineProperty(b.Guid, "Id", idBack, true, false);
+
+            var typeBack = linkType.DefineField(b.Int, СonventionsHelper.GetBackingFieldName("Type"), false, false);
+            linkType.DefineProperty(b.Int, "Type", typeBack, true, false);
+
+            var presentationBack = linkType.DefineField(b.String, СonventionsHelper.GetBackingFieldName("Presentation"),
+                false, false);
+            linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false);
+
+            var ctor = linkType.DefineConstructor(false, b.Int, b.Guid);
+
+            var e = ctor.Generator;
+
+            e.LdArg_0()
+                .EmitCall(b.Object.Constructors[0])
+                .LdArg_0()
+                .LdArg(1)
+                .StFld(typeBack)
+                .LdArg_0()
+                .LdArg(2)
+                .StFld(idBack)
+                .Ret();
         }
 
         private void BuildVersionField(ITypeBuilder tb)

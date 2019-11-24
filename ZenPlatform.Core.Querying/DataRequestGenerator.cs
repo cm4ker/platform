@@ -1,4 +1,4 @@
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
 
@@ -62,7 +62,7 @@ namespace ZenPlatform.Core.Querying
 
                 foreach (var type in lu.GetExpressionType())
                 {
-                    if (type is XCObjectTypeBase ot)
+                    if (type is IXCObjectType ot)
                     {
                         ot.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
 

@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using Xunit;
+using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Querying;

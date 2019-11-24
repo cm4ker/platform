@@ -165,6 +165,7 @@
         <Arguments>
             <List Name="Arguments" Type="IList&lt;Argument&gt;"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
     <!--Test comment-->
@@ -291,5 +292,13 @@
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
+
+
+    <Syntax Name="GlobalVar" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Expression" Type="Expression" />
+        </Arguments>
+    </Syntax>
+    
 </Config>
     

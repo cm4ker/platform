@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -8,11 +9,11 @@ namespace ZenPlatform.Configuration.Structure
     /// <summary>
     /// Параметр сессии
     /// </summary>
-    public class XCSessionSetting : IChildItem<XCRoot>
+    public class XCSessionSetting : IXCSessionSetting
     {
-        private XCRoot _parent;
+        private IXCRoot _parent;
 
-        public XCRoot Parent => _parent;
+        public IXCRoot Parent => _parent;
 
         /// <summary>
         /// Имя параметра сессии
@@ -25,9 +26,9 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         [XmlArray]
         [XmlArrayItem(ElementName = "Type", Type = typeof(XCUnknownType))]
-        public List<XCTypeBase> Types { get; }
+        public List<IXCType> Types { get; }
 
-        XCRoot IChildItem<XCRoot>.Parent
+        IXCRoot IChildItem<IXCRoot>.Parent
         {
             get => _parent;
             set => _parent = value;
