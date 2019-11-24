@@ -68,7 +68,7 @@ namespace ZenPlatform.Configuration.Structure
             return ms;
         }
 
-        public static string GetHash(this XCRoot root)
+        public static string GetHash(this IXCRoot root)
         {
             return HashHelper.HashMD5(root.SerializeToStream());
         }
