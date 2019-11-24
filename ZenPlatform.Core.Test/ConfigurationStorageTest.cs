@@ -33,7 +33,7 @@ namespace ZenPlatform.Core.Test
         {
             var configuration = Factory.CreateExampleConfiguration();
 
-            throw new NotSupportedException("нужно разобратся как сделать этот тест универсальным и не зависищем от connectionString");
+            throw new NotSupportedException("нужно разобратся как сделать этот тест универсальным и не зависящим от connectionString");
             
 
             using (var context = new DataContext(QueryBuilder.SqlDatabaseType.SqlServer, ""))
@@ -56,16 +56,20 @@ namespace ZenPlatform.Core.Test
         {
             var configuration = Factory.CreateExampleConfiguration();
 
-            var path = Directory.CreateDirectory(Path.GetTempFileName());
+            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using (var storage = new XCFileSystemStorage(path, "Test"))
+            {
 
+                configuration.Save(storage);
 
-            var storage = new XCFileSystemStorage(path.FullName, "Test");
+                var loadedConfiguration = XCRoot.Load(storage);
 
-            configuration.Save(storage);
+                
 
-            var loadedConfiguration = XCRoot.Load(storage);
+                Assert.Equal(configuration.GetHash(), loadedConfiguration.GetHash());
+            }
 
-            Assert.Equal(configuration.GetHash(), loadedConfiguration.GetHash());
+            Directory.Delete(path, true);
         }
 
 
