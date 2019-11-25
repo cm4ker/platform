@@ -48,12 +48,6 @@ namespace ZenPlatform.Core.Assemlies
                     .m_select()
                     .ld_column("data")
                     .st_query();
-//                
-//                var query = new SelectQueryNode()
-//                    .From("assemblies")
-//                    .Select("data")
-//                    .Where(x => x.Field("name"), "=", x => x.Parameter("name"))
-//                    .Where(x => x.Field("configuration_hash"), "=", x => x.Parameter("configuration_hash"));
             }
 
 
@@ -82,11 +76,6 @@ namespace ZenPlatform.Core.Assemlies
                     .m_select()
                     .ld_column("data")
                     .st_query();
-
-//                var query = new SelectQueryNode()
-//                    .From("assemblies")
-//                    .Select("data")
-//                    .Where(x => x.Field("assembly_hash"), "=", x => x.Parameter("assembly_hash"));
             }
 
 
@@ -127,15 +116,6 @@ namespace ZenPlatform.Core.Assemlies
                     .ld_column("type")
                     .ld_column("name")
                     .st_query();
-
-
-//                var query = new SelectQueryNode()
-//                    .From("assemblies")
-//                    .Select("assembly_hash")
-//                    .Select("configuration_hash")
-//                    .Select("type")
-//                    .Select("name")
-//                    .Where(x => x.Field("configuration_hash"), "=", x => x.Parameter("configuration_hash"));
             }
 
 
@@ -174,20 +154,7 @@ namespace ZenPlatform.Core.Assemlies
                         .ld_column("type")
                         .ld_column("name")
                     .st_query();
-
-//                var query = new InsertQueryNode()
-//                    .InsertInto("assemblies")
-//                    .WithFieldAndValue(x => x.Field("assembly_hash"),
-//                        x => x.Parameter("assembly_hash"))
-//                    .WithFieldAndValue(x => x.Field("configuration_hash"),
-//                        x => x.Parameter("configuration_hash"))
-//                    .WithFieldAndValue(x => x.Field("type"),
-//                        x => x.Parameter("type"))
-//                    .WithFieldAndValue(x => x.Field("name"),
-//                        x => x.Parameter("name"))
-//                    .WithFieldAndValue(x => x.Field("data"),
-//                        x => x.Parameter("data"));
-            }
+           }
 
             using (var cmd = _dataContextManager.GetContext().CreateCommand(Gen))
             {
