@@ -62,15 +62,15 @@ namespace ZenPlatform.Core.Environment
             MigrationRunner.Migrate(config.ConnectionString,
                 config.DatabaseType);
 
-            //var newProject = XCRoot.Create("Library");
+            var newProject = Factory.CreateExampleConfiguration();
 
-            //using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
-            //{
-            //    var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
-            //        dataContext);
+            using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
+            {
+                var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
+                    dataContext);
 
-            //    newProject.Save(configStorage);
-            //}
+                newProject.Save(configStorage);
+            }
 
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
             base.Initialize(config);

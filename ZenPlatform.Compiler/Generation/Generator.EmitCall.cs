@@ -90,25 +90,25 @@ namespace ZenPlatform.Compiler.Generation
                         if (ue.Expression is Name uen)
                         {
                             var variable = symbolTable.Find(uen.Value, SymbolType.Variable, uen.GetScope());
-//                                    
-//                                    if (variable.CodeObject is ILocal codeObject)
-//                                    {
-//                                        if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
-//                                            Error("ref cannot be applied to arrays");
-//                                        e.LdLocA(codeObject);
-//                                    }
-//                                    else if (variable.CodeObject is IField definition)
-//                                    {
-//                                        if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
-//                                            Error("ref cannot be applied to arrays");
-//                                        e.LdsFldA(definition);
-//                                    }
-//                                    else if (variable.CodeObject is IParameter pd)
-//                                    {
-//                                        if (((Parameter) variable.SyntaxObject).Type.Type.IsArray)
-//                                            Error("ref cannot be applied to arrays");
-//                                        e.LdArgA(pd);
-//                                    }
+                            
+                            // if (variable.CodeObject is ILocal codeObject)
+                            // {
+                            //     if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
+                            //         Error("ref cannot be applied to arrays");
+                            //     e.LdLocA(codeObject);
+                            // }
+                            // else if (variable.CodeObject is IField definition)
+                            // {
+                            //     if (((Variable) variable.SyntaxObject).Type.Type.IsArray)
+                            //         Error("ref cannot be applied to arrays");
+                            //     e.LdsFldA(definition);
+                            // }
+                            // else if (variable.CodeObject is IParameter pd)
+                            // {
+                            //     if (((Parameter) variable.SyntaxObject).Type.Type.IsArray)
+                            //         Error("ref cannot be applied to arrays");
+                            //     e.LdArgA(pd);
+                            // }
 
                             EmitExpression(e, ue.Indexer, symbolTable);
                             e.LdElemA();

@@ -37,10 +37,6 @@ namespace ZenPlatform.Core.Test
 {
     public static class Initializer
     {
-        
-
-        
-
         public static ServiceProvider GetServerService(ITestOutputHelper testOutput)
         {
             IServiceCollection services = new ServiceCollection();
@@ -116,6 +112,7 @@ namespace ZenPlatform.Core.Test
             services.AddTransient<ISerializer, ApexSerializer>();
             services.AddTransient<UserConnectionFactory>();
             services.AddTransient<ServerConnectionFactory>();
+            services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
             services.AddTransient<IChannelFactory, ChannelFactory>();
             services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
             services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
@@ -150,7 +147,6 @@ namespace ZenPlatform.Core.Test
             ///
 
 
-
             return services.BuildServiceProvider();
         }
 
@@ -160,7 +156,7 @@ namespace ZenPlatform.Core.Test
 
 
             services.AddSingleton<ClientPlatformContext>();
-            
+
             services.AddSingleton<IPlatformClient, Network.Client>();
 
             //services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
