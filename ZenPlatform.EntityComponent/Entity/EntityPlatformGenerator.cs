@@ -6,6 +6,7 @@ using System.Reflection;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Configuration.Compiler;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
@@ -276,9 +277,9 @@ namespace ZenPlatform.EntityComponent.Entity
             var constructor =
                 new Constructor(null, block, new List<Parameter>() {sessionParameter, dtoParameter}, null, className);
 
-            var field = new Field(null, "_dto", dtoType) {SymbolScope = SymbolScope.System};
+            var field = new Field(null, "_dto", dtoType) {SymbolScope = SymbolScopeBySecurity.System};
 
-            var fieldSession = new Field(null, "_session", sessionType) {SymbolScope = SymbolScope.System};
+            var fieldSession = new Field(null, "_session", sessionType) {SymbolScope = SymbolScopeBySecurity.System};
 
             members.Add(constructor);
 
@@ -425,7 +426,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                     foreach (var func in typeBody.Functions)
                     {
-                        func.SymbolScope = SymbolScope.User;
+                        func.SymbolScope = SymbolScopeBySecurity.User;
                         cls.AddFunction(func);
                     }
                 }
@@ -483,7 +484,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 foreach (var func in typeBody.Functions)
                 {
-                    func.SymbolScope = SymbolScope.User;
+                    func.SymbolScope = SymbolScopeBySecurity.User;
                 }
 
                 var cu = new CompilationUnit(null, new List<NamespaceBase>(),
@@ -525,6 +526,20 @@ namespace ZenPlatform.EntityComponent.Entity
         public void StageUI(IXCObjectType type, Node node)
         {
             throw new NotImplementedException();
+        }
+
+        public void StageGlobalVar(IGlobalVarManager manager)
+        {
+            manager.Register(new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared,"Test", (e) => { }));
+            
+            /*
+             *
+             * 
+             * $.Document.Invoice.Create();
+             * $.SomeFunction()
+             *
+             * MyGM.StaticFunction()
+             */
         }
 
 

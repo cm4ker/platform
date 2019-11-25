@@ -6,6 +6,6 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
 
         SymbolType SymbolType { get; }
 
-        SymbolScope SymbolScope { get; set; }
+        SymbolScopeBySecurity SymbolScope { get; set; }
     }
 }

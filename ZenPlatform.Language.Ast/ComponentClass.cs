@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ZenPlatform.Compiler;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Language.Ast;
@@ -48,7 +49,7 @@ namespace ZenPlatform.Configuration.Compiler
         }
 
 
-        public SymbolScope SymbolScope { get; set; }
+        public SymbolScopeBySecurity SymbolScope { get; set; }
     }
 
     /// <summary>

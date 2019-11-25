@@ -42,12 +42,11 @@ namespace ZenPlatform.Compiler.Generation
         /// </summary>
         public void BuildGlobalVar()
         {
-            _varManager = new GlobalVarManager();
-
+            _varManager = new GlobalVarManager(_mode);
 
             foreach (var component in _conf.Data.Components)
             {
-                component.ComponentImpl.Generator.
+                component.ComponentImpl.Generator.StageGlobalVar(_varManager);
             }
         }
 
@@ -439,7 +438,8 @@ namespace ZenPlatform.Compiler.Generation
 
                 resultVar = emitter.DefineLocal(property.Type.ToClrType(_asm));
 
-                var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScope.Shared);
+                var valueSym =
+                    property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScopeBySecurity.Shared);
                 valueSym.CodeObject = mb.Parameters[0];
 
                 var returnLabel = emitter.DefineLabel();
