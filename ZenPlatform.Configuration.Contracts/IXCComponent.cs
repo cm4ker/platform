@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Shared.ParenChildCollection;
 
-namespace ZenPlatform.Configuration.Structure.Data
+namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCBlob
     {

@@ -1,5 +1,5 @@
-﻿using ZenPlatform.Configuration.Contracts.Data.Entity;
-using ZenPlatform.Configuration.Data.Contracts.Entity;
+﻿using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Querying.Model;
 

@@ -1,4 +1,5 @@
 ﻿using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration.Structure
 {

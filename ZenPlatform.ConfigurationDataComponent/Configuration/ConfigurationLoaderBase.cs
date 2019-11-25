@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;

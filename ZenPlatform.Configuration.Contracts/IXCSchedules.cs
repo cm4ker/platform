@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ZenPlatform.Configuration.Structure
+namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCSchedules
     {

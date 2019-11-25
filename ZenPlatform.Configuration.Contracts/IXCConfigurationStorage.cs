@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace ZenPlatform.Configuration
+namespace ZenPlatform.Configuration.Contracts
 {
     /// <summary>
     /// Стратегия загрузки/сохранения данных конфигурации.

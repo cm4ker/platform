@@ -1,6 +1,4 @@
-﻿using System.Dynamic;
-
-namespace ZenPlatform.Configuration.Data.Contracts.Entity
+﻿namespace ZenPlatform.Configuration.Contracts.Data.Entity
 {
     public interface IEntity
     {

@@ -2,7 +2,6 @@
 using System.Data;
 using Antlr4.Runtime;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
-using ZenPlatform.Configuration.Data.Contracts.Entity;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Core.Querying;

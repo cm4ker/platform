@@ -1,6 +1,4 @@
-﻿using ZenPlatform.Configuration.Data.Contracts;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data;
+﻿using ZenPlatform.Configuration.Contracts.Data;
 
 namespace ZenPlatform.Configuration.Contracts
 {

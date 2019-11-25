@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;

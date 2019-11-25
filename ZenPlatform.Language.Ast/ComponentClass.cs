@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;

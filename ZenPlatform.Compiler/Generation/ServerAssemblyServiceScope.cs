@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
@@ -68,16 +69,6 @@ namespace ZenPlatform.Compiler.Generation
         Func
     }
 
-    public enum ValueType
-    {
-        String,
-        Int,
-        DateTime,
-        Long,
-        Double,
-        Byte
-    }
-
     public class GlobalVarTreeItem : Node
     {
         private List<object> _args;
@@ -125,7 +116,7 @@ namespace ZenPlatform.Compiler.Generation
         private IReadOnlyList<object> Args => _args.AsReadOnly();
     }
 
-    public class GlobalVarManager
+    public class GlobalVarManager : IGlobalVarManager
     {
         public GlobalVarManager()
         {
@@ -137,6 +128,14 @@ namespace ZenPlatform.Compiler.Generation
         public void Register(GlobalVarTreeItem node)
         {
             node.Attach(Root);
+        }
+
+        public void Register(Node node)
+        {
+            if (!(node is GlobalVarTreeItem gvar))
+                throw new Exception("Only GlobalVarTreeItem can be in GlobalVarTree");
+
+            Register(gvar);
         }
 
         public void Emit(IEmitter e, GlobalVar exp, Action<object> onUnknown)
@@ -154,8 +153,9 @@ namespace ZenPlatform.Compiler.Generation
                            throw new Exception(
                                $"Node with name {c.Name} not found in global var. Component must register this name.");
 
-                onUnknown(c.Expression);
                 onUnknown(c.Arguments);
+
+                onUnknown(c.Expression);
 
                 e.EmitCall((IMethod) node.CodeObject);
             }

@@ -1,9 +1,12 @@
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.Configuration.Data.Contracts
+namespace ZenPlatform.Configuration.Contracts.Data
 {
+    public class IGlobalVarManager
+    {
+    }
+
     /// <summary>
     /// Последовательный механизм для генерации сборки
     /// </summary>
@@ -29,6 +32,12 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// <param name="type"></param>
         /// <param name="uiNode"></param>
         void StageUI(IXCObjectType type, Node uiNode);
+
+        /// <summary>
+        /// Стадия генерации глобального пространства
+        /// </summary>
+        /// <param name="manager"></param>
+        void StageGlobalVar(IGlobalVarManager manager);
 
         /// <summary>
         /// Стадия 0 Формирование класса без структуры

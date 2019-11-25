@@ -33,12 +33,22 @@ namespace ZenPlatform.Compiler.Generation
 
             BuildInfrastructure();
             BuildStructure();
+            BuildGlobalVar();
             BuildCode();
         }
 
+        /// <summary>
+        /// Построить глобальное дерево
+        /// </summary>
         public void BuildGlobalVar()
         {
-            
+            _varManager = new GlobalVarManager();
+
+
+            foreach (var component in _conf.Data.Components)
+            {
+                component.ComponentImpl.Generator.
+            }
         }
 
         /// <summary>
