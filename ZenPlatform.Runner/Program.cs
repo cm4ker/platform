@@ -14,8 +14,8 @@ using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Configuration;
-using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Compiler.Platform;
+using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Networking;
 

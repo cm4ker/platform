@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
+using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration
 {

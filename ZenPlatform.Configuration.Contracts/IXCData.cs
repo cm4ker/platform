@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Shared.ParenChildCollection;
 
-namespace ZenPlatform.Configuration.Structure
+namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCData : IChildItem<IXCRoot>
     {

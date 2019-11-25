@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MoreLinq.Extensions;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Data.Contracts.Entity;
+using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
