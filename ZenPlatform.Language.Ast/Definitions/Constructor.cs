@@ -15,7 +15,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public SymbolType SymbolType => SymbolType.Constructor;
 
-        public SymbolScope SymbolScope { get; set; }
+        public SymbolScopeBySecurity SymbolScope { get; set; }
 
         public static Constructor Default => new Constructor(null, new Block(new List<Statement>()),
             new List<Parameter>(), new List<Attribute>(), null);

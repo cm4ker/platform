@@ -7,12 +7,12 @@ namespace ZenPlatform.Language.Ast.Infrastructure
 {
     public static class SymbolExt
     {
-        public static SymbolScope GetScope(this Expression exp)
+        public static SymbolScopeBySecurity GetScope(this Expression exp)
         {
             return exp.FirstParent<IAstSymbol>().SymbolScope;
         }
 
-        public static SymbolScope GetScope(this Statement exp)
+        public static SymbolScopeBySecurity GetScope(this Statement exp)
         {
             return exp.FirstParent<IAstSymbol>().SymbolScope;
         }

@@ -8,7 +8,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class Module : TypeEntity
     {
-        public SymbolScope SymbolScope { get; set; }
+        public SymbolScopeBySecurity SymbolScope { get; set; }
         
         public void AddFunction(Function function)
         {

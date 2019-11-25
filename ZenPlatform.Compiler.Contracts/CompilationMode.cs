@@ -1,12 +1,17 @@
 using System;
 
-namespace ZenPlatform.Compiler
+namespace ZenPlatform.Compiler.Contracts
 {
     [Flags]
     public enum CompilationMode
     {
-        Client = 1 << 0 | 1 << 2,
-        Server = 1 << 1,
+        Client = 1 << 1,
+        Server = 1 << 2,
+        
+        /// <summary>
+        /// Используется при объявлени объектов и там и там
+        /// </summary>
+        Shared = Client | Server
     }
 
     [Flags]

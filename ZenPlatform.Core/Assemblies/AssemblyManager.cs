@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ZenPlatform.Compiler;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Structure;

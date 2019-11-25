@@ -3,11 +3,7 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Configuration.Contracts.Data
 {
-    public class IGlobalVarManager
-    {
-    }
-
-    /// <summary>
+   /// <summary>
     /// Последовательный механизм для генерации сборки
     /// </summary>
     public interface IPlatformGenerator
