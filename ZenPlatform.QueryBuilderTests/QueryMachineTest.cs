@@ -188,7 +188,7 @@ namespace ZenPlatform.QueryBuilder.Tests
             var visitor = new SQLVisitorBase();
 
             var res = visitor.Visit((SSyntaxNode) machine.pop());
-            Assert.Equal(res, res = "INSERT INTO table2\nSELECT t1.column1\nFROM\ntable1 as t1\nWHERE\n@value1 = t1.column1\n");
+            Assert.Equal(res, res = "INSERT INTO table2(column1)\nSELECT t1.column1\nFROM\ntable1 as t1\nWHERE\n@value1 = t1.column1\n");
         }
 
         [Fact]
@@ -212,7 +212,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var res = visitor.Visit((SSyntaxNode) machine.pop());
 
-            Assert.Equal(res, res = "INSERT INTO table2\nVALUES\n(@value3, @value2, @value1)\n");
+            Assert.Equal(res, res = "INSERT INTO table2(column3, column2, column1)\nVALUES\n(@value3, @value2, @value1)\n");
         }
     }
 }

@@ -1,9 +1,10 @@
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Configuration.Contracts.Data
 {
-   /// <summary>
+    /// <summary>
     /// Последовательный механизм для генерации сборки
     /// </summary>
     public interface IPlatformGenerator
@@ -13,14 +14,14 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageServer(IXCObjectType type, Node root);
+        void StageServer(IXCObjectType type, Node root, SqlDatabaseType dbType);
 
         /// <summary>
         /// Генерация клиентского кода
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageClient(IXCObjectType type, Node root);
+        void StageClient(IXCObjectType type, Node root, SqlDatabaseType dbType);
 
         /// <summary>
         /// Стадия генерации UI интерфейса для пользователя на клиенте
@@ -40,19 +41,22 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// </summary>
         /// <param name="astTree"></param>
         /// <param name="builder"></param>
-        void Stage0(Node astTree, ITypeBuilder builder);
+        /// <param name="dbType"></param>
+        void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType);
 
         /// <summary>
         /// Стадия 1 формирование внутреннего каркаса класса (Методы + Свойства + Поля + События)
         /// </summary>
         /// <param name="astTree"></param>
         /// <param name="builder"></param>
-        void Stage1(Node astTree, ITypeBuilder builder);
+        /// <param name="dbType"></param>
+        void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType);
 
         /// <summary>
         /// Инфраструктурная стадия
         /// </summary>
         /// <param name="builder"></param>
-        void StageInfrastructure(IAssemblyBuilder builder);
+        /// <param name="dbType"></param>
+        void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType);
     }
 }

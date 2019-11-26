@@ -89,7 +89,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             foreach (var dataComponent in _conf.Data.Components)
             {
-                dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm);
+                dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm, _parameters.TargetDatabaseType);
             }
         }
 
@@ -121,7 +121,7 @@ namespace ZenPlatform.Compiler.Generation
                     {
                         var tco = PreBuildComponentClass(co);
                         AfterPreBuild(co, tco);
-                        co.Component.ComponentImpl.Generator.Stage0(co, tco);
+                        co.Component.ComponentImpl.Generator.Stage0(co, tco, _parameters.TargetDatabaseType);
                         break;
                     }
                     case ComponentModule cm:
@@ -130,7 +130,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         var tcm = PreBuildComponentModule(cm);
                         AfterPreBuild(cm, tcm);
-                        cm.Component.ComponentImpl.Generator.Stage0(cm, tcm);
+                        cm.Component.ComponentImpl.Generator.Stage0(cm, tcm, _parameters.TargetDatabaseType);
                         break;
                     }
 
@@ -242,7 +242,7 @@ namespace ZenPlatform.Compiler.Generation
                             }
                         }
 
-                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab);
+                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab, _parameters.TargetDatabaseType);
                         break;
 
                     default:
