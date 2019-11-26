@@ -26,5 +26,10 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         {
             return this.FirstOrDefault(x => x.Guid == guid);
         }
+
+        public TProperty GetPropertyByName(string name)
+        {
+            return this.FirstOrDefault(x => x.Name == name);
+        }
     }
 }

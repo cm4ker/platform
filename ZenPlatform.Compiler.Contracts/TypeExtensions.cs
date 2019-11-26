@@ -273,7 +273,7 @@ namespace ZenPlatform.Compiler.Contracts
                 setMethod.DefineParameter("value", type, false, false);
                 setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField).Ret();
 
-                result = result.WithGetter(setMethod);
+                result = result.WithSetter(setMethod);
             }
 
             return result;

@@ -225,16 +225,16 @@
     </Arguments>
   </Syntax>
 
-  <Syntax Name="SSetItem">
+  <Syntax Name="SAssign">
     <Arguments>
-      <Single Name="Field" Type="SField" />
-      <Single Name="Value" Type="SExpression" />
+      <Single Name="Expression" Type="SExpression" />
+      <Single Name="Variable" Type="SField" />
     </Arguments>
   </Syntax>
-
+  
   <Syntax Name="SSet">
     <Arguments>
-      <List Name="Items" Type="SSetItem" />
+      <List Name="Items" Type="SAssign" />
     </Arguments>
   </Syntax>
 

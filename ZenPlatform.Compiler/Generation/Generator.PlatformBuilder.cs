@@ -16,9 +16,9 @@ namespace ZenPlatform.Compiler.Generation
                 foreach (var type in component.Types)
                 {
                     if (_mode == CompilationMode.Client)
-                        component.ComponentImpl.Generator.StageClient(type, root);
+                        component.ComponentImpl.Generator.StageClient(type, root, _parameters.TargetDatabaseType);
                     else
-                        component.ComponentImpl.Generator.StageServer(type, root);
+                        component.ComponentImpl.Generator.StageServer(type, root, _parameters.TargetDatabaseType);
                 }
             }
 

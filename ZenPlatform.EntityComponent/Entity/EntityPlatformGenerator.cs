@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using ZenPlatform.Compiler;
@@ -24,6 +25,7 @@ using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.Shared.Tree;
 using ZenPlatform.UI.Ast;
@@ -43,7 +45,6 @@ namespace ZenPlatform.EntityComponent.Entity
             _rules = new GeneratorRules(component);
             _dtoCollections = new Dictionary<XCSingleEntity, IType>();
         }
-
 
         private TypeSyntax GetAstFromPlatformType(IXCType pt)
         {
@@ -555,17 +556,17 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             if (astTree is ComponentClass cc)
             {
+                BuildVersionField(builder);
+                
                 if (cc.CompilationMode == CompilationMode.Server)
                 {
                     EmitMappingSupport(cc, builder);
-                    EmitSavingSupport(cc, builder);
+                    EmitSavingSupport(cc, builder, dbType);
                 }
-
-                BuildVersionField(builder);
             }
         }
 
-        public void StageInfrastructure(IAssemblyBuilder builder)
+        public void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType)
         {
             var ts = builder.TypeSystem;
             var b = ts.GetSystemBindings();
@@ -609,8 +610,74 @@ namespace ZenPlatform.EntityComponent.Entity
             var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version");
         }
 
+        private SSyntaxNode GetInsertQuery(XCSingleEntity se)
+        {
+            QueryMachine qm = new QueryMachine();
+            qm.bg_query()
+                .m_values();
+
+            var pIndex = 0;
+
+            var columns = se.Properties.SelectMany(x => x.GetPropertySchemas());
+
+            foreach (var column in columns)
+            {
+                qm.ld_param($"P{pIndex}");
+                pIndex++;
+            }
+
+            qm.m_insert()
+                .ld_table(se.RelTableName);
+
+            foreach (var col in columns)
+            {
+                qm.ld_column(col.FullName);
+            }
+
+            qm.st_query();
+
+            return (SSyntaxNode) qm.pop();
+        }
+
+        private SSyntaxNode GetUpdateQuery(XCSingleEntity se)
+        {
+            var visitor = new SQLVisitorBase();
+
+            QueryMachine qm = new QueryMachine();
+
+            var pIndex = 0;
+
+            var columns = se.Properties.Where(x => !x.Unique).SelectMany(x => x.GetPropertySchemas());
+
+            qm.bg_query()
+                .m_where()
+                .ld_column(se.Properties.GetPropertyByName("Id").DatabaseColumnName, "T0")
+                .ld_param($"P_{pIndex++}")
+                .eq();
+
+            qm.m_set();
+            Debug.Assert(columns.Any());
+
+            foreach (var column in columns)
+            {
+                qm.ld_column(column.FullName, "T0")
+                    .ld_param($"P_{pIndex++}")
+                    .assign();
+            }
+
+            qm.m_update()
+                .ld_table(se.RelTableName)
+                .@as("T0")
+                .st_query();
+
+            return (SSyntaxNode) qm.pop();
+        }
+
         private void EmitSavingSupport(ComponentClass cls, ITypeBuilder tb, SqlDatabaseType dbType)
         {
+            var set = cls.Type as XCSingleEntity ??
+                      throw new Exception($"This component can't serve this type {cls.Type}");
+
             var _ts = tb.Assembly.TypeSystem;
             var _bindings = _ts.GetSystemBindings();
 
@@ -630,22 +697,36 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var indexp = 0;
 
-            QueryMachine qm = new QueryMachine();
-
-            foreach (var props in cls.TypeBody.Properties)
-            {
-                
-            }
-
-            var updateQuery = "";
-            var insertQuery = "";
 
             var p_loc = rg.DefineLocal(_ts.FindType<DbParameter>());
 
-            rg
-                .LdArg(cmdParam.ArgIndex)
-                .LdStr("SELECT * FROM Table")
-                .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter);
+            var versionF = tb.Properties.First(x => x.Name == "Version");
+
+            if (versionF != null)
+            {
+
+                var narg = rg.DefineLabel();
+                var end = rg.DefineLabel();
+                rg.LdArg_0()
+                    .EmitCall(versionF.Getter)
+                    .LdNull()
+                    .Ceq()
+                    .BrTrue(narg);
+                //if Version != null
+                rg
+                    .LdArg(cmdParam.ArgIndex)
+                    .LdStr(compiler.Compile(GetUpdateQuery(set)))
+                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
+                    .Br(end);
+                //if Version == null
+                rg
+                    .MarkLabel(narg)    
+                    .LdArg(cmdParam.ArgIndex)
+                    .LdStr(compiler.Compile(GetInsertQuery(set)))
+                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
+                    .MarkLabel(end);
+                
+            }
 
             foreach (var property in cls.TypeBody.Properties)
             {
