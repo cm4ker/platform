@@ -37,10 +37,6 @@ namespace ZenPlatform.Core.Configuration
                     .m_select()
                     .ld_column(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
                     .st_query();
-
-//                var query = new SelectQueryNode().From(_tableName).Select(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
-//                    .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
-//                        x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
             }
 
 
@@ -70,12 +66,6 @@ namespace ZenPlatform.Core.Configuration
                     .m_select()
                     .ld_const(1)
                     .st_query();
-
-//                var searchQuery = new SelectQueryNode()
-//                    .From(_tableName)
-//                    .SelectRaw("1")
-//                    .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
-//                        x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
             }
 
 
@@ -101,14 +91,6 @@ namespace ZenPlatform.Core.Configuration
                         .ld_column(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD)
                         .ld_column(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
                         .st_query();
-
-
-//                    query = new InsertQueryNode()
-//                        .InsertInto(_tableName)
-//                        .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD),
-//                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD))
-//                        .WithFieldAndValue(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
-//                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD));
                 }
                 else
                 {
@@ -121,15 +103,11 @@ namespace ZenPlatform.Core.Configuration
                         .m_set()
                         .ld_column(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
                         .ld_param(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD)
+                        .assign()
                         .m_update()
                         .ld_table(_tableName)
                         .st_query();
-//                    query = new UpdateQueryNode()
-//                        .Update(_tableName)
-//                        .Set(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD),
-//                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD))
-//                        .Where(x => x.Field(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD), "=",
-//                            x => x.Parameter(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD));
+
                 }
 
                 cmd.CommandText = _context.SqlCompiller.Compile((SSyntaxNode)qm.pop());
