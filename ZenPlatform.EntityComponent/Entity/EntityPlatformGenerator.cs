@@ -23,6 +23,8 @@ using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.Shared.Tree;
 using ZenPlatform.UI.Ast;
 
@@ -499,7 +501,8 @@ namespace ZenPlatform.EntityComponent.Entity
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        public void StageServer(IXCObjectType type, Node root)
+        /// <param name="dbType"></param>
+        public void StageServer(IXCObjectType type, Node root, SqlDatabaseType dbType)
         {
             if (root is Root r)
             {
@@ -513,8 +516,9 @@ namespace ZenPlatform.EntityComponent.Entity
         /// Генерация клиентского кода
         /// </summary>
         /// <param name="type">Тип</param>
-        /// <param name="root">Корень проекта</param>
-        public void StageClient(IXCObjectType type, Node node)
+        /// <param name="node"></param>
+        /// <param name="dbType"></param>
+        public void StageClient(IXCObjectType type, Node node, SqlDatabaseType dbType)
         {
             if (node is Root root)
             {
@@ -530,8 +534,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void StageGlobalVar(IGlobalVarManager manager)
         {
-            manager.Register(new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared,"Test", (e) => { }));
-            
+            manager.Register(new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "Test", (e) => { }));
+
             /*
              *
              * 
@@ -543,11 +547,11 @@ namespace ZenPlatform.EntityComponent.Entity
         }
 
 
-        public void Stage0(Node astTree, ITypeBuilder builder)
+        public void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
         {
         }
 
-        public void Stage1(Node astTree, ITypeBuilder builder)
+        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
         {
             if (astTree is ComponentClass cc)
             {
@@ -605,10 +609,12 @@ namespace ZenPlatform.EntityComponent.Entity
             var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version");
         }
 
-        private void EmitSavingSupport(ComponentClass cls, ITypeBuilder tb)
+        private void EmitSavingSupport(ComponentClass cls, ITypeBuilder tb, SqlDatabaseType dbType)
         {
             var _ts = tb.Assembly.TypeSystem;
             var _bindings = _ts.GetSystemBindings();
+
+            var compiler = SqlCompillerBase.FormEnum(dbType);
 
             tb.AddInterfaceImplementation(_ts.FindType<ICanSave>());
 
@@ -623,6 +629,16 @@ namespace ZenPlatform.EntityComponent.Entity
                 readerMethod.DefineParameter("cmd", cmdType, false, false);
 
             var indexp = 0;
+
+            QueryMachine qm = new QueryMachine();
+
+            foreach (var props in cls.TypeBody.Properties)
+            {
+                
+            }
+
+            var updateQuery = "";
+            var insertQuery = "";
 
             var p_loc = rg.DefineLocal(_ts.FindType<DbParameter>());
 
