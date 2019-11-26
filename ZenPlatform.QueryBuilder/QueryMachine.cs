@@ -136,6 +136,12 @@ namespace ZenPlatform.QueryBuilder
             return this;
         }
 
+        public QueryMachine assign()
+        {
+            Push(new SAssign(Pop<SExpression>(), Pop<SField>()));
+            return this;
+        }
+
         public QueryMachine ld_param(string name)
         {
             Push(new SParameter(name));
@@ -252,14 +258,7 @@ namespace ZenPlatform.QueryBuilder
                     Push(new SValuesSource(PopList<SExpression>()));
                     break;
                 case MachineContextType.Set:
-                    List<SSetItem> items = new List<SSetItem>();
-                    while (TryPeek(out SExpression exp))
-                    {
-                        pop();
-                        items.Add(new SSetItem(Pop<SField>(), exp));
-                    }
-
-                    Push(new SSet(items));
+                    Push(new SSet(PopList<SAssign>()));
                     break;
                 case MachineContextType.Update:
 

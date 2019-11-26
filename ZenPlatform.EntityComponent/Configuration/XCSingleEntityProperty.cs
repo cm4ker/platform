@@ -55,7 +55,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             return HashCode.Combine(Guid, Name, Unique, IsSystemProperty, Types);
         }
 
-        
 
         private bool SequenceEqual<T>(IEnumerable<T> list1, IEnumerable<T> list2)
         {
@@ -86,14 +85,13 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             return cnt.Values.All(c => c == 0);
         }
-        
+
         public override IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
             if (string.IsNullOrEmpty(propName)) propName = this.DatabaseColumnName;
 
             return PropertyHelper.GetPropertySchemas(propName, Types);
         }
-
     }
 
     internal static class StandardEntityPropertyHelper
@@ -121,7 +119,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 DatabaseColumnName = "Name",
                 Types = {PlatformTypesFactory.GetString(150)},
                 IsSystemProperty = false,
-                Unique = true,
+                Unique = false,
                 IsReadOnly = true
             };
         }
