@@ -87,28 +87,33 @@ namespace ZenPlatform.Compiler.Dnlib
         public IType FindType(string name, string assembly) =>
             FindAssembly(assembly)?.FindType(name);
 
-        public IType Resolve(TypeRef reference)
+        public IType Resolve(ITypeDefOrRef reference)
         {
+            reference = reference ?? throw new ArgumentNullException(nameof(reference));
+
             if (!_typeReferenceCache.TryGetValue(reference, out var rv))
             {
-                TypeDef resolved = reference.Resolve();
-
-                if (resolved != null)
+                if (reference is TypeRef tr)
                 {
-                    rv = _typeCache.Get(reference);
+                    TypeDef resolved = tr.Resolve();
+                    
+                    if (resolved != null)
+                    {
+                        rv = _typeCache.Get(reference);
+                    }
+                    else
+                    {
+                        var key = reference.FullName;
+
+                        //TODO: resolve generic parameters
+
+                        if (!_unresolvedTypeCache.TryGetValue(key, out rv))
+                            _unresolvedTypeCache[key] =
+                                rv = new UnresolvedDnlibType(tr);
+                    }
+
+                    _typeReferenceCache[reference] = rv;
                 }
-                else
-                {
-                    var key = reference.FullName;
-
-                    //TODO: resolve generic parameters
-
-                    if (!_unresolvedTypeCache.TryGetValue(key, out rv))
-                        _unresolvedTypeCache[key] =
-                            rv = new UnresolvedDnlibType(reference);
-                }
-
-                _typeReferenceCache[reference] = rv;
             }
 
             return rv;
@@ -143,8 +148,8 @@ namespace ZenPlatform.Compiler.Dnlib
             //var r = new DnlibContextResolver(TypeSystem, defOrRef.Module);
 
             var definition = defOrRef.ResolveTypeDef();
-            var reference = new TypeRefUser(defOrRef.Module, defOrRef.Namespace, defOrRef.Name);
-
+            var reference = new TypeRefUser(defOrRef.Module, defOrRef.Namespace, defOrRef.Name, defOrRef.Module);
+            var na = reference.FullName;
             var asm = (DnlibAssembly) TypeSystem.FindAssembly(definition.Module.Assembly);
 
             if (!_definitions.TryGetValue(definition, out var dentry))

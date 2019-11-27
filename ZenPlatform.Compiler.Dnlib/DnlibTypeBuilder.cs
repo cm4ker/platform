@@ -48,7 +48,8 @@ namespace ZenPlatform.Compiler.Dnlib
             var method = new MethodDefUser(name);
 
             method.Attributes |= (isPublic) ? MethodAttributes.Public : MethodAttributes.Private;
-            method.IsStatic = isPublic;
+            
+            method.IsStatic = isStatic;
             if (isInterfaceImpl)
                 method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
 

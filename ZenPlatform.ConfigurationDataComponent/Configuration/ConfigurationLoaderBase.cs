@@ -98,7 +98,7 @@ namespace ZenPlatform.DataComponent.Configuration
             IXCBlob blob;
             if (conf.AttachedBlob is null)
             {
-                blob = new XCBlob(conf.Name);
+                blob = new XCBlob(conf.Name); 
                 conf.Parent.Include.Add(blob);
             }
             else
