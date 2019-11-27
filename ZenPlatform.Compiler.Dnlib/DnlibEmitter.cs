@@ -32,6 +32,11 @@ namespace ZenPlatform.Compiler.Dnlib
             _body = _method.Body;
         }
 
+        private dnlib.DotNet.IMethod ImportMethod(DnlibMethod method)
+        {
+            return _method.Module.Import(method.MethofRef);
+        }
+
 
         private IEmitter Emit(Instruction i)
         {
@@ -86,7 +91,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
 
         public IEmitter Emit(SreOpCode code, IMethod method)
-            => Emit(Instruction.Create(Dic[code], ((DnlibMethod) method).MethofRef));
+            => Emit(Instruction.Create(Dic[code], ImportMethod((DnlibMethod) method)));
 
 
         public IEmitter Emit(SreOpCode code, IConstructor ctor)
@@ -179,7 +184,7 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IEmitter Emit(SreOpCode code, ILabel label)
-        =>  Emit(Instruction.Create(Dic[code], ((DnlibLabel) label).Instruction));
+            => Emit(Instruction.Create(Dic[code], ((DnlibLabel) label).Instruction));
 
         public IEmitter Emit(SreOpCode code, ILocal local) =>
             Emit(Instruction.Create(Dic[code], ((DnlibLocal) local).LocalDef));
