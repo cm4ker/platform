@@ -18,7 +18,7 @@ namespace ZenPlatform.Compiler.Dnlib
             TypeSystem = typeSystem;
             MethofRef = method;
             MethodDef = method.ResolveMethodDef() ?? throw new ArgumentNullException();
-            ContextResolver = new DnlibContextResolver(typeSystem, method.Module);
+            ContextResolver = new DnlibContextResolver(typeSystem, declaringType.Module);
             _declaringTR = declaringType;
         }
 
@@ -49,16 +49,16 @@ namespace ZenPlatform.Compiler.Dnlib
         public bool IsPublic => MethodDef.IsPublic;
         public bool IsStatic => MethodDef.IsStatic;
 
-        public IReadOnlyList<IParameter> Parameters => 
+        public IReadOnlyList<IParameter> Parameters =>
             _parameters ??= MethodDef.Parameters
-            .Where(x => !x.IsHiddenThisParameter)
-            .Select(p => new DnlibParameter(TypeSystem, MethodDef, p))
-            .ToList();
+                .Where(x => !x.IsHiddenThisParameter)
+                .Select(p => new DnlibParameter(TypeSystem, MethodDef, _declaringTR.Module, p))
+                .ToList();
 
 
         private IEmitter _generator;
         private List<DnlibParameter> _parameters;
-        
+
         public IEmitter Generator => _generator ??= new DnlibEmitter(TypeSystem, MethodDef);
 
         public bool Equals(IMethod other)

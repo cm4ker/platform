@@ -32,7 +32,7 @@ namespace ZenPlatform.Compiler.Dnlib
             p.CreateParamDef();
             p.Name = name;
 
-            return new DnlibParameter(TypeSystem, MethodDef, p);
+            return new DnlibParameter(TypeSystem, MethodDef, DeclaringTypeReference.Module, p);
         }
 
         public IMethodBuilder WithReturnType(IType type)

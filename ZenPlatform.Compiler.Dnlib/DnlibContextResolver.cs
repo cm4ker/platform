@@ -36,8 +36,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             if (tsig.AssemblyQualifiedName.Contains("System.Private.CoreLib"))
             {
-                var moduleDef = new ModuleRefUser(_moduleDef, _ts.GetSystemBindings().MSCORLIB);
-                return _ts.Resolve(new TypeRefUser(_moduleDef, tsig.Namespace, tsig.TypeName, moduleDef));
+                return _ts.Resolve(new TypeRefUser(_moduleDef, tsig.Namespace, tsig.TypeName, _moduleDef));
             }
             else
             {

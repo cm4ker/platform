@@ -54,7 +54,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             _methodDef.MethodSig.Params.Add(new ClassSig(((DnlibType) type).TypeRef));
             _methodDef.Parameters.UpdateParameterTypes();
-            return new DnlibParameter(TypeSystem, _methodDef, _methodDef.Parameters.Last());
+            return new DnlibParameter(TypeSystem, _methodDef, _methodDef.Module, _methodDef.Parameters.Last());
         }
     }
 }
