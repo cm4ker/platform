@@ -19,19 +19,25 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             _ts = ts;
             _assembly = assembly;
+            _definedTypes = new List<ITypeBuilder>();
         }
 
         public IReadOnlyList<ITypeBuilder> DefinedTypes => _definedTypes;
 
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
-            var bType = _assembly.ManifestModule.Import(((DnlibType) baseType).TypeDef);
+            var bType = (ITypeDefOrRef) _assembly.ManifestModule.Import(((DnlibType) baseType).TypeRef);
 
             var type = new TypeDefUser(@namespace, name, bType);
 
+            type.Attributes = SreMapper.Convert(typeAttributes);
+
             _assembly.ManifestModule.Types.Add(type);
 
-            return new DnlibTypeBuilder(_ts, type, this);
+            var dnlibType = new DnlibTypeBuilder(_ts, type, this);
+            _definedTypes.Add(dnlibType);
+
+            return dnlibType;
         }
 
         public ITypeBuilder ImportWithCopy(IType type)

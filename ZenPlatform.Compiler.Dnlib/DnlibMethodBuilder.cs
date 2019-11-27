@@ -41,7 +41,7 @@ namespace ZenPlatform.Compiler.Dnlib
             return this;
         }
 
-        public DnlibMethodBuilder(DnlibTypeSystem typeSystem, IMethodDefOrRef method, TypeRef declaringType) :
+        public DnlibMethodBuilder(DnlibTypeSystem typeSystem, IMethodDefOrRef method, ITypeDefOrRef declaringType) :
             base(typeSystem, method, declaringType)
         {
         }

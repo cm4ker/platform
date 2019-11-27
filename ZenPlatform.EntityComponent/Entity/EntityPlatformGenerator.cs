@@ -8,15 +8,11 @@ using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation;
-using ZenPlatform.Configuration.Compiler;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Core.Querying;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -28,11 +24,16 @@ using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.Shared.Tree;
-using ZenPlatform.UI.Ast;
-
 
 namespace ZenPlatform.EntityComponent.Entity
 {
+    public enum ObjectType
+    {
+        Dto,
+        Object,
+        Link
+    }
+
     public class EntityPlatformGenerator : IPlatformGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
@@ -58,7 +59,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
                 XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type),
                 XCObjectTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
-                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name, TypeNodeKind.Type),
+                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name+"Link", TypeNodeKind.Type),
                 XCGuid b => (TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
             };
         }
@@ -150,6 +151,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 new TypeBody(members));
 
             cls.Namespace = @namespace;
+            cls.Bag = ObjectType.Dto;
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
@@ -241,6 +243,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 new TypeBody(members));
 
             cls.Namespace = @namespace;
+            cls.Bag = ObjectType.Dto;
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
 
@@ -359,7 +362,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         else if (ctype is XCObjectTypeBase ot)
                         {
                             matchAtomType = new SingleTypeSyntax(null,
-                                ot.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + ot.Name,
+                                ot.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + ot.Name + "Link",
                                 TypeNodeKind.Type);
                         }
 
@@ -436,6 +439,15 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
 
+        private void GenerateLink(IXCObjectType type, Root root)
+        {
+            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name + "Link",
+                new TypeBody(new List<Member>())) {Base = "Documents.EntityLink", Namespace = "Documents"};
+
+            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+            root.Add(cu);
+        }
+
         private void EmitMappingSupport(ComponentClass cls, ITypeBuilder tb)
         {
             var _ts = tb.Assembly.TypeSystem;
@@ -510,6 +522,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 GenerateServerDtoClass(type, r);
                 GenerateServerObjectClass(type, r);
                 GenerateCommands(type, r);
+                GenerateLink(type, r);
             }
         }
 
@@ -525,6 +538,7 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 GenerateCommands(type, root);
                 GenerateClientDtoClass(type, root);
+                GenerateLink(type, root);
             }
         }
 
@@ -547,7 +561,6 @@ namespace ZenPlatform.EntityComponent.Entity
              */
         }
 
-
         public void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
         {
         }
@@ -556,17 +569,25 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             if (astTree is ComponentClass cc)
             {
-                BuildVersionField(builder);
-                
-                if (cc.CompilationMode == CompilationMode.Server)
+                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
                 {
-                    EmitMappingSupport(cc, builder);
-                    EmitSavingSupport(cc, builder, dbType);
+                    BuildVersionField(builder);
+
+                    if (cc.CompilationMode == CompilationMode.Server)
+                    {
+                        EmitMappingSupport(cc, builder);
+                        EmitSavingSupport(cc, builder, dbType);
+                    }
                 }
             }
         }
 
         public void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType)
+        {
+            CreateMainLink(builder);
+        }
+
+        private void CreateMainLink(IAssemblyBuilder builder)
         {
             var ts = builder.TypeSystem;
             var b = ts.GetSystemBindings();
@@ -704,7 +725,6 @@ namespace ZenPlatform.EntityComponent.Entity
 
             if (versionF != null)
             {
-
                 var narg = rg.DefineLabel();
                 var end = rg.DefineLabel();
                 rg.LdArg_0()
@@ -720,12 +740,11 @@ namespace ZenPlatform.EntityComponent.Entity
                     .Br(end);
                 //if Version == null
                 rg
-                    .MarkLabel(narg)    
+                    .MarkLabel(narg)
                     .LdArg(cmdParam.ArgIndex)
                     .LdStr(compiler.Compile(GetInsertQuery(set)))
                     .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
                     .MarkLabel(end);
-                
             }
 
             foreach (var property in cls.TypeBody.Properties)
@@ -750,6 +769,10 @@ namespace ZenPlatform.EntityComponent.Entity
             }
 
             rg.Ret();
+        }
+
+        private void EmitLink()
+        {
         }
     }
 }

@@ -11,9 +11,9 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public abstract class DnlibMethodBase : IMethod
     {
-        private TypeRef _declaringTR;
+        private ITypeDefOrRef _declaringTR;
 
-        public DnlibMethodBase(DnlibTypeSystem typeSystem, IMethodDefOrRef method, TypeRef declaringType)
+        public DnlibMethodBase(DnlibTypeSystem typeSystem, IMethodDefOrRef method, ITypeDefOrRef declaringType)
         {
             TypeSystem = typeSystem;
             MethofRef = method;
@@ -72,7 +72,7 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         public MethodDef MethodDef { get; }
 
-        public DnlibMethod(DnlibTypeSystem ts, MethodDef methodDef, TypeRef declaringType) : base(ts, methodDef,
+        public DnlibMethod(DnlibTypeSystem ts, MethodDef methodDef, ITypeDefOrRef declaringType) : base(ts, methodDef,
             declaringType)
         {
             MethodDef = methodDef;
@@ -91,17 +91,17 @@ namespace ZenPlatform.Compiler.Dnlib
 
     internal static class DnlibExtensions
     {
-        public static TypeRef ToTypeRef(this IType type)
+        public static ITypeDefOrRef ToTypeRef(this IType type)
         {
             return ((DnlibType) type).TypeRef.ToTypeSig().TryGetTypeRef();
         }
 
-        public static TypeRef ToTypeRef(this TypeDef type)
+        public static ITypeDefOrRef ToTypeRef(this TypeDef type)
         {
             return new TypeRefUser(type.Module, type.Namespace, type.Name);
         }
 
-        public static TypeRef ToTypeRef(this ITypeDefOrRef type)
+        public static ITypeDefOrRef ToTypeRef(this ITypeDefOrRef type)
         {
             return new TypeRefUser(type.Module, type.Namespace, type.Name);
         }

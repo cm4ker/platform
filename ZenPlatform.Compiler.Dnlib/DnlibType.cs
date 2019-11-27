@@ -19,7 +19,7 @@ namespace ZenPlatform.Compiler.Dnlib
         private readonly DnlibTypeSystem _ts;
         private readonly DnlibAssembly _assembly;
 
-        public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, TypeRef typeRef, DnlibAssembly assembly)
+        public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, ITypeDefOrRef typeRef, DnlibAssembly assembly)
         {
             _ts = typeSystem;
             _assembly = assembly;
@@ -27,18 +27,9 @@ namespace ZenPlatform.Compiler.Dnlib
             TypeRef = typeRef ?? throw new ArgumentNullException(nameof(typeRef));
         }
 
-
-        public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, TypeRef typeRef, TypeSpec typeSpec,
-            DnlibAssembly assembly) : this(typeSystem, typeDef, typeRef, assembly)
-        {
-            TypeSpec = typeSpec;
-        }
-
         public TypeDef TypeDef { get; }
 
-        public TypeRef TypeRef { get; }
-
-        public TypeSpec TypeSpec { get; }
+        public ITypeDefOrRef TypeRef { get; }
 
         public bool Equals(IType other)
         {
@@ -58,7 +49,7 @@ namespace ZenPlatform.Compiler.Dnlib
         private IReadOnlyList<IType> _interfaces;
 
         public IReadOnlyList<IProperty> Properties =>
-            _properties ??=TypeDef.Properties.Select(x => new DnlibProperty(_ts, x)).ToList();
+            _properties ??= TypeDef.Properties.Select(x => new DnlibProperty(_ts, x)).ToList();
 
         public IReadOnlyList<IField> Fields =>
             _fields ??= TypeDef.Fields.Select(x => new DnlibField(x)).ToList();
@@ -99,8 +90,8 @@ namespace ZenPlatform.Compiler.Dnlib
         public IType ArrayElementType { get; }
 
         public IType MakeArrayType()
-        { 
-            throw new NotImplementedException();
+        {
+            return new DnlibType(_ts, null, new TypeSpecUser(new SZArraySig(TypeRef.ToTypeSig())), _assembly);
         }
 
         public IType MakeArrayType(int dimensions)
@@ -121,10 +112,5 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IReadOnlyList<IType> GenericParameters { get; }
-    }
-
-
-    public class DnlibArrayType
-    {
     }
 }
