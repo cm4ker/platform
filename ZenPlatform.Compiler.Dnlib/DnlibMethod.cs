@@ -42,7 +42,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IMethod MakeGenericMethod(IType[] typeArguments)
         {
-            throw new NotImplementedException();
+            var generic = new MethodSpecUser(this.MethofRef,
+                new GenericInstMethodSig(typeArguments.Select(x => ((DnlibType) x).TypeRef.ToTypeSig()).ToArray()));
+            return   new DnlibMethod(TypeSystem, generic.Method, generic.ResolveMethodDef(), _declaringTR);
         }
 
         protected ITypeDefOrRef DeclaringTypeReference => _declaringTR;

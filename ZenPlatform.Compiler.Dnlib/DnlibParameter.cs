@@ -16,6 +16,8 @@ namespace ZenPlatform.Compiler.Dnlib
             _cr = new DnlibContextResolver(typeSystem, module);
         }
 
+        public Parameter Parameter => _parameter;
+        
         public bool Equals(IParameter other)
         {
             throw new NotImplementedException();
