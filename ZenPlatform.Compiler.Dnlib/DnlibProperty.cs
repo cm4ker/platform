@@ -12,11 +12,14 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         private readonly DnlibTypeSystem _ts;
         protected readonly PropertyDef PropertyDef;
+        private DnlibContextResolver _cr;
 
         public DnlibProperty(DnlibTypeSystem typeSystem, PropertyDef property)
         {
             _ts = typeSystem;
             PropertyDef = property;
+
+            _cr = new DnlibContextResolver(_ts, PropertyDef.Module);
         }
 
         public bool Equals(IProperty other)
@@ -26,7 +29,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public string Name => PropertyDef.Name;
 
-        public IType PropertyType => null;
+        public IType PropertyType => _cr.GetType(PropertyDef.DeclaringType.ToTypeSig());
         public IMethod Getter { get; }
         public IMethod Setter { get; }
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }

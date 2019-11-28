@@ -15,7 +15,8 @@ namespace ZenPlatform.Compiler.Dnlib
             module.Kind = ModuleKind.Dll;
             asmDef.Modules.Add(module);
             
-            return new DnlibAssemblyBuilder(dnts, asmDef);
+            var dab = new DnlibAssemblyBuilder(dnts, asmDef);
+            return (IAssemblyBuilder)dnts.RegisterAssembly(dab);;
         }
     }
 }

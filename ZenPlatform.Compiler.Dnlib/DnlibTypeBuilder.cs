@@ -14,7 +14,7 @@ namespace ZenPlatform.Compiler.Dnlib
         private readonly DnlibTypeSystem _ts;
 
         public DnlibTypeBuilder(DnlibTypeSystem typeSystem, TypeDef typeDef, DnlibAssembly assembly)
-            : base(typeSystem, typeDef, typeDef.ToTypeRef(), assembly)
+            : base(typeSystem, typeDef, typeDef, assembly)
         {
             _ts = typeSystem;
         }
@@ -64,7 +64,9 @@ namespace ZenPlatform.Compiler.Dnlib
         public IPropertyBuilder DefineProperty(IType propertyType, string name)
         {
             var prop = new PropertyDefUser(name);
-
+            
+            
+            
             TypeDef.Properties.Add(prop);
             prop.DeclaringType = ((DnlibType) propertyType).TypeDef;
 

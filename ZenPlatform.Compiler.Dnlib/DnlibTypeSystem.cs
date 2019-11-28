@@ -51,9 +51,14 @@ namespace ZenPlatform.Compiler.Dnlib
         internal IAssembly RegisterAssembly(AssemblyDef assemblyDef)
         {
             var result = new DnlibAssembly(this, assemblyDef);
-            _asms.Add(result);
-            _assemblyDic[assemblyDef] = result;
-            return result;
+            return RegisterAssembly(result);
+        }
+
+        internal IAssembly RegisterAssembly(DnlibAssembly assembly)
+        {
+            _asms.Add(assembly);
+            _assemblyDic[assembly.Assembly] = assembly;
+            return assembly;
         }
 
         public IAssembly FindAssembly(string assembly)
@@ -96,7 +101,7 @@ namespace ZenPlatform.Compiler.Dnlib
                 if (reference is TypeRef tr)
                 {
                     TypeDef resolved = tr.Resolve();
-                    
+
                     if (resolved != null)
                     {
                         rv = _typeCache.Get(reference);
