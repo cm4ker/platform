@@ -18,7 +18,7 @@ namespace ZenPlatform.Compiler.Generation
 
             foreach (var property in typeBody.Properties)
             {
-                var propBuilder = tb.DefineProperty(property.Type.ToClrType(_asm), property.Name);
+                var propBuilder = tb.DefineProperty(property.Type.ToClrType(_asm), property.Name, false);
 
                 IField backField = null;
 

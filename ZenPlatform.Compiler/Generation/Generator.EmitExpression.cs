@@ -192,9 +192,9 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (expProp.PropertyType.IsArray)
                     fe.Type = new ArrayTypeSyntax(null,
-                        new SingleTypeSyntax(null, expProp.PropertyType.ArrayElementType.Name, TypeNodeKind.Unknown));
+                        new SingleTypeSyntax(null, expProp.PropertyType.ArrayElementType.FullName, TypeNodeKind.Unknown));
                 else
-                    fe.Type = new SingleTypeSyntax(null, expProp.PropertyType.Name, TypeNodeKind.Unknown);
+                    fe.Type = new SingleTypeSyntax(null, expProp.PropertyType.FullName, TypeNodeKind.Unknown);
 
                 if (expProp.Getter is null)
                     throw new Exception($"Can't resolve property: {fe.FieldName}");

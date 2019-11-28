@@ -360,7 +360,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private IPropertyBuilder PrebuildProperty(Property property, ITypeBuilder tb)
         {
-            var propBuilder = tb.DefineProperty(property.Type.ToClrType(_asm), property.Name);
+            var propBuilder = tb.DefineProperty(property.Type.ToClrType(_asm), property.Name, false);
 
             IField backField = null;
 
