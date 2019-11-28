@@ -93,7 +93,7 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         public static ITypeDefOrRef ToTypeRef(this IType type)
         {
-            return ((DnlibType) type).TypeRef.ToTypeSig().TryGetTypeRef();
+            return ((DnlibType) type).TypeRef;
         }
 
         public static ITypeDefOrRef ToTypeRef(this TypeDef type)

@@ -36,7 +36,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
             var dnlibType = new DnlibTypeBuilder(_ts, type, this);
             _definedTypes.Add(dnlibType);
-
+            _typeCache.Add(dnlibType.FullName, dnlibType);
             return dnlibType;
         }
 

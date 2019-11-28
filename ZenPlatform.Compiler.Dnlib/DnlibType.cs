@@ -23,8 +23,9 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             _ts = typeSystem;
             _assembly = assembly;
-            TypeDef = typeDef;
+           
             TypeRef = typeRef ?? throw new ArgumentNullException(nameof(typeRef));
+            TypeDef = typeDef ?? typeRef.ResolveTypeDef();
         }
 
         public TypeDef TypeDef { get; }

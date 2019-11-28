@@ -37,6 +37,11 @@ namespace ZenPlatform.Compiler.Dnlib
             return _method.Module.Import(method.MethofRef);
         }
 
+        private dnlib.DotNet.ITypeDefOrRef ImportType(DnlibType type)
+        {
+            return (ITypeDefOrRef)_method.Module.Import(type.TypeRef);
+        }
+
 
         private IEmitter Emit(Instruction i)
         {
@@ -107,7 +112,7 @@ namespace ZenPlatform.Compiler.Dnlib
             => Emit(Instruction.Create(Dic[code], arg));
 
         public IEmitter Emit(SreOpCode code, IType type)
-            => Emit(Instruction.Create(Dic[code], ((DnlibType) type).TypeDef));
+            => Emit(Instruction.Create(Dic[code], ImportType((DnlibType) type)));
 
         public IEmitter Emit(SreOpCode code, float arg)
             => Emit(Instruction.Create(Dic[code], arg));
