@@ -13,11 +13,12 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         private ITypeDefOrRef _declaringTR;
 
-        public DnlibMethodBase(DnlibTypeSystem typeSystem, IMethodDefOrRef method, ITypeDefOrRef declaringType)
+        public DnlibMethodBase(DnlibTypeSystem typeSystem, IMethodDefOrRef method, MethodDef methodDef,
+            ITypeDefOrRef declaringType)
         {
             TypeSystem = typeSystem;
             MethofRef = method;
-            MethodDef = method.ResolveMethodDef() ?? throw new ArgumentNullException();
+            MethodDef = methodDef;
             ContextResolver = new DnlibContextResolver(typeSystem, declaringType.Module);
             _declaringTR = declaringType;
         }
@@ -55,11 +56,7 @@ namespace ZenPlatform.Compiler.Dnlib
                 .Select(p => new DnlibParameter(TypeSystem, MethodDef, _declaringTR.Module, p))
                 .ToList();
 
-
-        private IEmitter _generator;
         private List<DnlibParameter> _parameters;
-
-        public IEmitter Generator => _generator ??= new DnlibEmitter(TypeSystem, MethodDef);
 
         public bool Equals(IMethod other)
         {
@@ -72,7 +69,8 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         public MethodDef MethodDef { get; }
 
-        public DnlibMethod(DnlibTypeSystem ts, MethodDef methodDef, ITypeDefOrRef declaringType) : base(ts, methodDef,
+        public DnlibMethod(DnlibTypeSystem ts, IMethodDefOrRef method, MethodDef methodDef,
+            ITypeDefOrRef declaringType) : base(ts, method, methodDef,
             declaringType)
         {
             MethodDef = methodDef;

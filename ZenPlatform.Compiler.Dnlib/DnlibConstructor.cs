@@ -8,47 +8,34 @@ using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
-    public class DnlibConstructorBase : IConstructor
+    public class DnlibConstructor : DnlibMethodBase, IConstructor
     {
-        public DnlibTypeSystem TypeSystem { get; }
-        public MethodDef MethodDef { get; }
-
-        public DnlibConstructorBase(DnlibTypeSystem typeSystem, MethodDef methodDef)
+        public DnlibConstructor(DnlibTypeSystem ts, IMethodDefOrRef method, MethodDef methodDef, ITypeDefOrRef declType)
+            : base(ts, method, methodDef,
+                declType)
         {
-            TypeSystem = typeSystem;
-            MethodDef = methodDef;
         }
 
         public bool Equals(IConstructor other)
         {
             throw new NotImplementedException();
         }
-
-        public bool IsPublic { get; }
-        public bool IsStatic { get; }
-        public IReadOnlyList<IParameter> Parameters { get; }
     }
 
-
-    public class DnlibConstructor : DnlibConstructorBase
-    {
-        public DnlibConstructor(MethodDef methodDef) : base(null, methodDef)
-        {
-        }
-    }
-
-    public class DnlibConstructorBuilder : DnlibConstructorBase, IConstructorBuilder
+    public class DnlibConstructorBuilder : DnlibConstructor, IConstructorBuilder
     {
         private readonly MethodDefUser _methodDef;
 
-        public DnlibConstructorBuilder(MethodDefUser methodDef) : base(null, methodDef)
+        public DnlibConstructorBuilder(DnlibTypeSystem ts, MethodDefUser methodDef, ITypeDefOrRef declType) : base(ts,
+            methodDef, methodDef, declType)
         {
             _methodDef = methodDef;
             _methodDef.Body = new CilBody();
-            Generator = new DnlibEmitter(TypeSystem, methodDef);
         }
 
-        public IEmitter Generator { get; }
+        private IEmitter _generator;
+        public IEmitter Generator => _generator ??= new DnlibEmitter(TypeSystem, MethodDef);
+
 
         public IParameter DefineParameter(IType type)
         {

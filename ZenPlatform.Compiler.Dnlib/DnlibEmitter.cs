@@ -32,14 +32,14 @@ namespace ZenPlatform.Compiler.Dnlib
             _body = _method.Body;
         }
 
-        private dnlib.DotNet.IMethod ImportMethod(DnlibMethod method)
+        private dnlib.DotNet.IMethod ImportMethod(DnlibMethodBase method)
         {
             return _method.Module.Import(method.MethofRef);
         }
 
         private dnlib.DotNet.ITypeDefOrRef ImportType(DnlibType type)
         {
-            return (ITypeDefOrRef)_method.Module.Import(type.TypeRef);
+            return (ITypeDefOrRef) _method.Module.Import(type.TypeRef);
         }
 
 
@@ -96,7 +96,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
 
         public IEmitter Emit(SreOpCode code, IMethod method)
-            => Emit(Instruction.Create(Dic[code], ImportMethod((DnlibMethod) method)));
+            => Emit(Instruction.Create(Dic[code], ImportMethod((DnlibMethodBase) method)));
 
 
         public IEmitter Emit(SreOpCode code, IConstructor ctor)
@@ -125,6 +125,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             private readonly DnlibTypeSystem _ts;
             private readonly ITypeDefOrRef _typeRef;
+            private DnlibContextResolver _v;
             public Local LocalDef { get; }
 
             public DnlibLocal(DnlibTypeSystem ts, Local localDef, ITypeDefOrRef typeRef)
@@ -132,11 +133,14 @@ namespace ZenPlatform.Compiler.Dnlib
                 _ts = ts;
                 _typeRef = typeRef;
                 LocalDef = localDef;
+
+
+                _v = new DnlibContextResolver(ts, typeRef.Module);
             }
 
 
             public int Index => LocalDef.Index;
-            public IType Type => _ts.Resolve(LocalDef.Type.TryGetTypeRef());
+            public IType Type => _v.GetType(LocalDef.Type);
         }
 
         class DnlibLabel : ILabel

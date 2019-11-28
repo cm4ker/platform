@@ -119,6 +119,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
                     _typeReferenceCache[reference] = rv;
                 }
+                else if (reference is TypeDef td)
+                {
+                    rv = _typeCache.Get(td);
+                    _typeReferenceCache[reference] = rv;
+                }
             }
 
             return rv;

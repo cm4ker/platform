@@ -23,7 +23,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             _ts = typeSystem;
             _assembly = assembly;
-           
+
             TypeRef = typeRef ?? throw new ArgumentNullException(nameof(typeRef));
             TypeDef = typeDef ?? typeRef.ResolveTypeDef();
         }
@@ -58,10 +58,11 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<IEventInfo> Events { get; }
 
         public IReadOnlyList<IMethod> Methods =>
-            _methods ??= TypeDef.Methods.Select(x => new DnlibMethod(_ts, x, TypeRef)).ToList();
+            _methods ??= TypeDef.Methods.Where(x => !x.IsConstructor)
+                .Select(x => (IMethod) new DnlibMethod(_ts, x, x, TypeRef)).ToList();
 
         public IReadOnlyList<IConstructor> Constructors =>
-            _constructors ??= TypeDef.FindConstructors().Select(x => new DnlibConstructor(x)).ToList();
+            _constructors ??= TypeDef.FindConstructors().Select(x => (IConstructor)new DnlibConstructor(_ts, x, x, TypeRef)).ToList();
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
         public IReadOnlyList<IType> GenericArguments { get; }
@@ -78,7 +79,23 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public bool IsAssignableFrom(IType type)
         {
-            throw new NotImplementedException();
+            if (type.IsValueType
+                && GenericTypeDefinition?.FullName == "System.Nullable`1"
+                && GenericArguments[0].Equals(type))
+                return true;
+            if (FullName == "System.Object" && type.IsInterface)
+                return true;
+            var baseType = type;
+            while (baseType != null)
+            {
+                if (baseType.Equals(this))
+                    return true;
+                baseType = baseType.BaseType;
+            }
+
+            if (IsInterface && type.GetAllInterfaces().Any(IsAssignableFrom))
+                return true;
+            return false;
         }
 
         public IType MakeGenericType(IReadOnlyList<IType> typeArguments)
