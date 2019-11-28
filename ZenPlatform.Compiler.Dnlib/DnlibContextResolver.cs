@@ -50,7 +50,14 @@ namespace ZenPlatform.Compiler.Dnlib
             }
             else
             {
-                return _ts.Resolve(tsig.ToTypeDefOrRef());
+                var result =  _ts.Resolve(tsig.ToTypeDefOrRef());
+                if (result is UnresolvedDnlibType)
+                {
+                    result =  _ts.Resolve(tsig.ToTypeDefOrRef());
+                    throw new Exception($"Can't resolve type {tsig}");
+                }
+
+                return result;
             }
         }
     }

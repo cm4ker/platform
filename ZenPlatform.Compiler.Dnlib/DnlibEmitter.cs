@@ -199,9 +199,7 @@ namespace ZenPlatform.Compiler.Dnlib
             Emit(Instruction.Create(Dic[code], ((DnlibLocal) local).LocalDef));
 
         public IEmitter Emit(SreOpCode code, IParameter parameter)
-        {
-            throw new NotImplementedException();
-        }
+            => Emit(Instruction.Create(Dic[code], ((DnlibParameter) parameter).Parameter));
 
         public bool InitLocals { get; set; }
 

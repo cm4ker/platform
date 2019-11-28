@@ -17,8 +17,10 @@ namespace ZenPlatform.Compiler.Dnlib
         private Dictionary<ITypeDefOrRef, IType> _typeReferenceCache =
             new Dictionary<ITypeDefOrRef, IType>();
 
-        private Dictionary<AssemblyDef, DnlibAssembly> _assemblyDic
-            = new Dictionary<AssemblyDef, DnlibAssembly>();
+        private Dictionary<dnlib.DotNet.IAssembly, DnlibAssembly> _assemblyDic
+            = new Dictionary<dnlib.DotNet.IAssembly, DnlibAssembly>();
+
+        private Dictionary<string, IType> _qNameAssemblies = new Dictionary<string, IType>();
 
         private Dictionary<string, IType> _unresolvedTypeCache = new Dictionary<string, IType>();
 
@@ -66,10 +68,9 @@ namespace ZenPlatform.Compiler.Dnlib
             return RegisterAssembly(_resolver.Resolve(assembly, null));
         }
 
-        public IAssembly FindAssembly(AssemblyDef assembly)
+        public IAssembly FindAssembly(dnlib.DotNet.IAssembly assembly)
         {
-            var isCore = assembly.ManifestModule.IsCoreLibraryModule;
-            if (isCore.HasValue && isCore.Value)
+            if (assembly.IsCorLib())
             {
                 return _assemblyDic.FirstOrDefault(x => x.Key.Name == "mscorlib").Value;
             }
@@ -96,7 +97,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             reference = reference ?? throw new ArgumentNullException(nameof(reference));
 
-            if (!_typeReferenceCache.TryGetValue(reference, out var rv))
+            if (!_qNameAssemblies.TryGetValue(reference.AssemblyQualifiedName, out var rv))
             {
                 if (reference is TypeRef tr)
                 {
@@ -117,7 +118,7 @@ namespace ZenPlatform.Compiler.Dnlib
                                 rv = new UnresolvedDnlibType(tr);
                     }
 
-                    _typeReferenceCache[reference] = rv;
+                    _qNameAssemblies[reference.AssemblyQualifiedName] = rv;
                 }
                 else if (reference is TypeDef td)
                 {
@@ -158,7 +159,13 @@ namespace ZenPlatform.Compiler.Dnlib
             //var r = new DnlibContextResolver(TypeSystem, defOrRef.Module);
 
             var definition = defOrRef.ResolveTypeDef();
-            var reference = new TypeRefUser(defOrRef.Module, defOrRef.Namespace, defOrRef.Name, defOrRef.Module);
+            
+            IResolutionScope scope = defOrRef.Scope as IResolutionScope;
+            
+            if(scope is null) throw new Exception("Test");
+            
+            //if(defOrRef is TypeDef tda || defOrRef is TypeRef tra)
+            var reference = new TypeRefUser(defOrRef.Module, defOrRef.Namespace, defOrRef.Name, scope);
             var na = reference.FullName;
             var asm = (DnlibAssembly) TypeSystem.FindAssembly(definition.Module.Assembly);
 

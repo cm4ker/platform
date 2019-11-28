@@ -11,12 +11,15 @@ namespace ZenPlatform.Compiler.Dnlib
             var dnts = (DnlibTypeSystem) ts;
 
             var asmDef = new AssemblyDefUser(assemblyName, assemblyVersion);
-            var module = new ModuleDefUser(assemblyName, Guid.NewGuid());
+            var module = new ModuleDefUser(assemblyName, Guid.NewGuid(),
+                AssemblyRefUser.CreateMscorlibReferenceCLR40());
+            
             module.Kind = ModuleKind.Dll;
             asmDef.Modules.Add(module);
-            
+
             var dab = new DnlibAssemblyBuilder(dnts, asmDef);
-            return (IAssemblyBuilder)dnts.RegisterAssembly(dab);;
+            return (IAssemblyBuilder) dnts.RegisterAssembly(dab);
+            ;
         }
     }
 }

@@ -39,9 +39,21 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IParameter DefineParameter(IType type)
         {
-            _methodDef.MethodSig.Params.Add(new ClassSig(((DnlibType) type).TypeRef));
-            _methodDef.Parameters.UpdateParameterTypes();
-            return new DnlibParameter(TypeSystem, _methodDef, _methodDef.Module, _methodDef.Parameters.Last());
+            var dtype = (DnlibType) type;
+            
+            var typeSig = dtype.TypeRef.ToTypeSig();
+            MethodDef.MethodSig.Params.Add(typeSig);
+            
+            MethodDef.Parameters.UpdateParameterTypes();
+
+            var p = MethodDef.Parameters.Last();
+            p.CreateParamDef();
+             
+            var dp = new DnlibParameter(TypeSystem, MethodDef, DeclaringTypeReference.Module, p);
+            
+            ((List<DnlibParameter>)Parameters).Add(dp);
+            
+            return dp;
         }
     }
 }

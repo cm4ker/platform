@@ -46,6 +46,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public IMethodBuilder WithReturnType(IType type)
         {
             MethodDef.ReturnType = ContextResolver.GetReference(type.ToTypeRef()).ToTypeSig();
+            
             return this;
         }
 
