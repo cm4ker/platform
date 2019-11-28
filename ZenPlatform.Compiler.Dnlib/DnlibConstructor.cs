@@ -30,7 +30,7 @@ namespace ZenPlatform.Compiler.Dnlib
             methodDef, methodDef, declType)
         {
             _methodDef = methodDef;
-            _methodDef.Body = new CilBody();
+            _methodDef.Body = new CilBody() {KeepOldMaxStack = true};
         }
 
         private IEmitter _generator;

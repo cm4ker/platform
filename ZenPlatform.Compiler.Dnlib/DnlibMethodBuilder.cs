@@ -29,7 +29,6 @@ namespace ZenPlatform.Compiler.Dnlib
 
             var typeSig = dtype.TypeRef.ToTypeSig();
             MethodDef.MethodSig.Params.Add(typeSig);
-
             MethodDef.Parameters.UpdateParameterTypes();
 
             var p = MethodDef.Parameters.Last();
