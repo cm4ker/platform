@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using ZenPlatform.Compiler.Contracts;
@@ -17,6 +18,7 @@ namespace ZenPlatform.Compiler.Dnlib
             : base(typeSystem, typeDef, typeDef, assembly)
         {
             _ts = typeSystem;
+            Methods.Any();
         }
 
         public void AddInterfaceImplementation(IType type)
@@ -30,7 +32,7 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new NotImplementedException();
         }
 
-        public IReadOnlyList<IMethodBuilder> DefinedMethods { get; }
+        public IReadOnlyList<IMethodBuilder> DefinedMethods => Methods.Cast<IMethodBuilder>().ToList();
 
         public IField DefineField(IType type, string name, bool isPublic, bool isStatic)
         {
@@ -46,9 +48,12 @@ namespace ZenPlatform.Compiler.Dnlib
             IMethod overrideMethod = null)
         {
             var method = new MethodDefUser(name);
-
-            method.Attributes |= (isPublic) ? MethodAttributes.Public : MethodAttributes.Private;
             
+            var dm = new DnlibMethodBuilder(_ts, method, TypeRef);
+            ((List<IMethod>) Methods).Add(dm);
+            
+            method.Attributes |= (isPublic) ? MethodAttributes.Public : MethodAttributes.Private;
+
             method.IsStatic = isStatic;
             if (isInterfaceImpl)
                 method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
@@ -58,15 +63,16 @@ namespace ZenPlatform.Compiler.Dnlib
 
             method.MethodSig = new MethodSig();
 
-            return new DnlibMethodBuilder(_ts, method, TypeRef);
+            
+
+            return dm;
         }
 
         public IPropertyBuilder DefineProperty(IType propertyType, string name)
         {
             var prop = new PropertyDefUser(name);
-            
-            
-            
+
+
             TypeDef.Properties.Add(prop);
             prop.DeclaringType = ((DnlibType) propertyType).TypeDef;
 
@@ -94,7 +100,9 @@ namespace ZenPlatform.Compiler.Dnlib
             var name = (isStatic) ? ".cctor" : ".ctor";
             var c = new MethodDefUser(name, sig);
 
-            return new DnlibConstructorBuilder(c);
+            c.DeclaringType = TypeDef;
+
+            return new DnlibConstructorBuilder(_ts, c, TypeRef);
         }
 
         public ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic)

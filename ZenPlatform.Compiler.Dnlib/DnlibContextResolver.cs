@@ -1,6 +1,7 @@
 using System;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
+using IField = dnlib.DotNet.IField;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
@@ -13,6 +14,12 @@ namespace ZenPlatform.Compiler.Dnlib
         public DnlibContextResolver(DnlibTypeSystem ts, ModuleDef moduleDef)
         {
             _ts = ts;
+
+            if (moduleDef is null)
+            {
+                throw new ArgumentNullException(nameof(moduleDef));
+            }
+
             _moduleDef = moduleDef ?? throw new ArgumentNullException(nameof(moduleDef));
         }
 
@@ -26,6 +33,9 @@ namespace ZenPlatform.Compiler.Dnlib
             {
                 return _moduleDef.Import(ts);
             }
+            else if (type is TypeDefUser td)
+                return td;
+
 
             throw new Exception("This reference not supported");
         }
@@ -40,7 +50,7 @@ namespace ZenPlatform.Compiler.Dnlib
             }
             else
             {
-                return _ts.Resolve(tsig.TryGetTypeRef());
+                return _ts.Resolve(tsig.ToTypeDefOrRef());
             }
         }
     }

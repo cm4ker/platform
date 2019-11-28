@@ -13,6 +13,8 @@ namespace ZenPlatform.Compiler.Dnlib
         private readonly DnlibTypeSystem _ts;
         protected readonly PropertyDef PropertyDef;
         private DnlibContextResolver _cr;
+        protected IMethod _getter;
+        protected IMethod _setter;
 
         public DnlibProperty(DnlibTypeSystem typeSystem, PropertyDef property)
         {
@@ -30,8 +32,13 @@ namespace ZenPlatform.Compiler.Dnlib
         public string Name => PropertyDef.Name;
 
         public IType PropertyType => _cr.GetType(PropertyDef.DeclaringType.ToTypeSig());
-        public IMethod Getter { get; }
-        public IMethod Setter { get; }
+
+        public IMethod Getter => _getter ??= 
+            new DnlibMethod(_ts, PropertyDef.GetMethod, PropertyDef.GetMethod, PropertyDef.DeclaringType);
+
+        public IMethod Setter => _setter ??=
+            new DnlibMethod(_ts, PropertyDef.SetMethod, PropertyDef.SetMethod, PropertyDef.DeclaringType);
+
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
     }
 }
