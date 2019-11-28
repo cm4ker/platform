@@ -67,7 +67,7 @@ namespace ZenPlatform.Compiler.Dnlib
                 method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
 
             method.DeclaringType = TypeDef;
-            method.Body = new CilBody();
+            method.Body = new CilBody() {KeepOldMaxStack = true};
             method.MethodSig = new MethodSig();
 
             method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.ToTypeRef()).ToTypeSig();

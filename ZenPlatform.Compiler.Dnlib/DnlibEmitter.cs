@@ -100,7 +100,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
 
         public IEmitter Emit(SreOpCode code, IConstructor ctor)
-            => Emit(Instruction.Create(Dic[code], ((DnlibConstructor) ctor).MethodDef));
+            => Emit(Instruction.Create(Dic[code], ImportMethod((DnlibConstructor) ctor)));
 
         public IEmitter Emit(SreOpCode code, string arg)
             => Emit(Instruction.Create(Dic[code], arg));
