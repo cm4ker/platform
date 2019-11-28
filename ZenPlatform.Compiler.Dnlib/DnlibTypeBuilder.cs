@@ -13,12 +13,15 @@ namespace ZenPlatform.Compiler.Dnlib
     public class DnlibTypeBuilder : DnlibType, ITypeBuilder
     {
         private readonly DnlibTypeSystem _ts;
+        private DnlibContextResolver _r;
 
         public DnlibTypeBuilder(DnlibTypeSystem typeSystem, TypeDef typeDef, DnlibAssembly assembly)
             : base(typeSystem, typeDef, typeDef, assembly)
         {
             _ts = typeSystem;
             Methods.Any();
+
+            _r = new DnlibContextResolver(_ts, typeDef.Module);
         }
 
         public void AddInterfaceImplementation(IType type)
@@ -36,22 +39,27 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IField DefineField(IType type, string name, bool isPublic, bool isStatic)
         {
-            var field = new FieldDefUser(name);
+            var tref = _r.GetReference(((DnlibType) type).TypeRef);
+            var field = new FieldDefUser(name, new FieldSig(tref.ToTypeSig()));
             field.IsStatic = isStatic;
             field.Access |= (isPublic) ? FieldAttributes.Public : FieldAttributes.Private;
-            TypeDef.Fields.Add(field);
+            field.DeclaringType = TypeDef;
 
-            return new DnlibField(field);
+            var dfield = new DnlibField(field);
+
+            ((List<DnlibField>) Fields).Add(dfield);
+
+            return dfield;
         }
 
         public IMethodBuilder DefineMethod(string name, bool isPublic, bool isStatic, bool isInterfaceImpl,
             IMethod overrideMethod = null)
         {
             var method = new MethodDefUser(name);
-            
+
             var dm = new DnlibMethodBuilder(_ts, method, TypeRef);
             ((List<IMethod>) Methods).Add(dm);
-            
+
             method.Attributes |= (isPublic) ? MethodAttributes.Public : MethodAttributes.Private;
 
             method.IsStatic = isStatic;
@@ -60,22 +68,28 @@ namespace ZenPlatform.Compiler.Dnlib
 
             method.DeclaringType = TypeDef;
             method.Body = new CilBody();
-
             method.MethodSig = new MethodSig();
 
-            
+            method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.ToTypeRef()).ToTypeSig();
+
 
             return dm;
         }
 
-        public IPropertyBuilder DefineProperty(IType propertyType, string name)
+        public IPropertyBuilder DefineProperty(IType propertyType, string name, bool isStatic = false)
         {
             var prop = new PropertyDefUser(name);
 
 
             TypeDef.Properties.Add(prop);
-            prop.DeclaringType = ((DnlibType) propertyType).TypeDef;
+            prop.DeclaringType = TypeDef;
 
+            if (isStatic)
+                prop.PropertySig = PropertySig.CreateStatic(_r.GetReference(propertyType.GetRef()).ToTypeSig(),
+                    _r.GetReference(propertyType.GetRef()).ToTypeSig());
+            else
+                prop.PropertySig = PropertySig.CreateInstance(_r.GetReference(propertyType.GetRef()).ToTypeSig(),
+                    _r.GetReference(propertyType.GetRef()).ToTypeSig());
 
             var propertyBuilder = new DnlibPropertyBuilder(_ts, prop);
             ((List<DnlibProperty>) Properties).Add(propertyBuilder);
