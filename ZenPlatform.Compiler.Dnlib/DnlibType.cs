@@ -62,7 +62,9 @@ namespace ZenPlatform.Compiler.Dnlib
                 .Select(x => (IMethod) new DnlibMethod(_ts, x, x, TypeRef)).ToList();
 
         public IReadOnlyList<IConstructor> Constructors =>
-            _constructors ??= TypeDef.FindConstructors().Select(x => (IConstructor)new DnlibConstructor(_ts, x, x, TypeRef)).ToList();
+            _constructors ??= TypeDef.FindConstructors().Select(x =>
+                (IConstructor) new DnlibConstructor(_ts, new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef), x,
+                    TypeRef)).ToList();
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
         public IReadOnlyList<IType> GenericArguments { get; }
@@ -104,7 +106,9 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IType GenericTypeDefinition { get; }
+
         public bool IsArray { get; }
+
         public IType ArrayElementType { get; }
 
         public IType MakeArrayType()
@@ -118,11 +122,16 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IType BaseType { get; }
-        public bool IsValueType { get; }
-        public bool IsEnum { get; }
 
-        public bool IsInterface { get; }
+        public bool IsValueType => TypeDef.IsValueType;
+
+        public bool IsEnum => TypeDef.IsEnum;
+
+        public bool IsInterface => TypeDef.IsInterface;
+
         public bool IsSystem { get; }
+
+        public bool IsPrimitive => TypeDef.IsPrimitive;
 
         public IType GetEnumUnderlyingType()
         {

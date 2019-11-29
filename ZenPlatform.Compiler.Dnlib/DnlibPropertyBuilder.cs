@@ -10,14 +10,14 @@ namespace ZenPlatform.Compiler.Dnlib
         public IPropertyBuilder WithSetter(IMethod method)
         {
             _setter = method;
-            PropertyDef.GetMethod = ((DnlibMethodBase) method).MethodDef;
+            PropertyDef.SetMethod = ((DnlibMethodBase) method).MethodDef;
             return this;
         }
 
         public IPropertyBuilder WithGetter(IMethod method)
         {
             _getter = method;
-            PropertyDef.SetMethod = ((DnlibMethodBase) method).MethodDef;
+            PropertyDef.GetMethod = ((DnlibMethodBase) method).MethodDef;
             return this;
         }
 

@@ -31,7 +31,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public string Name => PropertyDef.Name;
 
-        public IType PropertyType => _cr.GetType(PropertyDef.DeclaringType.ToTypeSig());
+        public IType PropertyType => _cr.GetType(PropertyDef.PropertySig.RetType);
 
         public IMethod Getter => _getter ??= 
             new DnlibMethod(_ts, PropertyDef.GetMethod, PropertyDef.GetMethod, PropertyDef.DeclaringType);

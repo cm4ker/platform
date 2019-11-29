@@ -190,11 +190,37 @@ namespace ZenPlatform.Compiler.Generation
 
                 var expProp = extTypeScan.Properties.First(x => x.Name == fe.FieldName);
 
+                SingleTypeSyntax singleType;
+
                 if (expProp.PropertyType.IsArray)
-                    fe.Type = new ArrayTypeSyntax(null,
-                        new SingleTypeSyntax(null, expProp.PropertyType.ArrayElementType.FullName, TypeNodeKind.Unknown));
+                {
+                    singleType = new SingleTypeSyntax(null, expProp.PropertyType.ArrayElementType.FullName,
+                        TypeNodeKind.Unknown);
+                    fe.Type = new ArrayTypeSyntax(null, singleType);
+                }
                 else
-                    fe.Type = new SingleTypeSyntax(null, expProp.PropertyType.FullName, TypeNodeKind.Unknown);
+                {
+                    singleType = new SingleTypeSyntax(null, expProp.PropertyType.FullName, TypeNodeKind.Unknown);
+                    fe.Type = singleType;
+                }
+
+                var resolved = singleType.ToClrType(_asm);
+
+                if (resolved.IsPrimitive)
+                {
+                    singleType.ChangeKind(resolved.Name switch
+                    {
+                        "String" => TypeNodeKind.String,
+                        "Int" => TypeNodeKind.Int,
+                        "Boolean" => TypeNodeKind.Boolean,
+                        _ => throw new Exception($"New unknown primitive type {resolved.Name}")
+                    });
+                }
+                else
+                {
+                    singleType.ChangeKind(TypeNodeKind.Object);
+                }
+
 
                 if (expProp.Getter is null)
                     throw new Exception($"Can't resolve property: {fe.FieldName}");

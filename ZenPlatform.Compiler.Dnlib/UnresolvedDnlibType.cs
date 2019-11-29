@@ -68,6 +68,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<IType> Interfaces { get; }
         public bool IsInterface { get; }
         public bool IsSystem { get; }
+        public bool IsPrimitive { get; }
 
         public IType GetEnumUnderlyingType()
         {
