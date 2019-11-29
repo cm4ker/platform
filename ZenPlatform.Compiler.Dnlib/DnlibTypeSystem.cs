@@ -60,6 +60,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             _asms.Add(assembly);
             _assemblyDic[assembly.Assembly] = assembly;
+            Resolver.RegisterAsm(assembly.Assembly);
             return assembly;
         }
 
@@ -125,6 +126,11 @@ namespace ZenPlatform.Compiler.Dnlib
                     rv = _typeCache.Get(td);
                     _typeReferenceCache[reference] = rv;
                 }
+                else if (reference is TypeSpec ts)
+                {
+                    rv = _typeCache.Get(ts);
+                    _typeReferenceCache[reference] = rv;
+                }
             }
 
             return rv;
@@ -159,15 +165,20 @@ namespace ZenPlatform.Compiler.Dnlib
             //var r = new DnlibContextResolver(TypeSystem, defOrRef.Module);
 
             var definition = defOrRef.ResolveTypeDef();
-            
+
             IResolutionScope scope = defOrRef.Scope as IResolutionScope;
-            
-            if(scope is null) throw new Exception("Test");
-            
+
+            if (scope is null) throw new Exception("Test");
+
             //if(defOrRef is TypeDef tda || defOrRef is TypeRef tra)
             var reference = new TypeRefUser(defOrRef.Module, defOrRef.Namespace, defOrRef.Name, scope);
             var na = reference.FullName;
             var asm = (DnlibAssembly) TypeSystem.FindAssembly(definition.Module.Assembly);
+
+            if (defOrRef is TypeSpec ts)
+            {
+                return new DnlibType(TypeSystem, ts.ResolveTypeDef(), ts, asm);
+            }
 
             if (!_definitions.TryGetValue(definition, out var dentry))
                 _definitions[definition] = dentry = new DefinitionEntry();

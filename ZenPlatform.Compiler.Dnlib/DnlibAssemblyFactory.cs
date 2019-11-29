@@ -1,5 +1,6 @@
 using System;
 using dnlib.DotNet;
+using dnlib.DotNet.MD;
 using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Dnlib
@@ -13,11 +14,14 @@ namespace ZenPlatform.Compiler.Dnlib
             var asmDef = new AssemblyDefUser(assemblyName, assemblyVersion);
             var module = new ModuleDefUser(assemblyName, Guid.NewGuid(),
                 AssemblyRefUser.CreateMscorlibReferenceCLR40());
-            
+
+            module.Context = new ModuleContext(dnts.Resolver, new DnlibMetadataResolver(dnts.Resolver));
+            module.RuntimeVersion = MDHeaderRuntimeVersion.MS_CLR_40;
             module.Kind = ModuleKind.Dll;
             asmDef.Modules.Add(module);
 
             var dab = new DnlibAssemblyBuilder(dnts, asmDef);
+            
             return (IAssemblyBuilder) dnts.RegisterAssembly(dab);
             ;
         }
