@@ -211,7 +211,8 @@ namespace ZenPlatform.Compiler.Generation
                     singleType.ChangeKind(resolved.Name switch
                     {
                         "String" => TypeNodeKind.String,
-                        "Int" => TypeNodeKind.Int,
+                        "Int32" => TypeNodeKind.Int,
+                        "Byte" => TypeNodeKind.Byte,
                         "Boolean" => TypeNodeKind.Boolean,
                         _ => throw new Exception($"New unknown primitive type {resolved.Name}")
                     });

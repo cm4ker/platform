@@ -107,9 +107,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType GenericTypeDefinition { get; }
 
-        public bool IsArray { get; }
+        public bool IsArray => TypeRef.ToTypeSig().IsSingleOrMultiDimensionalArray;
 
-        public IType ArrayElementType { get; }
+        public IType ArrayElementType => _ts.Resolve(TypeRef.ScopeType);
 
         public IType MakeArrayType()
         {
