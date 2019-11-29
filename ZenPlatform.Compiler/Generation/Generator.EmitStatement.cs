@@ -25,7 +25,8 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     EmitExpression(e, ret.Expression, context.SymbolTable);
 
-                    if (returnVariable.Type == _bindings.Object)
+                    if (returnVariable.Type == _bindings.Object 
+                        && ret.Expression.Type.Kind != TypeNodeKind.Object)
                         e.Box(ret.Expression.Type.ToClrType(_asm));
                 }
 
