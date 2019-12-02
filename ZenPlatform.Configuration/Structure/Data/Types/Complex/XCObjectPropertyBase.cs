@@ -116,6 +116,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             return true;
         }
 
+
+        private bool ShouldSerializeId()
+        {
+            return false;
+        }
+
         /// <summary>
         /// Получить необработанные типы свойств. Вызывается во время конструирования типа при загрузке конфигурации.
         /// </summary>

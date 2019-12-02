@@ -51,13 +51,14 @@ namespace ZenPlatform.Configuration.Structure
         public void Load()
         {
             //Инициализируем примитивные типы платформы, они нужны для правильного построения зависимостей
+            /*
             _platformTypes.Add(new XCBinary());
             _platformTypes.Add(new XCString());
             _platformTypes.Add(new XCDateTime());
             _platformTypes.Add(new XCBoolean());
             _platformTypes.Add(new XCNumeric());
             _platformTypes.Add(new XCGuid());
-
+            */
             LoadComponents();
             LoadDependencies();
         }

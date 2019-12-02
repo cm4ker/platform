@@ -10,6 +10,10 @@ namespace ZenPlatform.Configuration.Structure.Data
     public interface IXCBlob
     {
         string Name { get; set; }
+
+        Uri URI { get; set; }
+
+        string Hash { get; set; }
     }
     
     public interface IXCBlobCollection : IList<IXCBlob>

@@ -1,5 +1,6 @@
 ﻿using System;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.DataComponent.Configuration;
@@ -22,6 +23,9 @@ namespace ZenPlatform.EntityComponent.Configuration
             ((IChildItem<IXCComponent>) newItem).Parent = Component;
             Component.Parent.RegisterType(newItem);
 
+
+            newItem.AttachedBlob = new XCBlob(Guid.NewGuid().ToString());
+            Component.Include.Add(newItem.AttachedBlob);
             //TODO: Обработать базовый тип
 
             return newItem;
