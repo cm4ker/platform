@@ -75,6 +75,7 @@ namespace ZenPlatform.DataComponent.Configuration
 
             AfterObjectLoad(conf);
 
+            conf.AttachedBlob = blob;
             //Сразу же указываем родителя
             conf.Parent = component;
 

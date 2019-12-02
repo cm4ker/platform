@@ -14,6 +14,8 @@ namespace ZenPlatform.Configuration.Structure
         Stream SaveToStream(IXCRoot root);
 
         string GetHash(IXCRoot root);
+
+        bool Equals(IXCRoot a, IXCRoot b);
     }
 
 

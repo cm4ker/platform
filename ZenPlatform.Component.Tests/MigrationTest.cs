@@ -51,7 +51,7 @@ namespace ZenPlatform.Component.Tests
             var actual = Factory.CreateExampleConfiguration();
 
 
-            var old = Factory.CreateChangedExampleConfiguration();
+            var old = Factory.CreateExampleConfiguration();
 
             var savedTypes = actual.Data.ComponentTypes;
             var dbTypes = old.Data.ComponentTypes;

@@ -17,7 +17,6 @@ using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration;
-using ZenPlatform.Core.Test.Configuration;
 using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Environment.Contracts;
@@ -32,6 +31,7 @@ using ZenPlatform.Cli;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Shell.Contracts;
 using ZenPlatform.Migration;
+using ZenPlatform.Configuration.Test;
 
 namespace ZenPlatform.Core.Test
 {
@@ -63,7 +63,7 @@ namespace ZenPlatform.Core.Test
             services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
             services.AddScoped<IAssemblyManager, AssemblyManager>();
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
-            services.AddSingleton<IXCConfigurationStorage, XCTestMemoryStorage>();
+            services.AddSingleton<IXCConfigurationStorage, XCMemoryStorage>();
             services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
 
             services.AddScoped<IConfigurationManager, ConfigurationManager>();
@@ -119,7 +119,7 @@ namespace ZenPlatform.Core.Test
 
             services.AddScoped<IAssemblyManager, AssemblyManager>();
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
-            services.AddSingleton<IXCConfigurationStorage, XCTestMemoryStorage>();
+            services.AddSingleton<IXCConfigurationStorage, XCMemoryStorage>();
             //services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
             services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
 
