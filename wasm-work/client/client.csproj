@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <Reference Include="WebAssembly.Bindings">
-            <HintPath>..\mono\sdks\framework\WebAssembly.Bindings.dll</HintPath>
+            <HintPath>..\mono\framework\WebAssembly.Bindings.dll</HintPath>
         </Reference>
     </ItemGroup>
 
