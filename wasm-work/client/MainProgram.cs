@@ -8,20 +8,36 @@ public class Program
     public static void Main()
     {
         var document = new Document();
-             
-        // Create a new div element
         var newDiv = document.CreateElement<HTMLDivElement>();
-
-        // and give it some content
+        
         var newContent = document.CreateTextNode("Hi there and greetings!");
-             
-        // add the text node to the newly created div
         newDiv.AppendChild(newContent);
+        var currentDiv = document.GetElementById("div1");
+        document.Body.InsertBefore(newDiv, currentDiv);
 
-        // add the newly created element and its content into the DOM 
-        var currentDiv = document.GetElementById("div1"); 
-
-        document.Body.InsertBefore(newDiv, currentDiv); 
+        /*
+         
+            Form
+                .Add(Params componetnts)
+                
+            Grid
+            
+            Button
+            
+            RadioButton
+            
+            ComboBox
+            
+            TextBox
+            
+            
+         
+            1) Server construct from in intermediate language
+            2) Server send serialized form to client
+            3) Client recieve from
+            4) Client starting interpretate intermediate language and construct from
+            5) Client end construct form and show it
+        */
     }
 }
 
