@@ -4,9 +4,9 @@ SET DRIVER_CONF=--debugrt
 
 SET DOM_CONF=Debug
 
-SET WASM_SDK=%TOP%\mono\sdks\
-SET WASM_SDK_FRAMEWORK=%TOP%\mono\sdks\framework
-SET WASM_SDK_PACKAGER=%TOP%\mono\sdks
+SET WASM_SDK=%TOP%\mono
+SET WASM_SDK_FRAMEWORK=%TOP%\mono\framework
+SET WASM_SDK_PACKAGER=%TOP%\mono\
 
 SET APP_SOURCES=".\Hello.cs"
 
