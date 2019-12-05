@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\UIModel\UIModel.csproj" />
         <ProjectReference Include="..\WebAssembly.Browser\WebAssembly.Browser.csproj" />
     </ItemGroup>
 
