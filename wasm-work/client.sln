@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "client", "client\client.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAssembly.Browser", "WebAssembly.Browser\WebAssembly.Browser.csproj", "{3D4DCAB5-3B27-46DC-8574-6C4226512BC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIModel", "UIModel\UIModel.csproj", "{317BE0CB-A1FF-414C-A521-E7EE3546C6C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{3D4DCAB5-3B27-46DC-8574-6C4226512BC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D4DCAB5-3B27-46DC-8574-6C4226512BC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D4DCAB5-3B27-46DC-8574-6C4226512BC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{317BE0CB-A1FF-414C-A521-E7EE3546C6C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{317BE0CB-A1FF-414C-A521-E7EE3546C6C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{317BE0CB-A1FF-414C-A521-E7EE3546C6C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{317BE0CB-A1FF-414C-A521-E7EE3546C6C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

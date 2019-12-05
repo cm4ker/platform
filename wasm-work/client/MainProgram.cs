@@ -9,18 +9,23 @@ public class Program
     {
         var document = new Document();
         var newDiv = document.CreateElement<HTMLDivElement>();
-        
-        var newContent = document.CreateTextNode("Hi there and greetings!");
+
+        var newContent = document.CreateTextNode("Хеллоу из .net'a!");
         newDiv.AppendChild(newContent);
         var currentDiv = document.GetElementById("div1");
         document.Body.InsertBefore(newDiv, currentDiv);
 
+        var text = new UIModel.Text(document);
+
+        document.Body.AppendChild(text.Element);
+        
         /*
          
-            Form
+            Form 
                 .Add(Params componetnts)
                 
             Grid
+                .
             
             Button
             
@@ -29,8 +34,6 @@ public class Program
             ComboBox
             
             TextBox
-            
-            
          
             1) Server construct from in intermediate language
             2) Server send serialized form to client
