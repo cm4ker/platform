@@ -1,17 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using WebAssembly.Browser.DOM;
 
 namespace UIModel
 {
-    
-    
-    
     /*
      
      Нам нужно решить следующие проблемы:
-     
-     
+          
      1) Создание формы на сервере | Решается XML схемой (билдим там, передаем, запускаем)
      2) Code Behind: нам нужно делать следующее
      XML Form Representation + Some code represesntation
@@ -19,7 +16,7 @@ namespace UIModel
      
      public class MyForm
      {
-        private Node Element;
+        private Node Element; <div>...</div>
         public void MyForm()
         {
             Init();
@@ -30,6 +27,11 @@ namespace UIModel
             // Get XML
             
             Element = Service.Interpret(xml, this);
+        }
+        
+        public void Test(sender, args)
+        {
+            //CODE        
         }
      }
 
@@ -67,7 +69,7 @@ namespace UIModel
      
      
      */
-    
+
     public abstract class Component
     {
         public virtual Node Element { get; }

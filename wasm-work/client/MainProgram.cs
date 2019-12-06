@@ -7,6 +7,8 @@ public class Program
 {
     public static void Main()
     {
+        MyExample();
+
         var document = new Document();
         var newDiv = document.CreateElement<HTMLDivElement>();
 
@@ -18,7 +20,7 @@ public class Program
         var text = new UIModel.Text(document);
 
         document.Body.AppendChild(text.Element);
-        
+
         /*
          
             Form 
@@ -42,7 +44,14 @@ public class Program
             5) Client end construct form and show it
         */
     }
+
+
+    private static void MyExample()
+    {
+        MyForm f = new MyForm();
+    }
 }
+
 
 public static class C
 {
