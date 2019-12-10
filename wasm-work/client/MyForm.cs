@@ -1,14 +1,20 @@
 using System;
-using System.Data;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
+using System.Dynamic;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
 using UIModel.XML;
+using WebAssembly;
 using WebAssembly.Browser.DOM;
 
 public class MyForm
 {
-    public MyForm()
+    private readonly HTMLElement _layer;
+
+
+    public MyForm(HTMLElement layer)
     {
+        _layer = layer;
         Init();
     }
 
@@ -31,52 +37,47 @@ public class MyForm
      }
      
      */
+
+    class TestEntity()
+    {
+        public string A { get; set; }
+
+        public DateTime B { get; set; }
+    }
+
     private void Init()
     {
-        var f = new Form();
-        f.Childs.Add(new Button() {OnClick = "Test", Text = "Push me"});
-        Service.Interpret(f, this);
+        var xml = @"
+ <Form>
+     <Controls>         
+        <Button OnClick='Test' Text='Push me'/> 
+        <Button OnClick='Test' Text='Push me'/>
+        <Field  Type='Date' Value='Push me'/>
+     </Controls>
+ </Form>
+";
+
+        XmlSerializer x = new XmlSerializer(typeof(Form));
+
+        StringReader sr = new StringReader(xml);
+
+        var f = (Form) x.Deserialize(sr);
+        sr.Dispose();
+
+        //get object from server
+        var test = new TestEntity();
+
+        var doc = new Document();
+
+        var formLayer = doc.CreateElement<HTMLDivElement>();
+
+        Service.Interpret(f, formLayer, this, test);
+
+        _layer.AppendChild(formLayer);
     }
 
     private void Test(object sender, object args)
     {
         Console.WriteLine("Hello");
-    }
-}
-
-public static class Service
-{
-    public static void Interpret(Form form, object instance)
-    {
-        var doc = new Document();
-
-        foreach (var child in form.Childs)
-        {
-            if (child is Button b)
-            {
-                var htmlButton = doc.CreateElement<HTMLInputElement>();
-                htmlButton.Type = InputElementType.Button;
-
-                if (!string.IsNullOrEmpty(b.OnClick))
-                {
-                    htmlButton.OnClick += (sender, args) =>
-                    {
-                        var method = instance.GetType().GetMethod(b.OnClick,
-                                         BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance) ??
-                                     throw new Exception("The method not found");
-
-                        // Тут мы можем обернуть ещё это всё
-                        method.Invoke(instance, new object[] {sender, args});
-                    };
-                }
-
-                if (!string.IsNullOrEmpty(b.Text))
-                {
-                    htmlButton.Value = b.Text;
-                }
-
-                doc.Body.AppendChild(htmlButton);
-            }
-        }
     }
 }

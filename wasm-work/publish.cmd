@@ -15,7 +15,7 @@ SET APP_SOURCES=".\Hello.cs"
 SET ASSETS=--asset %CLIENT%\index.html
 SET PREF_FOLDER=%TOP%\client\bin\%DOM_CONF%
 
-%WASM_SDK_PACKAGER%\packager.exe --debug --debugrt %DRIVER_CONF% --copy=ifnewer --out=publish --prefix=%PREF_FOLDER% %ASSETS% client.dll
+%WASM_SDK_PACKAGER%\packager.exe --linker=true --binding=false --debug %DRIVER_CONF% --copy=ifnewer --out=publish --prefix=%PREF_FOLDER% %ASSETS% client.dll
 COPY %CLIENT%\runtime.js %TOP%\publish\runtime.js /Y
 
 

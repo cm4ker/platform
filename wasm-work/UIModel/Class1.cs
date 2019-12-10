@@ -79,21 +79,12 @@ namespace UIModel
         }
     }
 
-    public class Binding
-    {
-        public string Path;
-    }
-
     public class Text : Component
     {
         public Text(Document document)
         {
             _underlyingElement = document.CreateElement<HTMLInputElement>();
             _underlyingElement.Type = InputElementType.Text;
-            _underlyingElement.OnClick += (sender, args) =>
-            {
-                ((HTMLInputElement) sender).Value = this.GetType().GetProperties().First().GetMethod.Name;
-            };
         }
 
         private HTMLInputElement _underlyingElement;

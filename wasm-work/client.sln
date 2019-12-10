@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAssembly.Browser", "WebA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIModel", "UIModel\UIModel.csproj", "{317BE0CB-A1FF-414C-A521-E7EE3546C6C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Tester\Tester.csproj", "{688CE512-4221-4692-9BCB-7965B784A72F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{317BE0CB-A1FF-414C-A521-E7EE3546C6C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{317BE0CB-A1FF-414C-A521-E7EE3546C6C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{317BE0CB-A1FF-414C-A521-E7EE3546C6C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{688CE512-4221-4692-9BCB-7965B784A72F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{688CE512-4221-4692-9BCB-7965B784A72F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{688CE512-4221-4692-9BCB-7965B784A72F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{688CE512-4221-4692-9BCB-7965B784A72F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
