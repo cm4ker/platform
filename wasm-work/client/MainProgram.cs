@@ -7,8 +7,6 @@ public class Program
 {
     public static void Main()
     {
-        MyExample();
-
         var document = new Document();
         var newDiv = document.CreateElement<HTMLDivElement>();
 
@@ -20,6 +18,8 @@ public class Program
         var text = new UIModel.Text(document);
 
         document.Body.AppendChild(text.Element);
+        
+        MyExample(document.Body);
 
         /*
          
@@ -46,9 +46,9 @@ public class Program
     }
 
 
-    private static void MyExample()
+    private static void MyExample(HTMLElement layer)
     {
-        MyForm f = new MyForm();
+        MyForm f = new MyForm(layer);
     }
 }
 
