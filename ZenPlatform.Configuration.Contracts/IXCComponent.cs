@@ -10,12 +10,12 @@ namespace ZenPlatform.Configuration.Contracts
     {
         string Name { get; set; }
     }
-    
+
     public interface IXCBlobCollection : IList<IXCBlob>
     {
     }
 
-    
+
     public interface IXCComponent : IChildItem<IXCData>
     {
         /// <summary>
@@ -41,10 +41,16 @@ namespace ZenPlatform.Configuration.Contracts
         IXCBlobCollection Include { get; set; }
 
         Assembly ComponentAssembly { get; set; }
+
         IXCRoot Root { get; }
+
         IXComponentLoader Loader { get; }
+
         IDataComponent ComponentImpl { get; }
-        IEnumerable<IXCObjectType> Types { get; }
+
+        IEnumerable<IXCType> Types { get; }
+
+        IEnumerable<IXCObjectType> ObjectTypes { get; }
 
         /// <summary>
         /// Загрузить все данные компонента из хранилища
@@ -76,5 +82,11 @@ namespace ZenPlatform.Configuration.Contracts
 
 
         IXCObjectType GetTypeByName(string typeName);
+
+        /// <summary>
+        /// Зарегистрировать тип данных на уровне конфигурации платформы
+        /// </summary>
+        /// <param name="type"></param>
+        void RegisterType(IXCType type);
     }
 }

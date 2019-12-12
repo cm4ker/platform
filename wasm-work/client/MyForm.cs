@@ -9,13 +9,23 @@ using WebAssembly.Browser.DOM;
 
 public class MyForm
 {
+    class TestEntity
+    {
+        public string A { get; set; }
+
+        public DateTime B { get; set; }
+    }
+
     private readonly HTMLElement _layer;
+    private object _dataContext;
 
 
-    public MyForm(HTMLElement layer)
+    public MyForm(HTMLElement layer, object dataContext)
     {
         _layer = layer;
-        Init();
+        _dataContext = dataContext;
+
+        Init(_layer, dataContext);
     }
 
     /*
@@ -36,23 +46,29 @@ public class MyForm
         List<DateTime> q = $$ FROM Invoice SELECT Data $$;
      }
      
+     MasterObject
+        - Obj
+        - Obj2
+        ...
+     
      */
 
-    class TestEntity()
-    {
-        public string A { get; set; }
 
-        public DateTime B { get; set; }
-    }
-
-    private void Init()
+    private void Init(HTMLElement layer, object dataContext)
     {
         var xml = @"
  <Form>
+     <Data> 
+        <Object Type='TestEntity' Name='Obj'></Object> <!-- Type property is optional -->
+     </Data>
      <Controls>         
         <Button OnClick='Test' Text='Push me'/> 
         <Button OnClick='Test' Text='Push me'/>
-        <Field  Type='Date' Value='Push me'/>
+        <Field  Type='Date' DefaultValue='2019-01-01'>
+            <Bindings>
+                <Binding Property='Value' Path='Obj.B'/> 
+            </Bindings>
+        </Field>
      </Controls>
  </Form>
 ";
@@ -73,7 +89,7 @@ public class MyForm
 
         Service.Interpret(f, formLayer, this, test);
 
-        _layer.AppendChild(formLayer);
+        layer.AppendChild(formLayer);
     }
 
     private void Test(object sender, object args)

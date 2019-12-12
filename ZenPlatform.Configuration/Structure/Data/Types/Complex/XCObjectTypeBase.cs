@@ -61,7 +61,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             set => _parent = value;
         }
 
-        
+
         /// <summary>
         /// Имя связанной таблицы документа
         /// 
@@ -154,6 +154,46 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public virtual IXCCommand CreateCommand()
         {
             throw new NotSupportedException();
+        }
+    }
+
+    public abstract class XCLinkTypeBase : XCTypeBase, IXCLinkType
+    {
+        private IXCComponent _parent;
+        private IXCObjectType _parentType;
+
+        public XCLinkTypeBase()
+        {
+        }
+
+        /// <summary>
+        /// Родительский компонент
+        /// </summary>
+        public IXCComponent Parent => _parent;
+
+
+        /// <summary>
+        /// Родительский объект
+        /// </summary>
+        public IXCObjectType ParentType => _parentType;
+
+
+        /// <summary>
+        /// Родительский компонент
+        /// </summary>
+        IXCComponent IChildItem<IXCComponent>.Parent
+        {
+            get => _parent;
+            set => _parent = value;
+        }
+
+        /// <summary>
+        /// Родительский объект
+        /// </summary>
+        IXCObjectType IChildItem<IXCObjectType>.Parent
+        {
+            get => _parentType;
+            set => _parentType = value;
         }
     }
 }

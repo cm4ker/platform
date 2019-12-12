@@ -14,7 +14,6 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    [XmlRoot("SingleEntity")]
     public class XCSingleEntity : XCObjectTypeBase
     {
         private List<XCCommand> _predefinedCommands;
@@ -63,22 +62,16 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <summary>
         /// Коллекция свойств сущности
         /// </summary>
-        [XmlArray]
-        [XmlArrayItem(ElementName = "Property", Type = typeof(XCSingleEntityProperty))]
         public XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty> Properties { get; }
 
         /// <summary>
         /// Коллекция модулей сущности
         /// </summary>
-        [XmlArray]
-        [XmlArrayItem(ElementName = "Modules", Type = typeof(XCSingleEntityModule))]
         public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; }
 
         /// <summary>
         /// Комманды, которые привязаны к сущности
         /// </summary>
-        [XmlArray]
-        [XmlArrayItem(ElementName = "Commands", Type = typeof(XCCommand))]
         public List<XCCommand> Commands { get; }
 
         /// <inheritdoc />
@@ -116,6 +109,9 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             if (Properties.FirstOrDefault(x => x.Name == "Name") == null)
                 Properties.Add(StandardEntityPropertyHelper.CreateNameProperty());
+
+            if (Properties.FirstOrDefault(x => x.Name == "Link") == null)
+                Properties.Add(StandardEntityPropertyHelper.CreateLinkProperty(this));
         }
 
         public override IEnumerable<IXCObjectProperty> GetProperties()
@@ -164,6 +160,14 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <returns></returns>
         private void InitPredefinedCommands()
         {
+        }
+    }
+
+    public class XCSingleEntityLink : XCLinkTypeBase
+    {
+        public XCSingleEntityLink(IXCObjectType parentType)
+        {
+            ((IChildItem<IXCObjectType>) this).Parent = parentType;
         }
     }
 }

@@ -2,67 +2,75 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UIModel;
 using UIModel.XML;
 using WebAssembly.Browser.DOM;
+using Button = UIModel.XML.Button;
 
 public static class Service
 {
     public static Document Doc { get; } = new Document();
 
-    public static void Interpret(Control control, HTMLElement layer, object instance, object dataContext = null)
+    public class RenderParameters
     {
-        var dict = new Dictionary<Type, Func<HTMLElement, Control, object, object, HTMLElement>>();
+        public RenderParameters(HTMLElement layer, object instance, object dataContext, List<ContextObject> objects)
+        {
+            Layer = layer;
+            Instance = instance;
+            DataContext = dataContext;
+            Objects = objects;
+        }
+
+        public HTMLElement Layer { get; }
+        public object Instance { get; }
+        public object DataContext { get; }
+
+        public List<ContextObject> Objects { get; }
+    }
+
+    public static void Interpret(Control control, RenderParameters p)
+    {
+        var dict = new Dictionary<Type, Func<Control, RenderParameters, HTMLElement>>();
         dict[typeof(Button)] = RenderButton;
         dict[typeof(Container)] = RenderContainer;
         dict[typeof(Field)] = RenderField;
 
         Type renderType = control.GetType();
 
-        Console.WriteLine(renderType);
-        Console.WriteLine(renderType.BaseType);
-        Console.WriteLine(renderType.BaseType?.BaseType);
-
         HTMLElement element = null;
 
-        var maxDepth = 8;
-        while (renderType != null && renderType != typeof(object) && maxDepth > 0)
+        while (renderType != null && renderType != typeof(object))
         {
             try
             {
-                Console.WriteLine(renderType);
-                element = dict[renderType](layer, control, instance, dataContext);
-                Console.WriteLine("Breaking");
+                element = dict[renderType](control, p);
                 break;
             }
             catch
             {
-                Console.WriteLine($"Change type to: {renderType.BaseType}");
                 renderType = renderType.BaseType;
             }
-
-            maxDepth--;
-            Console.WriteLine($"Depth is");
         }
 
         if (element == null)
             throw new Exception($"Can't render type {control.GetType()}");
 
-        layer.AppendChild(element);
+        p.Layer.AppendChild(element);
     }
 
-    private static HTMLElement RenderContainer(HTMLElement layer, Control md, object instance, object dataContext)
+    private static HTMLElement RenderContainer(Control md, RenderParameters p)
     {
         var cont = md as Container;
 
         var contLayer = Doc.CreateElement<HTMLDivElement>();
 
         foreach (var item in cont.Controls)
-            Interpret(item, contLayer, instance);
-
+            Interpret(item, new RenderParameters(contLayer, p.Instance, p.DataContext, p.Objects));
+        
         return contLayer;
     }
 
-    private static HTMLElement RenderField(HTMLElement layer, Control md, object instance, object dataContext)
+    private static HTMLElement RenderField(Control md, RenderParameters p)
     {
         var fieldMD = md as Field ?? throw new Exception($"Render field only for render field ({md.GetType()})");
         var htmlField = Doc.CreateElement<HTMLInputElement>();
@@ -74,9 +82,24 @@ public static class Service
             FieldType.Integer => InputElementType.Number
         };
 
+        if (!string.IsNullOrEmpty(fieldMD.DefaultValue))
+        {
+            htmlField.Value = fieldMD.DefaultValue;
+        }
 
         foreach (var binding in fieldMD.Bindings)
         {
+            if (binding.IsReadOnly)
+            {
+            }
+            else
+            {
+                //ComputePath(binding.Path,p.DataContext.GetType());
+                var a = p.DataContext.GetType().GetProperty(binding.Path);
+                //Document.Data
+            }
+
+
             /*
              Путь может быть следующим выражением через точку
              Invoice.Contract.Contractor.Name - Auto One Way
@@ -97,14 +120,13 @@ public static class Service
                 } 
              
              */
-            binding.Path
         }
 
 
         return htmlField;
     }
 
-    private static HTMLElement RenderButton(HTMLElement layer, Control md, object instance, object dataContext)
+    private static HTMLElement RenderButton(Control md, RenderParameters p)
     {
         var b = md as Button;
         var htmlButton = Doc.CreateElement<HTMLInputElement>();
@@ -114,12 +136,12 @@ public static class Service
         {
             htmlButton.OnClick += (sender, args) =>
             {
-                var method = instance.GetType().GetMethod(b.OnClick,
+                var method = p.Instance.GetType().GetMethod(b.OnClick,
                                  BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance) ??
                              throw new Exception("The method not found");
 
                 // Тут мы можем обернуть ещё это всё
-                method.Invoke(instance, new object[] {sender, args});
+                method.Invoke(p.Instance, new object[] {sender, args});
             };
         }
 

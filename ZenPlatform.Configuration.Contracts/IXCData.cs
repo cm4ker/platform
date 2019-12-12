@@ -15,7 +15,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Все типы, которые относятся к компонентам
         /// </summary>
-        IEnumerable<IXCObjectType> ComponentTypes { get; }
+        IEnumerable<IXCObjectType> ObjectTypes { get; }
 
         /// <summary>
         /// Загрузить дерективу и все зависимости
@@ -31,7 +31,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// Зарегистрировать тип данных на уровне конфигурации платформы
         /// </summary>
         /// <param name="type"></param>
-        void RegisterType(IXCObjectType type);
+        void RegisterType(IXCType type);
 
         IXCComponent GetComponentByName(string name);
     }
