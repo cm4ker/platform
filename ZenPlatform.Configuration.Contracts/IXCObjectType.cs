@@ -4,6 +4,13 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
 {
+    /// <summary>
+    /// Описывает ссылку как часть метаданных
+    /// </summary>
+    public interface IXCLinkType : IXCType, IChildItem<IXCComponent>, IChildItem<IXCObjectType>
+    {
+    }
+
     public interface IXCObjectType : IXCType, IChildItem<IXCComponent>
     {
         /// <summary>
@@ -33,7 +40,7 @@ namespace ZenPlatform.Configuration.Contracts
 
 
         string RelTableName { get; set; }
-        
+
         /// <summary>
         /// Инициализировать сущность.
         /// Для примера: здесь можно сделать регистрацию кэша объектов

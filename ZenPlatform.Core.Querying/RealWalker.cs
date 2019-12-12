@@ -96,6 +96,9 @@ namespace ZenPlatform.Core.Querying
                       Cast(B.String AS int)
      End = C.Int
      */
+    /// <summary>
+    /// Обходит дерево логического запроса и строит на его основе дерево реального SQL зарпоса 
+    /// </summary>
     public class RealWalker : QLangWalker
     {
         private QueryMachine _qm;

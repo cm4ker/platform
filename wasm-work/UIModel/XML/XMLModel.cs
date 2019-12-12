@@ -24,22 +24,30 @@ namespace UIModel.XML
 
     public class Form : Container
     {
+        [XmlArray("Data")]
+        [XmlArrayItem("Object", typeof(ContextObject))]
+        public List<ContextObject> ContextObject { get; set; }
     }
 
     public class Panel : Container
     {
     }
 
+    [Serializable, XmlRoot("Binding")]
     public class Binding
     {
-        public string Path { get; set; }
+        [XmlAttribute] public string Path { get; set; }
+
+        [XmlAttribute] public bool IsReadOnly { get; set; }
     }
 
     public enum FieldType
     {
+        TypeSelect,
         Text,
         Date,
-        Integer
+        Integer,
+        Object
     }
 
     [Serializable, XmlRoot("Field")]
@@ -50,11 +58,33 @@ namespace UIModel.XML
             Bindings = new List<Binding>();
         }
 
-        [XmlAttribute] public FieldType Type { get; set; }
+        /// <summary>
+        /// Тип поля
+        /// </summary>
+        [XmlAttribute]
+        public FieldType Type { get; set; }
 
-        [XmlAttribute] public string Value { get; set; }
 
-        [XmlArray] public List<Binding> Bindings { get; set; }
+        /// <summary>
+        /// Типы которые поле обслуживает, для
+        /// FiledType, Object и TypeSelect могут быть несколько типов
+        /// </summary>
+        [XmlAttribute]
+        public List<int> ServingTypes { get; set; }
+
+        /// <summary>
+        /// Значение по умолчанию для значимых типов
+        /// В остальных случаях необходимо сетить значения по умолчанию из кода
+        /// </summary>
+        [XmlAttribute]
+        public string DefaultValue { get; set; }
+
+
+        /// <summary>
+        /// Связки
+        /// </summary>
+        [XmlArray]
+        public List<Binding> Bindings { get; set; }
     }
 
     [Serializable, XmlRoot("Button")]
@@ -63,5 +93,12 @@ namespace UIModel.XML
         [XmlAttribute] public string OnClick { get; set; }
 
         [XmlAttribute] public string Text { get; set; }
+    }
+
+    public class ContextObject
+    {
+        [XmlAttribute] public string Type { get; set; }
+
+        [XmlAttribute] public string Name { get; set; }
     }
 }

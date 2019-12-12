@@ -30,12 +30,16 @@ namespace ZenPlatform.Configuration.Structure.Data
         private IXComponentLoader _loader;
         private IDataComponent _componentImpl;
 
+        private List<IXCType> _allTypes;
+
         private readonly IDictionary<CodeGenRuleType, CodeGenRule> _codeGenRules;
         private Assembly _componentAssembly;
 
         public XCComponent()
         {
             _codeGenRules = new ConcurrentDictionary<CodeGenRuleType, CodeGenRule>();
+            _allTypes = new List<IXCType>();
+
             Include = new XCBlobCollection();
             AttachedComponentIds = new List<Guid>();
             AttachedComponents = new List<IXCComponent>();
@@ -154,7 +158,7 @@ namespace ZenPlatform.Configuration.Structure.Data
         {
             if (ComponentAssembly is null) return;
 
-            foreach (var type in Types)
+            foreach (var type in ObjectTypes)
             {
                 Loader.SaveObject(type);
             }
@@ -174,15 +178,18 @@ namespace ZenPlatform.Configuration.Structure.Data
             }
         }
 
-        [XmlIgnore] public IXCRoot Root => _parent.Parent;
+        public IXCRoot Root => _parent.Parent;
 
-        [XmlIgnore] public IXCData Parent => _parent;
+        public IXCData Parent => _parent;
 
-        [XmlIgnore] public IXComponentLoader Loader => _loader;
+        public IXComponentLoader Loader => _loader;
 
-        [XmlIgnore] public IDataComponent ComponentImpl => _componentImpl;
 
-        [XmlIgnore] public IEnumerable<IXCObjectType> Types => _parent.ComponentTypes.Where(x => x.Parent == this);
+        public IDataComponent ComponentImpl => _componentImpl;
+
+        public IEnumerable<IXCType> Types => _allTypes;
+
+        public IEnumerable<IXCObjectType> ObjectTypes => _parent.ObjectTypes.Where(x => x.Parent == this);
 
         IXCData IChildItem<IXCData>.Parent
         {
@@ -222,12 +229,17 @@ namespace ZenPlatform.Configuration.Structure.Data
 
         public IXCObjectType GetTypeByName(string typeName)
         {
-            return Types.FirstOrDefault(x => x.Name == typeName) ??
+            return ObjectTypes.FirstOrDefault(x => x.Name == typeName) ??
                    throw new Exception($"Type with name {typeName} not found");
+        }
+
+        public void RegisterType(IXCType type)
+        {
+            _allTypes.Add(type);
         }
     }
 
- 
+
     public class XCBlobCollection : List<IXCBlob>, IXCBlobCollection
     {
     }
