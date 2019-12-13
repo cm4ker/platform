@@ -18,7 +18,7 @@ public class Program
         var text = new UIModel.Text(document);
 
         document.Body.AppendChild(text.Element);
-        
+
         MyExample(document.Body);
 
         /*
@@ -48,7 +48,7 @@ public class Program
 
     private static void MyExample(HTMLElement layer)
     {
-        MyForm f = new MyForm(layer);
+        MyForm f = new MyForm(layer, null);
     }
 }
 

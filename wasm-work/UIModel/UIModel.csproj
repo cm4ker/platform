@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Avalonia.Base\Avalonia.Base.csproj" />
       <ProjectReference Include="..\WebAssembly.Browser\WebAssembly.Browser.csproj" />
     </ItemGroup>
 

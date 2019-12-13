@@ -10,11 +10,18 @@ namespace Tester
         static void Main(string[] args)
         {
             var xml = @"
- <Form>
+<Form>
+     <Data> 
+        <Object Type='TestEntity' Name='Obj'></Object> <!-- Type property is optional -->
+     </Data>
      <Controls>         
         <Button OnClick='Test' Text='Push me'/> 
         <Button OnClick='Test' Text='Push me'/>
-        <Field  Type='Text' Value='Push me'/>
+        <Field  Type='Text' DefaultValue='Hello'>
+            <Bindings>
+                <Binding Property='Value' Path='A'/> 
+            </Bindings>
+        </Field>
      </Controls>
  </Form>
 ";

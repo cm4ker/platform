@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using Avalonia;
 
 namespace UIModel.XML
 {
-    public abstract class Control
+    public abstract class Control : AvaloniaObject
     {
     }
 

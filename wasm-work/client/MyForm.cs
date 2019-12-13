@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Xml;
@@ -7,13 +8,63 @@ using UIModel.XML;
 using WebAssembly;
 using WebAssembly.Browser.DOM;
 
+
+public static class ObjectExt
+{
+    public static object Get(this object obj, string propName)
+    {
+        Console.WriteLine(obj.GetType());
+        
+        var prop = obj.GetType().GetProperty(propName);
+        if (prop == null)
+            throw new Exception("Property not found");
+
+        return prop.GetMethod.Invoke(obj, null);
+    }
+
+    public static void Set(this object obj, string propName, object value)
+    {
+        var prop = obj.GetType().GetProperty(propName);
+        if (prop == null)
+            throw new Exception("Property not found");
+
+        var propType = prop.PropertyType;
+
+        prop.SetMethod.Invoke(obj, new[] {value});
+    }
+}
+
+public class Bind
+{
+    private readonly object _instance;
+    private readonly Action<object, object> _setter;
+    private readonly Func<object, object> _getter;
+
+    public Bind(object instance, Action<object, object> setter, Func<object, object> getter)
+    {
+        _instance = instance;
+        _setter = setter;
+        _getter = getter;
+    }
+    
+    
+
+    public object BGet()
+    {
+        return _getter(_instance);
+    }
+
+    public void BSet(object obj)
+    {
+        _setter(_instance, obj);
+    }
+}
+
 public class MyForm
 {
-    class TestEntity
+    public class TestEntity
     {
-        public string A { get; set; }
-
-        public DateTime B { get; set; }
+        public string A { get; set; } = "";
     }
 
     private readonly HTMLElement _layer;
@@ -64,9 +115,9 @@ public class MyForm
      <Controls>         
         <Button OnClick='Test' Text='Push me'/> 
         <Button OnClick='Test' Text='Push me'/>
-        <Field  Type='Date' DefaultValue='2019-01-01'>
+        <Field  Type='Text' DefaultValue='Hello'>
             <Bindings>
-                <Binding Property='Value' Path='Obj.B'/> 
+                <Binding Property='Value' Path='A'/> 
             </Bindings>
         </Field>
      </Controls>
@@ -87,7 +138,7 @@ public class MyForm
 
         var formLayer = doc.CreateElement<HTMLDivElement>();
 
-        Service.Interpret(f, formLayer, this, test);
+        Service.Interpret(f, new Service.RenderParameters(layer, test, test, f.ContextObject));
 
         layer.AppendChild(formLayer);
     }
