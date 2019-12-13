@@ -33,6 +33,11 @@ namespace ZenPlatform.Configuration.Contracts
         bool IsSystemProperty { get; set; }
 
         /// <summary>
+        /// Свойство является ссылкой
+        /// </summary>
+        bool IsLink { get; }
+
+        /// <summary>
         /// Указывает на то, что поле является только для
         /// чтения
         /// </summary>

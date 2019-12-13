@@ -27,24 +27,24 @@ namespace ZenPlatform.Compiler.Platform
             IAssemblyPlatform pl = new CecilAssemblyPlatform();
             var assemblyBuilder = pl.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
 
-            var root = new Root(null, new List<CompilationUnit>());
+            // var root = new Root(null, new List<CompilationUnit>());
+            //
+            // foreach (var component in configuration.Data.Components)
+            // {
+            //     foreach (var type in component.ObjectTypes)
+            //     {
+            //         if (mode == CompilationMode.Client)
+            //             component.ComponentImpl.Generator.StageClient(type, root, targetDatabaseType);
+            //         else
+            //             component.ComponentImpl.Generator.StageServer(type, root, targetDatabaseType);
+            //     }
+            // }
 
-            foreach (var component in configuration.Data.Components)
-            {
-                foreach (var type in component.ObjectTypes)
-                {
-                    if (mode == CompilationMode.Client)
-                        component.ComponentImpl.Generator.StageClient(type, root, targetDatabaseType);
-                    else
-                        component.ComponentImpl.Generator.StageServer(type, root, targetDatabaseType);
-                }
-            }
+            // AstScopeRegister.Apply(root);
 
-            AstScopeRegister.Apply(root);
-
-            var generator = new Generator(new GeneratorParameters(root.Units, assemblyBuilder, mode, targetDatabaseType,
+            var generator = new Generator(new GeneratorParameters(null, assemblyBuilder, mode, targetDatabaseType,
                 configuration));
-            generator.Build();
+            generator.BuildConf();
 
             return assemblyBuilder;
         }

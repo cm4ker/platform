@@ -119,8 +119,8 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Все типы, которые относятся к компонентам
         /// </summary>
-        public IEnumerable<IXCObjectType> ObjectTypes =>
-            PlatformTypes.Where(x => x is XCObjectTypeBase).Cast<XCObjectTypeBase>();
+        public IEnumerable<IXCObjectType> ObjectTypes => Components.SelectMany(x => x.ObjectTypes);
+            
 
         public IXCRoot Parent => _parent;
 

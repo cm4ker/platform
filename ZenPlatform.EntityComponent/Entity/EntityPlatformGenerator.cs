@@ -58,8 +58,12 @@ namespace ZenPlatform.EntityComponent.Entity
                 XCNumeric b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Double),
                 XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
                 XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type),
+                XCLinkTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
+                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name,
+                    TypeNodeKind.Type),
                 XCObjectTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
-                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name+"Link", TypeNodeKind.Type),
+                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name + "Link",
+                    TypeNodeKind.Type),
                 XCGuid b => (TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
             };
         }
@@ -80,7 +84,8 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 bool propertyGenerated = false;
 
-                if (string.IsNullOrEmpty(prop.DatabaseColumnName))
+                if (!prop.IsLink &&
+                    string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
                         $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
@@ -170,7 +175,7 @@ namespace ZenPlatform.EntityComponent.Entity
             List<Member> members = new List<Member>();
 
             //Create dto class
-            foreach (var prop in set.Properties)
+            foreach (var prop in set.Properties.Where(x => !x.IsLink))
             {
                 bool propertyGenerated = false;
 
@@ -384,11 +389,18 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
                 else
                 {
-                    var schema = prop.GetPropertySchemas(prop.Name)
-                        .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
-                    var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.FullName);
-                    var ret = new Return(null, fieldExpression);
-                    get.Add(ret);
+                    if (!prop.IsLink)
+                    {
+                        var schema = prop.GetPropertySchemas(prop.Name)
+                            .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
+                        var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.FullName);
+                        var ret = new Return(null, fieldExpression);
+                        get.Add(ret);
+                    }
+                    else
+                    {
+                        //TODO: Link gen
+                    }
                 }
 
                 if (astProp.HasGetter)
@@ -639,7 +651,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var pIndex = 0;
 
-            var columns = se.Properties.SelectMany(x => x.GetPropertySchemas());
+            var columns = se.Properties.Where(x => !x.IsLink)
+                .SelectMany(x => x.GetPropertySchemas());
 
             foreach (var column in columns)
             {
@@ -662,8 +675,6 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private SSyntaxNode GetUpdateQuery(XCSingleEntity se)
         {
-            var visitor = new SQLVisitorBase();
-
             QueryMachine qm = new QueryMachine();
 
             var pIndex = 0;
@@ -672,7 +683,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             qm.bg_query()
                 .m_where()
-                .ld_column(se.Properties.GetPropertyByName("Id").DatabaseColumnName, "T0")
+                .ld_column(se.GetPropertyByName("Id").DatabaseColumnName, "T0")
                 .ld_param($"P_{pIndex++}")
                 .eq();
 

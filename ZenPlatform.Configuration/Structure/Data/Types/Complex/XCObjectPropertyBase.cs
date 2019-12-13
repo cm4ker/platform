@@ -52,6 +52,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         public bool IsSystemProperty { get; set; }
 
+        public bool IsLink => false;
+
         /// <summary>
         /// Указывает на то, что поле является только для
         /// чтения
@@ -160,7 +162,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             _typeLink = typeLink;
             _idProp = idProp;
             _typeId = typeLink.Id;
-            
+
             _types = new List<IXCType> {_typeLink};
         }
 
@@ -172,6 +174,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             get => true;
             set => throw new NotImplementedException();
         }
+
+        public bool IsLink => true;
 
         public bool IsReadOnly
         {
@@ -199,7 +203,11 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             set => throw new NotImplementedException();
         }
 
-        public string DatabaseColumnName { get; set; }
+        public string DatabaseColumnName
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
         public IEnumerable<IXCType> GetUnprocessedPropertyTypes()
         {

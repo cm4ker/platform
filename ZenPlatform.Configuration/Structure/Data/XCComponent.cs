@@ -189,7 +189,8 @@ namespace ZenPlatform.Configuration.Structure.Data
 
         public IEnumerable<IXCType> Types => _allTypes;
 
-        public IEnumerable<IXCObjectType> ObjectTypes => _parent.ObjectTypes.Where(x => x.Parent == this);
+        public IEnumerable<IXCObjectType> ObjectTypes =>
+            _allTypes.Where(x => x is XCObjectTypeBase).Cast<XCObjectTypeBase>();
 
         IXCData IChildItem<IXCData>.Parent
         {
