@@ -114,7 +114,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             var linkType = type.Parent.Types.First(x => x is XCLinkTypeBase a && a.ParentType == type) as IXCLinkType;
 
-            return new XCLinkProperty(linkType, type.Properties.GetPropertyByName("Id"));
+            return new XCLinkProperty(linkType, type.GetPropertyByName("Id"));
         }
 
         public static XCSingleEntityProperty CreateNameProperty()

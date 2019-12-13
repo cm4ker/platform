@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public XCSingleEntity()
         {
-            Properties = new XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty>(this);
+            Properties = new ObservableCollection<IXCObjectProperty>();
             Properties.CollectionChanged += Properties_CollectionChanged;
             Modules = new XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>(this);
             Commands = new List<XCCommand>();
@@ -62,7 +63,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <summary>
         /// Коллекция свойств сущности
         /// </summary>
-        public XCPropertyCollection<XCSingleEntity, XCSingleEntityProperty> Properties { get; }
+        public ObservableCollection<IXCObjectProperty> Properties { get; }
 
         /// <summary>
         /// Коллекция модулей сущности
@@ -97,7 +98,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 }
 
                 var id = property.Id;
-                property.Parent.Root.Storage.GetId(property.Guid, ref id);
+                Root.Storage.GetId(property.Guid, ref id);
                 property.Id = id;
             }
         }
@@ -165,6 +166,8 @@ namespace ZenPlatform.EntityComponent.Configuration
 
     public class XCSingleEntityLink : XCLinkTypeBase
     {
+        public override string Name => $"{ParentType.Name}Link";
+
         public XCSingleEntityLink(IXCObjectType parentType)
         {
             ((IChildItem<IXCObjectType>) this).Parent = parentType;
