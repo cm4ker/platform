@@ -102,6 +102,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             {
                 if (type is IXCPrimitiveType) yield return type;
                 if (type is XCObjectTypeBase objType) yield return new XCUnknownType() {Guid = objType.Guid};
+                if (type is XCLinkTypeBase objLink) yield return new XCUnknownType() {Guid = objLink.Guid};
             }
         }
 

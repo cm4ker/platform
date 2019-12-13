@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using Avalonia.Data;
 using UIModel;
 using UIModel.XML;
 using WebAssembly.Browser.DOM;
 using Button = UIModel.XML.Button;
+using Container = UIModel.XML.Container;
 
 public static class Service
 {
@@ -46,7 +49,7 @@ public static class Service
                 element = dict[renderType](control, p);
                 break;
             }
-            catch
+            catch (KeyNotFoundException ex)
             {
                 renderType = renderType.BaseType;
             }
@@ -66,7 +69,7 @@ public static class Service
 
         foreach (var item in cont.Controls)
             Interpret(item, new RenderParameters(contLayer, p.Instance, p.DataContext, p.Objects));
-        
+
         return contLayer;
     }
 
@@ -89,16 +92,28 @@ public static class Service
 
         foreach (var binding in fieldMD.Bindings)
         {
-            if (binding.IsReadOnly)
-            {
-            }
-            else
-            {
-                //ComputePath(binding.Path,p.DataContext.GetType());
-                var a = p.DataContext.GetType().GetProperty(binding.Path);
-                //Document.Data
-            }
+            Console.WriteLine("Binding path=" + binding.Path);
 
+            var b = new Avalonia.Data.Binding();
+            b.Path = "A";
+            b.Source = p.DataContext;
+            b.Mode = BindingMode.TwoWay;
+            
+            b.Initiate()
+            
+            var bind = new Bind(p.DataContext,
+                (inst, value) => inst.Set(binding.Path, value),
+                (inst) => inst.Get(binding.Path));
+
+            //ComputePath(binding.Path,p.DataContext.GetType());
+            htmlField.OnChange += (sender, args) =>
+            {
+                bind.BSet(((HTMLInputElement) sender).Value);
+                Console.WriteLine(((MyForm.TestEntity) p.DataContext).A);
+            };
+
+            Console.WriteLine(bind.BGet());
+            //Document.Data
 
             /*
              Путь может быть следующим выражением через точку
