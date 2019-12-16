@@ -99,7 +99,6 @@ public static class Service
             b.Source = p.DataContext;
             b.Mode = BindingMode.TwoWay;
             
-            b.Initiate()
             
             var bind = new Bind(p.DataContext,
                 (inst, value) => inst.Set(binding.Path, value),

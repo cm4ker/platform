@@ -1,3 +1,6 @@
+using System;
+using System.ComponentModel;
+using System.Data.SqlTypes;
 using Avalonia;
 using UIModel.XML;
 using WebAssembly.Browser.DOM;
@@ -25,6 +28,12 @@ namespace UIModel.HtmlWrapper
 
         public object Value { get; set; }
     }
+    
+    
+
+    public class UIContainer : StyledElement
+    {
+    }
 
     public class ObjectPickerField : AvaloniaObject
     {
@@ -35,12 +44,28 @@ namespace UIModel.HtmlWrapper
 
         public ObjectPickerField()
         {
-            _htmlInput = D.Doc.CreateElement<HTMLInputElement>();
-            _htmlClearButton = D.Doc.CreateElement<HTMLButtonElement>();
-            _htmlLookupButton = D.Doc.CreateElement<HTMLButtonElement>();
-            _htmlSelectTypeButton = D.Doc.CreateElement<HTMLButtonElement>();
+            // _htmlInput = D.Doc.CreateElement<HTMLInputElement>();
+            // _htmlClearButton = D.Doc.CreateElement<HTMLButtonElement>();
+            // _htmlLookupButton = D.Doc.CreateElement<HTMLButtonElement>();
+            // _htmlSelectTypeButton = D.Doc.CreateElement<HTMLButtonElement>();
         }
 
-        public object Value { get; set; }
+        /// <summary>
+        /// Defines the <see cref="Text"/> property.
+        /// </summary>
+        public static readonly DirectProperty<ObjectPickerField, object> ValueProperty =
+            AvaloniaProperty.RegisterDirect<ObjectPickerField, object>(
+                nameof(Value),
+                o => o.Value,
+                (o, v) => o.Value = v);
+
+        private object _value;
+
+
+        public object Value
+        {
+            get { return _value; }
+            set { SetAndRaise(ValueProperty, ref _value, value); }
+        }
     }
 }

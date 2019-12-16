@@ -43,11 +43,7 @@ namespace Avalonia.Styling
         /// <summary>
         /// Gets or sets the property to set.
         /// </summary>
-        public AvaloniaProperty Property
-        {
-            get;
-            set;
-        }
+        public AvaloniaProperty Property { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -57,10 +53,7 @@ namespace Avalonia.Styling
         [DependsOn(nameof(Property))]
         public object Value
         {
-            get
-            {
-                return _value;
-            }
+            get { return _value; }
 
             set
             {
@@ -117,7 +110,10 @@ namespace Avalonia.Styling
 
                 if (source != null)
                 {
-                    var cloned = Clone(source, source.Mode == BindingMode.Default ? Property.GetMetadata(control.GetType()).DefaultBindingMode : source.Mode, style, activator);
+                    var cloned = Clone(source,
+                        source.Mode == BindingMode.Default
+                            ? Property.GetMetadata(control.GetType()).DefaultBindingMode
+                            : source.Mode, style, activator);
                     return BindingOperations.Apply(control, Property, cloned, null);
                 }
             }
@@ -125,7 +121,8 @@ namespace Avalonia.Styling
             return Disposable.Empty;
         }
 
-        private InstancedBinding Clone(InstancedBinding sourceInstance, BindingMode mode, IStyle style, IObservable<bool> activator)
+        private InstancedBinding Clone(InstancedBinding sourceInstance, BindingMode mode, IStyle style,
+            IObservable<bool> activator)
         {
             if (activator != null)
             {
@@ -145,17 +142,16 @@ namespace Avalonia.Styling
                             return InstancedBinding.OneTime(activated, BindingPriority.StyleTrigger);
                         }
                     case BindingMode.OneWay:
-                        {
-                            var activated = new ActivatedObservable(activator, sourceInstance.Observable, description);
-                            return InstancedBinding.OneWay(activated, BindingPriority.StyleTrigger);
-                        }
+                    {
+                        var activated = new ActivatedObservable(activator, sourceInstance.Observable, description);
+                        return InstancedBinding.OneWay(activated, BindingPriority.StyleTrigger);
+                    }
                     default:
-                        {
-                            var activated = new ActivatedSubject(activator, sourceInstance.Subject, description);
-                            return new InstancedBinding(activated, sourceInstance.Mode, BindingPriority.StyleTrigger);
-                        }
+                    {
+                        var activated = new ActivatedSubject(activator, sourceInstance.Subject, description);
+                        return new InstancedBinding(activated, sourceInstance.Mode, BindingPriority.StyleTrigger);
+                    }
                 }
-
             }
             else
             {
