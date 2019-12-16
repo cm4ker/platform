@@ -35,7 +35,7 @@ namespace UIModel.XML
     }
 
     [Serializable, XmlRoot("Binding")]
-    public class Binding
+    public class ModelBinding
     {
         [XmlAttribute] public string Path { get; set; }
 
@@ -56,7 +56,7 @@ namespace UIModel.XML
     {
         public Field()
         {
-            Bindings = new List<Binding>();
+            Bindings = new List<ModelBinding>();
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace UIModel.XML
         /// Связки
         /// </summary>
         [XmlArray]
-        public List<Binding> Bindings { get; set; }
+        public List<ModelBinding> Bindings { get; set; }
     }
 
     [Serializable, XmlRoot("Button")]

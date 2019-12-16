@@ -1,38 +1,43 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net.Http.Headers;
 using System.Xml.Serialization;
+using Avalonia;
+using Avalonia.Data;
+using UIModel.HtmlWrapper;
 using UIModel.XML;
 
 namespace Tester
 {
+    public class DModel
+    {
+        public object Test { get; set; }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            var xml = @"
-<Form>
-     <Data> 
-        <Object Type='TestEntity' Name='Obj'></Object> <!-- Type property is optional -->
-     </Data>
-     <Controls>         
-        <Button OnClick='Test' Text='Push me'/> 
-        <Button OnClick='Test' Text='Push me'/>
-        <Field  Type='Text' DefaultValue='Hello'>
-            <Bindings>
-                <Binding Property='Value' Path='A'/> 
-            </Bindings>
-        </Field>
-     </Controls>
- </Form>
-";
+            UIContainer ui = new UIContainer();
+            var obj = new {Test = "OPA!!"};
+            ui.DataContext = obj;
 
-            XmlSerializer x = new XmlSerializer(typeof(Form));
+            ObjectPickerField p = new ObjectPickerField();
 
-            StringReader sr = new StringReader(xml);
+            Binding b = new Binding();
+            b.Mode = BindingMode.TwoWay;
+            b.Path = "Test";
+            
+            var ib = b.Initiate(p, ObjectPickerField.ValueProperty, ui);
 
-            var f = (Form) x.Deserialize(sr);
-            sr.Dispose();
-
+            var a = BindingOperations.Apply(p, ObjectPickerField.ValueProperty, ib, ui);
+            
+            Console.WriteLine(p.Value);
+            
+            p.Value = "changed!";
+            
+            Console.WriteLine(obj.Test);
         }
     }
 }
