@@ -10,9 +10,43 @@ using UIModel.XML;
 
 namespace Tester
 {
+    /*
+        
+        Dto
+        {
+            Version
+            Type   
+            Guid
+            String
+            Int
+             
+        }
+                
+        ModelClient
+        {
+            Link = LinkAnother     
+        }
+                 
+     
+     */
+
+
     public class DModel
     {
         public object Test { get; set; }
+    }
+
+
+    public class Link
+    {
+        public object Type
+        {
+            get
+            {
+                //Return RequestServerForData
+                return null;
+            }
+        }
     }
 
     class Program
@@ -28,15 +62,15 @@ namespace Tester
             Binding b = new Binding();
             b.Mode = BindingMode.TwoWay;
             b.Path = "Test";
-            
+
             var ib = b.Initiate(p, ObjectPickerField.ValueProperty, ui);
 
-            var a = BindingOperations.Apply(p, ObjectPickerField.ValueProperty, ib, ui);
-            
+            BindingOperations.Apply(p, ObjectPickerField.ValueProperty, ib, ui);
+
             Console.WriteLine(p.Value);
-            
+
             p.Value = "changed!";
-            
+
             Console.WriteLine(obj.Test);
         }
     }

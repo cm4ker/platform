@@ -33,6 +33,7 @@ namespace UIModel.HtmlWrapper
 
     public class UIContainer : StyledElement
     {
+        
     }
 
     public class ObjectPickerField : AvaloniaObject
@@ -44,10 +45,10 @@ namespace UIModel.HtmlWrapper
 
         public ObjectPickerField()
         {
-            // _htmlInput = D.Doc.CreateElement<HTMLInputElement>();
-            // _htmlClearButton = D.Doc.CreateElement<HTMLButtonElement>();
-            // _htmlLookupButton = D.Doc.CreateElement<HTMLButtonElement>();
-            // _htmlSelectTypeButton = D.Doc.CreateElement<HTMLButtonElement>();
+            _htmlInput = D.Doc.CreateElement<HTMLInputElement>();
+            _htmlClearButton = D.Doc.CreateElement<HTMLButtonElement>();
+            _htmlLookupButton = D.Doc.CreateElement<HTMLButtonElement>();
+            _htmlSelectTypeButton = D.Doc.CreateElement<HTMLButtonElement>();
         }
 
         /// <summary>
