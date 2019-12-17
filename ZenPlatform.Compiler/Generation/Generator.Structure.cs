@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Configuration.Compiler;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
@@ -28,17 +27,30 @@ namespace ZenPlatform.Compiler.Generation
 
         public void Build()
         {
-            if (_mode == CompilationMode.Server)
+            if (_mode == CompilationMode.Server && _conf != null)
                 _serviceScope = new ServerAssemblyServiceScope(_asm);
+
 
             BuildInfrastructure();
             BuildStructure();
+            BuildGlobalVar();
             BuildCode();
         }
 
+        /// <summary>
+        /// Построить глобальное дерево
+        /// </summary>
         public void BuildGlobalVar()
         {
-            
+            if (_conf != null)
+            {
+                _varManager = new GlobalVarManager(_mode);
+
+                foreach (var component in _conf.Data.Components)
+                {
+                    component.ComponentImpl.Generator.StageGlobalVar(_varManager);
+                }
+            }
         }
 
         /// <summary>
@@ -78,10 +90,11 @@ namespace ZenPlatform.Compiler.Generation
         /// </summary>
         private void BuildInfrastructure()
         {
-            foreach (var dataComponent in _conf.Data.Components)
-            {
-                dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm);
-            }
+            if (_conf != null)
+                foreach (var dataComponent in _conf.Data.Components)
+                {
+                    dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm, _parameters.TargetDatabaseType);
+                }
         }
 
         /// <summary>
@@ -112,7 +125,7 @@ namespace ZenPlatform.Compiler.Generation
                     {
                         var tco = PreBuildComponentClass(co);
                         AfterPreBuild(co, tco);
-                        co.Component.ComponentImpl.Generator.Stage0(co, tco);
+                        co.Component.ComponentImpl.Generator.Stage0(co, tco, _parameters.TargetDatabaseType);
                         break;
                     }
                     case ComponentModule cm:
@@ -121,7 +134,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         var tcm = PreBuildComponentModule(cm);
                         AfterPreBuild(cm, tcm);
-                        cm.Component.ComponentImpl.Generator.Stage0(cm, tcm);
+                        cm.Component.ComponentImpl.Generator.Stage0(cm, tcm, _parameters.TargetDatabaseType);
                         break;
                     }
 
@@ -192,7 +205,7 @@ namespace ZenPlatform.Compiler.Generation
                         break;
                     case ComponentAstBase cab:
 
-                        if (cab.CompilationMode != _mode) break;
+                        if ((cab.CompilationMode & _mode) == 0) break;
 
                         var tcab = _stage0[cab];
 
@@ -233,7 +246,7 @@ namespace ZenPlatform.Compiler.Generation
                             }
                         }
 
-                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab);
+                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab, _parameters.TargetDatabaseType);
                         break;
 
                     default:
@@ -281,7 +294,7 @@ namespace ZenPlatform.Compiler.Generation
                         break;
                     case ComponentAstBase cab:
 
-                        if (cab.CompilationMode != _mode) break;
+                        if ((cab.CompilationMode & _mode) == 0) break;
 
                         var tbcab = _stage0[cab];
 
@@ -347,7 +360,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private IPropertyBuilder PrebuildProperty(Property property, ITypeBuilder tb)
         {
-            var propBuilder = tb.DefineProperty(property.Type.ToClrType(_asm), property.Name);
+            var propBuilder = tb.DefineProperty(property.Type.ToClrType(_asm), property.Name, false);
 
             IField backField = null;
 
@@ -429,7 +442,8 @@ namespace ZenPlatform.Compiler.Generation
 
                 resultVar = emitter.DefineLocal(property.Type.ToClrType(_asm));
 
-                var valueSym = property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScope.Shared);
+                var valueSym =
+                    property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScopeBySecurity.Shared);
                 valueSym.CodeObject = mb.Parameters[0];
 
                 var returnLabel = emitter.DefineLabel();
@@ -485,12 +499,23 @@ namespace ZenPlatform.Compiler.Generation
 
         private ITypeBuilder PreBuildComponentClass(ComponentClass componentClass)
         {
+            IType baseType = null;
+
+            if (string.IsNullOrEmpty(componentClass.Base))
+            {
+                baseType = _bindings.Object;
+            }
+            else
+            {
+                baseType = _ts.FindType(componentClass.Base);
+            }
+
             var tb = _asm.DefineType(
                 (string.IsNullOrEmpty(@componentClass.Namespace) ? DEFAULT_ASM_NAMESPACE : @componentClass.Namespace),
                 @componentClass.Name,
                 TypeAttributes.Class | TypeAttributes.NotPublic |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
-                _bindings.Object);
+                baseType);
 
             return tb;
         }

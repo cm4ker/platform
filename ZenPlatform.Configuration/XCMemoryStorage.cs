@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Contracts;
 
 
 namespace ZenPlatform.Configuration

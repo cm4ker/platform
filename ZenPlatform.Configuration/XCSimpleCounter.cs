@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using ZenPlatform.Configuration.Contracts;
 using System.Linq;
 using ZenPlatform.Configuration.Structure;
 

@@ -254,7 +254,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IPropertyBuilder DefineProperty(this ITypeBuilder tb, IType type, string name,
             IField backingField, bool hasGet, bool hasSet)
         {
-            var result = tb.DefineProperty(type, name);
+            var result = tb.DefineProperty(type, name, false);
             if (hasGet)
             {
                 var getMethod = tb.DefineMethod($"{name}_get", true, false, false).WithReturnType(type);
@@ -273,7 +273,7 @@ namespace ZenPlatform.Compiler.Contracts
                 setMethod.DefineParameter("value", type, false, false);
                 setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField).Ret();
 
-                result = result.WithGetter(setMethod);
+                result = result.WithSetter(setMethod);
             }
 
             return result;

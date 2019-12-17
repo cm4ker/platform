@@ -60,8 +60,8 @@ namespace ZenPlatform.Core.Environment
 
             var context = DataContextManager.GetContext();
 
-            var savedTypes = SavedConfiguration.Data.ComponentTypes;
-            var dbTypes = Configuration.Data.ComponentTypes;
+            var savedTypes = SavedConfiguration.Data.ObjectTypes;
+            var dbTypes = Configuration.Data.ObjectTypes;
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
                 x => new {component = x.Parent, old = x, actual = default(IXCObjectType)},

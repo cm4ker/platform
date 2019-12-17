@@ -9,6 +9,10 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
+        /// <summary>
+        /// Зарегистрировать маршрут функции на сервере
+        /// </summary>
+        /// <param name="function"></param>
         private void EmitRegisterServerFunction(Function function)
         {
             //IInvokeService.Register("test", (context, list) => { a(list[0], list[1], list[2]); });

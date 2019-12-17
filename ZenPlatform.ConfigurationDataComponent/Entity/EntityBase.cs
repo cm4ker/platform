@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ZenPlatform.Configuration.Data.Contracts.Entity;
+using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Sessions;

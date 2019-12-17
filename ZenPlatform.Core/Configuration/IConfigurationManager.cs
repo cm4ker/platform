@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Configuration.Structure;
+﻿using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Configuration

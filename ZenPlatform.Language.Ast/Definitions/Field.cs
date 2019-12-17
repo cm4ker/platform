@@ -10,7 +10,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public SymbolType SymbolType => SymbolType.Variable;
-        public SymbolScope SymbolScope { get; set; }
+        public SymbolScopeBySecurity SymbolScope { get; set; }
         public TypeSyntax Type { get; set; }
     }
 }

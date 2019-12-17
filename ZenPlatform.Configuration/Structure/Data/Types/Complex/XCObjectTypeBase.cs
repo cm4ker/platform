@@ -28,9 +28,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public bool IsSealed { get; set; }
 
         /// <summary>
-        /// Ссылка на базовый тип
+        /// 
         /// </summary>
-        public Guid BaseTypeId { get; set; }
+        public IXCType BaseType { get; }
 
         /// <summary>
         /// Родительский компонент
@@ -61,7 +61,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             set => _parent = value;
         }
 
-        
+
         /// <summary>
         /// Имя связанной таблицы документа
         /// 
@@ -74,6 +74,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
          */
         [XmlIgnore]
         public string RelTableName { get; set; }
+
+        public bool HasCommands { get; }
 
         /// <summary>
         /// Инициализировать сущность.
@@ -98,6 +100,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// У объекта есть поддержка свойств
         /// </summary>
         public virtual bool HasProperties { get; }
+
+        public bool HasModules { get; }
 
 
         /// <summary>
@@ -155,5 +159,54 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         {
             throw new NotSupportedException();
         }
+    }
+
+    public abstract class XCLinkTypeBase : XCTypeBase, IXCLinkType
+    {
+        public bool IsAbstract { get; }
+        public bool IsSealed { get; }
+        public IXCType BaseType { get; }
+        public bool HasProperties { get; }
+        public bool HasModules { get; }
+        public bool HasCommands { get; }
+
+        public void Initialize()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LoadDependencies()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IXCObjectProperty CreateProperty()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IXCObjectProperty> GetProperties()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IXCProgramModule> GetProgramModules()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IXCCommand> GetCommands()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IXCCommand CreateCommand()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IXCComponent Parent { get; set; }
+
+        public IXCObjectType ParentType { get; protected set; }
     }
 }

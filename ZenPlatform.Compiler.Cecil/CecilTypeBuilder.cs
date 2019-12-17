@@ -72,7 +72,7 @@ namespace ZenPlatform.Compiler.Cecil
             return rv;
         }
 
-        public IPropertyBuilder DefineProperty(IType propertyType, string name)
+        public IPropertyBuilder DefineProperty(IType propertyType, string name, bool isStatic)
         {
             var def = new PropertyDefinition(name, PropertyAttributes.None,
                 GetReference(propertyType));

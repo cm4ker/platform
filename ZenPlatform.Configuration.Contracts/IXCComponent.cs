@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Data.Contracts;
+using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Shared.ParenChildCollection;
 
-namespace ZenPlatform.Configuration.Structure.Data
+namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCBlob
     {
@@ -15,12 +14,12 @@ namespace ZenPlatform.Configuration.Structure.Data
 
         string Hash { get; set; }
     }
-    
+
     public interface IXCBlobCollection : IList<IXCBlob>
     {
     }
 
-    
+
     public interface IXCComponent : IChildItem<IXCData>
     {
         /// <summary>
@@ -46,10 +45,16 @@ namespace ZenPlatform.Configuration.Structure.Data
         IXCBlobCollection Include { get; set; }
 
         Assembly ComponentAssembly { get; set; }
+
         IXCRoot Root { get; }
+
         IXComponentLoader Loader { get; }
+
         IDataComponent ComponentImpl { get; }
-        IEnumerable<IXCObjectType> Types { get; }
+
+        IEnumerable<IXCType> Types { get; }
+
+        IEnumerable<IXCObjectType> ObjectTypes { get; }
 
         /// <summary>
         /// Загрузить все данные компонента из хранилища
@@ -81,5 +86,11 @@ namespace ZenPlatform.Configuration.Structure.Data
 
 
         IXCObjectType GetTypeByName(string typeName);
+
+        /// <summary>
+        /// Зарегистрировать тип данных на уровне конфигурации платформы
+        /// </summary>
+        /// <param name="type"></param>
+        void RegisterType(IXCType type);
     }
 }

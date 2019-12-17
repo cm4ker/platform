@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+
 //using ZenPlatform.AsmClientInfrastructure;
 
 namespace ZenPlatform.Compiler.Contracts
@@ -33,12 +34,21 @@ namespace ZenPlatform.Compiler.Contracts
         public virtual IType MakeArrayType(int dimensions) => throw new NullReferenceException();
 
         public IType BaseType { get; }
+        
         public bool IsValueType { get; } = false;
+        
         public bool IsEnum { get; } = false;
+        
         public IReadOnlyList<IType> Interfaces { get; } = new IType[0];
+        
         public bool IsInterface => false;
+        
         public bool IsSystem { get; }
+        
+        public bool IsPrimitive { get; }
+        
         public IType GetEnumUnderlyingType() => throw new InvalidOperationException();
+        
         public IReadOnlyList<IType> GenericParameters { get; } = null;
 
         public bool IsAssignableFrom(IType type) => type == this;

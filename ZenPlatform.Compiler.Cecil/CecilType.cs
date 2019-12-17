@@ -169,7 +169,10 @@ namespace ZenPlatform.Compiler.Cecil
                     .TransformGeneric(Reference))).ToList());
 
         public bool IsInterface => Definition.IsInterface;
+
         public bool IsSystem { get; }
+
+        public bool IsPrimitive => Definition.IsPrimitive;
 
         public IType GetEnumUnderlyingType()
         {

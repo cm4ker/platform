@@ -3,6 +3,16 @@ using System.Collections.Generic;
 
 namespace ZenPlatform.Configuration.Contracts
 {
+    [Flags]
+    public enum XCPropertyAccessPolicy
+    {
+        CanGetCode = 1 << 0,
+        CanGetDb = 1 << 1,
+
+        CanSetCode = 1 << 2,
+        CanSetDb = 1 << 3
+    }
+
     public interface IXCObjectProperty
     {
         /// <summary>
@@ -21,6 +31,11 @@ namespace ZenPlatform.Configuration.Contracts
         /// На них можно лишь воздействовать через какие-нибудь другие свойства
         /// </summary>
         bool IsSystemProperty { get; set; }
+
+        /// <summary>
+        /// Свойство является ссылкой
+        /// </summary>
+        bool IsLink { get; }
 
         /// <summary>
         /// Указывает на то, что поле является только для
@@ -44,10 +59,15 @@ namespace ZenPlatform.Configuration.Contracts
         List<IXCType> Types { get; }
 
         /// <summary>
+        /// Настройки доступа к полю на всех этапах
+        /// </summary>
+        XCPropertyAccessPolicy AccessPolicy { get; set; }
+
+        /// <summary>
         /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
         /// </summary>
         string DatabaseColumnName { get; set; }
-        
+
         /// <summary>
         /// Получить необработанные типы свойств. Вызывается во время конструирования типа при загрузке конфигурации.
         /// </summary>
@@ -56,7 +76,7 @@ namespace ZenPlatform.Configuration.Contracts
 
         IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null);
     }
-    
+
     /// <summary>
     /// Детерминированный тип колонки реквизита конфигурации
     /// Реквизит может быть нескольких типов одновременно
@@ -84,7 +104,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         Type
     }
-    
+
     /// <summary>
     /// Описывает тип и название колонки
     /// </summary>

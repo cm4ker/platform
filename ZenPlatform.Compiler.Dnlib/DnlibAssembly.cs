@@ -14,13 +14,12 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         private DnlibTypeSystem _ts;
 
-        private Dictionary<string, DnlibType> _typeCache = new Dictionary<string, DnlibType>();
+        protected Dictionary<string, DnlibType> _typeCache = new Dictionary<string, DnlibType>();
 
         public DnlibAssembly(DnlibTypeSystem ts, AssemblyDef assembly)
         {
             Assembly = assembly;
             _ts = ts;
-            
         }
 
         public AssemblyDef Assembly { get; }

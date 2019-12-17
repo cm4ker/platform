@@ -26,7 +26,11 @@ namespace ZenPlatform.Compiler.Generation
                     EmitExpression(e, ret.Expression, context.SymbolTable);
 
                     if (returnVariable.Type == _bindings.Object)
-                        e.Box(ret.Expression.Type.ToClrType(_asm));
+                    {
+                        var clrType = ret.Expression.Type.ToClrType(_asm);
+                        if (clrType.IsValueType && !clrType.IsArray)
+                            e.Box(clrType);
+                    }
                 }
 
                 if (inTry)

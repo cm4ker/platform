@@ -6,12 +6,12 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
     public interface ISymbolTable
     {
         ISymbol Add(IAstSymbol astSymbol);
-        ISymbol Add(string name, SymbolType type, SymbolScope scope, IAstSymbol syntaxObject, object codeObject);
+        ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject, object codeObject);
         ISymbol ConnectCodeObject(IAstSymbol v, object codeObject);
-        bool Contains(string name, SymbolType type, SymbolScope scope);
+        bool Contains(string name, SymbolType type, SymbolScopeBySecurity scope);
         ISymbol Find(IAstSymbol symbol);
         T FindCodeObject<T>(IAstSymbol symbol);
-        ISymbol Find(string name, SymbolType type, SymbolScope scope);
+        ISymbol Find(string name, SymbolType type, SymbolScopeBySecurity scope);
         void Clear();
     }
 
@@ -34,7 +34,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol.SymbolScope, astSymbol, null);
         }
 
-        public ISymbol Add(string name, SymbolType type, SymbolScope scope, IAstSymbol syntaxObject, object codeObject)
+        public ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject, object codeObject)
         {
             string prefix = PrefixFromType(type);
 
@@ -62,7 +62,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return result;
         }
 
-        public bool Contains(string name, SymbolType type, SymbolScope scope)
+        public bool Contains(string name, SymbolType type, SymbolScopeBySecurity scope)
         {
             return Find(name, type, scope) != null;
         }
@@ -77,7 +77,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return (T) Find(symbol)?.CodeObject;
         }
 
-        public ISymbol Find(string name, SymbolType type, SymbolScope scope)
+        public ISymbol Find(string name, SymbolType type, SymbolScopeBySecurity scope)
         {
             string prefix = PrefixFromType(type);
 

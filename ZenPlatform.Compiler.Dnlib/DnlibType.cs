@@ -19,26 +19,18 @@ namespace ZenPlatform.Compiler.Dnlib
         private readonly DnlibTypeSystem _ts;
         private readonly DnlibAssembly _assembly;
 
-        public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, TypeRef typeRef, DnlibAssembly assembly)
+        public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, ITypeDefOrRef typeRef, DnlibAssembly assembly)
         {
             _ts = typeSystem;
             _assembly = assembly;
-            TypeDef = typeDef;
+
             TypeRef = typeRef ?? throw new ArgumentNullException(nameof(typeRef));
-        }
-
-
-        public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, TypeRef typeRef, TypeSpec typeSpec,
-            DnlibAssembly assembly) : this(typeSystem, typeDef, typeRef, assembly)
-        {
-            TypeSpec = typeSpec;
+            TypeDef = typeDef ?? typeRef.ResolveTypeDef();
         }
 
         public TypeDef TypeDef { get; }
 
-        public TypeRef TypeRef { get; }
-
-        public TypeSpec TypeSpec { get; }
+        public ITypeDefOrRef TypeRef { get; }
 
         public bool Equals(IType other)
         {
@@ -58,7 +50,7 @@ namespace ZenPlatform.Compiler.Dnlib
         private IReadOnlyList<IType> _interfaces;
 
         public IReadOnlyList<IProperty> Properties =>
-            _properties ??=TypeDef.Properties.Select(x => new DnlibProperty(_ts, x)).ToList();
+            _properties ??= TypeDef.Properties.Select(x => new DnlibProperty(_ts, x)).ToList();
 
         public IReadOnlyList<IField> Fields =>
             _fields ??= TypeDef.Fields.Select(x => new DnlibField(x)).ToList();
@@ -66,10 +58,13 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<IEventInfo> Events { get; }
 
         public IReadOnlyList<IMethod> Methods =>
-            _methods ??= TypeDef.Methods.Select(x => new DnlibMethod(_ts, x, TypeRef)).ToList();
+            _methods ??= TypeDef.Methods.Where(x => !x.IsConstructor)
+                .Select(x => (IMethod) new DnlibMethod(_ts, x, x, TypeRef)).ToList();
 
         public IReadOnlyList<IConstructor> Constructors =>
-            _constructors ??= TypeDef.FindConstructors().Select(x => new DnlibConstructor(x)).ToList();
+            _constructors ??= TypeDef.FindConstructors().Select(x =>
+                (IConstructor) new DnlibConstructor(_ts, new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef), x,
+                    TypeRef)).ToList();
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
         public IReadOnlyList<IType> GenericArguments { get; }
@@ -86,7 +81,23 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public bool IsAssignableFrom(IType type)
         {
-            throw new NotImplementedException();
+            if (type.IsValueType
+                && GenericTypeDefinition?.FullName == "System.Nullable`1"
+                && GenericArguments[0].Equals(type))
+                return true;
+            if (FullName == "System.Object" && type.IsInterface)
+                return true;
+            var baseType = type;
+            while (baseType != null)
+            {
+                if (baseType.Equals(this))
+                    return true;
+                baseType = baseType.BaseType;
+            }
+
+            if (IsInterface && type.GetAllInterfaces().Any(IsAssignableFrom))
+                return true;
+            return false;
         }
 
         public IType MakeGenericType(IReadOnlyList<IType> typeArguments)
@@ -95,12 +106,14 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IType GenericTypeDefinition { get; }
-        public bool IsArray { get; }
-        public IType ArrayElementType { get; }
+
+        public bool IsArray => TypeRef.ToTypeSig().IsSingleOrMultiDimensionalArray;
+
+        public IType ArrayElementType => _ts.Resolve(TypeRef.ScopeType);
 
         public IType MakeArrayType()
-        { 
-            throw new NotImplementedException();
+        {
+            return new DnlibType(_ts, null, new TypeSpecUser(new SZArraySig(TypeRef.ToTypeSig())), _assembly);
         }
 
         public IType MakeArrayType(int dimensions)
@@ -109,11 +122,16 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IType BaseType { get; }
-        public bool IsValueType { get; }
-        public bool IsEnum { get; }
 
-        public bool IsInterface { get; }
+        public bool IsValueType => TypeDef.IsValueType;
+
+        public bool IsEnum => TypeDef.IsEnum;
+
+        public bool IsInterface => TypeDef.IsInterface;
+
         public bool IsSystem { get; }
+
+        public bool IsPrimitive => TypeDef.IsPrimitive;
 
         public IType GetEnumUnderlyingType()
         {
@@ -121,10 +139,5 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IReadOnlyList<IType> GenericParameters { get; }
-    }
-
-
-    public class DnlibArrayType
-    {
     }
 }

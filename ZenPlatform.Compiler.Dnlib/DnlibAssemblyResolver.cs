@@ -34,6 +34,11 @@ namespace ZenPlatform.Compiler.Dnlib
             _defaultResolver.PreSearchPaths.Add(MacNetstandardDirectory);
         }
 
+        public void RegisterAsm(AssemblyDef asm)
+        {
+            libraries.TryAdd(asm.Name, asm);
+        }
+
         public AssemblyDef Resolve(IAssembly assembly, ModuleDef sourceModule)
         {
             var asm = _defaultResolver.Resolve(assembly, sourceModule);

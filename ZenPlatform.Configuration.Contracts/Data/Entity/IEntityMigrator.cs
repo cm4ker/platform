@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.QueryBuilder.Builders;
+﻿using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Model;
 
-namespace ZenPlatform.Configuration.Data.Contracts.Entity
+namespace ZenPlatform.Configuration.Contracts.Data.Entity
 {
     /// <summary>
     /// Интерфейс для получения скриптов обновления и миграции сущностей

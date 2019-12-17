@@ -54,6 +54,11 @@ namespace ZenPlatform.Compiler.Sre
             return result;
         }
 
+        public IPropertyBuilder DefineProperty(IType propertyType, string name, bool isStatic)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public override IReadOnlyList<IField> Fields => _fileds;
         public override IReadOnlyList<IMethod> Methods => _definedMethods;
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.Definitions;
 
@@ -12,12 +13,12 @@ namespace ZenPlatform.Compiler.Generation
 
             foreach (var component in _conf.Data.Components)
             {
-                foreach (var type in component.Types)
+                foreach (var type in component.ObjectTypes)
                 {
                     if (_mode == CompilationMode.Client)
-                        component.ComponentImpl.Generator.StageClient(type, root);
+                        component.ComponentImpl.Generator.StageClient(type, root, _parameters.TargetDatabaseType);
                     else
-                        component.ComponentImpl.Generator.StageServer(type, root);
+                        component.ComponentImpl.Generator.StageServer(type, root, _parameters.TargetDatabaseType);
                 }
             }
 

@@ -66,6 +66,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool IsInterface => Type.IsInterface;
         public bool IsSystem { get; }
+        public bool IsPrimitive { get; }
 
         public IReadOnlyList<IType> GenericArguments
         {
