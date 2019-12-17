@@ -12,19 +12,22 @@ using ZenPlatform.Shared.ParenChildCollection;
 namespace ZenPlatform.Configuration.Structure
 {
     [XmlRoot("Root")]
-    public class XCRoot : IXCRoot
+    public class XCRoot : IXCRoot, IXCConfigurationItem<XCRoot.XCRootConfig>
     {
-        private IXCData _data;
+        private XCData _data;
         private IXCRoles _roles;
         private IXCConfigurationStorage _storage;
         private IXCConfigurationUniqueCounter _counter;
-
+        public class XCRootConfig: IXCSettingsItem
+        {
+            public string DataReference { get; set; }
+        }
 
         public XCRoot()
         {
             ProjectId = Guid.NewGuid();
 
-            Data = new XCData();
+            _data = new XCData();
             Interface = new XCInterface();
             Roles = new XCRoles();
             Modules = new XCModules();
@@ -66,12 +69,6 @@ namespace ZenPlatform.Configuration.Structure
         public IXCData Data
         {
             get => _data;
-
-            set
-            {
-                _data = value;
-                _data.Parent = this;
-            }
         }
 
         /// <summary>
@@ -222,6 +219,23 @@ namespace ZenPlatform.Configuration.Structure
         {
             //TODO: Сделать механизм сравнения двух конфигураций
             throw new NotImplementedException();
+        }
+
+        public void Initialize(IXCLoader loader, XCRootConfig settings)
+        {
+
+            _data = loader.Load<XCData, XCData.XCDataConfig>(settings.DataReference);
+        }
+
+        public IXCSettingsItem Store(IXCSaver saver)
+        {
+            saver.Save("Data", _data);
+
+            return new XCRootConfig()
+            { 
+                DataReference = "Data"
+            };
+            
         }
     }
 }
