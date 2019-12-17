@@ -18,7 +18,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Это абстрактный тип
         /// </summary>
-        [XmlElement]
         public bool IsAbstract { get; set; }
 
         /// <summary>

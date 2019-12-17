@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Avalonia.Data;
+using UIModel.HtmlWrapper;
 using WebAssembly;
 using WebAssembly.Browser.DOM;
 
 public class Program
 {
+    public class DModel
+    {
+        public object Test { get; set; }
+    }
+    
     public static void Main()
     {
         var document = new Document();
@@ -20,6 +27,29 @@ public class Program
         document.Body.AppendChild(text.Element);
 
         MyExample(document.Body);
+        
+        UIContainer ui = new UIContainer();
+        var obj = new DModel {Test = "OPA!!"};
+        ui.DataContext = obj;
+        
+        ObjectPickerField op = new ObjectPickerField();
+        ObjectPickerField op2 = new ObjectPickerField();
+        
+        Binding b = new Binding();
+        b.Mode = BindingMode.TwoWay;
+        b.Path = "Test";
+        
+        var ib = b.Initiate(op, ObjectPickerField.ValueProperty, ui);
+        BindingOperations.Apply(op, ObjectPickerField.ValueProperty, ib, ui);
+        
+        var ib2 = b.Initiate(op2, ObjectPickerField.ValueProperty, ui);
+        BindingOperations.Apply(op2, ObjectPickerField.ValueProperty, ib, ui);
+        
+        document.Body.AppendChild(op.Root);
+        document.Body.AppendChild(op2.Root);
+        
+        
+        
 
         /*
          
