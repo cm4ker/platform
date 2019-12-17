@@ -1,27 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
 {
-    public interface IXCObjectReadOnlyType : IXCType, IChildItem<IXCComponent>
+    /// <summary>
+    /// Метаданные типа
+    /// </summary>
+    public interface IXCTypeMetadata
     {
         /// <summary>
         /// Это абстрактный тип
         /// </summary>
-        bool IsAbstract { get; }
+        bool IsAbstract { get; set; }
 
         /// <summary>
         /// Этот тип нельзя наследовать
         /// </summary>
-        bool IsSealed { get; }
+        bool IsSealed { get; set; }
 
         /// <summary>
         /// Ссылка на базовый тип
         /// </summary>
-        IXCType BaseType { get; }
+        IXCType BaseType { get; set; }
 
         /// <summary>
         /// У объекта есть поддержка свойств
@@ -85,28 +85,5 @@ namespace ZenPlatform.Configuration.Contracts
         /// <returns>Возвращается новая проинициализированная комманда</returns>
         /// <exception cref="NotSupportedException">Данная функция не поддерживается компонентом</exception>
         IXCCommand CreateCommand();
-    }
-
-    public interface IXCObjectType : IXCObjectReadOnlyType
-    {
-    }
-
-    public static class StructHelper
-    {
-        public static IXCLinkType GetLink(this IXCObjectType type)
-        {
-            return (IXCLinkType) type.Parent.Types.FirstOrDefault(x =>
-                x is IXCLinkType l && ((IChildItem<IXCObjectType>) l).Parent == type);
-        }
-
-
-        public static IXCObjectProperty GetPropertyByName(this IXCObjectReadOnlyType type, string propName)
-        {
-            if (type.HasProperties)
-                return type.GetProperties().FirstOrDefault(x => x.Name == propName) ??
-                       throw new Exception($"Property not found: {propName}");
-            else
-                throw new Exception($"Component not support properties: {type.Parent.Info.ComponentName}");
-        }
     }
 }

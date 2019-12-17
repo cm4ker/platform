@@ -11,6 +11,7 @@ using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.ConfigurationExample;
