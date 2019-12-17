@@ -9,11 +9,12 @@ using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration
 {
-    public class XCFileSystemStorage : IXCConfigurationStorage
+    public class XCFileSystemStorage : IXCConfigurationStorage, IDisposable
     {
         private readonly string _directory;
         private readonly string _projectFileName;
         private uint _maxId = 100;
+        private List<IDisposable> _disposables = new List<IDisposable>();
 
         public XCFileSystemStorage(string directory, string projectFileName)
         {
@@ -23,12 +24,16 @@ namespace ZenPlatform.Configuration
 
         public Stream GetBlob(string name, string route)
         {
-            return File.OpenRead(Path.Combine(_directory, route, name));
+            var stream = File.OpenRead(Path.Combine(_directory, route, name));
+            _disposables.Add(stream);
+            return stream;
         }
 
         public Stream GetRootBlob()
         {
-            return File.OpenRead(Path.Combine(_directory, _projectFileName));
+            var stream = File.OpenRead(Path.Combine(_directory, _projectFileName));
+            _disposables.Add(stream);
+            return stream;
         }
 
         public void SaveRootBlob(Stream stream)
@@ -58,6 +63,14 @@ namespace ZenPlatform.Configuration
             using (var sw = File.Open(Path.Combine(_directory, route, name), FileMode.Create))
             {
                 stream.CopyTo(sw);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var d in _disposables)
+            {
+                d.Dispose();
             }
         }
     }
