@@ -195,5 +195,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             get => _parentType;
             set => _parentType = value;
         }
+        
     }
 }

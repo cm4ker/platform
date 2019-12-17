@@ -11,6 +11,10 @@ namespace ZenPlatform.Configuration.Contracts
     {
     }
 
+    public interface IXCTypeMetadata : IXCType
+    {
+    }
+
     public interface IXCObjectType : IXCType, IChildItem<IXCComponent>
     {
         /// <summary>

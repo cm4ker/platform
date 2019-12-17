@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure.Helper
 {
@@ -22,6 +24,13 @@ namespace ZenPlatform.Configuration.Structure.Helper
             if (type is IXCObjectType) return "guid";
 
             throw new Exception("Unknown type");
+        }
+
+
+        public static IXCLinkType GetLink(this IXCObjectType type)
+        {
+            return (IXCLinkType) type.Parent.Types.FirstOrDefault(x =>
+                x is IXCLinkType l && ((IChildItem<IXCObjectType>) l).Parent == type);
         }
     }
 }
