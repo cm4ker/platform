@@ -1,3 +1,4 @@
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Core.Environment.Contracts

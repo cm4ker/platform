@@ -34,10 +34,10 @@ namespace ZenPlatform.Component.Tests
 
             foreach (var component in conf.Data.Components)
             {
-                foreach (var type in component.Types)
+                foreach (var type in component.ObjectTypes)
                 {
-                    new EntityPlatformGenerator(component).StageServer(type, rootServer);
-                    new EntityPlatformGenerator(component).StageClient(type, rootClient);
+                    new EntityPlatformGenerator(component).StageServer(type, rootServer, SqlDatabaseType.SqlServer);
+                    new EntityPlatformGenerator(component).StageClient(type, rootClient, SqlDatabaseType.SqlServer);
                 }
             }
 

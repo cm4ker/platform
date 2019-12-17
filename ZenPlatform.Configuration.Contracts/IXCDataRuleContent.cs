@@ -1,8 +1,7 @@
 using System;
-using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Shared.ParenChildCollection;
 
-namespace ZenPlatform.Configuration.Structure
+namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCDataRuleContent : IChildItem<IXCRole>
     {

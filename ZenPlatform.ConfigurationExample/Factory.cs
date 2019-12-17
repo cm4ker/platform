@@ -72,7 +72,7 @@ namespace ZenPlatform.ConfigurationExample
             storeCompositeProp.Types.Add(new XCBoolean());
             storeCompositeProp.Types.Add(new XCString());
             storeCompositeProp.Types.Add(new XCDateTime());
- 
+
             store.Initialize();
 
 
@@ -142,13 +142,13 @@ public void OnClientClientCallProc()
 
             root.Data.Components.Add(component);
 
-            var store = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             store.Guid = Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5");
-            var invoice = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             store.Guid = Guid.Parse("b9fee6cd-a834-4d72-9de5-1fc2087467e5");
-            var department = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            var department = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             store.Guid = Guid.Parse("953120f4-6e30-4056-9b8b-6eb0c8d406f0");
-            var custom = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            var custom = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             store.Guid = Guid.Parse("0265f6cd-dccc-4a85-8e14-af65e2c0066f");
 
 

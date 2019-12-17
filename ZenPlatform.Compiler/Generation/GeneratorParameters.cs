@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;

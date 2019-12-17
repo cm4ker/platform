@@ -8,27 +8,23 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Глобальный идентификатор типа, уникальный в разрезе конфигураций
         /// </summary>
-        [XmlElement]
-        Guid Guid { get; set; }
+        Guid Guid { get; }
 
         /// <summary>
         /// Локальный уникальный идентификатор типа хранится в базе данных и присваивается инициализатороом во время загрузки конфигурации
         /// Если уникальность этого поля будет нарушена , то в таком случае это будет провал
         /// </summary>
-        [XmlIgnore]
-        uint Id { get; set; }
+        uint Id { get; }
 
         /// <summary>
         /// Наименование типа
         /// </summary>
-        [XmlElement]
-        string Name { get; set; }
+        string Name { get; }
 
         /// <summary>
         /// Описание типа
         /// </summary>
-        [XmlElement]
-        string Description { get; set; }
+        string Description { get; }
 
 
         bool IsAssignableFrom(IXCType tb);

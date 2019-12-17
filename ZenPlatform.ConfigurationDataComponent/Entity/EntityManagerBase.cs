@@ -1,4 +1,4 @@
-﻿using ZenPlatform.Configuration.Data.Contracts.Entity;
+﻿using ZenPlatform.Configuration.Contracts.Data.Entity;
 
 namespace ZenPlatform.DataComponent.Entity
 {

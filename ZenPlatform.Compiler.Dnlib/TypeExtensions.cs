@@ -6,7 +6,7 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public static class TypeExtensions
     {
-        public static TypeRef GetRef(this IType type)
+        public static ITypeDefOrRef GetRef(this IType type)
         {
             return ((DnlibType) type)?.TypeRef;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -16,11 +17,19 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public override IXCObjectType Create(IXCObjectType parentType = null)
         {
-            var newItem = new XCSingleEntity();
+            var newItem = new XCSingleEntity(null);
             newItem.Guid = Guid.NewGuid();
 
+            //Link type нельзя создать просто так, самому, он обязательно должен быть
+            //припинен к какому-то объекту, поэтому для него нет отдельного метода создания
+            var link = new XCSingleEntityLink(newItem, null);
+
+            ((IChildItem<IXCComponent>) link).Parent = Component;
             ((IChildItem<IXCComponent>) newItem).Parent = Component;
-            Component.Parent.RegisterType(newItem);
+
+
+            Component.RegisterType(newItem);
+            Component.RegisterType(link);
 
             //TODO: Обработать базовый тип
 

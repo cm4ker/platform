@@ -10,7 +10,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     public partial class Class : TypeEntity
     {
         public bool ImplementsReference { get; set; }
-        public SymbolScope SymbolScope { get; set; }
+        public SymbolScopeBySecurity SymbolScope { get; set; }
 
 
         public void AddFunction(Function function)

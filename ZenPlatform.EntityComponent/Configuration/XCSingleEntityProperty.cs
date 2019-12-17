@@ -55,7 +55,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             return HashCode.Combine(Guid, Name, Unique, IsSystemProperty, Types);
         }
 
-        
 
         private bool SequenceEqual<T>(IEnumerable<T> list1, IEnumerable<T> list2)
         {
@@ -86,14 +85,13 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             return cnt.Values.All(c => c == 0);
         }
-        
+
         public override IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
             if (string.IsNullOrEmpty(propName)) propName = this.DatabaseColumnName;
 
             return PropertyHelper.GetPropertySchemas(propName, Types);
         }
-
     }
 
     internal static class StandardEntityPropertyHelper
@@ -112,6 +110,13 @@ namespace ZenPlatform.EntityComponent.Configuration
             };
         }
 
+        public static IXCObjectProperty CreateLinkProperty(XCSingleEntity type)
+        {
+            var linkType = type.Parent.Types.First(x => x is XCLinkTypeBase a && a.ParentType == type) as IXCLinkType;
+
+            return new XCLinkProperty(linkType, type.GetPropertyByName("Id"));
+        }
+
         public static XCSingleEntityProperty CreateNameProperty()
         {
             return new XCSingleEntityProperty()
@@ -121,7 +126,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 DatabaseColumnName = "Name",
                 Types = {PlatformTypesFactory.GetString(150)},
                 IsSystemProperty = false,
-                Unique = true,
+                Unique = false,
                 IsReadOnly = true
             };
         }

@@ -9,6 +9,7 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Preprocessor;
 using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;

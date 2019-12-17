@@ -10,13 +10,13 @@ namespace ZenPlatform.Compiler.Tests
 
         // main plugin assembly.
 
-        private AssemblyDependencyResolver _resolver;
+     //   private AssemblyDependencyResolver _resolver;
 
 
         public HostAssemblyLoadContext(string pluginPath) : base(isCollectible: true)
 
         {
-            _resolver = new AssemblyDependencyResolver(pluginPath);
+           // _resolver = new AssemblyDependencyResolver(pluginPath);
         }
 
 
@@ -33,18 +33,7 @@ namespace ZenPlatform.Compiler.Tests
         protected override Assembly Load(AssemblyName name)
 
         {
-            string assemblyPath = _resolver.ResolveAssemblyToPath(name);
-
-            if (assemblyPath != null)
-
-            {
-                Console.WriteLine($"Loading assembly {assemblyPath} into the HostAssemblyLoadContext");
-
-                return LoadFromAssemblyPath(assemblyPath);
-            }
-
-
-            return null;
+           return null;
         }
     }
 }

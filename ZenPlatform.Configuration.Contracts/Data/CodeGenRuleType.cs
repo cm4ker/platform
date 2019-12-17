@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZenPlatform.Configuration.Data.Contracts
+namespace ZenPlatform.Configuration.Contracts.Data
 {
     public enum CodeGenRuleType
     {

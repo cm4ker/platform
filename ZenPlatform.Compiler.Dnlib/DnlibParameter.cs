@@ -10,12 +10,14 @@ namespace ZenPlatform.Compiler.Dnlib
         private Parameter _parameter;
         private DnlibContextResolver _cr;
 
-        public DnlibParameter(DnlibTypeSystem typeSystem, MethodDef methodDef, Parameter parameter)
+        public DnlibParameter(DnlibTypeSystem typeSystem, MethodDef methodDef, ModuleDef module, Parameter parameter)
         {
             _parameter = parameter;
-            _cr = new DnlibContextResolver(typeSystem, methodDef.Module);
+            _cr = new DnlibContextResolver(typeSystem, module);
         }
 
+        public Parameter Parameter => _parameter;
+        
         public bool Equals(IParameter other)
         {
             throw new NotImplementedException();

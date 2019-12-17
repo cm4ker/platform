@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Configuration.Compiler;
+using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Data.Contracts;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Core.Querying;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -22,12 +20,20 @@ using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Model;
+using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.Shared.Tree;
-using ZenPlatform.UI.Ast;
-
 
 namespace ZenPlatform.EntityComponent.Entity
 {
+    public enum ObjectType
+    {
+        Dto,
+        Object,
+        Link
+    }
+
     public class EntityPlatformGenerator : IPlatformGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
@@ -41,7 +47,6 @@ namespace ZenPlatform.EntityComponent.Entity
             _dtoCollections = new Dictionary<XCSingleEntity, IType>();
         }
 
-
         private TypeSyntax GetAstFromPlatformType(IXCType pt)
         {
             return pt switch
@@ -53,8 +58,12 @@ namespace ZenPlatform.EntityComponent.Entity
                 XCNumeric b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Double),
                 XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
                 XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type),
+                XCLinkTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
+                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name,
+                    TypeNodeKind.Type),
                 XCObjectTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
-                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name, TypeNodeKind.Type),
+                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name + "Link",
+                    TypeNodeKind.Type),
                 XCGuid b => (TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
             };
         }
@@ -75,7 +84,8 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 bool propertyGenerated = false;
 
-                if (string.IsNullOrEmpty(prop.DatabaseColumnName))
+                if (!prop.IsLink &&
+                    string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
                         $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
@@ -146,6 +156,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 new TypeBody(members));
 
             cls.Namespace = @namespace;
+            cls.Bag = ObjectType.Dto;
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
@@ -164,7 +175,7 @@ namespace ZenPlatform.EntityComponent.Entity
             List<Member> members = new List<Member>();
 
             //Create dto class
-            foreach (var prop in set.Properties)
+            foreach (var prop in set.Properties.Where(x => !x.IsLink))
             {
                 bool propertyGenerated = false;
 
@@ -237,6 +248,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 new TypeBody(members));
 
             cls.Namespace = @namespace;
+            cls.Bag = ObjectType.Dto;
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
 
@@ -276,9 +288,9 @@ namespace ZenPlatform.EntityComponent.Entity
             var constructor =
                 new Constructor(null, block, new List<Parameter>() {sessionParameter, dtoParameter}, null, className);
 
-            var field = new Field(null, "_dto", dtoType) {SymbolScope = SymbolScope.System};
+            var field = new Field(null, "_dto", dtoType) {SymbolScope = SymbolScopeBySecurity.System};
 
-            var fieldSession = new Field(null, "_session", sessionType) {SymbolScope = SymbolScope.System};
+            var fieldSession = new Field(null, "_session", sessionType) {SymbolScope = SymbolScopeBySecurity.System};
 
             members.Add(constructor);
 
@@ -355,7 +367,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         else if (ctype is XCObjectTypeBase ot)
                         {
                             matchAtomType = new SingleTypeSyntax(null,
-                                ot.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + ot.Name,
+                                ot.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + ot.Name + "Link",
                                 TypeNodeKind.Type);
                         }
 
@@ -377,11 +389,18 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
                 else
                 {
-                    var schema = prop.GetPropertySchemas(prop.Name)
-                        .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
-                    var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.FullName);
-                    var ret = new Return(null, fieldExpression);
-                    get.Add(ret);
+                    if (!prop.IsLink)
+                    {
+                        var schema = prop.GetPropertySchemas(prop.Name)
+                            .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
+                        var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.FullName);
+                        var ret = new Return(null, fieldExpression);
+                        get.Add(ret);
+                    }
+                    else
+                    {
+                        //TODO: Link gen
+                    }
                 }
 
                 if (astProp.HasGetter)
@@ -425,11 +444,20 @@ namespace ZenPlatform.EntityComponent.Entity
 
                     foreach (var func in typeBody.Functions)
                     {
-                        func.SymbolScope = SymbolScope.User;
+                        func.SymbolScope = SymbolScopeBySecurity.User;
                         cls.AddFunction(func);
                     }
                 }
             }
+        }
+
+        private void GenerateLink(IXCObjectType type, Root root)
+        {
+            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name + "Link",
+                new TypeBody(new List<Member>())) {Base = "Documents.EntityLink", Namespace = "Documents"};
+
+            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+            root.Add(cu);
         }
 
         private void EmitMappingSupport(ComponentClass cls, ITypeBuilder tb)
@@ -483,7 +511,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 foreach (var func in typeBody.Functions)
                 {
-                    func.SymbolScope = SymbolScope.User;
+                    func.SymbolScope = SymbolScopeBySecurity.User;
                 }
 
                 var cu = new CompilationUnit(null, new List<NamespaceBase>(),
@@ -498,13 +526,15 @@ namespace ZenPlatform.EntityComponent.Entity
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        public void StageServer(IXCObjectType type, Node root)
+        /// <param name="dbType"></param>
+        public void StageServer(IXCObjectType type, Node root, SqlDatabaseType dbType)
         {
             if (root is Root r)
             {
                 GenerateServerDtoClass(type, r);
                 GenerateServerObjectClass(type, r);
                 GenerateCommands(type, r);
+                GenerateLink(type, r);
             }
         }
 
@@ -512,14 +542,194 @@ namespace ZenPlatform.EntityComponent.Entity
         /// Генерация клиентского кода
         /// </summary>
         /// <param name="type">Тип</param>
-        /// <param name="root">Корень проекта</param>
-        public void StageClient(IXCObjectType type, Node node)
+        /// <param name="node"></param>
+        /// <param name="dbType"></param>
+        public void StageClient(IXCObjectType type, Node node, SqlDatabaseType dbType)
         {
             if (node is Root root)
             {
                 GenerateCommands(type, root);
                 GenerateClientDtoClass(type, root);
+                GenerateClientObjectClass(type, root);
+                GenerateLink(type, root);
             }
+        }
+
+        private void GenerateClientObjectClass(IXCObjectType type, Root root)
+        {
+            var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
+                                       $"This component only can serve {nameof(XCSingleEntity)} objects");
+            var className = type.Name;
+            var dtoClassName =
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+
+            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+            var intType = new PrimitiveTypeSyntax(null, TypeNodeKind.Int);
+            List<Member> members = new List<Member>();
+
+            var sessionType = new PrimitiveTypeSyntax(null, TypeNodeKind.Session);
+            var dtoType = new SingleTypeSyntax(null, $"{@namespace}.{dtoClassName}", TypeNodeKind.Type);
+
+            var sessionParameter = new Parameter(null, "session", sessionType
+                , PassMethod.ByValue);
+
+            var dtoParameter = new Parameter(null, "dto", dtoType
+                , PassMethod.ByValue);
+
+            var block = new Block(null,
+                new[]
+                    {
+                        new Assignment(null, new Name(null, "session"), null, new Name(null, "_session")).ToStatement(),
+                        new Assignment(null, new Name(null, "dto"), null, new Name(null, "_dto")).ToStatement()
+                    }
+                    .ToList());
+
+            var constructor =
+                new Constructor(null, block, new List<Parameter>() {sessionParameter, dtoParameter}, null, className);
+
+            var field = new Field(null, "_dto", dtoType) {SymbolScope = SymbolScopeBySecurity.System};
+
+            var fieldSession = new Field(null, "_session", sessionType) {SymbolScope = SymbolScopeBySecurity.System};
+
+            members.Add(constructor);
+
+            members.Add(field);
+            members.Add(fieldSession);
+
+            foreach (var prop in singleEntityType.Properties)
+            {
+                bool propertyGenerated = false;
+
+                var propName = prop.Name;
+
+                var propType = (prop.Types.Count > 1)
+                    ? new PrimitiveTypeSyntax(null, TypeNodeKind.Object)
+                    : GetAstFromPlatformType(prop.Types[0]);
+
+
+                var astProp = new Property(null, propName, propType, true, !prop.IsReadOnly);
+
+                members.Add(astProp);
+                var get = new List<Statement>();
+                var set = new List<Statement>();
+
+                if (prop.Types.Count > 1)
+                {
+                    var typeField = prop.GetPropertySchemas(prop.Name)
+                        .First(x => x.SchemaType == XCColumnSchemaType.Type);
+
+                    var matchAtomList = new List<MatchAtom>();
+
+                    var valExp = new Name(null, "value");
+
+                    foreach (var ctype in prop.Types)
+                    {
+                        var typeLiteral = new Literal(null, ctype.Id.ToString(), intType);
+
+                        var schema = prop.GetPropertySchemas(prop.Name)
+                            .First(x => x.SchemaType == XCColumnSchemaType.Type);
+
+                        var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.FullName);
+
+                        var expr = new BinaryExpression(null,
+                            typeLiteral
+                            , fieldExpression
+                            , BinaryOperatorType.Equal);
+
+
+                        var schemaTyped = ctype switch
+                        {
+                            XCObjectTypeBase obj => prop.GetPropertySchemas(prop.Name)
+                                .First(x => x.SchemaType == XCColumnSchemaType.Ref),
+                            _ => prop.GetPropertySchemas(prop.Name).First(x => x.PlatformType == ctype),
+                        };
+
+                        var feTypedProp = new GetFieldExpression(new Name(null, "_dto"), schemaTyped.FullName);
+
+                        var ret = new Return(null, feTypedProp);
+
+                        var @if = new If(null, null, ret.ToBlock(), expr);
+                        get.Add(@if);
+
+
+                        var afe = new AssignFieldExpression(null, new Name(null, "_dto"), schemaTyped.FullName);
+                        var afe2 = new AssignFieldExpression(null, new Name(null, "_dto"), typeField.FullName);
+                        var dtoAssignment = new Assignment(null, valExp, null, afe);
+                        var typeAssignment = new Assignment(null, new Literal(null, ctype.Id.ToString(), intType), null,
+                            afe2);
+                        TypeSyntax matchAtomType = null;
+
+                        if (ctype is XCPrimitiveType pt)
+                        {
+                            matchAtomType = GetAstFromPlatformType(pt);
+                        }
+                        else if (ctype is XCObjectTypeBase ot)
+                        {
+                            matchAtomType = new SingleTypeSyntax(null,
+                                ot.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + ot.Name + "Link",
+                                TypeNodeKind.Type);
+                        }
+
+                        var atomBlock =
+                            new Block(new[] {dtoAssignment.ToStatement(), typeAssignment.ToStatement()}.ToList());
+
+                        var matchAtom = new MatchAtom(null, atomBlock, matchAtomType);
+
+                        matchAtomList.Add(matchAtom);
+                    }
+
+                    var match = new Match(null, matchAtomList, valExp);
+
+                    get.Add(new Throw(null,
+                            new Literal(null, "The type not found", new PrimitiveTypeSyntax(null, TypeNodeKind.String)))
+                        .ToStatement());
+
+                    set.Add(match);
+                }
+                else
+                {
+                    if (!prop.IsLink)
+                    {
+                        var schema = prop.GetPropertySchemas(prop.Name)
+                            .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
+                        var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.FullName);
+                        var ret = new Return(null, fieldExpression);
+                        get.Add(ret);
+                    }
+                    else
+                    {
+                        //TODO: Link gen
+                    }
+                }
+
+                if (astProp.HasGetter)
+                    astProp.Getter = new Block(get);
+
+                if (astProp.HasSetter)
+                    astProp.Setter = new Block(set);
+            }
+
+            //IReferenceImpl
+
+
+            var tprop = new Property(null, "Type", intType, true, false) {IsInterface = true};
+            tprop.Getter = new Block(new[]
+            {
+                (Statement) new Return(null, new Literal(null, singleEntityType.Id.ToString(), intType))
+            }.ToList());
+            //
+
+            members.Add(tprop);
+
+            var cls = new ComponentClass(CompilationMode.Server, _component, singleEntityType, null, className,
+                new TypeBody(members));
+            cls.Namespace = @namespace;
+
+            GenerateObjectClassUserModules(type, cls);
+
+            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+            //end create dto class
+            root.Add(cu);
         }
 
         public void StageUI(IXCObjectType type, Node node)
@@ -527,26 +737,47 @@ namespace ZenPlatform.EntityComponent.Entity
             throw new NotImplementedException();
         }
 
+        public void StageGlobalVar(IGlobalVarManager manager)
+        {
+            manager.Register(new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "Test", (e) => { }));
 
-        public void Stage0(Node astTree, ITypeBuilder builder)
+            /*
+             *
+             * 
+             * $.Document.Invoice.Create();
+             * $.SomeFunction()
+             *
+             * MyGM.StaticFunction()
+             */
+        }
+
+        public void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
         {
         }
 
-        public void Stage1(Node astTree, ITypeBuilder builder)
+        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
         {
             if (astTree is ComponentClass cc)
             {
-                if (cc.CompilationMode == CompilationMode.Server)
+                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
                 {
-                    EmitMappingSupport(cc, builder);
-                    EmitSavingSupport(cc, builder);
-                }
+                    BuildVersionField(builder);
 
-                BuildVersionField(builder);
+                    if (cc.CompilationMode == CompilationMode.Server)
+                    {
+                        EmitMappingSupport(cc, builder);
+                        EmitSavingSupport(cc, builder, dbType);
+                    }
+                }
             }
         }
 
-        public void StageInfrastructure(IAssemblyBuilder builder)
+        public void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType)
+        {
+            CreateMainLink(builder);
+        }
+
+        private void CreateMainLink(IAssemblyBuilder builder)
         {
             var ts = builder.TypeSystem;
             var b = ts.GetSystemBindings();
@@ -590,10 +821,77 @@ namespace ZenPlatform.EntityComponent.Entity
             var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version");
         }
 
-        private void EmitSavingSupport(ComponentClass cls, ITypeBuilder tb)
+        private SSyntaxNode GetInsertQuery(XCSingleEntity se)
         {
+            QueryMachine qm = new QueryMachine();
+            qm.bg_query()
+                .m_values();
+
+            var pIndex = 0;
+
+            var columns = se.Properties.Where(x => !x.IsLink)
+                .SelectMany(x => x.GetPropertySchemas());
+
+            foreach (var column in columns)
+            {
+                qm.ld_param($"P{pIndex}");
+                pIndex++;
+            }
+
+            qm.m_insert()
+                .ld_table(se.RelTableName);
+
+            foreach (var col in columns)
+            {
+                qm.ld_column(col.FullName);
+            }
+
+            qm.st_query();
+
+            return (SSyntaxNode) qm.pop();
+        }
+
+        private SSyntaxNode GetUpdateQuery(XCSingleEntity se)
+        {
+            QueryMachine qm = new QueryMachine();
+
+            var pIndex = 0;
+
+            var columns = se.Properties.Where(x => !x.Unique).SelectMany(x => x.GetPropertySchemas());
+
+            qm.bg_query()
+                .m_where()
+                .ld_column(se.GetPropertyByName("Id").DatabaseColumnName, "T0")
+                .ld_param($"P_{pIndex++}")
+                .eq();
+
+            qm.m_set();
+            Debug.Assert(columns.Any());
+
+            foreach (var column in columns)
+            {
+                qm.ld_column(column.FullName, "T0")
+                    .ld_param($"P_{pIndex++}")
+                    .assign();
+            }
+
+            qm.m_update()
+                .ld_table(se.RelTableName)
+                .@as("T0")
+                .st_query();
+
+            return (SSyntaxNode) qm.pop();
+        }
+
+        private void EmitSavingSupport(ComponentClass cls, ITypeBuilder tb, SqlDatabaseType dbType)
+        {
+            var set = cls.Type as XCSingleEntity ??
+                      throw new Exception($"This component can't serve this type {cls.Type}");
+
             var _ts = tb.Assembly.TypeSystem;
             var _bindings = _ts.GetSystemBindings();
+
+            var compiler = SqlCompillerBase.FormEnum(dbType);
 
             tb.AddInterfaceImplementation(_ts.FindType<ICanSave>());
 
@@ -609,12 +907,34 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var indexp = 0;
 
+
             var p_loc = rg.DefineLocal(_ts.FindType<DbParameter>());
 
-            rg
-                .LdArg(cmdParam.ArgIndex)
-                .LdStr("SELECT * FROM Table")
-                .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter);
+            var versionF = tb.Properties.First(x => x.Name == "Version");
+
+            if (versionF != null)
+            {
+                var narg = rg.DefineLabel();
+                var end = rg.DefineLabel();
+                rg.LdArg_0()
+                    .EmitCall(versionF.Getter)
+                    .LdNull()
+                    .Ceq()
+                    .BrTrue(narg);
+                //if Version != null
+                rg
+                    .LdArg(cmdParam.ArgIndex)
+                    .LdStr(compiler.Compile(GetUpdateQuery(set)))
+                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
+                    .Br(end);
+                //if Version == null
+                rg
+                    .MarkLabel(narg)
+                    .LdArg(cmdParam.ArgIndex)
+                    .LdStr(compiler.Compile(GetInsertQuery(set)))
+                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
+                    .MarkLabel(end);
+            }
 
             foreach (var property in cls.TypeBody.Properties)
             {
@@ -638,6 +958,10 @@ namespace ZenPlatform.EntityComponent.Entity
             }
 
             rg.Ret();
+        }
+
+        private void EmitLink()
+        {
         }
     }
 }

@@ -151,8 +151,10 @@ namespace ZenPlatform.QueryBuilder.Tests
                 .m_set()
                 .ld_column("column1", "t2")
                 .ld_column("column1", "t1")
+                .assign()
                 .ld_column("column2", "t2")
                 .ld_column("column2", "t1")
+                .assign()
                 .m_update()
                 .ld_table("table2")
                 .@as("t2")
@@ -188,7 +190,7 @@ namespace ZenPlatform.QueryBuilder.Tests
             var visitor = new SQLVisitorBase();
 
             var res = visitor.Visit((SSyntaxNode) machine.pop());
-            Assert.Equal(res, res = "INSERT INTO table2\nSELECT t1.column1\nFROM\ntable1 as t1\nWHERE\n@value1 = t1.column1\n");
+            Assert.Equal(res, res = "INSERT INTO table2(column1)\nSELECT t1.column1\nFROM\ntable1 as t1\nWHERE\n@value1 = t1.column1\n");
         }
 
         [Fact]
@@ -212,7 +214,7 @@ namespace ZenPlatform.QueryBuilder.Tests
 
             var res = visitor.Visit((SSyntaxNode) machine.pop());
 
-            Assert.Equal(res, res = "INSERT INTO table2\nVALUES\n(@value3, @value2, @value1)\n");
+            Assert.Equal(res, res = "INSERT INTO table2(column3, column2, column1)\nVALUES\n(@value3, @value2, @value1)\n");
         }
     }
 }
