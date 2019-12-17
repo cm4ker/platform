@@ -550,8 +550,186 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 GenerateCommands(type, root);
                 GenerateClientDtoClass(type, root);
+                GenerateClientObjectClass(type, root);
                 GenerateLink(type, root);
             }
+        }
+
+        private void GenerateClientObjectClass(IXCObjectType type, Root root)
+        {
+            var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
+                                       $"This component only can serve {nameof(XCSingleEntity)} objects");
+            var className = type.Name;
+            var dtoClassName =
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+
+            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+            var intType = new PrimitiveTypeSyntax(null, TypeNodeKind.Int);
+            List<Member> members = new List<Member>();
+
+            var sessionType = new PrimitiveTypeSyntax(null, TypeNodeKind.Session);
+            var dtoType = new SingleTypeSyntax(null, $"{@namespace}.{dtoClassName}", TypeNodeKind.Type);
+
+            var sessionParameter = new Parameter(null, "session", sessionType
+                , PassMethod.ByValue);
+
+            var dtoParameter = new Parameter(null, "dto", dtoType
+                , PassMethod.ByValue);
+
+            var block = new Block(null,
+                new[]
+                    {
+                        new Assignment(null, new Name(null, "session"), null, new Name(null, "_session")).ToStatement(),
+                        new Assignment(null, new Name(null, "dto"), null, new Name(null, "_dto")).ToStatement()
+                    }
+                    .ToList());
+
+            var constructor =
+                new Constructor(null, block, new List<Parameter>() {sessionParameter, dtoParameter}, null, className);
+
+            var field = new Field(null, "_dto", dtoType) {SymbolScope = SymbolScopeBySecurity.System};
+
+            var fieldSession = new Field(null, "_session", sessionType) {SymbolScope = SymbolScopeBySecurity.System};
+
+            members.Add(constructor);
+
+            members.Add(field);
+            members.Add(fieldSession);
+
+            foreach (var prop in singleEntityType.Properties)
+            {
+                bool propertyGenerated = false;
+
+                var propName = prop.Name;
+
+                var propType = (prop.Types.Count > 1)
+                    ? new PrimitiveTypeSyntax(null, TypeNodeKind.Object)
+                    : GetAstFromPlatformType(prop.Types[0]);
+
+
+                var astProp = new Property(null, propName, propType, true, !prop.IsReadOnly);
+
+                members.Add(astProp);
+                var get = new List<Statement>();
+                var set = new List<Statement>();
+
+                if (prop.Types.Count > 1)
+                {
+                    var typeField = prop.GetPropertySchemas(prop.Name)
+                        .First(x => x.SchemaType == XCColumnSchemaType.Type);
+
+                    var matchAtomList = new List<MatchAtom>();
+
+                    var valExp = new Name(null, "value");
+
+                    foreach (var ctype in prop.Types)
+                    {
+                        var typeLiteral = new Literal(null, ctype.Id.ToString(), intType);
+
+                        var schema = prop.GetPropertySchemas(prop.Name)
+                            .First(x => x.SchemaType == XCColumnSchemaType.Type);
+
+                        var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.FullName);
+
+                        var expr = new BinaryExpression(null,
+                            typeLiteral
+                            , fieldExpression
+                            , BinaryOperatorType.Equal);
+
+
+                        var schemaTyped = ctype switch
+                        {
+                            XCObjectTypeBase obj => prop.GetPropertySchemas(prop.Name)
+                                .First(x => x.SchemaType == XCColumnSchemaType.Ref),
+                            _ => prop.GetPropertySchemas(prop.Name).First(x => x.PlatformType == ctype),
+                        };
+
+                        var feTypedProp = new GetFieldExpression(new Name(null, "_dto"), schemaTyped.FullName);
+
+                        var ret = new Return(null, feTypedProp);
+
+                        var @if = new If(null, null, ret.ToBlock(), expr);
+                        get.Add(@if);
+
+
+                        var afe = new AssignFieldExpression(null, new Name(null, "_dto"), schemaTyped.FullName);
+                        var afe2 = new AssignFieldExpression(null, new Name(null, "_dto"), typeField.FullName);
+                        var dtoAssignment = new Assignment(null, valExp, null, afe);
+                        var typeAssignment = new Assignment(null, new Literal(null, ctype.Id.ToString(), intType), null,
+                            afe2);
+                        TypeSyntax matchAtomType = null;
+
+                        if (ctype is XCPrimitiveType pt)
+                        {
+                            matchAtomType = GetAstFromPlatformType(pt);
+                        }
+                        else if (ctype is XCObjectTypeBase ot)
+                        {
+                            matchAtomType = new SingleTypeSyntax(null,
+                                ot.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + ot.Name + "Link",
+                                TypeNodeKind.Type);
+                        }
+
+                        var atomBlock =
+                            new Block(new[] {dtoAssignment.ToStatement(), typeAssignment.ToStatement()}.ToList());
+
+                        var matchAtom = new MatchAtom(null, atomBlock, matchAtomType);
+
+                        matchAtomList.Add(matchAtom);
+                    }
+
+                    var match = new Match(null, matchAtomList, valExp);
+
+                    get.Add(new Throw(null,
+                            new Literal(null, "The type not found", new PrimitiveTypeSyntax(null, TypeNodeKind.String)))
+                        .ToStatement());
+
+                    set.Add(match);
+                }
+                else
+                {
+                    if (!prop.IsLink)
+                    {
+                        var schema = prop.GetPropertySchemas(prop.Name)
+                            .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
+                        var fieldExpression = new GetFieldExpression(new Name(null, "_dto"), schema.FullName);
+                        var ret = new Return(null, fieldExpression);
+                        get.Add(ret);
+                    }
+                    else
+                    {
+                        //TODO: Link gen
+                    }
+                }
+
+                if (astProp.HasGetter)
+                    astProp.Getter = new Block(get);
+
+                if (astProp.HasSetter)
+                    astProp.Setter = new Block(set);
+            }
+
+            //IReferenceImpl
+
+
+            var tprop = new Property(null, "Type", intType, true, false) {IsInterface = true};
+            tprop.Getter = new Block(new[]
+            {
+                (Statement) new Return(null, new Literal(null, singleEntityType.Id.ToString(), intType))
+            }.ToList());
+            //
+
+            members.Add(tprop);
+
+            var cls = new ComponentClass(CompilationMode.Server, _component, singleEntityType, null, className,
+                new TypeBody(members));
+            cls.Namespace = @namespace;
+
+            GenerateObjectClassUserModules(type, cls);
+
+            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+            //end create dto class
+            root.Add(cu);
         }
 
         public void StageUI(IXCObjectType type, Node node)
