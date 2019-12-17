@@ -11,14 +11,20 @@ using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Shared.ParenChildCollection;
+using static ZenPlatform.Configuration.Structure.XCData;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCData : IXCData
+    public class XCData : IXCData, IXCConfigurationItem<XCDataConfig>
     {
         private IXCRoot _parent;
         private ObservableCollection<IXCType> _platformTypes;
         private ChildItemCollection<IXCData, IXCComponent> _components;
+
+        public class XCDataConfig: IXCSettingsItem
+        {
+
+        }
 
         public XCData()
         {
@@ -145,6 +151,16 @@ namespace ZenPlatform.Configuration.Structure
         {
             return Components.FirstOrDefault(x => x.Info.ComponentName == name) ??
                    throw new Exception($"Component with name {name} not found");
+        }
+
+        public void Initialize(IXCLoader loader, XCDataConfig settings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IXCSettingsItem Store(IXCSaver saver)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -47,7 +47,7 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Раздел данных
         /// </summary>
-        IXCData Data { get; set; }
+        IXCData Data { get; }
 
         /// <summary>
         /// Раздел  интерфейсов (UI)
