@@ -1,0 +1,1 @@
+dotnet ./mono/dbg-proxy/netcoreapp3.0/ProxyDriver.dll

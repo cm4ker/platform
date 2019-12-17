@@ -30,8 +30,8 @@ namespace ZenPlatform.Migration
         {
             _assemblyManager.BuildConfiguration(actual, _dataContextManager.DatabaseType);
 
-            var savedTypes = actual.Data.ComponentTypes;
-            var dbTypes = old.Data.ComponentTypes;
+            var savedTypes = actual.Data.ObjectTypes;
+            var dbTypes = old.Data.ObjectTypes;
 
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,

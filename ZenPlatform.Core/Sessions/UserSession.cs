@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using ZenPlatform.Configuration.Data.Contracts.Entity;
+using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Environment;

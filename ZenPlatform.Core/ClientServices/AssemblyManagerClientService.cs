@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ZenPlatform.Compiler;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Assemlies;

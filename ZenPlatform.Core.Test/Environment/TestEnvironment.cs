@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using ZenPlatform.Compiler;
-using ZenPlatform.Configuration.Data.Contracts.Entity;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Authentication;

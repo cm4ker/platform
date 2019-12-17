@@ -21,6 +21,8 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public string Namespace { get; set; }
 
+        public string Base { get; set; }
+
         public SymbolType SymbolType => SymbolType.Type;
     }
 }

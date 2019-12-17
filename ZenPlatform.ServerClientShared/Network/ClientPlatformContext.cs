@@ -12,6 +12,7 @@ using ZenPlatform.Core.Tools;
 using ZenPlatform.QueryBuilder;
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Compiler;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Core.Network

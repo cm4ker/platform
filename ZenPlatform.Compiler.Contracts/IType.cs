@@ -84,11 +84,18 @@ namespace ZenPlatform.Compiler.Contracts
         IType MakeArrayType(int dimensions);
 
         IType BaseType { get; }
+        
         bool IsValueType { get; }
+        
         bool IsEnum { get; }
+        
         IReadOnlyList<IType> Interfaces { get; }
+        
         bool IsInterface { get; }
+        
         bool IsSystem { get; }
+
+        bool IsPrimitive { get; }
 
         IType GetEnumUnderlyingType();
         IReadOnlyList<IType> GenericParameters { get; }

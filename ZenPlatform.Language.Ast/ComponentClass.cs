@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using ZenPlatform.Compiler;
+﻿using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 
-namespace ZenPlatform.Configuration.Compiler
+namespace ZenPlatform.Language.Ast
 {
     public class ComponentAstBase : TypeEntity, IAstSymbol
     {
@@ -21,6 +16,8 @@ namespace ZenPlatform.Configuration.Compiler
         public IXCComponent Component { get; }
 
         public IXCObjectType Type { get; }
+
+        public object Bag { get; set; }
 
         public ComponentAstBase(CompilationMode compilationMode, IXCComponent component, IXCObjectType type,
             ILineInfo lineInfo, string name) : base(
@@ -49,7 +46,7 @@ namespace ZenPlatform.Configuration.Compiler
         }
 
 
-        public SymbolScope SymbolScope { get; set; }
+        public SymbolScopeBySecurity SymbolScope { get; set; }
     }
 
     /// <summary>

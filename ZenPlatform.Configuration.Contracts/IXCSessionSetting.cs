@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts

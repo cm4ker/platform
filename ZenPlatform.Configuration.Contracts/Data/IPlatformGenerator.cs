@@ -1,8 +1,8 @@
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
 
-namespace ZenPlatform.Configuration.Data.Contracts
+namespace ZenPlatform.Configuration.Contracts.Data
 {
     /// <summary>
     /// Последовательный механизм для генерации сборки
@@ -14,14 +14,14 @@ namespace ZenPlatform.Configuration.Data.Contracts
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageServer(IXCObjectType type, Node root);
+        void StageServer(IXCObjectType type, Node root, SqlDatabaseType dbType);
 
         /// <summary>
         /// Генерация клиентского кода
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageClient(IXCObjectType type, Node root);
+        void StageClient(IXCObjectType type, Node root, SqlDatabaseType dbType);
 
         /// <summary>
         /// Стадия генерации UI интерфейса для пользователя на клиенте
@@ -31,23 +31,32 @@ namespace ZenPlatform.Configuration.Data.Contracts
         void StageUI(IXCObjectType type, Node uiNode);
 
         /// <summary>
+        /// Стадия генерации глобального пространства
+        /// </summary>
+        /// <param name="manager"></param>
+        void StageGlobalVar(IGlobalVarManager manager);
+
+        /// <summary>
         /// Стадия 0 Формирование класса без структуры
         /// </summary>
         /// <param name="astTree"></param>
         /// <param name="builder"></param>
-        void Stage0(Node astTree, ITypeBuilder builder);
+        /// <param name="dbType"></param>
+        void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType);
 
         /// <summary>
         /// Стадия 1 формирование внутреннего каркаса класса (Методы + Свойства + Поля + События)
         /// </summary>
         /// <param name="astTree"></param>
         /// <param name="builder"></param>
-        void Stage1(Node astTree, ITypeBuilder builder);
+        /// <param name="dbType"></param>
+        void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType);
 
         /// <summary>
         /// Инфраструктурная стадия
         /// </summary>
         /// <param name="builder"></param>
-        void StageInfrastructure(IAssemblyBuilder builder);
+        /// <param name="dbType"></param>
+        void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType);
     }
 }

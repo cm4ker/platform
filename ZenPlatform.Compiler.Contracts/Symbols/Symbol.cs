@@ -3,7 +3,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
     /// <summary>
     /// Тип пространства, где доступен данный символ
     /// </summary>
-    public enum SymbolScope
+    public enum SymbolScopeBySecurity
     {
         /// <summary>
         /// Оыбласть видимости не известна
@@ -52,7 +52,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         /// <summary>
         ///  Область видимости символа
         /// </summary>
-        SymbolScope SymbolScope { get; set; }
+        SymbolScopeBySecurity SymbolScope { get; set; }
     }
 
 
@@ -73,7 +73,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         public object CodeObject { get; set; }
 
 
-        public SymbolScope SymbolScope { get; set; }
+        public SymbolScopeBySecurity SymbolScope { get; set; }
 
         /// <summary>
         ///  Конструктор символа
@@ -82,7 +82,8 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         /// <param name="type">Symbol kind type</param>
         /// <param name="syntaxObject"><see cref="AstNode"/> object</param>
         /// <param name="codeObject">The connected object from the codegeneration backend</param>
-        public Symbol(string name, SymbolType type, SymbolScope scope, IAstSymbol syntaxObject, object codeObject)
+        public Symbol(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject,
+            object codeObject)
         {
             Name = name;
             Type = type;

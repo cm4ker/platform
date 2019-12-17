@@ -1,9 +1,8 @@
 using System;
 using System.IO;
-using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Shared.ParenChildCollection;
 
-namespace ZenPlatform.Configuration.Structure
+namespace ZenPlatform.Configuration.Contracts
 {
     public interface IConfigurationManipulator
     {

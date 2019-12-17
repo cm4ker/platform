@@ -95,7 +95,7 @@ namespace ZenPlatform.Configuration.Structure
             }
 
             //Загружаем зависимости типов
-            foreach (var xct in ComponentTypes)
+            foreach (var xct in ObjectTypes)
             {
                 xct.LoadDependencies();
             }
@@ -126,8 +126,8 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Все типы, которые относятся к компонентам
         /// </summary>
-        public IEnumerable<IXCObjectType> ComponentTypes =>
-            PlatformTypes.Where(x => x is XCObjectTypeBase).Cast<XCObjectTypeBase>();
+        public IEnumerable<IXCObjectType> ObjectTypes => Components.SelectMany(x => x.ObjectTypes);
+            
 
         public IXCRoot Parent => _parent;
 
@@ -142,7 +142,7 @@ namespace ZenPlatform.Configuration.Structure
         /// Зарегистрировать тип данных на уровне конфигурации платформы
         /// </summary>
         /// <param name="type"></param>
-        public void RegisterType(IXCObjectType type)
+        public void RegisterType(IXCType type)
         {
             _platformTypes.Add(type);
         }

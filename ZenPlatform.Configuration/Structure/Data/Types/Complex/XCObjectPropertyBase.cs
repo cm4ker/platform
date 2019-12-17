@@ -11,9 +11,14 @@ using System.Xml.Serialization;
 using Portable.Xaml.Schema;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 {
+    public abstract class XCObjectPropertyBaseBase
+    {
+    }
+
     /// <summary>
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
@@ -47,6 +52,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         public bool IsSystemProperty { get; set; }
 
+        public bool IsLink => false;
+
         /// <summary>
         /// Указывает на то, что поле является только для
         /// чтения
@@ -64,16 +71,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public string Name { get; set; }
 
         /// <summary>
-        /// Длина только для Двоичных\Числовых\Строковых данных
-        /// </summary>
-        // public int Length { get; set; }
-
-        /// <summary>
-        /// Точность, только для числовых типов
-        /// </summary>
-        //public int Precision { get; set; }
-
-        /// <summary>
         /// Уникальность, только для ключевых полей
         /// </summary>
         public bool Unique { get; set; }
@@ -84,12 +81,14 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         [XmlIgnore]
         public string DatabaseColumnName { get; set; }
-        
+
         /// <summary>
         /// Типы, описывающие поле
         /// </summary>
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<IXCType> Types => _types;
+
+        public XCPropertyAccessPolicy AccessPolicy { get; set; }
 
         /// <summary>
         /// Поля для выгрузки конфигурации здесь происходит подмена XCObjectType на XCUnknownType
@@ -103,6 +102,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             {
                 if (type is IXCPrimitiveType) yield return type;
                 if (type is XCObjectTypeBase objType) yield return new XCUnknownType() {Guid = objType.Guid};
+                if (type is XCLinkTypeBase objLink) yield return new XCUnknownType() {Guid = objLink.Guid};
             }
         }
 
@@ -149,7 +149,88 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public virtual IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
-           throw new NotImplementedException();
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// Свойство ссылки
+    /// </summary>
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
+    public class XCLinkProperty : IXCObjectProperty
+    {
+        private readonly IXCLinkType _typeLink;
+        private IXCObjectProperty _idProp;
+        private readonly uint _typeId;
+        private List<IXCType> _types;
+
+        public XCLinkProperty(IXCLinkType typeLink, IXCObjectProperty idProp)
+        {
+            _typeLink = typeLink;
+            _idProp = idProp;
+            _typeId = typeLink.Id;
+
+            _types = new List<IXCType> {_typeLink};
+        }
+
+        public Guid Guid { get; set; }
+        public uint Id { get; set; }
+
+        public bool IsSystemProperty
+        {
+            get => true;
+            set => throw new NotImplementedException();
+        }
+
+        public bool IsLink => true;
+
+        public bool IsReadOnly
+        {
+            get => true;
+            set => throw new NotImplementedException();
+        }
+
+        public string Name
+        {
+            get => "Link";
+            set => throw new NotImplementedException();
+        }
+
+        public bool Unique
+        {
+            get => true;
+            set => throw new NotImplementedException();
+        }
+
+        public List<IXCType> Types => _types;
+
+        public XCPropertyAccessPolicy AccessPolicy
+        {
+            get => XCPropertyAccessPolicy.CanGetCode | XCPropertyAccessPolicy.CanGetDb;
+            set => throw new NotImplementedException();
+        }
+
+        public string DatabaseColumnName
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
+
+        public IEnumerable<IXCType> GetUnprocessedPropertyTypes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
+        {
+            throw new NotImplementedException();
+            // return new[]
+            // {
+            //     new XCColumnSchemaDefinition(XCColumnSchemaType.Type,
+            //         _idProp.Types.First(), _idProp.DatabaseColumnName, false),
+            //     new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial,
+            //         _idProp.Types.First(), _idProp.DatabaseColumnName, false),
+            // };
         }
     }
 }

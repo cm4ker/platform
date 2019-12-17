@@ -9,7 +9,6 @@ using Xunit.Sdk;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using ZenPlatform.Configuration.Data.Contracts;
 using ZenPlatform.Compiler.Platform;
 using System.IO;
 using System.Threading.Tasks;
@@ -23,7 +22,9 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Compiler;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
@@ -169,12 +170,12 @@ namespace ZenPlatform.Core.Test
 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
                                                           && a.Name ==
-                                                          $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
+                                                          $"{root.ProjectName}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}"));
 
 
             Assert.NotNull(assemblies.FirstOrDefault(a => a.ConfigurationHash == root.GetHash()
                                                           && a.Name ==
-                                                          $"{root.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Server)}"));
+                                                          $"{root.ProjectName}{Enum.GetName(typeof(CompilationMode), CompilationMode.Server)}"));
         }
 
         [Fact]
@@ -193,7 +194,7 @@ namespace ZenPlatform.Core.Test
                 new AssemblyDescription()
                 {
                     Name =
-                        $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}",
+                        $"{env.Configuration.ProjectName}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}",
                     ConfigurationHash = "fake",
                     AssemblyHash = "fake"
                 }
@@ -204,7 +205,7 @@ namespace ZenPlatform.Core.Test
 
             Assert.NotNull(result.FirstOrDefault(a => a.ConfigurationHash == manipulator.GetHash(env.Configuration)
                                                       && a.Name ==
-                                                      $"{env.Configuration.ProjectName}{Enum.GetName(typeof(Compiler.CompilationMode), Compiler.CompilationMode.Client)}"));
+                                                      $"{env.Configuration.ProjectName}{Enum.GetName(typeof(CompilationMode), CompilationMode.Client)}"));
 
 
             Assert.Null(result.FirstOrDefault(a => a.Type == AssemblyType.Server));

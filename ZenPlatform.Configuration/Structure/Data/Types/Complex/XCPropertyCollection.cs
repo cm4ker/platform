@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
@@ -25,6 +26,11 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public TProperty GetProperty(Guid guid)
         {
             return this.FirstOrDefault(x => x.Guid == guid);
+        }
+
+        public TProperty GetPropertyByName(string name)
+        {
+            return this.FirstOrDefault(x => x.Name == name);
         }
     }
 }

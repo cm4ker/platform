@@ -1,40 +1,43 @@
 using System;
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Structure.Data;
+using System.Diagnostics;
+using System.Linq;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
 {
-    public interface IXCObjectType : IXCType, IChildItem<IXCComponent>
+    public interface IXCObjectReadOnlyType : IXCType, IChildItem<IXCComponent>
     {
         /// <summary>
         /// Это абстрактный тип
         /// </summary>
-        bool IsAbstract { get; set; }
+        bool IsAbstract { get; }
 
         /// <summary>
         /// Этот тип нельзя наследовать
         /// </summary>
-        bool IsSealed { get; set; }
+        bool IsSealed { get; }
 
         /// <summary>
         /// Ссылка на базовый тип
         /// </summary>
-        Guid BaseTypeId { get; set; }
-
-        /// <summary>
-        /// Присоединённые файлы
-        /// </summary>
-        IXCBlob AttachedBlob { get; set; }
+        IXCType BaseType { get; }
 
         /// <summary>
         /// У объекта есть поддержка свойств
         /// </summary>
         bool HasProperties { get; }
 
+        /// <summary>
+        /// У объекта есть поддержка модулей
+        /// </summary>
+        bool HasModules { get; }
 
-        string RelTableName { get; set; }
-        
+        /// <summary>
+        /// У объекта есть поддержка комманд
+        /// </summary>
+        bool HasCommands { get; }
+
         /// <summary>
         /// Инициализировать сущность.
         /// Для примера: здесь можно сделать регистрацию кэша объектов
@@ -69,8 +72,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// <exception cref="NotSupportedException">Выдается в случае, если программные модули не поддерживаются компонентом</exception>
         IEnumerable<IXCProgramModule> GetProgramModules();
 
-        IXCObjectProperty GetPropertyByName(string name);
-
         /// <summary>
         /// Получить список доступных комманд у типа 
         /// </summary>
@@ -86,96 +87,26 @@ namespace ZenPlatform.Configuration.Contracts
         IXCCommand CreateCommand();
     }
 
-
-    public interface IXCProgramModule
+    public interface IXCObjectType : IXCObjectReadOnlyType
     {
-        /// <summary>
-        /// Имя модуля
-        /// </summary>
-        string ModuleName { get; set; }
-
-        /// <summary>
-        /// Текст модуля
-        /// </summary>
-        string ModuleText { get; set; }
-
-        /// <summary>
-        /// Тип программного модуля
-        /// </summary>
-        XCProgramModuleDirectionType ModuleDirectionType { get; set; }
-
-        XCProgramModuleRelationType ModuleRelationType { get; set; }
     }
 
-
-    /// <summary>
-    /// Тип модуля по отношению к объекту
-    /// </summary>
-    public enum XCProgramModuleRelationType
+    public static class StructHelper
     {
-        /// <summary>
-        /// Модуль относится непосредственно к объекту
-        /// </summary>
-        Object,
+        public static IXCLinkType GetLink(this IXCObjectType type)
+        {
+            return (IXCLinkType) type.Parent.Types.FirstOrDefault(x =>
+                x is IXCLinkType l && ((IChildItem<IXCObjectType>) l).Parent == type);
+        }
 
-        /// <summary>
-        /// Модуль относится к менеджеру объектов
-        /// </summary>
-        Manager
-    }
 
-    /// <summary>
-    /// Тип программного модуля
-    /// </summary>
-    public enum XCProgramModuleDirectionType
-    {
-        /// <summary>
-        /// Серверный
-        /// </summary>
-        Server,
-
-        /// <summary>
-        /// Клиентский
-        /// </summary>
-        Client,
-
-        /// <summary>
-        /// Сервер-клиентский
-        /// </summary>
-        ClientServer
-    }
-
-    public interface IXCCommand
-    {
-        /// <summary>
-        /// Уникальный идентификатор комманды
-        /// </summary>
-        Guid Guid { get; set; }
-
-        /// <summary>
-        /// Предпределенная ли это команда (не доступна для редактирования)
-        /// </summary>
-        bool IsPredefined { get; }
-
-        /// <summary>
-        /// Текстовое представление комманды
-        /// </summary>
-        string Name { get; set; }
-
-        /// <summary>
-        /// Явное отображение комманды в интерфейсе
-        /// </summary>
-        string DisplayName { get; set; }
-
-        IXCProgramModule Module { get; set; }
-
-        /// <summary>
-        /// Аргументы команды
-        /// </summary>
-        List<IXCDataExpression> Arguments { get; }
-    }
-
-    public interface IXCDataExpression
-    {
+        public static IXCObjectProperty GetPropertyByName(this IXCObjectReadOnlyType type, string propName)
+        {
+            if (type.HasProperties)
+                return type.GetProperties().FirstOrDefault(x => x.Name == propName) ??
+                       throw new Exception($"Property not found: {propName}");
+            else
+                throw new Exception($"Component not support properties: {type.Parent.Info.ComponentName}");
+        }
     }
 }

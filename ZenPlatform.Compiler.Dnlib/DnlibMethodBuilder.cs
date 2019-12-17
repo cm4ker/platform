@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
@@ -9,6 +10,9 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibMethodBuilder : DnlibMethodBase, IMethodBuilder
     {
+        private IEmitter _generator;
+        public IEmitter Generator => _generator ??= new DnlibEmitter(TypeSystem, MethodDef);
+
         public bool Equals(IMethod other)
         {
             throw new NotImplementedException();
@@ -25,24 +29,28 @@ namespace ZenPlatform.Compiler.Dnlib
 
             var typeSig = dtype.TypeRef.ToTypeSig();
             MethodDef.MethodSig.Params.Add(typeSig);
-
             MethodDef.Parameters.UpdateParameterTypes();
 
             var p = MethodDef.Parameters.Last();
             p.CreateParamDef();
             p.Name = name;
 
-            return new DnlibParameter(TypeSystem, MethodDef, p);
+            var dp = new DnlibParameter(TypeSystem, MethodDef, DeclaringTypeReference.Module, p);
+            
+            ((List<DnlibParameter>)Parameters).Add(dp);
+            
+            return dp;
         }
 
         public IMethodBuilder WithReturnType(IType type)
         {
             MethodDef.ReturnType = ContextResolver.GetReference(type.ToTypeRef()).ToTypeSig();
+            
             return this;
         }
 
-        public DnlibMethodBuilder(DnlibTypeSystem typeSystem, IMethodDefOrRef method, TypeRef declaringType) :
-            base(typeSystem, method, declaringType)
+        public DnlibMethodBuilder(DnlibTypeSystem typeSystem, MethodDef method, ITypeDefOrRef declaringType) :
+            base(typeSystem, method, method, declaringType)
         {
         }
     }

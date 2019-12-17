@@ -79,6 +79,18 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public string TypeName { get; }
+
+        /// <summary>
+        /// Меняет тип с Unknown
+        ///
+        /// Если тип уже установлен, то он не будет изменен.
+        /// </summary>
+        /// <param name="kind"></param>
+        public void ChangeKind(TypeNodeKind kind)
+        {
+            if (Kind == TypeNodeKind.Unknown)
+                Kind = kind;
+        }
     }
 
     [Obsolete]

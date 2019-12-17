@@ -30,7 +30,7 @@ namespace ZenPlatform.Component.Tests
             var actual = Factory.CreateExampleConfiguration();
 
 
-            var savedTypes = actual.Data.ComponentTypes;
+            var savedTypes = actual.Data.ObjectTypes;
 
 
  
@@ -53,8 +53,8 @@ namespace ZenPlatform.Component.Tests
 
             var old = Factory.CreateExampleConfiguration();
 
-            var savedTypes = actual.Data.ComponentTypes;
-            var dbTypes = old.Data.ComponentTypes;
+            var savedTypes = actual.Data.ObjectTypes;
+            var dbTypes = old.Data.ObjectTypes;
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
                 x => new { component = x.Parent, old = x, actual = default(IXCObjectType) },

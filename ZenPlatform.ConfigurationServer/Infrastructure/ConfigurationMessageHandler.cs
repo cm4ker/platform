@@ -84,7 +84,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     var items = _conf.Data
                         .Components
                         .FirstOrDefault(x => x.Info.ComponentId == treeRequest.ItemId)
-                        ?.Types.Select(x => new XCItem()
+                        ?.ObjectTypes.Select(x => new XCItem()
                         {
                             ItemType = XCNodeKind.Type,
                             ItemId = x.Guid,
@@ -99,7 +99,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     responce.RequestId = treeRequest.RequestId;
                     responce.ParentId = treeRequest.ItemId;
 
-                    var type = _conf.Data.ComponentTypes.FirstOrDefault(x => x.Guid == treeRequest.ItemId);
+                    var type = _conf.Data.ObjectTypes.FirstOrDefault(x => x.Guid == treeRequest.ItemId);
                     var attachedComponents = type.Parent.AttachedComponents;
 
                     if (type.HasProperties)
