@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure

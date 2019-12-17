@@ -1,6 +1,6 @@
 using System;
 
-namespace ZenPlatform.Configuration
+namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCComponentInformation
     {

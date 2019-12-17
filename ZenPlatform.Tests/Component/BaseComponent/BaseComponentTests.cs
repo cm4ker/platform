@@ -19,7 +19,7 @@ namespace ZenPlatform.Tests.Component.BaseComponent
         {
             var conf = Factory.CreateExampleConfiguration();
 
-            var componentType = conf.Data.ComponentTypes.First();
+            var componentType = conf.Data.ObjectTypes.First();
 
             var componentProperty = componentType.GetProperties().First();
 

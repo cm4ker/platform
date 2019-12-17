@@ -11,14 +11,15 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public abstract class DnlibMethodBase : IMethod
     {
-        private TypeRef _declaringTR;
+        private ITypeDefOrRef _declaringTR;
 
-        public DnlibMethodBase(DnlibTypeSystem typeSystem, IMethodDefOrRef method, TypeRef declaringType)
+        public DnlibMethodBase(DnlibTypeSystem typeSystem, IMethodDefOrRef method, MethodDef methodDef,
+            ITypeDefOrRef declaringType)
         {
             TypeSystem = typeSystem;
             MethofRef = method;
-            MethodDef = method.ResolveMethodDef() ?? throw new ArgumentNullException();
-            ContextResolver = new DnlibContextResolver(typeSystem, method.Module);
+            MethodDef = methodDef;
+            ContextResolver = new DnlibContextResolver(typeSystem, declaringType.Module);
             _declaringTR = declaringType;
         }
 
@@ -41,7 +42,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IMethod MakeGenericMethod(IType[] typeArguments)
         {
-            throw new NotImplementedException();
+            var generic = new MethodSpecUser(this.MethofRef,
+                new GenericInstMethodSig(typeArguments.Select(x => ((DnlibType) x).TypeRef.ToTypeSig()).ToArray()));
+            return   new DnlibMethod(TypeSystem, generic.Method, generic.ResolveMethodDef(), _declaringTR);
         }
 
         protected ITypeDefOrRef DeclaringTypeReference => _declaringTR;
@@ -49,17 +52,13 @@ namespace ZenPlatform.Compiler.Dnlib
         public bool IsPublic => MethodDef.IsPublic;
         public bool IsStatic => MethodDef.IsStatic;
 
-        public IReadOnlyList<IParameter> Parameters => 
+        public IReadOnlyList<IParameter> Parameters =>
             _parameters ??= MethodDef.Parameters
-            .Where(x => !x.IsHiddenThisParameter)
-            .Select(p => new DnlibParameter(TypeSystem, MethodDef, p))
-            .ToList();
+                .Where(x => !x.IsHiddenThisParameter)
+                .Select(p => new DnlibParameter(TypeSystem, MethodDef, _declaringTR.Module, p))
+                .ToList();
 
-
-        private IEmitter _generator;
         private List<DnlibParameter> _parameters;
-        
-        public IEmitter Generator => _generator ??= new DnlibEmitter(TypeSystem, MethodDef);
 
         public bool Equals(IMethod other)
         {
@@ -72,7 +71,8 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         public MethodDef MethodDef { get; }
 
-        public DnlibMethod(DnlibTypeSystem ts, MethodDef methodDef, TypeRef declaringType) : base(ts, methodDef,
+        public DnlibMethod(DnlibTypeSystem ts, IMethodDefOrRef method, MethodDef methodDef,
+            ITypeDefOrRef declaringType) : base(ts, method, methodDef,
             declaringType)
         {
             MethodDef = methodDef;
@@ -91,17 +91,17 @@ namespace ZenPlatform.Compiler.Dnlib
 
     internal static class DnlibExtensions
     {
-        public static TypeRef ToTypeRef(this IType type)
+        public static ITypeDefOrRef ToTypeRef(this IType type)
         {
-            return ((DnlibType) type).TypeRef.ToTypeSig().TryGetTypeRef();
+            return ((DnlibType) type).TypeRef;
         }
 
-        public static TypeRef ToTypeRef(this TypeDef type)
+        public static ITypeDefOrRef ToTypeRef(this TypeDef type)
         {
             return new TypeRefUser(type.Module, type.Namespace, type.Name);
         }
 
-        public static TypeRef ToTypeRef(this ITypeDefOrRef type)
+        public static ITypeDefOrRef ToTypeRef(this ITypeDefOrRef type)
         {
             return new TypeRefUser(type.Module, type.Namespace, type.Name);
         }

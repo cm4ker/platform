@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Shared.ParenChildCollection;
+﻿using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {

@@ -1304,21 +1304,21 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
-    public partial class SSetItem : SSyntaxNode
+    public partial class SAssign : SSyntaxNode
     {
-        public SSetItem(SField field, SExpression value): base()
+        public SAssign(SExpression expression, SField variable): base()
         {
-            Field = field;
-            Value = value;
+            Expression = expression;
+            Variable = variable;
         }
 
-        public SField Field
+        public SExpression Expression
         {
             get;
             set;
         }
 
-        public SExpression Value
+        public SField Variable
         {
             get;
             set;
@@ -1327,17 +1327,17 @@ namespace ZenPlatform.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SSetItem ) obj ;  return  ( Compare ( this . Field ,  node . Field ) && Compare ( this . Value ,  node . Value ) ) ; 
+                return false; var  node  =  ( SAssign ) obj ;  return  ( Compare ( this . Expression ,  node . Expression ) && Compare ( this . Variable ,  node . Variable ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Field == null ? 0 : Field.GetHashCode()) ^ (Value == null ? 0 : Value.GetHashCode());
+            return (Expression == null ? 0 : Expression.GetHashCode()) ^ (Variable == null ? 0 : Variable.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitSSetItem(this);
+            return visitor.VisitSAssign(this);
         }
     }
 }
@@ -1346,12 +1346,12 @@ namespace ZenPlatform.QueryBuilder.Model
 {
     public partial class SSet : SSyntaxNode
     {
-        public SSet(List<SSetItem> items): base()
+        public SSet(List<SAssign> items): base()
         {
             Items = items;
         }
 
-        public List<SSetItem> Items
+        public List<SAssign> Items
         {
             get;
             set;
@@ -2703,12 +2703,12 @@ namespace ZenPlatform.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( RenameTableNode ) obj ;  return  ( ( this . From == node . From ) && ( this . To == node . To ) ) ; 
+                return false; var  node  =  ( RenameTableNode ) obj ;  return  ( Compare ( this . From ,  node . From ) && Compare ( this . To ,  node . To ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (From.GetHashCode()) ^ (To.GetHashCode());
+            return (From == null ? 0 : From.GetHashCode()) ^ (To == null ? 0 : To.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -2906,7 +2906,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return DefaultVisit(node);
         }
 
-        public virtual T VisitSSetItem(SSetItem node)
+        public virtual T VisitSAssign(SAssign node)
         {
             return DefaultVisit(node);
         }

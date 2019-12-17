@@ -32,6 +32,16 @@ namespace ZenPlatform.Compiler.Dnlib
             _body = _method.Body;
         }
 
+        private dnlib.DotNet.IMethod ImportMethod(DnlibMethodBase method)
+        {
+            return _method.Module.Import(method.MethofRef);
+        }
+
+        private dnlib.DotNet.ITypeDefOrRef ImportType(DnlibType type)
+        {
+            return (ITypeDefOrRef) _method.Module.Import(type.TypeRef);
+        }
+
 
         private IEmitter Emit(Instruction i)
         {
@@ -86,11 +96,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
 
         public IEmitter Emit(SreOpCode code, IMethod method)
-            => Emit(Instruction.Create(Dic[code], ((DnlibMethod) method).MethodDef));
+            => Emit(Instruction.Create(Dic[code], ImportMethod((DnlibMethodBase) method)));
 
 
         public IEmitter Emit(SreOpCode code, IConstructor ctor)
-            => Emit(Instruction.Create(Dic[code], ((DnlibConstructor) ctor).MethodDef));
+            => Emit(Instruction.Create(Dic[code], ImportMethod((DnlibConstructor) ctor)));
 
         public IEmitter Emit(SreOpCode code, string arg)
             => Emit(Instruction.Create(Dic[code], arg));
@@ -102,7 +112,7 @@ namespace ZenPlatform.Compiler.Dnlib
             => Emit(Instruction.Create(Dic[code], arg));
 
         public IEmitter Emit(SreOpCode code, IType type)
-            => Emit(Instruction.Create(Dic[code], ((DnlibType) type).TypeDef));
+            => Emit(Instruction.Create(Dic[code], ImportType((DnlibType) type)));
 
         public IEmitter Emit(SreOpCode code, float arg)
             => Emit(Instruction.Create(Dic[code], arg));
@@ -114,17 +124,23 @@ namespace ZenPlatform.Compiler.Dnlib
         class DnlibLocal : ILocal
         {
             private readonly DnlibTypeSystem _ts;
+            private readonly ITypeDefOrRef _typeRef;
+            private DnlibContextResolver _v;
             public Local LocalDef { get; }
 
-            public DnlibLocal(DnlibTypeSystem ts, Local localDef)
+            public DnlibLocal(DnlibTypeSystem ts, Local localDef, ITypeDefOrRef typeRef)
             {
                 _ts = ts;
+                _typeRef = typeRef;
                 LocalDef = localDef;
+
+
+                _v = new DnlibContextResolver(ts, typeRef.Module);
             }
 
 
             public int Index => LocalDef.Index;
-            public IType Type => _ts.Resolve(LocalDef.Type.TryGetTypeRef());
+            public IType Type => _v.GetType(LocalDef.Type);
         }
 
         class DnlibLabel : ILabel
@@ -134,11 +150,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public ILocal DefineLocal(IType type)
         {
-            var t = ((DnlibType) type).TypeDef;
+            var t = ((DnlibType) type).TypeRef;
             var loc = new Local(t.ToTypeSig());
             _body.Variables.Add(loc);
 
-            return new DnlibLocal(_ts, loc);
+            return new DnlibLocal(_ts, loc, t);
         }
 
         public ILabel DefineLabel() => new DnlibLabel();
@@ -177,19 +193,13 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IEmitter Emit(SreOpCode code, ILabel label)
-        {
-            throw new NotImplementedException();
-        }
+            => Emit(Instruction.Create(Dic[code], ((DnlibLabel) label).Instruction));
 
-        public IEmitter Emit(SreOpCode code, ILocal local)
-        {
-            throw new NotImplementedException();
-        }
+        public IEmitter Emit(SreOpCode code, ILocal local) =>
+            Emit(Instruction.Create(Dic[code], ((DnlibLocal) local).LocalDef));
 
         public IEmitter Emit(SreOpCode code, IParameter parameter)
-        {
-            throw new NotImplementedException();
-        }
+            => Emit(Instruction.Create(Dic[code], ((DnlibParameter) parameter).Parameter));
 
         public bool InitLocals { get; set; }
 

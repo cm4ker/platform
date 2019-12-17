@@ -1,5 +1,7 @@
 using System;
 using dnlib.DotNet;
+using ZenPlatform.Compiler.Contracts;
+using IField = dnlib.DotNet.IField;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
@@ -12,16 +14,51 @@ namespace ZenPlatform.Compiler.Dnlib
         public DnlibContextResolver(DnlibTypeSystem ts, ModuleDef moduleDef)
         {
             _ts = ts;
+
+            if (moduleDef is null)
+            {
+                throw new ArgumentNullException(nameof(moduleDef));
+            }
+
             _moduleDef = moduleDef ?? throw new ArgumentNullException(nameof(moduleDef));
         }
 
-        public TypeRef GetReference(TypeRef type)
+        public ITypeDefOrRef GetReference(ITypeDefOrRef type)
         {
-            return _moduleDef.Import(type);
+            if (type is TypeRef tr)
+            {
+                return _moduleDef.Import(tr);
+            }
+            else if (type is TypeSpec ts)
+            {
+                return _moduleDef.Import(ts);
+            }
+            else if (type is TypeDefUser td)
+                return td;
+
+
+            throw new Exception("This reference not supported");
         }
 
         public IType GetType(ITypeDefOrRef tr) => _ts.Resolve(tr.ToTypeRef());
 
-        public IType GetType(TypeSig tsig) => _ts.Resolve(tsig.TryGetTypeRef());
+        public IType GetType(TypeSig tsig)
+        {
+            if (tsig.AssemblyQualifiedName.Contains("System.Private.CoreLib"))
+            {
+                return _ts.Resolve(new TypeRefUser(_moduleDef, tsig.Namespace, tsig.TypeName, _moduleDef));
+            }
+            else
+            {
+                var result =  _ts.Resolve(tsig.ToTypeDefOrRef());
+                if (result is UnresolvedDnlibType)
+                {
+                    result =  _ts.Resolve(tsig.ToTypeDefOrRef());
+                    throw new Exception($"Can't resolve type {tsig}");
+                }
+
+                return result;
+            }
+        }
     }
 }

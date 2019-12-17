@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Shared.ParenChildCollection;
 

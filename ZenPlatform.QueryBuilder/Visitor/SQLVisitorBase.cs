@@ -110,7 +110,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
         {
             return string.Format("INSERT INTO {0}{1}\n{2}",
                 node.Into.Accept(this),
-                node.Fields.Count > 0 ? $"({string.Join(", ", node.Fields.Select(f=>f.Accept(this)))})": "",
+                node.Fields.Count > 0 ? $"({string.Join(", ", node.Fields.Select(f => f.Accept(this)))})" : "",
                 node.DataSource.Accept(this)
             );
         }
@@ -122,6 +122,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
                 node.Condition.Accept(this)
             );
         }
+
 
         public override string VisitSLessThen(SLessThen node)
         {
@@ -171,11 +172,11 @@ namespace ZenPlatform.QueryBuilder.Visitor
             );
         }
 
-        public override string VisitSSetItem(SSetItem node)
+        public override string VisitSAssign(SAssign node)
         {
             return string.Format("{0} = {1}",
-                node.Field.Accept(this),
-                node.Value.Accept(this)
+                node.Variable.Accept(this),
+                node.Expression.Accept(this)
             );
         }
 
@@ -339,7 +340,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitColumnTypeFloat(ColumnTypeFloat node)
         {
-            return "FLOAT"; 
+            return "FLOAT";
         }
 
         public override string VisitColumnTypeNumeric(ColumnTypeNumeric node)
@@ -359,15 +360,12 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitColumnTypeBinary(ColumnTypeBinary node)
         {
-
             return string.Format("BINARY{0}", node.Size > 0 ? $"({node.Size})" : "");
-            
         }
 
         public override string VisitColumnTypeVarBinary(ColumnTypeVarBinary node)
         {
             return string.Format("VARBINARY{0}", node.Size > 0 ? $"({node.Size})" : "");
-            
         }
 
         public override string VisitConstraint(Constraint node)

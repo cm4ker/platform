@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Shared.ParenChildCollection;
 
-namespace ZenPlatform.Configuration.Structure
+namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCData : IChildItem<IXCRoot>
     {
@@ -17,7 +15,7 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Все типы, которые относятся к компонентам
         /// </summary>
-        IEnumerable<IXCObjectType> ComponentTypes { get; }
+        IEnumerable<IXCObjectType> ObjectTypes { get; }
 
         /// <summary>
         /// Загрузить дерективу и все зависимости
@@ -33,7 +31,7 @@ namespace ZenPlatform.Configuration.Structure
         /// Зарегистрировать тип данных на уровне конфигурации платформы
         /// </summary>
         /// <param name="type"></param>
-        void RegisterType(IXCObjectType type);
+        void RegisterType(IXCType type);
 
         IXCComponent GetComponentByName(string name);
     }

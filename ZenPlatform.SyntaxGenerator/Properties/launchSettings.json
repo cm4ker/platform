@@ -2,15 +2,15 @@
   "profiles": {
     "ZLang": {
       "commandName": "Project",
-      "commandLineArgs": "compiler AstZlang.xml Geneerated.ZLang.xml.cs"
+      "commandLineArgs": "compiler AstZlang.xml Generated.ZLang.xml.cs"
     },
      "QLang": {
       "commandName": "Project",
-      "commandLineArgs": "qlang QLang.xml Geneerated.QLang.xml.cs"
+      "commandLineArgs": "qlang QLang.xml Generated.QLang.xml.cs"
     },
      "SQL": {
       "commandName": "Project",
-      "commandLineArgs": "compiler AstZlang.xml Geneerated.ZLang.xml.cs"
+      "commandLineArgs": "sql sql_syntax.xml Generated.SQL.xml.cs"
     }
   }
 }
