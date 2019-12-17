@@ -4,6 +4,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using Portable.Xaml;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Core.Crypto;
 
