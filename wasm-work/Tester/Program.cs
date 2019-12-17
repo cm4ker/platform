@@ -54,7 +54,7 @@ namespace Tester
         static void Main(string[] args)
         {
             UIContainer ui = new UIContainer();
-            var obj = new {Test = "OPA!!"};
+            var obj = new DModel {Test = "OPA!!"};
             ui.DataContext = obj;
 
             ObjectPickerField p = new ObjectPickerField();

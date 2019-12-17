@@ -19,7 +19,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         private List<XCCommand> _predefinedCommands;
 
-        public XCSingleEntity()
+        public XCSingleEntity(XCSingleEntityMetadata md)
         {
             Properties = new ObservableCollection<IXCObjectProperty>();
             Properties.CollectionChanged += Properties_CollectionChanged;
@@ -168,9 +168,9 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         public override string Name => $"{ParentType.Name}Link";
 
-        public XCSingleEntityLink(IXCObjectType parentType)
+        public XCSingleEntityLink(IXCObjectType parentType, XCSingleEntityMetadata md)
         {
-            ((IChildItem<IXCObjectType>) this).Parent = parentType;
+            ParentType = parentType;
         }
     }
 }

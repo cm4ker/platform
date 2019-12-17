@@ -28,9 +28,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public bool IsSealed { get; set; }
 
         /// <summary>
-        /// Ссылка на базовый тип
+        /// 
         /// </summary>
-        public Guid BaseTypeId { get; set; }
+        public IXCType BaseType { get; }
 
         /// <summary>
         /// Родительский компонент
@@ -75,6 +75,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         [XmlIgnore]
         public string RelTableName { get; set; }
 
+        public bool HasCommands { get; }
+
         /// <summary>
         /// Инициализировать сущность.
         /// Для примера: здесь можно сделать регистрацию кэша объектов
@@ -98,6 +100,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// У объекта есть поддержка свойств
         /// </summary>
         public virtual bool HasProperties { get; }
+
+        public bool HasModules { get; }
 
 
         /// <summary>
@@ -159,42 +163,50 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
     public abstract class XCLinkTypeBase : XCTypeBase, IXCLinkType
     {
-        private IXCComponent _parent;
-        private IXCObjectType _parentType;
+        public bool IsAbstract { get; }
+        public bool IsSealed { get; }
+        public IXCType BaseType { get; }
+        public bool HasProperties { get; }
+        public bool HasModules { get; }
+        public bool HasCommands { get; }
 
-        public XCLinkTypeBase()
+        public void Initialize()
         {
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Родительский компонент
-        /// </summary>
-        public IXCComponent Parent => _parent;
-
-
-        /// <summary>
-        /// Родительский объект
-        /// </summary>
-        public IXCObjectType ParentType => _parentType;
-
-
-        /// <summary>
-        /// Родительский компонент
-        /// </summary>
-        IXCComponent IChildItem<IXCComponent>.Parent
+        public void LoadDependencies()
         {
-            get => _parent;
-            set => _parent = value;
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Родительский объект
-        /// </summary>
-        IXCObjectType IChildItem<IXCObjectType>.Parent
+        public IXCObjectProperty CreateProperty()
         {
-            get => _parentType;
-            set => _parentType = value;
+            throw new NotImplementedException();
         }
-        
+
+        public IEnumerable<IXCObjectProperty> GetProperties()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IXCProgramModule> GetProgramModules()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IXCCommand> GetCommands()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IXCCommand CreateCommand()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IXCComponent Parent { get; set; }
+
+        public IXCObjectType ParentType { get; protected set; }
     }
 }

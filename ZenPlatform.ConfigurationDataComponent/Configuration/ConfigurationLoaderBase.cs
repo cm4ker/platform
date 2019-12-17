@@ -93,21 +93,21 @@ namespace ZenPlatform.DataComponent.Configuration
         /// <param name="conf"></param>
         public virtual void SaveObject(IXCObjectType conf)
         {
-            var storage = conf.Parent.Root.Storage;
-            var component = conf.Parent;
-            IXCBlob blob;
-            if (conf.AttachedBlob is null)
-            {
-                blob = new XCBlob(conf.Name); 
-                conf.Parent.Include.Add(blob);
-            }
-            else
-            {
-                blob = conf.AttachedBlob;
-            }
-
-            using (var stream = conf.SerializeToStream())
-                storage.SaveBlob(blob.Name, $"Data/{component.Info.ComponentName}", stream);
+            // var storage = conf.Parent.Root.Storage;
+            // var component = conf.Parent;
+            // IXCBlob blob;
+            // if (conf.AttachedBlob is null)
+            // {
+            //     blob = new XCBlob(conf.Name); 
+            //     conf.Parent.Include.Add(blob);
+            // }
+            // else
+            // {
+            //     blob = conf.AttachedBlob;
+            // }
+            //
+            // using (var stream = conf.SerializeToStream())
+            //     storage.SaveBlob(blob.Name, $"Data/{component.Info.ComponentName}", stream);
         }
 
         public IXCDataRule LoadRule(IXCDataRuleContent content)

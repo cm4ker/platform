@@ -27,10 +27,5 @@ namespace ZenPlatform.Configuration.Structure.Helper
         }
 
 
-        public static IXCLinkType GetLink(this IXCObjectType type)
-        {
-            return (IXCLinkType) type.Parent.Types.FirstOrDefault(x =>
-                x is IXCLinkType l && ((IChildItem<IXCObjectType>) l).Parent == type);
-        }
     }
 }
