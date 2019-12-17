@@ -25,6 +25,7 @@ namespace ZenPlatform.Core.Configuration
 
         public Stream GetBlob(string name, string route)
         {
+            
             void Gen(QueryMachine qm)
             {
                 qm.bg_query()
@@ -137,7 +138,7 @@ namespace ZenPlatform.Core.Configuration
             if (uid != 0)
                 return;
 
-            uid = _maxId++;
+           uid = _maxId++; 
         }
     }
 }
