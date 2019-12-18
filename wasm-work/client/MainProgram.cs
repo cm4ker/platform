@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Avalonia.Data;
 using UIModel.HtmlWrapper;
@@ -33,6 +34,9 @@ public class Program
         ui.DataContext = obj;
 
         ObjectPickerField op = new ObjectPickerField();
+
+        op.InitAutocomplete(new List<string> {"Apple", "Test", "Test1", "Test2", "Lol"});
+
         ObjectPickerField op2 = new ObjectPickerField();
 
         Binding b = new Binding();

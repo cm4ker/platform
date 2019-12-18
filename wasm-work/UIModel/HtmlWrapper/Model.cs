@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlTypes;
+using System.Linq;
 using Avalonia;
 using UIModel.XML;
 using WebAssembly.Browser.DOM;
@@ -45,6 +46,8 @@ namespace UIModel.HtmlWrapper
 
         private bool _isPicker = false;
 
+        int _currentFocus = -1;
+
         public HTMLElement Root => _htmlLayout;
 
         public ObjectPickerField()
@@ -60,6 +63,8 @@ namespace UIModel.HtmlWrapper
             _htmlLayout.AppendChild(_htmlLookupButton);
             _htmlLayout.AppendChild(_htmlSelectTypeButton);
 
+            var a = D.Doc.GetElementById("tset");
+
             SetPicker(false);
         }
 
@@ -70,7 +75,6 @@ namespace UIModel.HtmlWrapper
             if (_isPicker)
             {
                 // add autocomplete
-                
             }
             else
             {
@@ -99,6 +103,134 @@ namespace UIModel.HtmlWrapper
         private void KeyUp(DOMObject sender, DOMEventArgs args)
         {
             Value = _htmlInput.Value;
+        }
+
+        public void InitAutocomplete(List<string> arr)
+        {
+            void ElementOnOnInput(DOMObject sender, DOMEventArgs args)
+            {
+                var val = _htmlInput.Value;
+
+                if (string.IsNullOrEmpty(val))
+                {
+                    return;
+                }
+
+                CloseAllLists(_htmlInput);
+
+                _currentFocus = -1;
+
+                var a = D.Doc.CreateElement<HTMLDivElement>();
+
+                a.SetAttribute("id", _htmlInput.Id + "autocomplete-list");
+                a.SetAttribute("class", "autocomplete-items");
+
+                _htmlLayout.AppendChild(a);
+
+                for (int i = 0; i < arr.Count; i++)
+                {
+                    if (arr[i].ToLower().Contains(val.ToLower(), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var b = D.Doc.CreateElement<HTMLDivElement>();
+
+                        b.InnerHtml = "<strong>" + arr[i].Substring(0, val.Length) + "</strong>";
+                        b.InnerHtml += arr[i].Substring(val.Length);
+                        b.InnerHtml += "<input type='hidden' value='" + arr[i] + "'>";
+
+                        b.OnClick += (o, eventArgs) =>
+                        {
+                            _htmlInput.Value = b.GetElementsByTagName("input")[0].ConvertTo<HTMLInputElement>()
+                                .Value;
+                            //TODO: set Value property
+                            
+                            CloseAllLists(null);
+                        };
+
+                        a.AppendChild(b);
+                    }
+                }
+            }
+
+            void ElementOnOnKeydown(DOMObject sender, DOMEventArgs args)
+            {
+                var x = D.Doc.GetElementById(_htmlInput.Id + "autocomplete-list");
+
+                if (x == null || x.IsCorrupted)
+                {
+                    return;
+                }
+
+                var elemList = x.GetElementsByTagName("div");
+
+                if (elemList == null)
+                {
+                    return;
+                }
+
+                if (args.KeyCode == 40)
+                {
+                    _currentFocus++;
+                    AddActive(elemList);
+                }
+                else if (args.KeyCode == 38)
+                {
+                    _currentFocus--;
+                    AddActive(elemList);
+                }
+                else if (args.KeyCode == 13)
+                {
+                    args.PreventDefault();
+
+                    if (_currentFocus > -1)
+                    {
+                        elemList[_currentFocus].ConvertTo<HTMLDivElement>().Click();
+                    }
+                }
+            }
+
+            _htmlInput.OnInput += ElementOnOnInput;
+            _htmlInput.OnKeydown += ElementOnOnKeydown;
+
+            _htmlLayout.ClassName += " autocomplete";
+            //_htmlInput.OnFocusOut += (sender, args) => { CloseAllLists(null); };
+        }
+
+        private void AddActive(NodeListOf<Element> elements)
+        {
+            if (elements == null)
+                return;
+
+            RemoveActive(elements);
+
+            if (_currentFocus >= elements.Length) _currentFocus = 0;
+            if (_currentFocus < 0) _currentFocus = (int) elements.Length - 1;
+
+            Console.WriteLine($"Current focus {_currentFocus}");
+            Console.WriteLine($"Current focus {elements[_currentFocus]}");
+            elements[_currentFocus]?.ClassList?.Add("autocomplete-active");
+        }
+
+        private void RemoveActive(NodeListOf<Element> elements)
+        {
+            if (elements != null)
+                foreach (var element in elements)
+                {
+                    element.ClassList.Remove("autocomplete-active");
+                }
+        }
+
+        private void CloseAllLists(HTMLElement except)
+        {
+            var x = D.Doc.GetElementsByClassName("autocomplete-items")?.ToArray();
+
+            if (x != null)
+                foreach (var element in x)
+                {
+                    if (element != except)
+                    {
+                        element.ParentNode.RemoveChild(element);
+                    }
+                }
         }
 
         /// <summary>
