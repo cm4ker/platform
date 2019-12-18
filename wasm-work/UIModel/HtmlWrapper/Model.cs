@@ -70,12 +70,25 @@ namespace UIModel.HtmlWrapper
             if (_isPicker)
             {
                 // add autocomplete
+                
             }
             else
             {
-                _htmlInput.OnKeyup += KeyUp;
-                _htmlInput.OnKeydown += KeyDown;
+                // _htmlInput.OnKeyup += KeyUp;
+                // _htmlInput.OnKeydown += KeyDown;
+                // _htmlInput.OnKeypress += KeyPress;
+                _htmlInput.OnInput += HtmlInputOnOnInput;
             }
+        }
+
+        private void HtmlInputOnOnInput(DOMObject sender, DOMEventArgs args)
+        {
+            Value = _htmlInput.Value;
+        }
+
+        private void KeyPress(DOMObject sender, DOMEventArgs args)
+        {
+            Value = _htmlInput.Value;
         }
 
         private void KeyDown(DOMObject sender, DOMEventArgs args)
