@@ -39,6 +39,8 @@ public class Program
 
         ObjectPickerField op2 = new ObjectPickerField();
 
+        op2.InitAutocomplete(new List<string> {"AAAA", "BBBB", "CCCC", "DDDD", "EEEE"});
+        
         Binding b = new Binding();
         b.Mode = BindingMode.TwoWay;
         b.Path = "Test";
