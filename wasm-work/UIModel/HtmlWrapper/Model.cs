@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlTypes;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reactive.PlatformServices;
 using Avalonia;
 using UIModel.XML;
 using WebAssembly.Browser.DOM;
@@ -111,12 +113,12 @@ namespace UIModel.HtmlWrapper
             {
                 var val = _htmlInput.Value;
 
+                CloseAllLists(null);
+
                 if (string.IsNullOrEmpty(val))
                 {
                     return;
                 }
-
-                CloseAllLists(_htmlInput);
 
                 _currentFocus = -1;
 
@@ -129,12 +131,36 @@ namespace UIModel.HtmlWrapper
 
                 for (int i = 0; i < arr.Count; i++)
                 {
-                    if (arr[i].ToLower().Contains(val.ToLower(), StringComparison.InvariantCultureIgnoreCase))
+                    var itemLower = arr[i].ToLower();
+                    var valLower = val.ToLower();
+
+                    if (itemLower.Contains(valLower, StringComparison.InvariantCultureIgnoreCase))
                     {
                         var b = D.Doc.CreateElement<HTMLDivElement>();
 
-                        b.InnerHtml = "<strong>" + arr[i].Substring(0, val.Length) + "</strong>";
-                        b.InnerHtml += arr[i].Substring(val.Length);
+                        var index = itemLower.IndexOf(valLower, StringComparison.InvariantCultureIgnoreCase); //0
+                        var currentPos = 0;
+
+                        while (index >= 0)
+                        {
+                            if (index != currentPos && index > currentPos) // false, true
+                            {
+                                b.InnerHtml += arr[i].Substring(currentPos, index - currentPos);
+                            }
+
+                            b.InnerHtml += "<strong>" + arr[i].Substring(index, val.Length) + "</strong>"; // T
+
+                            currentPos = index + val.Length; // currentPos = 1
+
+                            index = itemLower.IndexOf(valLower, currentPos,
+                                StringComparison.InvariantCultureIgnoreCase); // 3
+                        }
+
+                        if (currentPos < arr[i].Length)
+                        {
+                            b.InnerHtml += arr[i].Substring(currentPos);
+                        }
+
                         b.InnerHtml += "<input type='hidden' value='" + arr[i] + "'>";
 
                         b.OnClick += (o, eventArgs) =>
@@ -142,7 +168,7 @@ namespace UIModel.HtmlWrapper
                             _htmlInput.Value = b.GetElementsByTagName("input")[0].ConvertTo<HTMLInputElement>()
                                 .Value;
                             //TODO: set Value property
-                            
+
                             CloseAllLists(null);
                         };
 
