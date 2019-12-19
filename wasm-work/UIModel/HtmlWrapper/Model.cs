@@ -5,6 +5,7 @@ using System.Data.SqlTypes;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.PlatformServices;
+using System.Runtime.CompilerServices;
 using Avalonia;
 using UIModel.XML;
 using WebAssembly.Browser.DOM;
@@ -165,7 +166,7 @@ namespace UIModel.HtmlWrapper
 
                         b.OnClick += (o, eventArgs) =>
                         {
-                            _htmlInput.Value = b.GetElementsByTagName("input")[0].ConvertTo<HTMLInputElement>()
+                            Value = b.GetElementsByTagName("input")[0].ConvertTo<HTMLInputElement>()
                                 .Value;
                             //TODO: set Value property
 
@@ -278,6 +279,68 @@ namespace UIModel.HtmlWrapper
                 SetAndRaise(ValueProperty, ref _value, value);
                 _htmlInput.Value = value.ToString();
             }
+        }
+    }
+
+    public class Grid : AvaloniaObject
+    {
+        private HTMLDivElement _htmlTableRoot;
+        private HTMLDivElement[] _allocatedRows;
+        private HTMLDivElement _htmlTableViewPort;
+
+        private int _rowHeight = 10;
+        private List<int> _data;
+
+        public Grid()
+        {
+            _htmlTableRoot = D.Doc.CreateElement<HTMLDivElement>();
+            _htmlTableViewPort = D.Doc.CreateElement<HTMLDivElement>();
+            
+            _data = Enumerable.Range(1, 300).ToList();
+        }
+
+        public HTMLElement Root => _htmlTableRoot;
+
+        private int _visibleRows = 0;
+        private int _bufferRowsTop = 15;
+        private int _bufferRowsBottom = 15;
+        private int _dataOffcet = 0;
+
+
+        public void Init()
+        {
+        }
+
+        private void CalculateViewPort()
+        {
+            if (_allocatedRows == null)
+            {
+                _allocatedRows = new HTMLDivElement[_visibleRows + _bufferRowsTop + _bufferRowsBottom];
+            }
+
+            if (_allocatedRows.Length != _visibleRows + _bufferRowsTop + _bufferRowsBottom)
+            {
+                
+            }
+        }
+
+        void AllocateBot()
+        {
+        }
+
+        void AllocateTop(int rowIndex)
+        {
+            var row = D.Doc.CreateElement<HTMLDivElement>();
+            row.InnerHtml = _data[rowIndex].ToString();
+            _allocatedRows.Add(row);
+        }
+
+        void DeallocateTop()
+        {
+        }
+
+        void DeallocateBot()
+        {
         }
     }
 }
