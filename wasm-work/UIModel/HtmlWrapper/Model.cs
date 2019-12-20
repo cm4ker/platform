@@ -285,7 +285,7 @@ namespace UIModel.HtmlWrapper
     public class Grid : AvaloniaObject
     {
         private HTMLDivElement _htmlTableRoot;
-        private HTMLDivElement[] _allocatedRows;
+        private List<HTMLDivElement> _allocatedRows;
         private HTMLDivElement _htmlTableViewPort;
 
         private int _rowHeight = 10;
@@ -295,8 +295,6 @@ namespace UIModel.HtmlWrapper
         {
             _htmlTableRoot = D.Doc.CreateElement<HTMLDivElement>();
             _htmlTableViewPort = D.Doc.CreateElement<HTMLDivElement>();
-            
-            _data = Enumerable.Range(1, 300).ToList();
         }
 
         public HTMLElement Root => _htmlTableRoot;
@@ -304,23 +302,117 @@ namespace UIModel.HtmlWrapper
         private int _visibleRows = 0;
         private int _bufferRowsTop = 15;
         private int _bufferRowsBottom = 15;
-        private int _dataOffcet = 0;
+        private int _currentRowPosition = 0;
+        private int _currentBufferedTopRows = 0;
+        private int _currentBufferedBottomRows = 0;
 
+        private int _totalRows = 0;
 
         public void Init()
         {
+            _data = Enumerable.Range(1, 300).ToList();
+            _totalRows = _data.Count;
+            _allocatedRows = new List<HTMLDivElement>();
+            Scroll(0);
         }
 
         private void CalculateViewPort()
         {
-            if (_allocatedRows == null)
-            {
-                _allocatedRows = new HTMLDivElement[_visibleRows + _bufferRowsTop + _bufferRowsBottom];
-            }
+        }
 
-            if (_allocatedRows.Length != _visibleRows + _bufferRowsTop + _bufferRowsBottom)
+        int GetViewPortSize()
+        {
+            return _visibleRows + _bufferRowsTop + _bufferRowsBottom;
+        }
+
+        void Scroll(int rowPosition)
+        {
+            var diff = rowPosition - _currentRowPosition;
+
+            //if we scroll and this scroll more than buffered zone
+            if (diff > GetViewPortSize())
             {
+                _allocatedRows.Clear();
+
+                _currentBufferedBottomRows = 0;
+                _currentBufferedTopRows = 0;
                 
+                if (rowPosition > 0)
+                {
+                    var index = rowPosition;
+                    var counter = _bufferRowsTop;
+                    while (index > 0 && counter > 0)
+                    {
+                        var row = D.Doc.CreateElement<HTMLDivElement>();
+
+                        //assign content
+                        row.InnerHtml = _data[index].ToString();
+
+                        _allocatedRows.Add(row);
+                        index--;
+                        counter--;
+                    }
+                }
+
+                // create viewPort and bottom buffer    
+                {
+                    var index = rowPosition;
+                    var counter = _bufferRowsTop + _visibleRows;
+
+                    while (index < _totalRows && counter > 0)
+                    {
+                        var row = D.Doc.CreateElement<HTMLDivElement>();
+
+                        //assign content
+                        row.InnerHtml = _data[index].ToString();
+
+                        _allocatedRows.Add(row);
+                        index++;
+                        counter--;
+                    }
+                }
+            }
+            else
+            {
+                if (diff > 0)
+                {
+                    diff = Math.Min(diff, _currentBufferedTopRows);
+                    
+                    _allocatedRows.RemoveRange(0, diff);
+
+                    for (int i = rowPosition + _visibleRows,
+                        counter = _bufferRowsBottom;
+                        i < _totalRows && counter > 0;
+                        i++, counter--)
+                    {
+                        var row = D.Doc.CreateElement<HTMLDivElement>();
+
+                        //assign content
+                        row.InnerHtml = _data[i].ToString();
+
+                        _allocatedRows.Add(row);
+                    }
+                }
+
+                if (diff < 0)
+                {
+                    diff = Math.Min(-diff, _currentBufferedTopRows);
+                    
+                    _allocatedRows.RemoveRange(_allocatedRows.Count - diff, diff);
+
+                    for (int i = rowPosition,
+                        counter = _bufferRowsTop;
+                        i > 0 && counter > 0;
+                        i--, counter--)
+                    {
+                        var row = D.Doc.CreateElement<HTMLDivElement>();
+
+                        //assign content
+                        row.InnerHtml = _data[i].ToString();
+
+                        _allocatedRows.Insert(0, row);
+                    }
+                }
             }
         }
 
@@ -332,7 +424,6 @@ namespace UIModel.HtmlWrapper
         {
             var row = D.Doc.CreateElement<HTMLDivElement>();
             row.InnerHtml = _data[rowIndex].ToString();
-            _allocatedRows.Add(row);
         }
 
         void DeallocateTop()
