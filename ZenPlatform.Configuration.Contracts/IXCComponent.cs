@@ -32,7 +32,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Хранилище компонента
         /// </summary>
-        IXCBlob Blob { get; set; }
+       // IXCBlob Blob { get; set; }
 
         /// <summary>
         /// Присоединённые компоненты. Это свойство инициализируется после загрузки всех компонентов
@@ -42,7 +42,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
         /// </summary>
-        IXCBlobCollection Include { get; set; }
+       // IXCBlobCollection Include { get; set; }
 
         Assembly ComponentAssembly { get; set; }
 

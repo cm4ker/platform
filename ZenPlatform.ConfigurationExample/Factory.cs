@@ -25,7 +25,7 @@ namespace ZenPlatform.ConfigurationExample
 
             var component = new XCComponent()
             {
-                Blob = new XCBlob("ZenPlatform.EntityComponent.dll"),
+                
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
@@ -137,7 +137,7 @@ public void OnClientClientCallProc()
 
             var component = new XCComponent()
             {
-                Blob = new XCBlob("ZenPlatform.EntityComponent.dll"),
+
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 

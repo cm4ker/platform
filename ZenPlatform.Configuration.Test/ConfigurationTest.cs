@@ -6,6 +6,7 @@ using ZenPlatform.ConfigurationExample;
 using System.Linq;
 using ZenPlatform.Data;
 using ZenPlatform.Core.Configuration;
+using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration.Test
 {

@@ -34,7 +34,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
 
             newItem.AttachedBlob = new XCBlob(Guid.NewGuid().ToString());
-            Component.Include.Add(newItem.AttachedBlob);
+            //Component.Include.Add(newItem.AttachedBlob);
             //TODO: Обработать базовый тип
 
             return newItem;

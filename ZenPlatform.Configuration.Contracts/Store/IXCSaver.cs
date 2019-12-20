@@ -6,10 +6,10 @@ namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCSaver
     {
-        void Save<T>(string path, IXCConfigurationItem<T> item)
+        void SaveObject<T>(string path, IXCConfigurationItem<T> item)
             where
             T : IXCSettingsItem;
 
-        void Save(string path, byte[] data);
+        void SaveBytes(string path, byte[] data);
     }
 }
