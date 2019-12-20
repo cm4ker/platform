@@ -284,89 +284,98 @@ namespace UIModel.HtmlWrapper
 
     public class Grid : AvaloniaObject
     {
-        private HTMLDivElement _htmlTableRoot;
-        private List<HTMLDivElement> _allocatedRows;
-        private HTMLDivElement _htmlTableViewPort;
-
-        private int _rowHeight = 10;
         private List<int> _data;
 
         public Grid()
         {
-            _htmlTableRoot = D.Doc.CreateElement<HTMLDivElement>();
-            _htmlTableViewPort = D.Doc.CreateElement<HTMLDivElement>();
+            _topBuffer = new Tube<HTMLDivElement>(15);
+            _bottomBuffer = new Tube<HTMLDivElement>(15);
+            _rows = new Tube<HTMLDivElement>(15);
+
+            void Superseded(object sender, IEnumerable<HTMLDivElement> elements)
+            {
+                foreach (var htmlDivElement in elements)
+                {
+                    htmlDivElement.ParentElement.RemoveChild(htmlDivElement);
+                }
+            }
+
+            _topBuffer.OnSuperseded += Superseded;
+            _bottomBuffer.OnSuperseded += Superseded;
         }
 
-        public HTMLElement Root => _htmlTableRoot;
-
-        private int _visibleRows = 0;
-        private int _bufferRowsTop = 15;
-        private int _bufferRowsBottom = 15;
         private int _currentRowPosition = 0;
-        private int _currentBufferedTopRows = 0;
-        private int _currentBufferedBottomRows = 0;
 
         private int _totalRows = 0;
+
+        private Tube<HTMLDivElement> _topBuffer;
+        private Tube<HTMLDivElement> _bottomBuffer;
+        private Tube<HTMLDivElement> _rows;
+
+        public HTMLDivElement _rootElement;
+        public HTMLDivElement _viewPort;
+
+        public HTMLDivElement Root => _rootElement;
 
         public void Init()
         {
             _data = Enumerable.Range(1, 300).ToList();
             _totalRows = _data.Count;
-            _allocatedRows = new List<HTMLDivElement>();
+            _rootElement = D.Doc.CreateElement<HTMLDivElement>();
+            _viewPort = D.Doc.CreateElement<HTMLDivElement>();
+            _rootElement.AppendChild(_viewPort);
+            
             Scroll(0);
-        }
-
-        private void CalculateViewPort()
-        {
         }
 
         int GetViewPortSize()
         {
-            return _visibleRows + _bufferRowsTop + _bufferRowsBottom;
+            return Math.Min(Math.Min(_rows.MaxItems, _topBuffer.MaxItems), _bottomBuffer.MaxItems);
         }
 
-        void Scroll(int rowPosition)
+        public void Scroll(int rowPosition)
         {
+            rowPosition = Math.Min(rowPosition, _totalRows);
+
             var diff = rowPosition - _currentRowPosition;
 
             //if we scroll and this scroll more than buffered zone
-            if (diff > GetViewPortSize())
+            if (diff > GetViewPortSize() || _rows.Count == 0)
             {
-                _allocatedRows.Clear();
+                _topBuffer.Clear();
+                _bottomBuffer.Clear();
+                _rows.Clear();
 
-                _currentBufferedBottomRows = 0;
-                _currentBufferedTopRows = 0;
-                
                 if (rowPosition > 0)
                 {
-                    var index = rowPosition;
-                    var counter = _bufferRowsTop;
+                    var index = rowPosition - 1;
+                    var counter = _topBuffer.MaxItems;
                     while (index > 0 && counter > 0)
                     {
-                        var row = D.Doc.CreateElement<HTMLDivElement>();
-
-                        //assign content
-                        row.InnerHtml = _data[index].ToString();
-
-                        _allocatedRows.Add(row);
+                        _topBuffer.PushTop(FromIndex(index));
                         index--;
                         counter--;
                     }
                 }
 
-                // create viewPort and bottom buffer    
+                // create viewPort
                 {
                     var index = rowPosition;
-                    var counter = _bufferRowsTop + _visibleRows;
+                    var counter = _rows.MaxItems;
 
                     while (index < _totalRows && counter > 0)
                     {
-                        var row = D.Doc.CreateElement<HTMLDivElement>();
+                        _rows.PushBottom(FromIndex(index));
+                        index++;
+                        counter--;
+                    }
 
-                        //assign content
-                        row.InnerHtml = _data[index].ToString();
+                    counter = _bottomBuffer.MaxItems;
 
-                        _allocatedRows.Add(row);
+                    //create bottom buffer
+                    while (index < _totalRows && counter > 0)
+                    {
+                        _bottomBuffer.PushBottom(FromIndex(index));
                         index++;
                         counter--;
                     }
@@ -374,64 +383,68 @@ namespace UIModel.HtmlWrapper
             }
             else
             {
-                if (diff > 0)
+                if (diff > 0 && _bottomBuffer.Count > 0)
                 {
-                    diff = Math.Min(diff, _currentBufferedTopRows);
-                    
-                    _allocatedRows.RemoveRange(0, diff);
+                    diff = Math.Min(diff, _bottomBuffer.Count);
 
-                    for (int i = rowPosition + _visibleRows,
-                        counter = _bufferRowsBottom;
-                        i < _totalRows && counter > 0;
-                        i++, counter--)
+                    _topBuffer.PushBottom(_rows.TakeTopRange(diff));
+                    _rows.PushBottom(_bottomBuffer.TakeTopRange(diff));
+
+                    var lastItem = rowPosition + _rows.MaxItems + _bottomBuffer.MaxItems - diff;
+                    var diffCounter = diff;
+/*
+
+ 1
+ 2
+ --top
+ 3 <---- current position (2 - pos)
+ 4
+ --rows
+ 5
+  --bottom
+ 6 < -- last item
+ 7
+ 
+ */
+                    while (_totalRows > lastItem && diffCounter > 0)
                     {
-                        var row = D.Doc.CreateElement<HTMLDivElement>();
+                        _bottomBuffer.PushBottom(FromIndex(lastItem));
 
-                        //assign content
-                        row.InnerHtml = _data[i].ToString();
-
-                        _allocatedRows.Add(row);
+                        lastItem++;
+                        diffCounter--;
                     }
                 }
 
-                if (diff < 0)
+                else if (diff < 0 && _topBuffer.Count > 0)
                 {
-                    diff = Math.Min(-diff, _currentBufferedTopRows);
-                    
-                    _allocatedRows.RemoveRange(_allocatedRows.Count - diff, diff);
+                    diff = Math.Min(-diff, _topBuffer.Count);
 
-                    for (int i = rowPosition,
-                        counter = _bufferRowsTop;
-                        i > 0 && counter > 0;
-                        i--, counter--)
+                    _bottomBuffer.PushTop(_rows.TakeBottomRange(diff));
+                    _rows.PushTop(_topBuffer.TakeBottomRange(diff));
+
+                    var firstTopItem = rowPosition - _topBuffer.Count - 1;
+                    var diffCounter = diff;
+
+                    while (0 <= firstTopItem && diffCounter > 0)
                     {
-                        var row = D.Doc.CreateElement<HTMLDivElement>();
+                        _topBuffer.PushTop(FromIndex(firstTopItem));
 
-                        //assign content
-                        row.InnerHtml = _data[i].ToString();
-
-                        _allocatedRows.Insert(0, row);
+                        firstTopItem--;
+                        diffCounter--;
                     }
                 }
             }
+
+            _currentRowPosition = rowPosition;
         }
 
-        void AllocateBot()
-        {
-        }
-
-        void AllocateTop(int rowIndex)
+        private HTMLDivElement FromIndex(int index)
         {
             var row = D.Doc.CreateElement<HTMLDivElement>();
-            row.InnerHtml = _data[rowIndex].ToString();
-        }
+            row.InnerText = _data[index].ToString();
+            _viewPort.AppendChild(row);
 
-        void DeallocateTop()
-        {
-        }
-
-        void DeallocateBot()
-        {
+            return row;
         }
     }
 }
