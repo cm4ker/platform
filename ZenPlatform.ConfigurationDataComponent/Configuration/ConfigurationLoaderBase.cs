@@ -11,11 +11,13 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.DataComponent.Configuration
 {
-    public abstract class ConfigurationLoaderBase<TObjectType> : IXComponentLoader
-        where TObjectType : class, IXCObjectType 
+    public abstract class ConfigurationLoaderBase<TTypeMetadata, TSettings> : IXComponentLoader
+        where TSettings : IXCSettingsItem
+        where TTypeMetadata : IXCTypeMetadata<TSettings>, new()
     {
+        /*
         #region Events
-
+        
         /// <summary>
         /// Вызывается после загрузки объекта
         /// </summary>
@@ -43,7 +45,7 @@ namespace ZenPlatform.DataComponent.Configuration
         }
 
         #endregion
-
+        */
         protected virtual XCDataRuleBase LoadRuleAction(IXCDataRuleContent content)
         {
             throw new NotImplementedException();
@@ -61,39 +63,37 @@ namespace ZenPlatform.DataComponent.Configuration
         /// <param name="blob"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public virtual IXCObjectType LoadObject(IXCComponent component, IXCBlob blob)
+        public virtual void LoadObject(IXCComponent component, IXCLoader loader, string reference)
         {
-            TObjectType conf;
-            using (var stream = component.Root.Storage.GetBlob(blob.Name, $"Data/{component.Info.ComponentName}"))
-            {
-                conf = XCHelper.DeserializeFromStream<TObjectType>(stream) ??
-                       throw new InvalidLoadConfigurationException(blob.Name);
-            }
 
-            if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
-            if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
 
-            AfterObjectLoad(conf);
+            var conf = loader.LoadObject<TTypeMetadata, TSettings>(reference);
 
-            conf.AttachedBlob = blob;
-            //Сразу же указываем родителя
-            conf.Parent = component;
 
-            component.Parent.RegisterType(conf);
+            CreateType(conf, component);
 
-            BeforeInitialize(conf);
-            conf.Initialize();
-            AfterInitialize(conf);
+            //if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
+            //if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
 
-            return conf;
+
+
         }
+
+        protected abstract void CreateType(TTypeMetadata metadata, IXCComponent component);
+
 
         /// <summary>
         /// Сохранить объект. Эта функция входит в обязательный набор API для реализации компонента
         /// </summary>
         /// <param name="conf"></param>
-        public virtual void SaveObject(IXCObjectType conf)
-        {
+        /// 
+
+
+        public abstract void SaveObject(IXCObjectType conf, IXCSaver saver);
+    
+        //{
+            
+            //saver.SaveObject<TSettings>(conf.Name, (TTypeMetadata)conf);
             // var storage = conf.Parent.Root.Storage;
             // var component = conf.Parent;
             // IXCBlob blob;
@@ -109,7 +109,7 @@ namespace ZenPlatform.DataComponent.Configuration
             //
             // using (var stream = conf.SerializeToStream())
             //     storage.SaveBlob(blob.Name, $"Data/{component.Info.ComponentName}", stream);
-        }
+        //}
 
         public IXCDataRule LoadRule(IXCDataRuleContent content)
         {

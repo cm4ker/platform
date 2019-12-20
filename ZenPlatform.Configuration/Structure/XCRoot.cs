@@ -6,28 +6,33 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Storages;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
+    public class XCRootConfig : IXCSettingsItem
+    {
+        public string DataReference { get; set; }
+    }
+
+
     [XmlRoot("Root")]
-    public class XCRoot : IXCRoot, IXCConfigurationItem<XCRoot.XCRootConfig>
+    public class XCRoot : IXCRoot, IXCConfigurationItem<XCRootConfig>
     {
         private XCData _data;
         private IXCRoles _roles;
-        private IXCConfigurationStorage _storage;
         private IXCConfigurationUniqueCounter _counter;
-        public class XCRootConfig: IXCSettingsItem
-        {
-            public string DataReference { get; set; }
-        }
+        
 
         public XCRoot()
         {
             ProjectId = Guid.NewGuid();
 
             _data = new XCData();
+            _data.SetParent(this);
+            
             Interface = new XCInterface();
             Roles = new XCRoles();
             Modules = new XCModules();
@@ -39,7 +44,6 @@ namespace ZenPlatform.Configuration.Structure
             _counter = new XCSimpleCounter();
         }
 
-        public IXCConfigurationStorage Storage => _storage;
         public IXCConfigurationUniqueCounter Counter => _counter;
 
         /// <summary>
@@ -114,13 +118,17 @@ namespace ZenPlatform.Configuration.Structure
         /// <returns></returns>
         public static IXCRoot Load(IXCConfigurationStorage storage)
         {
+
+            XCSaverLoader loader = new XCSaverLoader(storage);
+
+            /*
             XCRoot conf;
             using (var stream = storage.GetRootBlob())
                 //Начальная загрузка 
                 conf = XCHelper.DeserializeFromStream<XCRoot>(stream);
 
             //Сохраняем хранилище
-            conf._storage = storage;
+           // conf._storage = storage;
             conf._counter = storage;
 
             //Инициализация компонентов данных
@@ -133,6 +141,9 @@ namespace ZenPlatform.Configuration.Structure
             conf.LoadSessionSettings();
 
             return conf;
+            */
+
+            return loader.LoadObject<XCRoot,XCRootConfig>("root");
         }
 
         private void LoadSessionSettings()
@@ -178,6 +189,7 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Save()
         {
+            /*
             //Сохранение раздела данных
             Data.Save();
 
@@ -189,8 +201,12 @@ namespace ZenPlatform.Configuration.Structure
             //Сохранение раздела ...
 
             var ms = this.SerializeToStream();
-            _storage.SaveRootBlob(ms);
+           // _storage.SaveRootBlob(ms);
             //TODO: Необходимо инициировать сохранение для всех компонентов
+            */
+            throw new NotImplementedException();
+
+
         }
 
         /// <summary>
@@ -199,14 +215,21 @@ namespace ZenPlatform.Configuration.Structure
         /// <param name="storage"></param>
         public void Save(IXCConfigurationStorage storage)
         {
+
+
+            XCSaverLoader loader = new XCSaverLoader(storage);
+
+            loader.SaveObject("root", this);
+            /*
             //Всё просто, подменяем хранилище, сохраняем, заменяем обратно
-            var actualStorage = _storage;
+            //var actualStorage = _storage;
             var actualCounter = _counter;
-            _storage = storage;
+           // _storage = storage;
             _counter = storage;
             Save();
-            _storage = actualStorage;
+            //_storage = actualStorage;
             _counter = actualCounter;
+            */
         }
 
         /// <summary>
@@ -224,12 +247,12 @@ namespace ZenPlatform.Configuration.Structure
         public void Initialize(IXCLoader loader, XCRootConfig settings)
         {
 
-            _data = loader.Load<XCData, XCData.XCDataConfig>(settings.DataReference);
+            _data = loader.LoadObject<XCData, XCDataConfig>(settings.DataReference);
         }
 
         public IXCSettingsItem Store(IXCSaver saver)
         {
-            saver.Save("Data", _data);
+            saver.SaveObject("Data", _data);
 
             return new XCRootConfig()
             { 

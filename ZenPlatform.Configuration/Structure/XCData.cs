@@ -15,16 +15,22 @@ using static ZenPlatform.Configuration.Structure.XCData;
 
 namespace ZenPlatform.Configuration.Structure
 {
+    public class XCDataConfig : IXCSettingsItem
+    {
+        public XCDataConfig()
+        {
+            ComponentReferences = new List<string>();
+        }
+        public List<string> ComponentReferences { get; set; }
+
+    }
     public class XCData : IXCData, IXCConfigurationItem<XCDataConfig>
     {
         private IXCRoot _parent;
         private ObservableCollection<IXCType> _platformTypes;
         private ChildItemCollection<IXCData, IXCComponent> _components;
 
-        public class XCDataConfig: IXCSettingsItem
-        {
-
-        }
+        
 
         public XCData()
         {
@@ -65,8 +71,8 @@ namespace ZenPlatform.Configuration.Structure
             _platformTypes.Add(new XCNumeric());
             _platformTypes.Add(new XCGuid());
             */
-            LoadComponents();
-            LoadDependencies();
+            //LoadComponents();
+            //LoadDependencies();
         }
 
         #region Loading
@@ -99,6 +105,11 @@ namespace ZenPlatform.Configuration.Structure
             {
                 xct.LoadDependencies();
             }
+        }
+
+        public void SetParent(XCRoot root)
+        {
+            _parent = root;
         }
 
         #endregion
@@ -155,12 +166,23 @@ namespace ZenPlatform.Configuration.Structure
 
         public void Initialize(IXCLoader loader, XCDataConfig settings)
         {
-            throw new NotImplementedException();
+            foreach (var reference in settings.ComponentReferences)
+            {
+                _components.Add(loader.LoadObject<XCComponent, XCComponentConfig>(reference));
+            }
+
         }
 
         public IXCSettingsItem Store(IXCSaver saver)
         {
-            throw new NotImplementedException();
+            XCDataConfig settings = new XCDataConfig();
+            foreach (var component in _components)
+            {
+                saver.SaveObject(component.Info.ComponentName, (XCComponent)component);
+                settings.ComponentReferences.Add(component.Info.ComponentName);
+            }
+
+            return settings;
         }
     }
 }

@@ -1,55 +1,52 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class XCSingleEntityMetadata : IXCTypeMetadata
+    public class XCSingleEntityMetadataSettings : IXCSettingsItem
     {
-        public bool IsAbstract { get; set; }
+        public List<XCSingleEntityProperty> Properties { get; set; }
+
+        public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; set; }
+
+    }
+
+    public class XCSingleEntityMetadata : IXCTypeMetadata<XCSingleEntityMetadataSettings>
+    {
         
-        public bool IsSealed { get; set; }
-        
-        public IXCType BaseType { get; set; }
-        
-        public bool HasProperties { get; set; }
-        
-        public bool HasModules { get; set;}
-        
-        public bool HasCommands { get; set;}
-        
-        public void Initialize()
+
+        public List<XCSingleEntityProperty> Properties { get; set; }
+
+        public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; set; }
+
+        public XCSingleEntityMetadata()
         {
-            throw new System.NotImplementedException();
+            Properties = new List<XCSingleEntityProperty>();
+
+
         }
 
-        public void LoadDependencies()
+        public void AddPropertyRange(IEnumerable<XCSingleEntityProperty> properties)
         {
-            throw new System.NotImplementedException();
+            Properties.AddRange(properties);
         }
 
-        public IXCObjectProperty CreateProperty()
+        public void Initialize(IXCLoader loader, XCSingleEntityMetadataSettings settings)
         {
-            throw new System.NotImplementedException();
+            Properties = settings.Properties;
+            Modules = settings.Modules;
         }
 
-        public IEnumerable<IXCObjectProperty> GetProperties()
+        public IXCSettingsItem Store(IXCSaver saver)
         {
-            throw new System.NotImplementedException();
-        }
+            var settings = new XCSingleEntityMetadataSettings()
+            {
+                Modules = Modules,
+                Properties = Properties
+            };
 
-        public IEnumerable<IXCProgramModule> GetProgramModules()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerable<IXCCommand> GetCommands()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IXCCommand CreateCommand()
-        {
-            throw new System.NotImplementedException();
+            return settings;
         }
     }
 }

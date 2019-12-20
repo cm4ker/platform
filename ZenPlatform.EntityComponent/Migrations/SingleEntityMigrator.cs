@@ -38,7 +38,8 @@ namespace ZenPlatform.EntityComponent.Migrations
 
         public SSyntaxNode GetStep1(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-             
+            var oldtype = (XCObjectTypeBase)old;
+            var actualtype = (XCObjectTypeBase)actual;
 
             if (old == null && actual == null)
             {
@@ -46,11 +47,11 @@ namespace ZenPlatform.EntityComponent.Migrations
             } else
             if (old != null && actual == null)
             {
-                query.Delete().Table(old.RelTableName);
+                query.Delete().Table(oldtype.RelTableName);
             } else 
             if (old == null && actual != null )
             {
-                var tableBuilder = query.Create().Table(actual.RelTableName);
+                var tableBuilder = query.Create().Table(actualtype.RelTableName);
 
                 foreach (var property in actual.GetProperties())
                 {
@@ -67,7 +68,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                 var comparer = new XCObjectTypeComparer<IXCObjectType>();
                 if (!comparer.Equals(old, actual))
                 {
-                    query.Copy().Table().FromTable(old.RelTableName).ToTable($"{actual.RelTableName}_tmp");
+                    query.Copy().Table().FromTable(oldtype.RelTableName).ToTable($"{actualtype.RelTableName}_tmp");
                 }
             }
             
@@ -77,14 +78,15 @@ namespace ZenPlatform.EntityComponent.Migrations
 
         public SSyntaxNode GetStep2(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-
+            var oldtype = (XCObjectTypeBase)old;
+            var actualtype = (XCObjectTypeBase)actual;
 
             if (old != null && actual != null)
             {
 
 
                 var comparer = new XCObjectTypeComparer<IXCObjectProperty>();
-                string tableName = $"{actual.RelTableName}_tmp";
+                string tableName = $"{actualtype.RelTableName}_tmp";
 
                 var props = old.GetProperties()
                    .FullJoin(
@@ -174,20 +176,27 @@ namespace ZenPlatform.EntityComponent.Migrations
 
         public SSyntaxNode GetStep3(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
+
+            var oldtype = (XCObjectTypeBase)old;
+            var actualtype = (XCObjectTypeBase)actual;
+
             var comparer = new XCObjectTypeComparer<IXCObjectType>();
             if (old != null && actual != null && !comparer.Equals(old, actual))
             {
-                query.Delete().Table($"{actual.RelTableName}");
+                query.Delete().Table($"{actualtype.RelTableName}");
             }
             return query.Expression;
         }
 
         public SSyntaxNode GetStep4(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
+            var oldtype = (XCObjectTypeBase)old;
+            var actualtype = (XCObjectTypeBase)actual;
+
             var comparer = new XCObjectTypeComparer<IXCObjectType>();
             if (old != null && actual != null && !comparer.Equals(old,actual))
             {
-                query.Rename().Table($"{actual.RelTableName}_tmp").To(old.RelTableName);
+                query.Rename().Table($"{actualtype.RelTableName}_tmp").To(oldtype.RelTableName);
             }
             return query.Expression;
         }

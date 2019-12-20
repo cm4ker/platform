@@ -15,7 +15,7 @@ namespace ZenPlatform.Configuration.Storages
             _storage = storage;
         }
         public IXCConfigurationStorage _storage;
-        public T Load<T, C>(string path, bool loadTree = true)
+        public T LoadObject<T, C>(string path, bool loadTree = true)
             where
             T : IXCConfigurationItem<C>, new()
             where
@@ -36,7 +36,7 @@ namespace ZenPlatform.Configuration.Storages
 
         }
 
-        public byte[] Load(string path)
+        public byte[] LoadBytes(string path)
         {
             using (var stream = _storage.GetBlob("", path))
             {
@@ -49,7 +49,7 @@ namespace ZenPlatform.Configuration.Storages
             }
         }
 
-        public void Save<T>(string path, IXCConfigurationItem<T> item)
+        public void SaveObject<T>(string path, IXCConfigurationItem<T> item)
             where
             T : IXCSettingsItem
         {
@@ -61,7 +61,7 @@ namespace ZenPlatform.Configuration.Storages
 
         }
 
-        public void Save(string path, byte[] data)
+        public void SaveBytes(string path, byte[] data)
         {
             _storage.SaveBlob("", path, new MemoryStream(data));
         }
