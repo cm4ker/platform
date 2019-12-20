@@ -20,7 +20,6 @@ namespace Tester
 
     public class Grid : AvaloniaObject
     {
-        private int _rowHeight = 10;
         private List<int> _data;
 
         public Grid()
@@ -217,7 +216,6 @@ namespace Tester
 
             g.Init();
             var pos = 0;
-            g.Scroll(pos);
             g.Draw();
 
             var key = Console.ReadKey();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using Avalonia.Data;
 using UIModel.HtmlWrapper;
@@ -13,7 +14,7 @@ public class Program
         public object Test { get; set; }
     }
 
-    public static void Main()
+    public static void MainOLD()
     {
         var document = new Document();
         var newDiv = document.CreateElement<HTMLDivElement>();
@@ -40,7 +41,7 @@ public class Program
         ObjectPickerField op2 = new ObjectPickerField();
 
         op2.InitAutocomplete(new List<string> {"AAAA", "BBBB", "CCCC", "DDDD", "EEEE"});
-        
+
         Binding b = new Binding();
         b.Mode = BindingMode.TwoWay;
         b.Path = "Test";
@@ -77,6 +78,27 @@ public class Program
             4) Client starting interpretate intermediate language and construct from
             5) Client end construct form and show it
         */
+    }
+
+    private static int pos = 0;
+
+    public static void Main()
+    {
+        var document = new Document();
+        Grid g = new Grid();
+        g.Init();
+        document.Body.AppendChild(g.Root);
+
+
+        var b = document.CreateElement<HTMLInputElement>();
+        b.Type = InputElementType.Button;
+
+        b.OnClick += (sender, args) =>
+        {
+            pos++;
+            g.Scroll(pos);
+        };
+        document.Body.AppendChild(b);
     }
 
 
