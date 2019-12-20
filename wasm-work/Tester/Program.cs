@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -29,9 +30,7 @@ namespace Tester
             _rows = new Tube<Row>(15);
         }
 
-
         private int _currentRowPosition = 0;
-
 
         private int _totalRows = 0;
 
@@ -52,7 +51,7 @@ namespace Tester
 
         int GetViewPortSize()
         {
-            return _rows.MaxItems + _topBuffer.MaxItems + _bottomBuffer.MaxItems;
+            return Math.Min(Math.Min(_rows.MaxItems, _topBuffer.MaxItems), _bottomBuffer.MaxItems);
         }
 
         public void Scroll(int rowPosition)
@@ -64,15 +63,17 @@ namespace Tester
             //if we scroll and this scroll more than buffered zone
             if (diff > GetViewPortSize() || _rows.Count == 0)
             {
+                _topBuffer.Clear();
+                _bottomBuffer.Clear();
                 _rows.Clear();
 
                 if (rowPosition > 0)
                 {
-                    var index = rowPosition;
+                    var index = rowPosition - 1;
                     var counter = _topBuffer.MaxItems;
                     while (index > 0 && counter > 0)
                     {
-                        _topBuffer.PushBottom(FromIndex(index));
+                        _topBuffer.PushTop(FromIndex(index));
                         index--;
                         counter--;
                     }
@@ -211,7 +212,7 @@ namespace Tester
         static void Main(string[] args)
         {
             Console.Clear();
-
+            
             var g = new Grid();
 
             g.Init();
@@ -234,17 +235,22 @@ namespace Tester
                 }
                 else if (key.Key == ConsoleKey.RightArrow)
                 {
-                    pos += 10;
+                    pos += 40;
                 }
                 else if (key.Key == ConsoleKey.LeftArrow)
                 {
-                    if (pos > 10)
-                        pos -= 10;
+                    if (pos > 40)
+                        pos -= 40;
                 }
 
                 Console.Clear();
                 g.Scroll(pos);
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
                 g.Draw();
+                sw.Stop();
+
+                Console.WriteLine($"Time: {sw.ElapsedMilliseconds}ms");
 
                 key = Console.ReadKey();
             }
