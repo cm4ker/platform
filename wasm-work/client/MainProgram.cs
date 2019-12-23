@@ -1,11 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
+using Avalonia.Data;
+using UIModel.HtmlWrapper;
 using WebAssembly;
 using WebAssembly.Browser.DOM;
 
 public class Program
 {
-    public static void Main()
+    public class DModel
+    {
+        public object Test { get; set; }
+    }
+
+    public static void MainOLD()
     {
         var document = new Document();
         var newDiv = document.CreateElement<HTMLDivElement>();
@@ -20,6 +29,32 @@ public class Program
         document.Body.AppendChild(text.Element);
 
         MyExample(document.Body);
+
+        UIContainer ui = new UIContainer();
+        var obj = new DModel {Test = "OPA!!"};
+        ui.DataContext = obj;
+
+        ObjectPickerField op = new ObjectPickerField();
+
+        op.InitAutocomplete(new List<string> {"Apple", "Test", "Test1", "Test2", "Lol"});
+
+        ObjectPickerField op2 = new ObjectPickerField();
+
+        op2.InitAutocomplete(new List<string> {"AAAA", "BBBB", "CCCC", "DDDD", "EEEE"});
+
+        Binding b = new Binding();
+        b.Mode = BindingMode.TwoWay;
+        b.Path = "Test";
+
+        var ib = b.Initiate(op, ObjectPickerField.ValueProperty, ui);
+        BindingOperations.Apply(op, ObjectPickerField.ValueProperty, ib, ui);
+
+        var ib2 = b.Initiate(op2, ObjectPickerField.ValueProperty, ui);
+        BindingOperations.Apply(op2, ObjectPickerField.ValueProperty, ib, ui);
+
+        document.Body.AppendChild(op.Root);
+        document.Body.AppendChild(op2.Root);
+
 
         /*
          
@@ -43,6 +78,29 @@ public class Program
             4) Client starting interpretate intermediate language and construct from
             5) Client end construct form and show it
         */
+    }
+
+    private static int pos = 0;
+    private static Grid g;
+    public static void Main()
+    {
+        
+        g = new Grid();
+        g.Init();
+        D.Doc.Body.AppendChild(g.Root);
+
+
+        var b = D.Doc.CreateElement<HTMLInputElement>();
+        b.Type = InputElementType.Button;
+
+        b.OnClick += (sender, args) =>
+        {
+            pos++;
+            g.Scroll(pos);
+        };
+        
+        D.Doc.Body.AppendChild(b);
+        
     }
 
 
