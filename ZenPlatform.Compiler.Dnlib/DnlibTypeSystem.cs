@@ -50,6 +50,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IReadOnlyList<IAssembly> Assemblies => _asms;
 
+        
+        
+        public Dictionary<string, AssemblyRef> AsmRefsCache = new Dictionary<string, AssemblyRef>();
+        
+        
         internal IAssembly RegisterAssembly(AssemblyDef assemblyDef)
         {
             var result = new DnlibAssembly(this, assemblyDef);

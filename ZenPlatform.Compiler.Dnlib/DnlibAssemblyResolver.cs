@@ -42,6 +42,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public AssemblyDef Resolve(IAssembly assembly, ModuleDef sourceModule)
         {
             var asm = _defaultResolver.Resolve(assembly, sourceModule);
+
             if (asm != null)
             {
                 asm.ManifestModule.Context = new ModuleContext(this, new DnlibMetadataResolver(this));
@@ -77,6 +78,7 @@ namespace ZenPlatform.Compiler.Dnlib
                     {
                         def = AssemblyDef.Load(dllPath,
                             new ModuleContext(this, new DnlibMetadataResolver(this)));
+                        
                         libraries.Add(libname, def);
 
                         return def;

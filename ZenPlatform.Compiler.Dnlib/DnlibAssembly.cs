@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using dnlib.DotNet;
+using dnlib.DotNet.MD;
 using ZenPlatform.Compiler.Contracts;
 using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
 using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
@@ -35,13 +36,20 @@ namespace ZenPlatform.Compiler.Dnlib
             _attributes ??= Assembly.CustomAttributes.Select(ca => new DnlibCusotmAtttribute(_ts, ca))
                 .ToList();
 
+      
+
         public IType FindType(string fullName)
         {
             if (_typeCache.TryGetValue(fullName, out var rv))
                 return rv;
             var lastDot = fullName.LastIndexOf(".", StringComparison.Ordinal);
-            var asmRef = new AssemblyNameInfo(Assembly.FullName).ToAssemblyRef();
 
+            if (!_ts.AsmRefsCache.TryGetValue(Assembly.FullName, out var asmRef))
+            {
+                asmRef = new AssemblyNameInfo(Assembly.FullName).ToAssemblyRef();
+                asmRef.Attributes = AssemblyAttributes.None;
+                _ts.AsmRefsCache.Add(Assembly.FullName, asmRef);
+            }
 
             var tref = (lastDot == -1)
                 ? new TypeRefUser(Assembly.ManifestModule, null, fullName, asmRef)
@@ -57,11 +65,13 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public void Write(string fileName)
         {
-            Assembly.Write(fileName);
+            //var asm = Assembly.ManifestModule.ResolveToken(new MDToken(Table.AssemblyRef, 1).Raw);
+        Assembly.Write(fileName);
         }
 
         public void Write(Stream stream)
         {
+            //var asm = Assembly.ManifestModule.ResolveToken(new MDToken(Table.AssemblyRef, 1).Raw);
             Assembly.Write(stream);
         }
 
