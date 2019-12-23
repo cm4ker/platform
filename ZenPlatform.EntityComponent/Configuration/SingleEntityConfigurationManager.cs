@@ -24,6 +24,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             //Link type нельзя создать просто так, самому, он обязательно должен быть
             //припинен к какому-то объекту, поэтому для него нет отдельного метода создания
             var link = new XCSingleEntityLink(newItem, null);
+            link.Guid = Guid.NewGuid();
 
             ((IChildItem<IXCComponent>) link).Parent = Component;
             ((IChildItem<IXCComponent>) newItem).Parent = Component;
@@ -33,7 +34,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             Component.RegisterType(link);
 
 
-            newItem.AttachedBlob = new XCBlob(Guid.NewGuid().ToString());
+            //newItem.AttachedBlob = new XCBlob(Guid.NewGuid().ToString());
             //Component.Include.Add(newItem.AttachedBlob);
             //TODO: Обработать базовый тип
 

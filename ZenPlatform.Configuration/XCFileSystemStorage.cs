@@ -56,11 +56,12 @@ namespace ZenPlatform.Configuration
                 stream.Position = 0;
             }
 
-            var folder = Path.Combine(_directory, route);
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
+            var tmp = route + name;
+           // var folder = Pathname.Combine(_directory, route);
+           if (!Directory.Exists(_directory))
+            Directory.CreateDirectory(_directory);
 
-            using (var sw = File.Open(Path.Combine(_directory, route, name), FileMode.Create))
+            using (var sw = File.Open(Path.Combine(_directory, tmp), FileMode.Create))
             {
                 stream.CopyTo(sw);
             }

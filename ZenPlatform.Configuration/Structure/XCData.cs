@@ -72,7 +72,12 @@ namespace ZenPlatform.Configuration.Structure
             _platformTypes.Add(new XCGuid());
             */
             //LoadComponents();
-            //LoadDependencies();
+
+            foreach(var component in _components)
+                foreach (var type in component.Types)
+                    _platformTypes.Add(type);
+
+            LoadDependencies();
         }
 
         #region Loading
@@ -168,8 +173,14 @@ namespace ZenPlatform.Configuration.Structure
         {
             foreach (var reference in settings.ComponentReferences)
             {
-                _components.Add(loader.LoadObject<XCComponent, XCComponentConfig>(reference));
+                var component = loader.LoadObject<XCComponent, XCComponentConfig>(reference);
+                component.SetParent(this);
+                
+                _components.Add(component);
+                
             }
+
+            
 
         }
 

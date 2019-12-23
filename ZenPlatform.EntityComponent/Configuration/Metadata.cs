@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -8,7 +9,13 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         public List<XCSingleEntityProperty> Properties { get; set; }
 
-        public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; set; }
+        public List<XCSingleEntityModule> Modules { get; set; }
+
+        public string Name { get; set; }
+
+        public Guid EntityId { get; set; }
+
+        public Guid LinkId { get; set; }
 
     }
 
@@ -16,15 +23,21 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         
 
-        public List<XCSingleEntityProperty> Properties { get; set; }
+        public List<XCSingleEntityProperty> Properties { get; }
 
-        public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; set; }
+        public List<XCSingleEntityModule> Modules { get;  }
+
+        public string Name { get; set; }
+
+        public Guid EntityId { get; set; }
+
+        public Guid LinkId { get; set; }
 
         public XCSingleEntityMetadata()
         {
             Properties = new List<XCSingleEntityProperty>();
 
-
+            Modules = new List<XCSingleEntityModule>();
         }
 
         public void AddPropertyRange(IEnumerable<XCSingleEntityProperty> properties)
@@ -32,10 +45,18 @@ namespace ZenPlatform.EntityComponent.Configuration
             Properties.AddRange(properties);
         }
 
+        public void AddModuleRange(IEnumerable<XCSingleEntityModule> modules)
+        {
+            Modules.AddRange(modules);
+        }
+
         public void Initialize(IXCLoader loader, XCSingleEntityMetadataSettings settings)
         {
-            Properties = settings.Properties;
-            Modules = settings.Modules;
+            AddPropertyRange(settings.Properties);
+            AddModuleRange(settings.Modules);
+            EntityId = settings.EntityId;
+            LinkId = settings.LinkId;
+            Name = settings.Name;
         }
 
         public IXCSettingsItem Store(IXCSaver saver)
@@ -43,7 +64,10 @@ namespace ZenPlatform.EntityComponent.Configuration
             var settings = new XCSingleEntityMetadataSettings()
             {
                 Modules = Modules,
-                Properties = Properties
+                Properties = Properties,
+                Name = Name,
+                LinkId = LinkId,
+                EntityId = EntityId
             };
 
             return settings;

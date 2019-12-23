@@ -31,10 +31,13 @@ namespace ZenPlatform.EntityComponent.Configuration
         protected override void CreateType(XCSingleEntityMetadata metadata, IXCComponent component)
         {
             var entity = new XCSingleEntity(metadata);
+            ((IChildItem<IXCComponent>)entity).Parent = component;
 
             component.RegisterType(entity);
 
             var link = new XCSingleEntityLink(entity, metadata);
+
+            ((IChildItem<IXCComponent>)link).Parent = component;
 
             component.RegisterType(link);
 

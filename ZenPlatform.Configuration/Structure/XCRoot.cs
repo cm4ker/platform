@@ -15,6 +15,14 @@ namespace ZenPlatform.Configuration.Structure
     public class XCRootConfig : IXCSettingsItem
     {
         public string DataReference { get; set; }
+
+        public Guid ProjectId { get; set; }
+
+        public string ProjectName { get; set; }
+
+        public string ProjectVersion { get; set; }
+
+
     }
 
 
@@ -246,8 +254,13 @@ namespace ZenPlatform.Configuration.Structure
 
         public void Initialize(IXCLoader loader, XCRootConfig settings)
         {
+            ProjectId = settings.ProjectId;
+            ProjectName = settings.ProjectName;
+            ProjectVersion = settings.ProjectVersion;
 
             _data = loader.LoadObject<XCData, XCDataConfig>(settings.DataReference);
+            _data.SetParent(this);
+            _data.Load();
         }
 
         public IXCSettingsItem Store(IXCSaver saver)
@@ -256,7 +269,11 @@ namespace ZenPlatform.Configuration.Structure
 
             return new XCRootConfig()
             { 
-                DataReference = "Data"
+                DataReference = "Data",
+                ProjectId = ProjectId,
+                ProjectName = ProjectName,
+                ProjectVersion = ProjectVersion
+
             };
             
         }

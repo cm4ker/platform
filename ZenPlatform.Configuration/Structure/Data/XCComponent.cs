@@ -56,6 +56,11 @@ namespace ZenPlatform.Configuration.Structure.Data
             AttachedComponents = new List<IXCComponent>();
         }
 
+        public void SetParent(IXCData data)
+        {
+            _parent = data;
+        }
+
         /// <summary>
         /// Информация о компоненте
         /// </summary>
@@ -251,7 +256,7 @@ namespace ZenPlatform.Configuration.Structure.Data
         public void RegisterType(IXCType type)
         {
             _allTypes.Add(type);
-            Parent.RegisterType(type);
+            //Parent.RegisterType(type);
         }
 
         public void Initialize(IXCLoader loader, XCComponentConfig settings)
@@ -301,9 +306,9 @@ namespace ZenPlatform.Configuration.Structure.Data
                 module.Write(ms);
                 ms.Seek(0, SeekOrigin.Begin);
 
-                saver.SaveBytes(refelectionModule.FullyQualifiedName, ms.ToArray());
+                saver.SaveBytes(refelectionModule.Name, ms.ToArray());
 
-                settings.AssemblyReference = refelectionModule.FullyQualifiedName;
+                settings.AssemblyReference = refelectionModule.Name;
             }
 
             return settings;

@@ -223,7 +223,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
-            throw new NotImplementedException();
+            return new List<XCColumnSchemaDefinition>();
+            //throw new NotImplementedException();
             // return new[]
             // {
             //     new XCColumnSchemaDefinition(XCColumnSchemaType.Type,
