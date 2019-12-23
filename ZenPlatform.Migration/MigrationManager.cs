@@ -51,7 +51,8 @@ namespace ZenPlatform.Migration
 
             using (var cmd = context.CreateCommand(query.Expression))
             {
-                cmd.ExecuteNonQuery();
+                if (!string.IsNullOrEmpty(cmd.CommandText))
+                    cmd.ExecuteNonQuery();
             }
         }
 
@@ -64,7 +65,7 @@ namespace ZenPlatform.Migration
         /// <returns></returns>
         public bool CheckMigration(IXCRoot old, IXCRoot actual)
         {
-            return _m.GetHash(old) != _m.GetHash(actual);
+            return !_m.Equals(old, actual);
         }
     }
 }

@@ -18,16 +18,49 @@ namespace ZenPlatform.EntityComponent.Configuration
     public class XCSingleEntity : XCObjectTypeBase
     {
         private List<XCCommand> _predefinedCommands;
+        //private XCSingleEntityMetadata _metadata;
 
-        public XCSingleEntity(XCSingleEntityMetadata md)
+        public XCSingleEntity(XCSingleEntityMetadata metadata)
         {
+           
+
+
+            
+
+
             Properties = new ObservableCollection<IXCObjectProperty>();
             Properties.CollectionChanged += Properties_CollectionChanged;
             Modules = new XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>(this);
             Commands = new List<XCCommand>();
             _predefinedCommands = new List<XCCommand>();
 
+            if (metadata != null)
+            {
+                Name = metadata.Name;
+                Guid = metadata.EntityId;
+
+                foreach (var property in metadata.Properties)
+                    Properties.Add(property);
+
+
+                foreach (var module in metadata.Modules)
+                    Modules.Add(module);
+            }
             InitPredefinedCommands();
+        }
+
+        public XCSingleEntityMetadata GetMetadata()
+        {
+            
+
+            var metadata = new XCSingleEntityMetadata();
+
+            metadata.AddPropertyRange(this.Properties.Where(p => p is XCSingleEntityProperty).Select(p => (XCSingleEntityProperty)p));
+            metadata.AddModuleRange(this.Modules);
+            metadata.Name = Name;
+            metadata.EntityId = Guid;
+            return metadata;
+
         }
 
         private void Properties_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -98,7 +131,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 }
 
                 var id = property.Id;
-                Root.Storage.GetId(property.Guid, ref id);
+                Root.Counter.GetId(property.Guid, ref id);
                 property.Id = id;
             }
         }
@@ -162,6 +195,20 @@ namespace ZenPlatform.EntityComponent.Configuration
         private void InitPredefinedCommands()
         {
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is XCSingleEntity entity &&
+                   base.Equals(obj) &&
+                   EqualityComparer<ObservableCollection<IXCObjectProperty>>.Default.Equals(Properties, entity.Properties) &&
+                   EqualityComparer<XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>>.Default.Equals(Modules, entity.Modules) &&
+                   EqualityComparer<List<XCCommand>>.Default.Equals(Commands, entity.Commands);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), Properties, Modules, Commands);
+        }
     }
 
     public class XCSingleEntityLink : XCLinkTypeBase
@@ -171,6 +218,12 @@ namespace ZenPlatform.EntityComponent.Configuration
         public XCSingleEntityLink(IXCObjectType parentType, XCSingleEntityMetadata md)
         {
             ParentType = parentType;
+            if (md != null)
+            {
+                Guid = md.LinkId;
+            }
         }
+
+
     }
 }

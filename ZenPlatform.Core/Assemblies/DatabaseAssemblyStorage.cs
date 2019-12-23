@@ -109,12 +109,15 @@ namespace ZenPlatform.Core.Assemlies
                     .ld_column("configuration_hash")
                     .ld_param("configuration_hash")
                     .eq()
-                    .and()
+                    //.and()
                     .m_select()
-                    .ld_column("assembly_hash")
-                    .ld_column("configuration_hash")
-                    .ld_column("type")
                     .ld_column("name")
+                    .ld_column("type")
+
+                    .ld_column("configuration_hash")
+                    .ld_column("assembly_hash")
+                    
+                    
                     .st_query();
             }
 
@@ -139,21 +142,23 @@ namespace ZenPlatform.Core.Assemlies
         {
             void Gen(QueryMachine qm)
             {
-                qm.
-                    bg_query()
-                    .m_from()
-                        .ld_table("assemblies")
-                        .m_where()
-                        .ld_column("configuration_hash")
+                qm
+                    .bg_query()
+                    .m_values()
                         .ld_param("configuration_hash")
-                        .eq()
-                        .and()
-                    .m_select()
-                        .ld_column("assembly_hash")
+                        .ld_param("assembly_hash")
+                        .ld_param("type")
+                        .ld_param("name")
+                        .ld_param("data")
+                    .m_insert()
+                        .ld_table("assemblies")
                         .ld_column("configuration_hash")
+                        .ld_column("assembly_hash")
                         .ld_column("type")
                         .ld_column("name")
+                        .ld_column("data")
                     .st_query();
+
            }
 
             using (var cmd = _dataContextManager.GetContext().CreateCommand(Gen))
