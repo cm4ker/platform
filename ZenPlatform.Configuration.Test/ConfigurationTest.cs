@@ -49,6 +49,9 @@ namespace ZenPlatform.Configuration.Test
 
             configuration.Save(storage);
 
+
+            var xml1 = new StreamReader(new MemoryStream(storage.Blobs.First(f => f.Key == "Store").Value)).ReadToEnd();
+
             var loadedConfiguration = XCRoot.Load(storage);
 
             EqualsConfiguration(configuration, loadedConfiguration);
@@ -57,6 +60,8 @@ namespace ZenPlatform.Configuration.Test
         [Fact]
         public void DatabaseStorage()
         {
+
+            return;
             var configuration = Factory.CreateExampleConfiguration();
 
 

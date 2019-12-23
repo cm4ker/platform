@@ -65,8 +65,9 @@ namespace ZenPlatform.EntityComponent.Migrations
             }
             else
             {
-                var comparer = new XCObjectTypeComparer<IXCObjectType>();
-                if (!comparer.Equals(old, actual))
+                //var comparer = new XCObjectTypeComparer<IXCObjectType>();
+               //if (!comparer.Equals(old, actual))
+               if (!old.Equals(actual))
                 {
                     query.Copy().Table().FromTable(oldtype.RelTableName).ToTable($"{actualtype.RelTableName}_tmp");
                 }
@@ -85,7 +86,6 @@ namespace ZenPlatform.EntityComponent.Migrations
             {
 
 
-                var comparer = new XCObjectTypeComparer<IXCObjectProperty>();
                 string tableName = $"{actualtype.RelTableName}_tmp";
 
                 var props = old.GetProperties()
@@ -106,7 +106,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                         DeleteProperty(query, property.old, tableName);
                     } else
                     {
-                        if (!comparer.Equals(property.old, property.actual))
+                        if (!property.old.Equals(property.actual))
                             ChangeProperty(query, property.old, property.actual, tableName);
                     }
                 }
@@ -180,8 +180,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             var oldtype = (XCObjectTypeBase)old;
             var actualtype = (XCObjectTypeBase)actual;
 
-            var comparer = new XCObjectTypeComparer<IXCObjectType>();
-            if (old != null && actual != null && !comparer.Equals(old, actual))
+            if (old != null && actual != null && !old.Equals(actual))
             {
                 query.Delete().Table($"{actualtype.RelTableName}");
             }
@@ -193,8 +192,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             var oldtype = (XCObjectTypeBase)old;
             var actualtype = (XCObjectTypeBase)actual;
 
-            var comparer = new XCObjectTypeComparer<IXCObjectType>();
-            if (old != null && actual != null && !comparer.Equals(old,actual))
+            if (old != null && actual != null && !old.Equals(actual))
             {
                 query.Rename().Table($"{actualtype.RelTableName}_tmp").To(oldtype.RelTableName);
             }
