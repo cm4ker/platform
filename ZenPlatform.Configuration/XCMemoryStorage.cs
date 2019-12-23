@@ -6,18 +6,25 @@ using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 
 
-namespace ZenPlatform.Core.Test.Configuration
+namespace ZenPlatform.Configuration
 {
-    public class XCTestMemoryStorage : IXCConfigurationStorage
+    public class XCMemoryStorage : IXCConfigurationStorage
     {
         private uint _maxId = 100;
-        private Dictionary<string, byte[]> _blobs = new Dictionary<string, byte[]>();
+        public Dictionary<string, byte[]> Blobs { get; }
+
+        public XCMemoryStorage()
+        {
+            Blobs = new Dictionary<string, byte[]>();
+        }
+
         public Stream GetBlob(string name, string route)
         {
+            
             var path = $"{route}{name}";
-            if (_blobs.ContainsKey(path))
+            if (Blobs.ContainsKey(path))
             {
-                return new MemoryStream(_blobs[path]);
+                return new MemoryStream(Blobs[path]);
             }
 
             return new MemoryStream();
@@ -38,12 +45,12 @@ namespace ZenPlatform.Core.Test.Configuration
             stream.Read(buffer);
 
 
-            if (_blobs.ContainsKey(path))
+            if (Blobs.ContainsKey(path))
             {
-                _blobs[path] = buffer;
+                Blobs[path] = buffer;
             } else
             {
-                _blobs.Add(path, buffer);
+                Blobs.Add(path, buffer);
             }
 
         }

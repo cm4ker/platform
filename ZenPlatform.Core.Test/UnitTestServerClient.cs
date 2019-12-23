@@ -46,7 +46,6 @@ namespace ZenPlatform.Core.Test
         }
 
 
-
         [Fact]
         public void Connecting()
         {
@@ -102,7 +101,7 @@ namespace ZenPlatform.Core.Test
 
 
             //Task.Delay(1000000).Wait();
-             accessPoint.Stop();
+            accessPoint.Stop();
         }
 
         [Fact]
@@ -149,7 +148,6 @@ namespace ZenPlatform.Core.Test
 
             Assert.NotNull(result);
 
-
             var invoice = result.CreateInstance("Documents._Invoice");
             Assert.NotNull(invoice);
         }
@@ -159,7 +157,8 @@ namespace ZenPlatform.Core.Test
         {
             var storage = new TestAssemblyStorage();
             var manager =
-                new AssemblyManager(new XCCompiler(), storage, new XUnitLogger<AssemblyManager>(_testOutput),new XCConfManipulator());
+                new AssemblyManager(new XCCompiler(), storage, new XUnitLogger<AssemblyManager>(_testOutput),
+                    new XCConfManipulator());
 
             var root = Factory.CreateExampleConfiguration();
 

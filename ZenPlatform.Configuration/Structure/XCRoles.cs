@@ -39,11 +39,13 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Save()
         {
+            /*
             foreach (var role in Items)
             {
                 using (Stream stream = role.SerializeToStream())
                     Parent.Storage.SaveBlob(role.Name, StandardRoleFolder, stream);
             }
+            */
         }
 
         /// <summary>
@@ -51,6 +53,7 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Load()
         {
+            /*
             if (Blobs != null)
                 foreach (var blob in Blobs)
                 {
@@ -63,6 +66,7 @@ namespace ZenPlatform.Configuration.Structure
 
                     role.Load();
                 }
+                */
         }
     }
 }

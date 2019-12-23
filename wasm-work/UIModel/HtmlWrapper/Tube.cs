@@ -49,7 +49,8 @@ namespace UIModel.HtmlWrapper
 
             if (_items.Count > MaxItems)
             {
-                OnSupersededNotify(_items.GetRange(MaxItems, _items.Count - MaxItems));
+                var removed = _items.GetRange(MaxItems, _items.Count - MaxItems).ToList();
+                OnSupersededNotify(removed);
                 _items.RemoveRange(MaxItems, _items.Count - MaxItems);
             }
         }
@@ -62,7 +63,8 @@ namespace UIModel.HtmlWrapper
 
             if (_items.Count > MaxItems)
             {
-                OnSupersededNotify(_items.GetRange(0, _items.Count - MaxItems));
+                var removed = _items.GetRange(0, _items.Count - MaxItems).ToList();
+                OnSupersededNotify(removed);
                 _items.RemoveRange(0, _items.Count - MaxItems);
             }
         }

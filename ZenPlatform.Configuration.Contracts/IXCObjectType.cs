@@ -6,7 +6,8 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
 {
-    public interface IXCObjectReadOnlyType : IXCType, IChildItem<IXCComponent>
+
+    public interface IXCObjectReadOnlyType: IXCType, IChildItem<IXCComponent>
     {
         /// <summary>
         /// Это абстрактный тип
@@ -39,13 +40,6 @@ namespace ZenPlatform.Configuration.Contracts
         bool HasCommands { get; }
 
         /// <summary>
-        /// Инициализировать сущность.
-        /// Для примера: здесь можно сделать регистрацию кэша объектов
-        /// Вызывается после связки Компонент(Parent) -> Тип(Child)
-        /// </summary>
-        void Initialize();
-
-        /// <summary>
         /// Загрузить зависимости.
         /// Внимание, этот метод вызывается после полной загрузки всех типов в конфигурации.
         /// Поэтому в нём можно обращаться к Data.PlatformTypes 
@@ -57,13 +51,13 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         /// <returns>Только что созданное свойство</returns>
         /// <exception cref="NotImplementedException"></exception>
-        IXCObjectProperty CreateProperty();
+        IXProperty CreateProperty();
 
         /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IXCObjectProperty> GetProperties();
+        IEnumerable<IXProperty> GetProperties();
 
         /// <summary>
         /// Получить доступные программные модули объекта
@@ -96,11 +90,11 @@ namespace ZenPlatform.Configuration.Contracts
         public static IXCLinkType GetLink(this IXCObjectType type)
         {
             return (IXCLinkType) type.Parent.Types.FirstOrDefault(x =>
-                x is IXCLinkType l && ((IChildItem<IXCObjectType>) l).Parent == type);
+                x is IXCLinkType l && l.ParentType == type);
         }
 
 
-        public static IXCObjectProperty GetPropertyByName(this IXCObjectReadOnlyType type, string propName)
+        public static IXProperty GetPropertyByName(this IXCObjectReadOnlyType type, string propName)
         {
             if (type.HasProperties)
                 return type.GetProperties().FirstOrDefault(x => x.Name == propName) ??

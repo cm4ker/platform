@@ -81,16 +81,16 @@ public class Program
     }
 
     private static int pos = 0;
-
+    private static Grid g;
     public static void Main()
     {
-        var document = new Document();
-        Grid g = new Grid();
+        
+        g = new Grid();
         g.Init();
-        document.Body.AppendChild(g.Root);
+        D.Doc.Body.AppendChild(g.Root);
 
 
-        var b = document.CreateElement<HTMLInputElement>();
+        var b = D.Doc.CreateElement<HTMLInputElement>();
         b.Type = InputElementType.Button;
 
         b.OnClick += (sender, args) =>
@@ -98,7 +98,9 @@ public class Program
             pos++;
             g.Scroll(pos);
         };
-        document.Body.AppendChild(b);
+        
+        D.Doc.Body.AppendChild(b);
+        
     }
 
 

@@ -52,7 +52,7 @@ namespace ZenPlatform.Core.Querying.Model
 
     public partial class QLookupField : QField
     {
-        public IEnumerable<IXCObjectProperty> GetProperties()
+        public IEnumerable<IXProperty> GetProperties()
         {
             return BaseExpression.GetExpressionType().Where(x =>
                     x is IXCObjectType ot && ot.GetProperties().Any(p => p.Name == PropName))
