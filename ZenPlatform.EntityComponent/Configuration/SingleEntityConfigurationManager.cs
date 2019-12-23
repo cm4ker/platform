@@ -29,7 +29,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             ((IChildItem<IXCComponent>) link).Parent = Component;
             ((IChildItem<IXCComponent>) newItem).Parent = Component;
 
-
             Component.RegisterType(newItem);
             Component.RegisterType(link);
 

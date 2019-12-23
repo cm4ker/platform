@@ -108,7 +108,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         /// <returns>Только что созданное свойство</returns>
         /// <exception cref="NotImplementedException"></exception>
-        public virtual IXCObjectProperty CreateProperty()
+        public virtual IXProperty CreateProperty()
         {
             throw new NotImplementedException();
         }
@@ -117,7 +117,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<IXCObjectProperty> GetProperties()
+        public virtual IEnumerable<IXProperty> GetProperties()
         {
             throw new NotSupportedException();
         }
@@ -134,7 +134,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         }
 
 
-        public virtual IXCObjectProperty GetPropertyByName(string name)
+        public virtual IXProperty GetPropertyByName(string name)
         {
             return GetProperties().First(x => x.Name == name);
         }
@@ -165,7 +165,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public bool IsAbstract { get; }
         public bool IsSealed { get; }
         public IXCType BaseType { get; }
-        public bool HasProperties { get; }
+        public virtual bool HasProperties { get; }
         public bool HasModules { get; }
         public bool HasCommands { get; }
 
@@ -179,12 +179,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             throw new NotImplementedException();
         }
 
-        public IXCObjectProperty CreateProperty()
+        public IXProperty CreateProperty()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IXCObjectProperty> GetProperties()
+        public virtual IEnumerable<IXProperty> GetProperties()
         {
             throw new NotImplementedException();
         }
