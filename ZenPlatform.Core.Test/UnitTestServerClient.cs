@@ -148,7 +148,6 @@ namespace ZenPlatform.Core.Test
 
             Assert.NotNull(result);
 
-
             var invoice = result.CreateInstance("Documents._Invoice");
             Assert.NotNull(invoice);
         }

@@ -981,4 +981,38 @@ namespace ZenPlatform.EntityComponent.Entity
         {
         }
     }
+    
+    
+    /*
+     
+     class EntityLink
+     {
+        StoreLink _store;
+        Geid _id;
+        
+        
+        public EntityLink(Guid id)
+        {
+            _id = id;
+            
+            //Cache the ViewBagProps
+            
+        }   
+        
+        public EntityLink Link => this;
+        
+        public StoreLink Store => _store ??= Service.GetProperty("Store", _dto.Id);
+        
+        public double Sum => _dto.Sum;
+        
+        
+        
+        public void Reload()
+        {
+            //update data from server
+        }
+              
+     }
+     
+     */
 }
