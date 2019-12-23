@@ -19,16 +19,16 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Загрузить тип компонента
         /// </summary>
-        /// <param name="com">Компонент</param>
-        /// <param name="blob">Хранилище сериализованного объекта</param>
+        /// <param name="loader">Загрущик из хранилища</param>
+        /// <param name="reference">ссылка на объект</param>
         /// <returns></returns>
-        IXCObjectType LoadObject(IXCComponent com, IXCBlob blob);
+        void LoadObject(IXCComponent com, IXCLoader loader, string reference);
 
         /// <summary>
         /// Сохранить обхект
         /// </summary>
         /// <param name="conf"></param>
-        void SaveObject(IXCObjectType conf);
+        void SaveObject(IXCObjectType conf, IXCSaver saver);
 
         /// <summary>
         /// Загрузить правила компонента, необходимо для RLS

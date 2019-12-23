@@ -11,14 +11,26 @@ using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Shared.ParenChildCollection;
+using static ZenPlatform.Configuration.Structure.XCData;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCData : IXCData
+    public class XCDataConfig : IXCSettingsItem
+    {
+        public XCDataConfig()
+        {
+            ComponentReferences = new List<string>();
+        }
+        public List<string> ComponentReferences { get; set; }
+
+    }
+    public class XCData : IXCData, IXCConfigurationItem<XCDataConfig>
     {
         private IXCRoot _parent;
         private ObservableCollection<IXCType> _platformTypes;
         private ChildItemCollection<IXCData, IXCComponent> _components;
+
+        
 
         public XCData()
         {
@@ -51,14 +63,20 @@ namespace ZenPlatform.Configuration.Structure
         public void Load()
         {
             //Инициализируем примитивные типы платформы, они нужны для правильного построения зависимостей
+            /*
             _platformTypes.Add(new XCBinary());
             _platformTypes.Add(new XCString());
             _platformTypes.Add(new XCDateTime());
             _platformTypes.Add(new XCBoolean());
             _platformTypes.Add(new XCNumeric());
             _platformTypes.Add(new XCGuid());
+            */
+            //LoadComponents();
 
-            LoadComponents();
+            foreach(var component in _components)
+                foreach (var type in component.Types)
+                    _platformTypes.Add(type);
+
             LoadDependencies();
         }
 
@@ -92,6 +110,11 @@ namespace ZenPlatform.Configuration.Structure
             {
                 xct.LoadDependencies();
             }
+        }
+
+        public void SetParent(XCRoot root)
+        {
+            _parent = root;
         }
 
         #endregion
@@ -144,6 +167,33 @@ namespace ZenPlatform.Configuration.Structure
         {
             return Components.FirstOrDefault(x => x.Info.ComponentName == name) ??
                    throw new Exception($"Component with name {name} not found");
+        }
+
+        public void Initialize(IXCLoader loader, XCDataConfig settings)
+        {
+            foreach (var reference in settings.ComponentReferences)
+            {
+                var component = loader.LoadObject<XCComponent, XCComponentConfig>(reference);
+                component.SetParent(this);
+                
+                _components.Add(component);
+                
+            }
+
+            
+
+        }
+
+        public IXCSettingsItem Store(IXCSaver saver)
+        {
+            XCDataConfig settings = new XCDataConfig();
+            foreach (var component in _components)
+            {
+                saver.SaveObject(component.Info.ComponentName, (XCComponent)component);
+                settings.ComponentReferences.Add(component.Info.ComponentName);
+            }
+
+            return settings;
         }
     }
 }
