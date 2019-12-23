@@ -112,20 +112,7 @@ namespace Tester
 
                     var lastItem = rowPosition + _rows.MaxItems + _bottomBuffer.MaxItems - diff;
                     var diffCounter = diff;
-/*
 
- 1
- 2
- --top
- 3 <---- current position (2 - pos)
- 4
- --rows
- 5
-  --bottom
- 6 < -- last item
- 7
- 
- */
                     while (_totalRows > lastItem && diffCounter > 0)
                     {
                         _bottomBuffer.PushBottom(FromIndex(lastItem));

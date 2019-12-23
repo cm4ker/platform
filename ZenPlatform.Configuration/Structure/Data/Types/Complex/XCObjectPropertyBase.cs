@@ -23,7 +23,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public abstract class XCObjectPropertyBase : IXCObjectProperty
+    public abstract class XCObjectPropertyBase : IXProperty
     {
         private List<IXCType> _serializedTypes;
         private readonly List<IXCType> _types;
@@ -116,6 +116,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             return true;
         }
 
+
+        private bool ShouldSerializeId()
+        {
+            return false;
+        }
+
         /// <summary>
         /// Получить необработанные типы свойств. Вызывается во время конструирования типа при загрузке конфигурации.
         /// </summary>
@@ -151,14 +157,14 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// Свойство ссылки
     /// </summary>
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public class XCLinkProperty : IXCObjectProperty
+    public class XCLinkProperty : IXProperty
     {
         private readonly IXCLinkType _typeLink;
-        private IXCObjectProperty _idProp;
+        private IXProperty _idProp;
         private readonly uint _typeId;
         private List<IXCType> _types;
 
-        public XCLinkProperty(IXCLinkType typeLink, IXCObjectProperty idProp)
+        public XCLinkProperty(IXCLinkType typeLink, IXProperty idProp)
         {
             _typeLink = typeLink;
             _idProp = idProp;
@@ -217,7 +223,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
-            throw new NotImplementedException();
+            return new List<XCColumnSchemaDefinition>();
+            //throw new NotImplementedException();
             // return new[]
             // {
             //     new XCColumnSchemaDefinition(XCColumnSchemaType.Type,

@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using dnlib.DotNet.Resources;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -451,10 +452,12 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
 
-        private void GenerateLink(IXCObjectType type, Root root)
+        private void GenerateLink(IXCLinkType type, Root root)
         {
-            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name + "Link",
+            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name,
                 new TypeBody(new List<Member>())) {Base = "Documents.EntityLink", Namespace = "Documents"};
+
+            cls.Bag = ObjectType.Link;
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             root.Add(cu);
@@ -529,13 +532,13 @@ namespace ZenPlatform.EntityComponent.Entity
         /// <param name="dbType"></param>
         public void StageServer(IXCObjectType type, Node root, SqlDatabaseType dbType)
         {
-            if (root is Root r)
-            {
-                GenerateServerDtoClass(type, r);
-                GenerateServerObjectClass(type, r);
-                GenerateCommands(type, r);
-                GenerateLink(type, r);
-            }
+            var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
+
+            GenerateServerDtoClass(type, r);
+            GenerateLink(type.GetLink(), r);
+
+            GenerateServerObjectClass(type, r);
+            GenerateCommands(type, r);
         }
 
         /// <summary>
@@ -549,9 +552,10 @@ namespace ZenPlatform.EntityComponent.Entity
             if (node is Root root)
             {
                 GenerateCommands(type, root);
+                GenerateLink(type.GetLink(), root);
+
                 GenerateClientDtoClass(type, root);
                 GenerateClientObjectClass(type, root);
-                GenerateLink(type, root);
             }
         }
 
@@ -769,6 +773,18 @@ namespace ZenPlatform.EntityComponent.Entity
                         EmitSavingSupport(cc, builder, dbType);
                     }
                 }
+                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
+                {
+                    if (cc.CompilationMode.HasFlag(CompilationMode.Client))
+                    {
+                        var set = (IXCLinkType) cc.Type;
+                        var props = set.GetProperties();
+
+                        foreach (var prop in props)
+                        {
+                        }
+                    }
+                }
             }
         }
 
@@ -964,4 +980,92 @@ namespace ZenPlatform.EntityComponent.Entity
         {
         }
     }
+
+
+    /*
+     
+     class EntityLink
+     {
+        StoreLink _store;
+        double _sum;
+        string _name;
+        Guid _id;        
+        bool _isLoaded;        
+        
+        ViewBagEntity _vb;
+                
+        public EntityLink(ViewBagEntity vb)
+        {
+            //Required
+            _name = vb.Name;
+            
+            //Required
+            _id = vb.Id;
+            
+            if(vb.Has("Sum"))
+                _sum = (double)vb.Sum;
+                
+            if(vb.Has("Store"))
+                _store = StoreManager.GetLink(vb.Store);
+                
+        }   
+        
+        public string Name => _name;
+        
+        public EntityLink Link => this;
+        
+        public StoreLink Store => <k_platform_prefix>GetPropertyStore();
+        
+        public double Sum => <k_platform_prefix>GetPropertySum();
+       
+       public object CompositeProperty => 
+        
+        private object <k_platform_prefix>GetPropertyCompositeProperty()
+        {
+            if(_isLoaded)
+                FetchFromServer();
+        }
+        
+        private double <k_platform_prefix>GetPropertySum()
+        {
+            if(_isLoaded)
+                FetchFromServer();
+                
+            return _sum;    
+        }
+        
+        private StoreLink <k_platform_prefix>GetPropertyStore()
+        {
+            if(_isLoaded)
+                FetchFromServer();
+        
+            _store ??= StoreManager.GetLink(Service.GetProperty(TypeId: 5, "Store", _id));
+            return _store;
+        }
+        
+        private void FetchFromServer()
+        {
+            //fetching base layer from server
+            var props = Service.GetProperties(TypeId: 5, "Store", "Sum", _id);
+            
+            _store = StoreManager.GetLink(props["_store"]);
+            _sum = (double)props["Sum"];
+            _name = (string)props["Name"];
+            ...     
+            
+            _isLoaded = true;
+        }        
+        
+        public void Reload()
+        {
+            FetchFromServer();
+        }
+                
+        public override ToString()
+        {
+            return Name;
+        }      
+     }
+     
+     */
 }
