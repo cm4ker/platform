@@ -51,13 +51,13 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         /// <returns>Только что созданное свойство</returns>
         /// <exception cref="NotImplementedException"></exception>
-        IXCObjectProperty CreateProperty();
+        IXProperty CreateProperty();
 
         /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IXCObjectProperty> GetProperties();
+        IEnumerable<IXProperty> GetProperties();
 
         /// <summary>
         /// Получить доступные программные модули объекта
@@ -90,11 +90,11 @@ namespace ZenPlatform.Configuration.Contracts
         public static IXCLinkType GetLink(this IXCObjectType type)
         {
             return (IXCLinkType) type.Parent.Types.FirstOrDefault(x =>
-                x is IXCLinkType l && ((IChildItem<IXCObjectType>) l).Parent == type);
+                x is IXCLinkType l && l.ParentType == type);
         }
 
 
-        public static IXCObjectProperty GetPropertyByName(this IXCObjectReadOnlyType type, string propName)
+        public static IXProperty GetPropertyByName(this IXCObjectReadOnlyType type, string propName)
         {
             if (type.HasProperties)
                 return type.GetProperties().FirstOrDefault(x => x.Name == propName) ??

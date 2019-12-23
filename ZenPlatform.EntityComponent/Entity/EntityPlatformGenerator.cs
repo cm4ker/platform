@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using dnlib.DotNet.Resources;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -451,10 +452,12 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
 
-        private void GenerateLink(IXCObjectType type, Root root)
+        private void GenerateLink(IXCLinkType type, Root root)
         {
-            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name + "Link",
+            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name,
                 new TypeBody(new List<Member>())) {Base = "Documents.EntityLink", Namespace = "Documents"};
+
+            cls.Bag = ObjectType.Link;
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             root.Add(cu);
@@ -529,13 +532,13 @@ namespace ZenPlatform.EntityComponent.Entity
         /// <param name="dbType"></param>
         public void StageServer(IXCObjectType type, Node root, SqlDatabaseType dbType)
         {
-            if (root is Root r)
-            {
-                GenerateServerDtoClass(type, r);
-                GenerateServerObjectClass(type, r);
-                GenerateCommands(type, r);
-                GenerateLink(type, r);
-            }
+            var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
+
+            GenerateServerDtoClass(type, r);
+            GenerateLink(type.GetLink(), r);
+
+            GenerateServerObjectClass(type, r);
+            GenerateCommands(type, r);
         }
 
         /// <summary>
@@ -549,9 +552,10 @@ namespace ZenPlatform.EntityComponent.Entity
             if (node is Root root)
             {
                 GenerateCommands(type, root);
+                GenerateLink(type.GetLink(), root);
+
                 GenerateClientDtoClass(type, root);
                 GenerateClientObjectClass(type, root);
-                GenerateLink(type, root);
             }
         }
 
@@ -767,6 +771,19 @@ namespace ZenPlatform.EntityComponent.Entity
                     {
                         EmitMappingSupport(cc, builder);
                         EmitSavingSupport(cc, builder, dbType);
+                    }
+                }
+                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
+                {
+                    if (cc.CompilationMode.HasFlag(CompilationMode.Client))
+                    {
+                        var set = (IXCLinkType) cc.Type;
+                        var props = set.GetProperties();
+
+                        foreach (var prop in props)
+                        {
+                           
+                        }
                     }
                 }
             }
