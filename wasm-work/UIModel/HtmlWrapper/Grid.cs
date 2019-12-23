@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Avalonia;
+using WebAssembly;
 using WebAssembly.Browser.DOM;
 
 namespace UIModel.HtmlWrapper
@@ -20,7 +22,8 @@ namespace UIModel.HtmlWrapper
             {
                 foreach (var htmlDivElement in elements)
                 {
-                    htmlDivElement.ParentElement.RemoveChild(htmlDivElement);
+                    _viewPort.RemoveChild(htmlDivElement);
+                    htmlDivElement.Dispose();
                 }
             }
 
@@ -36,8 +39,10 @@ namespace UIModel.HtmlWrapper
         private Tube<HTMLDivElement> _bottomBuffer;
         private Tube<HTMLDivElement> _rows;
 
-        public HTMLDivElement _rootElement;
-        public HTMLDivElement _viewPort;
+        private HTMLDivElement _rootElement;
+        private HTMLDivElement _viewPort;
+
+        private int _defaultItemHeight = 30;
 
         public HTMLDivElement Root => _rootElement;
 
@@ -47,10 +52,37 @@ namespace UIModel.HtmlWrapper
             _totalRows = _data.Count;
             _rootElement = D.Doc.CreateElement<HTMLDivElement>();
             _viewPort = D.Doc.CreateElement<HTMLDivElement>();
+            
             _rootElement.AppendChild(_viewPort);
+
+            _rootElement.SetStyleAttribute("height", "300px");
+            _rootElement.SetStyleAttribute("overflow", "scroll");
+
+            _rootElement.OnScroll += (sender, args) =>
+            {
+                if (_rootElement.ScrollTop + _rootElement.ClientHeight >= _rootElement.ScrollHeight)
+                {
+                    Scroll(_currentRowPosition + _bottomBuffer.Count - 5);
+                    return;
+                }
+                
+                // if (_rootElement.ScrollTop < 10)
+                // {
+                //     Scroll(_currentRowPosition - _topBuffer.Count + 5);
+                //     
+                //     _rootElement.ScrollTop += 5;
+                //     return;
+                // }
+            };
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Console.WriteLine(_rootElement.IsCorrupted);
             
             Scroll(0);
         }
+
 
         int GetViewPortSize()
         {
@@ -116,20 +148,7 @@ namespace UIModel.HtmlWrapper
 
                     var lastItem = rowPosition + _rows.MaxItems + _bottomBuffer.MaxItems - diff;
                     var diffCounter = diff;
-/*
 
- 1
- 2
- --top
- 3 <---- current position (2 - pos)
- 4
- --rows
- 5
-  --bottom
- 6 < -- last item
- 7
- 
- */
                     while (_totalRows > lastItem && diffCounter > 0)
                     {
                         _bottomBuffer.PushBottom(FromIndex(lastItem));
@@ -160,12 +179,19 @@ namespace UIModel.HtmlWrapper
             }
 
             _currentRowPosition = rowPosition;
+
+            //update viewport
+            _viewPort.SetStyleAttribute("height",
+                $"{_defaultItemHeight * (_rows.Count + _topBuffer.Count + _bottomBuffer.Count)}px");
         }
 
         private HTMLDivElement FromIndex(int index)
         {
             var row = D.Doc.CreateElement<HTMLDivElement>();
             row.InnerText = _data[index].ToString();
+            
+            row.SetStyleAttribute("height", $"{_defaultItemHeight}px");
+
             _viewPort.AppendChild(row);
 
             return row;

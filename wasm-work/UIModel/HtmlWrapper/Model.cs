@@ -12,7 +12,7 @@ using WebAssembly.Browser.DOM;
 
 namespace UIModel.HtmlWrapper
 {
-    internal static class D
+    public  static class D
     {
         public static Document Doc { get; } = new Document();
     }
