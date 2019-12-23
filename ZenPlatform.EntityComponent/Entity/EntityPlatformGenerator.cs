@@ -777,12 +777,12 @@ namespace ZenPlatform.EntityComponent.Entity
                 {
                     if (cc.CompilationMode.HasFlag(CompilationMode.Client))
                     {
-                        var set = (IXCLinkType) cc.Type;
-                        var props = set.GetProperties();
-
-                        foreach (var prop in props)
-                        {
-                        }
+                        // var set = (IXCLinkType) cc.Type;
+                        // var props = set.GetProperties();
+                        //
+                        // foreach (var prop in props)
+                        // {
+                        // }
                     }
                 }
             }
