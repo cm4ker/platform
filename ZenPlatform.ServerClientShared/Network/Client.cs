@@ -27,7 +27,7 @@ namespace ZenPlatform.Core.Network
         private readonly ITransportClientFactory _tcFactory;
         private ClientConnection _connection;
         private IDisposable _unsubscriber;
-        private int _timeout = 3000;
+        private int _timeout = 10000;
         
         //TODO: Сделать клиента потокобезопасным
 

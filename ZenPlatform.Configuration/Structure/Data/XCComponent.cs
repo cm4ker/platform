@@ -19,11 +19,22 @@ using ZenPlatform.Configuration.Contracts.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
+    public class XCComponentConfig : IXCSettingsItem
+    {
+        public string AssemblyReference { get; set; }
+        public List<string> EntityReferences { get; set; }
+        public XCComponentConfig()
+        {
+            EntityReferences = new List<string>();
+        }
+
+    }
     /// <summary>
     /// Компонент конфигурации
     /// </summary>
-    public class XCComponent : IXCComponent
+    public class XCComponent : IXCComponent, IXCConfigurationItem<XCComponentConfig>
     {
+        
         private IXCData _parent;
         private bool _isLoaded;
         private XCComponentInformation _info;
@@ -40,9 +51,14 @@ namespace ZenPlatform.Configuration.Structure.Data
             _codeGenRules = new ConcurrentDictionary<CodeGenRuleType, CodeGenRule>();
             _allTypes = new List<IXCType>();
 
-            Include = new XCBlobCollection();
+            //Include = new XCBlobCollection();
             AttachedComponentIds = new List<Guid>();
             AttachedComponents = new List<IXCComponent>();
+        }
+
+        public void SetParent(IXCData data)
+        {
+            _parent = data;
         }
 
         /// <summary>
@@ -76,7 +92,7 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// <summary>
         /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
         /// </summary>
-        public IXCBlobCollection Include { get; set; }
+        //public IXCBlobCollection Include { get; set; }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Assembly ComponentAssembly
@@ -122,7 +138,7 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// Загрузить все данные компонента из хранилища
         /// </summary>
         public void LoadComponent()
-        {
+        {/*
             var stream = Root.Storage.GetBlob(Blob.Name, nameof(XCComponent));
 
             using (var ms = new MemoryStream())
@@ -148,6 +164,7 @@ namespace ZenPlatform.Configuration.Structure.Data
             }
 
             _isLoaded = true;
+            */
         }
 
         /// <summary>
@@ -156,6 +173,7 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// <exception cref="NotImplementedException"></exception>
         public void SaveComponent()
         {
+            /*
             if (ComponentAssembly is null) return;
 
             foreach (var type in ObjectTypes)
@@ -176,6 +194,7 @@ namespace ZenPlatform.Configuration.Structure.Data
 
                 Root.Storage.SaveBlob(Blob.Name, nameof(XCComponent), ms);
             }
+            */
         }
 
         public IXCRoot Root => _parent.Parent;
@@ -237,7 +256,65 @@ namespace ZenPlatform.Configuration.Structure.Data
         public void RegisterType(IXCType type)
         {
             _allTypes.Add(type);
+            //Parent.RegisterType(type);
         }
+
+        public void Initialize(IXCLoader loader, XCComponentConfig settings)
+        {
+            //load assembly
+            var bytes = loader.LoadBytes(settings.AssemblyReference);
+
+            var module = ModuleDefMD.Load(bytes);
+
+            var alreadyLoaded = AppDomain.CurrentDomain.GetAssemblies()
+                .FirstOrDefault(x => x.FullName == module.Assembly.FullName);
+
+            if (alreadyLoaded != null)
+                ComponentAssembly = alreadyLoaded;
+            else
+                ComponentAssembly = Assembly.Load(bytes);
+
+
+            // load entitys
+            foreach (var reference in settings.EntityReferences)
+            {
+               // XCSingleEntityMetadata loader.LoadObject<>(reference)
+                Loader.LoadObject(this, loader, reference);
+            }
+
+            _isLoaded = true;
+
+        }
+
+        public IXCSettingsItem Store(IXCSaver saver)
+        {
+            XCComponentConfig settings = new XCComponentConfig();
+
+            if (ComponentAssembly is null) return settings;
+
+            foreach (var type in ObjectTypes)
+            {
+                Loader.SaveObject(type, saver);
+                settings.EntityReferences.Add(type.Name);
+            }
+
+            var refelectionModule = ComponentAssembly.Modules.FirstOrDefault();
+            ModuleDefMD module = ModuleDefMD.Load(refelectionModule);
+
+            using (var ms = new MemoryStream())
+            {
+                module.Write(ms);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                saver.SaveBytes(refelectionModule.Name, ms.ToArray());
+
+                settings.AssemblyReference = refelectionModule.Name;
+            }
+
+            return settings;
+        }
+
+
     }
 
 

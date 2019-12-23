@@ -6,7 +6,8 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
 {
-    public interface IXCObjectReadOnlyType : IXCType, IChildItem<IXCComponent>
+
+    public interface IXCObjectReadOnlyType: IXCType, IChildItem<IXCComponent>
     {
         /// <summary>
         /// Это абстрактный тип
@@ -37,13 +38,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// У объекта есть поддержка комманд
         /// </summary>
         bool HasCommands { get; }
-
-        /// <summary>
-        /// Инициализировать сущность.
-        /// Для примера: здесь можно сделать регистрацию кэша объектов
-        /// Вызывается после связки Компонент(Parent) -> Тип(Child)
-        /// </summary>
-        void Initialize();
 
         /// <summary>
         /// Загрузить зависимости.

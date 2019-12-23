@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using ZenPlatform.Configuration.Contracts;
+using System.Linq;
 using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Configuration
@@ -38,6 +39,30 @@ namespace ZenPlatform.Configuration
         public string GetHash(IXCRoot root)
         {
             return ((XCRoot) root).GetHash();
+        }
+
+        public bool Equals(IXCRoot a, IXCRoot b)
+        {
+            var storage1 = new XCMemoryStorage();
+
+            var storage2 = new XCMemoryStorage();
+
+            a.Save(storage1);
+            b.Save(storage2);
+
+            if (storage1.Blobs.Count != storage2.Blobs.Count) return false;
+
+            var join = storage1.Blobs.Join(storage2.Blobs, k => k.Key, k => k.Key, (l, r) => new { left = l, right = r });
+
+            foreach (var item in join)
+            {
+                var aaaa = new StreamReader(new MemoryStream(item.left.Value)).ReadToEnd();
+                var bbbb = new StreamReader(new MemoryStream(item.right.Value)).ReadToEnd();
+                if (!item.left.Value.SequenceEqual(item.right.Value)) return false;
+
+            }
+
+            return true;
         }
     }
 }
