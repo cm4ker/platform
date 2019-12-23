@@ -782,7 +782,6 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         foreach (var prop in props)
                         {
-                           
                         }
                     }
                 }
@@ -981,37 +980,91 @@ namespace ZenPlatform.EntityComponent.Entity
         {
         }
     }
-    
-    
+
+
     /*
      
      class EntityLink
      {
         StoreLink _store;
-        Geid _id;
+        double _sum;
+        string _name;
+        Guid _id;        
+        bool _isLoaded;        
         
-        
-        public EntityLink(Guid id)
+        ViewBagEntity _vb;
+                
+        public EntityLink(ViewBagEntity vb)
         {
-            _id = id;
+            //Required
+            _name = vb.Name;
             
-            //Cache the ViewBagProps
+            //Required
+            _id = vb.Id;
             
+            if(vb.Has("Sum"))
+                _sum = (double)vb.Sum;
+                
+            if(vb.Has("Store"))
+                _store = StoreManager.GetLink(vb.Store);
+                
         }   
+        
+        public string Name => _name;
         
         public EntityLink Link => this;
         
-        public StoreLink Store => _store ??= Service.GetProperty("Store", _dto.Id);
+        public StoreLink Store => <k_platform_prefix>GetPropertyStore();
         
-        public double Sum => _dto.Sum;
+        public double Sum => <k_platform_prefix>GetPropertySum();
+       
+       public object CompositeProperty => 
         
+        private object <k_platform_prefix>GetPropertyCompositeProperty()
+        {
+            if(_isLoaded)
+                FetchFromServer();
+        }
         
+        private double <k_platform_prefix>GetPropertySum()
+        {
+            if(_isLoaded)
+                FetchFromServer();
+                
+            return _sum;    
+        }
+        
+        private StoreLink <k_platform_prefix>GetPropertyStore()
+        {
+            if(_isLoaded)
+                FetchFromServer();
+        
+            _store ??= StoreManager.GetLink(Service.GetProperty(TypeId: 5, "Store", _id));
+            return _store;
+        }
+        
+        private void FetchFromServer()
+        {
+            //fetching base layer from server
+            var props = Service.GetProperties(TypeId: 5, "Store", "Sum", _id);
+            
+            _store = StoreManager.GetLink(props["_store"]);
+            _sum = (double)props["Sum"];
+            _name = (string)props["Name"];
+            ...     
+            
+            _isLoaded = true;
+        }        
         
         public void Reload()
         {
-            //update data from server
+            FetchFromServer();
         }
-              
+                
+        public override ToString()
+        {
+            return Name;
+        }      
      }
      
      */
