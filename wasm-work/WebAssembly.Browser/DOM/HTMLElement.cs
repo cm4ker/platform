@@ -193,6 +193,13 @@ namespace WebAssembly.Browser.DOM
             add => AddEventListener("focus", value, false);
             remove => RemoveEventListener("focus", value, false);
         }
+        
+        public event DOMEventHandler OnFocusOut
+        {
+            add => AddEventListener("focusout", value, false);
+            remove => RemoveEventListener("focusout", value, false);
+        }
+        
         public event DOMEventHandler OnInput
         {
             add => AddEventListener("input", value, false);

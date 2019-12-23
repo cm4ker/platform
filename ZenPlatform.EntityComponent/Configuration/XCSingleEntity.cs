@@ -22,13 +22,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public XCSingleEntity(XCSingleEntityMetadata metadata)
         {
-           
-
-
-            
-
-
-            Properties = new ObservableCollection<IXCObjectProperty>();
+            Properties = new ObservableCollection<IXProperty>();
             Properties.CollectionChanged += Properties_CollectionChanged;
             Modules = new XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>(this);
             Commands = new List<XCCommand>();
@@ -42,26 +36,26 @@ namespace ZenPlatform.EntityComponent.Configuration
                 foreach (var property in metadata.Properties)
                     Properties.Add(property);
 
-
                 foreach (var module in metadata.Modules)
                     Modules.Add(module);
             }
+
             InitPredefinedCommands();
         }
 
         public XCSingleEntityMetadata GetMetadata()
         {
-            
-
             var metadata = new XCSingleEntityMetadata();
 
-            metadata.AddPropertyRange(this.Properties.Where(p => p is XCSingleEntityProperty).Select(p => (XCSingleEntityProperty)p));
+            metadata.AddPropertyRange(this.Properties.Where(p => p is XCSingleEntityProperty)
+                .Select(p => (XCSingleEntityProperty) p));
             metadata.AddModuleRange(this.Modules);
             metadata.Name = Name;
             metadata.EntityId = Guid;
             return metadata;
-
         }
+
+        public override bool HasProperties => true;
 
         private void Properties_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -96,7 +90,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <summary>
         /// Коллекция свойств сущности
         /// </summary>
-        public ObservableCollection<IXCObjectProperty> Properties { get; }
+        public ObservableCollection<IXProperty> Properties { get; }
 
         /// <summary>
         /// Коллекция модулей сущности
@@ -148,7 +142,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 Properties.Add(StandardEntityPropertyHelper.CreateLinkProperty(this));
         }
 
-        public override IEnumerable<IXCObjectProperty> GetProperties()
+        public override IEnumerable<IXProperty> GetProperties()
         {
             return Properties;
         }
@@ -159,7 +153,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             return Modules;
         }
 
-        public override IXCObjectProperty CreateProperty()
+        public override IXProperty CreateProperty()
         {
             var prop = new XCSingleEntityProperty();
             Properties.Add(prop);
@@ -200,8 +194,10 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return obj is XCSingleEntity entity &&
                    base.Equals(obj) &&
-                   EqualityComparer<ObservableCollection<IXCObjectProperty>>.Default.Equals(Properties, entity.Properties) &&
-                   EqualityComparer<XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>>.Default.Equals(Modules, entity.Modules) &&
+                   EqualityComparer<ObservableCollection<IXProperty>>.Default.Equals(Properties,
+                       entity.Properties) &&
+                   EqualityComparer<XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>>.Default.Equals(
+                       Modules, entity.Modules) &&
                    EqualityComparer<List<XCCommand>>.Default.Equals(Commands, entity.Commands);
         }
 
@@ -213,17 +209,25 @@ namespace ZenPlatform.EntityComponent.Configuration
 
     public class XCSingleEntityLink : XCLinkTypeBase
     {
+        private readonly XCSingleEntityMetadata _md;
         public override string Name => $"{ParentType.Name}Link";
+
+        public override bool HasProperties => true;
 
         public XCSingleEntityLink(IXCObjectType parentType, XCSingleEntityMetadata md)
         {
+            _md = md;
             ParentType = parentType;
+
             if (md != null)
             {
                 Guid = md.LinkId;
             }
         }
 
-
+        public override IEnumerable<IXProperty> GetProperties()
+        {
+            return _md.Properties;
+        }
     }
 }

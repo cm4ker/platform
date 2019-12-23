@@ -91,8 +91,8 @@ namespace ZenPlatform.EntityComponent.Migrations
                 var props = old.GetProperties()
                    .FullJoin(
                        actual.GetProperties(), x => x.Guid, 
-                       x => new { old = x, actual = default(IXCObjectProperty) },
-                       x => new { old = default(IXCObjectProperty), actual = x },
+                       x => new { old = x, actual = default(IXProperty) },
+                       x => new { old = default(IXProperty), actual = x },
                        (x, y) => new { old = x, actual = y });
 
                 foreach (var property in props)
@@ -131,17 +131,17 @@ namespace ZenPlatform.EntityComponent.Migrations
             query.Create().Column(GetColumnDefenitionBySchema(schema)).OnTable(tableName);
         }
 
-        public void CreateProperty(DDLQuery query, IXCObjectProperty property, string tableName)
+        public void CreateProperty(DDLQuery query, IXProperty property, string tableName)
         {
             property.GetPropertySchemas().ForEach(s => { CreateSchema(query, s, tableName); });
         }
 
-        public void DeleteProperty(DDLQuery query, IXCObjectProperty property, string tableName)
+        public void DeleteProperty(DDLQuery query, IXProperty property, string tableName)
         {
             property.GetPropertySchemas().ForEach(s => DeleteSchema(query, s, tableName));
         }
 
-        public void ChangeProperty(DDLQuery query, IXCObjectProperty old, IXCObjectProperty actual, string tableName)
+        public void ChangeProperty(DDLQuery query, IXProperty old, IXProperty actual, string tableName)
         {
             var schemas = old.GetPropertySchemas()
                             .FullJoin(

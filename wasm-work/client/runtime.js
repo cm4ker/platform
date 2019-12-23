@@ -263,6 +263,27 @@ var Module = {
 				}
 	
 			},        
+			fillKeyboardEventData : function (eventStruct, e, target)
+			{
+				var DOMKeyboardEventProps = ["locale",
+				"location",
+				"repeat",
+				"which",
+				"code",
+				"DOM_KEY_LOCATION_JOYSTICK",
+				"DOM_KEY_LOCATION_LEFT",
+				"DOM_KEY_LOCATION_MOBILE",
+				"DOM_KEY_LOCATION_NUMPAD",
+				"DOM_KEY_LOCATION_RIGHT",
+				"DOM_KEY_LOCATION_STANDARD"
+				];
+	
+				DOMKeyboardEventProps.forEach(function (prop) {
+					eventStruct._event_props[prop] = e[prop];
+				});
+	
+				eventStruct["typeOfEvent"] = "KeyboardEvent";
+			},
 			fillDragEventData: function (eventStruct, e, target)
 			{
 				var DOMDragEventProps = [];
