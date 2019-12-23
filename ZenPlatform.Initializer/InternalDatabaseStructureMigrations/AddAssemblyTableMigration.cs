@@ -18,7 +18,7 @@ namespace ZenPlatform.Initializer.InternalDatabaseStructureMigrations
                .WithColumn("type").AsInt32()
                .WithColumn("name").AsString(200)
                .WithColumn("create_datetime").AsDateTime().WithDefault(SystemMethods.CurrentDateTime)
-               .WithColumn("data").AsBinary();
+               .WithColumn("data").AsCustom("VARBINARY(MAX)");
             
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MoreLinq.Extensions;
+using ZenPlatform.Configuration.CompareTypes;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -35,10 +36,10 @@ namespace ZenPlatform.EntityComponent.Migrations
         }
 
 
-        public SSyntaxNode GetStep1(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
+        public SSyntaxNode GetStep1(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-            XCSingleEntity old = (XCSingleEntity)oldBase;
-            XCSingleEntity actual = (XCSingleEntity)actualBase;
+            var oldtype = (XCObjectTypeBase)old;
+            var actualtype = (XCObjectTypeBase)actual;
 
             if (old == null && actual == null)
             {
@@ -46,13 +47,13 @@ namespace ZenPlatform.EntityComponent.Migrations
             } else
             if (old != null && actual == null)
             {
-                query.Delete().Table(old.RelTableName);
+                query.Delete().Table(oldtype.RelTableName);
             } else 
             if (old == null && actual != null )
             {
-                var tableBuilder = query.Create().Table(actual.RelTableName);
+                var tableBuilder = query.Create().Table(actualtype.RelTableName);
 
-                foreach (var property in actual.Properties)
+                foreach (var property in actual.GetProperties())
                 {
                     property.GetPropertySchemas().ForEach(s =>
                     {
@@ -63,21 +64,29 @@ namespace ZenPlatform.EntityComponent.Migrations
                 
             }
             else
-            query.Copy().Table().FromTable(old.RelTableName).ToTable($"{actual.RelTableName}_tmp");
+            {
+                //var comparer = new XCObjectTypeComparer<IXCObjectType>();
+               //if (!comparer.Equals(old, actual))
+               if (!old.Equals(actual))
+                {
+                    query.Copy().Table().FromTable(oldtype.RelTableName).ToTable($"{actualtype.RelTableName}_tmp");
+                }
+            }
+            
 
             return query.Expression;
         }
 
-        public SSyntaxNode GetStep2(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
+        public SSyntaxNode GetStep2(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-            XCSingleEntity old = (XCSingleEntity)oldBase;
-            XCSingleEntity actual = (XCSingleEntity)actualBase;
-
+            var oldtype = (XCObjectTypeBase)old;
+            var actualtype = (XCObjectTypeBase)actual;
 
             if (old != null && actual != null)
             {
 
-                string tableName = $"{actual.RelTableName}_tmp";
+
+                string tableName = $"{actualtype.RelTableName}_tmp";
 
                 var props = old.GetProperties()
                    .FullJoin(
@@ -97,7 +106,8 @@ namespace ZenPlatform.EntityComponent.Migrations
                         DeleteProperty(query, property.old, tableName);
                     } else
                     {
-                        ChangeProperty(query, property.old, property.actual, tableName);
+                        if (!property.old.Equals(property.actual))
+                            ChangeProperty(query, property.old, property.actual, tableName);
                     }
                 }
                 
@@ -164,26 +174,27 @@ namespace ZenPlatform.EntityComponent.Migrations
         }
 
 
-        public SSyntaxNode GetStep3(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
+        public SSyntaxNode GetStep3(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-            XCSingleEntity old = (XCSingleEntity)oldBase;
-            XCSingleEntity actual = (XCSingleEntity)actualBase;
 
-            if (old != null && actual != null)
+            var oldtype = (XCObjectTypeBase)old;
+            var actualtype = (XCObjectTypeBase)actual;
+
+            if (old != null && actual != null && !old.Equals(actual))
             {
-                query.Delete().Table($"{actual.RelTableName}");
+                query.Delete().Table($"{actualtype.RelTableName}");
             }
             return query.Expression;
         }
 
-        public SSyntaxNode GetStep4(IXCObjectType oldBase, IXCObjectType actualBase, DDLQuery query)
+        public SSyntaxNode GetStep4(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-            XCSingleEntity old = (XCSingleEntity)oldBase;
-            XCSingleEntity actual = (XCSingleEntity)actualBase;
+            var oldtype = (XCObjectTypeBase)old;
+            var actualtype = (XCObjectTypeBase)actual;
 
-            if (old != null && actual != null)
+            if (old != null && actual != null && !old.Equals(actual))
             {
-                query.Rename().Table($"{actual.RelTableName}_tmp").To(old.RelTableName);
+                query.Rename().Table($"{actualtype.RelTableName}_tmp").To(oldtype.RelTableName);
             }
             return query.Expression;
         }

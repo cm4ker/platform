@@ -13,12 +13,13 @@ namespace ZenPlatform.Configuration.Contracts
         Stream SaveToStream(IXCRoot root);
 
         string GetHash(IXCRoot root);
+
+        bool Equals(IXCRoot a, IXCRoot b);
     }
 
 
     public interface IXCRoot
     {
-        IXCConfigurationStorage Storage { get; }
         IXCConfigurationUniqueCounter Counter { get; }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Раздел данных
         /// </summary>
-        IXCData Data { get; set; }
+        IXCData Data { get; }
 
         /// <summary>
         /// Раздел  интерфейсов (UI)

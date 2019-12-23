@@ -63,8 +63,10 @@ namespace ZenPlatform.Core.Environment
             MigrationRunner.Migrate(config.ConnectionString,
                 config.DatabaseType);
 
-            var newProject = Factory.CreateExampleConfiguration();
+            /*
+            var newProject = XCRoot.Create("Library");
 
+            
             using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
             {
                 var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
@@ -72,27 +74,43 @@ namespace ZenPlatform.Core.Environment
 
                 newProject.Save(configStorage);
             }
-
+            */
+            
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
-            base.Initialize(config);
-            _logger.Info("TEST Database '{0}' loaded.", Configuration.ProjectName);
-
-            AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
+            
 
 
             var savedConfiguration = Factory.CreateExampleConfiguration();
-
-
-            if (MigrationManager.CheckMigration(Configuration, savedConfiguration))
+            IXCRoot currentConfiguration = null; ;
+            using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
             {
-                MigrationManager.Migrate(Configuration, savedConfiguration);
+                var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
+                    dataContext);
+
+
+                currentConfiguration = XCRoot.Load(configStorage);
+            }
+
+
+            if (MigrationManager.CheckMigration(currentConfiguration, savedConfiguration))
+            {
+                DataContextManager.Initialize(config.DatabaseType, config.ConnectionString);
+                MigrationManager.Migrate(currentConfiguration, savedConfiguration);
 
 
                 var storage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
                 this.DataContextManager.GetContext());
 
                 savedConfiguration.Save(storage);
+
             }
+
+
+
+            base.Initialize(config);
+            _logger.Info("TEST Database '{0}' loaded.", Configuration.ProjectName);
+
+            AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
 
             if (_assemblyManager.CheckConfiguration(Configuration))
                 _assemblyManager.BuildConfiguration(Configuration, StartupConfig.DatabaseType);
