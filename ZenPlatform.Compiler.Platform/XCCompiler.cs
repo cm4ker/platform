@@ -18,30 +18,17 @@ namespace ZenPlatform.Compiler.Platform
     /// </summary>
     public class XCCompiler : IXCCompiller
     {
-        public XCCompiler()
+        private readonly IAssemblyPlatform _platform;
+
+        public XCCompiler(IAssemblyPlatform platform)
         {
+            _platform = platform;
         }
 
         public IAssembly Build(IXCRoot configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
         {
-            IAssemblyPlatform pl = new DnlibAssemblyPlatform();
-            var assemblyBuilder = pl.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
-
-            // var root = new Root(null, new List<CompilationUnit>());
-            //
-            // foreach (var component in configuration.Data.Components)
-            // {
-            //     foreach (var type in component.ObjectTypes)
-            //     {
-            //         if (mode == CompilationMode.Client)
-            //             component.ComponentImpl.Generator.StageClient(type, root, targetDatabaseType);
-            //         else
-            //             component.ComponentImpl.Generator.StageServer(type, root, targetDatabaseType);
-            //     }
-            // }
-
-            // AstScopeRegister.Apply(root);
-
+            var assemblyBuilder = _platform.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
+            
             var generator = new Generator(new GeneratorParameters(null, assemblyBuilder, mode, targetDatabaseType,
                 configuration));
             generator.BuildConf();
