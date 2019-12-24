@@ -13,7 +13,7 @@ namespace ZenPlatform.Configuration.Contracts
         CanSetDb = 1 << 3
     }
 
-    public interface IXCObjectProperty
+    public interface IXProperty
     {
         /// <summary>
         /// Уникальный идентификатор свойства

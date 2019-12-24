@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -15,7 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Avalonia.Base\Avalonia.Base.csproj" />
         <ProjectReference Include="..\Avalonia.Markup\Avalonia.Markup.csproj" />
+        <ProjectReference Include="..\Avalonia.Styling\Avalonia.Styling.csproj" />
         <ProjectReference Include="..\UIModel\UIModel.csproj" />
         <ProjectReference Include="..\WebAssembly.Browser\WebAssembly.Browser.csproj" />
     </ItemGroup>

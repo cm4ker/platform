@@ -15,11 +15,11 @@ namespace ZenPlatform.Language.Ast
 
         public IXCComponent Component { get; }
 
-        public IXCObjectType Type { get; }
+        public IXCType Type { get; }
 
         public object Bag { get; set; }
 
-        public ComponentAstBase(CompilationMode compilationMode, IXCComponent component, IXCObjectType type,
+        public ComponentAstBase(CompilationMode compilationMode, IXCComponent component, IXCType type,
             ILineInfo lineInfo, string name) : base(
             lineInfo, name)
         {
@@ -28,7 +28,7 @@ namespace ZenPlatform.Language.Ast
             Type = type;
         }
 
-        public ComponentAstBase(CompilationMode compilationMode, IXCComponent component, IXCObjectType type,
+        public ComponentAstBase(CompilationMode compilationMode, IXCComponent component, IXCType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(lineInfo,
             name, tb)
@@ -60,7 +60,7 @@ namespace ZenPlatform.Language.Ast
         {
         }
 
-        public ComponentClass(CompilationMode compilationMode, IXCComponent component, IXCObjectType type,
+        public ComponentClass(CompilationMode compilationMode, IXCComponent component, IXCType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
         {
