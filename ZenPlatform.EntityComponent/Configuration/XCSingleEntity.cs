@@ -17,90 +17,48 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class XCSingleEntity : XCObjectTypeBase
     {
-        private List<XCCommand> _predefinedCommands;
-        //private XCSingleEntityMetadata _metadata;
 
+        private XCSingleEntityMetadata _metadata;
+        private IXProperty _linkProperty;
         public XCSingleEntity(XCSingleEntityMetadata metadata)
         {
-            Properties = new ObservableCollection<IXProperty>();
-            Properties.CollectionChanged += Properties_CollectionChanged;
-            Modules = new XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>(this);
-            Commands = new List<XCCommand>();
-            _predefinedCommands = new List<XCCommand>();
 
-            if (metadata != null)
-            {
-                Name = metadata.Name;
-                Guid = metadata.EntityId;
 
-                foreach (var property in metadata.Properties)
-                    Properties.Add(property);
+            _metadata = metadata;
 
-                foreach (var module in metadata.Modules)
-                    Modules.Add(module);
-            }
-
-            InitPredefinedCommands();
+            
         }
+
 
         public XCSingleEntityMetadata GetMetadata()
         {
-            var metadata = new XCSingleEntityMetadata();
 
-            metadata.AddPropertyRange(this.Properties.Where(p => p is XCSingleEntityProperty)
-                .Select(p => (XCSingleEntityProperty) p));
-            metadata.AddModuleRange(this.Modules);
-            metadata.Name = Name;
-            metadata.EntityId = Guid;
-            return metadata;
+            return _metadata;
         }
 
         public override bool HasProperties => true;
 
-        private void Properties_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                for (int i = 0; i < Properties.Count - 1; i++)
-                {
-                    for (int j = i + 1; j < Properties.Count; j++)
-                    {
-                        var mailElement = Properties[i];
-                        var compareElement = Properties[j];
 
-                        try
-                        {
-                            if (mailElement.Name == compareElement.Name
-                                || (!string.IsNullOrEmpty(mailElement.DatabaseColumnName)
-                                    && !string.IsNullOrEmpty(compareElement.DatabaseColumnName)
-                                    && mailElement.DatabaseColumnName == compareElement.DatabaseColumnName))
-                            {
-                                throw new Exception("Свойства не целостны");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.Write("Error");
-                        }
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// Коллекция свойств сущности
         /// </summary>
-        public ObservableCollection<IXProperty> Properties { get; }
+        public IEnumerable<IXProperty> Properties => _metadata.Properties.Concat(_linkProperty != null ? new List<IXProperty>() { _linkProperty }: new List<IXProperty>());
 
         /// <summary>
         /// Коллекция модулей сущности
         /// </summary>
-        public XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule> Modules { get; }
+        public IEnumerable<XCSingleEntityModule> Modules => _metadata.Modules;
+
+        public override string Name => _metadata.Name;
+
+        public override Guid Guid => _metadata.EntityId;
+
 
         /// <summary>
         /// Комманды, которые привязаны к сущности
         /// </summary>
-        public List<XCCommand> Commands { get; }
+        public List<XCCommand> Commands => _metadata.Command;
 
         /// <inheritdoc />
         public override void LoadDependencies()
@@ -133,13 +91,14 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override void Initialize()
         {
             if (Properties.FirstOrDefault(x => x.Unique) == null)
-                Properties.Add(StandardEntityPropertyHelper.CreateUniqueProperty());
+                _metadata.Properties.Add(StandardEntityPropertyHelper.CreateUniqueProperty());
 
             if (Properties.FirstOrDefault(x => x.Name == "Name") == null)
-                Properties.Add(StandardEntityPropertyHelper.CreateNameProperty());
+                _metadata.Properties.Add(StandardEntityPropertyHelper.CreateNameProperty());
 
-            if (Properties.FirstOrDefault(x => x.Name == "Link") == null)
-                Properties.Add(StandardEntityPropertyHelper.CreateLinkProperty(this));
+            if (_linkProperty == null)
+                _linkProperty = StandardEntityPropertyHelper.CreateLinkProperty(this);
+
         }
 
         public override IEnumerable<IXProperty> GetProperties()
@@ -153,20 +112,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             return Modules;
         }
 
-        public override IXProperty CreateProperty()
-        {
-            var prop = new XCSingleEntityProperty();
-            Properties.Add(prop);
-            return prop;
-        }
-
         public override IEnumerable<IXCCommand> GetCommands()
         {
-            //Предопределенные комманды
-            foreach (var command in _predefinedCommands)
-            {
-                yield return command;
-            }
 
             foreach (var command in Commands)
             {
@@ -174,31 +121,12 @@ namespace ZenPlatform.EntityComponent.Configuration
             }
         }
 
-        public override IXCCommand CreateCommand()
-        {
-            var cmd = new XCCommand(false);
-            Commands.Add(cmd);
-            return cmd;
-        }
-
-
-        /// <summary>
-        /// Получить предопределённые комманды
-        /// </summary>
-        /// <returns></returns>
-        private void InitPredefinedCommands()
-        {
-        }
 
         public override bool Equals(object obj)
         {
             return obj is XCSingleEntity entity &&
-                   base.Equals(obj) &&
-                   EqualityComparer<ObservableCollection<IXProperty>>.Default.Equals(Properties,
-                       entity.Properties) &&
-                   EqualityComparer<XCProgramModuleCollection<XCSingleEntity, XCSingleEntityModule>>.Default.Equals(
-                       Modules, entity.Modules) &&
-                   EqualityComparer<List<XCCommand>>.Default.Equals(Commands, entity.Commands);
+                   base.Equals(obj);
+                   
         }
 
         public override int GetHashCode()
@@ -209,25 +137,24 @@ namespace ZenPlatform.EntityComponent.Configuration
 
     public class XCSingleEntityLink : XCLinkTypeBase
     {
-        private readonly XCSingleEntityMetadata _md;
+        private readonly XCSingleEntityMetadata _metadata;
         public override string Name => $"{ParentType.Name}Link";
+
+        public override Guid Guid => _metadata.LinkId;
 
         public override bool HasProperties => true;
 
-        public XCSingleEntityLink(IXCObjectType parentType, XCSingleEntityMetadata md)
+        public XCSingleEntityLink(IXCObjectType parentType, XCSingleEntityMetadata metadata)
         {
-            _md = md;
+            _metadata = metadata;
             ParentType = parentType;
 
-            if (md != null)
-            {
-                Guid = md.LinkId;
-            }
+
         }
 
         public override IEnumerable<IXProperty> GetProperties()
         {
-            return _md.Properties;
+            return _metadata.Properties;
         }
     }
 }
