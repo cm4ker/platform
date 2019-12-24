@@ -246,18 +246,18 @@ namespace ZenPlatform.Compiler.Contracts
         }
 
         public static IPropertyBuilder DefineProperty(this ITypeBuilder tb, IType type, string name,
-            IField backingField)
+            IField backingField, bool interfaceImpl)
         {
-            return DefineProperty(tb, type, name, backingField, true, true);
+            return DefineProperty(tb, type, name, backingField, true, true, interfaceImpl);
         }
 
         public static IPropertyBuilder DefineProperty(this ITypeBuilder tb, IType type, string name,
-            IField backingField, bool hasGet, bool hasSet)
+            IField backingField, bool hasGet, bool hasSet, bool interfaceImpl)
         {
             var result = tb.DefineProperty(type, name, false);
             if (hasGet)
             {
-                var getMethod = tb.DefineMethod($"{name}_get", true, false, false).WithReturnType(type);
+                var getMethod = tb.DefineMethod($"get_{name}", true, false, interfaceImpl).WithReturnType(type);
 
                 getMethod.Generator
                     .LdArg_0()
@@ -269,7 +269,7 @@ namespace ZenPlatform.Compiler.Contracts
 
             if (hasSet)
             {
-                var setMethod = tb.DefineMethod($"{name}_set", true, false, false);
+                var setMethod = tb.DefineMethod($"set_{name}", true, false, interfaceImpl);
                 setMethod.DefineParameter("value", type, false, false);
                 setMethod.Generator.LdArg(0).LdArg(1).StFld(backingField).Ret();
 
@@ -279,10 +279,10 @@ namespace ZenPlatform.Compiler.Contracts
             return result;
         }
 
-        public static IPropertyBuilder DefinePropertyWithBackingField(this ITypeBuilder tb, IType type, string name)
+        public static IPropertyBuilder DefinePropertyWithBackingField(this ITypeBuilder tb, IType type, string name, bool interfaceImpl)
         {
             var backingField = tb.DefineField(type, СonventionsHelper.GetBackingFieldName(name), false, false);
-            return tb.DefineProperty(type, name, backingField);
+            return tb.DefineProperty(type, name, backingField, interfaceImpl);
         }
 
         public static ITypeBuilder DefineType(this IAssemblyBuilder ab, string @namespace, string name,

@@ -806,14 +806,14 @@ namespace ZenPlatform.EntityComponent.Entity
             linkType.AddInterfaceImplementation(ts.FindType<ILink>());
 
             var idBack = linkType.DefineField(b.Guid, СonventionsHelper.GetBackingFieldName("Id"), false, false);
-            linkType.DefineProperty(b.Guid, "Id", idBack, true, false);
+            linkType.DefineProperty(b.Guid, "Id", idBack, true, false, true);
 
             var typeBack = linkType.DefineField(b.Int, СonventionsHelper.GetBackingFieldName("Type"), false, false);
-            linkType.DefineProperty(b.Int, "Type", typeBack, true, false);
+            linkType.DefineProperty(b.Int, "Type", typeBack, true, false, true);
 
             var presentationBack = linkType.DefineField(b.String, СonventionsHelper.GetBackingFieldName("Presentation"),
                 false, false);
-            linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false);
+            linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false, true);
 
             var ctor = linkType.DefineConstructor(false, b.Int, b.Guid);
 
@@ -834,7 +834,7 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             var _ts = tb.Assembly.TypeSystem;
             var _b = _ts.GetSystemBindings();
-            var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version");
+            var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version", false);
         }
 
         private SSyntaxNode GetInsertQuery(XCSingleEntity se)
