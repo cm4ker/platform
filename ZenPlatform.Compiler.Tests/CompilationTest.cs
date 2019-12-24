@@ -23,11 +23,5 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.Equal("Hello world!", result);
         }
-
-        [Fact]
-        public void ImportTypeTest()
-        {
-            ImportRef();
-        }
     }
 }
