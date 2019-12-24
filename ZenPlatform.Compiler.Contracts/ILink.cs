@@ -62,6 +62,6 @@ namespace ZenPlatform.Compiler.Contracts
         Guid Id { get; }
         int Type { get; }
 
-        string Presentation { set; }
+        string Presentation { get; }
     }
 }
