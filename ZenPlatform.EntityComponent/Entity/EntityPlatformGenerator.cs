@@ -994,13 +994,17 @@ namespace ZenPlatform.EntityComponent.Entity
         
         ViewBagEntity _vb;
                 
-        public EntityLink(ViewBagEntity vb)
+        public EntityLink(ViewBag vb)
         {
             //Required
-            _name = vb.Name;
+            if(vb.HasName("Name"))
+                _name = vb.Name;
             
             //Required
-            _id = vb.Id;
+            if(vb.HasName("Id"))
+                _id = vb.Id;
+            else
+                throw new Exception();
             
             if(vb.Has("Sum"))
                 _sum = (double)vb.Sum;
