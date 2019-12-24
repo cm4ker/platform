@@ -24,6 +24,7 @@ using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.ConfigurationExample;
@@ -108,14 +109,23 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void ConnectingAndLoginAndInvoke()
         {
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 1; i++)
             {
                 InvokeInClientServerContext((clientService, serverService, clientContext) =>
                 {
                     GlobalScope.Client = clientContext.Client;
                     var cmdType = clientContext.MainAssembly.GetType("CompileNamespace.__cmd_HelloFromServer");
-                    var result = cmdType.GetMethod("ClientCallProc").Invoke(null, new object[] {10});
-                    Assert.Equal(11, result);
+                    try
+                    {
+                        var result = cmdType.GetMethod("ClientCallProc")
+                            .Invoke(null, BindingFlags.DoNotWrapExceptions, null, new object[] {10}, null);
+                        Assert.Equal(11, result);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
                 });
             }
         }
@@ -129,7 +139,7 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void CompileAndLoadAssembly()
         {
-            var compiller = new XCCompiler();
+            var compiller = new XCCompiler(new DnlibAssemblyPlatform());
 
             var root = Factory.CreateExampleConfiguration();
 
@@ -164,7 +174,8 @@ namespace ZenPlatform.Core.Test
         {
             var storage = new TestAssemblyStorage();
             var manager =
-                new AssemblyManager(new XCCompiler(), storage, new XUnitLogger<AssemblyManager>(_testOutput),
+                new AssemblyManager(new XCCompiler(new DnlibAssemblyPlatform()), storage,
+                    new XUnitLogger<AssemblyManager>(_testOutput),
                     new XCConfManipulator());
 
             var root = Factory.CreateExampleConfiguration();

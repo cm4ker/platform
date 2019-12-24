@@ -76,6 +76,8 @@ namespace ZenPlatform.Compiler.Dnlib
 
             method.DeclaringType = TypeDef;
             method.Body = new CilBody();
+
+            method.Body.InitLocals = false;
             method.MethodSig = new MethodSig(c);
 
             method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.ToTypeRef()).ToTypeSig();
@@ -110,20 +112,21 @@ namespace ZenPlatform.Compiler.Dnlib
             MethodSig sig;
 
             if (isStatic)
-                sig = MethodSig.CreateStatic(new ClassSig(_ts.GetSystemBindings().Void.GetRef()));
+                sig = MethodSig.CreateStatic(_ts.GetSystemBindings().Void.GetRef().ToTypeSig());
             else
-                sig = MethodSig.CreateInstance(new CorLibTypeSig(_ts.GetSystemBindings().Void.GetRef(),
-                    ElementType.Void));
+                sig = MethodSig.CreateInstance(_ts.GetSystemBindings().Void.GetRef().ToTypeSig());
 
             foreach (var arg in args)
             {
-                sig.Params.Add(new ClassSig(((DnlibType) arg).TypeRef));
+                sig.Params.Add(arg.GetRef().ToTypeSig());
             }
 
             var name = (isStatic) ? ".cctor" : ".ctor";
             var c = new MethodDefUser(name, sig);
 
-            c.Attributes |= MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Public;
+            c.Attributes |= MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Public |
+                            MethodAttributes.HideBySig ;
+            
             c.DeclaringType = TypeDef;
 
             return new DnlibConstructorBuilder(_ts, c, TypeRef);

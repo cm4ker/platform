@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;
+using dnlib.DotNet.Writer;
+using dnlib.PE;
 using ZenPlatform.Compiler.Contracts;
 using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
 using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
@@ -36,7 +38,6 @@ namespace ZenPlatform.Compiler.Dnlib
             _attributes ??= Assembly.CustomAttributes.Select(ca => new DnlibCusotmAtttribute(_ts, ca))
                 .ToList();
 
-      
 
         public IType FindType(string fullName)
         {
@@ -66,13 +67,32 @@ namespace ZenPlatform.Compiler.Dnlib
         public void Write(string fileName)
         {
             //var asm = Assembly.ManifestModule.ResolveToken(new MDToken(Table.AssemblyRef, 1).Raw);
-        Assembly.Write(fileName);
+            Assembly.Write(fileName, new ModuleWriterOptions(Assembly.ManifestModule)
+            {
+                PEHeadersOptions = new PEHeadersOptions()
+                {
+                    ImageBase = 0x00400000,
+                    Subsystem = Subsystem.WindowsCui,
+                    MajorLinkerVersion = 8
+                },
+                AddCheckSum = true,
+                ModuleKind = ModuleKind.Dll
+            });
         }
 
         public void Write(Stream stream)
         {
             //var asm = Assembly.ManifestModule.ResolveToken(new MDToken(Table.AssemblyRef, 1).Raw);
-            Assembly.Write(stream);
+            Assembly.Write(stream, new ModuleWriterOptions(Assembly.ManifestModule)
+            {
+                PEHeadersOptions = new PEHeadersOptions()
+                {
+                    ImageBase = 0x00400000,
+                    Subsystem = Subsystem.WindowsCui,
+                    MajorLinkerVersion = 8
+                },
+                ModuleKind = ModuleKind.Dll
+            });
         }
 
         public ITypeSystem TypeSystem => _ts;
