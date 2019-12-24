@@ -21,7 +21,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
 
 
-            return new SingleEntityTypeEditor(Component.Parent);
+            return new SingleEntityTypeEditor(Component);
         }
 
         public override IXCObjectType Create(IXCObjectType parentType = null)
