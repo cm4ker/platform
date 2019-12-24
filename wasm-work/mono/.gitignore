@@ -1,9 +1,0 @@
-.stamp-wasm-bcl
-.stamp-wasm-toolchain
-
-emsdk
-sdks
-build
-debug
-release
-mono-wasm.zip

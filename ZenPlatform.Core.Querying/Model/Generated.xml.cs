@@ -603,7 +603,7 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QSourceFieldExpression : QField
     {
-        public QSourceFieldExpression(QObjectTable objectTable, IXCObjectProperty property): base(objectTable)
+        public QSourceFieldExpression(QObjectTable objectTable, IXProperty property): base(objectTable)
         {
             ObjectTable = objectTable;
             Property = property;
@@ -615,7 +615,7 @@ namespace ZenPlatform.Core.Querying.Model
             set;
         }
 
-        public IXCObjectProperty Property
+        public IXProperty Property
         {
             get;
             set;

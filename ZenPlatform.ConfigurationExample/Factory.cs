@@ -19,13 +19,12 @@ namespace ZenPlatform.ConfigurationExample
         {
             var root = new XCRoot();
 
-            root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a"); //Guid.NewGuid();
+            root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";
             root.ProjectVersion = "0.0.0.1";
 
             var component = new XCComponent()
             {
-                
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
@@ -33,10 +32,13 @@ namespace ZenPlatform.ConfigurationExample
 
             var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             store.Guid = Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5");
+            
             var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             invoice.Guid = Guid.Parse("b9fee6cd-a834-4d72-9de5-1fc2087467e5");
+            
             var department = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             department.Guid = Guid.Parse("953120f4-6e30-4056-9b8b-6eb0c8d406f0");
+            
             var custom = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             custom.Guid = Guid.Parse("0265f6cd-dccc-4a85-8e14-af65e2c0066f");
 
@@ -137,7 +139,6 @@ public void OnClientClientCallProc()
 
             var component = new XCComponent()
             {
-
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
@@ -145,11 +146,11 @@ public void OnClientClientCallProc()
 
             var store = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             store.Guid = Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5");
-            var invoice = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            var invoice = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             invoice.Guid = Guid.Parse("b9fee6cd-a834-4d72-9de5-1fc2087467e5");
-            var department = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            var department = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             department.Guid = Guid.Parse("953120f4-6e30-4056-9b8b-6eb0c8d406f0");
-            var custom = (XCSingleEntity)component.ComponentImpl.ComponentManager.Create();
+            var custom = (XCSingleEntity) component.ComponentImpl.ComponentManager.Create();
             custom.Guid = Guid.Parse("0265f6cd-dccc-4a85-8e14-af65e2c0066f");
 
 
@@ -201,7 +202,7 @@ public void OnClientClientCallProc()
             prop.Name = "CompositeProperty";
             prop.Types.Add(new XCBinary());
             prop.Types.Add(new XCBoolean());
-           // prop.Types.Add(new XCString());
+            // prop.Types.Add(new XCString());
             prop.Types.Add(new XCDateTime());
             prop.Types.Add(store);
 
