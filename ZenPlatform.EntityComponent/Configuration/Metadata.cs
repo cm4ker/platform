@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.EntityComponent.Configuration
@@ -10,6 +11,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         public List<XCSingleEntityProperty> Properties { get; set; }
 
         public List<XCSingleEntityModule> Modules { get; set; }
+
+        public List<XCCommand> Command { get; set; }
 
         public string Name { get; set; }
 
@@ -27,6 +30,8 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public List<XCSingleEntityModule> Modules { get;  }
 
+        public List<XCCommand> Command { get; }
+
         public string Name { get; set; }
 
         public Guid EntityId { get; set; }
@@ -38,22 +43,17 @@ namespace ZenPlatform.EntityComponent.Configuration
             Properties = new List<XCSingleEntityProperty>();
 
             Modules = new List<XCSingleEntityModule>();
+
+            Command = new List<XCCommand>();
         }
 
-        public void AddPropertyRange(IEnumerable<XCSingleEntityProperty> properties)
-        {
-            Properties.AddRange(properties);
-        }
-
-        public void AddModuleRange(IEnumerable<XCSingleEntityModule> modules)
-        {
-            Modules.AddRange(modules);
-        }
 
         public void Initialize(IXCLoader loader, XCSingleEntityMetadataSettings settings)
         {
-            AddPropertyRange(settings.Properties);
-            AddModuleRange(settings.Modules);
+            Properties.AddRange(settings.Properties);
+            Modules.AddRange(settings.Modules);
+            Command.AddRange(settings.Command);
+
             EntityId = settings.EntityId;
             LinkId = settings.LinkId;
             Name = settings.Name;
@@ -65,6 +65,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             {
                 Modules = Modules,
                 Properties = Properties,
+                Command = Command,
                 Name = Name,
                 LinkId = LinkId,
                 EntityId = EntityId
