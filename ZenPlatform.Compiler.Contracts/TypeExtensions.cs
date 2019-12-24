@@ -157,7 +157,9 @@ namespace ZenPlatform.Compiler.Contracts
             if (method is ICustomEmitMethod custom)
                 custom.EmitCall(emitter);
             else
-                emitter.Emit(method.IsStatic ? OpCodes.Call : OpCodes.Callvirt, method);
+            {
+               emitter.Emit(method.IsStatic ? OpCodes.Call : OpCodes.Callvirt, method);
+            }
 
             if (swallowResult && !(method.ReturnType.Namespace == "System" && method.ReturnType.Name == "Void"))
                 emitter.Pop();
@@ -279,7 +281,8 @@ namespace ZenPlatform.Compiler.Contracts
             return result;
         }
 
-        public static IPropertyBuilder DefinePropertyWithBackingField(this ITypeBuilder tb, IType type, string name, bool interfaceImpl)
+        public static IPropertyBuilder DefinePropertyWithBackingField(this ITypeBuilder tb, IType type, string name,
+            bool interfaceImpl)
         {
             var backingField = tb.DefineField(type, СonventionsHelper.GetBackingFieldName(name), false, false);
             return tb.DefineProperty(type, name, backingField, interfaceImpl);

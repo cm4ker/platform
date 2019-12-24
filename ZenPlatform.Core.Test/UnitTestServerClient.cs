@@ -13,6 +13,7 @@ using ZenPlatform.Compiler.Platform;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using dnlib.DotNet;
 using ZenPlatform.ClientRuntime;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Test.Assemblies;
@@ -117,6 +118,12 @@ namespace ZenPlatform.Core.Test
                     Assert.Equal(11, result);
                 });
             }
+        }
+
+        [Fact]
+        public void Test()
+        {
+            var module = ModuleDefMD.Load("ZenPlatform.Cli.dll");
         }
 
         [Fact]

@@ -118,7 +118,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType MakeArrayType(int dimensions)
         {
-            throw new NotImplementedException();
+            return new DnlibType(_ts, null, new TypeSpecUser(new ArraySig(TypeRef.ToTypeSig(), dimensions)), _assembly);
         }
 
         public IType BaseType { get; }

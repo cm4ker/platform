@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public Parameter Parameter => _parameter;
-        
+
         public bool Equals(IParameter other)
         {
             throw new NotImplementedException();
@@ -26,6 +26,6 @@ namespace ZenPlatform.Compiler.Dnlib
         public string Name => _parameter.Name;
         public IType Type => _cr.GetType(_parameter.Type);
         public int Sequence => _parameter.Index;
-        public int ArgIndex => _parameter.ParamDef.Sequence;
+        public int ArgIndex => _parameter.Index;
     }
 }
