@@ -26,8 +26,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
-            var bType = (ITypeDefOrRef) _assembly.ManifestModule.Import(((DnlibType) baseType).TypeRef);
+            ITypeDefOrRef bType = ((DnlibType) baseType).TypeRef;
 
+            if (bType is TypeRef || bType is TypeDef && bType.Module != this._assembly.ManifestModule)
+                bType = (ITypeDefOrRef) _assembly.ManifestModule.Import(bType);
+          
             var type = new TypeDefUser(@namespace, name, bType);
 
             type.Attributes = SreMapper.Convert(typeAttributes);
