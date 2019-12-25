@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.Tests
 
             var p2 = m.DefineParameter("A", sb.Int, false, false);
             
-            Assert.Equal(1, p2.ArgIndex);
+            Assert.Equal(1, p2.ArgIndex);            
         }
     }
 }

@@ -34,7 +34,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
         private dnlib.DotNet.IMethod ImportMethod(DnlibMethodBase method)
         {
-            return _method.Module.Import(method.MethofRef);
+            if (_method.Module != method.MethofRef.Module)
+                return _method.Module.Import(method.MethofRef);
+            else
+                return method.MethofRef;
         }
 
         private dnlib.DotNet.ITypeDefOrRef ImportType(DnlibType type)
