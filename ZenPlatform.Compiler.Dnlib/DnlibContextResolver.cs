@@ -46,14 +46,14 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             if (tsig.AssemblyQualifiedName.Contains("System.Private.CoreLib"))
             {
-                return _ts.Resolve(new TypeRefUser(_moduleDef, tsig.Namespace, tsig.TypeName, _moduleDef));
+                return _ts.FindAssembly(_ts.GetSystemBindings().MSCORLIB).FindType(tsig.FullName);
             }
             else
             {
-                var result =  _ts.Resolve(tsig.ToTypeDefOrRef());
+                var result = _ts.Resolve(tsig.ToTypeDefOrRef());
                 if (result is UnresolvedDnlibType)
                 {
-                    result =  _ts.Resolve(tsig.ToTypeDefOrRef());
+                    result = _ts.Resolve(tsig.ToTypeDefOrRef());
                     throw new Exception($"Can't resolve type {tsig}");
                 }
 
