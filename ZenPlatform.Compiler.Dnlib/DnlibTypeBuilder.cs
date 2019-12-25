@@ -63,7 +63,8 @@ namespace ZenPlatform.Compiler.Dnlib
             method.Attributes |= (isPublic) ? MethodAttributes.Public : MethodAttributes.Private;
 
             method.IsStatic = isStatic;
-
+          
+            
             if (isInterfaceImpl)
             {
                 method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
@@ -77,7 +78,7 @@ namespace ZenPlatform.Compiler.Dnlib
             method.DeclaringType = TypeDef;
             method.Body = new CilBody();
 
-            method.Body.InitLocals = false;
+            method.Body.InitLocals = true;
             method.MethodSig = new MethodSig(c);
 
             method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.ToTypeRef()).ToTypeSig();
@@ -124,11 +125,12 @@ namespace ZenPlatform.Compiler.Dnlib
             var name = (isStatic) ? ".cctor" : ".ctor";
             var c = new MethodDefUser(name, sig);
 
+            
             c.Attributes |= MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Public |
                             MethodAttributes.HideBySig ;
             
             c.DeclaringType = TypeDef;
-
+            
             return new DnlibConstructorBuilder(_ts, c, TypeRef);
         }
 

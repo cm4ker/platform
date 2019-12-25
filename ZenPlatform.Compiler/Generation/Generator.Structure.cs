@@ -288,7 +288,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         foreach (var constructor in c.TypeBody.Constructors)
                         {
-                            EmitConstructor(constructor, _stage1constructors[constructor]);
+                            EmitConstructor(constructor, tbc, _stage1constructors[constructor]);
                         }
 
                         break;
@@ -310,7 +310,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         foreach (var constructor in cab.TypeBody.Constructors)
                         {
-                            EmitConstructor(constructor, _stage1constructors[constructor]);
+                            EmitConstructor(constructor, tbcab, _stage1constructors[constructor]);
                         }
 
                         break;

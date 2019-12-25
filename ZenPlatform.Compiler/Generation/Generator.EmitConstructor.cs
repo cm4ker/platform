@@ -6,14 +6,14 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitConstructor(Constructor constructor, IConstructorBuilder stage1Constructor)
+        private void EmitConstructor(Constructor constructor, ITypeBuilder type, IConstructorBuilder stage1Constructor)
         {
             constructor.Builder = stage1Constructor.Generator;
 
-            EmitConstructor(constructor);
+            EmitConstructor(constructor, type);
         }
 
-        private void EmitConstructor(Constructor constructor)
+        private void EmitConstructor(Constructor constructor, ITypeBuilder type)
         {
             if (constructor == null)
                 throw new ArgumentNullException();
@@ -27,6 +27,7 @@ namespace ZenPlatform.Compiler.Generation
 
             //Используем конструктор по умолчанию
             emitter.LdArg_0().EmitCall(_bindings.Object.Constructors[0]);
+            //emitter.LdArg_0().EmitCall(type.BaseType.Constructors[0]);
 
             EmitBody(emitter, constructor.Block, returnLabel, ref resultVar);
             emitter.MarkLabel(returnLabel);

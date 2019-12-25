@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection.Metadata;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
@@ -50,11 +51,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IReadOnlyList<IAssembly> Assemblies => _asms;
 
-        
-        
+
         public Dictionary<string, AssemblyRef> AsmRefsCache = new Dictionary<string, AssemblyRef>();
-        
-        
+
+
         internal IAssembly RegisterAssembly(AssemblyDef assemblyDef)
         {
             var result = new DnlibAssembly(this, assemblyDef);
@@ -164,6 +164,10 @@ namespace ZenPlatform.Compiler.Dnlib
             public Dictionary<Type, List<DnlibType>> References { get; } = new Dictionary<Type, List<DnlibType>>();
         }
 
+        public void RegisterType(DnlibType type)
+        {
+          
+        }
 
         public DnlibType Get(ITypeDefOrRef defOrRef)
         {

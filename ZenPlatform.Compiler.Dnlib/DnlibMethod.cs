@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.Dnlib
             ITypeDefOrRef declaringType)
         {
             TypeSystem = typeSystem;
-            MethofRef = method;
+            MethodRef = method;
             MethodDef = methodDef;
             ContextResolver = new DnlibContextResolver(typeSystem, declaringType.Module);
             _declaringTR = declaringType;
@@ -33,7 +33,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public MethodDef MethodDef { get; }
 
-        public dnlib.DotNet.IMethod MethofRef { get; }
+        public dnlib.DotNet.IMethod MethodRef { get; }
 
         public string Name => MethodDef.Name;
 
@@ -42,7 +42,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IMethod MakeGenericMethod(IType[] typeArguments)
         {
-            if (MethofRef is IMethodDefOrRef mdr)
+            if (MethodRef is IMethodDefOrRef mdr)
             {
                 var sig = new GenericInstMethodSig(typeArguments.Select(x => ((DnlibType) x).TypeRef.ToTypeSig())
                     .ToArray());

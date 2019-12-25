@@ -34,10 +34,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
         private dnlib.DotNet.IMethod ImportMethod(DnlibMethodBase method)
         {
-            if (_method.Module != method.MethofRef.Module)
-                return _method.Module.Import(method.MethofRef);
+            if (_method.Module != method.MethodRef.Module)
+                return _method.Module.Import(method.MethodRef);
             else
-                return method.MethofRef;
+                return method.MethodRef;
         }
 
         private dnlib.DotNet.ITypeDefOrRef ImportType(DnlibType type)
@@ -204,7 +204,11 @@ namespace ZenPlatform.Compiler.Dnlib
         public IEmitter Emit(SreOpCode code, IParameter parameter)
             => Emit(Instruction.Create(Dic[code], ((DnlibParameter) parameter).Parameter));
 
-        public bool InitLocals { get; set; }
+        public bool InitLocals
+        {
+            get => _body.InitLocals;
+            set => _body.InitLocals = value;
+        }
 
         public void InsertSequencePoint(IFileSource file, int line, int position)
         {
