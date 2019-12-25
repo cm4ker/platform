@@ -158,11 +158,12 @@ namespace ZenPlatform.Compiler.Contracts
                 custom.EmitCall(emitter);
             else
             {
-               emitter.Emit(method.IsStatic ? OpCodes.Call : OpCodes.Callvirt, method);
+                emitter.Emit(method.IsStatic ? OpCodes.Call : OpCodes.Callvirt, method);
             }
 
             if (swallowResult && !(method.ReturnType.Namespace == "System" && method.ReturnType.Name == "Void"))
                 emitter.Pop();
+
             return emitter;
         }
 
@@ -292,6 +293,16 @@ namespace ZenPlatform.Compiler.Contracts
             TypeAttributes attrs)
         {
             return ab.DefineType(@namespace, name, attrs, ab.TypeSystem.GetSystemBindings().Object);
+        }
+
+
+        public static IConstructorBuilder DefineDefaultConstructor(this ITypeBuilder tb, bool isStatic)
+        {
+            var c = tb.DefineConstructor(isStatic);
+            if (!isStatic)
+                c.Generator.LdArg_0().EmitCall(tb.BaseType.Constructors[0]);
+
+            return c;
         }
     }
 

@@ -69,6 +69,12 @@ namespace ZenPlatform.Compiler.Dnlib
             return assembly;
         }
 
+        internal IType RegisterType(DnlibType type)
+        {
+            _typeCache.RegisterType(type);
+            return type;
+        }
+
         public IAssembly FindAssembly(string assembly)
         {
             return RegisterAssembly(_resolver.Resolve(assembly, null));
@@ -151,7 +157,7 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         public DnlibTypeSystem TypeSystem { get; }
 
-        Dictionary<TypeDef, DefinitionEntry> _definitions = new Dictionary<TypeDef, DefinitionEntry>();
+        Dictionary<ITypeDefOrRef, DefinitionEntry> _cache = new Dictionary<ITypeDefOrRef, DefinitionEntry>();
 
         public DnlibTypeCache(DnlibTypeSystem typeSystem)
         {
@@ -161,12 +167,11 @@ namespace ZenPlatform.Compiler.Dnlib
         class DefinitionEntry
         {
             public DnlibType Direct { get; set; }
-            public Dictionary<Type, List<DnlibType>> References { get; } = new Dictionary<Type, List<DnlibType>>();
         }
 
         public void RegisterType(DnlibType type)
         {
-          
+            _cache[type.TypeDef] = new DefinitionEntry {Direct = type};
         }
 
         public DnlibType Get(ITypeDefOrRef defOrRef)
@@ -189,20 +194,18 @@ namespace ZenPlatform.Compiler.Dnlib
                 return new DnlibType(TypeSystem, ts.ResolveTypeDef(), ts, asm);
             }
 
-            if (!_definitions.TryGetValue(definition, out var dentry))
-                _definitions[definition] = dentry = new DefinitionEntry();
-            if (defOrRef is TypeDef def)
-                return dentry.Direct ?? (dentry.Direct = new DnlibType(TypeSystem, def, reference, asm));
+            if (!_cache.TryGetValue(definition, out var definitionEntry))
+                _cache[definition] = definitionEntry = new DefinitionEntry();
+            else
+                return definitionEntry.Direct;
 
-            var rtype = reference.GetType();
-            if (!dentry.References.TryGetValue(rtype, out var rlist))
-                dentry.References[rtype] = rlist = new List<DnlibType>();
-            var found = rlist.FirstOrDefault(t => t.TypeDef.Equals(definition));
-            if (found != null)
-                return found;
-            var rv = new DnlibType(TypeSystem, definition, reference, asm);
-            rlist.Add(rv);
-            return rv;
+            if (defOrRef is TypeDef def)
+                return definitionEntry.Direct ??
+                       (definitionEntry.Direct = new DnlibType(TypeSystem, def, reference, asm));
+
+
+            return definitionEntry.Direct ??
+                   (definitionEntry.Direct = new DnlibType(TypeSystem, definition, reference, asm));
         }
     }
 }

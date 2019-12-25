@@ -36,22 +36,23 @@ namespace ZenPlatform.Compiler.Dnlib
             p.Name = name;
 
             var dp = new DnlibParameter(TypeSystem, MethodDef, DeclaringTypeReference.Module, p);
-            
-            ((List<DnlibParameter>)Parameters).Add(dp);
-            
+
+            ((List<DnlibParameter>) Parameters).Add(dp);
+
             return dp;
         }
 
         public IMethodBuilder WithReturnType(IType type)
         {
             MethodDef.ReturnType = ContextResolver.GetReference(type.ToTypeRef()).ToTypeSig();
-            
+
             return this;
         }
 
         public DnlibMethodBuilder(DnlibTypeSystem typeSystem, MethodDef method, ITypeDefOrRef declaringType) :
             base(typeSystem, method, method, declaringType)
         {
+            Parameters.Any();
         }
     }
 }

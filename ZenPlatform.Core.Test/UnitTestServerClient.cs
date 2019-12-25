@@ -118,7 +118,7 @@ namespace ZenPlatform.Core.Test
                     try
                     {
                         var result = cmdType.GetMethod("ClientCallProc")
-                            .Invoke(null, BindingFlags.DoNotWrapExceptions, null, new object[] {10}, null);
+                            .Invoke(null, new object[] {10});
                         Assert.Equal(11, result);
                     }
                     catch (Exception e)

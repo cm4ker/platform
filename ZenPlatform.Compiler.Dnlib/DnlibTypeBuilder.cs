@@ -19,7 +19,9 @@ namespace ZenPlatform.Compiler.Dnlib
             : base(typeSystem, typeDef, typeDef, assembly)
         {
             _ts = typeSystem;
+
             Methods.Any();
+            Constructors.Any();
 
             _r = new DnlibContextResolver(_ts, typeDef.Module);
         }
@@ -60,14 +62,19 @@ namespace ZenPlatform.Compiler.Dnlib
             var dm = new DnlibMethodBuilder(_ts, method, TypeRef);
             ((List<IMethod>) Methods).Add(dm);
 
+
             method.Attributes |= (isPublic) ? MethodAttributes.Public : MethodAttributes.Private;
 
             method.IsStatic = isStatic;
-          
-            
+
+
             if (isInterfaceImpl)
             {
                 method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
+            }
+            else
+            {
+                method.Attributes |= MethodAttributes.HideBySig;
             }
 
             var c = CallingConvention.Default;
@@ -125,13 +132,16 @@ namespace ZenPlatform.Compiler.Dnlib
             var name = (isStatic) ? ".cctor" : ".ctor";
             var c = new MethodDefUser(name, sig);
 
-            
+
             c.Attributes |= MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Public |
-                            MethodAttributes.HideBySig ;
-            
+                            MethodAttributes.HideBySig;
+
             c.DeclaringType = TypeDef;
-            
-            return new DnlibConstructorBuilder(_ts, c, TypeRef);
+
+            var dc = new DnlibConstructorBuilder(_ts, c, TypeRef);
+            ((List<IConstructor>) Constructors).Add(dc);
+
+            return dc;
         }
 
         public ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic)
