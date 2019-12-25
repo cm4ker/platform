@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Xunit;
+using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
@@ -18,7 +21,7 @@ namespace ZenPlatform.Compiler.Tests
         private IXCRoot r = Factory.CreateExampleConfiguration();
 
         [Fact]
-        void Test()
+        void TestCompileAndInvoke()
         {
             var dnlib = new DnlibAssemblyPlatform();
             var cecil = new CecilAssemblyPlatform();
@@ -44,6 +47,17 @@ namespace ZenPlatform.Compiler.Tests
 
             serverDnlib.Write("serverDnlib.bll");
             serverCecil.Write("serverCecil.bll");
+
+
+            var asm = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "clientDnlib.bll"));
+
+            var cmdType = asm.GetType("CompileNamespace.__cmd_HelloFromServer");
+            Assert.Throws<PlatformNotInitializedException>(() =>
+            {
+                var result = cmdType.GetMethod("ClientCallProc")
+                    .Invoke(null, BindingFlags.DoNotWrapExceptions, null, new object[] {10}, null);
+            });
         }
+        
     }
 }

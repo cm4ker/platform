@@ -19,15 +19,14 @@ namespace ZenPlatform.Compiler.Generation
                 throw new ArgumentNullException();
 
             IEmitter emitter = constructor.Builder;
-            emitter.InitLocals = true;
-
+      
             ILocal resultVar = null;
 
             var returnLabel = emitter.DefineLabel();
 
             //Используем конструктор по умолчанию
-            emitter.LdArg_0().EmitCall(_bindings.Object.Constructors[0]);
-            //emitter.LdArg_0().EmitCall(type.BaseType.Constructors[0]);
+            //emitter.LdArg_0().EmitCall(_bindings.Object.Constructors[0]);
+            emitter.LdArg_0().EmitCall(type.BaseType.Constructors[0]);
 
             EmitBody(emitter, constructor.Block, returnLabel, ref resultVar);
             emitter.MarkLabel(returnLabel);

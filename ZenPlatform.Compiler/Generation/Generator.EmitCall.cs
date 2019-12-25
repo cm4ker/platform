@@ -54,12 +54,7 @@ namespace ZenPlatform.Compiler.Generation
                 }
 
                 Hack:
-                e.EmitCall((IMethod) symbol.CodeObject);
-
-                if (call.IsStatement && function.Type.Kind != TypeNodeKind.Void)
-                {
-                    e.Pop();
-                }
+                e.EmitCall((IMethod) symbol.CodeObject, call.IsStatement);
             }
             else
             {

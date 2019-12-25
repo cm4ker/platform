@@ -815,7 +815,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 false, false);
             linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false, true);
 
-            var ctor = linkType.DefineConstructor(false, b.Int, b.Guid);
+            var ctor = linkType.DefineConstructor(false);
 
             var e = ctor.Generator;
 

@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         private DnlibTypeSystem _ts;
 
-        protected Dictionary<string, DnlibType> _typeCache = new Dictionary<string, DnlibType>();
+        protected Dictionary<string, DnlibType> TypeCache = new Dictionary<string, DnlibType>();
 
         public DnlibAssembly(DnlibTypeSystem ts, AssemblyDef assembly)
         {
@@ -41,7 +41,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType FindType(string fullName)
         {
-            if (_typeCache.TryGetValue(fullName, out var rv))
+            if (TypeCache.TryGetValue(fullName, out var rv))
                 return rv;
             var lastDot = fullName.LastIndexOf(".", StringComparison.Ordinal);
 
@@ -59,7 +59,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
             var resolved = tref.Resolve(Assembly.ManifestModule);
             if (resolved != null)
-                return _typeCache[fullName] = _ts.GetTypeFromReference(tref);
+                return TypeCache[fullName] = _ts.GetTypeFromReference(tref);
 
             return null;
         }
