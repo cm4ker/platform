@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\dnlib-sources\dnlib.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler.Dnlib\ZenPlatform.Compiler.Dnlib.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler.Platform\ZenPlatform.Compiler.Platform.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler\ZenPlatform.Compiler.csproj" />

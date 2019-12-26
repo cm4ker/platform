@@ -5,8 +5,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\dnlib-sources\dnlib.csproj" />
       <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="dnlib" Version="3.3.0" />
     </ItemGroup>
 
 </Project>
