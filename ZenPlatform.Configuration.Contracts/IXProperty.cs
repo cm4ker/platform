@@ -32,6 +32,8 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         bool IsSystemProperty { get; set; }
 
+        
+        
         /// <summary>
         /// Свойство является ссылкой
         /// </summary>
