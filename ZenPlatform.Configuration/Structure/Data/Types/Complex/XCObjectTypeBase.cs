@@ -102,17 +102,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public bool HasModules { get; }
 
-
-        /// <summary>
-        /// Создать новое свойство
-        /// </summary>
-        /// <returns>Только что созданное свойство</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public virtual IXProperty CreateProperty()
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
