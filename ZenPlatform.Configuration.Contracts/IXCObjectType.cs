@@ -47,13 +47,6 @@ namespace ZenPlatform.Configuration.Contracts
         void LoadDependencies();
 
         /// <summary>
-        /// Создать новое свойство
-        /// </summary>
-        /// <returns>Только что созданное свойство</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        IXProperty CreateProperty();
-
-        /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
         /// <returns></returns>
