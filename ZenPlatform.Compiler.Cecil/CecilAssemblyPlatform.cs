@@ -13,5 +13,10 @@ namespace ZenPlatform.Compiler.Cecil
         public IAssemblyFactory AsmFactory { get; }
 
         public ITypeSystem TypeSystem { get; }
+
+        public ITypeSystem CreateTypeSystem()
+        {
+            return new CecilTypeSystem(new string[] { });
+        }
     }
 }

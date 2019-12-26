@@ -63,8 +63,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IReadOnlyList<IConstructor> Constructors =>
             _constructors ??= TypeDef.FindConstructors().Select(x =>
-                (IConstructor) new DnlibConstructor(_ts, new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef), x,
-                    TypeRef)).ToList();
+            {
+                return (IConstructor) new DnlibConstructor(_ts,
+                    new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef) {MethodSig = x.MethodSig}, x,
+                    TypeRef);
+            }).ToList();
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
         public IReadOnlyList<IType> GenericArguments { get; }
@@ -118,10 +121,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType MakeArrayType(int dimensions)
         {
-            throw new NotImplementedException();
+            return new DnlibType(_ts, null, new TypeSpecUser(new ArraySig(TypeRef.ToTypeSig(), dimensions)), _assembly);
         }
 
-        public IType BaseType { get; }
+        public IType BaseType => _ts.Resolve(TypeDef.BaseType);
 
         public bool IsValueType => TypeDef.IsValueType;
 

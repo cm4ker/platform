@@ -777,13 +777,12 @@ namespace ZenPlatform.EntityComponent.Entity
                 {
                     if (cc.CompilationMode.HasFlag(CompilationMode.Client))
                     {
-                        var set = (IXCLinkType) cc.Type;
-                        var props = set.GetProperties();
-
-                        foreach (var prop in props)
-                        {
-                           
-                        }
+                        // var set = (IXCLinkType) cc.Type;
+                        // var props = set.GetProperties();
+                        //
+                        // foreach (var prop in props)
+                        // {
+                        // }
                     }
                 }
             }
@@ -807,16 +806,16 @@ namespace ZenPlatform.EntityComponent.Entity
             linkType.AddInterfaceImplementation(ts.FindType<ILink>());
 
             var idBack = linkType.DefineField(b.Guid, СonventionsHelper.GetBackingFieldName("Id"), false, false);
-            linkType.DefineProperty(b.Guid, "Id", idBack, true, false);
+            linkType.DefineProperty(b.Guid, "Id", idBack, true, false, true);
 
             var typeBack = linkType.DefineField(b.Int, СonventionsHelper.GetBackingFieldName("Type"), false, false);
-            linkType.DefineProperty(b.Int, "Type", typeBack, true, false);
+            linkType.DefineProperty(b.Int, "Type", typeBack, true, false, true);
 
             var presentationBack = linkType.DefineField(b.String, СonventionsHelper.GetBackingFieldName("Presentation"),
                 false, false);
-            linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false);
+            linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false, true);
 
-            var ctor = linkType.DefineConstructor(false, b.Int, b.Guid);
+            var ctor = linkType.DefineConstructor(false);
 
             var e = ctor.Generator;
 
@@ -835,7 +834,7 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             var _ts = tb.Assembly.TypeSystem;
             var _b = _ts.GetSystemBindings();
-            var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version");
+            var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version", false);
         }
 
         private SSyntaxNode GetInsertQuery(XCSingleEntity se)
@@ -981,4 +980,96 @@ namespace ZenPlatform.EntityComponent.Entity
         {
         }
     }
+
+
+    /*
+     
+     class EntityLink
+     {
+        StoreLink _store;
+        double _sum;
+        string _name;
+        Guid _id;        
+        bool _isLoaded;        
+        
+        ViewBagEntity _vb;
+                
+        public EntityLink(ViewBag vb)
+        {
+            //Required
+            if(vb.HasName("Name"))
+                _name = vb.Name;
+            
+            //Required
+            if(vb.HasName("Id"))
+                _id = vb.Id;
+            else
+                throw new Exception();
+            
+            if(vb.Has("Sum"))
+                _sum = (double)vb.Sum;
+                
+            if(vb.Has("Store"))
+                _store = StoreManager.GetLink(vb.Store);
+                
+        }   
+        
+        public string Name => _name;
+        
+        public EntityLink Link => this;
+        
+        public StoreLink Store => <k_platform_prefix>GetPropertyStore();
+        
+        public double Sum => <k_platform_prefix>GetPropertySum();
+       
+       public object CompositeProperty => 
+        
+        private object <k_platform_prefix>GetPropertyCompositeProperty()
+        {
+            if(_isLoaded)
+                FetchFromServer();
+        }
+        
+        private double <k_platform_prefix>GetPropertySum()
+        {
+            if(_isLoaded)
+                FetchFromServer();
+                
+            return _sum;    
+        }
+        
+        private StoreLink <k_platform_prefix>GetPropertyStore()
+        {
+            if(_isLoaded)
+                FetchFromServer();
+        
+            _store ??= StoreManager.GetLink(Service.GetProperty(TypeId: 5, "Store", _id));
+            return _store;
+        }
+        
+        private void FetchFromServer()
+        {
+            //fetching base layer from server
+            var props = Service.GetProperties(TypeId: 5, "Store", "Sum", _id);
+            
+            _store = StoreManager.GetLink(props["_store"]);
+            _sum = (double)props["Sum"];
+            _name = (string)props["Name"];
+            ...     
+            
+            _isLoaded = true;
+        }        
+        
+        public void Reload()
+        {
+            FetchFromServer();
+        }
+                
+        public override ToString()
+        {
+            return Name;
+        }      
+     }
+     
+     */
 }
