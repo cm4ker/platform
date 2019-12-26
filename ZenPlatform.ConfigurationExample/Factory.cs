@@ -68,7 +68,7 @@ namespace ZenPlatform.ConfigurationExample
             storeEditor.CreateProperty()
                 .SetGuid(Guid.Parse("9d865473-58a7-42ff-b4de-17451202064b"))
                 .SetName("Invoice")
-                .AddType(invoiceEditor.Type)
+                .AddType(invoiceEditor.Link)
                 .SetDatabaseColumnName("Fld_0003");
 
             storeEditor.CreateProperty()

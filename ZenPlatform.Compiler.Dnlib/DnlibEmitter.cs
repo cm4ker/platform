@@ -40,7 +40,7 @@ namespace ZenPlatform.Compiler.Dnlib
                 return method.MethodRef;
         }
 
-        private dnlib.DotNet.ITypeDefOrRef ImportType(DnlibType type)
+        private ITypeDefOrRef ImportType(DnlibType type)
         {
             return (ITypeDefOrRef) _method.Module.Import(type.TypeRef);
         }

@@ -17,33 +17,29 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class XCSingleEntity : XCObjectTypeBase
     {
-
         private XCSingleEntityMetadata _metadata;
         private IXProperty _linkProperty;
+
         public XCSingleEntity(XCSingleEntityMetadata metadata)
         {
-
-
             _metadata = metadata;
-
-            
         }
 
 
         public XCSingleEntityMetadata GetMetadata()
         {
-
             return _metadata;
         }
 
         public override bool HasProperties => true;
 
 
-
         /// <summary>
         /// Коллекция свойств сущности
         /// </summary>
-        public IEnumerable<IXProperty> Properties => _metadata.Properties.Concat(_linkProperty != null ? new List<IXProperty>() { _linkProperty }: new List<IXProperty>());
+        public IEnumerable<IXProperty> Properties => _metadata.Properties.Concat(_linkProperty != null
+            ? new List<IXProperty>() {_linkProperty}
+            : new List<IXProperty>());
 
         /// <summary>
         /// Коллекция модулей сущности
@@ -98,7 +94,6 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             if (_linkProperty == null)
                 _linkProperty = StandardEntityPropertyHelper.CreateLinkProperty(this);
-
         }
 
         public override IEnumerable<IXProperty> GetProperties()
@@ -114,47 +109,21 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public override IEnumerable<IXCCommand> GetCommands()
         {
-
             foreach (var command in Commands)
             {
                 yield return command;
             }
         }
 
-
         public override bool Equals(object obj)
         {
             return obj is XCSingleEntity entity &&
                    base.Equals(obj);
-                   
         }
 
         public override int GetHashCode()
         {
             return HashCode.Combine(base.GetHashCode(), Properties, Modules, Commands);
-        }
-    }
-
-    public class XCSingleEntityLink : XCLinkTypeBase
-    {
-        private readonly XCSingleEntityMetadata _metadata;
-        public override string Name => $"{ParentType.Name}Link";
-
-        public override Guid Guid => _metadata.LinkId;
-
-        public override bool HasProperties => true;
-
-        public XCSingleEntityLink(IXCObjectType parentType, XCSingleEntityMetadata metadata)
-        {
-            _metadata = metadata;
-            ParentType = parentType;
-
-
-        }
-
-        public override IEnumerable<IXProperty> GetProperties()
-        {
-            return _metadata.Properties;
         }
     }
 }

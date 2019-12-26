@@ -13,7 +13,7 @@ using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
-    [DebuggerDisplay("{" + nameof(TypeRef) + "}")]
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public class DnlibType : IType
     {
         private readonly DnlibTypeSystem _ts;
