@@ -108,7 +108,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 foreach (var ctype in prop.Types)
                 {
-                    if (ctype is XCPrimitiveType pt)
+                    if (ctype is IXCPrimitiveType pt)
                     {
                         var dbColName = prop
                             .GetPropertySchemas(prop.DatabaseColumnName)
@@ -127,7 +127,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         var astProp = new Property(null, propName, propType, true, true, dbColName);
                         members.Add(astProp);
                     }
-                    else if (ctype is XCObjectTypeBase ot)
+                    else if (ctype is IXCLinkType ot)
                     {
                         if (!propertyGenerated)
                         {
@@ -214,7 +214,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         var astProp = new Property(null, propName, propType, true, true);
                         members.Add(astProp);
                     }
-                    else if (ctype is XCObjectTypeBase ot)
+                    else if (ctype is IXCLinkType ot)
                     {
                         if (!propertyGenerated)
                         {
@@ -370,10 +370,10 @@ namespace ZenPlatform.EntityComponent.Entity
                         {
                             matchAtomType = GetAstFromPlatformType(pt);
                         }
-                        else if (ctype is XCObjectTypeBase ot)
+                        else if (ctype is IXCLinkType ot)
                         {
                             matchAtomType = new SingleTypeSyntax(null,
-                                ot.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + ot.Name + "Link",
+                                ot.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + ot.Name,
                                 TypeNodeKind.Type);
                         }
 
@@ -648,7 +648,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         var schemaTyped = ctype switch
                         {
-                            XCObjectTypeBase obj => prop.GetPropertySchemas(prop.Name)
+                            IXCLinkType obj => prop.GetPropertySchemas(prop.Name)
                                 .First(x => x.SchemaType == XCColumnSchemaType.Ref),
                             _ => prop.GetPropertySchemas(prop.Name).First(x => x.PlatformType == ctype),
                         };

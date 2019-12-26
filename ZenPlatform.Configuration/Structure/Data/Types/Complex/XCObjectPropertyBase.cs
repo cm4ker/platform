@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -50,9 +51,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// Системные поля нельзя удалить напрямую, нельзя редактировать.
         /// На них можно лишь воздействовать через какие-нибудь другие свойства
         /// </summary>
-        public bool IsSystemProperty { get; set; }
+        public virtual bool IsSystemProperty { get; set; }
 
-        public bool IsLink => false;
+        public virtual bool IsLink => false;
 
         /// <summary>
         /// Указывает на то, что поле является только для
@@ -223,7 +224,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
-            return new List<XCColumnSchemaDefinition>();
+            yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, new XCGuid(), _idProp.DatabaseColumnName);
+            yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, new XCGuid(), _idProp.DatabaseColumnName);
         }
     }
 }

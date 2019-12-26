@@ -32,8 +32,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         bool IsSystemProperty { get; set; }
 
-        
-        
         /// <summary>
         /// Свойство является ссылкой
         /// </summary>
@@ -113,12 +111,11 @@ namespace ZenPlatform.Configuration.Contracts
     public class XCColumnSchemaDefinition
     {
         public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, IXCType platformType, string name,
-            bool isPseudo, string prefix = "", string postfix = "")
+            string prefix = "", string postfix = "")
         {
             SchemaType = schemaType;
             Name = name;
             PlatformType = platformType;
-            IsPseudo = isPseudo;
             Prefix = prefix ?? throw new ArgumentNullException();
             Postfix = postfix ?? throw new ArgumentNullException();
         }
@@ -149,10 +146,5 @@ namespace ZenPlatform.Configuration.Contracts
         /// Тип платформы, закреплённый за схемой
         /// </summary>
         public IXCType PlatformType { get; set; }
-
-        /// <summary>
-        /// Псевдо схема. Используется, если "чужие" свойства не создают колонки, но программного должны генерироваться
-        /// </summary>
-        public bool IsPseudo { get; set; }
     }
 }

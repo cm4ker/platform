@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
@@ -9,6 +10,8 @@ using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
+    
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public abstract class DnlibMethodBase : IMethod
     {
         private ITypeDefOrRef _declaringTR;

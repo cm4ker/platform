@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
 using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
@@ -8,6 +9,8 @@ using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
+    
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public class DnlibProperty : IProperty
     {
         private readonly DnlibTypeSystem _ts;

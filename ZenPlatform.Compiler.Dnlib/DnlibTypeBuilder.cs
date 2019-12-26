@@ -21,6 +21,7 @@ namespace ZenPlatform.Compiler.Dnlib
             _ts = typeSystem;
 
             Methods.Any();
+            Properties.Any();
             Constructors.Any();
 
             _r = new DnlibContextResolver(_ts, typeDef.Module);
