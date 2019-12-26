@@ -13,7 +13,6 @@
     <Folder Include="Structure\Helper" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\dnlib-sources\dnlib.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration.Common\ZenPlatform.Configuration.Common.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration.Contracts\ZenPlatform.Configuration.Contracts.csproj" />
     <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
@@ -23,6 +22,7 @@
     <ProjectReference Include="..\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="dnlib" Version="3.3.0" />
     <PackageReference Include="morelinq" Version="3.0.0" />
     <PackageReference Include="Portable.Xaml" Version="0.24.0" />
   </ItemGroup>
