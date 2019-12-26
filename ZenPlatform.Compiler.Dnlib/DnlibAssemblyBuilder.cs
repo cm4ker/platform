@@ -26,7 +26,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType)
         {
-            var bType = (ITypeDefOrRef) _assembly.ManifestModule.Import(((DnlibType) baseType).TypeRef);
+            ITypeDefOrRef bType = ((DnlibType) baseType).TypeRef;
+
+            if (bType is TypeRef || bType is TypeDef && bType.Module != this._assembly.ManifestModule)
+                bType = (ITypeDefOrRef) _assembly.ManifestModule.Import(bType);
 
             var type = new TypeDefUser(@namespace, name, bType);
 
@@ -36,7 +39,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
             var dnlibType = new DnlibTypeBuilder(_ts, type, this);
             _definedTypes.Add(dnlibType);
-            _typeCache.Add(dnlibType.FullName, dnlibType);
+            TypeCache.Add(dnlibType.FullName, dnlibType);
+            _ts.RegisterType(dnlibType);
+            
             return dnlibType;
         }
 

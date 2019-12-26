@@ -30,7 +30,8 @@ namespace ZenPlatform.Compiler.Generation
             _sb = _builder.TypeSystem.GetSystemBindings();
 
             ServiceInitializerType = builder.DefineType(_serviceInitializerNamespace, _serviceInitializerName,
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.AnsiClass | TypeAttributes.RTSpecialName,
+                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.AnsiClass
+                | TypeAttributes.AutoClass | TypeAttributes.BeforeFieldInit,
                 _sb.Object);
 
             ServiceInitializerType.AddInterfaceImplementation(_sb.ServerInitializer);

@@ -27,6 +27,8 @@ using Xunit.Abstractions;
 using ZenPlatform.Shell.Terminal;
 using McMaster.Extensions.CommandLineUtils;
 using ZenPlatform.Cli;
+using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Structure;
@@ -67,6 +69,7 @@ namespace ZenPlatform.Core.Test
             services.AddSingleton<IXCConfigurationStorage, XCMemoryStorage>();
             services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
 
+            services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
             services.AddScoped<IConfigurationManager, ConfigurationManager>();
             services.AddScoped<IXCCompiller, XCCompiler>();
 

@@ -47,7 +47,7 @@ namespace ZenPlatform.Compiler.Cecil
             foreach (CecilParameter p in method.Parameters)
             {
                 var parameterDef = p.ParameterDefinition;
-                
+
                 r.Parameters.Add(parameterDef);
             }
 
@@ -338,7 +338,11 @@ namespace ZenPlatform.Compiler.Cecil
             Emit(Instruction.Create(Dic[code], Import(parameter)));
 
 
-        public bool InitLocals { get; set; }
+        public bool InitLocals
+        {
+            get => _body.InitLocals;
+            set => _body.InitLocals = value;
+        }
 
         private static readonly Guid LanguageGuid = new Guid("9a37fc74-96b5-4dbc-8b8a-c4e603735a63");
         private static readonly Guid LanguageVendorGuid = new Guid("3c631bf9-0cbe-4aab-a24a-5e417734441c");

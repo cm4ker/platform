@@ -7,6 +7,8 @@ namespace ZenPlatform.Compiler.Contracts
         IAssemblyFactory AsmFactory { get; }
 
         ITypeSystem TypeSystem { get; }
+
+        ITypeSystem CreateTypeSystem();
     }
 
     public static class AssemblyPlatformExtension
@@ -18,7 +20,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public static IAssemblyBuilder CreateAssembly(this IAssemblyPlatform ap, string name)
         {
-            return ap.AsmFactory.Create(ap.TypeSystem, name, Version.Parse("1.0.0.0"));
+            return ap.AsmFactory.Create(ap.CreateTypeSystem(), name, Version.Parse("1.0.0.0"));
         }
     }
 }

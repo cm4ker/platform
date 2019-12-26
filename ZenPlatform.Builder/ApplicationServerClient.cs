@@ -1,3 +1,4 @@
+using dnlib.DotNet;
 using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Cli
@@ -53,12 +54,26 @@ namespace ZenPlatform.Cli
      *           cmd list - получить список команд текущего узла
      *           exec [cmd] - выполнить команду в текущем узле
      */
-    
+
+
+    public class TestType
+    {
+        public T Invoke<T>()
+        {
+            return default;
+        }
+
+
+        public void A()
+        {
+            var i = Invoke<int>();
+        }
+    }
+
     public class ApplicationServerClient
     {
         public ApplicationServerClient()
         {
-            
         }
     }
 }

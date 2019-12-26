@@ -54,7 +54,7 @@ namespace ZenPlatform.Compiler.Generation
                 }
 
                 Hack:
-                e.EmitCall((IMethod) symbol.CodeObject);
+                e.EmitCall((IMethod) symbol.CodeObject, call.IsStatement);
             }
             else
             {
@@ -90,7 +90,7 @@ namespace ZenPlatform.Compiler.Generation
                         if (ue.Expression is Name uen)
                         {
                             var variable = symbolTable.Find(uen.Value, SymbolType.Variable, uen.GetScope());
-                            
+
                             // if (variable.CodeObject is ILocal codeObject)
                             // {
                             //     if (((Variable) variable.SyntaxObject).Type.Type.IsArray)

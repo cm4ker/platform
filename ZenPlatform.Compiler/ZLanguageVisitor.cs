@@ -683,7 +683,13 @@ namespace ZenPlatform.Compiler
 
                 // По умолчанию все операции могут являться выражениями.
                 //перед тем как мы будем добавлять их в инструкции нужно обернуть их в инструкцию
-                if (node is Expression exp) node = new ExpressionStatement(exp);
+                if (node is Expression exp)
+                {
+                    if (exp is Call c)
+                        c.IsStatement = true;
+
+                    node = new ExpressionStatement(exp);
+                }
 
                 _syntaxStack.PeekType<IList>().Add(node);
             }
