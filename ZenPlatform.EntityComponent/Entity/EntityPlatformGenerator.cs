@@ -338,13 +338,18 @@ namespace ZenPlatform.EntityComponent.Entity
                             , fieldExpression
                             , BinaryOperatorType.Equal);
 
+                        XCColumnSchemaDefinition schemaTyped;
 
-                        var schemaTyped = ctype switch
+                        if (ctype is IXCLinkType)
                         {
-                            XCObjectTypeBase obj => prop.GetPropertySchemas(prop.Name)
-                                .First(x => x.SchemaType == XCColumnSchemaType.Ref),
-                            _ => prop.GetPropertySchemas(prop.Name).First(x => x.PlatformType == ctype),
-                        };
+                            schemaTyped = prop.GetPropertySchemas(prop.Name)
+                                .First(x => x.SchemaType == XCColumnSchemaType.Ref);
+                        }
+                        else
+                        {
+                            schemaTyped = prop.GetPropertySchemas(prop.Name).First(x => x.PlatformType == ctype);
+                        }
+
 
                         var feTypedProp = new GetFieldExpression(new Name(null, "_dto"), schemaTyped.FullName);
 

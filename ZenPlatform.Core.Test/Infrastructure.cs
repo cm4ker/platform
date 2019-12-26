@@ -1,8 +1,9 @@
 using System;
+using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Core;
+using ZenPlatform.Core.Contracts;
 
-namespace ZenPlatform.Component.Tests
+namespace ZenPlatform.Core.Test
 {
     public class EntityLink : ILink
     {
@@ -38,11 +39,13 @@ namespace ZenPlatform.Component.Tests
 
     public class InvoiceLink : EntityLink
     {
+        private StoreLink _store;
+
         public InvoiceLink(ViewBag bag) : base(bag)
         {
         }
 
-
-        public StoreLink Store { get; }
+        public StoreLink Store => _store ??=
+            new StoreLink(GlobalScope.Client.Invoke<ViewBag>("Test_GetProperty", Type, nameof(Store), Id));
     }
 }

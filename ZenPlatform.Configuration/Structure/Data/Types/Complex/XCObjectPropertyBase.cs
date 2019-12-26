@@ -224,14 +224,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
             return new List<XCColumnSchemaDefinition>();
-            //throw new NotImplementedException();
-            // return new[]
-            // {
-            //     new XCColumnSchemaDefinition(XCColumnSchemaType.Type,
-            //         _idProp.Types.First(), _idProp.DatabaseColumnName, false),
-            //     new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial,
-            //         _idProp.Types.First(), _idProp.DatabaseColumnName, false),
-            // };
         }
     }
 }
