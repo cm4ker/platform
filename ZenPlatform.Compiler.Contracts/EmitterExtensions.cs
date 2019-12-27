@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Reflection.Emit;
 
 namespace ZenPlatform.Compiler.Contracts
@@ -79,6 +81,17 @@ namespace ZenPlatform.Compiler.Contracts
 
         public static IEmitter Throw(this IEmitter emitter)
             => emitter.Emit(OpCodes.Throw);
+
+        public static IEmitter Throw(this IEmitter emitter, IType type)
+        {
+            var con = type.Constructors.FirstOrDefault(x => !x.Parameters.Any());
+
+            if (con == null)
+                throw new Exception("Exception haven't default constructor use NewObj + Throw instead");
+
+            return emitter.NewObj(con).Emit(OpCodes.Throw);
+        }
+
 
         public static IEmitter LdcI4(this IEmitter emitter, int arg)
         {

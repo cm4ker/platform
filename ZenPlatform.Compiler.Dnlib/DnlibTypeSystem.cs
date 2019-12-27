@@ -5,11 +5,40 @@ using System.Net;
 using System.Reflection.Metadata;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
+using CustomAttribute = dnlib.DotNet.CustomAttribute;
 using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
+using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
+    public class DnlibCustomAttribute : ICustomAttribute
+    {
+        private readonly DnlibTypeSystem _ts;
+        private readonly CustomAttribute _ca;
+        private readonly IType _attrType;
+        private DnlibContextResolver _cr;
+
+        public DnlibCustomAttribute(DnlibTypeSystem ts, CustomAttribute ca, IType attrType)
+        {
+            _ts = ts;
+            _ca = ca;
+            _attrType = attrType;
+            _cr = new DnlibContextResolver(ts, ca.Constructor.Module);
+        }
+
+        public bool Equals(ICustomAttribute other)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IType Type => _attrType;
+
+        public List<object> Parameters => _ca.ConstructorArguments.Select(x => x.Value).ToList();
+
+        public Dictionary<string, object> Properties => _ca.Properties.ToDictionary(x => x.Name.String, x => x.Value);
+    }
+
     public class DnlibTypeSystem : ITypeSystem
     {
         private List<DnlibAssembly> _asms;
@@ -47,7 +76,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public DnlibAssemblyResolver Resolver => _resolver;
 
-        public IWellKnownTypes WellKnownTypes { get; }
+        public ICustomAttribute CreateAttribute(IType type)
+        {
+        }
 
         public IReadOnlyList<IAssembly> Assemblies => _asms;
 

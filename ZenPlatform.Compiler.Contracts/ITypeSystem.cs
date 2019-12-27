@@ -5,12 +5,16 @@ namespace ZenPlatform.Compiler.Contracts
 {
     public interface IAssemblyReference
     {
-        
     }
 
     public interface ITypeSystem
     {
-        IWellKnownTypes WellKnownTypes { get; }
+        /// <summary>
+        /// Создать аттрибут
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        ICustomAttribute CreateAttribute(IType type);
 
         IReadOnlyList<IAssembly> Assemblies { get; }
 

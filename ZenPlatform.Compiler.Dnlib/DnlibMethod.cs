@@ -10,13 +10,12 @@ using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
-    
     [DebuggerDisplay("{" + nameof(Name) + "}")]
     public abstract class DnlibMethodBase : IMethod
     {
         private ITypeDefOrRef _declaringTR;
 
-        public DnlibMethodBase(DnlibTypeSystem typeSystem, dnlib.DotNet.IMethod method, MethodDef methodDef,
+        protected DnlibMethodBase(DnlibTypeSystem typeSystem, dnlib.DotNet.IMethod method, MethodDef methodDef,
             ITypeDefOrRef declaringType)
         {
             TypeSystem = typeSystem;
@@ -80,23 +79,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
     public class DnlibMethod : DnlibMethodBase
     {
-        public MethodDef MethodDef { get; }
-
         public DnlibMethod(DnlibTypeSystem ts, dnlib.DotNet.IMethod method, MethodDef methodDef,
             ITypeDefOrRef declaringType) : base(ts, method, methodDef,
             declaringType)
         {
-            MethodDef = methodDef;
-        }
-
-        public bool Equals(IMethod other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMethod MakeGenericMethod(IType[] typeArguments)
-        {
-            throw new NotImplementedException();
         }
     }
 
