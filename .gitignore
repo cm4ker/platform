@@ -278,3 +278,8 @@ netcoreapp[23].[01]/
 /wasm-work/agent_log
 /wasm-work/error_log
 /wasm-work/referer_log
+/wasm-work/AsemblyTester/clientCecil.dll
+/wasm-work/Tester/Properties/launchSettings.json
+/wasm-work/AsemblyTester/LibraryClient.dll
+/wasm-work/AsemblyTester/ZenPlatform.Core.Contracts.dll
+/wasm-work/AsemblyTester/ZenPlatform.EntityComponent.dll
