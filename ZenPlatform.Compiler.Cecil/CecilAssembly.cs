@@ -100,6 +100,11 @@ namespace ZenPlatform.Compiler.Cecil
             return new CecilTypeBuilder(_typeSystem, this, a.Resolve());
         }
 
+        public void SetAttribute(ICustomAttribute attr)
+        {
+            throw new NotImplementedException();
+        }
+
         public IAssembly EndBuild()
         {
             return this;

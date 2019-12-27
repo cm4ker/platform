@@ -9,9 +9,9 @@ namespace ZenPlatform.Compiler.Dnlib
 {
     public class DnlibCusotmAtttribute : ICustomAttribute
     {
-        private readonly CustomAttribute _ca;
+        private readonly DnlibCustomAttribute _ca;
 
-        public DnlibCusotmAtttribute(ITypeSystem ts, CustomAttribute ca)
+        public DnlibCusotmAtttribute(ITypeSystem ts, DnlibCustomAttribute ca)
         {
             _ca = ca;
         }

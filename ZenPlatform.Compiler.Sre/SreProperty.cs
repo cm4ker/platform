@@ -19,7 +19,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool Equals(IProperty other)
         {
-            var otherProp = ((SreProperty)other)?.Member;
+            var otherProp = ((SreProperty) other)?.Member;
             if (otherProp == null)
                 return false;
             return otherProp?.DeclaringType?.Equals(Member.DeclaringType) == true
@@ -47,7 +47,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public bool Equals(IProperty other)
         {
-            var otherProp = ((SreProperty)other)?.Member;
+            var otherProp = ((SreProperty) other)?.Member;
             if (otherProp == null)
                 return false;
             return otherProp?.DeclaringType?.Equals(Member.DeclaringType) == true
@@ -67,9 +67,9 @@ namespace ZenPlatform.Compiler.Sre
                 _setter = value;
 
                 //Bake the method before we are set it to the member
-                ((SreMethodBuilder)_getter).Bake();
+                ((SreMethodBuilder) _getter).Bake();
 
-                Member.SetSetMethod((MethodBuilder)((SreMethodBuilder)_setter).Method);
+                Member.SetSetMethod((MethodBuilder) ((SreMethodBuilder) _setter).Method);
             }
         }
 
@@ -84,9 +84,9 @@ namespace ZenPlatform.Compiler.Sre
                 _getter = value;
 
                 //Bake the method before we are set it to the member
-                ((SreMethodBuilder)_getter).Bake();
+                ((SreMethodBuilder) _getter).Bake();
 
-                Member.SetGetMethod((MethodBuilder)((SreMethodBuilder)_getter).Method);
+                Member.SetGetMethod((MethodBuilder) ((SreMethodBuilder) _getter).Method);
             }
         }
 
@@ -100,6 +100,11 @@ namespace ZenPlatform.Compiler.Sre
         {
             Getter = method;
             return this;
+        }
+
+        public void SetAttribute(ICustomAttribute attr)
+        {
+            throw new NotImplementedException();
         }
     }
 }

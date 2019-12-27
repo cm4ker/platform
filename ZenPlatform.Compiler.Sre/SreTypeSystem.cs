@@ -13,6 +13,12 @@ namespace ZenPlatform.Compiler.Sre
     {
         private List<IAssembly> _assemblies = new List<IAssembly>();
         public IWellKnownTypes WellKnownTypes { get; }
+
+        public ICustomAttribute CreateAttribute(IType type)
+        {
+            throw new NotImplementedException();
+        }
+
         public IReadOnlyList<IAssembly> Assemblies => _assemblies;
 
         private Dictionary<Type, SreType> _typeDic = new Dictionary<Type, SreType>();

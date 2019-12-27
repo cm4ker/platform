@@ -13,16 +13,6 @@ namespace ZenPlatform.Compiler.Dnlib
         private IEmitter _generator;
         public IEmitter Generator => _generator ??= new DnlibEmitter(TypeSystem, MethodDef);
 
-        public bool Equals(IMethod other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMethod MakeGenericMethod(IType[] typeArguments)
-        {
-            throw new NotImplementedException();
-        }
-
         public IParameter DefineParameter(string name, IType type, bool isOut, bool isRef)
         {
             var dtype = (DnlibType) type;

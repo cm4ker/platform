@@ -25,11 +25,65 @@ namespace ZenPlatform.Compiler.Dnlib
         private List<DnlibLabel> _markedLabels = new List<DnlibLabel>();
         private DnlibDebugPoint _pendingDebugPoint;
 
+        class DnlibTryHandler
+        {
+            private readonly DnlibEmitter _emitter;
+            private ExceptionHandler _handler;
+            private ExceptionHandlerType _type;
+
+            private ITypeDefOrRef _catchType;
+
+            private DnlibLabel _tryStart;
+            private DnlibLabel _tryEnd;
+
+            private DnlibLabel _handlerStart;
+            private DnlibLabel _handlerEnd;
+
+            public DnlibTryHandler(DnlibEmitter emitter)
+            {
+                _emitter = emitter;
+                _tryStart = (DnlibLabel) _emitter.DefineLabel();
+                _handlerEnd = (DnlibLabel) _emitter.DefineLabel();
+                _emitter.MarkLabel(_tryStart);
+            }
+
+            public void WithCatch(DnlibType type)
+            {
+                _tryEnd = (DnlibLabel) _emitter.DefineLabel();
+                _emitter.Leave(_handlerEnd);
+                _emitter.MarkLabel(_tryEnd);
+
+                _type = ExceptionHandlerType.Catch;
+                _catchType = _emitter.ImportType(type);
+            }
+
+            public ILabel Start => _tryStart;
+
+            public void DefferedCreate()
+            {
+                _emitter.Leave(_handlerEnd);
+                _emitter.MarkLabel(_handlerEnd);
+
+                _handler = new ExceptionHandler(_type);
+
+                _handler.TryStart = _tryStart.Instruction;
+                _handler.TryEnd = _tryEnd.Instruction;
+
+                _handler.HandlerStart = _tryEnd.Instruction;
+                _handler.HandlerEnd = _handlerEnd.Instruction;
+
+                _handler.CatchType = _catchType;
+                _emitter._body.ExceptionHandlers.Add(_handler);
+            }
+        }
+
+
         public DnlibEmitter(ITypeSystem typeSystem, MethodDef method)
         {
             _method = method;
             _ts = (DnlibTypeSystem) typeSystem;
             _body = _method.Body;
+            _exceptionStack = new Stack<DnlibTryHandler>();
         }
 
         private dnlib.DotNet.IMethod ImportMethod(DnlibMethodBase method)
@@ -162,29 +216,27 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public ILabel DefineLabel() => new DnlibLabel();
 
+        private Stack<DnlibTryHandler> _exceptionStack;
+
+
         public ILabel BeginExceptionBlock()
         {
-            throw new NotImplementedException();
+            var ce = new DnlibTryHandler(this);
+            _exceptionStack.Push(ce);
+            return ce.Start;
         }
 
         public IEmitter BeginCatchBlock(IType exceptionType)
         {
-            throw new NotImplementedException();
-        }
-
-        public IEmitter CatchException(IType exceptionType)
-        {
-            throw new NotImplementedException();
+            var tr = ((DnlibType) exceptionType);
+            _exceptionStack.Peek().WithCatch(tr);
+            return this;
         }
 
         public IEmitter EndExceptionBlock()
         {
-            throw new NotImplementedException();
-        }
-
-        public IEmitter Throw()
-        {
-            throw new NotImplementedException();
+            _exceptionStack.Pop().DefferedCreate();
+            return this;
         }
 
         public IEmitter MarkLabel(ILabel label)

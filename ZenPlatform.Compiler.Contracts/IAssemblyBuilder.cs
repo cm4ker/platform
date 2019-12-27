@@ -17,8 +17,12 @@ namespace ZenPlatform.Compiler.Contracts
         /// </summary>
         /// <param name="type"></param>
         ITypeBuilder ImportWithCopy(IType type);
-        
+
         //ITypeBuilder DefineType(string @namespace, string name, IType baseType);
+
+
+        void SetAttribute(ICustomAttribute attr);
+
 
         IAssembly EndBuild();
     }

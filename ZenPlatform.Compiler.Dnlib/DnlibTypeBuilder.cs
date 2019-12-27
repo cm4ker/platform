@@ -99,7 +99,6 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             var prop = new PropertyDefUser(name);
 
-
             TypeDef.Properties.Add(prop);
             prop.DeclaringType = TypeDef;
 

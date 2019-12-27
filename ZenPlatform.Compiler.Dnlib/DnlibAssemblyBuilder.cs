@@ -4,6 +4,7 @@ using dnlib.DotNet;
 using dnlib.DotNet.MD;
 using ZenPlatform.Compiler.Contracts;
 using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
+using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 using TypeAttributes = System.Reflection.TypeAttributes;
 
@@ -46,6 +47,11 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public ITypeBuilder ImportWithCopy(IType type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetAttribute(ICustomAttribute attr)
         {
             throw new NotImplementedException();
         }
