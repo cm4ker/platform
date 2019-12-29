@@ -4,6 +4,7 @@ using System.Linq;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using ZenPlatform.Compiler.Contracts;
+using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 using IField = ZenPlatform.Compiler.Contracts.IField;
 using IMethod = ZenPlatform.Compiler.Contracts.IMethod;
 using IType = ZenPlatform.Compiler.Contracts.IType;
@@ -147,6 +148,11 @@ namespace ZenPlatform.Compiler.Dnlib
         public ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic)
         {
             throw new NotImplementedException();
+        }
+
+        public void SetCustomAttribute(ICustomAttribute attr)
+        {
+            TypeDef.CustomAttributes.Add(((DnlibCustomAttribute) attr).CustomAttribute);
         }
 
         public IType EndBuild()

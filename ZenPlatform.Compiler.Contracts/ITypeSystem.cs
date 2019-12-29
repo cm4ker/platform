@@ -9,13 +9,6 @@ namespace ZenPlatform.Compiler.Contracts
 
     public interface ITypeSystem
     {
-        /// <summary>
-        /// Создать аттрибут
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        ICustomAttribute CreateAttribute(IType type);
-
         IReadOnlyList<IAssembly> Assemblies { get; }
 
         IAssembly FindAssembly(string substring);
