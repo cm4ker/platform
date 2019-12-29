@@ -12,6 +12,7 @@ using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Language.Ast.Definitions;
+using Attribute = System.Attribute;
 using MethodAttributes = dnlib.DotNet.MethodAttributes;
 using TypeAttributes = System.Reflection.TypeAttributes;
 
@@ -200,6 +201,32 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.Equal(10, res);
         }
+
+        [Fact]
+        public void TestAttribute()
+        {
+            var asm = _ap.CreateAssembly("test");
+            var sb = asm.TypeSystem.GetSystemBindings();
+            var attr = asm.CreateAttribute<MyAttribute>(sb.String);
+
+            attr.SetParameters("Test");
+
+            var A = asm.DefineType("Default", "A", TypeAttributes.Public | TypeAttributes.Abstract,
+                sb.Object);
+
+            A.SetCustomAttribute(attr);
+
+            asm.Write("CustomAttribute.bll");
+
+
+            var lib = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CustomAttribute.bll"));
+
+            var cmdType = lib.GetType("Default.A");
+
+            var directAttribute = cmdType.GetCustomAttribute<MyAttribute>();
+
+            Assert.NotNull(directAttribute);
+        }
     }
 
 
@@ -208,6 +235,17 @@ namespace ZenPlatform.Compiler.Tests
         public static T InvokeMe<T>()
         {
             return default;
+        }
+    }
+
+    public class MyAttribute : Attribute
+    {
+        public MyAttribute()
+        {
+        }
+
+        public MyAttribute(string name)
+        {
         }
     }
 }

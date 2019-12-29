@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;
 using ZenPlatform.Compiler.Contracts;
@@ -42,7 +43,7 @@ namespace ZenPlatform.Compiler.Dnlib
             _definedTypes.Add(dnlibType);
             TypeCache.Add(dnlibType.FullName, dnlibType);
             _ts.RegisterType(dnlibType);
-            
+
             return dnlibType;
         }
 
@@ -54,6 +55,19 @@ namespace ZenPlatform.Compiler.Dnlib
         public void SetAttribute(ICustomAttribute attr)
         {
             throw new NotImplementedException();
+        }
+
+        public ICustomAttributeBuilder CreateAttribute(IType type, params IType[] args)
+        {
+            var c = type.FindConstructor(args) as DnlibMethodBase;
+
+            var imported = (MemberRef) _assembly.ManifestModule.Import(c.MethodRef);
+
+            var ca = new CustomAttribute(imported);
+
+            var a = new DnlibCustomAttributeBulder(_ts, ca);
+
+            return a;
         }
 
         public IAssembly EndBuild()
