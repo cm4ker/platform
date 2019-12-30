@@ -7,16 +7,17 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         public DnlibAssemblyPlatform()
         {
-            AsmFactory = new DnlibAssemblyFactory();
-            TypeSystem = new DnlibTypeSystem(new string[] { });
+            AsmFactory = new DnlibPlatformFactory();
+            TypeSystem = new DnlibTypeSystem((DnlibPlatformFactory) AsmFactory, new string[] { });
         }
 
-        public IAssemblyFactory AsmFactory { get; }
+        public IPlatformFactory AsmFactory { get; }
+
         public ITypeSystem TypeSystem { get; }
 
         public ITypeSystem CreateTypeSystem()
         {
-            return new DnlibTypeSystem(new string[] { });
+            return new DnlibTypeSystem((DnlibPlatformFactory) AsmFactory, new string[] { });
         }
     }
 }

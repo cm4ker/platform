@@ -19,6 +19,8 @@ namespace ZenPlatform.Compiler.Sre
             throw new NotImplementedException();
         }
 
+        public IPlatformFactory Factory { get; }
+
         public IReadOnlyList<IAssembly> Assemblies => _assemblies;
 
         private Dictionary<Type, SreType> _typeDic = new Dictionary<Type, SreType>();

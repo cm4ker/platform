@@ -8,6 +8,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     public class SingleEntityCommandEditor
     {
         private XCCommand _command;
+
         public SingleEntityCommandEditor(XCCommand command)
         {
             _command = command;
@@ -18,6 +19,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             _command.Guid = guid;
             return this;
         }
+
         public SingleEntityCommandEditor SetName(string name)
         {
             _command.Name = name;
@@ -34,8 +36,5 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return new SingleEntityModuleEditor(_command.Module);
         }
-
-
-
     }
 }

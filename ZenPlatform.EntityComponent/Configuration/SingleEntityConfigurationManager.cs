@@ -19,8 +19,6 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public SingleEntityTypeEditor Create()
         {
-
-
             return new SingleEntityTypeEditor(Component);
         }
 

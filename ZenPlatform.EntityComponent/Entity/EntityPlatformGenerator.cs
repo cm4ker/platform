@@ -40,12 +40,15 @@ namespace ZenPlatform.EntityComponent.Entity
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
         private readonly IXCComponent _component;
         private GeneratorRules _rules;
+        private EntityObjectDtoGenerator _eg;
 
         public EntityPlatformGenerator(IXCComponent component)
         {
             _component = component;
             _rules = new GeneratorRules(component);
             _dtoCollections = new Dictionary<XCSingleEntity, IType>();
+
+            _eg = new EntityObjectDtoGenerator(component);
         }
 
         private TypeSyntax GetAstFromPlatformType(IXCType pt)
@@ -71,6 +74,9 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void GenerateServerDtoClass(IXCObjectType type, Root root)
         {
+            _eg.GenerateAstTree(type, root);
+            return;
+
             var set = type as XCSingleEntity ?? throw new InvalidOperationException(
                           $"This component only can serve {nameof(XCSingleEntity)} objects");
             var dtoClassName =
@@ -770,12 +776,14 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
                 {
-                    BuildVersionField(builder);
+                    //BuildVersionField(builder);
 
-                    if (cc.CompilationMode == CompilationMode.Server)
+                    if (cc.CompilationMode.HasFlag(CompilationMode.Server))
                     {
-                        EmitMappingSupport(cc, builder);
-                        EmitSavingSupport(cc, builder, dbType);
+                        _eg.GenerateDetail(cc, builder, dbType);
+
+                        // EmitMappingSupport(cc, builder);
+                        // EmitSavingSupport(cc, builder, dbType);
                     }
                 }
                 else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
