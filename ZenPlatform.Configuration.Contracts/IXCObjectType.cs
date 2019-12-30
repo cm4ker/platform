@@ -7,7 +7,7 @@ using ZenPlatform.Shared.ParenChildCollection;
 namespace ZenPlatform.Configuration.Contracts
 {
 
-    public interface IXCObjectReadOnlyType: IXCType, IChildItem<IXCComponent>
+    public interface IXCObjectReadOnlyType: IXCType
     {
         /// <summary>
         /// Это абстрактный тип
@@ -39,6 +39,12 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         bool HasCommands { get; }
 
+
+        /// <summary>
+        /// Объекта влияет на структуру базы данных
+        /// </summary>
+        bool HasDBChanges { get; }
+
         /// <summary>
         /// Загрузить зависимости.
         /// Внимание, этот метод вызывается после полной загрузки всех типов в конфигурации.
@@ -66,12 +72,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// <exception cref="NotSupportedException"></exception>
         IEnumerable<IXCCommand> GetCommands();
 
-        /// <summary>
-        /// Создать новую комманду
-        /// </summary>
-        /// <returns>Возвращается новая проинициализированная комманда</returns>
-        /// <exception cref="NotSupportedException">Данная функция не поддерживается компонентом</exception>
-        IXCCommand CreateCommand();
     }
 
     public interface IXCObjectType : IXCObjectReadOnlyType

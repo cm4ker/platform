@@ -47,21 +47,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         protected IXCData Data => Root.Data;
 
         /// <summary>
-        /// Присоединённые файлы
-        /// </summary>
-        public IXCBlob AttachedBlob { get; set; }
-
-        /// <summary>
-        /// Родительский компонент
-        /// </summary>
-        IXCComponent IChildItem<IXCComponent>.Parent
-        {
-            get => _parent;
-            set => _parent = value;
-        }
-
-
-        /// <summary>
         /// Имя связанной таблицы документа
         /// 
         /// При миграции присваивается движком. В последствии хранится в служебных структурах конкретной базы.
@@ -102,6 +87,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public bool HasModules { get; }
 
+        public bool HasDBChanges => throw new NotImplementedException();
+
         /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
@@ -138,15 +125,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// Создать новую комманду
-        /// </summary>
-        /// <returns>Возвращается новая проинициализированная комманда</returns>
-        /// <exception cref="NotSupportedException">Данная функция не поддерживается компонентом</exception>
-        public virtual IXCCommand CreateCommand()
-        {
-            throw new NotSupportedException();
-        }
     }
 
     public abstract class XCLinkTypeBase : XCTypeBase, IXCLinkType
@@ -196,5 +174,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public IXCComponent Parent { get; set; }
 
         public IXCObjectType ParentType { get; protected set; }
+
+        public bool HasDBChanges => throw new NotImplementedException();
     }
 }
