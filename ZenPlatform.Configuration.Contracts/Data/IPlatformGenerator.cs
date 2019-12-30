@@ -42,7 +42,7 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// <param name="astTree"></param>
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
-        void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType);
+        void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
 
         /// <summary>
         /// Стадия 1 формирование внутреннего каркаса класса (Методы + Свойства + Поля + События)
@@ -50,13 +50,15 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// <param name="astTree"></param>
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
-        void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType);
+        /// <param name="mode"></param>
+        void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
 
         /// <summary>
         /// Инфраструктурная стадия
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
-        void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType);
+        /// <param name="mode"></param>
+        void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
     }
 }
