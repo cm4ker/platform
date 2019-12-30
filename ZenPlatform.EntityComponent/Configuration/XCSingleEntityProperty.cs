@@ -97,7 +97,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
     public class XCSingleEntityLinkProperty : XCSingleEntityProperty
     {
-        public override bool IsLink => true;
+        public override bool IsSelfLink => true;
 
         public override IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {
@@ -133,7 +133,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 DatabaseColumnName = "<U N K N O W N>",
                 Guid = Guid.Parse("7976d8c6-ce1a-4ec4-b965-be394e215670"),
                 IsSystemProperty = false,
-                IsReadOnly = true
+                IsReadOnly = true,
             };
         }
 
