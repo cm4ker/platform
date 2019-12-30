@@ -72,197 +72,6 @@ namespace ZenPlatform.EntityComponent.Entity
             };
         }
 
-        private void GenerateServerDtoClass(IXCObjectType type, Root root)
-        {
-            _eg.GenerateAstTree(type, root);
-            return;
-
-            var set = type as XCSingleEntity ?? throw new InvalidOperationException(
-                          $"This component only can serve {nameof(XCSingleEntity)} objects");
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
-
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
-
-            List<Member> members = new List<Member>();
-
-            //Create dto class
-            foreach (var prop in set.Properties)
-            {
-                bool propertyGenerated = false;
-
-                if (!prop.IsLink &&
-                    string.IsNullOrEmpty(prop.DatabaseColumnName))
-                {
-                    throw new Exception(
-                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
-                }
-
-                if (prop.Types.Count > 1)
-                {
-                    {
-                        var dbColName = prop.GetPropertySchemas(prop.DatabaseColumnName)
-                            .First(x => x.SchemaType == XCColumnSchemaType.Type).FullName;
-
-                        var astProp = new Property(null, prop.Name + "_Type",
-                            new PrimitiveTypeSyntax(null, TypeNodeKind.Int), true, true, dbColName);
-
-                        members.Add(astProp);
-                    }
-                }
-
-
-                foreach (var ctype in prop.Types)
-                {
-                    if (ctype is IXCPrimitiveType pt)
-                    {
-                        var dbColName = prop
-                            .GetPropertySchemas(prop.DatabaseColumnName)
-                            .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                            ? XCColumnSchemaType.Value
-                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).FullName;
-
-                        var propName = prop
-                            .GetPropertySchemas(prop.Name)
-                            .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                            ? XCColumnSchemaType.Value
-                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).FullName;
-
-                        TypeSyntax propType = GetAstFromPlatformType(pt);
-
-                        var astProp = new Property(null, propName, propType, true, true, dbColName);
-                        members.Add(astProp);
-                    }
-                    else if (ctype is IXCLinkType ot)
-                    {
-                        if (!propertyGenerated)
-                        {
-                            propertyGenerated = true;
-
-                            var dbColName = prop
-                                .GetPropertySchemas(prop.DatabaseColumnName)
-                                .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                                ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial)).FullName;
-
-                            var propName = prop
-                                .GetPropertySchemas(prop.Name)
-                                .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                                ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial)).FullName;
-
-                            var astProp = new Property(null, propName,
-                                new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type), true, true, dbColName);
-                            members.Add(astProp);
-                        }
-                    }
-                }
-            }
-
-            var cls = new ComponentClass(CompilationMode.Server, _component, set, null, dtoClassName,
-                new TypeBody(members));
-
-            cls.Namespace = @namespace;
-            cls.Bag = ObjectType.Dto;
-
-            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
-            //end create dto class
-            root.Add(cu);
-        }
-
-        private void GenerateClientDtoClass(IXCObjectType type, Root root)
-        {
-            var set = type as XCSingleEntity ?? throw new InvalidOperationException(
-                          $"This component only can serve {nameof(XCSingleEntity)} objects");
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
-
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
-
-            List<Member> members = new List<Member>();
-
-            //Create dto class
-            foreach (var prop in set.Properties.Where(x => !x.IsLink))
-            {
-                bool propertyGenerated = false;
-
-                if (string.IsNullOrEmpty(prop.DatabaseColumnName))
-                {
-                    throw new Exception(
-                        $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
-                }
-
-                if (prop.Types.Count > 1)
-                {
-                    {
-                        var dbColName = prop.GetPropertySchemas(prop.DatabaseColumnName)
-                            .First(x => x.SchemaType == XCColumnSchemaType.Type).FullName;
-
-                        var astProp = new Property(null, prop.Name + "_Type",
-                            new PrimitiveTypeSyntax(null, TypeNodeKind.Int), true, true);
-
-                        members.Add(astProp);
-                    }
-                }
-
-                foreach (var ctype in prop.Types)
-                {
-                    if (ctype is XCPrimitiveType pt)
-                    {
-                        var propName = prop
-                            .GetPropertySchemas(prop.Name)
-                            .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                            ? XCColumnSchemaType.Value
-                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).FullName;
-
-                        TypeSyntax propType = GetAstFromPlatformType(pt);
-
-                        var astProp = new Property(null, propName, propType, true, true);
-                        members.Add(astProp);
-                    }
-                    else if (ctype is IXCLinkType ot)
-                    {
-                        if (!propertyGenerated)
-                        {
-                            propertyGenerated = true;
-
-
-                            var dbColName = prop
-                                .GetPropertySchemas(prop.DatabaseColumnName)
-                                .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                                ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) && (prop.Types.Count > 1)
-                                    ? x.PlatformType == PlatformTypesFactory.Guid
-                                    : x.PlatformType == ot).FullName;
-
-                            var propName = prop
-                                .GetPropertySchemas(prop.Name)
-                                .First(x => x.SchemaType == ((prop.Types.Count > 1)
-                                                ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) && (prop.Types.Count > 1)
-                                    ? x.PlatformType == PlatformTypesFactory.Guid
-                                    : x.PlatformType == ot).FullName;
-
-                            var astProp = new Property(null, propName,
-                                new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type), true, true, dbColName);
-                            members.Add(astProp);
-                        }
-                    }
-                }
-            }
-
-            var cls = new ComponentClass(CompilationMode.Client, _component, set, null, dtoClassName,
-                new TypeBody(members));
-
-            cls.Namespace = @namespace;
-            cls.Bag = ObjectType.Dto;
-
-            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
-
-            //end create dto class
-            root.Add(cu);
-        }
-
         private void GenerateServerObjectClass(IXCObjectType type, Root root)
         {
             var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
@@ -545,7 +354,7 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
 
-            GenerateServerDtoClass(type, r);
+            _eg.GenerateAstTree(type, r);
             GenerateLink(type.GetLink(), r);
 
             GenerateServerObjectClass(type, r);
@@ -564,8 +373,6 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 GenerateCommands(type, root);
                 GenerateLink(type.GetLink(), root);
-
-                GenerateClientDtoClass(type, root);
                 GenerateClientObjectClass(type, root);
             }
         }
@@ -780,7 +587,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                     if (cc.CompilationMode.HasFlag(CompilationMode.Server))
                     {
-                        _eg.GenerateDetail(cc, builder, dbType);
+                        _eg.EmitDetail(cc, builder, dbType);
 
                         // EmitMappingSupport(cc, builder);
                         // EmitSavingSupport(cc, builder, dbType);
