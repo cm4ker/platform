@@ -57,19 +57,6 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new NotImplementedException();
         }
 
-        public ICustomAttributeBuilder CreateAttribute(IType type, params IType[] args)
-        {
-            var c = type.FindConstructor(args) as DnlibMethodBase;
-
-            var imported = (MemberRef) _assembly.ManifestModule.Import(c.MethodRef);
-
-            var ca = new CustomAttribute(imported);
-
-            var a = new DnlibCustomAttributeBulder(_ts, ca);
-
-            return a;
-        }
-
         public IAssembly EndBuild()
         {
             return this;

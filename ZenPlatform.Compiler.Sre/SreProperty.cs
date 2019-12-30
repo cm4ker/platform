@@ -31,6 +31,10 @@ namespace ZenPlatform.Compiler.Sre
         public IMethod Getter => _getMethod ??= new SreMethod(System, Member.GetMethod);
 
         public IMethod Setter => _setMethod ??= new SreMethod(System, Member.SetMethod);
+        public ICustomAttribute FindCustomAttribute(IType type)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     class SrePropertyBuilder : SreMemberInfo, IPropertyBuilder
@@ -71,6 +75,11 @@ namespace ZenPlatform.Compiler.Sre
 
                 Member.SetSetMethod((MethodBuilder) ((SreMethodBuilder) _setter).Method);
             }
+        }
+
+        public ICustomAttribute FindCustomAttribute(IType type)
+        {
+            throw new NotImplementedException();
         }
 
         public IMethod Getter
