@@ -210,7 +210,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
                 else
                 {
-                    if (!prop.IsLink)
+                    if (!prop.IsSelfLink)
                     {
                         var schema = prop.GetPropertySchemas(prop.Name)
                             .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
@@ -283,40 +283,6 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        private void EmitMappingSupport(ComponentClass cls, ITypeBuilder tb)
-        {
-            var _ts = tb.Assembly.TypeSystem;
-            var _bindings = _ts.GetSystemBindings();
-
-
-            tb.AddInterfaceImplementation(_ts.FindType<ICanMap>());
-
-            var readerMethod = tb.DefineMethod(nameof(ICanMap.Map), true, false, true);
-            var rg = readerMethod.Generator;
-
-            var readerType = _ts.FindType<DbDataReader>();
-
-            var readerParam =
-                readerMethod.DefineParameter("reader", readerType, false, false);
-
-
-            foreach (var property in cls.TypeBody.Properties)
-            {
-                if (string.IsNullOrEmpty(property.MapTo)) continue;
-
-                var prop = tb.FindProperty(property.Name);
-
-                rg
-                    .LdArg_0()
-                    .LdArg(readerParam.ArgIndex)
-                    .LdStr(property.MapTo)
-                    .EmitCall(readerType.FindMethod("get_Item", _bindings.String))
-                    .Unbox_Any(prop.PropertyType)
-                    .EmitCall(prop.Setter);
-            }
-
-            rg.Ret();
-        }
 
         private void GenerateCommands(IXCObjectType type, Root root)
         {
@@ -371,6 +337,8 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             if (node is Root root)
             {
+                _eg.GenerateAstTree(type, root);
+
                 GenerateCommands(type, root);
                 GenerateLink(type.GetLink(), root);
                 GenerateClientObjectClass(type, root);
@@ -510,7 +478,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
                 else
                 {
-                    if (!prop.IsLink)
+                    if (!prop.IsSelfLink)
                     {
                         var schema = prop.GetPropertySchemas(prop.Name)
                             .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
@@ -573,25 +541,17 @@ namespace ZenPlatform.EntityComponent.Entity
              */
         }
 
-        public void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
         }
 
-        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentClass cc)
             {
                 if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
                 {
-                    //BuildVersionField(builder);
-
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Server))
-                    {
-                        _eg.EmitDetail(cc, builder, dbType);
-
-                        // EmitMappingSupport(cc, builder);
-                        // EmitSavingSupport(cc, builder, dbType);
-                    }
+                    _eg.EmitDetail(cc, builder, dbType, mode);
                 }
                 else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
                 {
@@ -608,7 +568,7 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
 
-        public void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType)
+        public void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             CreateMainLink(builder);
         }
@@ -665,7 +625,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var pIndex = 0;
 
-            var columns = se.Properties.Where(x => !x.IsLink)
+            var columns = se.Properties.Where(x => !x.IsSelfLink)
                 .SelectMany(x => x.GetPropertySchemas());
 
             foreach (var column in columns)
