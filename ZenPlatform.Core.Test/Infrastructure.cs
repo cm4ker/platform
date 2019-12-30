@@ -46,6 +46,6 @@ namespace ZenPlatform.Core.Test
         }
 
         public StoreLink Store => _store ??=
-            new StoreLink(GlobalScope.Client.Invoke<ViewBag>("Test_GetProperty", Type, nameof(Store), Id));
+            new StoreLink(GlobalScope.Client.Invoke<ViewBag>(new Route("Test_GetProperty"), Type, nameof(Store), Id));
     }
 }

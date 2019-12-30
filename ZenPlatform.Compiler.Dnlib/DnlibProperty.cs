@@ -48,7 +48,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public ICustomAttribute FindCustomAttribute(IType type)
         {
-            return _customAttributes.FirstOrDefault(x => x.AttributeType == type);
+            return _customAttributes?.FirstOrDefault(x => x.AttributeType == type);
         }
     }
 }
