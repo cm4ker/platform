@@ -125,6 +125,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override bool Equals(object obj)
         {
             return obj is XCSingleEntity entity &&
+                   
                    base.Equals(obj);
                    
         }

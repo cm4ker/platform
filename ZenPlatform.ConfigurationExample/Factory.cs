@@ -197,7 +197,6 @@ public void OnClientClientCallProc()
                 .AddType(new XCBinary())
                 .AddType(new XCBoolean())
                 .AddType(new XCString())
-                .AddType(new XCDateTime())
                 .SetDatabaseColumnName("Fld_0004");
 
 
