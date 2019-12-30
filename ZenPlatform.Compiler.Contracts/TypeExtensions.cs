@@ -333,7 +333,7 @@ namespace ZenPlatform.Compiler.Contracts
     {
         public static ICustomAttribute FindCustomAttribute<T>(this IProperty property)
         {
-            var type = property.Setter.DeclaringType.Assembly.TypeSystem.FindType<T>();
+            var type = property.PropertyType.Assembly.TypeSystem.FindType<T>();
             return property.FindCustomAttribute(type);
         }
     }
