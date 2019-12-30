@@ -9,6 +9,8 @@ namespace ZenPlatform.Compiler.Contracts
 
     public interface ITypeSystem
     {
+        IPlatformFactory Factory { get; }
+
         IReadOnlyList<IAssembly> Assemblies { get; }
 
         IAssembly FindAssembly(string substring);

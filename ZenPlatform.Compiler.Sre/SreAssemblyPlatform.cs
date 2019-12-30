@@ -6,11 +6,11 @@ namespace ZenPlatform.Compiler.Sre
     {
         public SreAssemblyPlatform()
         {
-            AsmFactory = new SreAssemblyFactory();
+            AsmFactory = new SrePlatformFactory();
             TypeSystem = new SreTypeSystem();
         }
 
-        public IAssemblyFactory AsmFactory { get; }
+        public IPlatformFactory AsmFactory { get; }
         public ITypeSystem TypeSystem { get; }
         public ITypeSystem CreateTypeSystem()
         {

@@ -3,12 +3,13 @@ using dnlib.DotNet;
 using dnlib.DotNet.MD;
 using dnlib.PE;
 using ZenPlatform.Compiler.Contracts;
+using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
-    public class DnlibAssemblyFactory : IAssemblyFactory
+    public class DnlibPlatformFactory : IPlatformFactory
     {
-        public IAssemblyBuilder Create(ITypeSystem ts, string assemblyName, Version assemblyVersion)
+        public IAssemblyBuilder CreateAssembly(ITypeSystem ts, string assemblyName, Version assemblyVersion)
         {
             var dnts = (DnlibTypeSystem) ts;
 
@@ -28,6 +29,15 @@ namespace ZenPlatform.Compiler.Dnlib
 
             return (IAssemblyBuilder) dnts.RegisterAssembly(dab);
             ;
+        }
+
+        public ICustomAttributeBuilder CreateAttribute(ITypeSystem ts, IType type, params IType[] args)
+        {
+            var c = type.FindConstructor(args) as DnlibMethodBase;
+
+            var a = new DnlibCustomAttributeBulder((DnlibTypeSystem) ts, c.MethodRef);
+
+            return a;
         }
     }
 }

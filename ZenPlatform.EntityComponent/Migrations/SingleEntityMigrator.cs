@@ -13,8 +13,6 @@ using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.EntityComponent.Migrations
 {
-    
-
     /*
      * Мигрирование происходит в несколько этапов
      * 1) Создание таблицы для нового типа структуры
@@ -38,18 +36,17 @@ namespace ZenPlatform.EntityComponent.Migrations
 
         public SSyntaxNode GetStep1(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-            var oldtype = (XCObjectTypeBase)old;
-            var actualtype = (XCObjectTypeBase)actual;
+            var oldtype = (XCObjectTypeBase) old;
+            var actualtype = (XCObjectTypeBase) actual;
 
             if (old == null && actual == null)
             {
-
-            } else
-            if (old != null && actual == null)
+            }
+            else if (old != null && actual == null)
             {
                 query.Delete().Table(oldtype.RelTableName);
-            } else 
-            if (old == null && actual != null )
+            }
+            else if (old == null && actual != null)
             {
                 var tableBuilder = query.Create().Table(actualtype.RelTableName);
 
@@ -60,57 +57,53 @@ namespace ZenPlatform.EntityComponent.Migrations
                         tableBuilder.WithColumnDefinition(GetColumnDefenitionBySchema(s));
                     });
                 }
-                    
-                
             }
             else
             {
                 //var comparer = new XCObjectTypeComparer<IXCObjectType>();
-               //if (!comparer.Equals(old, actual))
-               if (!old.Equals(actual))
+                //if (!comparer.Equals(old, actual))
+                if (!old.Equals(actual))
                 {
                     query.Copy().Table().FromTable(oldtype.RelTableName).ToTable($"{actualtype.RelTableName}_tmp");
                 }
             }
-            
+
 
             return query.Expression;
         }
 
         public SSyntaxNode GetStep2(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-            var oldtype = (XCObjectTypeBase)old;
-            var actualtype = (XCObjectTypeBase)actual;
+            var oldtype = (XCObjectTypeBase) old;
+            var actualtype = (XCObjectTypeBase) actual;
 
             if (old != null && actual != null)
             {
-
-
                 string tableName = $"{actualtype.RelTableName}_tmp";
 
                 var props = old.GetProperties()
-                   .FullJoin(
-                       actual.GetProperties(), x => x.Guid, 
-                       x => new { old = x, actual = default(IXProperty) },
-                       x => new { old = default(IXProperty), actual = x },
-                       (x, y) => new { old = x, actual = y });
+                    .FullJoin(
+                        actual.GetProperties(), x => x.Guid,
+                        x => new {old = x, actual = default(IXProperty)},
+                        x => new {old = default(IXProperty), actual = x},
+                        (x, y) => new {old = x, actual = y});
 
                 foreach (var property in props)
                 {
                     if (property.old == null)
                     {
                         CreateProperty(query, property.actual, tableName);
-                    } else
-                    if (property.actual == null)
+                    }
+                    else if (property.actual == null)
                     {
                         DeleteProperty(query, property.old, tableName);
-                    } else
+                    }
+                    else
                     {
                         if (!property.old.Equals(property.actual))
                             ChangeProperty(query, property.old, property.actual, tableName);
                     }
                 }
-                
             }
 
             return query.Expression;
@@ -144,30 +137,31 @@ namespace ZenPlatform.EntityComponent.Migrations
         public void ChangeProperty(DDLQuery query, IXProperty old, IXProperty actual, string tableName)
         {
             var schemas = old.GetPropertySchemas()
-                            .FullJoin(
-                           actual.GetPropertySchemas(),
-                           x => x.FullName,
-                           x => new { old = x, actual = default(XCColumnSchemaDefinition) },
-                           x => new { old = default(XCColumnSchemaDefinition), actual = x },
-                           (x, y) => new { old = x, actual = y });
+                .FullJoin(
+                    actual.GetPropertySchemas(),
+                    x => x.FullName,
+                    x => new {old = x, actual = default(XCColumnSchemaDefinition)},
+                    x => new {old = default(XCColumnSchemaDefinition), actual = x},
+                    (x, y) => new {old = x, actual = y});
 
             foreach (var schema in schemas)
             {
                 if (schema.old == null)
                 {
                     CreateSchema(query, schema.actual, tableName);
-                } 
+                }
                 else if (schema.actual == null)
                 {
                     DeleteSchema(query, schema.old, tableName);
-                } else
+                }
+                else
                 {
                     if (schema.old.PlatformType is XCObjectTypeBase || schema.actual.PlatformType is XCObjectTypeBase)
                     {
                         if (schema.old.PlatformType.Guid != schema.actual.PlatformType.Guid)
                             ChangeSchema(query, schema.actual, tableName);
-                    } else
-                    if (!schema.old.PlatformType.Equals(schema.actual.PlatformType))
+                    }
+                    else if (!schema.old.PlatformType.Equals(schema.actual.PlatformType))
                         ChangeSchema(query, schema.actual, tableName);
                 }
             }
@@ -176,40 +170,38 @@ namespace ZenPlatform.EntityComponent.Migrations
 
         public SSyntaxNode GetStep3(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-
-            var oldtype = (XCObjectTypeBase)old;
-            var actualtype = (XCObjectTypeBase)actual;
+            var oldtype = (XCObjectTypeBase) old;
+            var actualtype = (XCObjectTypeBase) actual;
 
             if (old != null && actual != null && !old.Equals(actual))
             {
                 query.Delete().Table($"{actualtype.RelTableName}");
             }
+
             return query.Expression;
         }
 
         public SSyntaxNode GetStep4(IXCObjectType old, IXCObjectType actual, DDLQuery query)
         {
-            var oldtype = (XCObjectTypeBase)old;
-            var actualtype = (XCObjectTypeBase)actual;
+            var oldtype = (XCObjectTypeBase) old;
+            var actualtype = (XCObjectTypeBase) actual;
 
             if (old != null && actual != null && !old.Equals(actual))
             {
                 query.Rename().Table($"{actualtype.RelTableName}_tmp").To(oldtype.RelTableName);
             }
+
             return query.Expression;
         }
 
         public ColumnDefinition GetColumnDefenitionBySchema(XCColumnSchemaDefinition schema)
-        { 
-
+        {
             ColumnDefinitionBuilder builder = new ColumnDefinitionBuilder();
             builder.WithColumnName(schema.FullName);
-            
-            if (schema.SchemaType == XCColumnSchemaType.Value
-                
-                 || schema.SchemaType == XCColumnSchemaType.NoSpecial)
-            {
 
+            if (schema.SchemaType == XCColumnSchemaType.Value
+                || schema.SchemaType == XCColumnSchemaType.NoSpecial)
+            {
                 var type = schema.PlatformType;
 
                 switch (type)
@@ -240,22 +232,17 @@ namespace ZenPlatform.EntityComponent.Migrations
                         break;
                 }
             }
-            else 
-            if (schema.SchemaType == XCColumnSchemaType.Type)
+            else if (schema.SchemaType == XCColumnSchemaType.Type)
             {
                 builder.AsInt().Nullable();
-            } else
-            if (schema.SchemaType == XCColumnSchemaType.Ref)
+            }
+            else if (schema.SchemaType == XCColumnSchemaType.Ref)
             {
                 builder.AsGuid();
             }
 
-            
 
             return builder.ColumnDefinition;
         }
-        
-        
-
     }
 }

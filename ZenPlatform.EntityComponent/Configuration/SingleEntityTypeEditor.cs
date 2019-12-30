@@ -9,11 +9,11 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class SingleEntityTypeEditor
     {
-
         private XCSingleEntityMetadata _metadata;
         private XCSingleEntity _type;
         private XCSingleEntityLink _link;
         private IXCComponent _component;
+
         public SingleEntityTypeEditor(IXCComponent component)
         {
             _metadata = new XCSingleEntityMetadata();
@@ -26,11 +26,9 @@ namespace ZenPlatform.EntityComponent.Configuration
             _link = new XCSingleEntityLink(_type, _metadata);
 
 
-            ((IChildItem<IXCComponent>)_type).Parent = component;
-            ((IChildItem<IXCComponent>)_link).Parent = component;
+            ((IChildItem<IXCComponent>) _type).Parent = component;
+            ((IChildItem<IXCComponent>) _link).Parent = component;
 
-
-            
 
             _component = component;
 
@@ -53,7 +51,6 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public SingleEntityTypeEditor SetDescription(string description)
         {
-            
             return this;
         }
 
@@ -87,7 +84,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public SingleEntityModuleEditor CreateModule()
         {
             var module = new XCSingleEntityModule();
-            
+
             _metadata.Modules.Add(module);
             return new SingleEntityModuleEditor(module);
         }
@@ -98,6 +95,5 @@ namespace ZenPlatform.EntityComponent.Configuration
             _metadata.Command.Add(command);
             return new SingleEntityCommandEditor(command);
         }
-
     }
 }

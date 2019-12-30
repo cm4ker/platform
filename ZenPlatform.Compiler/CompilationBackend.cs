@@ -68,7 +68,7 @@ namespace ZenPlatform.Compiler
         {
             IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
-            var ab = ap.AsmFactory.Create(ap.TypeSystem, "Debug", new Version(1, 0));
+            var ab = ap.AsmFactory.CreateAssembly(ap.TypeSystem, "Debug", new Version(1, 0));
 
             ZLanguageVisitor v = new ZLanguageVisitor();
             var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
