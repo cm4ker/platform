@@ -35,7 +35,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Свойство является ссылкой
         /// </summary>
-        bool IsLink { get; }
+        bool IsSelfLink { get; }
 
         /// <summary>
         /// Указывает на то, что поле является только для

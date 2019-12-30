@@ -42,20 +42,20 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        public void EmitDetail(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
+        public void EmitDetail(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentClass cc)
             {
                 if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
                 {
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Server))
+                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
                     {
                         EmitBody(cc, builder, dbType);
                         EmitVersionField(builder);
                         EmitMappingSupport(cc, builder);
                         EmitSavingSupport(cc, builder, dbType);
                     }
-                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
+                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client) && mode.HasFlag(CompilationMode.Client))
                     {
                         EmitBody(cc, builder, dbType);
                     }
@@ -75,8 +75,10 @@ namespace ZenPlatform.EntityComponent.Entity
             foreach (var prop in set.Properties)
             {
                 bool propertyGenerated = false;
+                if (prop.IsSelfLink) continue;
 
-                if (!prop.IsLink && string.IsNullOrEmpty(prop.DatabaseColumnName))
+
+                if (string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
                         $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
@@ -183,7 +185,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var pIndex = 0;
 
-            var columns = se.Properties.Where(x => !x.IsLink)
+            var columns = se.Properties.Where(x => !x.IsSelfLink)
                 .SelectMany(x => x.GetPropertySchemas());
 
             foreach (var column in columns)
@@ -378,7 +380,18 @@ namespace ZenPlatform.EntityComponent.Entity
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
             var session = ts.GetSystemBindings().Session;
 
-            builder.DefineConstructor(false, dtoType, session);
+            var c = builder.DefineConstructor(false, dtoType, session);
+            var g = c.Generator;
+
+            var dtoPrivate = builder.DefineField(dtoType, "_dto", false, false);
+            var sessionPrivate = builder.DefineField(session, "_session", false, false);
+
+            g.LdArg_0()
+                .EmitCall(builder.BaseType.FindConstructor())
+                .LdArg(1)
+                .StFld(dtoPrivate)
+                .LdArg(2)
+                .StFld(sessionPrivate);
         }
 
         private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)
