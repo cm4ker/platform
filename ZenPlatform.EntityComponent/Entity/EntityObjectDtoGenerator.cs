@@ -15,6 +15,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.Shared.Tree;
+using Attribute = System.Attribute;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
@@ -27,10 +28,13 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateDraft(IXCObjectType type, Root root)
+        public void GenerateAstTree(IXCObjectType type, Root root)
         {
-            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name,
-                new TypeBody(new List<Member>())) {Base = "Documents.EntityLink", Namespace = "Documents"};
+            var dtoClassName =
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+
+            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, dtoClassName,
+                new TypeBody(new List<Member>())) {Namespace = "Documents"};
 
             cls.Bag = ObjectType.Dto;
 
@@ -44,10 +48,11 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
                 {
-                    if (cc.CompilationMode == CompilationMode.Server)
+                    if (cc.CompilationMode.HasFlag(CompilationMode.Server))
                     {
+                        EmitGeneral(cc, builder, dbType);
                         EmitMappingSupport(cc, builder);
-                        EmitSavingSupport(cc, builder, dbType);
+                        // EmitSavingSupport(cc, builder, dbType);
                     }
                 }
             }
@@ -117,7 +122,11 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         IType propType = GetTypeFromPlatform(pt, sb);
 
-                        builder.DefinePropertyWithBackingField(propType, propName, false);
+                        var propBuilder = builder.DefinePropertyWithBackingField(propType, propName, false);
+
+                        var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
+                        propBuilder.SetAttribute(attr);
+                        attr.SetParameters(dbColName);
                     }
                     else if (ctype is IXCLinkType ot)
                     {
@@ -137,7 +146,11 @@ namespace ZenPlatform.EntityComponent.Entity
                                                 ? XCColumnSchemaType.Ref
                                                 : XCColumnSchemaType.NoSpecial)).FullName;
 
-                            builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
+                            var propBuilder = builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
+
+                            var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
+                            propBuilder.SetAttribute(attr);
+                            attr.SetParameters(dbColName);
                         }
                     }
                 }
@@ -159,24 +172,22 @@ namespace ZenPlatform.EntityComponent.Entity
             var readerParam =
                 readerMethod.DefineParameter("reader", readerType, false, false);
 
-            foreach (var property in cls.TypeBody.Properties)
+            foreach (var property in tb.Properties)
             {
-                if (string.IsNullOrEmpty(property.MapTo)) continue;
-
-                var prop = tb.FindProperty(property.Name);
+                var mt = property.FindCustomAttribute<MapToAttribute>();
+                if (mt is null) continue;
 
                 rg
                     .LdArg_0()
                     .LdArg(readerParam.ArgIndex)
-                    .LdStr(property.MapTo)
+                    .LdStr(mt.Parameters[0].ToString())
                     .EmitCall(readerType.FindMethod("get_Item", _bindings.String))
-                    .Unbox_Any(prop.PropertyType)
-                    .EmitCall(prop.Setter);
+                    .Unbox_Any(property.PropertyType)
+                    .EmitCall(property.Setter);
             }
 
             rg.Ret();
         }
-
 
         private SSyntaxNode GetInsertQuery(XCSingleEntity se)
         {
@@ -316,5 +327,19 @@ namespace ZenPlatform.EntityComponent.Entity
 
             rg.Ret();
         }
+    }
+
+
+    /// <summary>
+    /// Используется при генерации мапингов
+    /// </summary>
+    public class MapToAttribute : Attribute
+    {
+        public MapToAttribute(string dbColumnName)
+        {
+            DbColumnName = dbColumnName;
+        }
+
+        public string DbColumnName { get; set; }
     }
 }

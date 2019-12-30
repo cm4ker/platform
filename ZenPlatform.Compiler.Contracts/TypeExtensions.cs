@@ -329,6 +329,15 @@ namespace ZenPlatform.Compiler.Contracts
         }
     }
 
+    public static class PropertyExtension
+    {
+        public static ICustomAttribute FindCustomAttribute<T>(this IProperty property)
+        {
+            var type = property.Setter.DeclaringType.Assembly.TypeSystem.FindType<T>();
+            return property.FindCustomAttribute(type);
+        }
+    }
+
     public static class СonventionsHelper
     {
         public static string GetBackingFieldName(string name) => $"<{name}>k__BackingField";

@@ -19,17 +19,7 @@ namespace ZenPlatform.Compiler.Contracts
         /// <param name="type"></param>
         ITypeBuilder ImportWithCopy(IType type);
 
-        /// <summary>
-        /// Создать аттрибут
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        ICustomAttributeBuilder CreateAttribute(IType type, params IType[] args);
-
-
         void SetAttribute(ICustomAttribute attr);
-
 
         IAssembly EndBuild();
     }

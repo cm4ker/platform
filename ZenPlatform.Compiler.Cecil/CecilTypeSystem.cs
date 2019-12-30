@@ -51,7 +51,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters) => Resolve(name);
 
-        public CecilTypeSystem(IEnumerable<string> paths, string targetPath = null)
+        public CecilTypeSystem(CecilPlatformFactory factory, IEnumerable<string> paths, string targetPath = null)
         {
             if (targetPath != null)
                 paths = paths.Concat(new[] {targetPath});
@@ -79,6 +79,8 @@ namespace ZenPlatform.Compiler.Cecil
                     TargetAssemblyDefinition = asm;
                 }
             }
+
+            Factory = factory;
         }
 
         public IAssembly TargetAssembly { get; private set; }
@@ -87,10 +89,13 @@ namespace ZenPlatform.Compiler.Cecil
 
         public AssemblyDefinition TargetAssemblyDefinition { get; private set; }
         public IWellKnownTypes WellKnownTypes { get; }
+
         public ICustomAttribute CreateAttribute(IType type)
         {
             throw new NotImplementedException();
         }
+
+        public IPlatformFactory Factory { get; }
 
         public IReadOnlyList<IAssembly> Assemblies => _asms.AsReadOnly();
         public IAssembly FindAssembly(string name) => RegisterAssembly(Resolve(name));
@@ -173,7 +178,7 @@ namespace ZenPlatform.Compiler.Cecil
             _asms.Add(wrapped);
             _assemblyDic[asm] = wrapped;
             _asmResolver.RegisterCustom(asm.Name.Name, asm);
-            
+
             return wrapped;
         }
 

@@ -6,17 +6,17 @@ namespace ZenPlatform.Compiler.Cecil
     {
         public CecilAssemblyPlatform()
         {
-            AsmFactory = new CecilAssemblyFactory();
-            TypeSystem = new CecilTypeSystem(new string[] { });
+            AsmFactory = new CecilPlatformFactory();
+            TypeSystem = new CecilTypeSystem((CecilPlatformFactory) AsmFactory, new string[] { });
         }
 
-        public IAssemblyFactory AsmFactory { get; }
+        public IPlatformFactory AsmFactory { get; }
 
         public ITypeSystem TypeSystem { get; }
 
         public ITypeSystem CreateTypeSystem()
         {
-            return new CecilTypeSystem(new string[] { });
+            return new CecilTypeSystem((CecilPlatformFactory) AsmFactory, new string[] { });
         }
     }
 }

@@ -45,6 +45,11 @@ namespace ZenPlatform.Compiler.Cecil
         public IReadOnlyList<ICustomAttribute> CustomAttributes =>
             _attributes ??= Property.CustomAttributes.Select(ca => new CecilCustomAttribute(TypeSystem, ca)).ToList();
 
+        public ICustomAttribute FindCustomAttribute(IType type)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IPropertyBuilder WithSetter(IMethod method)
         {
             Property.SetMethod = ((CecilMethodBase) method).Definition;

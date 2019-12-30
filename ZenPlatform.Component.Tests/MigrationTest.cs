@@ -33,7 +33,6 @@ namespace ZenPlatform.Component.Tests
             var savedTypes = actual.Data.ObjectTypes;
 
 
- 
             var query = DDLQuery.New();
             savedTypes.ForEach(a => a.Parent.ComponentImpl.Migrator.GetStep1(null, a, query));
             savedTypes.ForEach(a => a.Parent.ComponentImpl.Migrator.GetStep2(null, a, query));
@@ -57,9 +56,9 @@ namespace ZenPlatform.Component.Tests
             var dbTypes = old.Data.ObjectTypes;
 
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
-                x => new { component = x.Parent, old = x, actual = default(IXCObjectType) },
-                x => new { component = x.Parent, old = default(IXCObjectType), actual = x },
-                (x, y) => new { component = x.Parent, old = x, actual = y });
+                x => new {component = x.Parent, old = x, actual = default(IXCObjectType)},
+                x => new {component = x.Parent, old = default(IXCObjectType), actual = x},
+                (x, y) => new {component = x.Parent, old = x, actual = y});
 
             var query = DDLQuery.New();
             types.ForEach(a => a.component.ComponentImpl.Migrator.GetStep1(a.old, a.actual, query));

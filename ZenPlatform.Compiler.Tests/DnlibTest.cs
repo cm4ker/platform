@@ -210,11 +210,15 @@ namespace ZenPlatform.Compiler.Tests
             var attr = asm.CreateAttribute<MyAttribute>(sb.String);
 
             attr.SetParameters("Test");
+            attr.SetParameters("Test2");
 
             var A = asm.DefineType("Default", "A", TypeAttributes.Public | TypeAttributes.Abstract,
                 sb.Object);
 
             A.SetCustomAttribute(attr);
+
+            var prop = A.DefinePropertyWithBackingField(sb.Int, "TestProp", false);
+            prop.SetAttribute(attr);
 
             asm.Write("CustomAttribute.bll");
 
