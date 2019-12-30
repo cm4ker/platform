@@ -24,6 +24,7 @@ namespace ZenPlatform.Compiler.Dnlib
             Methods.Any();
             Properties.Any();
             Constructors.Any();
+            CustomAttributes.Any();
 
             _r = new DnlibContextResolver(_ts, typeDef.Module);
         }
@@ -92,7 +93,6 @@ namespace ZenPlatform.Compiler.Dnlib
 
             method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.ToTypeRef()).ToTypeSig();
 
-
             return dm;
         }
 
@@ -152,6 +152,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public void SetCustomAttribute(ICustomAttribute attr)
         {
+            ((List<ICustomAttribute>) CustomAttributes).Add(attr);
             TypeDef.CustomAttributes.Add(((DnlibCustomAttribute) attr).CustomAttribute);
         }
 

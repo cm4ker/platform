@@ -25,7 +25,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             _metadata = metadata;
         }
 
-
         public XCSingleEntityMetadata GetMetadata()
         {
             return _metadata;

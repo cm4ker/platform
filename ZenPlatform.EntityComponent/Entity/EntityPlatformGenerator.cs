@@ -137,13 +137,13 @@ namespace ZenPlatform.EntityComponent.Entity
                                 .GetPropertySchemas(prop.DatabaseColumnName)
                                 .First(x => x.SchemaType == ((prop.Types.Count > 1)
                                                 ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) /* && x.PlatformType == ot*/).FullName;
+                                                : XCColumnSchemaType.NoSpecial)).FullName;
 
                             var propName = prop
                                 .GetPropertySchemas(prop.Name)
                                 .First(x => x.SchemaType == ((prop.Types.Count > 1)
                                                 ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial) /* && x.PlatformType == ot*/).FullName;
+                                                : XCColumnSchemaType.NoSpecial)).FullName;
 
                             var astProp = new Property(null, propName,
                                 new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type), true, true, dbColName);
