@@ -144,12 +144,10 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
 
-
         private void EmitMappingSupport(ComponentClass cls, ITypeBuilder tb)
         {
             var _ts = tb.Assembly.TypeSystem;
             var _bindings = _ts.GetSystemBindings();
-
 
             tb.AddInterfaceImplementation(_ts.FindType<ICanMap>());
 
@@ -160,7 +158,6 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var readerParam =
                 readerMethod.DefineParameter("reader", readerType, false, false);
-
 
             foreach (var property in cls.TypeBody.Properties)
             {
