@@ -11,6 +11,8 @@ using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
+using ZenPlatform.Language.Ast.Definitions;
+using Attribute = System.Attribute;
 using MethodAttributes = dnlib.DotNet.MethodAttributes;
 using TypeAttributes = System.Reflection.TypeAttributes;
 
@@ -159,6 +161,72 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.Equal(0, result);
         }
+
+
+        [Fact]
+        public void TryCatchExceptionTest()
+        {
+            var asm = _ap.CreateAssembly("test");
+            var sb = asm.TypeSystem.GetSystemBindings();
+
+            var A = asm.DefineType("Default", "A", TypeAttributes.Public | TypeAttributes.Abstract,
+                sb.Object);
+
+            var m = A.DefineMethod("MyMethod", true, true, false);
+            m.WithReturnType(sb.Int);
+            var g = m.Generator;
+            g.InitLocals = true;
+            var loc = g.DefineLocal(sb.Int);
+            g.BeginExceptionBlock();
+            g.Throw(sb.Exception);
+            g.BeginCatchBlock(sb.Exception);
+            g.Pop();
+            g.LdcI4(10);
+            g.StLoc(loc);
+            g.EndExceptionBlock();
+
+            g.LdLoc(loc);
+
+            g.Ret();
+
+            asm.Write("TryCatchTest.bll");
+
+
+            var lib = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TryCatchTest.bll"));
+
+            var cmdType = lib.GetType("Default.A");
+
+            var res = cmdType.GetMethod("MyMethod")
+                .Invoke(null, BindingFlags.DoNotWrapExceptions, null, null, null);
+
+            Assert.Equal(10, res);
+        }
+
+        [Fact]
+        public void TestAttribute()
+        {
+            var asm = _ap.CreateAssembly("test");
+            var sb = asm.TypeSystem.GetSystemBindings();
+            var attr = asm.CreateAttribute<MyAttribute>(sb.String);
+
+            attr.SetParameters("Test");
+
+            var A = asm.DefineType("Default", "A", TypeAttributes.Public | TypeAttributes.Abstract,
+                sb.Object);
+
+            A.SetCustomAttribute(attr);
+
+            asm.Write("CustomAttribute.bll");
+
+
+            var lib = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CustomAttribute.bll"));
+
+            var cmdType = lib.GetType("Default.A");
+
+            var directAttribute = cmdType.GetCustomAttribute<MyAttribute>();
+
+            Assert.NotNull(directAttribute);
+        }
     }
 
 
@@ -167,6 +235,17 @@ namespace ZenPlatform.Compiler.Tests
         public static T InvokeMe<T>()
         {
             return default;
+        }
+    }
+
+    public class MyAttribute : Attribute
+    {
+        public MyAttribute()
+        {
+        }
+
+        public MyAttribute(string name)
+        {
         }
     }
 }

@@ -282,6 +282,29 @@ namespace ZenPlatform.Compiler.Contracts
             return result;
         }
 
+        public static (IPropertyBuilder prop, IField field, IMethodBuilder getMethod, IMethodBuilder setMethod)
+            DefineProperty(this ITypeBuilder tb, IType type, string name, bool hasGet, bool hasSet, bool interfaceImpl)
+        {
+            var backingField = tb.DefineField(type, СonventionsHelper.GetBackingFieldName(name), false, false);
+
+            IMethodBuilder getMethod = null, setMethod = null;
+
+            var result = tb.DefineProperty(type, name, false);
+            if (hasGet)
+            {
+                getMethod = tb.DefineMethod($"get_{name}", true, false, interfaceImpl).WithReturnType(type);
+
+                result = result.WithGetter(getMethod);
+            }
+
+            if (hasSet)
+            {
+                result = result.WithSetter(setMethod);
+            }
+
+            return (result, backingField, getMethod, setMethod);
+        }
+
         public static IPropertyBuilder DefinePropertyWithBackingField(this ITypeBuilder tb, IType type, string name,
             bool interfaceImpl)
         {

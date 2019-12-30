@@ -35,7 +35,7 @@ namespace ZenPlatform.Compiler.Dnlib
         private IReadOnlyList<ICustomAttribute> _attributes;
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes =>
-            _attributes ??= Assembly.CustomAttributes.Select(ca => new DnlibCusotmAtttribute(_ts, ca))
+            _attributes ??= Assembly.CustomAttributes.Select(ca => new DnlibCustomAttribute(_ts, ca))
                 .ToList();
 
 

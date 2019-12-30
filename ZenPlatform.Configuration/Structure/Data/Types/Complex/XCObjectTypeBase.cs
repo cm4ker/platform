@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Contracts;
@@ -14,6 +15,8 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     public abstract class XCObjectTypeBase : XCTypeBase, IXCObjectType
     {
         private IXCComponent _parent;
+
+        public bool IsLink => false;
 
         /// <summary>
         /// Это абстрактный тип
@@ -151,11 +154,18 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
     public abstract class XCLinkTypeBase : XCTypeBase, IXCLinkType
     {
+        public bool IsLink => true;
+
         public bool IsAbstract { get; }
+
         public bool IsSealed { get; }
+
         public IXCType BaseType { get; }
+
         public virtual bool HasProperties { get; }
+
         public bool HasModules { get; }
+
         public bool HasCommands { get; }
 
         public void Initialize()

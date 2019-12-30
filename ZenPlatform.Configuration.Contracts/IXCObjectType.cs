@@ -6,9 +6,13 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
 {
-
-    public interface IXCObjectReadOnlyType: IXCType, IChildItem<IXCComponent>
+    public interface IXCObjectReadOnlyType : IXCType, IChildItem<IXCComponent>
     {
+        /// <summary>
+        /// Это ссылочный тип
+        /// </summary>
+        bool IsLink { get; }
+
         /// <summary>
         /// Это абстрактный тип
         /// </summary>

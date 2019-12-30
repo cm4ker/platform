@@ -310,16 +310,6 @@ namespace ZenPlatform.Compiler.Cecil
             return this;
         }
 
-        public IEmitter Throw()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEmitter CatchException(IType exceptionType)
-        {
-            return this.Emit(SreOpCodes.Throw, exceptionType);
-        }
-
         public IEmitter MarkLabel(ILabel label)
         {
             var cl = (CecilLabel) label;

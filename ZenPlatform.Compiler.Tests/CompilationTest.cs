@@ -23,5 +23,16 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.Equal("Hello world!", result);
         }
+
+
+        [Fact]
+        public void ExceptionTest()
+        {
+            var script = "string Main() { return \"Hello \" + \"world!\"; }";
+
+            var result = (string) this.CompileAndRun(script);
+
+            Assert.Equal("Hello world!", result);
+        }
     }
 }

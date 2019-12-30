@@ -56,5 +56,10 @@ namespace ZenPlatform.Compiler.Cecil
             Property.GetMethod = ((CecilMethodBase) method).Definition;
             return this;
         }
+
+        public void SetAttribute(ICustomAttribute attr)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

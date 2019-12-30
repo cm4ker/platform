@@ -4,6 +4,7 @@ using System.Linq;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using ZenPlatform.Compiler.Contracts;
+using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 using IField = ZenPlatform.Compiler.Contracts.IField;
 using IMethod = ZenPlatform.Compiler.Contracts.IMethod;
 using IType = ZenPlatform.Compiler.Contracts.IType;
@@ -21,7 +22,9 @@ namespace ZenPlatform.Compiler.Dnlib
             _ts = typeSystem;
 
             Methods.Any();
+            Properties.Any();
             Constructors.Any();
+            CustomAttributes.Any();
 
             _r = new DnlibContextResolver(_ts, typeDef.Module);
         }
@@ -90,14 +93,12 @@ namespace ZenPlatform.Compiler.Dnlib
 
             method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.ToTypeRef()).ToTypeSig();
 
-
             return dm;
         }
 
         public IPropertyBuilder DefineProperty(IType propertyType, string name, bool isStatic = false)
         {
             var prop = new PropertyDefUser(name);
-
 
             TypeDef.Properties.Add(prop);
             prop.DeclaringType = TypeDef;
@@ -147,6 +148,12 @@ namespace ZenPlatform.Compiler.Dnlib
         public ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic)
         {
             throw new NotImplementedException();
+        }
+
+        public void SetCustomAttribute(ICustomAttribute attr)
+        {
+            ((List<ICustomAttribute>) CustomAttributes).Add(attr);
+            TypeDef.CustomAttributes.Add(((DnlibCustomAttribute) attr).CustomAttribute);
         }
 
         public IType EndBuild()
