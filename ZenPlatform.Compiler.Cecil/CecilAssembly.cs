@@ -100,6 +100,16 @@ namespace ZenPlatform.Compiler.Cecil
             return new CecilTypeBuilder(_typeSystem, this, a.Resolve());
         }
 
+        public ICustomAttributeBuilder CreateAttribute(IType type, params IType[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetAttribute(ICustomAttribute attr)
+        {
+            throw new NotImplementedException();
+        }
+
         public IAssembly EndBuild()
         {
             return this;

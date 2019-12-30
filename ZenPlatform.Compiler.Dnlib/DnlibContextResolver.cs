@@ -2,6 +2,7 @@ using System;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
 using IField = dnlib.DotNet.IField;
+using IMethod = dnlib.DotNet.IMethod;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
@@ -38,6 +39,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
 
             throw new Exception("This reference not supported");
+        }
+
+        public IMethod GetReference(IMethod method)
+        {
+            return _moduleDef.Import(method);
         }
 
         public IType GetType(ITypeDefOrRef tr) => _ts.Resolve(tr.ToTypeRef());

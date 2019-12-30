@@ -141,8 +141,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration.Test", "ZenPlatform.Configuration.Test\ZenPlatform.Configuration.Test.csproj", "{F42EFC9E-A4D4-4D01-92E1-8C4818377BDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnlib", "dnlib-sources\dnlib.csproj", "{BC5EB0F2-2977-46FA-A35A-675554E2C777}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -2083,38 +2081,6 @@ Global
 		{F42EFC9E-A4D4-4D01-92E1-8C4818377BDD}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{F42EFC9E-A4D4-4D01-92E1-8C4818377BDD}.Release|x86.ActiveCfg = Release|Any CPU
 		{F42EFC9E-A4D4-4D01-92E1-8C4818377BDD}.Release|x86.Build.0 = Release|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.AppStore|Any CPU.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.AppStore|iPhone.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.AppStore|x86.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.AppStore|x86.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Debug|x86.Build.0 = Debug|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Release|iPhone.Build.0 = Release|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Release|x86.ActiveCfg = Release|Any CPU
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2162,7 +2128,6 @@ Global
 		{4E098D04-9E75-47DF-9CEF-6AE906994DDC} = {60F9DF35-0F24-4B1B-AE89-43D43BAF8160}
 		{2395B4CB-D7B2-48BD-9C48-20F7A2AAFDFA} = {22D31880-2328-451D-ABF3-996E033F9CFC}
 		{F42EFC9E-A4D4-4D01-92E1-8C4818377BDD} = {60F9DF35-0F24-4B1B-AE89-43D43BAF8160}
-		{BC5EB0F2-2977-46FA-A35A-675554E2C777} = {C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87366D66-1391-4D90-8999-95A620AD786A}

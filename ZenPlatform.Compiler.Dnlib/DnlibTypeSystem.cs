@@ -5,7 +5,10 @@ using System.Net;
 using System.Reflection.Metadata;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
+using CustomAttribute = dnlib.DotNet.CustomAttribute;
 using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
+using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
+using IMethod = dnlib.DotNet.IMethod;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
@@ -47,13 +50,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public DnlibAssemblyResolver Resolver => _resolver;
 
-        public IWellKnownTypes WellKnownTypes { get; }
-
         public IReadOnlyList<IAssembly> Assemblies => _asms;
 
-
         public Dictionary<string, AssemblyRef> AsmRefsCache = new Dictionary<string, AssemblyRef>();
-
 
         internal IAssembly RegisterAssembly(AssemblyDef assemblyDef)
         {
