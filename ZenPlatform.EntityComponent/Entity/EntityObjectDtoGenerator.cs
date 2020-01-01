@@ -4,9 +4,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json.Bson;
-using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -320,96 +318,6 @@ namespace ZenPlatform.EntityComponent.Entity
             var _ts = tb.Assembly.TypeSystem;
             var _b = _ts.GetSystemBindings();
             var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version", false);
-        }
-    }
-
-    public class EntityObjectClassGenerator
-    {
-        private readonly IXCComponent _component;
-
-        public EntityObjectClassGenerator(IXCComponent component)
-        {
-            _component = component;
-        }
-
-        public void GenerateAstTree(IXCObjectType type, Root root)
-        {
-            var className = type.Name;
-
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
-
-            var cls = new ComponentClass(CompilationMode.Server, _component, type, null, className,
-                new TypeBody(new List<Member>()));
-            cls.Namespace = @namespace;
-
-            GenerateObjectClassUserModules(type, cls);
-
-            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
-            //end create dto class
-            root.Add(cu);
-        }
-
-        public void EmitDetail(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
-        {
-            if (astTree is ComponentClass cc)
-            {
-                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
-                {
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Server))
-                    {
-                        EmitBody(cc, builder, dbType);
-                    }
-                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
-                    {
-                        EmitBody(cc, builder, dbType);
-                    }
-                }
-            }
-        }
-
-        private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
-        {
-            var type = cc.Type;
-            var ts = builder.Assembly.TypeSystem;
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
-
-
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
-
-            var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
-            var session = ts.GetSystemBindings().Session;
-
-            var c = builder.DefineConstructor(false, dtoType, session);
-            var g = c.Generator;
-
-            var dtoPrivate = builder.DefineField(dtoType, "_dto", false, false);
-            var sessionPrivate = builder.DefineField(session, "_session", false, false);
-
-            g.LdArg_0()
-                .EmitCall(builder.BaseType.FindConstructor())
-                .LdArg(1)
-                .StFld(dtoPrivate)
-                .LdArg(2)
-                .StFld(sessionPrivate);
-        }
-
-        private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)
-        {
-            foreach (var module in type.GetProgramModules())
-            {
-                if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
-                {
-                    var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
-
-
-                    foreach (var func in typeBody.Functions)
-                    {
-                        func.SymbolScope = SymbolScopeBySecurity.User;
-                        cls.AddFunction(func);
-                    }
-                }
-            }
         }
     }
 }

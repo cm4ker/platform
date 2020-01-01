@@ -40,7 +40,8 @@ namespace ZenPlatform.EntityComponent.Entity
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
         private readonly IXCComponent _component;
         private GeneratorRules _rules;
-        private EntityObjectDtoGenerator _eg;
+        private EntityObjectDtoGenerator _egDto;
+        private EntityObjectClassGenerator _egClass;
 
         public EntityPlatformGenerator(IXCComponent component)
         {
@@ -48,7 +49,8 @@ namespace ZenPlatform.EntityComponent.Entity
             _rules = new GeneratorRules(component);
             _dtoCollections = new Dictionary<XCSingleEntity, IType>();
 
-            _eg = new EntityObjectDtoGenerator(component);
+            _egDto = new EntityObjectDtoGenerator(component);
+            _egClass = new EntityObjectClassGenerator(component);
         }
 
         private TypeSyntax GetAstFromPlatformType(IXCType pt)
@@ -320,10 +322,10 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
 
-            _eg.GenerateAstTree(type, r);
+            _egDto.GenerateAstTree(type, r);
             GenerateLink(type.GetLink(), r);
-
-            GenerateServerObjectClass(type, r);
+            _egClass.GenerateAstTree(type, r);
+            //GenerateServerObjectClass(type, r);
             GenerateCommands(type, r);
         }
 
@@ -337,7 +339,7 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             if (node is Root root)
             {
-                _eg.GenerateAstTree(type, root);
+                _egDto.GenerateAstTree(type, root);
 
                 GenerateCommands(type, root);
                 GenerateLink(type.GetLink(), root);
@@ -551,7 +553,11 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
                 {
-                    _eg.EmitDetail(cc, builder, dbType, mode);
+                    _egDto.EmitDetail(cc, builder, dbType, mode);
+                }
+                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
+                {
+                    _egClass.EmitDetail(cc, builder, dbType, mode);
                 }
                 else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
                 {
