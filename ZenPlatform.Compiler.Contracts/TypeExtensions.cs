@@ -299,6 +299,9 @@ namespace ZenPlatform.Compiler.Contracts
 
             if (hasSet)
             {
+                setMethod = tb.DefineMethod($"set_{name}", true, false, interfaceImpl);
+                setMethod.DefineParameter("value", type, false, false);
+                
                 result = result.WithSetter(setMethod);
             }
 
