@@ -109,14 +109,17 @@ namespace ZenPlatform.EntityComponent.Entity
 
 
                 var propBuilder = builder.DefineProperty(propType, propName, true, !prop.IsReadOnly, false);
-                var gb = propBuilder.getMethod.Generator;
+                var getBuilder = propBuilder.getMethod.Generator;
+                var setBuilder = propBuilder.setMethod?.Generator;
+
+
+                // var valueParam = propBuilder.setMethod.Parameters[0];
 
                 if (prop.Types.Count > 1)
                 {
                     var typeField = prop.GetPropertySchemas(prop.Name)
                         .First(x => x.SchemaType == XCColumnSchemaType.Type);
                     var dtoTypeProp = dtoType.FindProperty(typeField.FullName);
-
 
                     foreach (var ctype in prop.Types)
                     {
@@ -136,9 +139,10 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         var compileType = ctype.ConvertType(sb);
 
-                        var label = gb.DefineLabel();
+                        var label = getBuilder.DefineLabel();
 
-                        gb
+                        //GETTER
+                        getBuilder
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .EmitCall(dtoTypeProp.Getter)
@@ -149,15 +153,41 @@ namespace ZenPlatform.EntityComponent.Entity
                             .EmitCall(dtoProp.Getter);
 
                         if (compileType.IsValueType)
-                            gb.Box(compileType);
+                            getBuilder.Box(compileType);
 
-                        gb
+                        getBuilder
                             .Ret()
-                            .MarkLabel(label)
-                            ;
+                            .MarkLabel(label);
+
+
+                        if (!prop.IsReadOnly)
+                        {
+                            label = setBuilder.DefineLabel();
+                            //SETTER
+                            setBuilder
+                                .LdArg(1)
+                                .IsInst(compileType)
+                                .BrFalse(label)
+                                .LdArg_0()
+                                .LdFld(dtoPrivate)
+                                .LdArg(1)
+                                .Unbox_Any(compileType)
+                                .EmitCall(dtoProp.Setter)
+                                
+                                .LdArg_0()
+                                .LdFld(dtoPrivate)
+                                    .LdcI4((int) ctype.Id)
+                                .EmitCall(dtoTypeProp.Setter)
+                                
+                                .MarkLabel(label);
+                        }
                     }
 
-                    gb.Throw(sb.Exception);
+                    getBuilder.Throw(sb.Exception);
+                    setBuilder.Throw(sb.Exception);
+
+                    // getBuilder.Ret();
+                    // setBuilder.Ret();
                 }
                 else
                 {
@@ -168,7 +198,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         var dtofield = dtoType.FindProperty(schema.FullName);
 
-                        gb
+                        getBuilder
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .EmitCall(dtofield.Getter)
