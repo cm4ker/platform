@@ -1,7 +1,10 @@
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
+using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Core.Test
@@ -28,6 +31,37 @@ namespace ZenPlatform.Core.Test
 
             var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
             Assert.NotEmpty(environmentManager.GetEnvironmentList());
+        }
+
+
+        [Fact]
+        public void PlatformContextTest()
+        {
+            Assert.False(TestExdecution());
+
+            var c = ExecutionContext.Capture();
+
+            ExecutionContext.Run(c, state =>
+            {
+                var service = Initializer.GetServerService(_o);
+
+                var env = service.GetService<IWorkEnvironment>();
+
+                var session = env.CreateSession(new Anonymous());
+
+                ContextHelper.SetContext(new PlatformContext(session));
+
+                Assert.True(TestExdecution());
+            }, null);
+
+
+            Assert.False(TestExdecution());
+        }
+
+
+        public bool TestExdecution()
+        {
+            return ContextHelper.GetContext()?.Session.User.Name == "Anonymous";
         }
     }
 }

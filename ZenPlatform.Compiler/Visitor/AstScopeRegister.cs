@@ -59,6 +59,7 @@ namespace ZenPlatform.Compiler.Visitor
             var v = obj.FirstParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable, obj.GetScope());
 
             if (v?.SyntaxObject is Variable vv) obj.Type = vv.Type;
+            if (v?.SyntaxObject is ContextVariable cv) obj.Type = cv.Type;
             if (v?.SyntaxObject is Parameter p) obj.Type = p.Type;
 
             return null;
@@ -112,6 +113,9 @@ namespace ZenPlatform.Compiler.Visitor
                     obj.Block.SymbolTable = new SymbolTable(te.SymbolTable);
 
                 obj.Block.SymbolTable.Clear();
+
+                obj.Block.SymbolTable.Add(new ContextVariable(null, "Context",
+                    new PrimitiveTypeSyntax(null, TypeNodeKind.Context)));
 
                 te.SymbolTable.Add(obj);
             }

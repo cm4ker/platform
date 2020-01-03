@@ -8,6 +8,7 @@ using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.AST;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
@@ -79,6 +80,7 @@ namespace ZenPlatform.Compiler.Helpers
                     TypeNodeKind.Object => _stb.Object,
                     TypeNodeKind.Void => _stb.Void,
                     TypeNodeKind.Session => _stb.Session,
+                    TypeNodeKind.Context => context.FindType<PlatformContext>(),
                     _ => throw new Exception($"This type is not primitive {ptn.Kind}")
                 };
             }

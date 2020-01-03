@@ -115,7 +115,10 @@ namespace ZenPlatform.ConfigurationExample
 [ClientCall] 
 public int ClientCallProc(int a)
 { 
-    a++; 
+    a++;
+    
+    object c = Context.Session;
+ 
     return a; 
 }
 

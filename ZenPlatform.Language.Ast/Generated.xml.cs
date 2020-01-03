@@ -1052,6 +1052,36 @@ namespace ZenPlatform.Language.Ast.Definitions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
+    public partial class ContextVariable : Expression, IAstSymbol
+    {
+        public ContextVariable(ILineInfo lineInfo, String name, TypeSyntax type): base(lineInfo)
+        {
+            var slot = 0;
+            Name = name;
+            Type = type;
+            if (Type != null)
+                Childs.Add(Type);
+        }
+
+        public String Name
+        {
+            get;
+        }
+
+        public TypeSyntax Type
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitContextVariable(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
     public partial class Literal : Expression
     {
         public Literal(ILineInfo lineInfo): base(lineInfo)

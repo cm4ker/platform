@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Npgsql.NameTranslation;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast;
@@ -197,6 +198,7 @@ namespace ZenPlatform.Compiler
             TypeNodeKind t = TypeNodeKind.Unknown;
             if (context.STRING() != null) t = TypeNodeKind.String;
             else if (context.INT() != null) t = TypeNodeKind.Int;
+            else if (context.OBJECT() != null) t = TypeNodeKind.Object;
             else if (context.BOOL() != null) t = TypeNodeKind.Boolean;
             else if (context.DOUBLE() != null) t = TypeNodeKind.Double;
             else if (context.CHAR() != null) t = TypeNodeKind.Char;
@@ -305,6 +307,11 @@ namespace ZenPlatform.Compiler
             return result;
         }
 
+        public override SyntaxNode VisitLookup(ZSharpParser.LookupContext context)
+        {
+            return base.VisitLookup(context);
+        }
+
         public override SyntaxNode VisitFunctionDeclaration(ZSharpParser.FunctionDeclarationContext context)
         {
             base.VisitFunctionDeclaration(context);
@@ -409,17 +416,11 @@ namespace ZenPlatform.Compiler
 
             var result = new Call(context.start.ToLineInfo(), _syntaxStack.PopList<Argument>().ToImmutableList(),
                 _syntaxStack.PopString(),
-                (context.ownerName != null || context.nameLookup() != null) ? _syntaxStack.PopExpression() : null);
+                (context.expressionPrimitive() != null) ? _syntaxStack.PopExpression() : null);
 
             _syntaxStack.Push(result);
 
             return result;
-        }
-
-
-        public override SyntaxNode VisitFunctionCallExpression(ZSharpParser.FunctionCallExpressionContext context)
-        {
-            return base.VisitFunctionCallExpression(context);
         }
 
         public override SyntaxNode VisitStatements(ZSharpParser.StatementsContext context)

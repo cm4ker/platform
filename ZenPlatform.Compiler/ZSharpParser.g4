@@ -81,13 +81,12 @@ assigment:
    | name OP_DEC
 ;   
 
+
+
 functionCall: 
-    ((nameLookup | ownerName=name) '.')? functionName=name '(' arguments? ')' ('.' lookupFunction=functionCall)?
+    (expressionPrimitive '.')? functionName=name '(' arguments? ')' ('.' (functionCall | expressionPrimitive))?
 ;
 
-functionCallExpression:
-   functionCall
-   ;
 
 parameters: parameter (',' parameter)*;
 
@@ -123,10 +122,17 @@ string_literal
 	;
 
 
-
-
-
 expression:
+    expressionStructural 
+    | lookup 
+    ;
+
+expressionStructural:
+   functionCall
+   |expressionPrimitive
+   ;
+
+expressionPrimitive:
     expressionBinary
 ;
 
@@ -183,7 +189,6 @@ expressionPostfix:
 
 expressionAtom:
     literal
-    | functionCallExpression
     | name
     | globalVar
 ;
@@ -212,7 +217,8 @@ primitiveType:
     | STRING 
     | CHAR 
     | DOUBLE
-    | VOID;
+    | VOID
+    | OBJECT;
 
 accessModifier: 
     PUBLIC
@@ -224,8 +230,8 @@ arrayType:
 name:
     IDENTIFIER;
 
-nameLookup:
-    name ('.' name)+;
+lookup:
+    expressionStructural ('.' expressionStructural)+;
 
 globalVar:
     '$' ('.' (name | functionCall))*;  
