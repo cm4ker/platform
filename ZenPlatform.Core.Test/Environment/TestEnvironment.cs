@@ -88,6 +88,7 @@ namespace ZenPlatform.Core.Test.Environment
             InvokeService.Register(new Route("Test_GetProperty"),
                 (c, a) =>
                 {
+                    
                     var typeId = (int) a[0];
                     var propName = (string) a[1];
                     var id = (Guid) a[2];
