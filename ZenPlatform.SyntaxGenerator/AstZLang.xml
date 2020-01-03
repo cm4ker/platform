@@ -174,7 +174,7 @@
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
-    
+
     <Syntax Name="Class" Base="TypeEntity" IsSymbol="true">
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody"/>
@@ -193,6 +193,14 @@
     <Syntax Name="Variable" Base="Expression" IsSymbol="true">
         <Arguments>
             <Single Name="Value" Type="Expression"/>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="TypeSyntax"/>
+        </Arguments>
+    </Syntax>
+
+
+    <Syntax Name="ContextVariable" Base="Expression" IsSymbol="true">
+        <Arguments>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
             <Single Name="Type" Type="TypeSyntax"/>
         </Arguments>
@@ -296,9 +304,9 @@
 
     <Syntax Name="GlobalVar" Base="Expression" NS="Expressions">
         <Arguments>
-            <Single Name="Expression" Type="Expression" />
+            <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
-    
+
 </Config>
     

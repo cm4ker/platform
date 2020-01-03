@@ -1,9 +1,11 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
@@ -138,6 +140,11 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is Name name)
             {
                 var variable = symbolTable.Find(name.Value, SymbolType.Variable, name.GetScope());
+
+                if (variable.SyntaxObject is ContextVariable)
+                {
+                    CheckContextVariable(e, variable);
+                }
 
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
@@ -326,6 +333,20 @@ namespace ZenPlatform.Compiler.Generation
                  
                  
                  */
+            }
+        }
+
+
+        private void CheckContextVariable(IEmitter e, ISymbol symbol)
+        {
+            if (symbol.CodeObject == null)
+            {
+                var loc = e.DefineLocal(_ts.FindType<PlatformContext>());
+
+                e.EmitCall(_ts.FindType<ContextHelper>().FindMethod("GetContext"))
+                    .StLoc(loc);
+
+                symbol.CodeObject = loc;
             }
         }
     }

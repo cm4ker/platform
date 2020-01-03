@@ -17,4 +17,16 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
         }
     }
+
+
+    public partial class ContextVariable : ITypedNode
+    {
+        public SymbolType SymbolType => SymbolType.Variable;
+
+        public SymbolScopeBySecurity SymbolScope
+        {
+            get => SymbolScopeBySecurity.User;
+            set { }
+        }
+    }
 }
