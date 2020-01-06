@@ -25,7 +25,7 @@ namespace ZenPlatform.DataComponent.Configuration
         protected IXCComponent Component => _component;
 
         /// <inheritdoc />
-        public virtual IXCObjectType Create(IXCObjectType parentType = null)
+        public virtual ITypeEditor Create()
         {
             throw new NotImplementedException();
         }

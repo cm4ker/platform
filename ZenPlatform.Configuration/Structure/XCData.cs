@@ -27,8 +27,8 @@ namespace ZenPlatform.Configuration.Structure
     public class XCData : IXCData, IXCConfigurationItem<XCDataConfig>
     {
         private IXCRoot _parent;
-        private ObservableCollection<IXCType> _platformTypes;
-        private ChildItemCollection<IXCData, IXCComponent> _components;
+        private readonly ObservableCollection<IXCType> _platformTypes;
+        private readonly ChildItemCollection<IXCData, IXCComponent> _components;
 
         
 
@@ -86,7 +86,7 @@ namespace ZenPlatform.Configuration.Structure
         {
             foreach (var component in Components.Where(x => !x.IsLoaded))
             {
-                component.LoadComponent();
+                //component.LoadComponent();
             }
         }
 
@@ -106,7 +106,7 @@ namespace ZenPlatform.Configuration.Structure
             }
 
             //Загружаем зависимости типов
-            foreach (var xct in ObjectTypes)
+            foreach (var xct in StructureTypes)
             {
                 xct.LoadDependencies();
             }
@@ -128,7 +128,7 @@ namespace ZenPlatform.Configuration.Structure
         {
             foreach (var component in Components)
             {
-                component.SaveComponent();
+               // component.SaveComponent();
             }
         }
 
@@ -142,8 +142,9 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Все типы, которые относятся к компонентам
         /// </summary>
-        public IEnumerable<IXCObjectType> ObjectTypes => Components.SelectMany(x => x.ObjectTypes);
-            
+        public IEnumerable<IXCStructureType> StructureTypes => _platformTypes.Where(s => s is IXCStructureType).Cast<IXCStructureType>();//Components.SelectMany(x => x.ObjectTypes);
+
+
 
         public IXCRoot Parent => _parent;
 
@@ -174,7 +175,7 @@ namespace ZenPlatform.Configuration.Structure
             foreach (var reference in settings.ComponentReferences)
             {
                 var component = loader.LoadObject<XCComponent, XCComponentConfig>(reference);
-                component.SetParent(this);
+                ((IChildItem<IXCData>)component).Parent = this;
                 
                 _components.Add(component);
                 

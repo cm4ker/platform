@@ -5,7 +5,7 @@ using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class SingleEntityModuleEditor
+    public class SingleEntityModuleEditor : IModuleEditor
     {
 
         private IXCProgramModule _module;
@@ -15,13 +15,13 @@ namespace ZenPlatform.EntityComponent.Configuration
             _module = module;
         }
 
-        public SingleEntityModuleEditor SetText(string text)
+        public IModuleEditor SetText(string text)
         {
             _module.ModuleText = text;
             return this;
         }
 
-        public SingleEntityModuleEditor SetRelationTypeObject()
+        public IModuleEditor SetRelationTypeObject()
         {
             _module.ModuleRelationType = XCProgramModuleRelationType.Object;
 

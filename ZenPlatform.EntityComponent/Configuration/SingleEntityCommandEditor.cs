@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class SingleEntityCommandEditor
+    public class SingleEntityCommandEditor : ICommandEditor
     {
         private XCCommand _command;
         public SingleEntityCommandEditor(XCCommand command)
@@ -13,24 +14,24 @@ namespace ZenPlatform.EntityComponent.Configuration
             _command = command;
         }
 
-        public SingleEntityCommandEditor SetGuid(Guid guid)
+        public ICommandEditor SetGuid(Guid guid)
         {
             _command.Guid = guid;
             return this;
         }
-        public SingleEntityCommandEditor SetName(string name)
+        public ICommandEditor SetName(string name)
         {
             _command.Name = name;
             return this;
         }
 
-        public SingleEntityCommandEditor SetDisplayName(string name)
+        public ICommandEditor SetDisplayName(string name)
         {
             _command.DisplayName = name;
             return this;
         }
 
-        public SingleEntityModuleEditor EditModule()
+        public IModuleEditor EditModule()
         {
             return new SingleEntityModuleEditor(_command.Module);
         }

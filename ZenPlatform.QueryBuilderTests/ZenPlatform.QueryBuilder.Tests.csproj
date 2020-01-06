@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ZenPlatform.QueryBuilder\ZenPlatform.QueryBuilder.csproj" />
+      <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
     </ItemGroup>
 
 </Project>

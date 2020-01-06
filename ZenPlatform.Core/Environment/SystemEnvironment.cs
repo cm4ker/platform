@@ -60,21 +60,22 @@ namespace ZenPlatform.Core.Environment
 
             var context = DataContextManager.GetContext();
 
-            var savedTypes = SavedConfiguration.Data.ObjectTypes;
-            var dbTypes = Configuration.Data.ObjectTypes;
+            var savedTypes = SavedConfiguration.Data.StructureTypes;
+            var dbTypes = Configuration.Data.StructureTypes;
 
+            /*
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,
                 x => new {component = x.Parent, old = x, actual = default(IXCObjectType)},
                 x => new {component = x.Parent, old = default(IXCObjectType), actual = x},
                 (x, y) => new {component = x.Parent, old = x, actual = y});
-
+                */
 //            Expression query1 = new Expression();
 //            Expression query2 = new Expression();
 //            Expression query3 = new Expression();
 //            Expression query4 = new Expression();
 
-            foreach (var type in types)
-            {
+            //foreach (var type in types)
+           // {
                 /*
                  * Все DDL (data definition language) происходят вне транзакции. Поэтому должны быть полностью
                  * безопасны для внезапного прерывания.
@@ -87,7 +88,7 @@ namespace ZenPlatform.Core.Environment
 //                query2.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep2(type.old, type.actual).Expression);
 //                query3.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep3(type.old, type.actual).Expression);
 //                query4.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep4(type.old, type.actual).Expression);
-            }
+            //}
 
 //            var cmd = context.CreateCommand(query1);
 //            cmd.ExecuteNonQuery();

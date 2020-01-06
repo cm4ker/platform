@@ -535,14 +535,16 @@ namespace ZenPlatform.QueryBuilder
 
         #region Premitives
 
-        public void ld_str(string arg)
+        public QueryMachine ld_str(string arg)
         {
             _syntaxStack.Push(arg);
+            return this;
         }
 
-        public void ld_null()
+        public QueryMachine ld_null()
         {
             _syntaxStack.Push(new SNull());
+            return this;
         }
 
         #endregion
