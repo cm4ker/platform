@@ -13,5 +13,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IAssemblyFactory AsmFactory { get; }
         public ITypeSystem TypeSystem { get; }
+
+        public ITypeSystem CreateTypeSystem()
+        {
+            return new DnlibTypeSystem(new string[] { });
+        }
     }
 }

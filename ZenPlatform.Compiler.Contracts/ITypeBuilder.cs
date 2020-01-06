@@ -22,6 +22,9 @@ namespace ZenPlatform.Compiler.Contracts
 
         ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic);
 
+
+        void SetCustomAttribute(ICustomAttribute attr);
+
         IType EndBuild();
     }
 }

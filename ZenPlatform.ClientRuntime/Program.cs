@@ -14,10 +14,11 @@ namespace ZenPlatform.ClientRuntime
             GlobalScope.Client = client;
         }
     }
+
     public class PlatformNotInitializedException : Exception
     {
     }
-    
+
     public static class GlobalScope
     {
         private static IPlatformClient _client;
@@ -28,5 +29,4 @@ namespace ZenPlatform.ClientRuntime
             set => _client = value;
         }
     }
-
 }

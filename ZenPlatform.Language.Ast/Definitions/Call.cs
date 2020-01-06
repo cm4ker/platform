@@ -10,5 +10,6 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class Call : Expression
     {
+        public bool IsStatement { get; set; }
     }
 }

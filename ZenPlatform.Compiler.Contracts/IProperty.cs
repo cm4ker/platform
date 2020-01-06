@@ -22,5 +22,7 @@ namespace ZenPlatform.Compiler.Contracts
         IPropertyBuilder WithSetter(IMethod method);
 
         IPropertyBuilder WithGetter(IMethod method);
+        
+        void SetAttribute(ICustomAttribute attr);
     }
 }

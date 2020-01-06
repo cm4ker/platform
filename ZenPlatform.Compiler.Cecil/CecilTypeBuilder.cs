@@ -5,6 +5,7 @@ using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using ZenPlatform.Compiler.Contracts;
 using GenericParameterConstraint = ZenPlatform.Compiler.Contracts.GenericParameterConstraint;
+using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 
 namespace ZenPlatform.Compiler.Cecil
 {
@@ -111,6 +112,11 @@ namespace ZenPlatform.Compiler.Cecil
 
             Definition.NestedTypes.Add(td);
             return new CecilTypeBuilder(TypeSystem, (CecilAssembly) Assembly, td);
+        }
+
+        public void SetCustomAttribute(ICustomAttribute attr)
+        {
+            throw new NotImplementedException();
         }
 
         public IType EndBuild()

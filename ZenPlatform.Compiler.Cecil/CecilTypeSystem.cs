@@ -4,6 +4,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using ZenPlatform.Compiler.Contracts;
+using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 
 namespace ZenPlatform.Compiler.Cecil
 {
@@ -86,6 +87,11 @@ namespace ZenPlatform.Compiler.Cecil
 
         public AssemblyDefinition TargetAssemblyDefinition { get; private set; }
         public IWellKnownTypes WellKnownTypes { get; }
+        public ICustomAttribute CreateAttribute(IType type)
+        {
+            throw new NotImplementedException();
+        }
+
         public IReadOnlyList<IAssembly> Assemblies => _asms.AsReadOnly();
         public IAssembly FindAssembly(string name) => RegisterAssembly(Resolve(name));
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace ZenPlatform.Compiler.Contracts
@@ -17,8 +18,18 @@ namespace ZenPlatform.Compiler.Contracts
         /// </summary>
         /// <param name="type"></param>
         ITypeBuilder ImportWithCopy(IType type);
-        
-        //ITypeBuilder DefineType(string @namespace, string name, IType baseType);
+
+        /// <summary>
+        /// Создать аттрибут
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        ICustomAttributeBuilder CreateAttribute(IType type, params IType[] args);
+
+
+        void SetAttribute(ICustomAttribute attr);
+
 
         IAssembly EndBuild();
     }

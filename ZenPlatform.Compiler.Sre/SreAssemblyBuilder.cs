@@ -77,6 +77,11 @@ namespace ZenPlatform.Compiler.Sre
             throw new NotImplementedException();
         }
 
+        public void SetAttribute(ICustomAttribute attr)
+        {
+            throw new NotImplementedException();
+        }
+
         public IAssembly EndBuild()
         {
             foreach (var defType in _definedTypes)

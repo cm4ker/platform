@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
@@ -9,15 +10,16 @@ using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public abstract class DnlibMethodBase : IMethod
     {
         private ITypeDefOrRef _declaringTR;
 
-        public DnlibMethodBase(DnlibTypeSystem typeSystem, IMethodDefOrRef method, MethodDef methodDef,
+        protected DnlibMethodBase(DnlibTypeSystem typeSystem, dnlib.DotNet.IMethod method, MethodDef methodDef,
             ITypeDefOrRef declaringType)
         {
             TypeSystem = typeSystem;
-            MethofRef = method;
+            MethodRef = method;
             MethodDef = methodDef;
             ContextResolver = new DnlibContextResolver(typeSystem, declaringType.Module);
             _declaringTR = declaringType;
@@ -33,7 +35,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public MethodDef MethodDef { get; }
 
-        public IMethodDefOrRef MethofRef { get; }
+        public dnlib.DotNet.IMethod MethodRef { get; }
 
         public string Name => MethodDef.Name;
 
@@ -42,9 +44,17 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IMethod MakeGenericMethod(IType[] typeArguments)
         {
-            var generic = new MethodSpecUser(this.MethofRef,
-                new GenericInstMethodSig(typeArguments.Select(x => ((DnlibType) x).TypeRef.ToTypeSig()).ToArray()));
-            return   new DnlibMethod(TypeSystem, generic.Method, generic.ResolveMethodDef(), _declaringTR);
+            if (MethodRef is IMethodDefOrRef mdr)
+            {
+                var sig = new GenericInstMethodSig(typeArguments.Select(x => ((DnlibType) x).TypeRef.ToTypeSig())
+                    .ToArray());
+
+                var generic = new MethodSpecUser(mdr, sig);
+
+                return new DnlibMethod(TypeSystem, generic, generic.ResolveMethodDef(), _declaringTR);
+            }
+
+            throw new Exception("Can't create generic method");
         }
 
         protected ITypeDefOrRef DeclaringTypeReference => _declaringTR;
@@ -69,23 +79,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
     public class DnlibMethod : DnlibMethodBase
     {
-        public MethodDef MethodDef { get; }
-
-        public DnlibMethod(DnlibTypeSystem ts, IMethodDefOrRef method, MethodDef methodDef,
+        public DnlibMethod(DnlibTypeSystem ts, dnlib.DotNet.IMethod method, MethodDef methodDef,
             ITypeDefOrRef declaringType) : base(ts, method, methodDef,
             declaringType)
         {
-            MethodDef = methodDef;
-        }
-
-        public bool Equals(IMethod other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMethod MakeGenericMethod(IType[] typeArguments)
-        {
-            throw new NotImplementedException();
         }
     }
 

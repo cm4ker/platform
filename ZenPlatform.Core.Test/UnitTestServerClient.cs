@@ -13,6 +13,7 @@ using ZenPlatform.Compiler.Platform;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using dnlib.DotNet;
 using ZenPlatform.ClientRuntime;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Test.Assemblies;
@@ -23,6 +24,7 @@ using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.ConfigurationExample;
@@ -107,22 +109,58 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void ConnectingAndLoginAndInvoke()
         {
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 1; i++)
             {
                 InvokeInClientServerContext((clientService, serverService, clientContext) =>
                 {
                     GlobalScope.Client = clientContext.Client;
+
                     var cmdType = clientContext.MainAssembly.GetType("CompileNamespace.__cmd_HelloFromServer");
-                    var result = cmdType.GetMethod("ClientCallProc").Invoke(null, new object[] {10});
-                    Assert.Equal(11, result);
+                    try
+                    {
+                        var result = cmdType.GetMethod("ClientCallProc")
+                            .Invoke(null, new object[] {10});
+                        Assert.Equal(11, result);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
                 });
             }
         }
 
         [Fact]
+        public void GetViewBag()
+        {
+            InvokeInClientServerContext((clientService, serverService, clientContext) =>
+                {
+                    GlobalScope.Client = clientContext.Client;
+                    
+                    var vb = clientContext.Client.Invoke<ViewBag>(new Route("Test_GetInvoice"));
+                    
+                    InvoiceLink il = new InvoiceLink(vb);
+
+                    Assert.Equal("Entity = (10:{8b888935-895d-4806-beaf-0f9e9217ad1b})", il.Presentation);
+
+                    var stLink = il.Store;
+                    
+                    Assert.Equal("Entity = (11:{9de86d2e-1597-4518-b24c-8bfe7f25bf50})", stLink.Presentation);
+                });
+        }
+
+
+        [Fact]
+        public void Test()
+        {
+            var module = ModuleDefMD.Load("ZenPlatform.Cli.dll");
+        }
+
+        [Fact]
         public void CompileAndLoadAssembly()
         {
-            var compiller = new XCCompiler();
+            var compiller = new XCCompiler(new DnlibAssemblyPlatform());
 
             var root = Factory.CreateExampleConfiguration();
 
@@ -148,7 +186,6 @@ namespace ZenPlatform.Core.Test
 
             Assert.NotNull(result);
 
-
             var invoice = result.CreateInstance("Documents._Invoice");
             Assert.NotNull(invoice);
         }
@@ -158,7 +195,8 @@ namespace ZenPlatform.Core.Test
         {
             var storage = new TestAssemblyStorage();
             var manager =
-                new AssemblyManager(new XCCompiler(), storage, new XUnitLogger<AssemblyManager>(_testOutput),
+                new AssemblyManager(new XCCompiler(new DnlibAssemblyPlatform()), storage,
+                    new XUnitLogger<AssemblyManager>(_testOutput),
                     new XCConfManipulator());
 
             var root = Factory.CreateExampleConfiguration();

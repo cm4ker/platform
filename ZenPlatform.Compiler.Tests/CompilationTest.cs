@@ -24,10 +24,15 @@ namespace ZenPlatform.Compiler.Tests
             Assert.Equal("Hello world!", result);
         }
 
+
         [Fact]
-        public void ImportTypeTest()
+        public void ExceptionTest()
         {
-            ImportRef();
+            var script = "string Main() { return \"Hello \" + \"world!\"; }";
+
+            var result = (string) this.CompileAndRun(script);
+
+            Assert.Equal("Hello world!", result);
         }
     }
 }
