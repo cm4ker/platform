@@ -13,11 +13,12 @@ using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
 {
-    [DebuggerDisplay("{" + nameof(TypeRef) + "}")]
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public class DnlibType : IType
     {
         private readonly DnlibTypeSystem _ts;
         private readonly DnlibAssembly _assembly;
+        private readonly DnlibContextResolver _cr;
 
         public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, ITypeDefOrRef typeRef, DnlibAssembly assembly)
         {
@@ -26,6 +27,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
             TypeRef = typeRef ?? throw new ArgumentNullException(nameof(typeRef));
             TypeDef = typeDef ?? typeRef.ResolveTypeDef();
+
+            if (typeDef is null) throw new ArgumentNullException(nameof(typeDef));
+            _cr = new DnlibContextResolver(_ts, typeDef.Module);
         }
 
         public TypeDef TypeDef { get; }
@@ -34,7 +38,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public bool Equals(IType other)
         {
-            return new SigComparer().Equals(TypeRef, ((DnlibType) other).TypeRef);
+            return new SigComparer().Equals(TypeRef, ((DnlibType) other)?.TypeRef);
         }
 
         public object Id => TypeDef.FullName;
@@ -48,6 +52,7 @@ namespace ZenPlatform.Compiler.Dnlib
         private IReadOnlyList<IMethod> _methods;
         private IReadOnlyList<IConstructor> _constructors;
         private IReadOnlyList<IType> _interfaces;
+        private IReadOnlyList<IType> _genericParameters;
 
         public IReadOnlyList<IProperty> Properties =>
             _properties ??= TypeDef.Properties.Select(x => new DnlibProperty(_ts, x)).ToList();
@@ -63,8 +68,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IReadOnlyList<IConstructor> Constructors =>
             _constructors ??= TypeDef.FindConstructors().Select(x =>
-                (IConstructor) new DnlibConstructor(_ts, new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef), x,
-                    TypeRef)).ToList();
+            {
+                return (IConstructor) new DnlibConstructor(_ts,
+                    new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef) {MethodSig = x.MethodSig}, x,
+                    TypeRef);
+            }).ToList();
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
         public IReadOnlyList<IType> GenericArguments { get; }
@@ -78,6 +86,12 @@ namespace ZenPlatform.Compiler.Dnlib
                         (DnlibAssembly) _ts.FindAssembly(x.Interface.ResolveTypeDef().DefinitionAssembly.FullName));
                 })
                 .ToList();
+
+
+        public IReadOnlyList<IType> GenericParameters =>
+            _genericParameters ??= (TypeRef as TypeSpec).TryGetGenericInstSig().GenericArguments
+                .Select(x => _cr.GetType(x)).ToList();
+
 
         public bool IsAssignableFrom(IType type)
         {
@@ -102,7 +116,18 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType MakeGenericType(IReadOnlyList<IType> typeArguments)
         {
-            throw new NotImplementedException();
+            if (TypeRef is TypeDef || TypeRef is TypeRef)
+            {
+                var sig = new GenericInstSig(TypeRef.TryGetValueTypeSig(), typeArguments
+                    .Select(x => ((DnlibType) x).TypeRef.ToTypeSig())
+                    .ToArray());
+
+                var generic = new TypeSpecUser(sig);
+
+                return new DnlibType(_ts, TypeDef, generic, _assembly);
+            }
+
+            throw new Exception("Can't create generic Type");
         }
 
         public IType GenericTypeDefinition { get; }
@@ -118,10 +143,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType MakeArrayType(int dimensions)
         {
-            throw new NotImplementedException();
+            return new DnlibType(_ts, null, new TypeSpecUser(new ArraySig(TypeRef.ToTypeSig(), dimensions)), _assembly);
         }
 
-        public IType BaseType { get; }
+        public IType BaseType => _ts.Resolve(TypeDef.BaseType);
 
         public bool IsValueType => TypeDef.IsValueType;
 
@@ -129,7 +154,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public bool IsInterface => TypeDef.IsInterface;
 
-        public bool IsSystem { get; }
+        public bool IsSystem => false;
 
         public bool IsPrimitive => TypeDef.IsPrimitive;
 
@@ -137,7 +162,5 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             throw new NotImplementedException();
         }
-
-        public IReadOnlyList<IType> GenericParameters { get; }
     }
 }

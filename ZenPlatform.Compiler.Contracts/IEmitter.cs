@@ -21,7 +21,6 @@ namespace ZenPlatform.Compiler.Contracts
 
         ILabel BeginExceptionBlock();
         IEmitter BeginCatchBlock(IType exceptionType);
-        IEmitter CatchException(IType exceptionType);
         IEmitter EndExceptionBlock();
 
         IEmitter MarkLabel(ILabel label);

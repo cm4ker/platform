@@ -13,16 +13,6 @@ namespace ZenPlatform.Compiler.Dnlib
         private IEmitter _generator;
         public IEmitter Generator => _generator ??= new DnlibEmitter(TypeSystem, MethodDef);
 
-        public bool Equals(IMethod other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMethod MakeGenericMethod(IType[] typeArguments)
-        {
-            throw new NotImplementedException();
-        }
-
         public IParameter DefineParameter(string name, IType type, bool isOut, bool isRef)
         {
             var dtype = (DnlibType) type;
@@ -36,22 +26,23 @@ namespace ZenPlatform.Compiler.Dnlib
             p.Name = name;
 
             var dp = new DnlibParameter(TypeSystem, MethodDef, DeclaringTypeReference.Module, p);
-            
-            ((List<DnlibParameter>)Parameters).Add(dp);
-            
+
+            ((List<DnlibParameter>) Parameters).Add(dp);
+
             return dp;
         }
 
         public IMethodBuilder WithReturnType(IType type)
         {
             MethodDef.ReturnType = ContextResolver.GetReference(type.ToTypeRef()).ToTypeSig();
-            
+
             return this;
         }
 
         public DnlibMethodBuilder(DnlibTypeSystem typeSystem, MethodDef method, ITypeDefOrRef declaringType) :
             base(typeSystem, method, method, declaringType)
         {
+            Parameters.Any();
         }
     }
 }

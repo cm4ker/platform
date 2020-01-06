@@ -2,6 +2,7 @@ using System;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
 using IField = dnlib.DotNet.IField;
+using IMethod = dnlib.DotNet.IMethod;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib
@@ -40,20 +41,25 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new Exception("This reference not supported");
         }
 
+        public IMethod GetReference(IMethod method)
+        {
+            return _moduleDef.Import(method);
+        }
+
         public IType GetType(ITypeDefOrRef tr) => _ts.Resolve(tr.ToTypeRef());
 
         public IType GetType(TypeSig tsig)
         {
             if (tsig.AssemblyQualifiedName.Contains("System.Private.CoreLib"))
             {
-                return _ts.Resolve(new TypeRefUser(_moduleDef, tsig.Namespace, tsig.TypeName, _moduleDef));
+                return _ts.FindAssembly(_ts.GetSystemBindings().MSCORLIB).FindType(tsig.FullName);
             }
             else
             {
-                var result =  _ts.Resolve(tsig.ToTypeDefOrRef());
+                var result = _ts.Resolve(tsig.ToTypeDefOrRef());
                 if (result is UnresolvedDnlibType)
                 {
-                    result =  _ts.Resolve(tsig.ToTypeDefOrRef());
+                    result = _ts.Resolve(tsig.ToTypeDefOrRef());
                     throw new Exception($"Can't resolve type {tsig}");
                 }
 

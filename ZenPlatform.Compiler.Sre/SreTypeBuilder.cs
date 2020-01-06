@@ -26,6 +26,7 @@ namespace ZenPlatform.Compiler.Sre
                 (isPublic ? FieldAttributes.Public : FieldAttributes.Private)
                 | (isStatic ? FieldAttributes.Static : default(FieldAttributes)));
 
+
             var sreField = new SreField(_system, f);
             _fileds.Add(sreField);
             return sreField;
@@ -129,6 +130,7 @@ namespace ZenPlatform.Compiler.Sre
         }
 
         public IEmitter Generator { get; }
+
         public IParameter DefineParameter(IType type)
         {
             throw new System.NotImplementedException();

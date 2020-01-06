@@ -4,6 +4,7 @@ using System.Linq;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using ZenPlatform.Compiler.Contracts;
+using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 using IField = ZenPlatform.Compiler.Contracts.IField;
 using IMethod = ZenPlatform.Compiler.Contracts.IMethod;
 using IType = ZenPlatform.Compiler.Contracts.IType;
@@ -19,7 +20,11 @@ namespace ZenPlatform.Compiler.Dnlib
             : base(typeSystem, typeDef, typeDef, assembly)
         {
             _ts = typeSystem;
+
             Methods.Any();
+            Properties.Any();
+            Constructors.Any();
+            CustomAttributes.Any();
 
             _r = new DnlibContextResolver(_ts, typeDef.Module);
         }
@@ -60,18 +65,33 @@ namespace ZenPlatform.Compiler.Dnlib
             var dm = new DnlibMethodBuilder(_ts, method, TypeRef);
             ((List<IMethod>) Methods).Add(dm);
 
+
             method.Attributes |= (isPublic) ? MethodAttributes.Public : MethodAttributes.Private;
 
             method.IsStatic = isStatic;
+
+
             if (isInterfaceImpl)
+            {
                 method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
+            }
+            else
+            {
+                method.Attributes |= MethodAttributes.HideBySig;
+            }
+
+            var c = CallingConvention.Default;
+
+            if (!isStatic)
+                c |= CallingConvention.HasThis;
 
             method.DeclaringType = TypeDef;
-            method.Body = new CilBody() {KeepOldMaxStack = true};
-            method.MethodSig = new MethodSig();
+            method.Body = new CilBody();
+
+            method.Body.InitLocals = true;
+            method.MethodSig = new MethodSig(c);
 
             method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.ToTypeRef()).ToTypeSig();
-
 
             return dm;
         }
@@ -79,7 +99,6 @@ namespace ZenPlatform.Compiler.Dnlib
         public IPropertyBuilder DefineProperty(IType propertyType, string name, bool isStatic = false)
         {
             var prop = new PropertyDefUser(name);
-
 
             TypeDef.Properties.Add(prop);
             prop.DeclaringType = TypeDef;
@@ -102,26 +121,39 @@ namespace ZenPlatform.Compiler.Dnlib
             MethodSig sig;
 
             if (isStatic)
-                sig = MethodSig.CreateStatic(new ClassSig(_ts.GetSystemBindings().Void.GetRef()));
+                sig = MethodSig.CreateStatic(_ts.GetSystemBindings().Void.GetRef().ToTypeSig());
             else
-                sig = MethodSig.CreateInstance(new ClassSig(_ts.GetSystemBindings().Void.GetRef()));
+                sig = MethodSig.CreateInstance(_ts.GetSystemBindings().Void.GetRef().ToTypeSig());
 
             foreach (var arg in args)
             {
-                sig.Params.Add(new ClassSig(((DnlibType) arg).TypeRef));
+                sig.Params.Add(arg.GetRef().ToTypeSig());
             }
 
             var name = (isStatic) ? ".cctor" : ".ctor";
             var c = new MethodDefUser(name, sig);
 
+
+            c.Attributes |= MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Public |
+                            MethodAttributes.HideBySig;
+
             c.DeclaringType = TypeDef;
 
-            return new DnlibConstructorBuilder(_ts, c, TypeRef);
+            var dc = new DnlibConstructorBuilder(_ts, c, TypeRef);
+            ((List<IConstructor>) Constructors).Add(dc);
+
+            return dc;
         }
 
         public ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic)
         {
             throw new NotImplementedException();
+        }
+
+        public void SetCustomAttribute(ICustomAttribute attr)
+        {
+            ((List<ICustomAttribute>) CustomAttributes).Add(attr);
+            TypeDef.CustomAttributes.Add(((DnlibCustomAttribute) attr).CustomAttribute);
         }
 
         public IType EndBuild()
