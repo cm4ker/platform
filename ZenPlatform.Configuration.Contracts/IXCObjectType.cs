@@ -6,7 +6,7 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
 {
-    public interface IXCObjectReadOnlyType : IXCType, IChildItem<IXCComponent>
+    public interface IXCStructureType : IXCType, IChildItem<IXCComponent>
     {
         /// <summary>
         /// Это ссылочный тип
@@ -47,7 +47,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Объекта влияет на структуру базы данных
         /// </summary>
-        bool HasDBChanges { get; }
+        bool HasDatabaseUsed { get; }
 
         /// <summary>
         /// Загрузить зависимости.
@@ -78,7 +78,7 @@ namespace ZenPlatform.Configuration.Contracts
 
     }
 
-    public interface IXCObjectType : IXCObjectReadOnlyType
+    public interface IXCObjectType : IXCStructureType
     {
     }
 
@@ -91,7 +91,7 @@ namespace ZenPlatform.Configuration.Contracts
         }
 
 
-        public static IXProperty GetPropertyByName(this IXCObjectReadOnlyType type, string propName)
+        public static IXProperty GetPropertyByName(this IXCStructureType type, string propName)
         {
             if (type.HasProperties)
                 return type.GetProperties().FirstOrDefault(x => x.Name == propName) ??

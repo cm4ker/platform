@@ -30,7 +30,12 @@ namespace ZenPlatform.EntityComponent.Configuration
             return _metadata;
         }
 
+        public override bool IsAbstract => false;
+        public override bool IsSealed => false;
+        public override bool HasCommands => true;
         public override bool HasProperties => true;
+        public override bool HasModules => true;
+        public override bool HasDatabaseUsed => true;
 
 
         /// <summary>
@@ -99,8 +104,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return Properties;
         }
-
-        /// <inheritdoc />
+        
         public override IEnumerable<IXCProgramModule> GetProgramModules()
         {
             return Modules;
@@ -108,22 +112,18 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public override IEnumerable<IXCCommand> GetCommands()
         {
-            foreach (var command in Commands)
-            {
-                yield return command;
-            }
+            return Commands;
         }
 
         public override bool Equals(object obj)
         {
             return obj is XCSingleEntity entity &&
-                   
-                   base.Equals(obj);
+                   Guid.Equals(entity.Guid);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(base.GetHashCode(), Properties, Modules, Commands);
+            return HashCode.Combine(base.GetHashCode(), Guid);
         }
     }
 }

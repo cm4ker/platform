@@ -4,10 +4,12 @@ using System.Linq;
 using MoreLinq.Extensions;
 using ZenPlatform.Configuration.CompareTypes;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.Migration;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Model;
 
@@ -35,86 +37,168 @@ namespace ZenPlatform.EntityComponent.Migrations
         {
         }
 
-
-        public SSyntaxNode GetStep1(IXCObjectType old, IXCObjectType actual, DDLQuery query)
+        private bool NeedToChangeDatabase(XCSingleEntity x, XCSingleEntity y)
         {
-            var oldtype = (XCObjectTypeBase)old;
-            var actualtype = (XCObjectTypeBase)actual;
+           return !x.Properties.SequenceEqual(y.Properties);
+        }
 
-            if (old == null && actual == null)
-            {
-
-            } else
-            if (old != null && actual == null)
-            {
-                query.Delete().Table(oldtype.RelTableName);
-            } else 
-            if (old == null && actual != null )
-            {
-                var tableBuilder = query.Create().Table(actualtype.RelTableName);
-
-                foreach (var property in actual.GetProperties())
-                {
-                    property.GetPropertySchemas().ForEach(s =>
+        private void DeleteTableTask(int step, List<IMigrationTask> tasks, string tableName)
+        {
+            tasks.Add(new MigrationTaskAction(step,
+                    query =>
                     {
-                        tableBuilder.WithColumnDefinition(GetColumnDefenitionBySchema(s));
-                    });
-                }
-                    
-                
-            }
-            else
-            {
-                //var comparer = new XCObjectTypeComparer<IXCObjectType>();
-               //if (!comparer.Equals(old, actual))
-               if (!old.Equals(actual))
-                {
-                    query.Copy().Table().FromTable(oldtype.RelTableName).ToTable($"{actualtype.RelTableName}_tmp");
-                }
-            }
+                        query.Delete().Table(tableName);
+                    },
+                    query =>
+                    {
+
+                    }, $"Delete table {tableName}"));
+        }
+
+        private void CopyTableTask(int step, List<IMigrationTask> tasks, string tableNameFrom, string tableNameTo)
+        {
+            tasks.Add(new MigrationTaskAction(step,
+                    query =>
+                    {
+                        query.Copy().Table().FromTable(tableNameFrom).ToTable(tableNameTo);
+                    },
+                    query =>
+                    {
+                        query.Delete().Table(tableNameTo);
+                    }, $"Copy table {tableNameFrom} => {tableNameTo}"));
+        }
+
+        private void RenameTableTask(int step, List<IMigrationTask> tasks, string tableNameFrom, string tableNameTo)
+        {
+            tasks.Add(new MigrationTaskAction(step,
+                    query =>
+                    {
+                        query.Rename().Table(tableNameFrom).To(tableNameTo);
+                    },
+                    query =>
+                    {
+                        query.Rename().Table(tableNameTo).To(tableNameFrom);
+                    }, $"Rename table {tableNameFrom} => {tableNameTo}"));
+        }
+
+
+        private void CreateTableTask(int step, List<IMigrationTask> tasks, XCSingleEntity entity)
+        {
+            tasks.Add(new MigrationTaskAction(step,
+                    query =>
+                    {
+                        var tableBuilder = query.Create().Table(entity.RelTableName);
+
+                        foreach (var property in entity.Properties)
+                        {
+                            property.GetPropertySchemas().ForEach(s =>
+                            {
+                                tableBuilder.WithColumnDefinition(GetColumnDefenitionBySchema(s));
+                            });
+                        }
+                    },
+                    query =>
+                    {
+                        query.Delete().Table(entity.RelTableName);
+                    }, $"Create table {entity.RelTableName}"));
+        }
+
+        private void ChangeTableTask(int step, List<IMigrationTask> tasks, XCSingleEntity old, XCSingleEntity actual)
+        {
+            tasks.Add(new MigrationTaskAction(step,
+                    query =>
+                    {
+                        string tableName = $"{actual.RelTableName}_tmp";
+
+                        var props = old.GetProperties()
+                           .FullJoin(
+                               actual.GetProperties(), x => x.Guid,
+                               x => new { old = x, actual = default(IXProperty) },
+                               x => new { old = default(IXProperty), actual = x },
+                               (x, y) => new { old = x, actual = y });
+
+                        foreach (var property in props)
+                        {
+                            if (property.old == null)
+                            {
+                                CreateProperty(query, property.actual, tableName);
+                            }
+                            else
+                            if (property.actual == null)
+                            {
+                                DeleteProperty(query, property.old, tableName);
+                            }
+                            else
+                            {
+                                if (!property.old.Equals(property.actual))
+                                    ChangeProperty(query, property.old, property.actual, tableName);
+                            }
+                        }
+                    },
+                    query =>
+                    {
+                        
+                    }, $"Change table {actual.RelTableName}_tmp"));
             
-
-            return query.Expression;
         }
 
-        public SSyntaxNode GetStep2(IXCObjectType old, IXCObjectType actual, DDLQuery query)
+
+        public IList<IMigrationTask> GetMigration(IXCComponent oldState, IXCComponent actualState)
         {
-            var oldtype = (XCObjectTypeBase)old;
-            var actualtype = (XCObjectTypeBase)actual;
+            var oldTypes = oldState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
+            var actualTypes = actualState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
 
-            if (old != null && actual != null)
+            var types = oldTypes.FullJoin(actualTypes, x => x.Guid,
+                x => new { old = x, actual = default(XCSingleEntity) },
+                x => new { old = default(XCSingleEntity), actual = x },
+                (x, y) => new { old = x, actual = y });
+
+
+            var tasks = new List<IMigrationTask>();
+
+
+
+            foreach (var entitys in types)
             {
+                var old = entitys.old;
+                var actual = entitys.actual;
 
-
-                string tableName = $"{actualtype.RelTableName}_tmp";
-
-                var props = old.GetProperties()
-                   .FullJoin(
-                       actual.GetProperties(), x => x.Guid, 
-                       x => new { old = x, actual = default(IXProperty) },
-                       x => new { old = default(IXProperty), actual = x },
-                       (x, y) => new { old = x, actual = y });
-
-                foreach (var property in props)
+                if (old == null && actual == null)
                 {
-                    if (property.old == null)
-                    {
-                        CreateProperty(query, property.actual, tableName);
-                    } else
-                    if (property.actual == null)
-                    {
-                        DeleteProperty(query, property.old, tableName);
-                    } else
-                    {
-                        if (!property.old.Equals(property.actual))
-                            ChangeProperty(query, property.old, property.actual, tableName);
-                    }
+                    
                 }
-                
+                else
+                if (old != null && actual == null)
+                {
+                    DeleteTableTask(10, tasks, old.RelTableName);
+                    
+                }
+                else
+                if (old == null && actual != null)
+                {
+                    CreateTableTask(10, tasks, actual);
+
+
+
+                }
+                else
+                {
+                    if (NeedToChangeDatabase(old, actual))
+                    {
+                        CopyTableTask(10, tasks, old.RelTableName, $"{actual.RelTableName}_tmp");
+                        ChangeTableTask(20, tasks, old, actual);
+                        DeleteTableTask(30, tasks, old.RelTableName);
+                        RenameTableTask(40, tasks, $"{actual.RelTableName}_tmp", old.RelTableName);
+
+                    }
+                        
+                }
             }
 
-            return query.Expression;
+
+            return tasks;
         }
+
 
         private void DeleteSchema(DDLQuery query, XCColumnSchemaDefinition schema, string tableName)
         {
@@ -173,32 +257,6 @@ namespace ZenPlatform.EntityComponent.Migrations
             }
         }
 
-
-        public SSyntaxNode GetStep3(IXCObjectType old, IXCObjectType actual, DDLQuery query)
-        {
-
-            var oldtype = (XCObjectTypeBase)old;
-            var actualtype = (XCObjectTypeBase)actual;
-
-            if (old != null && actual != null && !old.Equals(actual))
-            {
-                query.Delete().Table($"{actualtype.RelTableName}");
-            }
-            return query.Expression;
-        }
-
-        public SSyntaxNode GetStep4(IXCObjectType old, IXCObjectType actual, DDLQuery query)
-        {
-            var oldtype = (XCObjectTypeBase)old;
-            var actualtype = (XCObjectTypeBase)actual;
-
-            if (old != null && actual != null && !old.Equals(actual))
-            {
-                query.Rename().Table($"{actualtype.RelTableName}_tmp").To(oldtype.RelTableName);
-            }
-            return query.Expression;
-        }
-
         public ColumnDefinition GetColumnDefenitionBySchema(XCColumnSchemaDefinition schema)
         { 
 
@@ -235,7 +293,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                     case XCInt t:
                         builder.AsInt().NotNullable();
                         break;
-                    case XCObjectTypeBase t:
+                    case IXCStructureType t:
                         builder.AsGuid().NotNullable();
                         break;
                 }
@@ -249,6 +307,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             {
                 builder.AsGuid();
             }
+
 
             
 

@@ -56,11 +56,6 @@ namespace ZenPlatform.Configuration.Structure.Data
             AttachedComponents = new List<IXCComponent>();
         }
 
-        public void SetParent(IXCData data)
-        {
-            _parent = data;
-        }
-
         /// <summary>
         /// Информация о компоненте
         /// </summary>
@@ -74,10 +69,6 @@ namespace ZenPlatform.Configuration.Structure.Data
             get => _isLoaded;
         }
 
-        /// <summary>
-        /// Хранилище компонента
-        /// </summary>
-        public IXCBlob Blob { get; set; }
 
         /// <summary>
         /// Список идентификаторов присоединённых компонентов
@@ -89,12 +80,6 @@ namespace ZenPlatform.Configuration.Structure.Data
         /// </summary>
         public List<IXCComponent> AttachedComponents { get; private set; }
 
-        /// <summary>
-        /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
-        /// </summary>
-        //public IXCBlobCollection Include { get; set; }
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Assembly ComponentAssembly
         {
             get => _componentAssembly;
@@ -131,70 +116,6 @@ namespace ZenPlatform.Configuration.Structure.Data
 
             //Инициализируем компонент
             _componentImpl.OnInitializing();
-        }
-
-
-        /// <summary>
-        /// Загрузить все данные компонента из хранилища
-        /// </summary>
-        public void LoadComponent()
-        {/*
-            var stream = Root.Storage.GetBlob(Blob.Name, nameof(XCComponent));
-
-            using (var ms = new MemoryStream())
-            {
-                stream.CopyTo(ms);
-                var bytes = ms.ToArray();
-                var module = ModuleDefMD.Load(bytes);
-
-                var alreadyLoaded = AppDomain.CurrentDomain.GetAssemblies()
-                    .FirstOrDefault(x => x.FullName == module.Assembly.FullName);
-
-                if (alreadyLoaded != null)
-                    ComponentAssembly = alreadyLoaded;
-                else
-                    ComponentAssembly = Assembly.Load(bytes);
-            }
-
-
-            //Подгружаем все дочерние объекты
-            foreach (var includeBlob in Include)
-            {
-                Loader.LoadObject(this, includeBlob);
-            }
-
-            _isLoaded = true;
-            */
-        }
-
-        /// <summary>
-        /// Сохрнить все данные компонента в хранилище
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        public void SaveComponent()
-        {
-            /*
-            if (ComponentAssembly is null) return;
-
-            foreach (var type in ObjectTypes)
-            {
-                Loader.SaveObject(type);
-            }
-
-            if (Blob is null)
-                Blob = new XCBlob(Path.GetFileName(ComponentAssembly.Location));
-
-            var refelectionModule = ComponentAssembly.Modules.FirstOrDefault();
-            ModuleDefMD module = ModuleDefMD.Load(refelectionModule);
-
-            using (var ms = new MemoryStream())
-            {
-                module.Write(ms);
-                ms.Seek(0, SeekOrigin.Begin);
-
-                Root.Storage.SaveBlob(Blob.Name, nameof(XCComponent), ms);
-            }
-            */
         }
 
         public IXCRoot Root => _parent.Parent;
@@ -312,13 +233,9 @@ namespace ZenPlatform.Configuration.Structure.Data
             }
 
             return settings;
+    
         }
 
-
     }
 
-
-    public class XCBlobCollection : List<IXCBlob>, IXCBlobCollection
-    {
-    }
 }

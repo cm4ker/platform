@@ -21,13 +21,15 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Это абстрактный тип
         /// </summary>
-        public bool IsAbstract { get; set; }
+        public virtual bool IsAbstract => true;
+        public virtual bool IsSealed => throw new NotImplementedException();
+        public virtual bool HasCommands => throw new NotImplementedException();
 
-        /// <summary>
-        /// Этот тип нельзя наследовать
-        /// </summary>
-        [XmlElement]
-        public bool IsSealed { get; set; }
+        public virtual bool HasProperties => throw new NotImplementedException();
+
+        public virtual bool HasModules => throw new NotImplementedException();
+
+        public virtual bool HasDatabaseUsed => throw new NotImplementedException();
 
         /// <summary>
         /// 
@@ -59,10 +61,10 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
          * Результаты раздумий: Все мапинги должны быть в БД, а не в конфигурации. Оставляю TODO
          * выше просто для того, чтобы можно было поразмышлять,  вдруг я был не прав
          */
-        [XmlIgnore]
+  
         public string RelTableName { get; set; }
 
-        public bool HasCommands { get; }
+        
 
         /// <summary>
         /// Инициализировать сущность.
@@ -86,11 +88,9 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// У объекта есть поддержка свойств
         /// </summary>
-        public virtual bool HasProperties { get; }
+        
 
-        public bool HasModules { get; }
-
-        public bool HasDBChanges => throw new NotImplementedException();
+        IXCComponent IChildItem<IXCComponent>.Parent { get => _parent; set => _parent = value; }
 
         /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
@@ -134,17 +134,19 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     {
         public bool IsLink => true;
 
-        public bool IsAbstract { get; }
+        public virtual bool IsAbstract => true;
 
-        public bool IsSealed { get; }
+        public virtual bool IsSealed => throw new NotImplementedException();
 
         public IXCType BaseType { get; }
 
-        public virtual bool HasProperties { get; }
+        public virtual bool HasProperties => throw new NotImplementedException();
 
-        public bool HasModules { get; }
+        public virtual bool HasModules => throw new NotImplementedException();
 
-        public bool HasCommands { get; }
+        public virtual bool HasCommands => throw new NotImplementedException();
+
+        public virtual bool HasDatabaseUsed => throw new NotImplementedException();
 
         public void Initialize()
         {
@@ -185,6 +187,5 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public IXCObjectType ParentType { get; protected set; }
 
-        public bool HasDBChanges => throw new NotImplementedException();
     }
 }

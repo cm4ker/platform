@@ -17,6 +17,22 @@ namespace ZenPlatform.QueryBuilder.Builders
         public SSyntaxNode Expression => _expression;
         private Querys _expression = new Querys();
 
+        public DDLQuery Add(Action<QueryMachine> action)
+        {
+            QueryMachine machine = new QueryMachine();
+
+            action(machine);
+
+            return Add((SSyntaxNode)machine.pop());
+        }
+
+        public DDLQuery Add(SSyntaxNode syntax)
+        {
+            _expression.QueryList.Add(syntax);
+
+            return this;
+        }
+
         public CreateBuilder Create()
         {
             var builder = new CreateBuilder(_expression);
