@@ -223,6 +223,13 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="LookupExpression" Base="Expression">
+        <Arguments>
+            <Single Name="Parent" Type="Expression"/>
+            <Single Name="Lookup" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+        
     <Syntax Name="AssignFieldExpression" Base="Expression">
         <Arguments>
             <Single Name="Expression" Type="Expression"/>

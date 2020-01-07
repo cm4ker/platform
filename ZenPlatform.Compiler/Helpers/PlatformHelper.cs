@@ -97,6 +97,47 @@ namespace ZenPlatform.Compiler.Helpers
 
             return null;
         }
+
+        public static TypeSyntax ToAstType(this IType type)
+        {
+            SingleTypeSyntax GetSingle(IType elementType)
+            {
+                var singleType = new SingleTypeSyntax(null, elementType.FullName, TypeNodeKind.Unknown);
+
+                if (elementType.IsPrimitive)
+                {
+                    singleType.ChangeKind(elementType.Name switch
+                    {
+                        "String" => TypeNodeKind.String,
+                        "Int32" => TypeNodeKind.Int,
+                        "Byte" => TypeNodeKind.Byte,
+                        "Boolean" => TypeNodeKind.Boolean,
+                        _ => throw new Exception($"New unknown primitive type {elementType.Name}")
+                    });
+                }
+                else
+                {
+                    singleType.ChangeKind(TypeNodeKind.Object);
+                }
+
+                return singleType;
+            }
+
+            TypeSyntax GetArray(IType elementType)
+            {
+                if (elementType.IsArray)
+                    return GetArray(elementType.ArrayElementType);
+
+                return new ArrayTypeSyntax(GetSingle(elementType));
+            }
+
+            if (type.IsArray)
+            {
+                return GetArray(type.ArrayElementType);
+            }
+
+            return GetSingle(type);
+        }
     }
 
     public static class Helper

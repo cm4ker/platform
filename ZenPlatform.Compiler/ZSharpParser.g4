@@ -8,14 +8,23 @@ entryPoint:
     (moduleDefinition
     | typeDefinition
     | usingDefinition
-    | namespaceDefinition)*;
+    | namespaceDefinition
+    | aliasingTypeDefinition)*;
 
 usingDefinition : 
-        USING name ';'
+        USING namespace ';';
+
+aliasingTypeDefinition: 
+        USING alias=name '=' namespace ('.' typeName = name) ';';
+
+namespace :
+ name ('.' name)*
 ;
 
+
+
 namespaceDefinition : 
-    NAMESPACE name '{' (moduleDefinition | typeDefinition)* '}'
+    NAMESPACE namespace '{' (moduleDefinition | typeDefinition)* '}'
 ;
 
 /*
@@ -84,7 +93,7 @@ assigment:
 
 
 functionCall: 
-    (expressionPrimitive '.')? functionName=name '(' arguments? ')' ('.' (functionCall | expressionPrimitive))?
+    functionName=name '(' arguments? ')'
 ;
 
 
@@ -122,14 +131,20 @@ string_literal
 	;
 
 
+
 expression:
-    expressionStructural 
-    | lookup 
+    expressionStructural
+    | lookupExpression
     ;
+
+lookupExpression:
+    lookupExpression '.' expressionStructural    
+    | expressionStructural '.' expressionStructural
+;
 
 expressionStructural:
    functionCall
-   |expressionPrimitive
+   | expressionPrimitive 
    ;
 
 expressionPrimitive:
@@ -230,8 +245,6 @@ arrayType:
 name:
     IDENTIFIER;
 
-lookup:
-    expressionStructural ('.' expressionStructural)+;
 
 globalVar:
     '$' ('.' (name | functionCall))*;  
