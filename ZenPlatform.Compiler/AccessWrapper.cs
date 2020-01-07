@@ -9,7 +9,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
-using ArrayTypeSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ArrayTypeSyntax;
+using ArrayTypeSyntax = ZenPlatform.Language.Ast.Definitions.ArrayTypeSyntax;
 using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 
 namespace ZenPlatform.Compiler
