@@ -155,28 +155,24 @@ namespace ZenPlatform.Compiler.Generation
         private void EmitInternal(IEmitter e, Expression exp, GlobalVarTreeItem currentItem,
             Action<object> onUnknown)
         {
-            if (exp is Call c)
+            if (exp is LookupExpression le)
             {
-                var node = currentItem.Childs.Select(x => x as GlobalVarTreeItem)
-                               .FirstOrDefault(x => x.Name == c.Name && x.Type == VarTreeLeafType.Func) ??
-                           throw new Exception(
-                               $"Node with name {c.Name} not found in global var. Component must register this name.");
+                if (le.Lookup is Call c)
+                {
+                    var node = currentItem.Childs.Select(x => x as GlobalVarTreeItem)
+                                   .FirstOrDefault(x => x.Name == c.Name && x.Type == VarTreeLeafType.Func) ??
+                               throw new Exception(
+                                   $"Node with name {c.Name} not found in global var. Component must register this name.");
 
-                onUnknown(c.Arguments);
+                    onUnknown(c.Arguments);
 
-                onUnknown(c.Expression);
+                    onUnknown(c.Expression);
 
-                e.EmitCall((IMethod) node.CodeObject);
-            }
-            else if (exp is GetFieldExpression fe)
-            {
-                //emit field lookup
-                var node = currentItem.Childs.Select(x => x as GlobalVarTreeItem)
-                               .FirstOrDefault(x => x.Name == fe.FieldName && x.Type == VarTreeLeafType.Prop) ??
-                           throw new Exception(
-                               $"Node with name {fe.FieldName} not found in global var. Component must register this name.");
-
-                EmitInternal(e, fe.Expression, node, onUnknown);
+                    e.EmitCall((IMethod) node.CodeObject);
+                }
+                else if (le.Lookup is Name fe)
+                {
+                }
             }
         }
     }
