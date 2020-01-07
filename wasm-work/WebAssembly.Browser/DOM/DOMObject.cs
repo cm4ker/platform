@@ -20,8 +20,10 @@ namespace WebAssembly.Browser.DOM
 
         public bool IsCorrupted
         {
-            get { return ManagedJSObject == null; }
+            get { return disposed || ManagedJSObject == null || ManagedJSObject.JSHandle == -1; }
         }
+
+        public object Bug { get; set; }
 
         public DOMObject(JSObject jsObject)
         {
@@ -214,9 +216,9 @@ namespace WebAssembly.Browser.DOM
                     //
                 }
 
-                //#if DEBUG
-                //            Console.WriteLine($"CS::DOMObject::Dispose {ManagedJSObject}");
-                //#endif
+#if DEBUG
+                Console.WriteLine($"CS::{this.GetType()}::Dispose {ManagedJSObject} {Bug}");
+#endif
                 // Free any unmanaged objects here.
                 //
                 ManagedJSObject?.Dispose();
@@ -231,6 +233,10 @@ namespace WebAssembly.Browser.DOM
         // same objects may get disposed out from under you.
         ~DOMObject()
         {
+#if DEBUG
+            Console.WriteLine($"CS::DOMObject::Destructor {ManagedJSObject}");
+#endif
+
             Dispose(false);
         }
     }
