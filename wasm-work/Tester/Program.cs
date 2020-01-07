@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using Avalonia;
 using Avalonia.Data;
@@ -195,10 +198,10 @@ namespace Tester
 
     class Program
     {
-        static void Main(string[] args)
+        static void Main2(string[] args)
         {
             Console.Clear();
-            
+
             var g = new Grid();
 
             g.Init();
@@ -239,6 +242,35 @@ namespace Tester
 
                 key = Console.ReadKey();
             }
+        }
+
+        public class AnyRef
+        {
+            ~AnyRef()
+            {
+                Console.WriteLine($"The {ToString()} destructor is executing.");
+            }
+        }
+
+        public static void Main(string[] args)
+        {
+            var a = new AnyRef();
+    
+            var hand = GCHandle.Alloc(a, GCHandleType.Normal);
+
+
+            Console.WriteLine(hand.IsAllocated);
+
+            hand.Free();
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            while (true)
+            {
+            }
+
+            //Console.WriteLine(a.Handle.IsAllocated);
         }
     }
 }

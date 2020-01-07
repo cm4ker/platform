@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Data;
 using UIModel.HtmlWrapper;
 using WebAssembly;
@@ -81,14 +83,14 @@ public class Program
     }
 
     private static int pos = 0;
-    private static Grid g;
-    public static void Main()
-    {
-        
-        g = new Grid();
-        g.Init();
-        D.Doc.Body.AppendChild(g.Root);
 
+    public static Grid G { get; set; }
+
+    public static void Main3()
+    {
+        G = new Grid();
+        G.Init();
+        D.Doc.Body.AppendChild(G.Root);
 
         var b = D.Doc.CreateElement<HTMLInputElement>();
         b.Type = InputElementType.Button;
@@ -96,11 +98,39 @@ public class Program
         b.OnClick += (sender, args) =>
         {
             pos++;
-            g.Scroll(pos);
+            G.Scroll(pos);
         };
-        
+
         D.Doc.Body.AppendChild(b);
-        
+
+        Console.WriteLine("DOCUMENT: " + D.Doc.IsCorrupted);
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
+//        Task.Delay(2000).Wait();
+
+        Console.WriteLine("DOCUMENT AFTER: " + D.Doc.IsCorrupted);
+    }
+
+    public static HTMLDivElement A;
+
+    public static void Main()
+    {
+        A = D.Doc.CreateElement<HTMLDivElement>();
+
+        A.Bug = "Object A";
+
+        var b = D.Doc.CreateElement<HTMLDivElement>();
+        b.Bug = "Object B";
+
+        A.AppendChild(b);
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        Console.WriteLine(A.IsCorrupted);
     }
 
 

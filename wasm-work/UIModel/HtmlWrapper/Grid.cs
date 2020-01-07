@@ -39,8 +39,8 @@ namespace UIModel.HtmlWrapper
         private Tube<HTMLDivElement> _bottomBuffer;
         private Tube<HTMLDivElement> _rows;
 
-        private HTMLDivElement _rootElement;
-        private HTMLDivElement _viewPort;
+        private static HTMLDivElement _rootElement;
+        private static HTMLDivElement _viewPort;
 
         private int _defaultItemHeight = 30;
 
@@ -52,7 +52,7 @@ namespace UIModel.HtmlWrapper
             _totalRows = _data.Count;
             _rootElement = D.Doc.CreateElement<HTMLDivElement>();
             _viewPort = D.Doc.CreateElement<HTMLDivElement>();
-            
+
             _rootElement.AppendChild(_viewPort);
 
             _rootElement.SetStyleAttribute("height", "300px");
@@ -60,12 +60,19 @@ namespace UIModel.HtmlWrapper
 
             _rootElement.OnScroll += (sender, args) =>
             {
+                
+                Console.WriteLine("Doc: " + D.Doc.IsCorrupted);
+                Console.WriteLine("Root: " + _rootElement.IsCorrupted);
+                Console.WriteLine("ViewPort: " + _viewPort.IsCorrupted);
+                Console.WriteLine("Child nodes: " + _viewPort.ChildNodes.IsCorrupted);
+                Console.WriteLine("ViewPort Any element: " + _viewPort.ChildNodes.Any(x => x.IsCorrupted));
+
                 if (_rootElement.ScrollTop + _rootElement.ClientHeight >= _rootElement.ScrollHeight)
                 {
                     Scroll(_currentRowPosition + _bottomBuffer.Count - 5);
                     return;
                 }
-                
+
                 // if (_rootElement.ScrollTop < 10)
                 // {
                 //     Scroll(_currentRowPosition - _topBuffer.Count + 5);
@@ -75,11 +82,8 @@ namespace UIModel.HtmlWrapper
                 // }
             };
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
             Console.WriteLine(_rootElement.IsCorrupted);
-            
+
             Scroll(0);
         }
 
@@ -189,7 +193,7 @@ namespace UIModel.HtmlWrapper
         {
             var row = D.Doc.CreateElement<HTMLDivElement>();
             row.InnerText = _data[index].ToString();
-            
+
             row.SetStyleAttribute("height", $"{_defaultItemHeight}px");
 
             _viewPort.AppendChild(row);
