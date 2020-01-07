@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
@@ -37,7 +38,7 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void PlatformContextTest()
         {
-            Assert.False(TestExdecution());
+            Assert.False(TestExecution());
 
             var c = ExecutionContext.Capture();
 
@@ -51,15 +52,17 @@ namespace ZenPlatform.Core.Test
 
                 ContextHelper.SetContext(new PlatformContext(session));
 
-                Assert.True(TestExdecution());
+                Assert.True(TestExecution());
+
+                Task.Run(() => Assert.True(TestExecution())).Wait();
             }, null);
 
 
-            Assert.False(TestExdecution());
+            Assert.False(TestExecution());
         }
 
 
-        public bool TestExdecution()
+        public bool TestExecution()
         {
             return ContextHelper.GetContext()?.Session.User.Name == "Anonymous";
         }

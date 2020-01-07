@@ -80,6 +80,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType ParametricMethod => _ts.FindType<ParametricMethod>();
 
+
         public SystemMethods Methods { get; }
 
 

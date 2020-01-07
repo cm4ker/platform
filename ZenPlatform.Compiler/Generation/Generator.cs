@@ -26,12 +26,14 @@ namespace ZenPlatform.Compiler.Generation
         private ServerAssemblyServiceScope _serviceScope;
 
         private SystemTypeBindings _bindings;
+        private SyntaxTreeMemberAccessProvider _map;
 
         private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
 
         public Generator(GeneratorParameters parameters)
         {
             _parameters = parameters;
+
             _cus = parameters.Units;
             _asm = parameters.Builder;
             _ts = _asm.TypeSystem;
@@ -41,6 +43,9 @@ namespace ZenPlatform.Compiler.Generation
             _mode = parameters.Mode;
 
             _bindings = _ts.GetSystemBindings();
+
+
+            _map = new SyntaxTreeMemberAccessProvider(_cus, _bindings);
         }
 
         private void Error(string message)

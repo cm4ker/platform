@@ -36,19 +36,35 @@ namespace ZenPlatform.Compiler
 
             _syntaxStack.Push(typeList);
 
+            var usings = new List<NamespaceBase>();
+
+            foreach (var atd in context.aliasingTypeDefinition())
+            {
+                usings.Add((NamespaceBase) Visit(atd));
+            }
+
+            foreach (var u in context.usingDefinition())
+            {
+                usings.Add((NamespaceBase) Visit(u));
+            }
+
             base.VisitEntryPoint(context);
 
-            var cu = new CompilationUnit(context.start.ToLineInfo(), new List<NamespaceBase>(), typeList);
+            var cu = new CompilationUnit(context.start.ToLineInfo(), usings, typeList);
 
             return cu;
+        }
+
+        public override SyntaxNode VisitAliasingTypeDefinition(ZSharpParser.AliasingTypeDefinitionContext context)
+        {
+            return new ClassNamespace(context.start.ToLineInfo(),
+                context.@namespace().GetText() + "." + context.typeName.GetText(), context.alias.GetText());
         }
 
         public override SyntaxNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
         {
             base.VisitUsingDefinition(context);
-//            _syntaxStack.PeekType<CompilationUnit>().Namespaces.Add(_syntaxStack.PopString());
-
-            return null;
+            return new Namespace(context.start.ToLineInfo(), _syntaxStack.PopString());
         }
 
         public override SyntaxNode VisitModuleDefinition(ZSharpParser.ModuleDefinitionContext context)
@@ -307,9 +323,16 @@ namespace ZenPlatform.Compiler
             return result;
         }
 
-        public override SyntaxNode VisitLookup(ZSharpParser.LookupContext context)
+        public override SyntaxNode VisitLookupExpression(ZSharpParser.LookupExpressionContext context)
         {
-            return base.VisitLookup(context);
+            base.VisitLookupExpression(context);
+
+            var result = new LookupExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                _syntaxStack.PopExpression());
+
+            _syntaxStack.Push(result);
+
+            return result;
         }
 
         public override SyntaxNode VisitFunctionDeclaration(ZSharpParser.FunctionDeclarationContext context)
@@ -415,8 +438,7 @@ namespace ZenPlatform.Compiler
             base.VisitFunctionCall(context);
 
             var result = new Call(context.start.ToLineInfo(), _syntaxStack.PopList<Argument>().ToImmutableList(),
-                _syntaxStack.PopString(),
-                (context.expressionPrimitive() != null) ? _syntaxStack.PopExpression() : null);
+                _syntaxStack.PopString(), null);
 
             _syntaxStack.Push(result);
 
