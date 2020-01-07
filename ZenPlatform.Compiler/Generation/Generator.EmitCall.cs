@@ -13,7 +13,7 @@ namespace ZenPlatform.Compiler.Generation
     {
         private void EmitCall(IEmitter e, Call call, SymbolTable symbolTable)
         {
-            var symbol = symbolTable.Find(call.Name, SymbolType.Function, call.GetScope());
+            var symbol = symbolTable.Find(call.Name, SymbolType.Method, call.GetScope());
 
             if (symbol != null)
             {

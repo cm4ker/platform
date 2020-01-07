@@ -117,7 +117,7 @@ public int ClientCallProc(int a)
 { 
     a++;
     
-    object c = Context.Session;
+    //object c = Context.Session;
  
     return a; 
 }

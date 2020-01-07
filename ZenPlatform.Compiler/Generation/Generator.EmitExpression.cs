@@ -235,6 +235,24 @@ namespace ZenPlatform.Compiler.Generation
 
                 e.PropGetValue(expProp);
             }
+            else if (expression is LookupExpression le)
+            {
+                EmitExpression(e, le.Parent, symbolTable);
+
+                if (le.Lookup is Name lna)
+                {
+                    var prop = _map.GetProperty(le.Parent.Type, lna.Value);
+                    lna.Type = prop.PropertyType.ToAstType();
+                    e.EmitCall(prop.Getter);
+                }
+                else if (le.Lookup is Call lca)
+                {
+                    var method = _map.GetMethod(le.Parent.Type, lca.Name,
+                        lca.Arguments.Select(x => x.Expression.Type).ToArray());
+                    EmitArguments(e, lca.Arguments, symbolTable);
+                    e.EmitCall(method);
+                }
+            }
             else if (expression is PostIncrementExpression pis)
             {
                 var symbol = symbolTable.Find(pis.Name.Value, SymbolType.Variable, pis.GetScope()) ??
