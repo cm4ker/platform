@@ -35,18 +35,25 @@ namespace ZenPlatform.Core.Network
 
         public async Task<object> Invoke(Route route, ISession session, params object[] arg)
         {
-
             if (!methods.ContainsKey(route))
                 throw new InvokeException($"Method not found, route = {route.ToString()}");
 
             var task = _taskManager.RunTask(session, ic =>
             {
-                return methods[route](ic, arg);
+                object result = null;
+
+                var c = ExecutionContext.Capture();
+                ExecutionContext.Run(c, state =>
+                {
+                    ContextHelper.SetContext(new PlatformContext(ic.Session));
+                    result = methods[route](ic, arg);
+                }, null);
+
+                return result;
             });
 
             return await task;
         }
-
 
 
         public void Register(Route route, ParametricMethod method)
@@ -55,7 +62,6 @@ namespace ZenPlatform.Core.Network
             {
                 _logger.Trace("Add method '{0}'", route.ToString());
                 methods.Add(route, method);
-
             }
             else
             {
@@ -68,10 +74,16 @@ namespace ZenPlatform.Core.Network
             if (!streamMethods.ContainsKey(route))
                 throw new InvokeException($"Method not found, route = {route.ToString()}");
 
+
             var task = _taskManager.RunTask(session, ic =>
             {
-                
-                streamMethods[route](ic, stream, arg);
+                var c = ExecutionContext.Capture();
+                ExecutionContext.Run(c, state =>
+                {
+                    ContextHelper.SetContext(new PlatformContext(ic.Session));
+                    streamMethods[route](ic, stream, arg);
+                }, null);
+
                 return null;
             });
 
@@ -82,8 +94,6 @@ namespace ZenPlatform.Core.Network
         {
             return _taskManager.RunTask(session, ic =>
             {
-                
-
                 MethodInfo methodInfo = instanceObject.GetType().GetMethod(methodName);
 
                 return methodInfo.Invoke(instanceObject, args);
@@ -96,7 +106,6 @@ namespace ZenPlatform.Core.Network
             {
                 _logger.Trace("Add method '{0}'", route.ToString());
                 streamMethods.Add(route, method);
-
             }
             else
             {
@@ -195,5 +204,4 @@ namespace ZenPlatform.Core.Network
         }
         */
     }
-
 }
