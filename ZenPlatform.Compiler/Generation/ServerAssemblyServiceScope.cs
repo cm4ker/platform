@@ -60,6 +60,12 @@ namespace ZenPlatform.Compiler.Generation
         public IConstructorBuilder ServiceInitializerConstructor { get; }
 
         public IField InvokeServiceField { get; private set; }
+
+        public void EndBuild()
+        {
+            var e = ServiceInitializerInitMethod.Generator;
+            e.Ret();
+        }
     }
 
 

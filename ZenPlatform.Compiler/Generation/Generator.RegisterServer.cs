@@ -57,7 +57,11 @@ namespace ZenPlatform.Compiler.Generation
                 .LdFtn(dlgt)
                 .NewObj(_bindings.ParametricMethod.Constructors.First())
                 .EmitCall(_bindings.InvokeService.FindMethod((m) => m.Name == "Register"));
+        }
 
+        private void EmitEndRegisterServerFunction()
+        {
+            var e = _serviceScope.ServiceInitializerInitMethod.Generator;
             e.Ret();
         }
     }

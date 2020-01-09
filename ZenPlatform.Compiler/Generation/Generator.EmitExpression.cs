@@ -139,10 +139,10 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Name name)
             {
-                var variable = symbolTable.Find(name.Value, SymbolType.Variable, name.GetScope());
+                var variable = symbolTable.Find(name.Value, SymbolType.Variable | SymbolType.Property, name.GetScope());
 
                 if (variable == null)
-                    Error("Assignment variable " + name.Value + " unknown.");
+                    Error("Variable " + name.Value + " are unknown.");
 
                 if (variable.SyntaxObject is ContextVariable)
                 {
@@ -182,6 +182,10 @@ namespace ZenPlatform.Compiler.Generation
 
                     if (p.PassMethod == PassMethod.ByReference)
                         e.LdIndI4();
+                }
+                else if (variable.CodeObject is IProperty pr)
+                {
+                    throw new NotImplementedException();
                 }
             }
             else if (expression is Call call)
@@ -243,12 +247,16 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     var prop = _map.GetProperty(le.Parent.Type, lna.Value);
                     lna.Type = prop.PropertyType.ToAstType();
+
                     e.EmitCall(prop.Getter);
                 }
                 else if (le.Lookup is Call lca)
                 {
                     var method = _map.GetMethod(le.Parent.Type, lca.Name,
                         lca.Arguments.Select(x => x.Expression.Type).ToArray());
+
+                    lca.Type = method.ReturnType.ToAstType();
+
                     EmitArguments(e, lca.Arguments, symbolTable);
                     e.EmitCall(method);
                 }

@@ -8,14 +8,23 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class Name : Expression, ICanBeAssigned
     {
+        private TypeSyntax _type;
+
         public override TypeSyntax Type
         {
             get
             {
-                var v = FirstParent<IScoped>().SymbolTable
-                    .Find(this.Value, SymbolType.Variable, this.GetScope());
-                return ((ITypedNode) v.SyntaxObject).Type;
+                if (_type == null)
+                {
+                    var v = FirstParent<IScoped>().SymbolTable
+                        .Find(this.Value, SymbolType.Variable | SymbolType.Property, this.GetScope());
+                    return ((ITypedNode) v.SyntaxObject).Type;
+                }
+
+                return _type;
             }
+
+            set { _type = value; }
         }
     }
 

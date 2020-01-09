@@ -13,6 +13,8 @@ namespace ZenPlatform.Core
         }
 
         public ISession Session { get; }
+
+        public string UserName => Session.User.Name;
     }
 
     public class ContextHelper

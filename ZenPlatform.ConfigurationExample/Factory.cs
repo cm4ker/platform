@@ -116,9 +116,6 @@ namespace ZenPlatform.ConfigurationExample
 public int ClientCallProc(int a)
 { 
     a++;
-    
-    //object c = Context.Session;
- 
     return a; 
 }
 
@@ -126,12 +123,22 @@ public int ClientCallProc(int a)
 public void OnClientClientCallProc()
 {
     ClientCallProc(10);
-}");
+}
 
+[ClientCall] 
+public string GetUserNameServer()
+{ 
+    return Context.UserName; 
+}
 
+[Client]
+public void GetUserName()
+{
+    GetUserNameServer();
+}
+");
             return root;
         }
-
 
         public static XCRoot CreateChangedExampleConfiguration()
         {

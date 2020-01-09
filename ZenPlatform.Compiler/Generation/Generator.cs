@@ -43,9 +43,6 @@ namespace ZenPlatform.Compiler.Generation
             _mode = parameters.Mode;
 
             _bindings = _ts.GetSystemBindings();
-
-
-            _map = new SyntaxTreeMemberAccessProvider(_cus, _bindings);
         }
 
         private void Error(string message)
