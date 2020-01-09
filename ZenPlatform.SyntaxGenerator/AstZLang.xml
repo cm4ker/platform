@@ -43,7 +43,23 @@
 
     <Syntax Name="TypeEntity" IsAbstract="true">
         <Arguments>
+            <Single Name="TypeBody" Type="TypeBody"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Class" Base="TypeEntity" IsSymbol="true">
+        <Arguments>
+            <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true" PassBase="true" OnlyArgument="true"/>
+            <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true" OnlyArgument="true"/>
+            <Single Name="IsMappable" Type="Boolean" DenyChildrenFill="true" Default="false"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Module" Base="TypeEntity" IsSymbol="true">
+        <Arguments>
+            <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true" PassBase="true" OnlyArgument="true"/>
+            <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true" OnlyArgument="true"/>
         </Arguments>
     </Syntax>
 
@@ -175,20 +191,7 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="Class" Base="TypeEntity" IsSymbol="true">
-        <Arguments>
-            <Single Name="TypeBody" Type="TypeBody"/>
-            <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>
-            <Single Name="IsMappable" Type="Boolean" DenyChildrenFill="true" Default="false"/>
-        </Arguments>
-    </Syntax>
-
-    <Syntax Name="Module" Base="TypeEntity" IsSymbol="true">
-        <Arguments>
-            <Single Name="TypeBody" Type="TypeBody"/>
-            <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true"/>
-        </Arguments>
-    </Syntax>
+  
 
     <Syntax Name="Variable" Base="Expression" IsSymbol="true">
         <Arguments>
@@ -225,8 +228,8 @@
 
     <Syntax Name="LookupExpression" Base="Expression">
         <Arguments>
-            <Single Name="Parent" Type="Expression"/>
             <Single Name="Lookup" Type="Expression"/>
+            <Single Name="Parent" Type="Expression"/>
         </Arguments>
     </Syntax>
         

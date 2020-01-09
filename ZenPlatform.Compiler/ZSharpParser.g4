@@ -109,7 +109,7 @@ arguments:
     argument (',' argument)*;
 
 argument:
-    (REF)? expression? 
+    (REF)? expression 
 ;
 
 

@@ -11,4 +11,12 @@ namespace ZenPlatform.Language.Ast.Definitions
     {
         public virtual TypeSyntax Type { get; set; }
     }
+
+    public partial class LookupExpression
+    {
+        public override TypeSyntax Type
+        {
+            get { return Lookup.Type; }
+        }
+    }
 }

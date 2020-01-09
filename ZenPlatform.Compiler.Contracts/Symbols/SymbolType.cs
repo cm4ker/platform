@@ -8,7 +8,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         /// <summary>
         /// Неопознанный символ
         /// </summary>
-        None = 0x0,
+        None = 1,
 
         /// <summary>
         /// Функция
