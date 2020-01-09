@@ -87,7 +87,7 @@ namespace ZenPlatform.Compiler
                 context.typeName().IDENTIFIER().GetText());
 
             result.Namespace = context.typeName().@namespace()?.GetText();
-            
+
             _syntaxStack.PeekCollection().Add(result);
 
             return result;
@@ -439,7 +439,14 @@ namespace ZenPlatform.Compiler
         {
             base.VisitFunctionCall(context);
 
-            var result = new Call(context.start.ToLineInfo(), _syntaxStack.PopList<Argument>().ToImmutableList(),
+            IList<Argument> args = new ArgumentCollection();
+
+            if (context.arguments() != null)
+            {
+                args = _syntaxStack.PopList<Argument>().ToImmutableList();
+            }
+
+            var result = new Call(context.start.ToLineInfo(),args,
                 _syntaxStack.PopString(), null);
 
             _syntaxStack.Push(result);

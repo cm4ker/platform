@@ -95,13 +95,26 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
 
         public ISymbol Find(string name, SymbolType type, SymbolScopeBySecurity scope)
         {
-            string prefix = PrefixFromType(type);
-
-            if (_hashtable.Contains(prefix + name))
-                return (Symbol) _hashtable[prefix + name];
-            if (_parent != null)
+            foreach (SymbolType val in Enum.GetValues(typeof(SymbolType)))
             {
-                return _parent.Find(name, type, scope);
+                if (!type.HasFlag(val)) continue;
+                
+                ISymbol result = null;
+
+                string prefix = PrefixFromType(val);
+
+                if (_hashtable.Contains(prefix + name))
+                {
+                    return (Symbol) _hashtable[prefix + name];
+                }
+                    
+                if (_parent != null)
+                {
+                    result = _parent.Find(name, type, scope);
+                }
+
+                if (result != null)
+                    return result;
             }
 
             return null;

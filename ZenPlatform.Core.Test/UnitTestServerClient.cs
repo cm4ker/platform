@@ -116,17 +116,16 @@ namespace ZenPlatform.Core.Test
                     GlobalScope.Client = clientContext.Client;
 
                     var cmdType = clientContext.MainAssembly.GetType("CompileNamespace.__cmd_HelloFromServer");
-                    try
-                    {
-                        var result = cmdType.GetMethod("ClientCallProc")
-                            .Invoke(null, new object[] {10});
-                        Assert.Equal(11, result);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                        throw;
-                    }
+
+                    var result = cmdType.GetMethod("ClientCallProc")
+                        .Invoke(null, new object[] {10});
+
+                    Assert.Equal(11, result);
+
+                    var userName = cmdType.GetMethod("GetUserNameServer")
+                        .Invoke(null, new object[] { });
+                    
+                    Assert.Equal("Anonymous", userName);
                 });
             }
         }
@@ -135,19 +134,19 @@ namespace ZenPlatform.Core.Test
         public void GetViewBag()
         {
             InvokeInClientServerContext((clientService, serverService, clientContext) =>
-                {
-                    GlobalScope.Client = clientContext.Client;
-                    
-                    var vb = clientContext.Client.Invoke<ViewBag>(new Route("Test_GetInvoice"));
-                    
-                    InvoiceLink il = new InvoiceLink(vb);
+            {
+                GlobalScope.Client = clientContext.Client;
 
-                    Assert.Equal("Entity = (10:{8b888935-895d-4806-beaf-0f9e9217ad1b})", il.Presentation);
+                var vb = clientContext.Client.Invoke<ViewBag>(new Route("Test_GetInvoice"));
 
-                    var stLink = il.Store;
-                    
-                    Assert.Equal("Entity = (11:{9de86d2e-1597-4518-b24c-8bfe7f25bf50})", stLink.Presentation);
-                });
+                InvoiceLink il = new InvoiceLink(vb);
+
+                Assert.Equal("Entity = (10:{8b888935-895d-4806-beaf-0f9e9217ad1b})", il.Presentation);
+
+                var stLink = il.Store;
+
+                Assert.Equal("Entity = (11:{9de86d2e-1597-4518-b24c-8bfe7f25bf50})", stLink.Presentation);
+            });
         }
 
 

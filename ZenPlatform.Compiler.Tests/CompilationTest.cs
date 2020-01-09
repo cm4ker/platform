@@ -44,6 +44,8 @@ namespace ZenPlatform.Compiler.Tests
 type NS.B
 {
     int PropB {get;set;}
+
+    NS.A PropA {get;set;}
 }
 
 type NS.A
@@ -52,7 +54,7 @@ type NS.A
 
     int Test(NS.B arg)
     {
-       return arg.PropB;
+       return arg.PropA.Prop;
     }
 }
 ";

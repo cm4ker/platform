@@ -7,7 +7,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// <summary>
     /// Олицетворяет класс в платформе
     /// </summary>
-    public partial class Class : TypeEntity
+    public partial class Class
     {
         public bool ImplementsReference { get; set; }
         public SymbolScopeBySecurity SymbolScope { get; set; }
