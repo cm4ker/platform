@@ -93,17 +93,22 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
 
                         constructor = constructor.AddParameterListParameters(parameterSyntax);
 
-                        var ae = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                            SyntaxFactory.ParseName(argument.Name),
-                            SyntaxFactory.ParseName(argument.Name.ToCamelCase()));
 
-                        constructor = constructor.AddBodyStatements(SyntaxFactory.ExpressionStatement(ae));
 
-                        members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
-                                argument.Name).AddModifiers(publicToken)
-                            .WithAccessorList(SyntaxFactory.AccessorList()
-                                .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
+                        if (!argument.OnlyArgument)
+                        {
+                            var ae = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                SyntaxFactory.ParseName(argument.Name),
+                                SyntaxFactory.ParseName(argument.Name.ToCamelCase()));
+
+                            constructor = constructor.AddBodyStatements(SyntaxFactory.ExpressionStatement(ae));
+                            
+                            members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
+                                    argument.Name).AddModifiers(publicToken)
+                                .WithAccessorList(SyntaxFactory.AccessorList()
+                                    .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
+                        }
 
                         if (!argument.DenyChildrenFill)
                         {

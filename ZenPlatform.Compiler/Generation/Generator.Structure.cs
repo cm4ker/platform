@@ -30,11 +30,15 @@ namespace ZenPlatform.Compiler.Generation
             if (_mode == CompilationMode.Server && _conf != null)
                 _serviceScope = new ServerAssemblyServiceScope(_asm);
 
+            _map = new SyntaxTreeMemberAccessProvider(_cus, _bindings);
 
             BuildInfrastructure();
             BuildStructure();
             BuildGlobalVar();
             BuildCode();
+
+            if (_conf != null && _mode == CompilationMode.Server)
+                _serviceScope.EndBuild();
         }
 
         /// <summary>
@@ -163,6 +167,12 @@ namespace ZenPlatform.Compiler.Generation
                             var mf = PrebuildFunction(function, tb, false);
                             _stage1Methods.Add(function, mf);
                             m.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+
+                            if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
+                                _mode == CompilationMode.Server)
+                            {
+                                EmitRegisterServerFunction(function);
+                            }
                         }
 
                         break;
@@ -174,6 +184,12 @@ namespace ZenPlatform.Compiler.Generation
                             var mf = PrebuildFunction(function, tbc, true);
                             _stage1Methods.Add(function, mf);
                             c.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+
+                            if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
+                                _mode == CompilationMode.Server)
+                            {
+                                EmitRegisterServerFunction(function);
+                            }
                         }
 
                         foreach (var property in c.TypeBody.Properties)
@@ -215,6 +231,12 @@ namespace ZenPlatform.Compiler.Generation
                             var mf = PrebuildFunction(function, tcab, cab is ComponentClass);
                             _stage1Methods.Add(function, mf);
                             cab.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+
+                            if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
+                                _mode == CompilationMode.Server)
+                            {
+                                EmitRegisterServerFunction(function);
+                            }
                         }
 
                         if (cab is ComponentClass)

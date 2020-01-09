@@ -31,6 +31,8 @@ namespace ZenPlatform.Compiler
 
             _props = new Dictionary<string, List<IProperty>>();
             _methods = new Dictionary<string, List<IMethod>>();
+
+            RegisterStatic();
         }
 
         public IMethod GetMethod(TypeSyntax type, string name, TypeSyntax[] args)
@@ -64,7 +66,11 @@ namespace ZenPlatform.Compiler
                 var typeDef = GetType(typeName);
                 var propDef = typeDef?.TypeBody.SymbolTable.Find(name, SymbolType.Property, SymbolScopeBySecurity.User);
                 p = (IProperty) propDef?.CodeObject;
-                RegisterProperty(typeName, p);
+
+                if (p != null)
+                    RegisterProperty(typeName, p);
+                else
+                    throw new Exception($"Property {typeName}.{name} not found");
             }
 
             return p;
@@ -140,7 +146,16 @@ namespace ZenPlatform.Compiler
 
         private TypeEntity GetType(string name)
         {
-            return _types.FirstOrDefault(x => x.Name == name);
+            return _types.FirstOrDefault(x =>
+                (!string.IsNullOrEmpty(x.Namespace) ? x.Namespace + "." : "") + x.Name == name);
+        }
+
+
+        private void RegisterStatic()
+        {
+            var context = _stb.TypeSystem.FindType<PlatformContext>();
+            RegisterProperty(context.FullName, context.FindProperty(nameof(PlatformContext.Session)));
+            RegisterProperty(context.FullName, context.FindProperty(nameof(PlatformContext.UserName)));
         }
     }
 }
