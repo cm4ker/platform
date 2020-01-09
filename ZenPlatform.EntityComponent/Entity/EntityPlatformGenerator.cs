@@ -42,6 +42,7 @@ namespace ZenPlatform.EntityComponent.Entity
         private GeneratorRules _rules;
         private EntityObjectDtoGenerator _egDto;
         private EntityObjectClassGenerator _egClass;
+        private EntityLinkClassGenerator _egLink;
 
         public EntityPlatformGenerator(IXCComponent component)
         {
@@ -51,6 +52,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             _egDto = new EntityObjectDtoGenerator(component);
             _egClass = new EntityObjectClassGenerator(component);
+            _egLink = new EntityLinkClassGenerator(component);
         }
 
         private TypeSyntax GetAstFromPlatformType(IXCType pt)
@@ -323,7 +325,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
 
             _egDto.GenerateAstTree(type, r);
-            GenerateLink(type.GetLink(), r);
+            _egLink.GenerateAstTree(type.GetLink(), r);
             _egClass.GenerateAstTree(type, r);
             //GenerateServerObjectClass(type, r);
             GenerateCommands(type, r);
@@ -561,15 +563,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
                 else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
                 {
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Client))
-                    {
-                        // var set = (IXCLinkType) cc.Type;
-                        // var props = set.GetProperties();
-                        //
-                        // foreach (var prop in props)
-                        // {
-                        // }
-                    }
+                    _egLink.EmitDetail(cc, builder, dbType, mode);
                 }
             }
         }
