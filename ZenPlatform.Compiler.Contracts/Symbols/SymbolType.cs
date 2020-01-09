@@ -1,35 +1,38 @@
+using System;
+
 namespace ZenPlatform.Compiler.Contracts.Symbols
 {
+    [Flags]
     public enum SymbolType
     {
         /// <summary>
         /// Неопознанный символ
         /// </summary>
-        None,
+        None = 0x0,
 
         /// <summary>
         /// Функция
         /// </summary>
-        Method,
+        Method = 1 << 1,
 
         /// <summary>
         /// Свойсство
         /// </summary>
-        Property,
+        Property = 1 << 2,
 
         /// <summary>
         /// Тип
         /// </summary>
-        Type,
+        Type = 1 << 3,
 
         /// <summary>
         /// Переменная
         /// </summary>
-        Variable,
+        Variable = 1 << 4,
 
         /// <summary>
         /// Конструктор
         /// </summary>
-        Constructor
+        Constructor = 1 << 5
     }
 }
