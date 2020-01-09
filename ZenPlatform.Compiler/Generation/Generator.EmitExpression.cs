@@ -141,13 +141,13 @@ namespace ZenPlatform.Compiler.Generation
             {
                 var variable = symbolTable.Find(name.Value, SymbolType.Variable, name.GetScope());
 
+                if (variable == null)
+                    Error("Assignment variable " + name.Value + " unknown.");
+
                 if (variable.SyntaxObject is ContextVariable)
                 {
                     CheckContextVariable(e, variable);
                 }
-
-                if (variable == null)
-                    Error("Assignment variable " + name.Value + " unknown.");
 
                 if (name.Type is null)
                     if (variable.SyntaxObject is ITypedNode tn)
