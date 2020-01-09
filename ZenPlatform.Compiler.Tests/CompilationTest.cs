@@ -34,5 +34,30 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.Equal("Hello world!", result);
         }
+
+        [Fact]
+        public void LookupTest()
+        {
+            var script = 
+@"
+
+type NS.B
+{
+    int PropB {get;set;}
+}
+
+type NS.A
+{
+    int Prop {get;set;}
+
+    int Test(NS.B arg)
+    {
+       return arg.PropB;
+    }
+}
+";
+
+            Compile(script);
+        }
     }
 }
