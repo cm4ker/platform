@@ -58,7 +58,7 @@ namespace ZenPlatform.Compiler
         public override SyntaxNode VisitAliasingTypeDefinition(ZSharpParser.AliasingTypeDefinitionContext context)
         {
             return new ClassNamespace(context.start.ToLineInfo(),
-                context.@namespace().GetText() + "." + context.typeName.GetText(), context.alias.GetText());
+                context.typeName().GetText(), context.alias.GetText());
         }
 
         public override SyntaxNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
@@ -72,7 +72,7 @@ namespace ZenPlatform.Compiler
             base.VisitModuleDefinition(context);
 
             Module result = new Module(context.start.ToLineInfo(), _syntaxStack.PopTypeBody(),
-                context.IDENTIFIER().GetText());
+                context.typeName().GetText());
 
             _syntaxStack.PeekCollection().Add(result);
 
@@ -84,8 +84,10 @@ namespace ZenPlatform.Compiler
             base.VisitTypeDefinition(context);
 
             var result = new Class(context.start.ToLineInfo(), _syntaxStack.PopTypeBody(),
-                context.IDENTIFIER().GetText());
+                context.typeName().IDENTIFIER().GetText());
 
+            result.Namespace = context.typeName().@namespace()?.GetText();
+            
             _syntaxStack.PeekCollection().Add(result);
 
             return result;

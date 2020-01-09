@@ -15,10 +15,10 @@ usingDefinition :
         USING namespace ';';
 
 aliasingTypeDefinition: 
-        USING alias=name '=' namespace ('.' typeName = name) ';';
+        USING alias=name '=' typeName ';';
 
 namespace :
- name ('.' name)*
+ IDENTIFIER ('.' IDENTIFIER)*
 ;
 
 
@@ -31,7 +31,7 @@ namespaceDefinition :
 ================START MODULE==================
 */
 
-moduleDefinition: MODULE IDENTIFIER '{' moduleBody '}';
+moduleDefinition: MODULE typeName '{' moduleBody '}';
 
 moduleBody: (functionDeclaration)* ;
 /*
@@ -41,12 +41,15 @@ moduleBody: (functionDeclaration)* ;
 /*
 ================START TYPE==================
 */
-typeDefinition: attributes? TYPE IDENTIFIER '{' typeBody '}';
+typeDefinition: attributes? TYPE typeName '{' typeBody '}';
 
 typeBody: (functionDeclaration | fieldDeclaration | propertyDeclaration)*;
 /*
 ================END TYPE==================
 */
+
+typeName:
+    (namespace '.')? IDENTIFIER;
 
 
 instructionsBody : '{' statements '}';
@@ -224,7 +227,7 @@ typeList:
 ;
 
 structureType:
-    IDENTIFIER;
+   typeName;
     
 primitiveType:
     BOOL 
