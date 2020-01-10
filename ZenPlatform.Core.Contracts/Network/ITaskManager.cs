@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ZenPlatform.Core.Sessions;
+using ZenPlatform.Core.Contracts;
 
 namespace ZenPlatform.Core.Network
 {
