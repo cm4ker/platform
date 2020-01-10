@@ -32,6 +32,7 @@ using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Core.Test.Logging;
+using ZenPlatform.EntityComponent.Entity;
 
 namespace ZenPlatform.Core.Test
 {
@@ -46,7 +47,6 @@ namespace ZenPlatform.Core.Test
         {
             _testOutput = testOutput;
         }
-
 
         [Fact]
         public void Connecting()
@@ -124,7 +124,7 @@ namespace ZenPlatform.Core.Test
 
                     var userName = cmdType.GetMethod("GetUserNameServer")
                         .Invoke(null, new object[] { });
-                    
+
                     Assert.Equal("Anonymous", userName);
                 });
             }
@@ -187,6 +187,22 @@ namespace ZenPlatform.Core.Test
 
             var invoice = result.CreateInstance("Documents._Invoice");
             Assert.NotNull(invoice);
+
+
+            // var manager = result.GetType("Documents.InvoiceManager");
+            // var facMethod = manager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static );
+            //
+            // Assert.NotNull(facMethod);
+            //
+            // var invoice = facMethod.Invoke(null, new object[] { });
+            // Assert.NotNull(invoice);
+            //
+            // var it = invoice.GetType();
+            // var idProp = it.GetProperty("Id");
+            //
+            // Assert.NotNull(idProp);
+            //
+            // Assert.NotEqual(Guid.Empty, idProp.GetValue(invoice));
         }
 
         [Fact]

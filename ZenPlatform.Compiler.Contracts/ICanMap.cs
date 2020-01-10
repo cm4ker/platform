@@ -11,4 +11,9 @@ namespace ZenPlatform.Compiler.Contracts
     {
         void Save(DbCommand command);
     }
+
+    public interface ICanReLoad
+    {
+        void ReLoad();
+    }
 }

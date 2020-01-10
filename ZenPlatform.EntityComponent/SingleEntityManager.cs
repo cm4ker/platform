@@ -8,6 +8,7 @@ using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
 using ZenPlatform.DataComponent.Helpers;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.QueryBuilder.Model;
 
 
 namespace ZenPlatform.EntityComponent
@@ -24,8 +25,6 @@ namespace ZenPlatform.EntityComponent
         public SingleEntityManager()
         {
         }
-
-        //TODO: Сделать async API task 86
 
         private bool CheckType(Type type)
         {
@@ -147,41 +146,11 @@ namespace ZenPlatform.EntityComponent
         }
     }
 
-
-    public class DocumentEntityManager<T> where T : SingleEntity
-    {
-        private SingleEntityManager _singleEntityManager;
-        private UserSession _session;
-
-        public DocumentEntityManager(UserSession session)
-        {
-            _singleEntityManager = session.GetManager(typeof(T)) as SingleEntityManager;
-            _session = session;
-        }
-
-        public T Load(Guid key)
-        {
-            return _singleEntityManager.Load(_session, typeof(T), key) as T;
-        }
-
-        public void Delete(T entity)
-        {
-            _singleEntityManager.Delete(_session, entity);
-        }
-
-        public void Save(T entity)
-        {
-            _singleEntityManager.Save(_session, entity);
-        }
-
-        public T Create()
-        {
-            return _singleEntityManager.Create(_session, typeof(T)) as T;
-        }
-
-        public Guid GetKey(T entity)
-        {
-            return new Guid();
-        }
-    }
+    /*
+     InvoiceManager
+        - Create
+     
+     StoreFactory
+        - Create 
+     */
 }

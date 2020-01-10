@@ -15,7 +15,6 @@ using ZenPlatform.Shared.Tree;
 namespace ZenPlatform.EntityComponent.Entity
 {
     /*
-     
      Link
      {
         ViewBag _vb;
@@ -45,8 +44,6 @@ namespace ZenPlatform.EntityComponent.Entity
             Init();
         }        
      }
-     
-     
      */
 
     public class EntityLinkClassGenerator
