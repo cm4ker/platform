@@ -515,7 +515,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private ITypeBuilder PreBuildModule(Module module)
         {
-            return _asm.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
+            return _asm.DefineType((string.IsNullOrEmpty(@module.Namespace) ? DEFAULT_ASM_NAMESPACE : @module.Namespace), module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
         }
@@ -546,7 +546,9 @@ namespace ZenPlatform.Compiler.Generation
 
         private ITypeBuilder PreBuildComponentModule(ComponentModule componentModule)
         {
-            return _asm.DefineType(DEFAULT_ASM_NAMESPACE, componentModule.Name,
+            return _asm.DefineType(
+                (string.IsNullOrEmpty(@componentModule.Namespace) ? DEFAULT_ASM_NAMESPACE : @componentModule.Namespace),
+                componentModule.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
         }
