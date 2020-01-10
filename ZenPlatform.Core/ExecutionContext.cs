@@ -1,7 +1,9 @@
 using System;
 using System.Threading;
 using Mono.Cecil;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Data;
 
 namespace ZenPlatform.Core
 {
@@ -15,6 +17,8 @@ namespace ZenPlatform.Core
         public ISession Session { get; }
 
         public string UserName => Session.User.Name;
+
+        public DataContext DataContext => Session.DataContext;
     }
 
     public class ContextHelper

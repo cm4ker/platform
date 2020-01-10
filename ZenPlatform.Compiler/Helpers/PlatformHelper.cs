@@ -14,12 +14,42 @@ using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Network.Contracts;
+using ZenPlatform.Data;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 
 namespace ZenPlatform.Compiler.Helpers
 {
     public static class PlatformHelper
     {
+        public static IEmitter LdContext(this IEmitter e)
+        {
+            var m = e.TypeSystem.FindType<ContextHelper>().FindMethod(nameof(ContextHelper.GetContext));
+            e.EmitCall(m);
+            return e;
+        }
+
+        public static IEmitter LdDataContext(this IEmitter e)
+        {
+            var p = e.TypeSystem.FindType<PlatformContext>().FindProperty(nameof(PlatformContext.DataContext));
+            e
+                .LdContext()
+                .EmitCall(p.Getter);
+            return e;
+        }
+
+        public static IEmitter NewDbCmdFromContext(this IEmitter e)
+        {
+            var o = e.TypeSystem.FindType<DataContext>().FindMethod(nameof(DataContext.CreateCommand));
+            e
+                .LdDataContext()
+                .EmitCall(o);
+            return e;
+        }
+        
+        
+        
+
+
         public static IMethod ClientInvoke(this SystemTypeBindings b)
         {
             return b.Client.Methods.FirstOrDefault(x => x.Name == nameof(IPlatformClient.Invoke)) ??
