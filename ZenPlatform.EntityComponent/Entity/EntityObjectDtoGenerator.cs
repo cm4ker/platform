@@ -17,6 +17,21 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
+    
+    /*
+    
+    Dto
+        - Create factroy
+        - Load by Id
+        
+        StaticClassManager
+            Load(Guid id)
+            Create()
+     
+     */
+    
+    
+    
     public class EntityObjectDtoGenerator
     {
         private readonly IXCComponent _component;

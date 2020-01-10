@@ -66,13 +66,15 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IReadOnlyList<IMethod> Methods =>
             _methods ??= TypeDef.Methods.Where(x => !x.IsConstructor)
-                .Select(x => (IMethod) new DnlibMethod(_ts, x, x, TypeRef)).ToList();
+                .Select(x => (IMethod) new DnlibMethod(_ts,
+                    new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig), TypeRef), x, TypeRef))
+                .ToList();
 
         public IReadOnlyList<IConstructor> Constructors =>
             _constructors ??= TypeDef.FindConstructors().Select(x =>
             {
                 return (IConstructor) new DnlibConstructor(_ts,
-                    new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef) {MethodSig = x.MethodSig}, x,
+                    new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef), x,
                     TypeRef);
             }).ToList();
 

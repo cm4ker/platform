@@ -48,6 +48,19 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType GetType(ITypeDefOrRef tr) => _ts.Resolve(tr.ToTypeRef());
 
+        public MethodSig ResolveMethodSig(MethodSig msig)
+        {
+            if (!(msig.RetType is GenericMVar || msig.RetType is GenericInstSig))
+            {
+                DnlibType dt = (DnlibType) GetType(msig.RetType);
+
+                if (dt != null)
+                    msig.RetType = dt.TypeRef.ToTypeSig();
+            }
+
+            return msig;
+        }
+
         public IType GetType(TypeSig tsig)
         {
             if (tsig.AssemblyQualifiedName.Contains("System.Private.CoreLib"))

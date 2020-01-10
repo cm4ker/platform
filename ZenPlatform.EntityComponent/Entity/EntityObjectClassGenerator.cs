@@ -46,6 +46,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
+
             root.Add(cu);
         }
 
@@ -79,22 +80,18 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
-            var session = ts.GetSystemBindings().Session;
-
-            var c = builder.DefineConstructor(false, dtoType, session);
+            
+            var c = builder.DefineConstructor(false, dtoType);
             var g = c.Generator;
 
             var dtoPrivate = builder.DefineField(dtoType, "_dto", false, false);
-            var sessionPrivate = builder.DefineField(session, "_session", false, false);
+          
 
             g.LdArg_0()
                 .EmitCall(builder.BaseType.FindConstructor())
                 .LdArg_0()
                 .LdArg(1)
                 .StFld(dtoPrivate)
-                .LdArg_0()
-                .LdArg(2)
-                .StFld(sessionPrivate)
                 .Ret();
 
             foreach (var prop in set.Properties)
