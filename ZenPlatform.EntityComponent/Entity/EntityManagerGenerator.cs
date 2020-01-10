@@ -15,6 +15,31 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
+    
+    /*
+     
+     Manager
+     {
+        Entity Create()
+        {
+            var dto  = new dto();
+            dto.Id = Guid.NewId();
+            return new Entity(dto);
+        }
+        
+        EntityLink Get()
+        {
+            var dto = DbManager.GetDto();
+            
+            
+            
+            return new Link(dto);            
+        }
+     
+     }
+     
+     
+     */
     public class EntityManagerGenerator
     {
         private readonly IXCComponent _component;
