@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Network;
-using ZenPlatform.Core.Sessions;
 
 namespace ZenPlatform.Core.Environment.Contracts
 {

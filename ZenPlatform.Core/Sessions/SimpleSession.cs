@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Data;
@@ -12,12 +13,6 @@ namespace ZenPlatform.Core.Sessions
     {
         private readonly Dictionary<string, object> _sessionParameters;
         private IDisposable _remover;
-        public Guid Id { get; }
-
-        public IUser User { get; }
-
-        public IEnvironment Environment { get; }
-
 
         public SimpleSession(IEnvironment env, IUser user)
         {
@@ -29,8 +24,16 @@ namespace ZenPlatform.Core.Sessions
 
         public SimpleSession(IUser user) : this(null, user)
         {
-
         }
+
+        public Guid Id { get; }
+
+        public IUser User { get; }
+
+        public DataContext DataContext => throw new NotSupportedException();
+
+        public IEnvironment Environment { get; }
+
 
         public void Dispose()
         {

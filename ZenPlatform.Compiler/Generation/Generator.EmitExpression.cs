@@ -369,7 +369,7 @@ namespace ZenPlatform.Compiler.Generation
             {
                 var loc = e.DefineLocal(_ts.FindType<PlatformContext>());
 
-                e.EmitCall(_ts.FindType<ContextHelper>().FindMethod("GetContext"))
+                e.LdContext()
                     .StLoc(loc);
 
                 symbol.CodeObject = loc;

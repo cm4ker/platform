@@ -82,7 +82,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public DnlibEmitter(ITypeSystem typeSystem, MethodDef method)
         {
             _method = method;
-            _ts = (DnlibTypeSystem) typeSystem;
+            _ts = (DnlibTypeSystem) typeSystem ?? throw new ArgumentNullException(nameof(typeSystem));
             _body = _method.Body;
             _exceptionStack = new Stack<DnlibTryHandler>();
             _cr = new DnlibContextResolver(_ts, _method.Module);
@@ -147,7 +147,7 @@ namespace ZenPlatform.Compiler.Dnlib
             return this;
         }
 
-        public ITypeSystem TypeSystem { get; }
+        public ITypeSystem TypeSystem => _ts;
 
 
         public IEmitter Emit(SreOpCode code) => Emit(Instruction.Create(Dic[code]));

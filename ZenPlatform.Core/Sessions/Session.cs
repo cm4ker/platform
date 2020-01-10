@@ -5,6 +5,7 @@ using ZenPlatform.Data;
 using System.Linq;
 using System;
 using ZenPlatform.Core.CacheService;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 
 namespace ZenPlatform.Core.Sessions
