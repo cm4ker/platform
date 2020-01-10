@@ -90,7 +90,10 @@ namespace ZenPlatform.Compiler.Dnlib
                 return _assemblyDic.FirstOrDefault(x => x.Key.Name == "mscorlib").Value;
             }
 
-            return _assemblyDic[assembly];
+            if (_assemblyDic.ContainsKey(assembly))
+                return _assemblyDic[assembly];
+            else
+                return FindAssembly(assembly.FullName);
         }
 
         public IType FindType(string name)

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Contracts.Network;
-using ZenPlatform.Core.Sessions;
 
 namespace ZenPlatform.Core.Network
 {
