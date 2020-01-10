@@ -201,7 +201,9 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                     else
                     {
-                        //TODO: Link gen
+                        getBuilder
+                            .LdNull()
+                            .Ret();
                     }
                 }
             }

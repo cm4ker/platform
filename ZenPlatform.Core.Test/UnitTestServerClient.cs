@@ -189,20 +189,7 @@ namespace ZenPlatform.Core.Test
             Assert.NotNull(invoice);
 
 
-            // var manager = result.GetType("Documents.InvoiceManager");
-            // var facMethod = manager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static );
-            //
-            // Assert.NotNull(facMethod);
-            //
-            // var invoice = facMethod.Invoke(null, new object[] { });
-            // Assert.NotNull(invoice);
-            //
-            // var it = invoice.GetType();
-            // var idProp = it.GetProperty("Id");
-            //
-            // Assert.NotNull(idProp);
-            //
-            // Assert.NotEqual(Guid.Empty, idProp.GetValue(invoice));
+            
         }
 
         [Fact]

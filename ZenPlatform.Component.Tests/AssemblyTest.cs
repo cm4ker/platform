@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Xunit;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Cecil;
@@ -20,11 +22,18 @@ namespace ZenPlatform.Component.Tests
 {
     public class AssemblyTest
     {
-        [Fact]
-        public void BuildAstTest()
+        private Assembly _clientAsm;
+        private Assembly _serverAsm;
+        
+        public AssemblyTest()
+        {
+            Build();
+        }
+        
+        public void Build()
         {
             var conf = Factory.CreateExampleConfiguration();
-            IAssemblyPlatform pl = new CecilAssemblyPlatform();
+            IAssemblyPlatform pl = new DnlibAssemblyPlatform();
 
             var server = pl.CreateAssembly("Server");
             var client = pl.CreateAssembly("Client");
@@ -56,6 +65,32 @@ namespace ZenPlatform.Component.Tests
 
             server.Write("Server.bll");
             client.Write("Client.bll");
+
+            var execDir = AppDomain.CurrentDomain.BaseDirectory;
+            
+            
+            _serverAsm = Assembly.LoadFile(Path.Combine(execDir,"Server.bll"));
+            _clientAsm = Assembly.LoadFile(Path.Combine(execDir,"Client.bll"));
+        }
+
+
+        [Fact]
+        public void TestManagerCreate()
+        {
+            var manager = _serverAsm.GetType("Documents.InvoiceManager");
+            var facMethod = manager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static );
+            
+            Assert.NotNull(facMethod);
+            
+            var invoice = facMethod.Invoke(null, new object[] { });
+            Assert.NotNull(invoice);
+            
+            var it = invoice.GetType();
+            var idProp = it.GetProperty("Id");
+            
+            Assert.NotNull(idProp);
+            
+            Assert.NotEqual(Guid.Empty, idProp.GetValue(invoice));
         }
     }
 }
