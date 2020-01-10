@@ -41,17 +41,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public AssemblyDef Resolve(IAssembly assembly, ModuleDef sourceModule)
         {
-            var asm = _defaultResolver.Resolve(assembly, sourceModule);
-
-            if (asm != null)
-            {
-                asm.ManifestModule.Context = new ModuleContext(this, new DnlibMetadataResolver(this));
-                return asm;
-            }
-
             if (assembly == null)
-                throw new ArgumentNullException("name");
-
+                throw new ArgumentNullException(nameof(assembly));
+            
             AssemblyDef def;
 
             List<string> paths = new List<string>();
@@ -85,8 +77,20 @@ namespace ZenPlatform.Compiler.Dnlib
                     }
                 }
 
+                var asm = _defaultResolver.Resolve(assembly, sourceModule);
+
+                if (asm != null)
+                {
+                    asm.ManifestModule.Context = new ModuleContext(this, new DnlibMetadataResolver(this));
+                    return asm;
+                }
+
+
+                
                 throw new ResolveException(assembly.Name);
             }
+            
+            
 
             return def;
         }
