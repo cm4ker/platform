@@ -152,6 +152,8 @@ namespace ZenPlatform.EntityComponent.Entity
                         if (ctype is IXCLinkType lt)
                         {
                             //Call Manager.Get(Id)
+                            //Мы не можем ссылаться на методы, когда они ещё не готовы.
+                            //нужно либо разбивать все на стадии, либо вводить понятие шаблона
                             var mrg = ts.FindType($"{@namespace}.{lt.ParentType.Name}Manager");
                             var mrgGet = mrg.FindMethod("Get", sb.Guid);
                             getBuilder.EmitCall(mrgGet);
