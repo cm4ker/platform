@@ -149,6 +149,7 @@ namespace ZenPlatform.EntityComponent.Entity
             _egLink.GenerateAstTree(type.GetLink(), r);
             _egClass.GenerateAstTree(type, r);
             _egManager.GenerateAstTree(type, r);
+
             //GenerateServerObjectClass(type, r);
             GenerateCommands(type, r);
         }

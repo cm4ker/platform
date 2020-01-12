@@ -80,12 +80,12 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
-            
+
             var c = builder.DefineConstructor(false, dtoType);
             var g = c.Generator;
 
             var dtoPrivate = builder.DefineField(dtoType, "_dto", false, false);
-          
+
 
             g.LdArg_0()
                 .EmitCall(builder.BaseType.FindConstructor())
@@ -149,7 +149,14 @@ namespace ZenPlatform.EntityComponent.Entity
                             .LdFld(dtoPrivate)
                             .EmitCall(dtoProp.Getter);
 
-                        if (compileType.IsValueType)
+                        if (ctype is IXCLinkType lt)
+                        {
+                            //Call Manager.Get(Id)
+                            var mrg = ts.FindType($"{@namespace}.{lt.ParentType.Name}Manager");
+                            var mrgGet = mrg.FindMethod("Get", sb.Guid);
+                            getBuilder.EmitCall(mrgGet);
+                        }
+                        else if (compileType.IsValueType)
                             getBuilder.Box(compileType);
 
                         getBuilder
