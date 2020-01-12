@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using ZenPlatform.Compiler;
@@ -14,6 +15,7 @@ using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -132,29 +134,74 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var gg = get.Generator;
             var dxcType = ts.FindType<DbCommand>();
+            var readerType = ts.FindType<DbDataReader>();
             var dxcLoc = gg.DefineLocal(dxcType);
+            var readerLoc = gg.DefineLocal(readerType);
 
+            dto = gg.DefineLocal(dtoType);
 
-            _qm
-                .reset()
-                .bg_query()
-                .m_from()
-                .ld_table(type.RelTableName)
-                .m_select()
-                .ld_column("Test")
-                .st_query();
-
+            var q = GetSelectQuery(set);
 
             var compiler = SqlCompillerBase.FormEnum(dbType);
+
+
+            // DbCommand d;
+            //
+            // d.ExecuteReader()
 
             gg
                 .NewDbCmdFromContext()
                 .StLoc(dxcLoc)
                 .LdLoc(dxcLoc)
-                .LdStr(compiler.Compile(_qm))
+                .LdStr(compiler.Compile(q))
                 .EmitCall(sb.DbCommand.FindProperty(nameof(DbCommand.CommandText)).Setter)
-                .LdNull()
+                //ExecuteReader        
+                .LdLoc(dxcLoc)
+                .EmitCall(sb.DbCommand.FindMethod(nameof(DbCommand.ExecuteReader)))
+                .StLoc(readerLoc)
+                //Create dto and map it
+                .NewObj(dtoType.FindConstructor())
+                .StLoc(dto)
+                .LdLoc(dto)
+                .LdLoc(readerLoc)
+                .EmitCall(dtoType.FindMethod("Map", readerType))
+                //Create link
+                .LdLoc(dto)
+                .NewObj(linkType.FindConstructor(dtoType))
                 .Ret();
+        }
+
+
+        private SSyntaxNode GetSelectQuery(XCSingleEntity se)
+        {
+            QueryMachine qm = new QueryMachine();
+
+            var pIndex = 0;
+
+            var columns = se.Properties.Where(x => !x.Unique).SelectMany(x => x.GetPropertySchemas());
+
+            qm.bg_query()
+                .m_from()
+                .ld_table(se.RelTableName)
+                .@as("T0")
+                .m_where()
+                .ld_column(se.GetPropertyByName("Id").DatabaseColumnName, "T0")
+                .ld_param($"P_{pIndex}")
+                .eq();
+
+
+            qm.m_select();
+
+            Debug.Assert(columns.Any());
+
+            foreach (var column in columns)
+            {
+                qm.ld_column(column.FullName, "T0");
+            }
+
+
+            qm.st_query();
+            return (SSyntaxNode) qm.pop();
         }
     }
 }
