@@ -17,7 +17,6 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
-    
     /*
     
     Dto
@@ -29,9 +28,8 @@ namespace ZenPlatform.EntityComponent.Entity
             Create()
      
      */
-    
-    
-    
+
+
     public class EntityObjectDtoGenerator
     {
         private readonly IXCComponent _component;
@@ -55,7 +53,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        public void EmitDetail(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentClass cc)
             {
@@ -74,6 +72,10 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                 }
             }
+        }
+
+        public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        {
         }
 
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)

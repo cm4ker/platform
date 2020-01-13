@@ -153,7 +153,7 @@ namespace ZenPlatform.Compiler.Dnlib
                 _assembly);
         }
 
-        public IType BaseType => _ts.Resolve(TypeDef.BaseType);
+        public IType BaseType => (TypeDef.BaseType != null) ? _ts.Resolve(TypeDef.BaseType) : null;
 
         public bool IsValueType => TypeDef.IsValueType;
 
