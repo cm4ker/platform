@@ -68,6 +68,7 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
+
         public void EmitDetail(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentModule cm)
@@ -83,6 +84,35 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                 }
             }
+        }
+
+        public void EmitStructure(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
+        {
+            var type = (XCSingleEntity) cm.Type;
+            var xcLinkType = _component.Types.FirstOrDefault(x => x is IXCLinkType lt && lt.ParentType == type);
+            var set = cm.Type as XCSingleEntity ?? throw new Exception("This component can generate only SingleEntity");
+            var ts = builder.Assembly.TypeSystem;
+            var sb = ts.GetSystemBindings();
+
+            var dtoClassName =
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+            var objectClassName = $"{type.Name}";
+
+            var linkClassName = xcLinkType.Name;
+
+
+            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+
+            var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
+            var objectType = ts.FindType($"{@namespace}.{objectClassName}");
+            var linkType = ts.FindType($"{@namespace}.{linkClassName}");
+
+            builder.DefineMethod("Create", true, true, false)
+                .WithReturnType(objectType);
+
+            //Get method
+            builder.DefineMethod("Get", true, true, false)
+                .WithReturnType(linkType);
         }
 
         private void EmitBody(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
@@ -108,8 +138,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var nGuid = sb.Guid.FindMethod(nameof(Guid.NewGuid));
 
-            var create = builder.DefineMethod("Create", true, true, false)
-                .WithReturnType(objectType);
+            var create = (IMethodBuilder)builder.FindMethod("Create");
 
             var cg = create.Generator;
 
@@ -127,8 +156,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 ;
 
             //Get method
-            var get = builder.DefineMethod("Get", true, true, false)
-                .WithReturnType(linkType);
+            var get = (IMethodBuilder)builder.FindMethod("Get");
 
             var guidParam = get.DefineParameter("id", sb.Guid, false, false);
 
