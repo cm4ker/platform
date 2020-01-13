@@ -336,6 +336,8 @@ namespace ZenPlatform.Compiler.Generation
                             EmitConstructor(constructor, tbcab, _stage1constructors[constructor]);
                         }
 
+                        
+                        cab.Component.ComponentImpl.Generator.Stage2(cab, tbcab, _parameters.TargetDatabaseType, _mode);
                         break;
 
                     default:
