@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Migration;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.Configuration.Contracts.Data.Entity
+
 {
     /// <summary>
     /// Интерфейс для получения скриптов обновления и миграции сущностей
@@ -16,6 +19,6 @@ namespace ZenPlatform.Configuration.Contracts.Data.Entity
         /// <param name="actual">Текущий объект</param>
         /// <returns></returns>
         //IList<SqlNode> GetScript(XCObjectTypeBase old, XCObjectTypeBase actual);
-        IList<IMigrationTask> GetMigration(IXCComponent oldState, IXCComponent actualState);
+        void MigrationPlan(IEntityMigrationPlan plan, IXCComponent oldState, IXCComponent actualState);
     }
 }

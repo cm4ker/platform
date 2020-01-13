@@ -1,7 +1,8 @@
 ﻿using System;
+
 using ZenPlatform.QueryBuilder.Builders;
 
-namespace ZenPlatform.Configuration.Contracts.Data
+namespace ZenPlatform.Configuration.Contracts.Migration
 {
     public interface IMigrationTask
     {

@@ -11,6 +11,7 @@ using ZenPlatform.Data;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.Core.Logging;
+using ZenPlatform.Configuration.Contracts.Migration;
 
 namespace ZenPlatform.Migration
 {
@@ -38,41 +39,9 @@ namespace ZenPlatform.Migration
         private bool IsNotComplitLastMigration(out Guid migration_id)
         {
             migration_id = Guid.Empty;
-            var context = _dataContextManager.GetContext();
 
-            using (var cmd = context.CreateCommand(m=>
-            {
-                m
-                .bg_query()
-                .m_from()
-                .ld_table("migration")
-                .m_where()
-                .ld_column("complited")
-                .ld_const(false)
-                .eq()
-                .m_select()
-                .ld_column("id")
-                .st_query();
-            }))
-            {
-                try
-                {
-                   
-                    var id = cmd.ExecuteScalar();
-                    if (id == null)
-                        return false;
 
-                    return Guid.TryParse((string)id, out migration_id);
-
-                    
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex, "Check last migration error");
-                    throw new Exception("Check last migration error");
-                }
-
-            }
+            return false;
         }
 
         public void Migrate(IXCRoot old, IXCRoot actual)
@@ -89,70 +58,22 @@ namespace ZenPlatform.Migration
             var components = old.Data.Components.Join(actual.Data.Components, c => c.Info.ComponentId, c => c.Info.ComponentId,
                 (x, y) => new { old = x, actual = y });
 
-            var tasks = new List<IMigrationTask>();
+            var plan = new EntityMigrationPlan() ;
             foreach (var component in components)
             {
-                var list = component.actual.ComponentImpl.Migrator.GetMigration(component.old, component.actual);
-                tasks.AddRange(list);
+                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
+             
             }
 
-            var orderTasks = tasks.OrderBy(t => t.Step);
+           
 
             var migrationId = Guid.NewGuid();
             var query = DDLQuery.New();
 
-            foreach (var task in orderTasks)
-            {
-                var rollback = DDLQuery.New();
-                task.RollBack(rollback);
+            var builder = new EntityMigrationPlanSQLBuilder(migrationId);
 
-                query.Add(m =>
-                {
-                    m
-                    .bg_query()
-                    .m_values()
-                    .ld_const(migrationId)
-                    .ld_const(task.Id)
-                    .ld_const(task.Name)
-                    .ld_const(false)
-                    .ld_const(_dataContextManager.SqlCompiler.Compile(rollback.Expression))
-                    
-                    .m_insert()
-                    .ld_table("migration_task")
-                    .ld_column("migration_id")
-                    .ld_column("id")
-                    .ld_column("name")
-                    .ld_const("complited")
-                    .ld_column("rollback")
-                    .st_query();
+            builder.Build(plan, query);
 
-                });
-                task.Run(query);
-
-                query.Add(m =>
-                {
-                    m
-                    .bg_query()
-                    .m_where()
-                        .ld_column("id")
-                        .ld_const(task.Id)
-                        .eq()
-                        .ld_column("migration_id")
-                        .ld_const(migrationId)
-                        .eq()
-                        .and()
-                    .m_set()
-                        .ld_column("complited")
-                        .ld_const(true)
-                        .assign()
-                    .m_update()
-                        .ld_table("migration_task")
-
-                    .st_query();
-
-                });
-            }
-            
             var context = _dataContextManager.GetContext();
 
             using (var cmd = context.CreateCommand(query.Expression))

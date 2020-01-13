@@ -45,7 +45,14 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSConstant(SConstant node)
         {
-            return node.Value.ToString();
+            return node.Value switch
+            {
+                string str => string.Format("'{0}'", str),
+                bool b =>  b.ToString().ToUpper(),
+                Guid g => string.Format("'{0}'", g.ToString()),
+                _ => node.Value.ToString()
+            };
+
         }
 
         public override string VisitSCount(SCount node)
@@ -443,6 +450,11 @@ namespace ZenPlatform.QueryBuilder.Visitor
         public override string VisitRenameTableNode(RenameTableNode node)
         {
             return string.Format("EXEC sp_rename '{0}', '{1}'", node.From.Accept(this), node.To.Accept(this));
+        }
+
+        public override string VisitRenameColumnNode(RenameColumnNode node)
+        {
+            return string.Format("EXEC sp_rename '{0}.{1}', '{2}', 'COLUMN'", node.Table.Accept(this), node.From.Accept(this), node.To.Accept(this));
         }
 
         #endregion

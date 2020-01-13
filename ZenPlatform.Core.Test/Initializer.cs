@@ -127,6 +127,8 @@ namespace ZenPlatform.Core.Test
             //services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
             services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
 
+
+            services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
             services.AddScoped<IConfigurationManager, ConfigurationManager>();
             services.AddScoped<IXCCompiller, XCCompiler>();
 
