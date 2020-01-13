@@ -149,6 +149,7 @@ namespace ZenPlatform.EntityComponent.Entity
             _egLink.GenerateAstTree(type.GetLink(), r);
             _egClass.GenerateAstTree(type, r);
             _egManager.GenerateAstTree(type, r);
+
             //GenerateServerObjectClass(type, r);
             GenerateCommands(type, r);
         }
@@ -374,19 +375,42 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
                 {
-                    _egDto.EmitDetail(cc, builder, dbType, mode);
+                    _egDto.Stage1(cc, builder, dbType, mode);
                 }
                 else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
                 {
-                    _egClass.EmitDetail(cc, builder, dbType, mode);
+                    _egClass.Stage1(cc, builder, dbType, mode);
                 }
                 else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
                 {
-                    _egLink.EmitDetail(cc, builder, dbType, mode);
+                    _egLink.Stage1(cc, builder, dbType, mode);
                 }
                 else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Manager)
                 {
-                    _egManager.EmitDetail(cc, builder, dbType, mode);
+                    _egManager.Stage1(cc, builder, dbType, mode);
+                }
+            }
+        }
+
+        public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        {
+            if (astTree is ComponentAstBase cc)
+            {
+                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
+                {
+                    _egDto.Stage2(cc, builder, dbType, mode);
+                }
+                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
+                {
+                    _egClass.Stage2(cc, builder, dbType, mode);
+                }
+                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
+                {
+                    _egLink.Stage2(cc, builder, dbType, mode);
+                }
+                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Manager)
+                {
+                    _egManager.Stage2(cc, builder, dbType, mode);
                 }
             }
         }
