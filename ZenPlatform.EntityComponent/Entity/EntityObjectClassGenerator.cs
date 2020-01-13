@@ -67,7 +67,7 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
 
-        private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
+        public void EmitStructure(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = cc.Type;
             var set = cc.Type as XCSingleEntity ?? throw new Exception("This component can generate only SingleEntity");
@@ -104,11 +104,39 @@ namespace ZenPlatform.EntityComponent.Entity
                     ? sb.Object
                     : prop.Types[0].ConvertType(sb);
 
+                builder.DefineProperty(propType, propName, true, !prop.IsReadOnly, false);
+            }
+        }
 
-                var propBuilder = builder.DefineProperty(propType, propName, true, !prop.IsReadOnly, false);
-                var getBuilder = propBuilder.getMethod.Generator;
-                var setBuilder = propBuilder.setMethod?.Generator;
+        private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
+        {
+            var type = cc.Type;
+            var set = cc.Type as XCSingleEntity ?? throw new Exception("This component can generate only SingleEntity");
+            var ts = builder.Assembly.TypeSystem;
+            var sb = ts.GetSystemBindings();
+            var dtoClassName =
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
 
+            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+
+            var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
+
+
+            var dtoPrivate = builder.FindField("_dot");
+
+            foreach (var prop in set.Properties)
+            {
+                bool propertyGenerated = false;
+
+                var propName = prop.Name;
+
+                var propType = (prop.Types.Count > 1)
+                    ? sb.Object
+                    : prop.Types[0].ConvertType(sb);
+
+                var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
+                var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
+                var setBuilder = ((IMethodBuilder) propBuilder.Setter)?.Generator;
 
                 // var valueParam = propBuilder.setMethod.Parameters[0];
 

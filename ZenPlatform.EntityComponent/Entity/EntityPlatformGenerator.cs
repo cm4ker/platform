@@ -367,6 +367,25 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
+            if (astTree is ComponentAstBase cc)
+            {
+                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
+                {
+                    _egDto.EmitDetail(cc, builder, dbType, mode);
+                }
+                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
+                {
+                    
+                }
+                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
+                {
+                    
+                }
+                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Manager)
+                {
+                    
+                }
+            }
         }
 
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)

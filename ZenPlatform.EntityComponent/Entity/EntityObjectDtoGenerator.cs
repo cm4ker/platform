@@ -75,6 +75,8 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
             }
         }
+        
+        
 
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
         {
