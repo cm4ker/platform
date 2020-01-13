@@ -180,9 +180,11 @@ namespace ZenPlatform.EntityComponent.Entity
             var gg = get.Generator;
             var dxcType = ts.FindType<DbCommand>();
             var readerType = ts.FindType<DbDataReader>();
+            var parameterType = ts.FindType<DbParameter>();
             var dxcLoc = gg.DefineLocal(dxcType);
             var readerLoc = gg.DefineLocal(readerType);
-    
+            var p_loc = gg.DefineLocal(parameterType);
+            
             dto = gg.DefineLocal(dtoType);
 
             var q = GetSelectQuery(set);
@@ -200,10 +202,26 @@ namespace ZenPlatform.EntityComponent.Entity
                 .LdLoc(dxcLoc)
                 .LdStr(compiler.Compile(q))
                 .EmitCall(sb.DbCommand.FindProperty(nameof(DbCommand.CommandText)).Setter)
+                
+                //load parameter
+                .LdLoc(dxcLoc)
+                .EmitCall(sb.DbCommand.FindMethod(nameof(DbCommand.CreateParameter)))
+                .StLoc(p_loc)
+                .LdLoc(p_loc)
+                .LdStr("P_0")
+                .EmitCall(parameterType.FindProperty(nameof(DbParameter.ParameterName)).Setter)
+                .LdLoc(p_loc)
+                .LdArg(get.Parameters[0].ArgIndex)
+                .Box(get.Parameters[0].Type)
+                .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter)
+
                 //ExecuteReader        
                 .LdLoc(dxcLoc)
                 .EmitCall(sb.DbCommand.FindMethod(nameof(DbCommand.ExecuteReader)))
                 .StLoc(readerLoc)
+                .LdLoc(readerLoc)
+                .EmitCall(readerType.FindMethod(nameof(DbDataReader.Read)))
+                .Pop()
                 //Create dto and map it
                 .NewObj(dtoType.FindConstructor())
                 .StLoc(dto)
