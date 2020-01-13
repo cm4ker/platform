@@ -72,7 +72,24 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        public void EmitDetail(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        {
+            if (astTree is ComponentClass cc)
+            {
+                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
+                {
+                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
+                    {
+                        EmitStructure(cc, builder, dbType);
+                    }
+                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
+                    {
+                    }
+                }
+            }
+        }
+
+        public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentClass cc)
             {
@@ -92,7 +109,8 @@ namespace ZenPlatform.EntityComponent.Entity
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = cc.Type;
-            var set = cc.Type as XCSingleEntityLink ?? throw new Exception("This component can generate only SingleEntity");
+            var set = cc.Type as XCSingleEntityLink ??
+                      throw new Exception("This component can generate only SingleEntity");
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
             var dtoClassName =
@@ -102,19 +120,8 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
-           
-            var c = builder.DefineConstructor(false, dtoType);
-            var g = c.Generator;
 
-            var dtoPrivate = builder.DefineField(dtoType, "_dto", false, false);
-            
-
-            g.LdArg_0()
-                .EmitCall(builder.BaseType.FindConstructor())
-                .LdArg_0()
-                .LdArg(1)
-                .StFld(dtoPrivate)
-                .Ret();
+            var dtoPrivate = builder.FindField("_dto") ?? throw new Exception("You must declare private field _dto");
 
             foreach (var prop in set.GetProperties())
             {
@@ -126,10 +133,9 @@ namespace ZenPlatform.EntityComponent.Entity
                     ? sb.Object
                     : prop.Types[0].ConvertType(sb);
 
-
-                var propBuilder = builder.DefineProperty(propType, propName, true, false, false);
-                var getBuilder = propBuilder.getMethod.Generator;
-                var setBuilder = propBuilder.setMethod?.Generator;
+                var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
+                var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
+                var setBuilder = ((IMethodBuilder) propBuilder.Setter)?.Generator;
 
 
                 // var valueParam = propBuilder.setMethod.Parameters[0];
@@ -205,6 +211,48 @@ namespace ZenPlatform.EntityComponent.Entity
                         //TODO: Link gen
                     }
                 }
+            }
+        }
+
+        public void EmitStructure(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
+        {
+            var type = cc.Type;
+            var set = cc.Type as XCSingleEntityLink ??
+                      throw new Exception("This component can generate only SingleEntity");
+            var ts = builder.Assembly.TypeSystem;
+            var sb = ts.GetSystemBindings();
+            var dtoClassName =
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{set.ParentType.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+
+
+            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+
+            var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
+
+            var c = builder.DefineConstructor(false, dtoType);
+            var g = c.Generator;
+
+            var dtoPrivate = builder.DefineField(dtoType, "_dto", false, false);
+
+
+            g.LdArg_0()
+                .EmitCall(builder.BaseType.FindConstructor())
+                .LdArg_0()
+                .LdArg(1)
+                .StFld(dtoPrivate)
+                .Ret();
+
+            foreach (var prop in set.GetProperties())
+            {
+                bool propertyGenerated = false;
+
+                var propName = prop.Name;
+
+                var propType = (prop.Types.Count > 1)
+                    ? sb.Object
+                    : prop.Types[0].ConvertType(sb);
+
+                builder.DefineProperty(propType, propName, true, !prop.IsReadOnly, false);
             }
         }
 

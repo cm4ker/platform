@@ -179,7 +179,7 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new NotImplementedException();
         }
 
-        public string Name { get; }
+        public string Name => FieldDef.Name;
         public IType FieldType { get; }
         public bool IsPublic { get; }
         public bool IsStatic { get; }

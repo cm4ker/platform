@@ -50,7 +50,24 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        public void EmitDetail(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        {
+            if (astTree is ComponentClass cc)
+            {
+                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
+                {
+                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
+                    {
+                        EmitStructure(cc, builder, dbType);
+                    }
+                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
+                    {
+                    }
+                }
+            }
+        }
+
+        public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentClass cc)
             {
@@ -122,7 +139,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
 
 
-            var dtoPrivate = builder.FindField("_dot");
+            var dtoPrivate = builder.FindField("_dto");
 
             foreach (var prop in set.Properties)
             {

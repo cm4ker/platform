@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
+using NLog.LayoutRenderers;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -69,7 +70,24 @@ namespace ZenPlatform.EntityComponent.Entity
         }
 
 
-        public void EmitDetail(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        {
+            if (astTree is ComponentModule cm)
+            {
+                if (cm.Bag != null && ((ObjectType) cm.Bag) == ObjectType.Manager)
+                {
+                    if (cm.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
+                    {
+                        EmitStructure(cm, builder, dbType);
+                    }
+                    else if (cm.CompilationMode.HasFlag(CompilationMode.Client))
+                    {
+                    }
+                }
+            }
+        }
+
+        public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentModule cm)
             {
@@ -112,7 +130,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
             //Get method
             builder.DefineMethod("Get", true, true, false)
-                .WithReturnType(linkType);
+                .WithReturnType(linkType)
+                .DefineParameter("id", sb.Guid, false, false);
         }
 
         private void EmitBody(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
@@ -138,7 +157,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var nGuid = sb.Guid.FindMethod(nameof(Guid.NewGuid));
 
-            var create = (IMethodBuilder)builder.FindMethod("Create");
+            var create = (IMethodBuilder) builder.FindMethod("Create");
 
             var cg = create.Generator;
 
@@ -156,16 +175,14 @@ namespace ZenPlatform.EntityComponent.Entity
                 ;
 
             //Get method
-            var get = (IMethodBuilder)builder.FindMethod("Get");
-
-            var guidParam = get.DefineParameter("id", sb.Guid, false, false);
+            var get = (IMethodBuilder) builder.FindMethod("Get", sb.Guid);
 
             var gg = get.Generator;
             var dxcType = ts.FindType<DbCommand>();
             var readerType = ts.FindType<DbDataReader>();
             var dxcLoc = gg.DefineLocal(dxcType);
             var readerLoc = gg.DefineLocal(readerType);
-
+    
             dto = gg.DefineLocal(dtoType);
 
             var q = GetSelectQuery(set);

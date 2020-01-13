@@ -38,10 +38,12 @@ namespace ZenPlatform.Compiler.Dnlib
         public IType PropertyType => _cr.GetType(PropertyDef.PropertySig.RetType);
 
         public IMethod Getter => _getter ??=
-            new DnlibMethod(_ts, PropertyDef.GetMethod, PropertyDef.GetMethod, PropertyDef.DeclaringType);
+            (PropertyDef.GetMethod == null) ? null : new DnlibMethod(_ts, PropertyDef.GetMethod, PropertyDef.GetMethod, PropertyDef.DeclaringType);
 
         public IMethod Setter => _setter ??=
-            new DnlibMethod(_ts, PropertyDef.SetMethod, PropertyDef.SetMethod, PropertyDef.DeclaringType);
+            (PropertyDef.SetMethod == null)
+                ? null
+                : new DnlibMethod(_ts, PropertyDef.SetMethod, PropertyDef.SetMethod, PropertyDef.DeclaringType);
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes =>
             _customAttributes ??= new List<DnlibCustomAttribute>();
