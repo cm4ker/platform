@@ -2718,6 +2718,44 @@ namespace ZenPlatform.QueryBuilder.Model
     }
 }
 
+namespace ZenPlatform.QueryBuilder.Model
+{
+    public partial class RenameColumnNode : TableOperation
+    {
+        public RenameColumnNode(): base()
+        {
+        }
+
+        public Column From
+        {
+            get;
+            set;
+        }
+
+        public Column To
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( RenameColumnNode ) obj ;  return  ( Compare ( this . From ,  node . From ) && Compare ( this . To ,  node . To ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (From == null ? 0 : From.GetHashCode()) ^ (To == null ? 0 : To.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitRenameColumnNode(this);
+        }
+    }
+}
+
 namespace ZenPlatform.QueryBuilder.Visitor
 {
     public abstract partial class QueryVisitorBase<T>
@@ -3152,6 +3190,11 @@ namespace ZenPlatform.QueryBuilder.Visitor
         }
 
         public virtual T VisitRenameTableNode(RenameTableNode node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitRenameColumnNode(RenameColumnNode node)
         {
             return DefaultVisit(node);
         }

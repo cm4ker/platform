@@ -65,30 +65,9 @@ namespace ZenPlatform.EntityComponent.Configuration
         }
     }
 
-    public class XCSingleEntityLinkProperty : XCSingleEntityProperty,
-        IEquatable<XCSingleEntityLinkProperty>
+    public class XCSingleEntityLinkProperty : XCSingleEntityProperty
     {
         public override bool IsLink => true;
-
-        public bool Equals([AllowNull] XCSingleEntityLinkProperty other)
-        {
-            if (other == null) return false;
-
-            return base.Equals(other);
-        }
-
-
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return Equals(obj as XCSingleEntityLinkProperty);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Guid, Name, Unique, IsSystemProperty);
-        }
 
         public override IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {

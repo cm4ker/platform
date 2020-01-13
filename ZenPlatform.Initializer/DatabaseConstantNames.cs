@@ -55,5 +55,23 @@
         public const string SAVE_CONFIG_TABLE_NAME = "config_save";
 
         #endregion
+
+        #region Migration status table
+        public const string MIGRATION_STATUS_TABLE_NAME = "migration_status";
+
+
+        public const string MIGRATION_STATUS_TABLE_CHANGE_NAME_FIELD = "change_table";
+        public const string MIGRATION_STATUS_TABLE_RENAME_NAME_FIELD = "rename_table";
+        public const string MIGRATION_STATUS_TABLE_DELETE_NAME_FIELD = "delete_table";
+        public const string MIGRATION_STATUS_TABLE_COPY_NAME_FIELD = "copy_table";
+
+        public const string MIGRATION_STATUS_TABLE_ORIGINAL_NAME_FIELD = "original_table";
+        public const string MIGRATION_STATUS_TABLE_TEMP_NAME_FIELD = "temp_table";
+
+
+        #endregion
+
+
+
     }
 }
