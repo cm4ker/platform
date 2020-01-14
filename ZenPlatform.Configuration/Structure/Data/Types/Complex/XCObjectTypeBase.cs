@@ -150,18 +150,14 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public void Initialize()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void LoadDependencies()
         {
-            throw new NotImplementedException();
+            
         }
 
-        public IXProperty CreateProperty()
-        {
-            throw new NotImplementedException();
-        }
 
         public virtual IEnumerable<IXProperty> GetProperties()
         {
@@ -174,11 +170,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         }
 
         public IEnumerable<IXCCommand> GetCommands()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IXCCommand CreateCommand()
         {
             throw new NotImplementedException();
         }

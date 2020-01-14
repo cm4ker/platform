@@ -20,13 +20,22 @@ namespace ZenPlatform.Initializer.InternalDatabaseStructureMigrations
 
                .WithColumn("original_table").AsString(200)
                .WithColumn("temp_table").AsString(200)
+               .WithColumn("datetime").AsDateTime().WithDefault(SystemMethods.CurrentDateTime);
+            ;
+
+            Create.Table("migrations")
+               .WithColumn("migration_id").AsGuid().PrimaryKey().NotNullable()
+               .WithColumn("complited").AsBoolean().WithDefaultValue(false).NotNullable()
+               .WithColumn("datetime").AsDateTime().WithDefault(SystemMethods.CurrentDateTime);
 
                ;
+
         }
 
         public override void Down()
         {
             Delete.Table("migration_status");
+            Delete.Table("migrations");
         }
     }
 }

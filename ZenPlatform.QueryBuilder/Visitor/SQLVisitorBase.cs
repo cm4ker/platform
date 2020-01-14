@@ -179,6 +179,14 @@ namespace ZenPlatform.QueryBuilder.Visitor
             );
         }
 
+        public override string VisitSDelete(SDelete node)
+        {
+            return string.Format("DELETE\n{0}{1}",
+                node.From == null ? "" : node.From.Accept(this),
+                node.Where == null ? "" : node.Where.Accept(this)
+            );
+        }
+
         public override string VisitSAssign(SAssign node)
         {
             return string.Format("{0} = {1}",
@@ -444,7 +452,9 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitDropTable(DropTable node)
         {
-            return string.Format("DROP TABLE {0}", node.Table.Accept(this));
+            return string.Format("{0}DROP TABLE {1}", 
+                node.IfExists ? string.Format("IF OBJECT_ID('{0}', 'U') IS NOT NULL\n", node.Table.Accept(this)): "",
+                node.Table.Accept(this));
         }
 
         public override string VisitRenameTableNode(RenameTableNode node)
