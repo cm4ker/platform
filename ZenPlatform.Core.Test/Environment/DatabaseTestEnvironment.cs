@@ -63,7 +63,7 @@ namespace ZenPlatform.Core.Environment
             MigrationRunner.Migrate(config.ConnectionString,
                 config.DatabaseType);
 
-            /*
+            
             var newProject = XCRoot.Create("Library");
 
             
@@ -74,7 +74,7 @@ namespace ZenPlatform.Core.Environment
 
                 newProject.Save(configStorage);
             }
-            */
+            
             
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
             
