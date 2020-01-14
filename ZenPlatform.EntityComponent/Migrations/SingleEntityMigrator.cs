@@ -80,77 +80,100 @@ namespace ZenPlatform.EntityComponent.Migrations
 
         public void MigrationPlan(IEntityMigrationPlan plan, IXCComponent oldState, IXCComponent actualState)
         {
-            var oldTypes = oldState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
-            var actualTypes = actualState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
-
-            var types = oldTypes.FullJoin(actualTypes, x => x.Guid,
-                x => new { old = x, actual = default(XCSingleEntity) },
-                x => new { old = default(XCSingleEntity), actual = x },
-                (x, y) => new { old = x, actual = y });
-
-
-
-
-
-            foreach (var entitys in types)
+            if (oldState == null && actualState != null)
             {
-                var old = entitys.old;
-                var actual = entitys.actual;
+                var typesToCreate = actualState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
 
-                if (old == null && actual == null)
+                typesToCreate.ForEach(e =>
+                plan.AddScope(scope =>
                 {
-                    
-                }
-                else
-                if (old != null && actual == null)
+                    scope.CreateTable(e.RelTableName, e.Properties.Where(p => !p.IsLink).SelectMany(p => p.GetPropertySchemas()));
+                }, 20));
+
+            }
+            else
+            if (oldState != null && actualState == null)
+            {
+                var typesToDelete = actualState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
+
+                typesToDelete.ForEach(e =>
+                    plan.AddScope(scope => scope.DeleteTable(e.RelTableName), 20)
+                );
+            }
+            else
+            if (oldState != null && actualState != null)
+            {
+                var oldTypes = oldState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
+                var actualTypes = actualState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
+
+                var types = oldTypes.FullJoin(actualTypes, x => x.Guid,
+                    x => new { old = x, actual = default(XCSingleEntity) },
+                    x => new { old = default(XCSingleEntity), actual = x },
+                    (x, y) => new { old = x, actual = y });
+
+
+
+
+
+                foreach (var entitys in types)
                 {
-                    plan.AddScope(scope =>
+                    var old = entitys.old;
+                    var actual = entitys.actual;
+
+                    if (old == null && actual == null)
                     {
-                        scope.DeleteTable(old.RelTableName);
-                    }, 30);
 
-                }
-                else
-                if (old == null && actual != null)
-                {
-                    plan.AddScope(scope =>
+                    }
+                    else
+                    if (old != null && actual == null)
                     {
-                        scope.CreateTable(actual.RelTableName, actual.Properties.Where(p => !p.IsLink).SelectMany(p => p.GetPropertySchemas()));
-                    }, 20);
-
-                }
-                else
-                {
-                    if (NeedToChangeDatabase(old, actual))
-                    {
-                        plan.AddScope(scope =>
-                        {
-                            scope.CopyTable(old.RelTableName, $"{actual.RelTableName}_tmp");
-                            scope.SetFlagCopyTable(old.RelTableName, $"{actual.RelTableName}_tmp");
-                        }, 10);
-
-                        plan.AddScope(scope =>
-                        {
-                            ChangeTable(scope, old, actual);
-                            scope.SetFlagChangeTable(actual.RelTableName);
-                        }, 20);
-
                         plan.AddScope(scope =>
                         {
                             scope.DeleteTable(old.RelTableName);
-                            scope.SetFlagDeleteTable(old.RelTableName);
                         }, 30);
 
+                    }
+                    else
+                    if (old == null && actual != null)
+                    {
                         plan.AddScope(scope =>
                         {
-                            scope.RenameTable($"{actual.RelTableName}_tmp", old.RelTableName);
-                            scope.SetFlagRenameTable($"{actual.RelTableName}_tmp");
-                        }, 40);
+                            scope.CreateTable(actual.RelTableName, actual.Properties.Where(p => !p.IsLink).SelectMany(p => p.GetPropertySchemas()));
+                        }, 20);
+
                     }
-                        
+                    else
+                    {
+                        if (NeedToChangeDatabase(old, actual))
+                        {
+                            plan.AddScope(scope =>
+                            {
+                                scope.CopyTable(old.RelTableName, $"{actual.RelTableName}_tmp");
+                                scope.SetFlagCopyTable(old.RelTableName, $"{actual.RelTableName}_tmp");
+                            }, 10);
+
+                            plan.AddScope(scope =>
+                            {
+                                ChangeTable(scope, old, actual);
+                                scope.SetFlagChangeTable(actual.RelTableName);
+                            }, 20);
+
+                            plan.AddScope(scope =>
+                            {
+                                scope.DeleteTable(old.RelTableName);
+                                scope.SetFlagDeleteTable(old.RelTableName);
+                            }, 30);
+
+                            plan.AddScope(scope =>
+                            {
+                                scope.RenameTable($"{actual.RelTableName}_tmp", old.RelTableName);
+                                scope.SetFlagRenameTable($"{actual.RelTableName}_tmp");
+                            }, 40);
+                        }
+
+                    }
                 }
             }
-
 
         }
 

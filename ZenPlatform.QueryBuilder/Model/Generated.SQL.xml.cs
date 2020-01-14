@@ -474,6 +474,46 @@ namespace ZenPlatform.QueryBuilder.Model
 
 namespace ZenPlatform.QueryBuilder.Model
 {
+    public partial class SDelete : SSyntaxNode
+    {
+        public SDelete(SWhere where, SFrom from): base()
+        {
+            Where = where;
+            From = from;
+        }
+
+        public SWhere Where
+        {
+            get;
+            set;
+        }
+
+        public SFrom From
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SDelete ) obj ;  return  ( Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSDelete(this);
+        }
+    }
+}
+
+namespace ZenPlatform.QueryBuilder.Model
+{
     public partial class SOrderBy : SSyntaxNode
     {
         public SOrderBy(OrderDirection direction, List<SExpression> fields): base()
@@ -2468,9 +2508,21 @@ namespace ZenPlatform.QueryBuilder.Model
         {
         }
 
+        public bool IfExists
+        {
+            get;
+            set;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( DropTable ) obj ;  return  ( ( this . IfExists == node . IfExists ) ) ; 
+        }
+
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return (IfExists.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -2825,6 +2877,11 @@ namespace ZenPlatform.QueryBuilder.Visitor
         }
 
         public virtual T VisitSCoalese(SCoalese node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSDelete(SDelete node)
         {
             return DefaultVisit(node);
         }
