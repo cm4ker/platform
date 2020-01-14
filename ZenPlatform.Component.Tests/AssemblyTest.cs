@@ -24,12 +24,12 @@ namespace ZenPlatform.Component.Tests
     {
         private Assembly _clientAsm;
         private Assembly _serverAsm;
-        
+
         public AssemblyTest()
         {
             Build();
         }
-        
+
         public void Build()
         {
             var conf = Factory.CreateExampleConfiguration();
@@ -67,10 +67,10 @@ namespace ZenPlatform.Component.Tests
             client.Write("Client.bll");
 
             var execDir = AppDomain.CurrentDomain.BaseDirectory;
-            
-            
-            _serverAsm = Assembly.LoadFile(Path.Combine(execDir,"Server.bll"));
-            _clientAsm = Assembly.LoadFile(Path.Combine(execDir,"Client.bll"));
+
+
+            _serverAsm = Assembly.LoadFile(Path.Combine(execDir, "Server.bll"));
+            _clientAsm = Assembly.LoadFile(Path.Combine(execDir, "Client.bll"));
         }
 
 
@@ -78,19 +78,46 @@ namespace ZenPlatform.Component.Tests
         public void TestManagerCreate()
         {
             var manager = _serverAsm.GetType("Documents.InvoiceManager");
-            var facMethod = manager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static );
-            
+            var facMethod = manager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static);
+
             Assert.NotNull(facMethod);
-            
+
             var invoice = facMethod.Invoke(null, new object[] { });
             Assert.NotNull(invoice);
-            
+
             var it = invoice.GetType();
             var idProp = it.GetProperty("Id");
-            
+
             Assert.NotNull(idProp);
-            
+
             Assert.NotEqual(Guid.Empty, idProp.GetValue(invoice));
+        }
+
+        [Fact]
+        public void TestObjectCreateAndSet()
+        {
+            var invoiceManager = _serverAsm.GetType("Documents.InvoiceManager");
+            var iFacMethod = invoiceManager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static);
+
+            var storelink = _serverAsm.GetType("Documents.StoreLink");
+            var storeDto = _serverAsm.GetType("Documents._Store");
+            
+            Assert.NotNull(iFacMethod);
+            
+            var invoice = iFacMethod.Invoke(null, new object[] { });
+            Assert.NotNull(invoice);
+
+            var dtoInst =  Activator.CreateInstance(storeDto);
+            var storeInst = Activator.CreateInstance(storelink, dtoInst);
+
+            var it = invoice.GetType();
+            var storeProp = it.GetProperty("Store");
+
+            Assert.NotNull(storeProp);
+
+            storeProp.SetMethod.Invoke(invoice, new[] {storeInst});
+
+            Assert.NotNull(storeProp.GetMethod.Invoke(invoice, new object[] { }));
         }
     }
 }

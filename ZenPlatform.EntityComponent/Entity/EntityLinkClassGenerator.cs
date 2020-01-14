@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using dnlib.DotNet.Resources;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -135,9 +137,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
                 var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
-                var setBuilder = ((IMethodBuilder) propBuilder.Setter)?.Generator;
-
-
+                
                 // var valueParam = propBuilder.setMethod.Parameters[0];
 
                 if (prop.Types.Count > 1)
@@ -208,6 +208,8 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                     else
                     {
+                        getBuilder.LdcI4(1)
+                            .Ret();
                         //TODO: Link gen
                     }
                 }
@@ -244,6 +246,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             foreach (var prop in set.GetProperties())
             {
+                
                 bool propertyGenerated = false;
 
                 var propName = prop.Name;
@@ -252,7 +255,14 @@ namespace ZenPlatform.EntityComponent.Entity
                     ? sb.Object
                     : prop.Types[0].ConvertType(sb);
 
-                builder.DefineProperty(propType, propName, true, !prop.IsReadOnly, false);
+                IProperty baseProp = null;
+
+                if (propName == "Id")
+                {
+                    baseProp = builder.BaseType.FindProperty("Id");
+                }
+
+                builder.DefineProperty(propType, propName, true, false, false, baseProp);
             }
         }
 

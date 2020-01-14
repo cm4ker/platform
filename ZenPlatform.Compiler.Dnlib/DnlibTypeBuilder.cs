@@ -59,7 +59,7 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IMethodBuilder DefineMethod(string name, bool isPublic, bool isStatic, bool isInterfaceImpl,
-            IMethod overrideMethod = null)
+            IMethod overrideMethod = null, bool isVirtual = false)
         {
             var method = new MethodDefUser(name);
 
@@ -71,15 +71,22 @@ namespace ZenPlatform.Compiler.Dnlib
 
             method.IsStatic = isStatic;
 
+            if (overrideMethod != null)
+            {
+                var mo = new MethodOverride(method, (IMethodDefOrRef) ((DnlibMethodBase) overrideMethod).MethodRef);
+                method.Overrides.Add(mo);
+                method.Attributes |= MethodAttributes.Virtual;
+            }
 
             if (isInterfaceImpl)
             {
                 method.Attributes |= MethodAttributes.NewSlot | MethodAttributes.Virtual;
             }
-            else
-            {
-                method.Attributes |= MethodAttributes.HideBySig;
-            }
+
+            if (isVirtual)
+                method.Attributes |= MethodAttributes.Virtual;
+
+            method.Attributes |= MethodAttributes.HideBySig;
 
             var c = CallingConvention.Default;
 

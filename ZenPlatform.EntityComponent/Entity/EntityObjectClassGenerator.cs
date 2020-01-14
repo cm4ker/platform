@@ -222,12 +222,17 @@ namespace ZenPlatform.EntityComponent.Entity
                                 .LdArg_0()
                                 .LdFld(dtoPrivate)
                                 .LdArg(1)
-                                .Unbox_Any(compileType)
-                                .EmitCall(dtoProp.Setter)
+                                .Unbox_Any(compileType);
+                            
+                            if (ctype is IXCLinkType)
+                                setBuilder.EmitCall(compileType.FindProperty("Id").Getter);
+                                
+                            setBuilder.EmitCall(dtoProp.Setter)
                                 .LdArg_0()
                                 .LdFld(dtoPrivate)
                                 .LdcI4((int) ctype.Id)
                                 .EmitCall(dtoTypeProp.Setter)
+                                .Ret()
                                 .MarkLabel(label);
                         }
                     }
@@ -255,8 +260,14 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                     else
                     {
+                        
+                        var mrg = ts.FindType($"{@namespace}.{set.Name}Manager");
+                        var mrgGet = mrg.FindMethod("Get", sb.Guid);
+                        
                         getBuilder
-                            .LdNull()
+                            .LdArg_0()
+                            .EmitCall(builder.FindProperty("Id").Getter)
+                            .EmitCall(mrgGet)
                             .Ret();
                     }
                 }

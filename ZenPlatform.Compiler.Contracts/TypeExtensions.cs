@@ -202,7 +202,12 @@ namespace ZenPlatform.Compiler.Contracts
 
         public static IProperty FindProperty(this IType t, Func<IProperty, bool> criteria)
         {
-            return t.Properties.FirstOrDefault(criteria);
+            var result = t.Properties.FirstOrDefault(criteria);
+
+            if (result == null && t.BaseType != null)
+                return t.BaseType.FindProperty(criteria);
+
+            return result;
         }
 
         public static IField FindField(this IType t, string name)
@@ -283,25 +288,26 @@ namespace ZenPlatform.Compiler.Contracts
         }
 
         public static (IPropertyBuilder prop, IField field, IMethodBuilder getMethod, IMethodBuilder setMethod)
-            DefineProperty(this ITypeBuilder tb, IType type, string name, bool hasGet, bool hasSet, bool interfaceImpl)
+            DefineProperty(this ITypeBuilder tb, IType type, string name, bool hasGet, bool hasSet, bool interfaceImpl,
+                IProperty overrideProperty = null)
         {
-            var backingField = tb.DefineField(type, СonventionsHelper.GetBackingFieldName(name), false, false);
+            var backingField = tb.DefineField(type, ConventionsHelper.GetBackingFieldName(name), false, false);
 
             IMethodBuilder getMethod = null, setMethod = null;
 
             var result = tb.DefineProperty(type, name, false);
             if (hasGet)
             {
-                getMethod = tb.DefineMethod($"get_{name}", true, false, interfaceImpl).WithReturnType(type);
-
+                getMethod = tb.DefineMethod($"get_{name}", true, false, interfaceImpl, overrideProperty?.Getter)
+                    .WithReturnType(type);
                 result = result.WithGetter(getMethod);
             }
 
             if (hasSet)
             {
-                setMethod = tb.DefineMethod($"set_{name}", true, false, interfaceImpl);
+                setMethod = tb.DefineMethod($"set_{name}", true, false, interfaceImpl, overrideProperty?.Setter);
                 setMethod.DefineParameter("value", type, false, false);
-                
+
                 result = result.WithSetter(setMethod);
             }
 
@@ -311,7 +317,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IPropertyBuilder DefinePropertyWithBackingField(this ITypeBuilder tb, IType type, string name,
             bool interfaceImpl)
         {
-            var backingField = tb.DefineField(type, СonventionsHelper.GetBackingFieldName(name), false, false);
+            var backingField = tb.DefineField(type, ConventionsHelper.GetBackingFieldName(name), false, false);
             return tb.DefineProperty(type, name, backingField, interfaceImpl);
         }
 
@@ -341,7 +347,7 @@ namespace ZenPlatform.Compiler.Contracts
         }
     }
 
-    public static class СonventionsHelper
+    public static class ConventionsHelper
     {
         public static string GetBackingFieldName(string name) => $"<{name}>k__BackingField";
     }
