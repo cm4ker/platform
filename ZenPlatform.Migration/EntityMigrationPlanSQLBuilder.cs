@@ -69,6 +69,8 @@ namespace ZenPlatform.Migration
         }
         public void CreateTableItemVisit(DDLQuery query, CreateTableItem item)
         {
+
+            query.Delete().Table(item.TableName).IfExists();
             var tableBuilder = query.Create().Table(item.TableName);
 
             foreach (var schema in item.SchemaDefinitions)

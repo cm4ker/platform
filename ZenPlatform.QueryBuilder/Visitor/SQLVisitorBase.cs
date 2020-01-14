@@ -48,7 +48,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return node.Value switch
             {
                 string str => string.Format("'{0}'", str),
-                bool b =>  b.ToString().ToUpper(),
+                bool b =>  Convert.ToByte(b).ToString(),
                 Guid g => string.Format("'{0}'", g.ToString()),
                 _ => node.Value.ToString()
             };

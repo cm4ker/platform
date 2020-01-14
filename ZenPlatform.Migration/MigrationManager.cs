@@ -57,17 +57,40 @@ namespace ZenPlatform.Migration
                 {
                     using (var reader = cmd.ExecuteReader())
                     {
-                       
-                    }
+                        if (reader.HasRows)
+                        {
+                            var plan = new EntityMigrationPlan();
+                            while (reader.Read())
+                            {
+                                var original = reader.GetString(5);
+                                var tmp = reader.GetString(6);
 
+                                plan.AddScope(scope =>
+                                {
+                                    scope.RenameTable(tmp, original);
+                                    scope.SetFlagRenameTable(tmp);
+                                }, 40);
+                            }
+
+                            ExecPlan(plan, id, context);
+
+                            CompliteMigration(context, id);
+
+                            return true;
+                        }
+                        else
+                        {
+                            _logger.Error("Migration error, migration_status doesn't have rows to continue.");
+                            return false;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, "Migration error, check complited");
+                    _logger.Error(ex, "Migration error, try continue");
+                    throw ex;
                 }
             }
-
-            return false;
         }
 
         private bool IfLastMigrationFail(out Guid migration_id, DataContext context)
@@ -82,8 +105,10 @@ namespace ZenPlatform.Migration
                 .m_from()
                     .ld_table("migrations")
                 .m_where()
-                    .ld_column("Complited")
                     .ld_const(false)
+
+                    .ld_column("complited")
+                    
                     .eq()
                 .m_order_by()
                     .ld_column("datetime")
@@ -105,6 +130,7 @@ namespace ZenPlatform.Migration
                 catch (Exception ex)
                 {
                     _logger.Error(ex, "Migration error, check complited");
+                    throw ex;
                 }
             }
 
@@ -136,7 +162,8 @@ namespace ZenPlatform.Migration
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, "Migration error, start migration");
+                    _logger.Error(ex, "Migration error, create migration");
+                    throw ex;
                 }
             }
 
@@ -156,8 +183,8 @@ namespace ZenPlatform.Migration
                     .ld_column("migration_id")
                     .eq()
                 .m_set()
-                    .ld_const(true)
                     .ld_column("complited")
+                    .ld_const(true)  
                     .assign()
                 .m_update()
                     .ld_table("migrations")
@@ -172,6 +199,7 @@ namespace ZenPlatform.Migration
                 catch (Exception ex)
                 {
                     _logger.Error(ex, "Migration error, complite migration");
+                    throw ex;
                 }
             }
 
@@ -201,12 +229,13 @@ namespace ZenPlatform.Migration
                 catch (Exception ex)
                 {
                     _logger.Error(ex, "Migration error, clear migration status");
+                    throw ex;
                 }
             }
         }
 
 
-        private void RunPlan(EntityMigrationPlan plan, Guid id, DataContext context)
+        private void ExecPlan(EntityMigrationPlan plan, Guid id, DataContext context)
         {
             var query = DDLQuery.New();
 
@@ -220,11 +249,15 @@ namespace ZenPlatform.Migration
                 try
                 {
                     if (!string.IsNullOrEmpty(cmd.CommandText))
+                    {
+                        _logger.Debug("SQL Migration plan:\n{0}", cmd.CommandText);
                         cmd.ExecuteNonQuery();
+                    }
                 }
                 catch (Exception ex)
                 {
                     _logger.Error(ex, "Run migration plan error");
+                    throw ex;
                 }
             }
         }
@@ -242,9 +275,15 @@ namespace ZenPlatform.Migration
             {
                 component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
 
-            }s
-
-            RunPlan(plan, id, context);
+            }
+            if (plan.Count() > 0)
+            {
+                ExecPlan(plan, id, context);
+            }
+            else
+            {
+                _logger.Info("Migraion plan is empty.");
+            }
         }
 
         public void Migrate(IXCRoot old, IXCRoot actual)
@@ -263,6 +302,9 @@ namespace ZenPlatform.Migration
                     ClearMigrationStatus(last_fail_migration_id, context);
                     _logger.Info($"Restart migration '{last_fail_migration_id}'.");
                     RunMigration(old, actual, last_fail_migration_id, context);
+
+                    CompliteMigration(context, last_fail_migration_id);
+                    _logger.Info($"Migration '{last_fail_migration_id}' complite.");
                 }
             } else
             {

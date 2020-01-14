@@ -87,6 +87,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                 typesToCreate.ForEach(e =>
                 plan.AddScope(scope =>
                 {
+                    
                     scope.CreateTable(e.RelTableName, e.Properties.Where(p => !p.IsLink).SelectMany(p => p.GetPropertySchemas()));
                 }, 20));
 
