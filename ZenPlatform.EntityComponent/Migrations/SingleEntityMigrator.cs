@@ -50,9 +50,9 @@ namespace ZenPlatform.EntityComponent.Migrations
             //var task = new MigrationTaskAction(step, $"Change table {tableName}");
 
 
-            var props = old.Properties.Where(p => !p.IsLink)
+            var props = old.Properties.Where(p => !p.IsSelfLink)
                            .FullJoin(
-                               actual.Properties.Where(p => !p.IsLink), x => x.Guid,
+                               actual.Properties.Where(p => !p.IsSelfLink), x => x.Guid,
                                x => new { old = x, actual = default(IXProperty) },
                                x => new { old = default(IXProperty), actual = x },
                                (x, y) => new { old = x, actual = y });
@@ -88,7 +88,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                 plan.AddScope(scope =>
                 {
                     
-                    scope.CreateTable(e.RelTableName, e.Properties.Where(p => !p.IsLink).SelectMany(p => p.GetPropertySchemas()));
+                    scope.CreateTable(e.RelTableName, e.Properties.Where(p => !p.IsSelfLink).SelectMany(p => p.GetPropertySchemas()));
                 }, 20));
 
             }
@@ -140,7 +140,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                     {
                         plan.AddScope(scope =>
                         {
-                            scope.CreateTable(actual.RelTableName, actual.Properties.Where(p => !p.IsLink).SelectMany(p => p.GetPropertySchemas()));
+                            scope.CreateTable(actual.RelTableName, actual.Properties.Where(p => !p.IsSelfLink).SelectMany(p => p.GetPropertySchemas()));
                         }, 20);
 
                     }
