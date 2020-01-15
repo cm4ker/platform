@@ -69,7 +69,6 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentModule cm)
@@ -250,7 +249,6 @@ namespace ZenPlatform.EntityComponent.Entity
                 .NewObj(linkType.FindConstructor(dtoType))
                 .Ret();
         }
-
 
         private SSyntaxNode GetSelectQuery(XCSingleEntity se)
         {

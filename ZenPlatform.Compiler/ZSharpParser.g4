@@ -250,7 +250,7 @@ name:
 
 
 globalVar:
-    '$' ('.' (name | functionCall))*;  
+    '$' expression;  
         
 ifStatement:
     IF '(' expression ')' instructionsOrSingleStatement (ELSE instructionsOrSingleStatement)?;

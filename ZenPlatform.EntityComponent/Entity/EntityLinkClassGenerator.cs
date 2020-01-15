@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using dnlib.DotNet.Resources;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -16,38 +14,6 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
-    /*
-     Link
-     {
-        ViewBag _vb;
-     
-        .ctor Link(ViewBag vb)
-        {
-            _vb = vb;
-            Init();            
-        }
-     
-        AnyProp     
-        public [Type] [PropName] { get; private set; }
-        
-        private void Init()
-        {
-            _vb.TrySet("Id", out Id);
-            _vb.TrySet("Name", out Name);
-            
-            ..ETC..
-            
-            SomeExternalLink = 
-        }
-        
-        public void Reload()
-        {
-            _vb = Manager.GetViewBag();
-            Init();
-        }        
-     }
-     */
-
     public class EntityLinkClassGenerator
     {
         private readonly IXCComponent _component;
@@ -137,7 +103,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
                 var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
-                
+
                 // var valueParam = propBuilder.setMethod.Parameters[0];
 
                 if (prop.Types.Count > 1)
@@ -208,9 +174,14 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                     else
                     {
-                        getBuilder.LdcI4(1)
+                        var mrg = ts.FindType($"{@namespace}.{set.ParentType.Name}Manager");
+                        var mrgGet = mrg.FindMethod("Get", sb.Guid);
+
+                        getBuilder
+                            .LdArg_0()
+                            .EmitCall(builder.FindProperty("Id").Getter)
+                            .EmitCall(mrgGet)
                             .Ret();
-                        //TODO: Link gen
                     }
                 }
             }
@@ -246,7 +217,6 @@ namespace ZenPlatform.EntityComponent.Entity
 
             foreach (var prop in set.GetProperties())
             {
-                
                 bool propertyGenerated = false;
 
                 var propName = prop.Name;
@@ -263,24 +233,6 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
 
                 builder.DefineProperty(propType, propName, true, false, false, baseProp);
-            }
-        }
-
-        private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)
-        {
-            foreach (var module in type.GetProgramModules())
-            {
-                if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
-                {
-                    var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
-
-
-                    foreach (var func in typeBody.Functions)
-                    {
-                        func.SymbolScope = SymbolScopeBySecurity.User;
-                        cls.AddFunction(func);
-                    }
-                }
             }
         }
     }
