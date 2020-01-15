@@ -12,6 +12,7 @@ using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Builders;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Component.Tests
 {

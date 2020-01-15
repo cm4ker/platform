@@ -1,12 +1,11 @@
 ﻿using System;
-using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.Contracts;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
 
-namespace ZenPlatform.ConfigurationExample
+namespace ZenPlatform.Test.Tools
 {
     /// <summary>
     /// Пример конфигурации
@@ -112,6 +111,7 @@ namespace ZenPlatform.ConfigurationExample
                 .EditModule()
                 .SetText(@"
 
+
 [ClientCall] 
 public int ClientCallProc(int a)
 { 
@@ -128,6 +128,8 @@ public void OnClientClientCallProc()
 [ClientCall] 
 public string GetUserNameServer()
 { 
+    Entity.Invoice i = $Entity.Invoice.Create();
+
     return Context.UserName; 
 }
 

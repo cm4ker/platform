@@ -8,5 +8,7 @@ namespace ZenPlatform.Configuration.Contracts
         ITypeSystem TypeSystem { get; }
 
         void Register(Node node);
+
+        Node Root { get; }
     }
 }

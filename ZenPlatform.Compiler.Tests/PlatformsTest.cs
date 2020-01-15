@@ -13,6 +13,7 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Compiler.Tests
 {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Mono.Cecil;
@@ -11,6 +12,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -241,18 +243,18 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is LookupExpression le)
             {
-                EmitExpression(e, le.Parent, symbolTable);
+                EmitExpression(e, le.Current, symbolTable);
 
                 if (le.Lookup is Name lna)
                 {
-                    var prop = _map.GetProperty(le.Parent.Type, lna.Value);
+                    var prop = _map.GetProperty(le.Current.Type, lna.Value);
                     lna.Type = prop.PropertyType.ToAstType();
 
                     e.EmitCall(prop.Getter);
                 }
                 else if (le.Lookup is Call lca)
                 {
-                    var method = _map.GetMethod(le.Parent.Type, lca.Name,
+                    var method = _map.GetMethod(le.Current.Type, lca.Name,
                         lca.Arguments.Select(x => x.Expression.Type).ToArray());
 
                     lca.Type = method.ReturnType.ToAstType();
@@ -319,10 +321,7 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is GlobalVar gv)
             {
-                if (gv.Expression is Name)
-                {
-                    _varManager
-                }
+                GlobalVarEmitter(e, _varManager.Root, gv.Expression, symbolTable);
 
                 /*
                  Глобальное адрессное пространство.
@@ -367,9 +366,49 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        private void GlobalVarEmitter(IEmitter e, ISymbol symbol)
+        private Node GlobalVarEmitter(IEmitter e, Node currentGv, Expression expr, SymbolTable symbolTable)
         {
+            if (expr is Name n)
+            {
+                var gv = currentGv.Childs.First(x =>
+                {
+                    var gvar = x as GlobalVarTreeItem;
+
+                    if (gvar?.Type == VarTreeLeafType.Prop)
+                        return gvar?.Name == n.Value;
+
+                    return false;
+                }) as GlobalVarTreeItem;
+
+                gv?.Emit(n, e);
+
+                return gv;
+            }
+            else if (expr is Call c)
+            {
+                var gv = currentGv.Childs.First(x =>
+                {
+                    var gvar = x as GlobalVarTreeItem;
+
+                    if (gvar?.Type == VarTreeLeafType.Func)
+                        return gvar?.Name == c.Name;
+
+                    return false;
+                }) as GlobalVarTreeItem;
+
+                EmitArguments(e, c.Arguments, symbolTable);
+
+                gv?.Emit(c, e);
+
+                return gv;
+            }
+            else if (expr is LookupExpression le)
+            {
+                var last = GlobalVarEmitter(e, currentGv, le.Current, symbolTable);
+                return GlobalVarEmitter(e, last, le.Lookup, symbolTable);
+            }
             
+            throw new Exception("Unknown expression in global space");
         }
 
 

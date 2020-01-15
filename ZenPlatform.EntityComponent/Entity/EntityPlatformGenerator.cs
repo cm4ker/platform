@@ -100,7 +100,7 @@ namespace ZenPlatform.EntityComponent.Entity
         private void GenerateLink(IXCLinkType type, Root root)
         {
             var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name,
-                new TypeBody(new List<Member>())) {Base = "Documents.EntityLink", Namespace = "Documents"};
+                new TypeBody(new List<Member>())) {Base = "Entity.EntityLink", Namespace = "Entity"};
 
             cls.Bag = ObjectType.Link;
 
@@ -356,7 +356,7 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             var ts = manager.TypeSystem;
 
-            var root = new GlobalVarTreeItem(VarTreeLeafType.None, CompilationMode.Shared, "Document", (e) => { });
+            var root = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "Entity", (n, e) => { });
 
             foreach (var type in _component.ObjectTypes)
             {
@@ -364,15 +364,19 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 var mrg = ts.FindType(mrgName);
 
-                var mrgLeaf = new GlobalVarTreeItem(VarTreeLeafType.None, CompilationMode.Shared, type.GetManagerName(),
-                    e => { });
+                var mrgLeaf = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, type.GetObjectName(),
+                    (n, e) => { });
 
-                root.Add(mrgLeaf);
+                mrgLeaf.Attach(root);
 
                 var createMethod = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Shared,
-                    "Create", e => { e.EmitCall(mrg.FindMethod("Create")); });
+                    "Create", (n, e) =>
+                    {
+                        var call = n as Call ?? throw new Exception("Can't emit function if it is not a call");
+                        e.EmitCall(mrg.FindMethod("Create"), call.IsStatement);
+                    });
 
-                mrgLeaf.Add(createMethod);
+                createMethod.Attach(mrgLeaf);
             }
 
             manager.Register(root);
@@ -414,7 +418,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
-            if (astTree is ComponentAstBase cc)
+            if (astTree is ComponentAstBase cc && cc.Bag != null)
             {
                 if ((ObjectType) cc.Bag == ObjectType.Dto)
                 {

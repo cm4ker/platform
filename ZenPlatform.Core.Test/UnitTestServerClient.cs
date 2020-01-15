@@ -27,6 +27,7 @@ using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Core.Test.Logging;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Core.Test
 {
@@ -179,7 +180,7 @@ namespace ZenPlatform.Core.Test
 
             Assert.NotNull(result);
 
-            var invoice = result.CreateInstance("Documents._Invoice");
+            var invoice = result.CreateInstance($"Entity._Invoice");
             Assert.NotNull(invoice);
 
 
