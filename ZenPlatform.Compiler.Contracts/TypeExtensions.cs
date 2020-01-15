@@ -299,6 +299,9 @@ namespace ZenPlatform.Compiler.Contracts
 
             if (hasSet)
             {
+                setMethod = tb.DefineMethod($"set_{name}", true, false, interfaceImpl);
+                setMethod.DefineParameter("value", type, false, false);
+                
                 result = result.WithSetter(setMethod);
             }
 
@@ -323,9 +326,18 @@ namespace ZenPlatform.Compiler.Contracts
         {
             var c = tb.DefineConstructor(isStatic);
             if (!isStatic)
-                c.Generator.LdArg_0().EmitCall(tb.BaseType.Constructors[0]);
+                c.Generator.LdArg_0().EmitCall(tb.BaseType.Constructors[0]).Ret();
 
             return c;
+        }
+    }
+
+    public static class PropertyExtension
+    {
+        public static ICustomAttribute FindCustomAttribute<T>(this IProperty property)
+        {
+            var type = property.PropertyType.Assembly.TypeSystem.FindType<T>();
+            return property.FindCustomAttribute(type);
         }
     }
 

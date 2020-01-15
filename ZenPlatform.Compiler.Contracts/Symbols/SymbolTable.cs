@@ -1,4 +1,8 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using ZenPlatform.Compiler.AST.Infrastructure;
 
 namespace ZenPlatform.Compiler.Contracts.Symbols
@@ -6,12 +10,23 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
     public interface ISymbolTable
     {
         ISymbol Add(IAstSymbol astSymbol);
-        ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject, object codeObject);
+
+        ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject,
+            object codeObject);
+
         ISymbol ConnectCodeObject(IAstSymbol v, object codeObject);
+
         bool Contains(string name, SymbolType type, SymbolScopeBySecurity scope);
+
         ISymbol Find(IAstSymbol symbol);
+
         T FindCodeObject<T>(IAstSymbol symbol);
+
         ISymbol Find(string name, SymbolType type, SymbolScopeBySecurity scope);
+
+        IEnumerable<ISymbol> GetAll(SymbolType type);
+
+
         void Clear();
     }
 
@@ -34,7 +49,8 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol.SymbolScope, astSymbol, null);
         }
 
-        public ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject, object codeObject)
+        public ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject,
+            object codeObject)
         {
             string prefix = PrefixFromType(type);
 
@@ -79,17 +95,39 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
 
         public ISymbol Find(string name, SymbolType type, SymbolScopeBySecurity scope)
         {
-            string prefix = PrefixFromType(type);
-
-            if (_hashtable.Contains(prefix + name))
-                return (Symbol) _hashtable[prefix + name];
-            if (_parent != null)
+            foreach (SymbolType val in Enum.GetValues(typeof(SymbolType)))
             {
-                return _parent.Find(name, type, scope);
+                if (!type.HasFlag(val)) continue;
+                
+                ISymbol result = null;
+
+                string prefix = PrefixFromType(val);
+
+                if (_hashtable.Contains(prefix + name))
+                {
+                    return (Symbol) _hashtable[prefix + name];
+                }
+                    
+                if (_parent != null)
+                {
+                    result = _parent.Find(name, type, scope);
+                }
+
+                if (result != null)
+                    return result;
             }
 
             return null;
         }
+
+
+        public IEnumerable<ISymbol> GetAll(SymbolType type)
+        {
+            var prefix = PrefixFromType(type);
+            return _hashtable.Cast<DictionaryEntry>().Where(x => ((string) x.Key).StartsWith(prefix))
+                .Select(x => (Symbol) x.Value);
+        }
+
 
         public void Clear()
         {
@@ -98,13 +136,14 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
 
         private string PrefixFromType(SymbolType type)
         {
-            if (type == SymbolType.Function)
-                return "f_";
-            if (type == SymbolType.Type)
-                return "t_";
-            if (type == SymbolType.Variable)
-                return "v_";
-            return "";
+            return type switch
+            {
+                SymbolType.Method => "f_",
+                SymbolType.Type => "t_",
+                SymbolType.Property => "p_",
+                SymbolType.Variable => "v_",
+                _ => ""
+            };
         }
     }
 }

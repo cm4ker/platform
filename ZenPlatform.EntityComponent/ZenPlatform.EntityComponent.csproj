@@ -8,7 +8,4 @@
         <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
         <ProjectReference Include="..\ZenPlatform.Migration\ZenPlatform.Migration.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Helpers\" />
-    </ItemGroup>
 </Project>

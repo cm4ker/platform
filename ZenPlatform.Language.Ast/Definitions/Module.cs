@@ -6,7 +6,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// <summary>
     /// Описывает модуль
     /// </summary>
-    public partial class Module : TypeEntity
+    public partial class Module
     {
         public SymbolScopeBySecurity SymbolScope { get; set; }
         

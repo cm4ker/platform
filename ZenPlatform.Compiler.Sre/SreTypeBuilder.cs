@@ -97,6 +97,11 @@ namespace ZenPlatform.Compiler.Sre
             return new SreTypeBuilder(_system, builder);
         }
 
+        public void SetCustomAttribute(ICustomAttribute attr)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IType EndBuild()
         {
             foreach (SreMethodBuilder method in _definedMethods)

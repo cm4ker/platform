@@ -27,6 +27,7 @@ DOUBLE : 'double';
 CHAR : 'char';
 STRING : 'string';
 VOID : 'void';
+OBJECT : 'object';
 TYPE : 'type';
 NEW  : 'new';
 RETURN : 'return';

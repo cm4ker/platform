@@ -24,6 +24,7 @@ namespace ZenPlatform.Compiler.Dnlib
         private DnlibTypeSystem _ts;
         private List<DnlibLabel> _markedLabels = new List<DnlibLabel>();
         private DnlibDebugPoint _pendingDebugPoint;
+        private DnlibContextResolver _cr;
 
         class DnlibTryHandler
         {
@@ -81,15 +82,19 @@ namespace ZenPlatform.Compiler.Dnlib
         public DnlibEmitter(ITypeSystem typeSystem, MethodDef method)
         {
             _method = method;
-            _ts = (DnlibTypeSystem) typeSystem;
+            _ts = (DnlibTypeSystem) typeSystem ?? throw new ArgumentNullException(nameof(typeSystem));
             _body = _method.Body;
             _exceptionStack = new Stack<DnlibTryHandler>();
+            _cr = new DnlibContextResolver(_ts, _method.Module);
         }
 
         private dnlib.DotNet.IMethod ImportMethod(DnlibMethodBase method)
         {
             if (_method.Module != method.MethodRef.Module)
+            {
+               //method.MethodRef.MethodSig = _cr.ResolveMethodSig(method.MethodRef.MethodSig);
                 return _method.Module.Import(method.MethodRef);
+            }
             else
                 return method.MethodRef;
         }
@@ -142,7 +147,7 @@ namespace ZenPlatform.Compiler.Dnlib
             return this;
         }
 
-        public ITypeSystem TypeSystem { get; }
+        public ITypeSystem TypeSystem => _ts;
 
 
         public IEmitter Emit(SreOpCode code) => Emit(Instruction.Create(Dic[code]));
@@ -217,6 +222,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public ILabel DefineLabel() => new DnlibLabel();
 
         private Stack<DnlibTryHandler> _exceptionStack;
+        
 
 
         public ILabel BeginExceptionBlock()

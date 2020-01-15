@@ -4,7 +4,7 @@ namespace ZenPlatform.Compiler.Contracts
 {
     public interface IAssemblyPlatform
     {
-        IAssemblyFactory AsmFactory { get; }
+        IPlatformFactory AsmFactory { get; }
 
         ITypeSystem TypeSystem { get; }
 
@@ -15,12 +15,12 @@ namespace ZenPlatform.Compiler.Contracts
     {
         public static IAssemblyBuilder CreateAssembly(this IAssemblyPlatform ap, string name, Version assemblyVersion)
         {
-            return ap.AsmFactory.Create(ap.TypeSystem, name, assemblyVersion);
+            return ap.AsmFactory.CreateAssembly(ap.TypeSystem, name, assemblyVersion);
         }
 
         public static IAssemblyBuilder CreateAssembly(this IAssemblyPlatform ap, string name)
         {
-            return ap.AsmFactory.Create(ap.CreateTypeSystem(), name, Version.Parse("1.0.0.0"));
+            return ap.AsmFactory.CreateAssembly(ap.CreateTypeSystem(), name, Version.Parse("1.0.0.0"));
         }
     }
 }

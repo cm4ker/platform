@@ -38,11 +38,6 @@ namespace ZenPlatform.Compiler.Generation
                 return;
             }
 
-            if (function.Flags == FunctionFlags.ServerClientCall && _mode == CompilationMode.Server)
-            {
-                EmitRegisterServerFunction(function);
-            }
-
             IEmitter emitter = function.Builder;
             emitter.InitLocals = true;
 

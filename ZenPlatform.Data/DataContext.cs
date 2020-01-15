@@ -21,6 +21,7 @@ namespace ZenPlatform.Data
         public ISqlCompiler SqlCompiller { get; }
 
         private int _tranCount;
+        private QueryMachine _machine;
 
         public DataContext(SqlDatabaseType compilerType, string connectionString)
         {
@@ -28,6 +29,7 @@ namespace ZenPlatform.Data
             SqlCompiller = SqlCompillerBase.FormEnum(compilerType);
             _connection.Open();
             _isolationLevel = IsolationLevel.Snapshot;
+            _machine = new QueryMachine();
         }
 
         public void BeginTransaction()
@@ -60,18 +62,9 @@ namespace ZenPlatform.Data
 
         public DbCommand CreateCommand(Action<QueryMachine> action)
         {
-            var cmd = _connection.CreateCommand();
-            if (_activeTransaction != null)
-                cmd.Transaction = _activeTransaction;
-
-
-            var machine = new QueryMachine();
-
-            action(machine);
-            var res = machine.pop();
-            cmd.CommandText = SqlCompiller.Compile((SSyntaxNode)res);
-
-            return cmd;
+            _machine.reset();
+            action(_machine);
+            return CreateCommand((SSyntaxNode) _machine.pop());
         }
 
         public DbCommand CreateCommand()

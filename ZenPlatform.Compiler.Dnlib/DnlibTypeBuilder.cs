@@ -25,6 +25,7 @@ namespace ZenPlatform.Compiler.Dnlib
             Properties.Any();
             Constructors.Any();
             CustomAttributes.Any();
+            //GenericParameters.Any();
 
             _r = new DnlibContextResolver(_ts, typeDef.Module);
         }
@@ -152,8 +153,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public void SetCustomAttribute(ICustomAttribute attr)
         {
-            ((List<ICustomAttribute>) CustomAttributes).Add(attr);
-            TypeDef.CustomAttributes.Add(((DnlibCustomAttribute) attr).CustomAttribute);
+            var dnlibAttr = (DnlibCustomAttribute) attr;
+            dnlibAttr.ImportAttribute(TypeDef.Module);
+            ((List<ICustomAttribute>) CustomAttributes).Add(dnlibAttr);
+            TypeDef.CustomAttributes.Add(dnlibAttr.GetCA());
         }
 
         public IType EndBuild()
@@ -176,7 +179,7 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new NotImplementedException();
         }
 
-        public string Name { get; }
+        public string Name => FieldDef.Name;
         public IType FieldType { get; }
         public bool IsPublic { get; }
         public bool IsStatic { get; }

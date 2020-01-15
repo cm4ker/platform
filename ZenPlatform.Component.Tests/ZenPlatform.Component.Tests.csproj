@@ -13,17 +13,17 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Compiler.Dnlib\ZenPlatform.Compiler.Dnlib.csproj" />
-      <ProjectReference Include="..\ZenPlatform.ConfigurationExample\ZenPlatform.ConfigurationExample.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
-      <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Compiler.Dnlib\ZenPlatform.Compiler.Dnlib.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ConfigurationExample\ZenPlatform.ConfigurationExample.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
+        <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Common" />
+        <Folder Include="Common" />
     </ItemGroup>
 
 </Project>

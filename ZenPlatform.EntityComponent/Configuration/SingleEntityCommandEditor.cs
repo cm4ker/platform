@@ -9,6 +9,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     public class SingleEntityCommandEditor : ICommandEditor
     {
         private XCCommand _command;
+
         public SingleEntityCommandEditor(XCCommand command)
         {
             _command = command;
@@ -35,8 +36,5 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return new SingleEntityModuleEditor(_command.Module);
         }
-
-
-
     }
 }

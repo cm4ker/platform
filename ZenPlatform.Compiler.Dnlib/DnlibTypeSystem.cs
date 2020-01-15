@@ -30,7 +30,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
         private DnlibTypeCache _typeCache;
 
-        public DnlibTypeSystem(IEnumerable<string> paths, string targetPath = null)
+        public DnlibTypeSystem(DnlibPlatformFactory factory, IEnumerable<string> paths, string targetPath = null)
         {
             _asms = new List<DnlibAssembly>();
             _resolver = new DnlibAssemblyResolver();
@@ -46,9 +46,13 @@ namespace ZenPlatform.Compiler.Dnlib
                 var asm = AssemblyDef.Load(path, new ModuleCreationOptions());
                 RegisterAssembly(asm);
             }
+
+            Factory = factory;
         }
 
         public DnlibAssemblyResolver Resolver => _resolver;
+
+        public IPlatformFactory Factory { get; }
 
         public IReadOnlyList<IAssembly> Assemblies => _asms;
 
@@ -86,7 +90,10 @@ namespace ZenPlatform.Compiler.Dnlib
                 return _assemblyDic.FirstOrDefault(x => x.Key.Name == "mscorlib").Value;
             }
 
-            return _assemblyDic[assembly];
+            if (_assemblyDic.ContainsKey(assembly))
+                return _assemblyDic[assembly];
+            else
+                return FindAssembly(assembly.FullName);
         }
 
         public IType FindType(string name)

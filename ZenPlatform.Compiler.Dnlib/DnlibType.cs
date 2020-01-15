@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Transactions;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
@@ -23,7 +24,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public DnlibType(DnlibTypeSystem typeSystem, TypeDef typeDef, ITypeDefOrRef typeRef, DnlibAssembly assembly)
         {
             _ts = typeSystem;
-            _assembly = assembly;
+            _assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
 
             TypeRef = typeRef ?? throw new ArgumentNullException(nameof(typeRef));
             TypeDef = typeDef ?? typeRef.ResolveTypeDef();
@@ -53,6 +54,7 @@ namespace ZenPlatform.Compiler.Dnlib
         private IReadOnlyList<IConstructor> _constructors;
         private IReadOnlyList<IType> _interfaces;
         private IReadOnlyList<IType> _genericParameters;
+        private IReadOnlyList<ICustomAttribute> _customAttributes;
 
         public IReadOnlyList<IProperty> Properties =>
             _properties ??= TypeDef.Properties.Select(x => new DnlibProperty(_ts, x)).ToList();
@@ -64,17 +66,21 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IReadOnlyList<IMethod> Methods =>
             _methods ??= TypeDef.Methods.Where(x => !x.IsConstructor)
-                .Select(x => (IMethod) new DnlibMethod(_ts, x, x, TypeRef)).ToList();
+                .Select(x => (IMethod) new DnlibMethod(_ts,
+                    new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig), TypeRef), x, TypeRef))
+                .ToList();
 
         public IReadOnlyList<IConstructor> Constructors =>
             _constructors ??= TypeDef.FindConstructors().Select(x =>
             {
                 return (IConstructor) new DnlibConstructor(_ts,
-                    new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef) {MethodSig = x.MethodSig}, x,
+                    new MemberRefUser(x.Module, x.Name, x.MethodSig, TypeRef), x,
                     TypeRef);
             }).ToList();
 
-        public IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
+        public IReadOnlyList<ICustomAttribute> CustomAttributes
+            => _customAttributes ??= new List<ICustomAttribute>();
+
         public IReadOnlyList<IType> GenericArguments { get; }
 
         public IReadOnlyList<IType> Interfaces =>
@@ -89,7 +95,7 @@ namespace ZenPlatform.Compiler.Dnlib
 
 
         public IReadOnlyList<IType> GenericParameters =>
-            _genericParameters ??= (TypeRef as TypeSpec).TryGetGenericInstSig().GenericArguments
+            _genericParameters ??= (TypeRef as TypeSpec)?.TryGetGenericInstSig()?.GenericArguments?
                 .Select(x => _cr.GetType(x)).ToList();
 
 
@@ -138,15 +144,16 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType MakeArrayType()
         {
-            return new DnlibType(_ts, null, new TypeSpecUser(new SZArraySig(TypeRef.ToTypeSig())), _assembly);
+            return new DnlibType(_ts, TypeDef, new TypeSpecUser(new SZArraySig(TypeRef.ToTypeSig())), _assembly);
         }
 
         public IType MakeArrayType(int dimensions)
         {
-            return new DnlibType(_ts, null, new TypeSpecUser(new ArraySig(TypeRef.ToTypeSig(), dimensions)), _assembly);
+            return new DnlibType(_ts, TypeDef, new TypeSpecUser(new ArraySig(TypeRef.ToTypeSig(), dimensions)),
+                _assembly);
         }
 
-        public IType BaseType => _ts.Resolve(TypeDef.BaseType);
+        public IType BaseType => (TypeDef.BaseType != null) ? _ts.Resolve(TypeDef.BaseType) : null;
 
         public bool IsValueType => TypeDef.IsValueType;
 

@@ -25,6 +25,8 @@ namespace ZenPlatform.Compiler.Generation
             _cus = root.Units;
             AstScopeRegister.Apply(root);
 
+           
+            
             Build();
         }
     }

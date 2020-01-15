@@ -12,6 +12,8 @@ namespace ZenPlatform.Compiler.Contracts
         IMethod Setter { get; }
 
         IReadOnlyList<ICustomAttribute> CustomAttributes { get; }
+
+        ICustomAttribute FindCustomAttribute(IType type);
     }
 
     /// <summary>
@@ -22,7 +24,7 @@ namespace ZenPlatform.Compiler.Contracts
         IPropertyBuilder WithSetter(IMethod method);
 
         IPropertyBuilder WithGetter(IMethod method);
-        
+
         void SetAttribute(ICustomAttribute attr);
     }
 }
