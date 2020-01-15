@@ -79,12 +79,12 @@ namespace ZenPlatform.Compiler.Generation
 
     public class GlobalVarTreeItem : Node
     {
-        private readonly Action<IEmitter> _e;
+        private readonly Action<Node, IEmitter> _e;
         private List<object> _args;
         private object _codeObject;
         private CompilationMode _mode;
 
-        public GlobalVarTreeItem(VarTreeLeafType type, CompilationMode mode, string name, Action<IEmitter> e)
+        public GlobalVarTreeItem(VarTreeLeafType type, CompilationMode mode, string name, Action<Node, IEmitter> e)
         {
             _e = e;
             Type = type;
@@ -123,9 +123,9 @@ namespace ZenPlatform.Compiler.Generation
             _args.Add(arg);
         }
 
-        public void Emit(IEmitter e)
+        public void Emit(Node node, IEmitter e)
         {
-            _e(e);
+            _e(node, e);
         }
 
         private IReadOnlyList<object> Args => _args.AsReadOnly();
@@ -139,12 +139,7 @@ namespace ZenPlatform.Compiler.Generation
             TypeSystem = ts;
         }
 
-        private GlobalVarTreeItem Root { get; }
-
-        public void Register(GlobalVarTreeItem node)
-        {
-            node.Attach(Root);
-        }
+        public Node Root { get; }
 
         public ITypeSystem TypeSystem { get; }
 
@@ -153,7 +148,7 @@ namespace ZenPlatform.Compiler.Generation
             if (!(node is GlobalVarTreeItem gvar))
                 throw new Exception("Only GlobalVarTreeItem can be in GlobalVarTree");
 
-            Register(gvar);
+            node.Attach(Root);
         }
 
         public void Emit(IEmitter e, GlobalVar exp, Action<object> onUnknown)
@@ -161,7 +156,7 @@ namespace ZenPlatform.Compiler.Generation
             EmitInternal(e, exp.Expression, Root, onUnknown);
         }
 
-        private void EmitInternal(IEmitter e, Expression exp, GlobalVarTreeItem currentItem,
+        private void EmitInternal(IEmitter e, Expression exp, Node currentItem,
             Action<object> onUnknown)
         {
             if (exp is LookupExpression le)

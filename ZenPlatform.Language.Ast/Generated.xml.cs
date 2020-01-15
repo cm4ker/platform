@@ -1137,9 +1137,9 @@ namespace ZenPlatform.Language.Ast.Definitions
             Lookup = lookup;
             if (Lookup != null)
                 Childs.Add(Lookup);
-            Parent = parent;
-            if (Parent != null)
-                Childs.Add(Parent);
+            Current = parent;
+            if (Current != null)
+                Childs.Add(Current);
         }
 
         public Expression Lookup
@@ -1147,7 +1147,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             get;
         }
 
-        public Expression Parent
+        public Expression Current
         {
             get;
         }

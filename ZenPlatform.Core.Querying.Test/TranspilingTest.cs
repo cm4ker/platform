@@ -5,6 +5,7 @@ using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Core.Querying.Test
 {

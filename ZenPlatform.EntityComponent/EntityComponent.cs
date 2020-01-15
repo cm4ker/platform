@@ -58,7 +58,7 @@ namespace ZenPlatform.EntityComponent
             Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.DtoPreffixRule, "_"));
             Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.EntityClassPostfixRule, ""));
             Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.EntityClassPrefixRule, ""));
-            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.NamespaceRule, "Documents"));
+            Component.RegisterCodeRule(new CodeGenRule(CodeGenRuleType.NamespaceRule, "Entity"));
         }
 
         /*

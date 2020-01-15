@@ -31,7 +31,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var dtoClassName = type.GetDtoName();
 
             var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, dtoClassName,
-                new TypeBody(new List<Member>())) {Namespace = "Documents"};
+                new TypeBody(new List<Member>())) {Namespace = type.GetNamespace()};
 
             cls.Bag = ObjectType.Dto;
 

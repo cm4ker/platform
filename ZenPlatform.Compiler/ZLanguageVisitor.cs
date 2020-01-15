@@ -446,7 +446,7 @@ namespace ZenPlatform.Compiler
                 args = _syntaxStack.PopList<Argument>().ToImmutableList();
             }
 
-            var result = new Call(context.start.ToLineInfo(),args,
+            var result = new Call(context.start.ToLineInfo(), args,
                 _syntaxStack.PopString(), null);
 
             _syntaxStack.Push(result);
@@ -717,8 +717,21 @@ namespace ZenPlatform.Compiler
                 //перед тем как мы будем добавлять их в инструкции нужно обернуть их в инструкцию
                 if (node is Expression exp)
                 {
-                    if (exp is Call c)
-                        c.IsStatement = true;
+                    void CheckExpr(Expression exp)
+                    {
+                        if (exp is Call c)
+                            c.IsStatement = true;
+                        else if (exp is GlobalVar gv)
+                        {
+                            CheckExpr(gv.Expression);
+                        }
+                        else if (exp is LookupExpression le)
+                        {
+                            CheckExpr(le.Lookup);
+                        }
+                    }
+
+                    CheckExpr(exp);
 
                     node = new ExpressionStatement(exp);
                 }

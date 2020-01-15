@@ -23,6 +23,7 @@ using ZenPlatform.Core.Test;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.Test.Tools;
 
 
 namespace ZenPlatform.Component.Tests
@@ -88,7 +89,7 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void TestManagerCreate()
         {
-            var manager = _serverAsm.GetType("Documents.InvoiceManager");
+            var manager = _serverAsm.GetType("Entity.InvoiceManager");
             var facMethod = manager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static);
 
             Assert.NotNull(facMethod);
@@ -123,11 +124,11 @@ namespace ZenPlatform.Component.Tests
 
             //install session
 
-            var invoiceManager = _serverAsm.GetType("Documents.InvoiceManager");
+            var invoiceManager = _serverAsm.GetType("Entity.InvoiceManager");
             var iFacMethod = invoiceManager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static);
 
-            var storelink = _serverAsm.GetType("Documents.StoreLink");
-            var storeDto = _serverAsm.GetType("Documents._Store");
+            var storelink = _serverAsm.GetType("Entity.StoreLink");
+            var storeDto = _serverAsm.GetType("Entity._Store");
 
             Assert.NotNull(iFacMethod);
 

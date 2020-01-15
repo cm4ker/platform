@@ -229,7 +229,7 @@
     <Syntax Name="LookupExpression" Base="Expression">
         <Arguments>
             <Single Name="Lookup" Type="Expression"/>
-            <Single Name="Parent" Type="Expression"/>
+            <Single Name="Current" Type="Expression"/>
         </Arguments>
     </Syntax>
         

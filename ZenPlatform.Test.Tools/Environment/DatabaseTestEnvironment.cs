@@ -23,6 +23,7 @@ using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.ConfigurationExample;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Core.Environment
 {

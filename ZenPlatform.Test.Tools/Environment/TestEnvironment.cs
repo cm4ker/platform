@@ -19,6 +19,7 @@ using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Core.Test.Environment
 {
