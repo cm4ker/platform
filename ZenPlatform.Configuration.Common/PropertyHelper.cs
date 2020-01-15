@@ -27,7 +27,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
                         yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
                             propName, "", $"_{type.Name}");
 
-                    if (type is IXCObjectReadOnlyType obj && !done)
+                    if (type is IXCStructureType obj && !done)
                     {
                         yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, PlatformTypesFactory.Guid,
                             propName, "", "_Ref");

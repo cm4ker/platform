@@ -1,7 +1,11 @@
-﻿using ZenPlatform.QueryBuilder.Builders;
+﻿using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Migration;
+using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.Configuration.Contracts.Data.Entity
+
 {
     /// <summary>
     /// Интерфейс для получения скриптов обновления и миграции сущностей
@@ -15,10 +19,6 @@ namespace ZenPlatform.Configuration.Contracts.Data.Entity
         /// <param name="actual">Текущий объект</param>
         /// <returns></returns>
         //IList<SqlNode> GetScript(XCObjectTypeBase old, XCObjectTypeBase actual);
-        SSyntaxNode GetStep1(IXCObjectType old, IXCObjectType actual, DDLQuery query);
-
-        SSyntaxNode GetStep2(IXCObjectType old, IXCObjectType actual, DDLQuery query);
-        SSyntaxNode GetStep3(IXCObjectType old, IXCObjectType actual, DDLQuery query);
-        SSyntaxNode GetStep4(IXCObjectType old, IXCObjectType actual, DDLQuery query);
+        void MigrationPlan(IEntityMigrationPlan plan, IXCComponent oldState, IXCComponent actualState);
     }
 }

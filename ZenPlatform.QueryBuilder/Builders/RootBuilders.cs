@@ -17,6 +17,27 @@ namespace ZenPlatform.QueryBuilder.Builders
         public SSyntaxNode Expression => _expression;
         private Querys _expression = new Querys();
 
+        public void Clear()
+        {
+            _expression = new Querys();
+        }
+
+        public DDLQuery Add(Action<QueryMachine> action)
+        {
+            QueryMachine machine = new QueryMachine();
+
+            action(machine);
+
+            return Add((SSyntaxNode)machine.pop());
+        }
+
+        public DDLQuery Add(SSyntaxNode syntax)
+        {
+            _expression.QueryList.Add(syntax);
+
+            return this;
+        }
+
         public CreateBuilder Create()
         {
             var builder = new CreateBuilder(_expression);
@@ -185,6 +206,16 @@ namespace ZenPlatform.QueryBuilder.Builders
             if (!string.IsNullOrEmpty(oldName)) node.From = new Table() { Value = oldName };
 
             var builder = new RenameTableBuilder(node);
+            _querys.QueryList.Add(node);
+            return builder;
+        }
+
+        public RenameColumnBuilder Column(string tableName = null)
+        {
+            var node = new RenameColumnNode();
+            if (!string.IsNullOrEmpty(tableName)) node.Table = new Table() { Value = tableName };
+
+            var builder = new RenameColumnBuilder(node);
             _querys.QueryList.Add(node);
             return builder;
         }

@@ -8,7 +8,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     /// <summary>
     /// Редактор свойств 
     /// </summary>
-    public class SingleEntityPropertyEditor
+    public class SingleEntityPropertyEditor : IPropertyEditor
     {
         private XCSingleEntityProperty _property;
 
@@ -22,7 +22,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// </summary>
         /// <param name="name">Имя свойства</param>
         /// <returns></returns>
-        public SingleEntityPropertyEditor SetName(string name)
+        public IPropertyEditor SetName(string name)
         {
             _property.Name = name;
             return this;
@@ -34,9 +34,9 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <param name="type">Тип свойсва</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public SingleEntityPropertyEditor AddType(IXCType type)
+        public IPropertyEditor AddType(IXCType type)
         {
-            if (type is IXCObjectReadOnlyType t && !t.IsLink)
+            if (type is IXCStructureType t && !t.IsLink)
                 throw new Exception("Only link type can be used in another types");
 
             _property.Types.Add(type);
@@ -49,7 +49,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// </summary>
         /// <param name="guid">Идентификатор свойства</param>
         /// <returns></returns>
-        public SingleEntityPropertyEditor SetGuid(Guid guid)
+        public IPropertyEditor SetGuid(Guid guid)
         {
             _property.Guid = guid;
             return this;
@@ -60,7 +60,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public SingleEntityPropertyEditor SetDatabaseColumnName(string name)
+        public IPropertyEditor SetDatabaseColumnName(string name)
         {
             _property.DatabaseColumnName = name;
             return this;

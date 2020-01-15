@@ -6,5 +6,6 @@
         <ProjectReference Include="..\ZenPlatform.Compiler\ZenPlatform.Compiler.csproj" />
         <ProjectReference Include="..\ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj" />
         <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Migration\ZenPlatform.Migration.csproj" />
     </ItemGroup>
 </Project>

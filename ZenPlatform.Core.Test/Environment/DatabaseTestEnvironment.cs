@@ -74,6 +74,7 @@ namespace ZenPlatform.Core.Environment
 
                 newProject.Save(configStorage);
             }
+            
             */
             
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
@@ -81,7 +82,9 @@ namespace ZenPlatform.Core.Environment
 
 
             var savedConfiguration = Factory.CreateExampleConfiguration();
-            IXCRoot currentConfiguration = null; ;
+            //savedConfiguration = Factory.CreateChangedExampleConfiguration();
+
+            IXCRoot currentConfiguration = null; 
             using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
             {
                 var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,

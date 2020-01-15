@@ -56,8 +56,6 @@ namespace ZenPlatform.Configuration
 
             foreach (var item in join)
             {
-                var aaaa = new StreamReader(new MemoryStream(item.left.Value)).ReadToEnd();
-                var bbbb = new StreamReader(new MemoryStream(item.right.Value)).ReadToEnd();
                 if (!item.left.Value.SequenceEqual(item.right.Value)) return false;
 
             }
