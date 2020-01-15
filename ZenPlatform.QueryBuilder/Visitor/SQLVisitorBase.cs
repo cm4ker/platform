@@ -262,7 +262,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitAddColumn(AddColumn node)
         {
-            return string.Format("ALTER TABLE {0}\n ADD COLUMN {1}",
+            return string.Format("ALTER TABLE {0}\n ADD {1}",
                 node.Table.Accept(this),
                 node.Column.Accept(this)
             );
@@ -270,7 +270,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitCopyTable(CopyTable node)
         {
-            return string.Format("INSERT INTO {0} SELECT * FROM {1}",
+            return string.Format("SELECT * INTO {0} FROM {1}",
                 node.DstTable.Accept(this),
                 node.Table.Accept(this)
             );

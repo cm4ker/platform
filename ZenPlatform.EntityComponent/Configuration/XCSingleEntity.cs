@@ -52,6 +52,8 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public override string Name => _metadata.Name;
 
+        public override string RelTableName { get => _metadata.TableName; set { _metadata.TableName = value; } }
+
         public override Guid Guid => _metadata.EntityId;
 
 

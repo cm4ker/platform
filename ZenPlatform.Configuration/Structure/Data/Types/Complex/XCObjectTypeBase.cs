@@ -32,6 +32,19 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         public virtual bool HasDatabaseUsed => throw new NotImplementedException();
 
         /// <summary>
+        /// Имя связанной таблицы документа
+        /// 
+        /// При миграции присваивается движком. В последствии хранится в служебных структурах конкретной базы.
+        /// </summary>
+        //TODO: Продумать структуру, в которой будут храниться сопоставление Тип -> Дополнительные настройки компонента 
+        /*
+         * Результаты раздумий: Все мапинги должны быть в БД, а не в конфигурации. Оставляю TODO
+         * выше просто для того, чтобы можно было поразмышлять,  вдруг я был не прав
+         */
+
+        public virtual string RelTableName { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         public IXCType BaseType { get; }
@@ -51,18 +64,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         protected IXCData Data => Root.Data;
 
-        /// <summary>
-        /// Имя связанной таблицы документа
-        /// 
-        /// При миграции присваивается движком. В последствии хранится в служебных структурах конкретной базы.
-        /// </summary>
-        //TODO: Продумать структуру, в которой будут храниться сопоставление Тип -> Дополнительные настройки компонента 
-        /*
-         * Результаты раздумий: Все мапинги должны быть в БД, а не в конфигурации. Оставляю TODO
-         * выше просто для того, чтобы можно было поразмышлять,  вдруг я был не прав
-         */
-  
-        public string RelTableName { get; set; }
+       
 
         
 

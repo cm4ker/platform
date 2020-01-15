@@ -21,7 +21,7 @@ namespace ZenPlatform.Migration
         }
         public void AddColumnItemVisit(DDLQuery query, AddColumnItem item)
         {
-            query.Delete().Table(item.TableName).IfExists();
+           
             query.Create().Column(GetColumnDefenitionBySchema(item.Schema)).OnTable(item.TableName);
         }
         public void AlterColumnItemVisit(DDLQuery query, AlterColumnItem item)

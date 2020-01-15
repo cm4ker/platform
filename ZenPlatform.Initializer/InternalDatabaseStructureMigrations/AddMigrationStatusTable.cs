@@ -12,7 +12,7 @@ namespace ZenPlatform.Initializer.InternalDatabaseStructureMigrations
         public override void Up()
         {
             Create.Table("migration_status")
-               .WithColumn("migration_id").AsGuid().PrimaryKey().NotNullable()
+               .WithColumn("migration_id").AsGuid().NotNullable()
                .WithColumn("change_table").AsBoolean().WithDefaultValue(false).NotNullable()
                .WithColumn("rename_table").AsBoolean().WithDefaultValue(false).NotNullable()
                .WithColumn("delete_table").AsBoolean().WithDefaultValue(false).NotNullable()
