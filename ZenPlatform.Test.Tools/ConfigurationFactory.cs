@@ -103,7 +103,6 @@ namespace ZenPlatform.Test.Tools
                 .SetText("public int Test(int i) { int _i = i; _i++; return _i; }")
                 .SetRelationTypeObject();
 
-
             invoiceEditor.CreateCommand()
                 .SetGuid(Guid.Parse("8008bbaa-7bc1-4c7d-aa56-3b9f728619ff"))
                 .SetName("HelloFromServer")

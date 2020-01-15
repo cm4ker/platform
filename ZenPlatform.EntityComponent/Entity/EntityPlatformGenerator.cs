@@ -117,10 +117,10 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 var typeBody = ParserHelper.ParseTypeBody(command.Module.ModuleText);
                 var serverModule = new ComponentModule(CompilationMode.Server, _component, set, null,
-                    $"__cmd_{command.Name}", typeBody);
+                    $"__cmd_{command.Name}", typeBody) {Namespace = type.GetNamespace()};
 
                 var clientModule = new ComponentModule(CompilationMode.Client, _component, set, null,
-                    $"__cmd_{command.Name}", typeBody);
+                    $"__cmd_{command.Name}", typeBody) {Namespace = type.GetNamespace()};
 
 
                 foreach (var func in typeBody.Functions)
