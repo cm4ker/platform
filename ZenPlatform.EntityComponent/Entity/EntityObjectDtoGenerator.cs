@@ -17,19 +17,6 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
-    /*
-    
-    Dto
-        - Create factroy
-        - Load by Id
-        
-        StaticClassManager
-            Load(Guid id)
-            Create()
-     
-     */
-
-
     public class EntityObjectDtoGenerator
     {
         private readonly IXCComponent _component;
@@ -41,8 +28,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void GenerateAstTree(IXCObjectType type, Root root)
         {
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+            var dtoClassName = type.GetDtoName();
 
             var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, dtoClassName,
                 new TypeBody(new List<Member>())) {Namespace = "Documents"};
@@ -55,21 +41,18 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
-            if (astTree is ComponentClass cc)
+            if (astTree is ComponentClass cc && (ObjectType) cc.Bag == ObjectType.Dto)
             {
-                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
+                if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Server))
                 {
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
-                    {
-                        EmitBody(cc, builder, dbType);
-                        EmitVersionField(builder);
-                        EmitMappingSupport(cc, builder);
-                        EmitSavingSupport(cc, builder, dbType);
-                    }
-                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client) && mode.HasFlag(CompilationMode.Client))
-                    {
-                        EmitBody(cc, builder, dbType);
-                    }
+                    EmitBody(cc, builder, dbType);
+                    EmitVersionField(builder);
+                    EmitMappingSupport(cc, builder);
+                    EmitSavingSupport(cc, builder, dbType);
+                }
+                else if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Client))
+                {
+                    EmitBody(cc, builder, dbType);
                 }
             }
         }
@@ -104,13 +87,13 @@ namespace ZenPlatform.EntityComponent.Entity
                     {
                         var clsSchema = prop.GetPropertySchemas(prop.Name)
                             .First(x => x.SchemaType == XCColumnSchemaType.Type);
-                        
+
                         var dbSchema = prop.GetPropertySchemas(prop.DatabaseColumnName)
                             .First(x => x.SchemaType == XCColumnSchemaType.Type);
 
-                        
+
                         var propBuilder = builder.DefinePropertyWithBackingField(sb.Int, clsSchema.FullName, false);
-                       
+
                         var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
                         propBuilder.SetAttribute(attr);
                         attr.SetParameters(dbSchema.FullName);

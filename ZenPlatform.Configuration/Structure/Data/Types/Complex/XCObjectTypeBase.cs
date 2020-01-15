@@ -168,11 +168,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public bool HasCommands { get; }
 
-        public void Initialize()
-        {
-            throw new NotImplementedException();
-        }
-
         public void LoadDependencies()
         {
             throw new NotImplementedException();

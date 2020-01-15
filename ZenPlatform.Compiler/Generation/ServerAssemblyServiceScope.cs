@@ -133,9 +133,10 @@ namespace ZenPlatform.Compiler.Generation
 
     public class GlobalVarManager : IGlobalVarManager
     {
-        public GlobalVarManager(CompilationMode mode)
+        public GlobalVarManager(CompilationMode mode, ITypeSystem ts)
         {
             Root = new GlobalVarTreeItem(VarTreeLeafType.Root, CompilationMode.Shared, "NoName", null);
+            TypeSystem = ts;
         }
 
         private GlobalVarTreeItem Root { get; }
@@ -144,6 +145,8 @@ namespace ZenPlatform.Compiler.Generation
         {
             node.Attach(Root);
         }
+
+        public ITypeSystem TypeSystem { get; }
 
         public void Register(Node node)
         {

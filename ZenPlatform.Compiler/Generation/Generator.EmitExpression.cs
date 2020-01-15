@@ -319,6 +319,11 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is GlobalVar gv)
             {
+                if (gv.Expression is Name)
+                {
+                    _varManager
+                }
+
                 /*
                  Глобальное адрессное пространство.
                  
@@ -360,6 +365,11 @@ namespace ZenPlatform.Compiler.Generation
                  
                  */
             }
+        }
+
+        private void GlobalVarEmitter(IEmitter e, ISymbol symbol)
+        {
+            
         }
 
 
