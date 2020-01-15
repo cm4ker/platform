@@ -5,22 +5,17 @@ using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Environment;
 using System.Reflection;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using ZenPlatform.Compiler.Platform;
 using System.IO;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using dnlib.DotNet;
 using ZenPlatform.ClientRuntime;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Test.Assemblies;
 using ZenPlatform.Core.Assemblies;
-using ZenPlatform.Core.Logging;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
@@ -32,7 +27,6 @@ using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Core.Test.Logging;
-using ZenPlatform.EntityComponent.Entity;
 
 namespace ZenPlatform.Core.Test
 {
@@ -53,8 +47,8 @@ namespace ZenPlatform.Core.Test
         {
             for (int i = 0; i < 1; i++)
             {
-                var serverServices = Initializer.GetServerService(_testOutput);
-                var clientServices = Initializer.GetClientService(_testOutput);
+                var serverServices = TestEnvSetup.GetServerService(_testOutput);
+                var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
                 var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
                 Assert.NotEmpty(environmentManager.GetEnvironmentList());
@@ -80,8 +74,8 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void ConnectingAndLogin()
         {
-            var serverServices = Initializer.GetServerService(_testOutput);
-            var clientServices = Initializer.GetClientService(_testOutput);
+            var serverServices = TestEnvSetup.GetServerService(_testOutput);
+            var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
 
             var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
@@ -161,7 +155,7 @@ namespace ZenPlatform.Core.Test
         {
             var compiller = new XCCompiler(new DnlibAssemblyPlatform());
 
-            var root = Factory.CreateExampleConfiguration();
+            var root = ConfigurationFactory.Create();
 
             var _assembly2 = compiller.Build(root, CompilationMode.Server, SqlDatabaseType.SqlServer);
             var _assembly = compiller.Build(root, CompilationMode.Client, SqlDatabaseType.SqlServer);
@@ -201,7 +195,7 @@ namespace ZenPlatform.Core.Test
                     new XUnitLogger<AssemblyManager>(_testOutput),
                     new XCConfManipulator());
 
-            var root = Factory.CreateExampleConfiguration();
+            var root = ConfigurationFactory.Create();
 
             if (manager.CheckConfiguration(root))
                 manager.BuildConfiguration(root, SqlDatabaseType.SqlServer);
@@ -221,7 +215,7 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void AssemblyManagerClientServiceTest()
         {
-            var serverService = Initializer.GetServerService(_testOutput);
+            var serverService = TestEnvSetup.GetServerService(_testOutput);
 
             var assemblyManagerClientService = serverService.GetRequiredService<IAssemblyManagerClientService>();
             var manipulator = serverService.GetRequiredService<IConfigurationManipulator>();

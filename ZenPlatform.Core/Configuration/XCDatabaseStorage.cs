@@ -25,7 +25,6 @@ namespace ZenPlatform.Core.Configuration
 
         public Stream GetBlob(string name, string route)
         {
-            
             void Gen(QueryMachine qm)
             {
                 qm.bg_query()
@@ -108,10 +107,9 @@ namespace ZenPlatform.Core.Configuration
                         .m_update()
                         .ld_table(_tableName)
                         .st_query();
-
                 }
 
-                cmd.CommandText = _context.SqlCompiller.Compile((SSyntaxNode)qm.pop());
+                cmd.CommandText = _context.SqlCompiller.Compile((SSyntaxNode) qm.pop());
 
                 byte[] buffer = new byte[stream.Length];
                 stream.Read(buffer, 0, (int) stream.Length);
@@ -138,7 +136,7 @@ namespace ZenPlatform.Core.Configuration
             if (uid != 0)
                 return;
 
-           uid = _maxId++; 
+            uid = _maxId++;
         }
     }
 }

@@ -121,7 +121,10 @@ namespace ZenPlatform.EntityComponent.Entity
                     ? sb.Object
                     : prop.Types[0].ConvertType(sb);
 
-                builder.DefineProperty(propType, propName, true, !prop.IsReadOnly, false);
+                var hasSet = !prop.IsReadOnly;
+
+
+                builder.DefineProperty(propType, propName, true, hasSet, false);
             }
         }
 
@@ -154,8 +157,6 @@ namespace ZenPlatform.EntityComponent.Entity
                 var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
                 var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
                 var setBuilder = ((IMethodBuilder) propBuilder.Setter)?.Generator;
-
-                // var valueParam = propBuilder.setMethod.Parameters[0];
 
                 if (prop.Types.Count > 1)
                 {
@@ -211,7 +212,7 @@ namespace ZenPlatform.EntityComponent.Entity
                             .MarkLabel(label);
 
 
-                        if (!prop.IsReadOnly)
+                        if (setBuilder != null)
                         {
                             label = setBuilder.DefineLabel();
                             //SETTER
@@ -223,10 +224,10 @@ namespace ZenPlatform.EntityComponent.Entity
                                 .LdFld(dtoPrivate)
                                 .LdArg(1)
                                 .Unbox_Any(compileType);
-                            
+
                             if (ctype is IXCLinkType)
                                 setBuilder.EmitCall(compileType.FindProperty("Id").Getter);
-                                
+
                             setBuilder.EmitCall(dtoProp.Setter)
                                 .LdArg_0()
                                 .LdFld(dtoPrivate)
@@ -247,23 +248,56 @@ namespace ZenPlatform.EntityComponent.Entity
                 {
                     if (!prop.IsSelfLink)
                     {
-                        var schema = prop.GetPropertySchemas(prop.Name)
+                        var dtoPropSchema = prop.GetPropertySchemas(prop.Name)
                             .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
 
-                        var dtofield = dtoType.FindProperty(schema.FullName);
+                        var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
 
+                        var ctype = prop.Types[0];
+
+                        var compileType = ctype.ConvertType(sb);
+
+                        //GETTER
                         getBuilder
+                            
                             .LdArg_0()
                             .LdFld(dtoPrivate)
-                            .EmitCall(dtofield.Getter)
+                            .EmitCall(dtoProp.Getter);
+
+                        if (ctype is IXCLinkType lt)
+                        {
+                            //Call Manager.Get(Id)
+                            //Мы не можем ссылаться на методы, когда они ещё не готовы.
+                            //нужно либо разбивать все на стадии, либо вводить понятие шаблона
+                            var mrg = ts.FindType($"{@namespace}.{lt.ParentType.Name}Manager");
+                            var mrgGet = mrg.FindMethod("Get", sb.Guid);
+                            getBuilder.EmitCall(mrgGet);
+                        }
+                        
+                        getBuilder
                             .Ret();
+
+                        if (setBuilder != null)
+                        {
+             
+                            
+                            setBuilder
+                                .LdArg_0()
+                                .LdFld(dtoPrivate)
+                                .LdArg(1);
+
+                            if (ctype is IXCLinkType)
+                                setBuilder.EmitCall(compileType.FindProperty("Id").Getter);
+
+                            setBuilder.EmitCall(dtoProp.Setter)
+                                .Ret();
+                        }
                     }
                     else
                     {
-                        
                         var mrg = ts.FindType($"{@namespace}.{set.Name}Manager");
                         var mrgGet = mrg.FindMethod("Get", sb.Guid);
-                        
+
                         getBuilder
                             .LdArg_0()
                             .EmitCall(builder.FindProperty("Id").Getter)
