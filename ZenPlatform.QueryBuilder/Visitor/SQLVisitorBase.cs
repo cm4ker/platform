@@ -45,7 +45,14 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitSConstant(SConstant node)
         {
-            return node.Value.ToString();
+            return node.Value switch
+            {
+                string str => string.Format("'{0}'", str),
+                bool b =>  Convert.ToByte(b).ToString(),
+                Guid g => string.Format("'{0}'", g.ToString()),
+                _ => node.Value.ToString()
+            };
+
         }
 
         public override string VisitSCount(SCount node)
@@ -172,6 +179,14 @@ namespace ZenPlatform.QueryBuilder.Visitor
             );
         }
 
+        public override string VisitSDelete(SDelete node)
+        {
+            return string.Format("DELETE\n{0}{1}",
+                node.From == null ? "" : node.From.Accept(this),
+                node.Where == null ? "" : node.Where.Accept(this)
+            );
+        }
+
         public override string VisitSAssign(SAssign node)
         {
             return string.Format("{0} = {1}",
@@ -247,7 +262,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitAddColumn(AddColumn node)
         {
-            return string.Format("ALTER TABLE {0}\n ADD COLUMN {1}",
+            return string.Format("ALTER TABLE {0}\n ADD {1}",
                 node.Table.Accept(this),
                 node.Column.Accept(this)
             );
@@ -255,7 +270,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitCopyTable(CopyTable node)
         {
-            return string.Format("INSERT INTO {0} SELECT * FROM {1}",
+            return string.Format("SELECT * INTO {0} FROM {1}",
                 node.DstTable.Accept(this),
                 node.Table.Accept(this)
             );
@@ -437,12 +452,19 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitDropTable(DropTable node)
         {
-            return string.Format("DROP TABLE {0}", node.Table.Accept(this));
+            return string.Format("{0}DROP TABLE {1}", 
+                node.IfExists ? string.Format("IF OBJECT_ID('{0}', 'U') IS NOT NULL\n", node.Table.Accept(this)): "",
+                node.Table.Accept(this));
         }
 
         public override string VisitRenameTableNode(RenameTableNode node)
         {
             return string.Format("EXEC sp_rename '{0}', '{1}'", node.From.Accept(this), node.To.Accept(this));
+        }
+
+        public override string VisitRenameColumnNode(RenameColumnNode node)
+        {
+            return string.Format("EXEC sp_rename '{0}.{1}', '{2}', 'COLUMN'", node.Table.Accept(this), node.From.Accept(this), node.To.Accept(this));
         }
 
         #endregion

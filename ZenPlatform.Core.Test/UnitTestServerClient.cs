@@ -253,5 +253,24 @@ namespace ZenPlatform.Core.Test
 
             //var clientService = Initializer.GetClientService();
         }
+
+       /*
+        [Fact]
+        public void MigrationTest()
+        {
+            var serverServices = Initializer.GetServerServiceWithDatabase(_testOutput);
+
+
+            var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
+            Assert.NotEmpty(environmentManager.GetEnvironmentList());
+
+
+            var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
+            accessPoint.Start();
+            //need check listing
+
+        }
+        */
+
     }
 }

@@ -17,7 +17,8 @@ namespace ZenPlatform.QueryBuilder
         Insert,
         Values,
         Update,
-        Set
+        Set,
+        Delete
 
 
     }

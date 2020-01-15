@@ -108,6 +108,9 @@ namespace ZenPlatform.Configuration.Test
         private void EqualsConfiguration(IXCRoot l, IXCRoot r)
         {
 
+
+
+
             var storage1 = new XCMemoryStorage();
 
             var storage2 = new XCMemoryStorage();

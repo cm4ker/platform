@@ -29,10 +29,7 @@ namespace ZenPlatform.Configuration.Contracts
 
         bool IsLoaded { get; }
 
-        /// <summary>
-        /// Хранилище компонента
-        /// </summary>
-       // IXCBlob Blob { get; set; }
+
 
         /// <summary>
         /// Присоединённые компоненты. Это свойство инициализируется после загрузки всех компонентов
@@ -55,18 +52,7 @@ namespace ZenPlatform.Configuration.Contracts
         IEnumerable<IXCType> Types { get; }
 
         IEnumerable<IXCObjectType> ObjectTypes { get; }
-
-        /// <summary>
-        /// Загрузить все данные компонента из хранилища
-        /// </summary>
-        void LoadComponent();
-
-        /// <summary>
-        /// Сохрнить все данные компонента в хранилище
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        void SaveComponent();
-
+        
         /// <summary>
         /// Зарегистрировать правило для генерации кода
         /// Это действие иммутабельно. В последствии нельзя отменить регистрацию.

@@ -17,33 +17,9 @@ namespace ZenPlatform.EntityComponent.Configuration
         }
 
 
-        public SingleEntityTypeEditor Create()
-        {
+        public override ITypeEditor Create()
+        { 
             return new SingleEntityTypeEditor(Component);
-        }
-
-        public override IXCObjectType Create(IXCObjectType parentType = null)
-        {
-            var newItem = new XCSingleEntity(null);
-            newItem.Guid = Guid.NewGuid();
-
-            //Link type нельзя создать просто так, самому, он обязательно должен быть
-            //припинен к какому-то объекту, поэтому для него нет отдельного метода создания
-            var link = new XCSingleEntityLink(newItem, null);
-            link.Guid = Guid.NewGuid();
-
-            ((IChildItem<IXCComponent>) link).Parent = Component;
-            ((IChildItem<IXCComponent>) newItem).Parent = Component;
-
-            Component.RegisterType(newItem);
-            Component.RegisterType(link);
-
-
-            //newItem.AttachedBlob = new XCBlob(Guid.NewGuid().ToString());
-            //Component.Include.Add(newItem.AttachedBlob);
-            //TODO: Обработать базовый тип
-
-            return newItem;
         }
 
         /// <inheritdoc />
