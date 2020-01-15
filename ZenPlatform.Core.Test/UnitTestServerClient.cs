@@ -110,7 +110,7 @@ namespace ZenPlatform.Core.Test
                 {
                     GlobalScope.Client = clientContext.Client;
 
-                    var cmdType = clientContext.MainAssembly.GetType("CompileNamespace.__cmd_HelloFromServer");
+                    var cmdType = clientContext.MainAssembly.GetType("Entity.__cmd_HelloFromServer");
 
                     var result = cmdType.GetMethod("ClientCallProc")
                         .Invoke(null, new object[] {10});
