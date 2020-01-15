@@ -8,21 +8,30 @@ entryPoint:
     (moduleDefinition
     | typeDefinition
     | usingDefinition
-    | namespaceDefinition)*;
+    | namespaceDefinition
+    | aliasingTypeDefinition)*;
 
 usingDefinition : 
-        USING name ';'
+        USING namespace ';';
+
+aliasingTypeDefinition: 
+        USING alias=name '=' typeName ';';
+
+namespace :
+ IDENTIFIER ('.' IDENTIFIER)*
 ;
 
+
+
 namespaceDefinition : 
-    NAMESPACE name '{' (moduleDefinition | typeDefinition)* '}'
+    NAMESPACE namespace '{' (moduleDefinition | typeDefinition)* '}'
 ;
 
 /*
 ================START MODULE==================
 */
 
-moduleDefinition: MODULE IDENTIFIER '{' moduleBody '}';
+moduleDefinition: MODULE typeName '{' moduleBody '}';
 
 moduleBody: (functionDeclaration)* ;
 /*
@@ -32,12 +41,15 @@ moduleBody: (functionDeclaration)* ;
 /*
 ================START TYPE==================
 */
-typeDefinition: attributes? TYPE IDENTIFIER '{' typeBody '}';
+typeDefinition: attributes? TYPE typeName '{' typeBody '}';
 
 typeBody: (functionDeclaration | fieldDeclaration | propertyDeclaration)*;
 /*
 ================END TYPE==================
 */
+
+typeName:
+    (namespace '.')? IDENTIFIER;
 
 
 instructionsBody : '{' statements '}';
@@ -81,13 +93,12 @@ assigment:
    | name OP_DEC
 ;   
 
+
+
 functionCall: 
-    ((nameLookup | ownerName=name) '.')? functionName=name '(' arguments? ')' ('.' lookupFunction=functionCall)?
+    functionName=name '(' arguments? ')'
 ;
 
-functionCallExpression:
-   functionCall
-   ;
 
 parameters: parameter (',' parameter)*;
 
@@ -98,7 +109,7 @@ arguments:
     argument (',' argument)*;
 
 argument:
-    (REF)? expression? 
+    (REF)? expression 
 ;
 
 
@@ -124,9 +135,22 @@ string_literal
 
 
 
-
-
 expression:
+    expressionStructural
+    | lookupExpression
+    ;
+
+lookupExpression:
+    lookupExpression '.' expressionStructural    
+    | expressionStructural '.' expressionStructural
+;
+
+expressionStructural:
+   functionCall
+   | expressionPrimitive 
+   ;
+
+expressionPrimitive:
     expressionBinary
 ;
 
@@ -183,7 +207,6 @@ expressionPostfix:
 
 expressionAtom:
     literal
-    | functionCallExpression
     | name
     | globalVar
 ;
@@ -204,7 +227,7 @@ typeList:
 ;
 
 structureType:
-    IDENTIFIER;
+   typeName;
     
 primitiveType:
     BOOL 
@@ -212,7 +235,8 @@ primitiveType:
     | STRING 
     | CHAR 
     | DOUBLE
-    | VOID;
+    | VOID
+    | OBJECT;
 
 accessModifier: 
     PUBLIC
@@ -224,8 +248,6 @@ arrayType:
 name:
     IDENTIFIER;
 
-nameLookup:
-    name ('.' name)+;
 
 globalVar:
     '$' ('.' (name | functionCall))*;  

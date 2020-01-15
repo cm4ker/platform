@@ -9,11 +9,11 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class SingleEntityTypeEditor : ITypeEditor
     {
-
         private XCSingleEntityMetadata _metadata;
         private XCSingleEntity _type;
         private XCSingleEntityLink _link;
         private IXCComponent _component;
+
         public SingleEntityTypeEditor(IXCComponent component)
         {
             _metadata = new XCSingleEntityMetadata();
@@ -101,6 +101,5 @@ namespace ZenPlatform.EntityComponent.Configuration
             _metadata.Command.Add(command);
             return new SingleEntityCommandEditor(command);
         }
-
     }
 }

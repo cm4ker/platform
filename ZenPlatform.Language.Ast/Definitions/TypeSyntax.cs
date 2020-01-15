@@ -20,6 +20,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         Object,
         Byte,
         Array,
+        Context,
         Type,
         Session,
         UnionType,

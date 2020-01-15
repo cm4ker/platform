@@ -65,8 +65,6 @@ namespace ZenPlatform.DataComponent.Configuration
         /// <exception cref="NullReferenceException"></exception>
         public virtual void LoadObject(IXCComponent component, IXCLoader loader, string reference)
         {
-
-
             var conf = loader.LoadObject<TTypeMetadata, TSettings>(reference);
 
 
@@ -74,9 +72,6 @@ namespace ZenPlatform.DataComponent.Configuration
 
             //if (conf.Name is null) throw new NullReferenceException("Configuration broken fill the name");
             //if (conf.Guid == Guid.Empty) throw new NullReferenceException("Configuration broken fill the id field");
-
-
-
         }
 
         protected abstract void CreateType(TTypeMetadata metadata, IXCComponent component);
@@ -87,28 +82,26 @@ namespace ZenPlatform.DataComponent.Configuration
         /// </summary>
         /// <param name="conf"></param>
         /// 
-
-
         public abstract void SaveObject(IXCObjectType conf, IXCSaver saver);
-    
+
         //{
-            
-            //saver.SaveObject<TSettings>(conf.Name, (TTypeMetadata)conf);
-            // var storage = conf.Parent.Root.Storage;
-            // var component = conf.Parent;
-            // IXCBlob blob;
-            // if (conf.AttachedBlob is null)
-            // {
-            //     blob = new XCBlob(conf.Name); 
-            //     conf.Parent.Include.Add(blob);
-            // }
-            // else
-            // {
-            //     blob = conf.AttachedBlob;
-            // }
-            //
-            // using (var stream = conf.SerializeToStream())
-            //     storage.SaveBlob(blob.Name, $"Data/{component.Info.ComponentName}", stream);
+
+        //saver.SaveObject<TSettings>(conf.Name, (TTypeMetadata)conf);
+        // var storage = conf.Parent.Root.Storage;
+        // var component = conf.Parent;
+        // IXCBlob blob;
+        // if (conf.AttachedBlob is null)
+        // {
+        //     blob = new XCBlob(conf.Name); 
+        //     conf.Parent.Include.Add(blob);
+        // }
+        // else
+        // {
+        //     blob = conf.AttachedBlob;
+        // }
+        //
+        // using (var stream = conf.SerializeToStream())
+        //     storage.SaveBlob(blob.Name, $"Data/{component.Info.ComponentName}", stream);
         //}
 
         public IXCDataRule LoadRule(IXCDataRuleContent content)

@@ -20,16 +20,13 @@ namespace ZenPlatform.EntityComponent.Configuration
         public Guid EntityId { get; set; }
 
         public Guid LinkId { get; set; }
-
     }
 
     public class XCSingleEntityMetadata : IXCTypeMetadata<XCSingleEntityMetadataSettings>
     {
-        
-
         public List<XCSingleEntityProperty> Properties { get; }
 
-        public List<XCSingleEntityModule> Modules { get;  }
+        public List<XCSingleEntityModule> Modules { get; }
 
         public List<XCCommand> Command { get; }
 

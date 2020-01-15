@@ -8,7 +8,6 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -18,6 +17,19 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
+    /*
+    
+    Dto
+        - Create factroy
+        - Load by Id
+        
+        StaticClassManager
+            Load(Guid id)
+            Create()
+     
+     */
+
+
     public class EntityObjectDtoGenerator
     {
         private readonly IXCComponent _component;
@@ -27,10 +39,13 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateDraft(IXCObjectType type, Root root)
+        public void GenerateAstTree(IXCObjectType type, Root root)
         {
-            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name,
-                new TypeBody(new List<Member>())) {Base = "Documents.EntityLink", Namespace = "Documents"};
+            var dtoClassName =
+                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+
+            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, dtoClassName,
+                new TypeBody(new List<Member>())) {Namespace = "Documents"};
 
             cls.Bag = ObjectType.Dto;
 
@@ -38,41 +53,32 @@ namespace ZenPlatform.EntityComponent.Entity
             root.Add(cu);
         }
 
-        public void GenerateDetail(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentClass cc)
             {
                 if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
                 {
-                    if (cc.CompilationMode == CompilationMode.Server)
+                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
                     {
+                        EmitBody(cc, builder, dbType);
+                        EmitVersionField(builder);
                         EmitMappingSupport(cc, builder);
                         EmitSavingSupport(cc, builder, dbType);
+                    }
+                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client) && mode.HasFlag(CompilationMode.Client))
+                    {
+                        EmitBody(cc, builder, dbType);
                     }
                 }
             }
         }
 
-        private IType GetTypeFromPlatform(IXCType pt, SystemTypeBindings sb)
+        public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
-            return pt switch
-            {
-                XCBinary b => sb.Byte.MakeArrayType(),
-                XCInt b => sb.Int,
-                XCString b => sb.String,
-                XCNumeric b => sb.Double,
-                XCBoolean b => sb.Boolean,
-                XCDateTime b => sb.DateTime,
-                XCGuid b => sb.Guid,
-
-                IXCLinkType b => sb.TypeSystem.FindType(
-                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name),
-                IXCObjectType b => sb.TypeSystem.FindType(
-                    b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name),
-            };
         }
 
-        private void EmitGeneral(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
         {
             var set = cc.Type as XCSingleEntity ?? throw new InvalidOperationException(
                           $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -84,8 +90,10 @@ namespace ZenPlatform.EntityComponent.Entity
             foreach (var prop in set.Properties)
             {
                 bool propertyGenerated = false;
+                if (prop.IsSelfLink) continue;
 
-                if (!prop.IsLink && string.IsNullOrEmpty(prop.DatabaseColumnName))
+
+                if (string.IsNullOrEmpty(prop.DatabaseColumnName))
                 {
                     throw new Exception(
                         $"Prop: {prop.Name} ObjectType: {typeof(XCSingleEntity)} Name: {set.Name}. Database column is empty!");
@@ -115,9 +123,13 @@ namespace ZenPlatform.EntityComponent.Entity
                                             ? XCColumnSchemaType.Value
                                             : XCColumnSchemaType.NoSpecial) && x.PlatformType == pt).FullName;
 
-                        IType propType = GetTypeFromPlatform(pt, sb);
+                        IType propType = pt.ConvertType(sb);
 
-                        builder.DefinePropertyWithBackingField(propType, propName, false);
+                        var propBuilder = builder.DefinePropertyWithBackingField(propType, propName, false);
+
+                        var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
+                        propBuilder.SetAttribute(attr);
+                        attr.SetParameters(dbColName);
                     }
                     else if (ctype is IXCLinkType ot)
                     {
@@ -137,7 +149,11 @@ namespace ZenPlatform.EntityComponent.Entity
                                                 ? XCColumnSchemaType.Ref
                                                 : XCColumnSchemaType.NoSpecial)).FullName;
 
-                            builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
+                            var propBuilder = builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
+
+                            var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
+                            propBuilder.SetAttribute(attr);
+                            attr.SetParameters(dbColName);
                         }
                     }
                 }
@@ -159,24 +175,22 @@ namespace ZenPlatform.EntityComponent.Entity
             var readerParam =
                 readerMethod.DefineParameter("reader", readerType, false, false);
 
-            foreach (var property in cls.TypeBody.Properties)
+            foreach (var property in tb.Properties)
             {
-                if (string.IsNullOrEmpty(property.MapTo)) continue;
-
-                var prop = tb.FindProperty(property.Name);
+                var mt = property.FindCustomAttribute<MapToAttribute>();
+                if (mt is null) continue;
 
                 rg
                     .LdArg_0()
                     .LdArg(readerParam.ArgIndex)
-                    .LdStr(property.MapTo)
+                    .LdStr(mt.Parameters[0].ToString())
                     .EmitCall(readerType.FindMethod("get_Item", _bindings.String))
-                    .Unbox_Any(prop.PropertyType)
-                    .EmitCall(prop.Setter);
+                    .Unbox_Any(property.PropertyType)
+                    .EmitCall(property.Setter);
             }
 
             rg.Ret();
         }
-
 
         private SSyntaxNode GetInsertQuery(XCSingleEntity se)
         {
@@ -186,7 +200,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var pIndex = 0;
 
-            var columns = se.Properties.Where(x => !x.IsLink)
+            var columns = se.Properties.Where(x => !x.IsSelfLink)
                 .SelectMany(x => x.GetPropertySchemas());
 
             foreach (var column in columns)
@@ -278,13 +292,13 @@ namespace ZenPlatform.EntityComponent.Entity
                     .LdNull()
                     .Ceq()
                     .BrTrue(narg);
-                //if Version != null
+
                 rg
                     .LdArg(cmdParam.ArgIndex)
                     .LdStr(compiler.Compile(GetUpdateQuery(set)))
                     .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
                     .Br(end);
-                //if Version == null
+
                 rg
                     .MarkLabel(narg)
                     .LdArg(cmdParam.ArgIndex)
@@ -293,11 +307,10 @@ namespace ZenPlatform.EntityComponent.Entity
                     .MarkLabel(end);
             }
 
-            foreach (var property in cls.TypeBody.Properties)
+            foreach (var property in tb.Properties)
             {
-                if (string.IsNullOrEmpty(property.MapTo)) continue;
-
-                var prop = tb.FindProperty(property.Name);
+                var m = property.FindCustomAttribute<MapToAttribute>();
+                if (m is null) continue;
 
                 rg.LdArg(cmdParam.ArgIndex)
                     .EmitCall(cmdType.FindMethod(nameof(DbCommand.CreateParameter)))
@@ -307,14 +320,21 @@ namespace ZenPlatform.EntityComponent.Entity
                     .EmitCall(parameterType.FindProperty(nameof(DbParameter.ParameterName)).Setter)
                     .LdLoc(p_loc)
                     .LdArg_0()
-                    .EmitCall(prop.Getter)
-                    .Box(prop.PropertyType)
+                    .EmitCall(property.Getter)
+                    .Box(property.PropertyType)
                     .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter);
 
                 indexp++;
             }
 
             rg.Ret();
+        }
+
+        private void EmitVersionField(ITypeBuilder tb)
+        {
+            var _ts = tb.Assembly.TypeSystem;
+            var _b = _ts.GetSystemBindings();
+            var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version", false);
         }
     }
 }

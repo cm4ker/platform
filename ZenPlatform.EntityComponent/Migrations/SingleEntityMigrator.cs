@@ -16,8 +16,6 @@ using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.EntityComponent.Migrations
 {
-    
-
     /*
      * Мигрирование происходит в несколько этапов
      * 1) Создание таблицы для нового типа структуры

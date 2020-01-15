@@ -20,18 +20,9 @@ namespace ZenPlatform.Language.Ast
         public object Bag { get; set; }
 
         public ComponentAstBase(CompilationMode compilationMode, IXCComponent component, IXCType type,
-            ILineInfo lineInfo, string name) : base(
-            lineInfo, name)
-        {
-            CompilationMode = compilationMode;
-            Component = component;
-            Type = type;
-        }
-
-        public ComponentAstBase(CompilationMode compilationMode, IXCComponent component, IXCType type,
             ILineInfo lineInfo, string name,
-            TypeBody tb) : base(lineInfo,
-            name, tb)
+            TypeBody tb) : base(lineInfo
+            , tb, name)
         {
             CompilationMode = compilationMode;
             Component = component;
@@ -54,12 +45,6 @@ namespace ZenPlatform.Language.Ast
     /// </summary>
     public class ComponentClass : ComponentAstBase
     {
-        public ComponentClass(CompilationMode compilationMode, IXCComponent component, IXCObjectType type,
-            ILineInfo lineInfo, string name) : base(
-            compilationMode, component, type, lineInfo, name)
-        {
-        }
-
         public ComponentClass(CompilationMode compilationMode, IXCComponent component, IXCType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
@@ -73,12 +58,6 @@ namespace ZenPlatform.Language.Ast
     /// </summary>
     public class ComponentModule : ComponentAstBase
     {
-        public ComponentModule(CompilationMode compilationMode, IXCComponent component, IXCObjectType type,
-            ILineInfo lineInfo, string name) : base(
-            compilationMode, component, type, lineInfo, name)
-        {
-        }
-
         public ComponentModule(CompilationMode compilationMode, IXCComponent component, IXCObjectType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)

@@ -30,11 +30,15 @@ namespace ZenPlatform.Compiler.Generation
             if (_mode == CompilationMode.Server && _conf != null)
                 _serviceScope = new ServerAssemblyServiceScope(_asm);
 
+            _map = new SyntaxTreeMemberAccessProvider(_cus, _bindings);
 
             BuildInfrastructure();
             BuildStructure();
             BuildGlobalVar();
             BuildCode();
+
+            if (_conf != null && _mode == CompilationMode.Server)
+                _serviceScope.EndBuild();
         }
 
         /// <summary>
@@ -93,7 +97,8 @@ namespace ZenPlatform.Compiler.Generation
             if (_conf != null)
                 foreach (var dataComponent in _conf.Data.Components)
                 {
-                    dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm, _parameters.TargetDatabaseType);
+                    dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm, _parameters.TargetDatabaseType,
+                        _mode);
                 }
         }
 
@@ -125,7 +130,7 @@ namespace ZenPlatform.Compiler.Generation
                     {
                         var tco = PreBuildComponentClass(co);
                         AfterPreBuild(co, tco);
-                        co.Component.ComponentImpl.Generator.Stage0(co, tco, _parameters.TargetDatabaseType);
+                        co.Component.ComponentImpl.Generator.Stage0(co, tco, _parameters.TargetDatabaseType, _mode);
                         break;
                     }
                     case ComponentModule cm:
@@ -134,7 +139,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         var tcm = PreBuildComponentModule(cm);
                         AfterPreBuild(cm, tcm);
-                        cm.Component.ComponentImpl.Generator.Stage0(cm, tcm, _parameters.TargetDatabaseType);
+                        cm.Component.ComponentImpl.Generator.Stage0(cm, tcm, _parameters.TargetDatabaseType, _mode);
                         break;
                     }
 
@@ -162,6 +167,12 @@ namespace ZenPlatform.Compiler.Generation
                             var mf = PrebuildFunction(function, tb, false);
                             _stage1Methods.Add(function, mf);
                             m.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+
+                            if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
+                                _mode == CompilationMode.Server)
+                            {
+                                EmitRegisterServerFunction(function);
+                            }
                         }
 
                         break;
@@ -173,6 +184,12 @@ namespace ZenPlatform.Compiler.Generation
                             var mf = PrebuildFunction(function, tbc, true);
                             _stage1Methods.Add(function, mf);
                             c.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+
+                            if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
+                                _mode == CompilationMode.Server)
+                            {
+                                EmitRegisterServerFunction(function);
+                            }
                         }
 
                         foreach (var property in c.TypeBody.Properties)
@@ -214,6 +231,12 @@ namespace ZenPlatform.Compiler.Generation
                             var mf = PrebuildFunction(function, tcab, cab is ComponentClass);
                             _stage1Methods.Add(function, mf);
                             cab.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+
+                            if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
+                                _mode == CompilationMode.Server)
+                            {
+                                EmitRegisterServerFunction(function);
+                            }
                         }
 
                         if (cab is ComponentClass)
@@ -246,7 +269,7 @@ namespace ZenPlatform.Compiler.Generation
                             }
                         }
 
-                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab, _parameters.TargetDatabaseType);
+                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab, _parameters.TargetDatabaseType, _mode);
                         break;
 
                     default:
@@ -313,6 +336,8 @@ namespace ZenPlatform.Compiler.Generation
                             EmitConstructor(constructor, tbcab, _stage1constructors[constructor]);
                         }
 
+                        
+                        cab.Component.ComponentImpl.Generator.Stage2(cab, tbcab, _parameters.TargetDatabaseType, _mode);
                         break;
 
                     default:
@@ -492,7 +517,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private ITypeBuilder PreBuildModule(Module module)
         {
-            return _asm.DefineType(DEFAULT_ASM_NAMESPACE, module.Name,
+            return _asm.DefineType((string.IsNullOrEmpty(@module.Namespace) ? DEFAULT_ASM_NAMESPACE : @module.Namespace), module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
         }
@@ -523,7 +548,9 @@ namespace ZenPlatform.Compiler.Generation
 
         private ITypeBuilder PreBuildComponentModule(ComponentModule componentModule)
         {
-            return _asm.DefineType(DEFAULT_ASM_NAMESPACE, componentModule.Name,
+            return _asm.DefineType(
+                (string.IsNullOrEmpty(@componentModule.Namespace) ? DEFAULT_ASM_NAMESPACE : @componentModule.Namespace),
+                componentModule.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
         }

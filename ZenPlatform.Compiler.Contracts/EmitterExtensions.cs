@@ -24,8 +24,10 @@ namespace ZenPlatform.Compiler.Contracts
                         emitter.Emit(OpCodes.Ldarg_3);
                         break;
                 }
-            else
+            else if (arg < 255)
                 emitter.Emit(OpCodes.Ldarg_S, arg);
+            else
+                emitter.Emit(OpCodes.Ldarg, arg);
 
             return emitter;
         }
@@ -170,10 +172,10 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter LdFtn(this IEmitter emitter, IMethod method)
             => emitter.Emit(OpCodes.Ldftn, method);
 
-        public static IEmitter Isinst(this IEmitter emitter, IType type)
+        public static IEmitter IsInst(this IEmitter emitter, IType type)
             => emitter.Emit(OpCodes.Isinst, type);
 
-        public static IEmitter Castclass(this IEmitter emitter, IType type)
+        public static IEmitter CastClass(this IEmitter emitter, IType type)
             => emitter.Emit(OpCodes.Castclass, type);
 
         public static IEmitter Box(this IEmitter emitter, IType type)
@@ -190,7 +192,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public static IEmitter LdElemA(this IEmitter emitter) => emitter.Emit(OpCodes.Ldelema);
         public static IEmitter StElemRef(this IEmitter emitter) => emitter.Emit(OpCodes.Stelem_Ref);
-        public static IEmitter Ldlen(this IEmitter emitter) => emitter.Emit(OpCodes.Ldlen);
+        public static IEmitter LdLen(this IEmitter emitter) => emitter.Emit(OpCodes.Ldlen);
 
         public static IEmitter Add(this IEmitter emitter) => emitter.Emit(OpCodes.Add);
         public static IEmitter And(this IEmitter emitter) => emitter.Emit(OpCodes.And);

@@ -17,6 +17,7 @@ using ZenPlatform.Core.Crypto;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Initializer;
 using ZenPlatform.Core.Assemblies;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
 
 namespace ZenPlatform.Core.Environment

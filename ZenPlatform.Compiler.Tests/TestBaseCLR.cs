@@ -19,6 +19,7 @@ namespace ZenPlatform.Compiler.Tests
     public abstract class TestBaseCLR : IDisposable
     {
         private ZLanguageVisitor _zlv;
+
         IAssemblyPlatform ap = new DnlibAssemblyPlatform();
         //IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
@@ -61,6 +62,30 @@ namespace ZenPlatform.Compiler.Tests
             asm.ImportWithCopy(asm.TypeSystem.GetSystemBindings().Client);
             var asmName = $"test.bll";
 
+            if (File.Exists(asmName))
+                File.Delete(asmName);
+
+            asm.Write(asmName);
+        }
+
+        public void Compile(string unit)
+        {
+            var asm = ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
+
+            var cunit = (CompilationUnit) unit.Parse(x => _zlv.VisitEntryPoint(x.entryPoint()));
+
+            Root r = new Root(null, new List<CompilationUnit> {cunit});
+
+            AstScopeRegister.Apply(r);
+
+            var gp = new GeneratorParameters(r.Units, asm, CompilationMode.Server,
+                SqlDatabaseType.SqlServer, null);
+
+            var gen = new Generator(gp);
+
+            gen.Build();
+
+            var asmName = $"test.bll";
             if (File.Exists(asmName))
                 File.Delete(asmName);
 
@@ -127,12 +152,6 @@ namespace ZenPlatform.Compiler.Tests
 
         public void Dispose()
         {
-//            var files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.bll");
-//
-//            foreach (var file in files)
-//            {
-//                File.Delete(file);
-//            }
         }
     }
 }

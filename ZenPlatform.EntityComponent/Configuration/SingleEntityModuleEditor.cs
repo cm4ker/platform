@@ -7,7 +7,6 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class SingleEntityModuleEditor : IModuleEditor
     {
-
         private IXCProgramModule _module;
 
         public SingleEntityModuleEditor(IXCProgramModule module)
@@ -27,7 +26,5 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             return this;
         }
-
-
     }
 }

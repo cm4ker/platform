@@ -59,6 +59,9 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType Exception => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Exception)}", MSCORLIB);
 
+
+        public IType DbCommand => _ts.FindType<System.Data.Common.DbCommand>();
+        
         public IType Client => _ts.FindType<IProtocolClient>(); // _ts.FindType<Client>()
 
         public IType ServerInitializer => _ts.FindType<IServerInitializer>();
@@ -79,6 +82,7 @@ namespace ZenPlatform.Compiler.Contracts
         public IType UnionTypeStorage => _ts.FindType<UnionTypeStorage>();
 
         public IType ParametricMethod => _ts.FindType<ParametricMethod>();
+
 
         public SystemMethods Methods { get; }
 

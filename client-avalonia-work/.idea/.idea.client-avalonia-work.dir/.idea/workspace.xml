@@ -2,28 +2,36 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0864cbd5-3ffd-4cc0-a041-d9e51515a5b6" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.client-avalonia-work.dir/.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.client-avalonia-work.dir/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.client-avalonia-work.dir/.idea/projectSettingsUpdater.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.client-avalonia-work.dir/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.client-avalonia-work.dir/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.client-avalonia-work.dir/riderModule.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/App.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/App.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MainWindow.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client-avalonia-work.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.0/client-avalonia-work.AssemblyInfo.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.0/client-avalonia-work.AssemblyInfoInputs.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.0/client-avalonia-work.assets.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.0/client-avalonia-work.csprojAssemblyReference.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/client-avalonia-work.csproj.nuget.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/client-avalonia-work.csproj.nuget.dgspec.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/client-avalonia-work.csproj.nuget.g.props" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/client-avalonia-work.csproj.nuget.g.targets" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/project.assets.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obj/project.packagespec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../wasm-work/UIModel/HtmlWrapper/Grid.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../wasm-work/UIModel/HtmlWrapper/Grid.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/Entity/EntityManagerGenerator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.Compiler.Contracts/ICanMap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.Compiler.Contracts/ICanMap.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/DnlibContextResolver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/DnlibContextResolver.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/DnlibEmitter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/DnlibEmitter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/DnlibPlatformFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/DnlibPlatformFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/DnlibType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/DnlibType.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/ZenPlatform.Compiler.Dnlib.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/ZenPlatform.Compiler.Dnlib.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.Compiler/Generation/Generator.Structure.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.Compiler/Generation/Generator.Structure.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.Configuration/ZenPlatform.Configuration.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.Configuration/ZenPlatform.Configuration.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/Entity/EntityLinkClassGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/Entity/EntityLinkClassGenerator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/Entity/EntityObjectClassGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/Entity/EntityObjectClassGenerator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/Entity/EntityObjectDtoGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/Entity/EntityObjectDtoGenerator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/Entity/EntityPlatformGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/Entity/EntityPlatformGenerator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/SingleEntityManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../ZenPlatform.EntityComponent/SingleEntityManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.client-avalonia-work.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.client-avalonia-work.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.xaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.xaml.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainWindow.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client-avalonia-work.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.0/client-avalonia-work.AssemblyInfo.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.0/client-avalonia-work.AssemblyInfoInputs.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.0/client-avalonia-work.assets.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.0/client-avalonia-work.csprojAssemblyReference.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/client-avalonia-work.csproj.nuget.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/client-avalonia-work.csproj.nuget.dgspec.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/client-avalonia-work.csproj.nuget.g.props" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/client-avalonia-work.csproj.nuget.g.targets" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/project.assets.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/project.packagespec.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,12 +42,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/../ZenPlatform.Compiler.Dnlib/DnlibContextResolver.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3ACC3518-03B8-4BB5-B43C-A81B7791D678/39/AvaloniaXamlLoader.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1F695758-D5E9-4C0C-B5D3-BC573B2707F1/7/AppBuilderBase.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Program.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/MainWindow.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/App.xaml" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/App.xaml.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -109,20 +114,23 @@
       <option name="presentableId" value="Default" />
       <updated>1577083080777</updated>
       <workItem from="1577083082143" duration="1118000" />
+      <workItem from="1578648783913" duration="145000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
-  <component name="UnityProjectConfiguration" hasMinimizedUI="null" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
@@ -193,6 +201,10 @@
       <screen x="0" y="0" width="2560" height="1040" />
     </state>
     <state width="2517" height="348" key="GridCell.Tab.3.right/0.0.2560.1040@0.0.2560.1040" timestamp="1577084204772" />
+    <state x="764" y="110" key="SettingsEditor" timestamp="1578648886238">
+      <screen x="0" y="0" width="2560" height="1040" />
+    </state>
+    <state x="764" y="110" key="SettingsEditor/0.0.2560.1040@0.0.2560.1040" timestamp="1578648886238" />
     <state x="936" y="173" width="670" height="676" key="search.everywhere.popup" timestamp="1577083759911">
       <screen x="0" y="0" width="2560" height="1040" />
     </state>

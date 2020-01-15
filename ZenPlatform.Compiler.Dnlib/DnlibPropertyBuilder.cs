@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
 using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
@@ -24,7 +25,10 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public void SetAttribute(ICustomAttribute attr)
         {
-            throw new NotImplementedException();
+            var dnlibAttr = (DnlibCustomAttribute) attr;
+            dnlibAttr.ImportAttribute(PropertyDef.Module);
+            PropertyDef.CustomAttributes.Add(dnlibAttr.GetCA());
+            ((List<DnlibCustomAttribute>) CustomAttributes).Add(dnlibAttr);
         }
 
         public DnlibPropertyBuilder(DnlibTypeSystem ts, PropertyDef property) : base(ts, property)

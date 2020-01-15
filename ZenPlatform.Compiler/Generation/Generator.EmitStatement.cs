@@ -153,7 +153,7 @@ namespace ZenPlatform.Compiler.Generation
                     //Load value
                     EmitExpression(e, mt.Expression, context.SymbolTable);
                     //Check is instance of the value
-                    e.Isinst(matchAtom.Type.ToClrType(_asm));
+                    e.IsInst(matchAtom.Type.ToClrType(_asm));
                     e.BrFalse(label);
 
                     EmitBody(e, matchAtom.Block, returnLabel, ref returnVariable, false);

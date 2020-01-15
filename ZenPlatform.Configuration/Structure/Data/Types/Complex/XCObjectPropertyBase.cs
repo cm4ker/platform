@@ -53,7 +53,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         public virtual bool IsSystemProperty { get; set; }
 
-        public virtual bool IsLink => false;
+        public virtual bool IsSelfLink => false;
 
         /// <summary>
         /// Указывает на то, что поле является только для
@@ -183,7 +183,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             set => throw new NotImplementedException();
         }
 
-        public bool IsLink => true;
+        public bool IsSelfLink => true;
 
         public bool IsReadOnly
         {

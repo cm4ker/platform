@@ -232,10 +232,18 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public abstract partial class TypeEntity : SyntaxNode
     {
-        public TypeEntity(ILineInfo lineInfo, String name): base(lineInfo)
+        public TypeEntity(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo)
         {
             var slot = 0;
+            TypeBody = typeBody;
+            if (TypeBody != null)
+                Childs.Add(TypeBody);
             Name = name;
+        }
+
+        public TypeBody TypeBody
+        {
+            get;
         }
 
         public String Name
@@ -246,6 +254,44 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             throw new NotImplementedException();
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class Class : TypeEntity, IAstSymbol
+    {
+        public Class(ILineInfo lineInfo, TypeBody typeBody, String name, Boolean isMappable = false): base(lineInfo, typeBody, name)
+        {
+            var slot = 0;
+            IsMappable = isMappable;
+        }
+
+        public Boolean IsMappable
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitClass(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class Module : TypeEntity, IAstSymbol
+    {
+        public Module(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, typeBody, name)
+        {
+            var slot = 0;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitModule(this);
         }
     }
 }
@@ -948,72 +994,6 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class Class : TypeEntity, IAstSymbol
-    {
-        public Class(ILineInfo lineInfo, TypeBody typeBody, String name, Boolean isMappable = false): base(lineInfo, name)
-        {
-            var slot = 0;
-            TypeBody = typeBody;
-            if (TypeBody != null)
-                Childs.Add(TypeBody);
-            Name = name;
-            IsMappable = isMappable;
-        }
-
-        public TypeBody TypeBody
-        {
-            get;
-        }
-
-        public String Name
-        {
-            get;
-        }
-
-        public Boolean IsMappable
-        {
-            get;
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitClass(this);
-        }
-    }
-}
-
-namespace ZenPlatform.Language.Ast.Definitions
-{
-    public partial class Module : TypeEntity, IAstSymbol
-    {
-        public Module(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, name)
-        {
-            var slot = 0;
-            TypeBody = typeBody;
-            if (TypeBody != null)
-                Childs.Add(TypeBody);
-            Name = name;
-        }
-
-        public TypeBody TypeBody
-        {
-            get;
-        }
-
-        public String Name
-        {
-            get;
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitModule(this);
-        }
-    }
-}
-
-namespace ZenPlatform.Language.Ast.Definitions
-{
     public partial class Variable : Expression, IAstSymbol
     {
         public Variable(ILineInfo lineInfo, Expression value, String name, TypeSyntax type): base(lineInfo)
@@ -1046,6 +1026,36 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitVariable(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class ContextVariable : Expression, IAstSymbol
+    {
+        public ContextVariable(ILineInfo lineInfo, String name, TypeSyntax type): base(lineInfo)
+        {
+            var slot = 0;
+            Name = name;
+            Type = type;
+            if (Type != null)
+                Childs.Add(Type);
+        }
+
+        public String Name
+        {
+            get;
+        }
+
+        public TypeSyntax Type
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitContextVariable(this);
         }
     }
 }
@@ -1113,6 +1123,38 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitGetFieldExpression(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class LookupExpression : Expression
+    {
+        public LookupExpression(ILineInfo lineInfo, Expression lookup, Expression parent): base(lineInfo)
+        {
+            var slot = 0;
+            Lookup = lookup;
+            if (Lookup != null)
+                Childs.Add(Lookup);
+            Parent = parent;
+            if (Parent != null)
+                Childs.Add(Parent);
+        }
+
+        public Expression Lookup
+        {
+            get;
+        }
+
+        public Expression Parent
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitLookupExpression(this);
         }
     }
 }
