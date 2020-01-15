@@ -49,7 +49,7 @@ namespace ZenPlatform.UIBuilder
 
         public Interpreter()
         {
-            _m = new QLang(Factory.CreateExampleConfiguration());
+            _m = new QLang(ConfigurationFactory.Create());
         }
 
         public (string Output1, string Output2) RunQuery(string sql)

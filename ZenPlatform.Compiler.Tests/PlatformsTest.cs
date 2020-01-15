@@ -18,7 +18,7 @@ namespace ZenPlatform.Compiler.Tests
 {
     public class PlatformsTest
     {
-        private IXCRoot r = Factory.CreateExampleConfiguration();
+        private IXCRoot r = ConfigurationFactory.Create();
 
         // [Fact]
         // void TestCompileAndInvoke()

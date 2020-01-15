@@ -102,7 +102,18 @@ namespace ZenPlatform.EntityComponent.Entity
                 if (prop.Types.Count > 1)
                 {
                     {
-                        builder.DefinePropertyWithBackingField(sb.Int, prop.Name + "_Type", false);
+                        var clsSchema = prop.GetPropertySchemas(prop.Name)
+                            .First(x => x.SchemaType == XCColumnSchemaType.Type);
+                        
+                        var dbSchema = prop.GetPropertySchemas(prop.DatabaseColumnName)
+                            .First(x => x.SchemaType == XCColumnSchemaType.Type);
+
+                        
+                        var propBuilder = builder.DefinePropertyWithBackingField(sb.Int, clsSchema.FullName, false);
+                       
+                        var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
+                        propBuilder.SetAttribute(attr);
+                        attr.SetParameters(dbSchema.FullName);
                     }
                 }
 

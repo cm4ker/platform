@@ -17,7 +17,7 @@ namespace ZenPlatform.Core.Querying.Test
 
         public QLangTest()
         {
-            conf = Factory.CreateExampleConfiguration();
+            conf = ConfigurationFactory.Create();
             _m = new Querying.Model.QLang(conf);
         }
 

@@ -180,11 +180,14 @@ namespace ZenPlatform.EntityComponent.Entity
             var gg = get.Generator;
             var dxcType = ts.FindType<DbCommand>();
             var readerType = ts.FindType<DbDataReader>();
+
+            var pcolType = ts.FindType<DbParameterCollection>();
+
             var parameterType = ts.FindType<DbParameter>();
             var dxcLoc = gg.DefineLocal(dxcType);
             var readerLoc = gg.DefineLocal(readerType);
             var p_loc = gg.DefineLocal(parameterType);
-            
+
             dto = gg.DefineLocal(dtoType);
 
             var q = GetSelectQuery(set);
@@ -202,7 +205,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 .LdLoc(dxcLoc)
                 .LdStr(compiler.Compile(q))
                 .EmitCall(sb.DbCommand.FindProperty(nameof(DbCommand.CommandText)).Setter)
-                
+
                 //load parameter
                 .LdLoc(dxcLoc)
                 .EmitCall(sb.DbCommand.FindMethod(nameof(DbCommand.CreateParameter)))
@@ -214,20 +217,34 @@ namespace ZenPlatform.EntityComponent.Entity
                 .LdArg(get.Parameters[0].ArgIndex)
                 .Box(get.Parameters[0].Type)
                 .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter)
+                .LdLoc(dxcLoc)
+                .EmitCall(dxcType.FindProperty(nameof(DbCommand.Parameters)).Getter)
+                //collection on stack
+                .LdLoc(p_loc)
+                .EmitCall(pcolType.FindMethod("Add", sb.Object), true)
 
                 //ExecuteReader        
                 .LdLoc(dxcLoc)
                 .EmitCall(sb.DbCommand.FindMethod(nameof(DbCommand.ExecuteReader)))
                 .StLoc(readerLoc)
                 .LdLoc(readerLoc)
-                .EmitCall(readerType.FindMethod(nameof(DbDataReader.Read)))
-                .Pop()
+                .EmitCall(readerType.FindMethod(nameof(DbDataReader.Read)), true)
+
                 //Create dto and map it
                 .NewObj(dtoType.FindConstructor())
                 .StLoc(dto)
                 .LdLoc(dto)
                 .LdLoc(readerLoc)
                 .EmitCall(dtoType.FindMethod("Map", readerType))
+
+                //release reader
+                .LdLoc(readerLoc)
+                .EmitCall(readerType.FindMethod(nameof(DbDataReader.Dispose)), true)
+
+                //release command
+                .LdLoc(dxcLoc)
+                .EmitCall(sb.DbCommand.FindMethod(nameof(DbCommand.Dispose)), true)
+
                 //Create link
                 .LdLoc(dto)
                 .NewObj(linkType.FindConstructor(dtoType))

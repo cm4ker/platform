@@ -4,6 +4,7 @@ using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Sessions
@@ -16,7 +17,7 @@ namespace ZenPlatform.Core.Sessions
     {
         private readonly ConcurrentDictionary<string, object> _sessionParameters;
 
-        public UserSession(WorkEnvironment env, IUser user, IDataContextManager dataContextManger,
+        public UserSession(IWorkEnvironment env, IUser user, IDataContextManager dataContextManger,
             ICacheService cacheService)
             : base(env, dataContextManger, cacheService)
         {

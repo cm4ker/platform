@@ -27,7 +27,7 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void CreateTest()
         {
-            var actual = Factory.CreateExampleConfiguration();
+            var actual = ConfigurationFactory.Create();
 
 
             var savedTypes = actual.Data.ObjectTypes;
@@ -47,10 +47,10 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void MultiTest()
         {
-            var actual = Factory.CreateExampleConfiguration();
+            var actual = ConfigurationFactory.Create();
 
 
-            var old = Factory.CreateExampleConfiguration();
+            var old = ConfigurationFactory.Create();
 
             var savedTypes = actual.Data.ObjectTypes;
             var dbTypes = old.Data.ObjectTypes;

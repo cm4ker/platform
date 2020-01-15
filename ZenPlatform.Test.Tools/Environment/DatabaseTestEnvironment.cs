@@ -38,7 +38,8 @@ namespace ZenPlatform.Core.Environment
         public DatabaseTestEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
-            IAssemblyManager assemblyManager, IMigrationManager migrationManager, IConfigurationManipulator manipulator) :
+            IAssemblyManager assemblyManager, IMigrationManager migrationManager,
+            IConfigurationManipulator manipulator) :
             base(contextManager, cacheService, manipulator)
         {
             _locking = new object();
@@ -75,13 +76,13 @@ namespace ZenPlatform.Core.Environment
                 newProject.Save(configStorage);
             }
             */
-            
+
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
-            
 
 
-            var savedConfiguration = Factory.CreateExampleConfiguration();
-            IXCRoot currentConfiguration = null; ;
+            var savedConfiguration = ConfigurationFactory.Create();
+            IXCRoot currentConfiguration = null;
+            ;
             using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
             {
                 var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
@@ -91,6 +92,7 @@ namespace ZenPlatform.Core.Environment
                 currentConfiguration = XCRoot.Load(configStorage);
             }
 
+            DataContextManager.Initialize(config.DatabaseType, config.ConnectionString);
 
             if (MigrationManager.CheckMigration(currentConfiguration, savedConfiguration))
             {
@@ -99,12 +101,10 @@ namespace ZenPlatform.Core.Environment
 
 
                 var storage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
-                this.DataContextManager.GetContext());
+                    this.DataContextManager.GetContext());
 
                 savedConfiguration.Save(storage);
-
             }
-
 
 
             base.Initialize(config);
@@ -121,10 +121,10 @@ namespace ZenPlatform.Core.Environment
             var serverAssembly = Assembly.Load(bytes);
 
             var serviceType = serverAssembly.GetType("Service.ServerInitializer");
-            var initializerInstance = (IServerInitializer)Activator.CreateInstance(serviceType, InvokeService);
+            var initializerInstance = (IServerInitializer) Activator.CreateInstance(serviceType, InvokeService);
             initializerInstance.Init();
 
-            InvokeService.Register(new Route("test"), (c, a) => { return (int)a[0] + 1; });
+            InvokeService.Register(new Route("test"), (c, a) => { return (int) a[0] + 1; });
 
             InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
             {
@@ -180,10 +180,8 @@ namespace ZenPlatform.Core.Environment
             lock (_locking)
             {
                 //if (!Sessions.Any()) throw new Exception("The environment not initialized!");
-
                 //var id = Sessions.Max(x => x.Id) + 1;
-
-                var session = new SimpleSession(this, user);
+                var session = new UserSession(this, user, DataContextManager, CacheService);
                 Sessions.Add(session);
 
                 return session;

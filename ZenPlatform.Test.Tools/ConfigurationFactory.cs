@@ -11,11 +11,11 @@ namespace ZenPlatform.ConfigurationExample
     /// <summary>
     /// Пример конфигурации
     /// </summary>
-    public static class Factory
+    public static class ConfigurationFactory
     {
         public static string GetDatabaseConnectionString() => "Host=db1; Username=user; Password=password;";
 
-        public static XCRoot CreateExampleConfiguration()
+        public static XCRoot Create()
         {
             var root = new XCRoot();
 

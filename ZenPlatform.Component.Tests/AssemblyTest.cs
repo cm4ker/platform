@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using Xunit.Abstractions;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
@@ -12,7 +14,12 @@ using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
+using ZenPlatform.Core;
+using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Sessions;
+using ZenPlatform.Core.Test;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
@@ -25,14 +32,18 @@ namespace ZenPlatform.Component.Tests
         private Assembly _clientAsm;
         private Assembly _serverAsm;
 
-        public AssemblyTest()
+
+        private ITestOutputHelper _testOutput;
+
+        public AssemblyTest(ITestOutputHelper testOutput)
         {
             Build();
+            _testOutput = testOutput;
         }
 
         public void Build()
         {
-            var conf = Factory.CreateExampleConfiguration();
+            var conf = ConfigurationFactory.Create();
             IAssemblyPlatform pl = new DnlibAssemblyPlatform();
 
             var server = pl.CreateAssembly("Server");
@@ -96,18 +107,34 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void TestObjectCreateAndSet()
         {
+            var service = TestEnvSetup.GetServerServiceWithDatabase(_testOutput);
+            var we = service.GetRequiredService<IWorkEnvironment>();
+            var a = we.CreateSession(new PlatformUser());
+
+            we.Initialize(new StartupConfig
+            {
+                DatabaseType = SqlDatabaseType.SqlServer,
+                ConnectionString =
+                    "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=testdb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+            });
+
+
+            ContextHelper.SetContext(new PlatformContext(a));
+
+            //install session
+
             var invoiceManager = _serverAsm.GetType("Documents.InvoiceManager");
             var iFacMethod = invoiceManager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static);
 
             var storelink = _serverAsm.GetType("Documents.StoreLink");
             var storeDto = _serverAsm.GetType("Documents._Store");
-            
+
             Assert.NotNull(iFacMethod);
-            
+
             var invoice = iFacMethod.Invoke(null, new object[] { });
             Assert.NotNull(invoice);
 
-            var dtoInst =  Activator.CreateInstance(storeDto);
+            var dtoInst = Activator.CreateInstance(storeDto);
             var storeInst = Activator.CreateInstance(storelink, dtoInst);
 
             var it = invoice.GetType();
@@ -116,8 +143,8 @@ namespace ZenPlatform.Component.Tests
             Assert.NotNull(storeProp);
 
             storeProp.SetMethod.Invoke(invoice, new[] {storeInst});
-
-            Assert.NotNull(storeProp.GetMethod.Invoke(invoice, new object[] { }));
+            var storeObject = storeProp.GetMethod.Invoke(invoice, new object[] { });
+            Assert.NotNull(storeObject);
         }
     }
 }
