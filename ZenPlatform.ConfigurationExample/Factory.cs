@@ -202,7 +202,11 @@ public void OnClientClientCallProc()
                 .AddType(departmentEditor.Link)
                 .AddType(customEditor.Link)
                 .SetDatabaseColumnName("Fld_0002");
-
+            invoiceEditor.CreateProperty()
+                .SetGuid(Guid.Parse("175d1ade-75f0-416e-bd18-67793f79f133"))
+                .SetName("NewProperty")
+                .AddType(new XCInt())
+                .SetDatabaseColumnName("Fld_0003");
 
             invoiceEditor.CreateProperty()
                 .SetGuid(Guid.Parse("4925d3ee-d858-4a96-a65f-1f87c2cf1357"))

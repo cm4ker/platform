@@ -403,7 +403,7 @@ namespace ZenPlatform.Component.Tests
             var sql = visitor.Visit(query.Expression);
 
 
-            Assert.Equal("INSERT INTO Obj_0001_tmp SELECT * FROM Obj_0001;\nINSERT INTO migration_status(temp_table, original_table, copy_table)\nVALUES\n('Obj_0001_tmp', 'Obj_0001', TRUE)\n;\nALTER TABLE Obj_0001_tmp\n ALTER COLUMN Fld_0001 INT NOT NULL;\nUPDATE migration_status\nSET change_table = TRUE\nWHERE\n'Obj_0001' = temp_table\n;\nDROP TABLE Obj_0001;\nUPDATE migration_status\nSET delete_table = TRUE\nWHERE\n'Obj_0001' = original_table\n;\nEXEC sp_rename 'Obj_0001_tmp', 'Obj_0001';\nUPDATE migration_status\nSET rename_table = TRUE\nWHERE\n'Obj_0001_tmp' = temp_table\n", sql);
+            Assert.Equal("IF OBJECT_ID('Obj_0001_tmp', 'U') IS NOT NULL\nDROP TABLE Obj_0001_tmp;\nSELECT * INTO Obj_0001_tmp FROM Obj_0001;\nINSERT INTO migration_status(migration_id, temp_table, original_table, copy_table)\nVALUES\n('ed46b940-1176-4c46-9522-b42c44d92861', 'Obj_0001_tmp', 'Obj_0001', 1)\n;\nALTER TABLE Obj_0001_tmp\n ALTER COLUMN Fld_0001 INT NOT NULL;\nUPDATE migration_status\nSET change_table = 1\nWHERE\n'Obj_0001' = temp_table\n;\nDROP TABLE Obj_0001;\nUPDATE migration_status\nSET delete_table = 1\nWHERE\n'Obj_0001' = original_table\n;\nEXEC sp_rename 'Obj_0001_tmp', 'Obj_0001';\nUPDATE migration_status\nSET rename_table = 1\nWHERE\n'Obj_0001_tmp' = temp_table\n", sql);
 
         }
         
@@ -436,7 +436,7 @@ namespace ZenPlatform.Component.Tests
 
             var sql = visitor.Visit(query.Expression);
 
-            Assert.Equal("INSERT INTO Obj_0001_tmp SELECT * FROM Obj_0001;\nINSERT INTO migration_status(temp_table, original_table, copy_table)\nVALUES\n('Obj_0001_tmp', 'Obj_0001', TRUE)\n;\nALTER TABLE Obj_0001_tmp\n ADD COLUMN Fld_0003 INT NOT NULL;\nUPDATE migration_status\nSET change_table = TRUE\nWHERE\n'Obj_0001' = temp_table\n;\nDROP TABLE Obj_0001;\nUPDATE migration_status\nSET delete_table = TRUE\nWHERE\n'Obj_0001' = original_table\n;\nEXEC sp_rename 'Obj_0001_tmp', 'Obj_0001';\nUPDATE migration_status\nSET rename_table = TRUE\nWHERE\n'Obj_0001_tmp' = temp_table\n", sql);
+            Assert.Equal("IF OBJECT_ID('Obj_0001_tmp', 'U') IS NOT NULL\nDROP TABLE Obj_0001_tmp;\nSELECT * INTO Obj_0001_tmp FROM Obj_0001;\nINSERT INTO migration_status(migration_id, temp_table, original_table, copy_table)\nVALUES\n('ed46b940-1176-4c46-9522-b42c44d92861', 'Obj_0001_tmp', 'Obj_0001', 1)\n;\nALTER TABLE Obj_0001_tmp\n ADD Fld_0003 INT NOT NULL;\nUPDATE migration_status\nSET change_table = 1\nWHERE\n'Obj_0001' = temp_table\n;\nDROP TABLE Obj_0001;\nUPDATE migration_status\nSET delete_table = 1\nWHERE\n'Obj_0001' = original_table\n;\nEXEC sp_rename 'Obj_0001_tmp', 'Obj_0001';\nUPDATE migration_status\nSET rename_table = 1\nWHERE\n'Obj_0001_tmp' = temp_table\n", sql);
 
             //DELETE test
             plan = new EntityMigrationPlan();
@@ -451,7 +451,7 @@ namespace ZenPlatform.Component.Tests
 
             sql = visitor.Visit(query.Expression);
 
-            Assert.Equal("INSERT INTO Obj_0001_tmp SELECT * FROM Obj_0001;\nINSERT INTO migration_status(temp_table, original_table, copy_table)\nVALUES\n('Obj_0001_tmp', 'Obj_0001', TRUE)\n;\nALTER TABLE Obj_0001_tmp DROP COLUMN Fld_0003;\nUPDATE migration_status\nSET change_table = TRUE\nWHERE\n'Obj_0001' = temp_table\n;\nDROP TABLE Obj_0001;\nUPDATE migration_status\nSET delete_table = TRUE\nWHERE\n'Obj_0001' = original_table\n;\nEXEC sp_rename 'Obj_0001_tmp', 'Obj_0001';\nUPDATE migration_status\nSET rename_table = TRUE\nWHERE\n'Obj_0001_tmp' = temp_table\n", sql);
+            Assert.Equal("IF OBJECT_ID('Obj_0001_tmp', 'U') IS NOT NULL\nDROP TABLE Obj_0001_tmp;\nSELECT * INTO Obj_0001_tmp FROM Obj_0001;\nINSERT INTO migration_status(migration_id, temp_table, original_table, copy_table)\nVALUES\n('ed46b940-1176-4c46-9522-b42c44d92861', 'Obj_0001_tmp', 'Obj_0001', 1)\n;\nALTER TABLE Obj_0001_tmp DROP COLUMN Fld_0003;\nUPDATE migration_status\nSET change_table = 1\nWHERE\n'Obj_0001' = temp_table\n;\nDROP TABLE Obj_0001;\nUPDATE migration_status\nSET delete_table = 1\nWHERE\n'Obj_0001' = original_table\n;\nEXEC sp_rename 'Obj_0001_tmp', 'Obj_0001';\nUPDATE migration_status\nSET rename_table = 1\nWHERE\n'Obj_0001_tmp' = temp_table\n", sql);
 
         }
         
@@ -484,7 +484,7 @@ namespace ZenPlatform.Component.Tests
 
             var sql = visitor.Visit(query.Expression);
 
-            Assert.Equal("CREATE TABLE Obj_0002 \n(\nId UNIQUEIDENTIFIER NOT NULL,\nName VARCHAR(150) NOT NULL,\nFld_0001 UNIQUEIDENTIFIER NOT NULL\n)", sql);
+            Assert.Equal("IF OBJECT_ID('Obj_0002', 'U') IS NOT NULL\nDROP TABLE Obj_0002;\nCREATE TABLE Obj_0002 \n(\nId UNIQUEIDENTIFIER NOT NULL,\nName VARCHAR(150) NOT NULL,\nFld_0001 UNIQUEIDENTIFIER NOT NULL\n)", sql);
 
             //DELETE test
 
@@ -539,7 +539,7 @@ namespace ZenPlatform.Component.Tests
             var sql = visitor.Visit(query.Expression);
 
 
-            Assert.Equal("INSERT INTO Obj_0001_tmp SELECT * FROM Obj_0001;\nINSERT INTO migration_status(temp_table, original_table, copy_table)\nVALUES\n('Obj_0001_tmp', 'Obj_0001', TRUE)\n;\nALTER TABLE Obj_0001_tmp\n ADD COLUMN Fld_0001_Type INT;\nALTER TABLE Obj_0001_tmp\n ADD COLUMN Fld_0001_Int INT NOT NULL;\nEXEC sp_rename 'Obj_0001_tmp.Fld_0001', 'Fld_0001_Binary', 'COLUMN';\nUPDATE Obj_0001_tmp\nSET Fld_0001_Type = 1\n;\nUPDATE migration_status\nSET change_table = TRUE\nWHERE\n'Obj_0001' = temp_table\n;\nDROP TABLE Obj_0001;\nUPDATE migration_status\nSET delete_table = TRUE\nWHERE\n'Obj_0001' = original_table\n;\nEXEC sp_rename 'Obj_0001_tmp', 'Obj_0001';\nUPDATE migration_status\nSET rename_table = TRUE\nWHERE\n'Obj_0001_tmp' = temp_table\n", sql);
+            Assert.Equal("IF OBJECT_ID('Obj_0001_tmp', 'U') IS NOT NULL\nDROP TABLE Obj_0001_tmp;\nSELECT * INTO Obj_0001_tmp FROM Obj_0001;\nINSERT INTO migration_status(migration_id, temp_table, original_table, copy_table)\nVALUES\n('ed46b940-1176-4c46-9522-b42c44d92861', 'Obj_0001_tmp', 'Obj_0001', 1)\n;\nALTER TABLE Obj_0001_tmp\n ADD Fld_0001_Type INT;\nALTER TABLE Obj_0001_tmp\n ADD Fld_0001_Int INT NOT NULL;\nEXEC sp_rename 'Obj_0001_tmp.Fld_0001', 'Fld_0001_Binary', 'COLUMN';\nUPDATE Obj_0001_tmp\nSET Fld_0001_Type = 1\n;\nUPDATE migration_status\nSET change_table = 1\nWHERE\n'Obj_0001' = temp_table\n;\nDROP TABLE Obj_0001;\nUPDATE migration_status\nSET delete_table = 1\nWHERE\n'Obj_0001' = original_table\n;\nEXEC sp_rename 'Obj_0001_tmp', 'Obj_0001';\nUPDATE migration_status\nSET rename_table = 1\nWHERE\n'Obj_0001_tmp' = temp_table\n", sql);
 
 
 

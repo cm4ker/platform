@@ -40,7 +40,9 @@ namespace ZenPlatform.EntityComponent.Migrations
 
         private bool NeedToChangeDatabase(XCSingleEntity x, XCSingleEntity y)
         {
-           return !x.Properties.SequenceEqual(y.Properties);
+            
+           return !x.Properties.Where(p=>p is XCSingleEntityProperty).SequenceEqual(y.Properties.Where(p => p is XCSingleEntityProperty));
+
         }
 
         private void ChangeTable(IEntityMigrationScope scope, XCSingleEntity old, XCSingleEntity actual)
@@ -128,6 +130,7 @@ namespace ZenPlatform.EntityComponent.Migrations
                     else
                     if (old != null && actual == null)
                     {
+
                         plan.AddScope(scope =>
                         {
                             scope.DeleteTable(old.RelTableName);
