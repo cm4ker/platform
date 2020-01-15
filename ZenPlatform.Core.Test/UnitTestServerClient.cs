@@ -254,7 +254,7 @@ namespace ZenPlatform.Core.Test
             //var clientService = Initializer.GetClientService();
         }
 
-
+       /*
         [Fact]
         public void MigrationTest()
         {
@@ -270,7 +270,7 @@ namespace ZenPlatform.Core.Test
             //need check listing
 
         }
-
+        */
 
     }
 }
