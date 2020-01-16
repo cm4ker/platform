@@ -45,9 +45,29 @@ namespace ZenPlatform.Compiler.Helpers
                 .EmitCall(o);
             return e;
         }
-        
-        
-        
+
+
+        public static IEmitter DbTypes(this IEmitter e)
+        {
+            var o = e.TypeSystem.FindType<DataContext>().FindProperty(nameof(DataContext.Types));
+            e
+                .LdDataContext()
+                .EmitCall(o.Getter);
+            return e;
+        }
+
+
+        public static IEmitter LdDefaultDateTime(this IEmitter e)
+        {
+            var o = e.TypeSystem.FindType<IDbTypesContract>().FindProperty(nameof(IDbTypesContract.DateTime));
+            var o1 = e.TypeSystem.FindType<IDateTime>().FindProperty(nameof(IDateTime.MinValue));
+
+            e
+                .DbTypes()
+                .EmitCall(o.Getter)
+                .EmitCall(o1.Getter);
+            return e;
+        }
 
 
         public static IMethod ClientInvoke(this SystemTypeBindings b)

@@ -6,11 +6,13 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Infrastructure;
+using ZenPlatform.Core.Querying;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 
 
 namespace ZenPlatform.Compiler.Generation
@@ -47,22 +49,11 @@ namespace ZenPlatform.Compiler.Generation
                     else if (variable.CodeObject is ILocal l && mtNode)
                         e.LdLocA(l);
 
-
                     // Load value
                     EmitExpression(e, assignment.Value, symbolTable);
 
-
-//                if (mtNode)
-//                {
-//                    if (!(assignment.Value.Type.Type.Equals(_bindings.Object)
-//                          || assignment.Value.Type.Type.Equals(_bindings.UnionTypeStorage)))
-//                    {
-//                        e.Box(assignment.Value.Type.Type);
-//                    }
-//
-//                    e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
-//                    return;
-//                }
+                    if (name.Type.ToClrType(_asm) == _bindings.Object)
+                        HandleBox(e, assignment.Value.Type);
 
                     // Store
                     if (variable.CodeObject is ILocal vd)
@@ -102,22 +93,34 @@ namespace ZenPlatform.Compiler.Generation
 
                 //load context
                 EmitExpression(e, ple.Current, symbolTable);
-                
-                var expProp = _map.GetProperty(ple.Current.Type, n.Value);
 
-                
+                var expProp = _map.GetProperty(ple.Current.Type, n.Value);
 
                 //load value
                 EmitExpression(e, assignment.Value, symbolTable);
+
+                if (expProp.PropertyType == _bindings.Object)
+                    HandleBox(e, assignment.Value.Type);
 
                 //Set value
                 e.PropSetValue(expProp);
             }
         }
 
-        private void EmitLoadThis(IEmitter il)
+        private void HandleBox(IEmitter e, TypeSyntax type)
         {
-            il.LdArg_0();
+            HandleBox(e, type.ToClrType(_asm));
+        }
+
+        private void HandleBox(IEmitter e, IType currenType)
+        {
+            if (currenType.IsValueType && !currenType.IsArray)
+                e.Box(currenType);
+        }
+
+        private void EmitLoadThis(IEmitter e)
+        {
+            e.LdArg_0();
         }
 
         private void EmitLoad(IEmitter e, object codeObject, bool stat, bool addr)
