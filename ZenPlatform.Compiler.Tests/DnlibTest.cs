@@ -238,21 +238,23 @@ namespace ZenPlatform.Compiler.Tests
             var asm = _ap.CreateAssembly("test");
             var sb = asm.TypeSystem.GetSystemBindings();
 
-            var a = asm.DefineType("Default", "A", 
-                TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit, sb.Object);
+            var a = asm.DefineType("Default", "A",
+                TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass |
+                TypeAttributes.BeforeFieldInit, sb.Object);
 
             a.DefineDefaultConstructor(false);
-            
+
             var m1 = a.DefineMethod("Test", true, false, false, null, true);
             m1.WithReturnType(sb.Object);
             m1.Generator.LdNull().Ret();
 
-            var b = asm.DefineType("Default", "B", 
-                TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit,
+            var b = asm.DefineType("Default", "B",
+                TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass |
+                TypeAttributes.BeforeFieldInit,
                 a);
 
             b.DefineDefaultConstructor(false);
-            
+
             var m2 = b.DefineMethod("Test", true, false, false, m1);
             m2.WithReturnType(sb.Object);
 
@@ -279,6 +281,37 @@ namespace ZenPlatform.Compiler.Tests
                 .Invoke(instB, null);
 
             Assert.Equal(1, res2);
+        }
+
+        [Fact]
+        public void TestArray()
+        {
+            var asm = _ap.CreateAssembly("test");
+            var sb = asm.TypeSystem.GetSystemBindings();
+
+            var a = asm.DefineType("Default", "A",
+                TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass |
+                TypeAttributes.BeforeFieldInit, sb.Object);
+
+            a.DefineDefaultConstructor(false);
+
+            var m1 = a.DefineMethod("Test", true, false, false, null, true);
+            m1.WithReturnType(sb.Byte.MakeArrayType());
+            m1.Generator.LdcI4(0).NewArr(sb.Byte).Ret();
+
+            asm.Write("test_array.bll");
+
+            var lib = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test_array.bll"));
+
+
+            var aType = lib.GetType("Default.A");
+
+            var instA = Activator.CreateInstance(aType);
+
+            var res1 = aType.GetMethod("Test")
+                .Invoke(instA, null);
+
+            Assert.NotNull(res1);
         }
     }
 

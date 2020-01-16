@@ -117,7 +117,7 @@ namespace ZenPlatform.ServerRPC
                 state.TryGetValue(name, out AsyncLocal<object> data) ? data.Value : null;
         }
 
-        public static async Task Main()
+        public static async Task Main2()
         {
         }
 
