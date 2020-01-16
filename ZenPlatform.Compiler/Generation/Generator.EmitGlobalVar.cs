@@ -34,7 +34,7 @@ namespace ZenPlatform.Compiler.Generation
                     var gvar = x as GlobalVarTreeItem;
 
                     if (gvar?.Type == VarTreeLeafType.Func)
-                        return gvar?.Name == c.Name;
+                        return gvar?.Name == c.Name.Value;
 
                     return false;
                 }) as GlobalVarTreeItem;

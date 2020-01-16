@@ -164,7 +164,7 @@ namespace ZenPlatform.Compiler.Generation
                 if (le.Lookup is Call c)
                 {
                     var node = currentItem.Childs.Select(x => x as GlobalVarTreeItem)
-                                   .FirstOrDefault(x => x.Name == c.Name && x.Type == VarTreeLeafType.Func) ??
+                                   .FirstOrDefault(x => x.Name == c.Name.Value && x.Type == VarTreeLeafType.Func) ??
                                throw new Exception(
                                    $"Node with name {c.Name} not found in global var. Component must register this name.");
 

@@ -4,9 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using Mono.Cecil.Cil;
 using MoreLinq.Extensions;
+using Npgsql.NameTranslation;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -14,6 +16,7 @@ using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.QueryBuilder;
@@ -124,10 +127,16 @@ namespace ZenPlatform.EntityComponent.Entity
                 var hasSet = !prop.IsReadOnly;
 
 
-                builder.DefineProperty(propType, propName, true, hasSet, false);
+                var codeObj = builder.DefineProperty(propType, propName, true, hasSet, false);
+                cc.TypeBody.SymbolTable.Add(new Property(null, propName, propType.ToAstType()), codeObj.prop);
             }
 
-            builder.DefineMethod("Save", true, false, false);
+            var saveBuilder = builder.DefineMethod("Save", true, false, false);
+            
+            cc.TypeBody.SymbolTable.Add(
+                new Function(null, null, null, null, saveBuilder.Name, saveBuilder.ReturnType.ToAstType()),
+                saveBuilder);
+
         }
 
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
@@ -148,7 +157,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var mrg = ts.FindType($"{@namespace}.{set.Name}Manager");
             var mrgGet = mrg.FindMethod("Get", sb.Guid);
-            
+
             foreach (var prop in set.Properties)
             {
                 bool propertyGenerated = false;
@@ -297,8 +306,6 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                     else
                     {
-                        
-
                         getBuilder
                             .LdArg_0()
                             .EmitCall(builder.FindProperty("Id").Getter)
@@ -308,7 +315,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 }
             }
 
-            var saveBuilder = (IMethodBuilder)builder.FindMethod("Save");
+            var saveBuilder = (IMethodBuilder) builder.FindMethod("Save");
 
             var sg = saveBuilder.Generator;
 
@@ -318,7 +325,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 .EmitCall(mrg.FindMethod("Save", dtoType))
                 .Ret();
 
-        }
+         }
 
         private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)
         {

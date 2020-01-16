@@ -76,13 +76,13 @@ namespace ZenPlatform.Component.Tests
 
 
             server.Write("Server.bll");
-            client.Write("Client.bll");
+            //client.Write("Client.bll");
 
             var execDir = AppDomain.CurrentDomain.BaseDirectory;
 
 
             _serverAsm = Assembly.LoadFile(Path.Combine(execDir, "Server.bll"));
-            _clientAsm = Assembly.LoadFile(Path.Combine(execDir, "Client.bll"));
+           // _clientAsm = Assembly.LoadFile(Path.Combine(execDir, "Client.bll"));
         }
 
 
@@ -110,7 +110,7 @@ namespace ZenPlatform.Component.Tests
         {
             var service = TestEnvSetup.GetServerServiceWithDatabase(_testOutput);
             var we = service.GetRequiredService<IWorkEnvironment>();
-            var a = we.CreateSession(new PlatformUser());
+            var a = we.CreateSession(new PlatformUser() {Name = "User"});
 
 
             we.Initialize(new StartupConfig
@@ -120,33 +120,14 @@ namespace ZenPlatform.Component.Tests
                     "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=testdb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
             });
 
-
             ContextHelper.SetContext(new PlatformContext(a));
 
             //install session
 
-            var invoiceManager = _serverAsm.GetType("Entity.InvoiceManager");
-            var iFacMethod = invoiceManager.GetMethod("Create", BindingFlags.Public | BindingFlags.Static);
-
-            var storelink = _serverAsm.GetType("Entity.StoreLink");
-            var storeDto = _serverAsm.GetType("Entity._Store");
-
-            Assert.NotNull(iFacMethod);
-
-            var invoice = iFacMethod.Invoke(null, new object[] { });
-            Assert.NotNull(invoice);
-
-            var dtoInst = Activator.CreateInstance(storeDto);
-            var storeInst = Activator.CreateInstance(storelink, dtoInst);
-
-            var it = invoice.GetType();
-            var storeProp = it.GetProperty("Store");
-
-            Assert.NotNull(storeProp);
-
-            storeProp.SetMethod.Invoke(invoice, new[] {storeInst});
-            var storeObject = storeProp.GetMethod.Invoke(invoice, new object[] { });
-            Assert.NotNull(storeObject);
+            var cmd = _serverAsm.GetType("Entity.__cmd_HelloFromServer");
+            var method = cmd.GetMethod("GetUserNameServer");
+            var result = method.Invoke(null, null);
+            Assert.NotNull(result);
         }
     }
 }

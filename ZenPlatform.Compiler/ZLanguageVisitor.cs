@@ -146,7 +146,7 @@ namespace ZenPlatform.Compiler
             }
 
             Property p =
-                new Property(context.start.ToLineInfo(), _syntaxStack.PopString(), _syntaxStack.PopType(),
+                new Property(context.start.ToLineInfo(), _syntaxStack.PopName().Value, _syntaxStack.PopType(),
                     context.GET() != null, context.SET() != null)
                 {
                     Getter = get,
@@ -455,8 +455,7 @@ namespace ZenPlatform.Compiler
                 args = _syntaxStack.PopList<Argument>().ToImmutableList();
             }
 
-            var result = new Call(context.start.ToLineInfo(), args,
-                _syntaxStack.PopString(), null);
+            var result = new Call(context.start.ToLineInfo(), args,_syntaxStack.PopName(), null);
 
             _syntaxStack.Push(result);
 
