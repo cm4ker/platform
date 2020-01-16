@@ -70,7 +70,7 @@ propertyDeclaration:
 
 statement: 
         ((variableDeclaration 
-        | functionCall
+        | expression
         | assigment
         | (RETURN returnExpression = expression))
         ';'+ )
@@ -89,6 +89,7 @@ variableDeclaration:
 assigment: 
    name '=' expression
    | name '[' indexExpression=expression ']' '=' assigmentExpression=expression
+   | lookupExpression '=' expression
    | name OP_INC
    | name OP_DEC
 ;   
@@ -98,7 +99,6 @@ assigment:
 functionCall: 
     functionName=name '(' arguments? ')'
 ;
-
 
 parameters: parameter (',' parameter)*;
 
@@ -133,16 +133,15 @@ string_literal
 	| VERBATIUM_STRING
 	;
 
-
-
 expression:
-    expressionStructural
-    | lookupExpression
+     lookupExpression
+     | expressionStructural
+  
     ;
 
 lookupExpression:
-    lookupExpression '.' expressionStructural    
-    | expressionStructural '.' expressionStructural
+    lookupExpression '.' (name | functionCall) 
+    | expressionStructural '.' (name | functionCall) 
 ;
 
 expressionStructural:

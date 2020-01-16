@@ -191,7 +191,6 @@
         </Arguments>
     </Syntax>
 
-  
 
     <Syntax Name="Variable" Base="Expression" IsSymbol="true">
         <Arguments>
@@ -226,13 +225,28 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="LookupExpression" Base="Expression">
+    <Syntax Name="LookupExpression" Base="Expression" IsAbstract="true">
         <Arguments>
             <Single Name="Lookup" Type="Expression"/>
             <Single Name="Current" Type="Expression"/>
         </Arguments>
     </Syntax>
-        
+
+    <Syntax Name="PropertyLookupExpression" Base="LookupExpression">
+        <Arguments>
+            <Single Name="Lookup" Type="Expression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Current" Type="Expression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="MethodLookupExpression" Base="LookupExpression">
+        <Arguments>
+            <Single Name="Lookup" Type="Expression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Current" Type="Expression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+
     <Syntax Name="AssignFieldExpression" Base="Expression">
         <Arguments>
             <Single Name="Expression" Type="Expression"/>
@@ -280,13 +294,13 @@
 
     <Syntax Name="PostIncrementExpression" Base="Expression" NS="Expressions">
         <Arguments>
-            <Single Name="Name" Type="Name"/>
+            <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="PostDecrementExpression" Base="Expression" NS="Expressions">
         <Arguments>
-            <Single Name="Name" Type="Name"/>
+            <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
 

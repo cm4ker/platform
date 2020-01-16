@@ -92,6 +92,11 @@ namespace ZenPlatform.Core.Environment
 
 
                 currentConfiguration = XCRoot.Load(configStorage);
+
+                if (currentConfiguration == null)
+                {
+                    currentConfiguration = new XCRoot();
+                }
             }
 
 

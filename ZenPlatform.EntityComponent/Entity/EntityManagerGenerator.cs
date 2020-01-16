@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using dnlib.DotNet;
 using McMaster.Extensions.CommandLineUtils;
 using NLog.LayoutRenderers;
 using ZenPlatform.Compiler;
@@ -131,6 +132,9 @@ namespace ZenPlatform.EntityComponent.Entity
             builder.DefineMethod("Get", true, true, false)
                 .WithReturnType(linkType)
                 .DefineParameter("id", sb.Guid, false, false);
+
+            builder.DefineMethod("Save", true, true, false)
+                .DefineParameter("dto", dtoType, false, false);
         }
 
         private void EmitBody(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
@@ -248,6 +252,161 @@ namespace ZenPlatform.EntityComponent.Entity
                 .LdLoc(dto)
                 .NewObj(linkType.FindConstructor(dtoType))
                 .Ret();
+
+            EmitSavingSupport(cm, builder, dbType);
+        }
+
+        private void EmitSavingSupport(ComponentModule cm, ITypeBuilder tb, SqlDatabaseType dbType)
+        {
+            var set = cm.Type as XCSingleEntity ??
+                      throw new Exception($"This component can't serve this type {cm.Type}");
+
+            var ts = tb.Assembly.TypeSystem;
+            var sb = ts.GetSystemBindings();
+
+            var compiler = SqlCompillerBase.FormEnum(dbType);
+
+            var dtoType = ts.FindType($"{set.GetNamespace()}.{set.GetDtoName()}");
+
+            var saveMethod = (IMethodBuilder) tb.FindMethod("Save", dtoType);
+
+            var rg = saveMethod.Generator;
+
+
+            var cmdType = ts.FindType<DbCommand>();
+            var parameterType = ts.FindType<DbParameter>();
+            var pcolType = ts.FindType<DbParameterCollection>();
+
+            var dtoParam = saveMethod.Parameters[0];
+
+            var indexp = 0;
+
+            var p_loc = rg.DefineLocal(ts.FindType<DbParameter>());
+
+            var versionF = dtoType.Properties.First(x => x.Name == "Version");
+
+            var cmdLoc = rg.DefineLocal(cmdType);
+
+            if (versionF != null)
+            {
+                rg.NewDbCmdFromContext()
+                    .StLoc(cmdLoc);
+
+                var narg = rg.DefineLabel();
+                var end = rg.DefineLabel();
+                rg.LdArg(dtoParam)
+                    .EmitCall(versionF.Getter)
+                    .LdNull()
+                    .Ceq()
+                    .BrTrue(narg);
+
+                rg
+                    .LdLoc(cmdLoc)
+                    .LdStr(compiler.Compile(GetUpdateQuery(set)))
+                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
+                    .Br(end);
+
+                rg
+                    .MarkLabel(narg)
+                    .LdLoc(cmdLoc)
+                    .LdStr(compiler.Compile(GetInsertQuery(set)))
+                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
+                    .MarkLabel(end);
+            }
+
+            foreach (var property in dtoType.Properties)
+            {
+                var m = property.FindCustomAttribute<MapToAttribute>();
+                if (m is null) continue;
+
+                rg.LdLoc(cmdLoc)
+                    .EmitCall(cmdType.FindMethod(nameof(DbCommand.CreateParameter)))
+                    .StLoc(p_loc)
+                    .LdLoc(p_loc)
+                    //add param to collection
+                    .LdLoc(cmdLoc)
+                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.Parameters)).Getter)
+                    //collection on stack
+                    .LdLoc(p_loc)
+                    .EmitCall(pcolType.FindMethod("Add", sb.Object), true)
+                    //endadd
+                    .LdLoc(p_loc)
+                    .LdStr($"P_{indexp}")
+                    .EmitCall(parameterType.FindProperty(nameof(DbParameter.ParameterName)).Setter)
+                    .LdLoc(p_loc)
+                    .LdArg_0()
+                    .EmitCall(property.Getter)
+                    .Box(property.PropertyType)
+                    .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter);
+
+                indexp++;
+            }
+
+            rg.LdLoc(cmdLoc)
+                .EmitCall(cmdType.FindMethod(nameof(DbCommand.ExecuteNonQuery)), true)
+                .Ret();
+        }
+
+        private SSyntaxNode GetInsertQuery(XCSingleEntity se)
+        {
+            QueryMachine qm = new QueryMachine();
+            qm.bg_query()
+                .m_values();
+
+            var pIndex = 0;
+
+            var columns = se.Properties.Where(x => !x.IsSelfLink)
+                .SelectMany(x => x.GetPropertySchemas());
+
+            foreach (var column in columns)
+            {
+                qm.ld_param($"P_{pIndex}");
+                pIndex++;
+            }
+
+            qm.m_insert()
+                .ld_table(se.RelTableName);
+
+            foreach (var col in columns)
+            {
+                qm.ld_column(col.FullName);
+            }
+
+            qm.st_query();
+
+            return (SSyntaxNode) qm.pop();
+        }
+
+        private SSyntaxNode GetUpdateQuery(XCSingleEntity se)
+        {
+            QueryMachine qm = new QueryMachine();
+
+            var pIndex = 0;
+
+            var columns = se.Properties.Where(x => !x.Unique && !x.IsReadOnly).SelectMany(x => x.GetPropertySchemas());
+
+            qm.bg_query()
+                .m_where()
+                .ld_column(se.GetPropertyByName("Id").DatabaseColumnName, "T0")
+                .ld_param($"P_{pIndex++}")
+                .eq();
+
+            qm.m_set();
+            Debug.Assert(columns.Any());
+
+            foreach (var column in columns)
+            {
+                qm.ld_column(column.FullName, "T0")
+                    .ld_param($"P_{pIndex++}")
+                    .assign();
+            }
+
+            qm.m_update()
+                .ld_table(se.RelTableName)
+                .@as("T0")
+                .st_query();
+
+            return (SSyntaxNode) qm.pop();
         }
 
         private SSyntaxNode GetSelectQuery(XCSingleEntity se)

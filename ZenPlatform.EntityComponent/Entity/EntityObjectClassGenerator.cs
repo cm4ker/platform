@@ -126,6 +126,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 builder.DefineProperty(propType, propName, true, hasSet, false);
             }
+
+            builder.DefineMethod("Save", true, false, false);
         }
 
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
@@ -144,6 +146,9 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var dtoPrivate = builder.FindField("_dto");
 
+            var mrg = ts.FindType($"{@namespace}.{set.Name}Manager");
+            var mrgGet = mrg.FindMethod("Get", sb.Guid);
+            
             foreach (var prop in set.Properties)
             {
                 bool propertyGenerated = false;
@@ -200,9 +205,9 @@ namespace ZenPlatform.EntityComponent.Entity
                             //Call Manager.Get(Id)
                             //Мы не можем ссылаться на методы, когда они ещё не готовы.
                             //нужно либо разбивать все на стадии, либо вводить понятие шаблона
-                            var mrg = ts.FindType($"{@namespace}.{lt.ParentType.Name}Manager");
-                            var mrgGet = mrg.FindMethod("Get", sb.Guid);
-                            getBuilder.EmitCall(mrgGet);
+                            var mrgRemote = ts.FindType($"{@namespace}.{lt.ParentType.Name}Manager");
+                            var mrgRemoteGet = mrgRemote.FindMethod("Get", sb.Guid);
+                            getBuilder.EmitCall(mrgRemoteGet);
                         }
                         else if (compileType.IsValueType)
                             getBuilder.Box(compileType);
@@ -259,7 +264,6 @@ namespace ZenPlatform.EntityComponent.Entity
 
                         //GETTER
                         getBuilder
-                            
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .EmitCall(dtoProp.Getter);
@@ -269,18 +273,16 @@ namespace ZenPlatform.EntityComponent.Entity
                             //Call Manager.Get(Id)
                             //Мы не можем ссылаться на методы, когда они ещё не готовы.
                             //нужно либо разбивать все на стадии, либо вводить понятие шаблона
-                            var mrg = ts.FindType($"{@namespace}.{lt.ParentType.Name}Manager");
-                            var mrgGet = mrg.FindMethod("Get", sb.Guid);
-                            getBuilder.EmitCall(mrgGet);
+                            var mrgRemote = ts.FindType($"{@namespace}.{lt.ParentType.Name}Manager");
+                            var mrgRemoteGet = mrgRemote.FindMethod("Get", sb.Guid);
+                            getBuilder.EmitCall(mrgRemoteGet);
                         }
-                        
+
                         getBuilder
                             .Ret();
 
                         if (setBuilder != null)
                         {
-             
-                            
                             setBuilder
                                 .LdArg_0()
                                 .LdFld(dtoPrivate)
@@ -295,8 +297,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                     else
                     {
-                        var mrg = ts.FindType($"{@namespace}.{set.Name}Manager");
-                        var mrgGet = mrg.FindMethod("Get", sb.Guid);
+                        
 
                         getBuilder
                             .LdArg_0()
@@ -306,6 +307,17 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                 }
             }
+
+            var saveBuilder = (IMethodBuilder)builder.FindMethod("Save");
+
+            var sg = saveBuilder.Generator;
+
+            sg
+                .LdArg_0()
+                .LdFld(dtoPrivate)
+                .EmitCall(mrg.FindMethod("Save", dtoType))
+                .Ret();
+
         }
 
         private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)

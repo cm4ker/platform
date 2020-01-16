@@ -1129,15 +1129,15 @@ namespace ZenPlatform.Language.Ast.Definitions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class LookupExpression : Expression
+    public abstract partial class LookupExpression : Expression
     {
-        public LookupExpression(ILineInfo lineInfo, Expression lookup, Expression parent): base(lineInfo)
+        public LookupExpression(ILineInfo lineInfo, Expression lookup, Expression current): base(lineInfo)
         {
             var slot = 0;
             Lookup = lookup;
             if (Lookup != null)
                 Childs.Add(Lookup);
-            Current = parent;
+            Current = current;
             if (Current != null)
                 Childs.Add(Current);
         }
@@ -1154,7 +1154,39 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitLookupExpression(this);
+            throw new NotImplementedException();
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class PropertyLookupExpression : LookupExpression
+    {
+        public PropertyLookupExpression(ILineInfo lineInfo, Expression lookup, Expression current): base(lineInfo, lookup, current)
+        {
+            var slot = 0;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitPropertyLookupExpression(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class MethodLookupExpression : LookupExpression
+    {
+        public MethodLookupExpression(ILineInfo lineInfo, Expression lookup, Expression current): base(lineInfo, lookup, current)
+        {
+            var slot = 0;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitMethodLookupExpression(this);
         }
     }
 }
@@ -1377,15 +1409,15 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class PostIncrementExpression : Expression
     {
-        public PostIncrementExpression(ILineInfo lineInfo, Name name): base(lineInfo)
+        public PostIncrementExpression(ILineInfo lineInfo, Expression expression): base(lineInfo)
         {
             var slot = 0;
-            Name = name;
-            if (Name != null)
-                Childs.Add(Name);
+            Expression = expression;
+            if (Expression != null)
+                Childs.Add(Expression);
         }
 
-        public Name Name
+        public Expression Expression
         {
             get;
         }
@@ -1401,15 +1433,15 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class PostDecrementExpression : Expression
     {
-        public PostDecrementExpression(ILineInfo lineInfo, Name name): base(lineInfo)
+        public PostDecrementExpression(ILineInfo lineInfo, Expression expression): base(lineInfo)
         {
             var slot = 0;
-            Name = name;
-            if (Name != null)
-                Childs.Add(Name);
+            Expression = expression;
+            if (Expression != null)
+                Childs.Add(Expression);
         }
 
-        public Name Name
+        public Expression Expression
         {
             get;
         }

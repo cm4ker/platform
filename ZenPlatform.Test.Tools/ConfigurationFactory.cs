@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Serialization;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -128,6 +129,9 @@ public void OnClientClientCallProc()
 public string GetUserNameServer()
 { 
     Entity.Invoice i = $Entity.Invoice.Create();
+
+    i.Name = ""My invoice name"";
+    i.Save();
 
     return Context.UserName; 
 }

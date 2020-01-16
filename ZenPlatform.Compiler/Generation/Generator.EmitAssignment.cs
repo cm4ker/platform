@@ -96,49 +96,20 @@ namespace ZenPlatform.Compiler.Generation
                 }
             }
 
-            if (assignment.Assignable is AssignFieldExpression afe)
+            if (assignment.Assignable is PropertyLookupExpression ple)
             {
-                if (afe.Expression is null)
-                {
-                    //Then we a re set local Property, just load Arg0
-                    e.LdArg_0();
+                var n = ple.Lookup as Name;
 
-                    var cls = assignment.FirstParent<Class>();
+                var expProp = _map.GetProperty(n.Type, n.Value);
 
-                    if (cls is null) throw new Exception("The assigment can't be resolved in current context");
+                //load context
+                EmitExpression(e, ple.Current, symbolTable);
 
-                    var expType =
-                        new SingleTypeSyntax(null, $"{cls.Namespace}.{cls.Name}", TypeNodeKind.Type).ToClrType(_asm);
+                //load value
+                EmitExpression(e, assignment.Value, symbolTable);
 
-                    var expProp = expType.Properties.First(x => x.Name == afe.FieldName);
-
-                    //load value
-                    EmitExpression(e, assignment.Value, symbolTable);
-
-                    //Set value
-                    e.PropSetValue(expProp);
-                }
-                else
-                {
-                    EmitExpression(e, afe.Expression, symbolTable);
-
-                    var expType = afe.Expression.Type;
-
-                    IType extTypeScan = expType.ToClrType(_asm);
-
-                    var expProp = extTypeScan.Properties.First(x => x.Name == afe.FieldName);
-
-                    //load value
-                    EmitExpression(e, assignment.Value, symbolTable);
-
-                    if (assignment.Value.Type.Kind == TypeNodeKind.Object)
-                    {
-                        e.Unbox_Any(expProp.PropertyType);
-                    }
-
-                    //Set value
-                    e.PropSetValue(expProp);
-                }
+                //Set value
+                e.PropSetValue(expProp);
             }
         }
 

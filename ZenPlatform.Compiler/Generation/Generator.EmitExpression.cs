@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -194,92 +195,34 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitCall(e, call, symbolTable);
             }
-            else if (expression is GetFieldExpression fe)
-            {
-                EmitExpression(e, fe.Expression, symbolTable);
-                var expType = fe.Expression.Type;
-
-                IType extTypeScan = expType.ToClrType(_asm);
-
-                var expProp = extTypeScan.Properties.First(x => x.Name == fe.FieldName);
-
-                SingleTypeSyntax singleType;
-
-                if (expProp.PropertyType.IsArray)
-                {
-                    singleType = new SingleTypeSyntax(null, expProp.PropertyType.ArrayElementType.FullName,
-                        TypeNodeKind.Unknown);
-                    fe.Type = new ArrayTypeSyntax(null, singleType);
-                }
-                else
-                {
-                    singleType = new SingleTypeSyntax(null, expProp.PropertyType.FullName, TypeNodeKind.Unknown);
-                    fe.Type = singleType;
-                }
-
-                var resolved = singleType.ToClrType(_asm);
-
-                if (resolved.IsPrimitive)
-                {
-                    singleType.ChangeKind(resolved.Name switch
-                    {
-                        "String" => TypeNodeKind.String,
-                        "Int32" => TypeNodeKind.Int,
-                        "Byte" => TypeNodeKind.Byte,
-                        "Boolean" => TypeNodeKind.Boolean,
-                        _ => throw new Exception($"New unknown primitive type {resolved.Name}")
-                    });
-                }
-                else
-                {
-                    singleType.ChangeKind(TypeNodeKind.Object);
-                }
-
-
-                if (expProp.Getter is null)
-                    throw new Exception($"Can't resolve property: {fe.FieldName}");
-
-                e.PropGetValue(expProp);
-            }
-            else if (expression is LookupExpression le)
+            else if (expression is PropertyLookupExpression le)
             {
                 EmitExpression(e, le.Current, symbolTable);
 
-                if (le.Lookup is Name lna)
-                {
-                    var prop = _map.GetProperty(le.Current.Type, lna.Value);
-                    lna.Type = prop.PropertyType.ToAstType();
+                var lna = le.Lookup as Name;
 
-                    e.EmitCall(prop.Getter);
-                }
-                else if (le.Lookup is Call lca)
-                {
-                    var method = _map.GetMethod(le.Current.Type, lca.Name,
-                        lca.Arguments.Select(x => x.Expression.Type).ToArray());
+                var prop = _map.GetProperty(le.Current.Type, lna.Value);
+                lna.Type = prop.PropertyType.ToAstType();
 
-                    lca.Type = method.ReturnType.ToAstType();
-
-                    EmitArguments(e, lca.Arguments, symbolTable);
-                    e.EmitCall(method);
-                }
+                e.EmitCall(prop.Getter);
             }
+
+            else if (expression is MethodLookupExpression mle)
+            {
+                var lca = mle.Lookup as Call;
+
+                var method = _map.GetMethod(mle.Current.Type, lca.Name,
+                    lca.Arguments.Select(x => x.Expression.Type).ToArray());
+
+                lca.Type = method.ReturnType.ToAstType();
+
+                EmitArguments(e, lca.Arguments, symbolTable);
+                e.EmitCall(method);
+            }
+
             else if (expression is PostIncrementExpression pis)
             {
-                var symbol = symbolTable.Find(pis.Name.Value, SymbolType.Variable, pis.GetScope()) ??
-                             throw new Exception($"Variable {pis.Name} not found");
-
-                IType opType = pis.Type.ToClrType(_asm);
-
-                EmitExpression(e, pis.Name, symbolTable);
-
-                EmitIncrement(e, opType);
-                e.Add();
-
-                if (symbol.CodeObject is IParameter pd)
-                    e.StArg(pd);
-
-                if (symbol.CodeObject is ILocal vd)
-                    e.StLoc(vd);
+                EmitPostIncrement(e, symbolTable, pis);
             }
             else if (expression is PostDecrementExpression pds)
             {
@@ -363,6 +306,44 @@ namespace ZenPlatform.Compiler.Generation
                  
                  
                  */
+            }
+        }
+
+        private void EmitPostIncrement(IEmitter e, SymbolTable symbolTable, Expression pis)
+        {
+            IType opType = pis.Type.ToClrType(_asm);
+
+            var loc = e.DefineLocal(opType);
+
+            EmitExpression(e, pis.Expression, symbolTable);
+
+            e.StLoc(loc);
+
+
+            if (pis.Expression is Name n)
+            {
+                var symbol = symbolTable.Find(n.Value, SymbolType.Variable | SymbolType.Property,
+                    SymbolScopeBySecurity.Shared);
+
+                EmitIncrement(e, opType);
+                e.Add();
+
+                if (symbol.CodeObject is IParameter pd)
+                    e.StArg(pd);
+
+                if (symbol.CodeObject is ILocal vd)
+                    e.StLoc(vd);
+            }
+            else if (pis.Expression is PropertyLookupExpression ple)
+            {
+                //Load context
+                EmitExpression(e, ple.Current, symbolTable);
+
+                //Assign new value
+                var prop = _map.GetProperty(ple.Current.Type, (ple.Lookup as Name).Value);
+                e.LdLoc(loc);
+
+                e.EmitCall(prop.Setter);
             }
         }
 
