@@ -4,10 +4,13 @@ using System.Linq;
 using MoreLinq.Extensions;
 using ZenPlatform.Configuration.CompareTypes;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Contracts.Migration;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.Migration;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Model;
 
@@ -33,216 +36,243 @@ namespace ZenPlatform.EntityComponent.Migrations
         {
         }
 
-
-        public SSyntaxNode GetStep1(IXCObjectType old, IXCObjectType actual, DDLQuery query)
+        private bool NeedToChangeDatabase(XCSingleEntity x, XCSingleEntity y)
         {
-            var oldtype = (XCObjectTypeBase) old;
-            var actualtype = (XCObjectTypeBase) actual;
+            
+           return !x.Properties.Where(p=>p is XCSingleEntityProperty).SequenceEqual(y.Properties.Where(p => p is XCSingleEntityProperty));
 
-            if (old == null && actual == null)
-            {
-            }
-            else if (old != null && actual == null)
-            {
-                query.Delete().Table(oldtype.RelTableName);
-            }
-            else if (old == null && actual != null)
-            {
-                var tableBuilder = query.Create().Table(actualtype.RelTableName);
+        }
 
-                foreach (var property in actual.GetProperties())
+        private void ChangeTable(IEntityMigrationScope scope, XCSingleEntity old, XCSingleEntity actual)
+        {
+            string tableName = $"{actual.RelTableName}_tmp";
+
+            //var task = new MigrationTaskAction(step, $"Change table {tableName}");
+
+
+            var props = old.Properties.Where(p => !p.IsSelfLink)
+                           .FullJoin(
+                               actual.Properties.Where(p => !p.IsSelfLink), x => x.Guid,
+                               x => new { old = x, actual = default(IXProperty) },
+                               x => new { old = default(IXProperty), actual = x },
+                               (x, y) => new { old = x, actual = y });
+
+            foreach (var property in props)
+            {
+                if (property.old == null)
                 {
-                    property.GetPropertySchemas().ForEach(s =>
-                    {
-                        tableBuilder.WithColumnDefinition(GetColumnDefenitionBySchema(s));
-                    });
+                    CreateProperty(scope, property.actual, tableName);
                 }
-            }
-            else
-            {
-                //var comparer = new XCObjectTypeComparer<IXCObjectType>();
-                //if (!comparer.Equals(old, actual))
-                if (!old.Equals(actual))
+                else
+                if (property.actual == null)
                 {
-                    query.Copy().Table().FromTable(oldtype.RelTableName).ToTable($"{actualtype.RelTableName}_tmp");
-                }
-            }
-
-
-            return query.Expression;
-        }
-
-        public SSyntaxNode GetStep2(IXCObjectType old, IXCObjectType actual, DDLQuery query)
-        {
-            var oldtype = (XCObjectTypeBase) old;
-            var actualtype = (XCObjectTypeBase) actual;
-
-            if (old != null && actual != null)
-            {
-                string tableName = $"{actualtype.RelTableName}_tmp";
-
-                var props = old.GetProperties()
-                    .FullJoin(
-                        actual.GetProperties(), x => x.Guid,
-                        x => new {old = x, actual = default(IXProperty)},
-                        x => new {old = default(IXProperty), actual = x},
-                        (x, y) => new {old = x, actual = y});
-
-                foreach (var property in props)
-                {
-                    if (property.old == null)
-                    {
-                        CreateProperty(query, property.actual, tableName);
-                    }
-                    else if (property.actual == null)
-                    {
-                        DeleteProperty(query, property.old, tableName);
-                    }
-                    else
-                    {
-                        if (!property.old.Equals(property.actual))
-                            ChangeProperty(query, property.old, property.actual, tableName);
-                    }
-                }
-            }
-
-            return query.Expression;
-        }
-
-        private void DeleteSchema(DDLQuery query, XCColumnSchemaDefinition schema, string tableName)
-        {
-            query.Delete().Column(schema.FullName).OnTable(tableName);
-        }
-
-        private void ChangeSchema(DDLQuery query, XCColumnSchemaDefinition schema, string tableName)
-        {
-            query.Alter().Column(GetColumnDefenitionBySchema(schema)).OnTable(tableName);
-        }
-
-        private void CreateSchema(DDLQuery query, XCColumnSchemaDefinition schema, string tableName)
-        {
-            query.Create().Column(GetColumnDefenitionBySchema(schema)).OnTable(tableName);
-        }
-
-        public void CreateProperty(DDLQuery query, IXProperty property, string tableName)
-        {
-            property.GetPropertySchemas().ForEach(s => { CreateSchema(query, s, tableName); });
-        }
-
-        public void DeleteProperty(DDLQuery query, IXProperty property, string tableName)
-        {
-            property.GetPropertySchemas().ForEach(s => DeleteSchema(query, s, tableName));
-        }
-
-        public void ChangeProperty(DDLQuery query, IXProperty old, IXProperty actual, string tableName)
-        {
-            var schemas = old.GetPropertySchemas()
-                .FullJoin(
-                    actual.GetPropertySchemas(),
-                    x => x.FullName,
-                    x => new {old = x, actual = default(XCColumnSchemaDefinition)},
-                    x => new {old = default(XCColumnSchemaDefinition), actual = x},
-                    (x, y) => new {old = x, actual = y});
-
-            foreach (var schema in schemas)
-            {
-                if (schema.old == null)
-                {
-                    CreateSchema(query, schema.actual, tableName);
-                }
-                else if (schema.actual == null)
-                {
-                    DeleteSchema(query, schema.old, tableName);
+                    DeleteProperty(scope, property.old, tableName);
                 }
                 else
                 {
-                    if (schema.old.PlatformType is XCObjectTypeBase || schema.actual.PlatformType is XCObjectTypeBase)
-                    {
-                        if (schema.old.PlatformType.Guid != schema.actual.PlatformType.Guid)
-                            ChangeSchema(query, schema.actual, tableName);
-                    }
-                    else if (!schema.old.PlatformType.Equals(schema.actual.PlatformType))
-                        ChangeSchema(query, schema.actual, tableName);
+                    if (!property.old.Equals(property.actual))
+                        ChangeProperty(scope, property.old, property.actual, tableName);
                 }
             }
+            
         }
 
 
-        public SSyntaxNode GetStep3(IXCObjectType old, IXCObjectType actual, DDLQuery query)
+        public void MigrationPlan(IEntityMigrationPlan plan, IXCComponent oldState, IXCComponent actualState)
         {
-            var oldtype = (XCObjectTypeBase) old;
-            var actualtype = (XCObjectTypeBase) actual;
-
-            if (old != null && actual != null && !old.Equals(actual))
+            if (oldState == null && actualState != null)
             {
-                query.Delete().Table($"{actualtype.RelTableName}");
-            }
+                var typesToCreate = actualState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
 
-            return query.Expression;
-        }
-
-        public SSyntaxNode GetStep4(IXCObjectType old, IXCObjectType actual, DDLQuery query)
-        {
-            var oldtype = (XCObjectTypeBase) old;
-            var actualtype = (XCObjectTypeBase) actual;
-
-            if (old != null && actual != null && !old.Equals(actual))
-            {
-                query.Rename().Table($"{actualtype.RelTableName}_tmp").To(oldtype.RelTableName);
-            }
-
-            return query.Expression;
-        }
-
-        public ColumnDefinition GetColumnDefenitionBySchema(XCColumnSchemaDefinition schema)
-        {
-            ColumnDefinitionBuilder builder = new ColumnDefinitionBuilder();
-            builder.WithColumnName(schema.FullName);
-
-            if (schema.SchemaType == XCColumnSchemaType.Value
-                || schema.SchemaType == XCColumnSchemaType.NoSpecial)
-            {
-                var type = schema.PlatformType;
-
-                switch (type)
+                typesToCreate.ForEach(e =>
+                plan.AddScope(scope =>
                 {
-                    case XCBoolean t:
-                        builder.AsBoolean().NotNullable();
-                        break;
-                    case XCString t:
-                        builder.AsString(t.Size).NotNullable();
-                        break;
-                    case XCDateTime t:
-                        builder.AsDateTime().NotNullable();
-                        break;
-                    case XCGuid t:
-                        builder.AsGuid().NotNullable();
-                        break;
-                    case XCNumeric t:
-                        builder.AsFloat(t.Scale, t.Precision).NotNullable();
-                        break;
-                    case XCBinary t:
-                        builder.AsVarBinary(t.Size).NotNullable();
-                        break;
-                    case XCInt t:
-                        builder.AsInt().NotNullable();
-                        break;
-                    case XCObjectTypeBase t:
-                        builder.AsGuid().NotNullable();
-                        break;
+                    
+                    scope.CreateTable(e.RelTableName, e.Properties.Where(p => !p.IsSelfLink).SelectMany(p => p.GetPropertySchemas()));
+                }, 20));
+
+            }
+            else
+            if (oldState != null && actualState == null)
+            {
+                var typesToDelete = actualState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
+
+                typesToDelete.ForEach(e =>
+                    plan.AddScope(scope => scope.DeleteTable(e.RelTableName), 20)
+                );
+            }
+            else
+            if (oldState != null && actualState != null)
+            {
+                var oldTypes = oldState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
+                var actualTypes = actualState.Types.Where(t => t is XCSingleEntity).Cast<XCSingleEntity>();
+
+                var types = oldTypes.FullJoin(actualTypes, x => x.Guid,
+                    x => new { old = x, actual = default(XCSingleEntity) },
+                    x => new { old = default(XCSingleEntity), actual = x },
+                    (x, y) => new { old = x, actual = y });
+
+
+
+
+
+                foreach (var entitys in types)
+                {
+                    var old = entitys.old;
+                    var actual = entitys.actual;
+
+                    if (old == null && actual == null)
+                    {
+
+                    }
+                    else
+                    if (old != null && actual == null)
+                    {
+
+                        plan.AddScope(scope =>
+                        {
+                            scope.DeleteTable(old.RelTableName);
+                        }, 30);
+
+                    }
+                    else
+                    if (old == null && actual != null)
+                    {
+                        plan.AddScope(scope =>
+                        {
+                            scope.CreateTable(actual.RelTableName, actual.Properties.Where(p => !p.IsSelfLink).SelectMany(p => p.GetPropertySchemas()));
+                        }, 20);
+
+                    }
+                    else
+                    {
+                        if (NeedToChangeDatabase(old, actual))
+                        {
+                            plan.AddScope(scope =>
+                            {
+                                scope.CopyTable(old.RelTableName, $"{actual.RelTableName}_tmp");
+                                scope.SetFlagCopyTable(old.RelTableName, $"{actual.RelTableName}_tmp");
+                            }, 10);
+
+                            plan.AddScope(scope =>
+                            {
+                                ChangeTable(scope, old, actual);
+                                scope.SetFlagChangeTable(actual.RelTableName);
+                            }, 20);
+
+                            plan.AddScope(scope =>
+                            {
+                                scope.DeleteTable(old.RelTableName);
+                                scope.SetFlagDeleteTable(old.RelTableName);
+                            }, 30);
+
+                            plan.AddScope(scope =>
+                            {
+                                scope.RenameTable($"{actual.RelTableName}_tmp", old.RelTableName);
+                                scope.SetFlagRenameTable($"{actual.RelTableName}_tmp");
+                            }, 40);
+                        }
+
+                    }
                 }
             }
-            else if (schema.SchemaType == XCColumnSchemaType.Type)
-            {
-                builder.AsInt().Nullable();
-            }
-            else if (schema.SchemaType == XCColumnSchemaType.Ref)
-            {
-                builder.AsGuid();
-            }
 
-
-            return builder.ColumnDefinition;
         }
+
+
+        public void CreateProperty(IEntityMigrationScope plan, IXProperty property, string tableName)
+        {
+            property.GetPropertySchemas().ForEach(s =>  plan.AddColumn(s, tableName) );
+        }
+
+        public void DeleteProperty(IEntityMigrationScope plan, IXProperty property, string tableName)
+        {
+            property.GetPropertySchemas().ForEach(s =>  plan.DeleteColumn(s, tableName));
+        }
+
+        public void ChangeProperty(IEntityMigrationScope plan, IXProperty old, IXProperty actual, string tableName)
+        {
+
+            //случай если в свойстве был один тип а стало много 
+            if (old.Types.Count == 1 && actual.Types.Count > 1)
+            {
+                //ищем колонку для переименования
+                var rename = old.GetPropertySchemas().Join(actual.GetPropertySchemas(),
+                    o => o.PlatformType,
+                    a => a.PlatformType,
+                    (x, y) => new { old = x, actual = y }
+                    ).FirstOrDefault();
+
+                //находим колонки которые нужно создать, это все кроме той что нужно переименовать
+                var toCreate = actual.GetPropertySchemas().Where(s => s.FullName != rename.actual.FullName);
+                // и добавляем их
+                toCreate.ForEach(s => plan.AddColumn(s, tableName));
+
+                // переименовываем колонку
+                plan.RenameColumn(rename.old, rename.actual, tableName);
+
+                //Обновляем колонку с типом
+                plan.UpdateType(actual, tableName, rename.old.PlatformType);
+
+                
+
+            }
+            else  // было много стал один
+            if (old.Types.Count > 1 && actual.Types.Count == 1)
+            {
+                //ищем колонку для переименования
+                var rename = old.GetPropertySchemas().Join(actual.GetPropertySchemas(),
+                    o => o.PlatformType,
+                    a => a.PlatformType,
+                    (x, y) => new { old = x, actual = y }
+                    ).FirstOrDefault();
+
+                //находим колонки которые нужно удалить, это все кроме той что нужно переименовать
+                var toDel = old.GetPropertySchemas().Where(s => s.FullName != rename.old.FullName);
+                // и удаляем их
+                toDel.ForEach(s => plan.DeleteColumn(s, tableName));
+
+                // переименовываем колонку
+                plan.RenameColumn(rename.old, rename.actual, tableName);
+
+
+            }
+            else
+            {
+
+                var schemas = old.GetPropertySchemas()
+                                .FullJoin(
+                               actual.GetPropertySchemas(),
+                               x => x.FullName,
+                               x => new { old = x, actual = default(XCColumnSchemaDefinition) },
+                               x => new { old = default(XCColumnSchemaDefinition), actual = x },
+                               (x, y) => new { old = x, actual = y });
+
+                foreach (var schema in schemas)
+                {
+                    if (schema.old == null)
+                    {
+                        plan.AddColumn(schema.actual, tableName);
+                    }
+                    else if (schema.actual == null)
+                    {
+                        plan.DeleteColumn(schema.old, tableName);
+                    }
+                    else
+                    {
+                        if (schema.old.PlatformType is XCObjectTypeBase || schema.actual.PlatformType is XCObjectTypeBase)
+                        {
+                            if (schema.old.PlatformType.Guid != schema.actual.PlatformType.Guid)
+                                plan.AlterColumn(schema.actual, tableName);
+                        }
+                        else
+                        if (!schema.old.PlatformType.Equals(schema.actual.PlatformType))
+                            plan.AlterColumn(schema.actual, tableName);
+                    }
+                }
+            }
+        }
+        
+
     }
 }

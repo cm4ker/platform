@@ -15,6 +15,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public List<XCCommand> Command { get; set; }
 
         public string Name { get; set; }
+        public string TableName { get; set; }
 
         public Guid EntityId { get; set; }
 
@@ -30,6 +31,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         public List<XCCommand> Command { get; }
 
         public string Name { get; set; }
+
+        public string TableName { get; set; }
 
         public Guid EntityId { get; set; }
 
@@ -54,6 +57,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             EntityId = settings.EntityId;
             LinkId = settings.LinkId;
             Name = settings.Name;
+            TableName = settings.TableName;
         }
 
         public IXCSettingsItem Store(IXCSaver saver)
@@ -65,7 +69,8 @@ namespace ZenPlatform.EntityComponent.Configuration
                 Command = Command,
                 Name = Name,
                 LinkId = LinkId,
-                EntityId = EntityId
+                EntityId = EntityId,
+                TableName = TableName
             };
 
             return settings;

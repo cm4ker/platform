@@ -79,6 +79,13 @@
       </Arguments>
     </Syntax>
 
+  <Syntax Name="SDelete">
+    <Arguments>
+      <Single Name="Where" Type="SWhere"/>
+      <Single Name="From" Type="SFrom"/>
+    </Arguments>
+  </Syntax>
+
     <Syntax Name="SOrderBy">
         <Arguments>
             <Single Name="Direction" Type="OrderDirection"/>
@@ -386,7 +393,11 @@
   </Syntax>
 
 
-  <Syntax Name="DropTable" Base="TableOperation" Ddl="true" />
+  <Syntax Name="DropTable" Base="TableOperation" Ddl="true" >
+    <Arguments>
+      <Single Name="IfExists" Type="bool"  Ddl="true" />
+    </Arguments>
+  </Syntax>
 
   <Syntax Name="DropColumn" Base="TableOperation" Ddl="true" >
     <Arguments>
@@ -431,5 +442,11 @@
     </Arguments>
   </Syntax>
 
+  <Syntax Name="RenameColumnNode" Base="TableOperation" Ddl="true" >
+    <Arguments>
+      <Single Name="From" Type="Column" />
+      <Single Name="To" Type="Column" />
+    </Arguments>
+  </Syntax>
 
 </Config>

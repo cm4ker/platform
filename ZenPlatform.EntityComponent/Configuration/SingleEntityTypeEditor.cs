@@ -7,7 +7,7 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class SingleEntityTypeEditor
+    public class SingleEntityTypeEditor : ITypeEditor
     {
         private XCSingleEntityMetadata _metadata;
         private XCSingleEntity _type;
@@ -26,8 +26,10 @@ namespace ZenPlatform.EntityComponent.Configuration
             _link = new XCSingleEntityLink(_type, _metadata);
 
 
-            ((IChildItem<IXCComponent>) _type).Parent = component;
-            ((IChildItem<IXCComponent>) _link).Parent = component;
+            ((IChildItem<IXCComponent>)_type).Parent = component;
+            ((IChildItem<IXCComponent>)_link).Parent = component;
+
+
 
 
             _component = component;
@@ -37,42 +39,46 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             _component.RegisterType(_link);
             _component.Parent.RegisterType(_link);
+
+            _type.Initialize();
+
         }
 
-        public XCSingleEntity Type => _type;
+        public IXCObjectType Type => _type;
 
-        public XCSingleEntityLink Link => _link;
+        public IXCLinkType Link => _link;
 
-        public SingleEntityTypeEditor SetName(string name)
+        public ITypeEditor SetName(string name)
         {
             _metadata.Name = name;
             return this;
         }
 
-        public SingleEntityTypeEditor SetDescription(string description)
+        public ITypeEditor SetDescription(string description)
         {
+
             return this;
         }
 
-        public SingleEntityTypeEditor SetId(Guid id)
+        public ITypeEditor SetId(Guid id)
         {
             _metadata.EntityId = id;
             return this;
         }
 
-        public SingleEntityTypeEditor SetLinkId(Guid id)
+        public ITypeEditor SetLinkId(Guid id)
         {
             _metadata.LinkId = id;
             return this;
         }
 
-        public SingleEntityTypeEditor SetRealTableName(string tableName)
+        public ITypeEditor SetRealTableName(string tableName)
         {
             _type.RelTableName = tableName;
             return this;
         }
 
-        public SingleEntityPropertyEditor CreateProperty()
+        public IPropertyEditor CreateProperty()
         {
             var newProperty = new XCSingleEntityProperty();
             newProperty.Guid = Guid.NewGuid();
@@ -81,7 +87,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             return new SingleEntityPropertyEditor(newProperty);
         }
 
-        public SingleEntityModuleEditor CreateModule()
+        public IModuleEditor CreateModule()
         {
             var module = new XCSingleEntityModule();
 
@@ -89,7 +95,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             return new SingleEntityModuleEditor(module);
         }
 
-        public SingleEntityCommandEditor CreateCommand()
+        public ICommandEditor CreateCommand()
         {
             var command = new XCCommand(true);
             _metadata.Command.Add(command);
