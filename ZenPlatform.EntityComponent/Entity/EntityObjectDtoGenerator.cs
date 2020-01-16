@@ -48,7 +48,6 @@ namespace ZenPlatform.EntityComponent.Entity
                     EmitBody(cc, builder, dbType);
                     EmitVersionField(builder);
                     EmitMappingSupport(cc, builder);
-                    
                 }
                 else if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Client))
                 {
@@ -84,20 +83,19 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 if (prop.Types.Count > 1)
                 {
-                    {
-                        var clsSchema = prop.GetPropertySchemas(prop.Name)
-                            .First(x => x.SchemaType == XCColumnSchemaType.Type);
+                    var clsSchema = prop.GetPropertySchemas(prop.Name)
+                        .First(x => x.SchemaType == XCColumnSchemaType.Type);
 
-                        var dbSchema = prop.GetPropertySchemas(prop.DatabaseColumnName)
-                            .First(x => x.SchemaType == XCColumnSchemaType.Type);
+                    var dbSchema = prop.GetPropertySchemas(prop.DatabaseColumnName)
+                        .First(x => x.SchemaType == XCColumnSchemaType.Type);
 
 
-                        var propBuilder = builder.DefinePropertyWithBackingField(sb.Int, clsSchema.FullName, false);
+                    var propBuilder = builder.DefinePropertyWithBackingField(clsSchema.PlatformType.ConvertType(sb),
+                        clsSchema.FullName, false);
 
-                        var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
-                        propBuilder.SetAttribute(attr);
-                        attr.SetParameters(dbSchema.FullName);
-                    }
+                    var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
+                    propBuilder.SetAttribute(attr);
+                    attr.SetParameters(dbSchema.FullName);
                 }
 
 
@@ -124,6 +122,12 @@ namespace ZenPlatform.EntityComponent.Entity
                         var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
                         propBuilder.SetAttribute(attr);
                         attr.SetParameters(dbColName);
+
+                        if (!prop.Unique)
+                        {
+                            var initAttr = builder.CreateAttribute<NeedInitAttribute>();
+                            propBuilder.SetAttribute(initAttr);
+                        }
                     }
                     else if (ctype is IXCLinkType ot)
                     {
@@ -148,6 +152,12 @@ namespace ZenPlatform.EntityComponent.Entity
                             var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
                             propBuilder.SetAttribute(attr);
                             attr.SetParameters(dbColName);
+
+                            if (!prop.Unique)
+                            {
+                                var initAttr = builder.CreateAttribute<NeedInitAttribute>();
+                                propBuilder.SetAttribute(initAttr);
+                            }
                         }
                     }
                 }
@@ -191,6 +201,20 @@ namespace ZenPlatform.EntityComponent.Entity
             var _ts = tb.Assembly.TypeSystem;
             var _b = _ts.GetSystemBindings();
             var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version", false);
+        }
+
+        private void EmitDefaultValues(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
+        {
+            var set = cc.Type as XCSingleEntity ?? throw new InvalidOperationException(
+                          $"This component only can serve {nameof(XCSingleEntity)} objects");
+
+            var ts = builder.Assembly.TypeSystem;
+            var sb = ts.GetSystemBindings();
+
+            foreach (var prop in set.GetProperties())
+            {
+                if (prop.IsSelfLink) continue;
+            }
         }
     }
 }

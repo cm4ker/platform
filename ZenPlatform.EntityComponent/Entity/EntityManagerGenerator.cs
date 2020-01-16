@@ -19,6 +19,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.Shared.Tree;
+using IField = ZenPlatform.Compiler.Contracts.IField;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
@@ -171,8 +172,31 @@ namespace ZenPlatform.EntityComponent.Entity
                 .StLoc(dto)
                 .LdLoc(dto)
                 .EmitCall(nGuid)
-                .EmitCall(dtoType.FindProperty("Id").Setter)
-                .LdLoc(dto)
+                .EmitCall(dtoType.FindProperty("Id").Setter);
+
+            //init default values
+
+            var byteArr = sb.Byte.MakeArrayType();
+            
+            foreach (var property in dtoType.Properties)
+            {
+                if (property.FindCustomAttribute<NeedInitAttribute>() != null)
+                {
+                    if (property.PropertyType == sb.DateTime)
+                        cg.LdLoc(dto)
+                            .LdDefaultDateTime()
+                            .EmitCall(property.Setter);
+                    else if (property.PropertyType.Equals(byteArr))
+                    {
+                        cg.LdLoc(dto)
+                            .LdcI4(0)
+                            .NewArr(sb.Byte)
+                            .EmitCall(property.Setter);
+                    }
+                }
+            }
+
+            cg.LdLoc(dto)
                 .NewObj(objectType.FindConstructor(dtoType))
                 .Ret()
                 ;
@@ -318,7 +342,7 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 var m = property.FindCustomAttribute<MapToAttribute>();
                 if (m is null) continue;
-            
+
                 rg.LdLoc(cmdLoc)
                     .EmitCall(cmdType.FindMethod(nameof(DbCommand.CreateParameter)))
                     .StLoc(p_loc)
@@ -337,7 +361,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     .EmitCall(property.Getter)
                     .Box(property.PropertyType)
                     .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter);
-            
+
                 indexp++;
             }
 
