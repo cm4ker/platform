@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
@@ -82,7 +83,7 @@ namespace ZenPlatform.Component.Tests
 
 
             _serverAsm = Assembly.LoadFile(Path.Combine(execDir, "Server.bll"));
-           // _clientAsm = Assembly.LoadFile(Path.Combine(execDir, "Client.bll"));
+            // _clientAsm = Assembly.LoadFile(Path.Combine(execDir, "Client.bll"));
         }
 
 
@@ -112,7 +113,6 @@ namespace ZenPlatform.Component.Tests
             var we = service.GetRequiredService<IWorkEnvironment>();
             var a = we.CreateSession(new PlatformUser() {Name = "User"});
 
-
             we.Initialize(new StartupConfig
             {
                 DatabaseType = SqlDatabaseType.SqlServer,
@@ -126,6 +126,7 @@ namespace ZenPlatform.Component.Tests
 
             var cmd = _serverAsm.GetType("Entity.__cmd_HelloFromServer");
             var method = cmd.GetMethod("GetUserNameServer");
+
             var result = method.Invoke(null, null);
             Assert.NotNull(result);
         }

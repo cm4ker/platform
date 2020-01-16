@@ -20,6 +20,8 @@ namespace ZenPlatform.Data
 
         public ISqlCompiler SqlCompiller { get; }
 
+        public IDbTypesContract Types { get; }
+
         private int _tranCount;
         private QueryMachine _machine;
 
@@ -27,6 +29,7 @@ namespace ZenPlatform.Data
         {
             _connection = DatabaseFactory.Get(compilerType, connectionString);
             SqlCompiller = SqlCompillerBase.FormEnum(compilerType);
+            Types = new SqlServerDbTypesContract();
             _connection.Open();
             _isolationLevel = IsolationLevel.Snapshot;
             _machine = new QueryMachine();
