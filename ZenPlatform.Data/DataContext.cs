@@ -20,7 +20,7 @@ namespace ZenPlatform.Data
 
         public ISqlCompiler SqlCompiller { get; }
 
-        public IDbTypesContract Types { get; }
+        
 
         private int _tranCount;
         private QueryMachine _machine;
@@ -35,6 +35,8 @@ namespace ZenPlatform.Data
             _machine = new QueryMachine();
         }
 
+        public IDbTypesContract Types { get; }
+        
         public void BeginTransaction()
         {
             if (_activeTransaction == null)

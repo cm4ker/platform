@@ -14,4 +14,10 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public string DbColumnName { get; set; }
     }
+
+    public class NeedInitAttribute : Attribute
+    {
+        
+    }
+    
 }

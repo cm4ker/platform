@@ -9,6 +9,8 @@ using System.Threading;
 using ZenPlatform.Core.Network;
 using System.IO;
 using System.Reflection;
+using dnlib.DotNet;
+using dnlib.DotNet.Emit;
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Logging;
@@ -17,20 +19,30 @@ namespace ZenPlatform.ServerRPC
 {
     class Program
     {
-        static void Main2(string[] args)
+        static void Main(string[] args)
         {
-            DbCommand b = new SqlCommand();
-            b.Connection = null;
-            b.Transaction = null;
-            
-            //inside
-            b.CommandText = "test";
-            var p = b.CreateParameter();
-            p.ParameterName = "name";
-            p.Value = null;
-            //inside
+            AssemblyDef d = new AssemblyDefUser("Test", Version.Parse("1.1.1.1"));
+            var m = new ModuleDefUser("Default");
+            d.Modules.Add(m);
 
-            b.ExecuteNonQuery();
+            var td = new TypeDefUser("A");
+
+            var arrSig = new SZArraySig(m.CorLibTypes.Byte);
+            
+            var md = new MethodDefUser("Test", MethodSig.CreateInstance(arrSig));
+            
+            md.Body = new CilBody();
+            td.Methods.Add(md);
+            
+            m.Types.Add(td);
+            
+            var g = md.Body;
+            
+            g.Instructions.Add(Instruction.CreateLdcI4(0));
+            g.Instructions.Add(Instruction.Create(OpCodes.Newarr, m.CorLibTypes.Byte));
+            g.Instructions.Add(Instruction.Create(OpCodes.Ret));
+
+            d.Write("MyAsm");
 
 
 //            Client client = new Client(new SimpleConsoleLogger<Client>());
