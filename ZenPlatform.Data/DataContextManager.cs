@@ -47,7 +47,12 @@ namespace ZenPlatform.Data
         /// <returns></returns>
         public DataContext GetContext()
         {
-            if (_dbType == SqlDatabaseType.Unknown || _connectionString == null) throw new NotSupportedException("DataContextManager not initialized!");
+            if(_dbType == SqlDatabaseType.Unknown)
+                throw new Exception("Database is unknown");
+            
+            if ( _connectionString == null) 
+                throw new NotSupportedException("Connection string is empty!");
+            
             if (!_contexts.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var context))
             {
                 context = new DataContext(_dbType, _connectionString);

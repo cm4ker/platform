@@ -14,38 +14,6 @@ using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
-    /*
-     Link
-     {
-        ViewBag _vb;
-     
-        .ctor Link(ViewBag vb)
-        {
-            _vb = vb;
-            Init();            
-        }
-     
-        AnyProp     
-        public [Type] [PropName] { get; private set; }
-        
-        private void Init()
-        {
-            _vb.TrySet("Id", out Id);
-            _vb.TrySet("Name", out Name);
-            
-            ..ETC..
-            
-            SomeExternalLink = 
-        }
-        
-        public void Reload()
-        {
-            _vb = Manager.GetViewBag();
-            Init();
-        }        
-     }
-     */
-
     public class EntityLinkClassGenerator
     {
         private readonly IXCComponent _component;
@@ -62,7 +30,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, className,
-                new TypeBody(new List<Member>())) {Base = "Documents.EntityLink", Namespace = "Documents"};
+                new TypeBody(new List<Member>())) {Base = "Entity.EntityLink", Namespace = type.ParentType.GetNamespace()};
 
             cls.Namespace = @namespace;
             cls.Bag = ObjectType.Link;
@@ -135,8 +103,6 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
                 var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
-                var setBuilder = ((IMethodBuilder) propBuilder.Setter)?.Generator;
-
 
                 // var valueParam = propBuilder.setMethod.Parameters[0];
 
@@ -208,7 +174,14 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                     else
                     {
-                        //TODO: Link gen
+                        var mrg = ts.FindType($"{@namespace}.{set.ParentType.Name}Manager");
+                        var mrgGet = mrg.FindMethod("Get", sb.Guid);
+
+                        getBuilder
+                            .LdArg_0()
+                            .EmitCall(builder.FindProperty("Id").Getter)
+                            .EmitCall(mrgGet)
+                            .Ret();
                     }
                 }
             }
@@ -252,25 +225,14 @@ namespace ZenPlatform.EntityComponent.Entity
                     ? sb.Object
                     : prop.Types[0].ConvertType(sb);
 
-                builder.DefineProperty(propType, propName, true, !prop.IsReadOnly, false);
-            }
-        }
+                IProperty baseProp = null;
 
-        private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)
-        {
-            foreach (var module in type.GetProgramModules())
-            {
-                if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
+                if (propName == "Id")
                 {
-                    var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
-
-
-                    foreach (var func in typeBody.Functions)
-                    {
-                        func.SymbolScope = SymbolScopeBySecurity.User;
-                        cls.AddFunction(func);
-                    }
+                    baseProp = builder.BaseType.FindProperty("Id");
                 }
+
+                builder.DefineProperty(propType, propName, true, false, false, baseProp);
             }
         }
     }

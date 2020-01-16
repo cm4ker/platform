@@ -14,7 +14,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         IMethodBuilder DefineMethod(string name,
             bool isPublic, bool isStatic,
-            bool isInterfaceImpl, IMethod overrideMethod = null);
+            bool isInterfaceImpl, IMethod overrideMethod = null, bool isVirtual = false);
 
         IPropertyBuilder DefineProperty(IType propertyType, string name, bool isStatic);
 

@@ -22,7 +22,7 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void TestServer()
         {
-            var serverServices = Initializer.GetServerServiceWithDatabase(_o);
+            var serverServices = TestEnvSetup.GetServerServiceWithDatabase(_o);
 
 
             var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
@@ -44,7 +44,7 @@ namespace ZenPlatform.Core.Test
 
             ExecutionContext.Run(c, state =>
             {
-                var service = Initializer.GetServerService(_o);
+                var service = TestEnvSetup.GetServerService(_o);
 
                 var env = service.GetService<IWorkEnvironment>();
 

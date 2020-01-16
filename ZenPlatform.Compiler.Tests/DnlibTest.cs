@@ -231,6 +231,55 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.NotNull(directAttribute);
         }
+
+        [Fact]
+        public void OverrideTest()
+        {
+            var asm = _ap.CreateAssembly("test");
+            var sb = asm.TypeSystem.GetSystemBindings();
+
+            var a = asm.DefineType("Default", "A", 
+                TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit, sb.Object);
+
+            a.DefineDefaultConstructor(false);
+            
+            var m1 = a.DefineMethod("Test", true, false, false, null, true);
+            m1.WithReturnType(sb.Object);
+            m1.Generator.LdNull().Ret();
+
+            var b = asm.DefineType("Default", "B", 
+                TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit,
+                a);
+
+            b.DefineDefaultConstructor(false);
+            
+            var m2 = b.DefineMethod("Test", true, false, false, m1);
+            m2.WithReturnType(sb.Object);
+
+            m2.Generator.LdcI4(1).Box(sb.Int).Ret();
+
+            asm.Write("test_override.bll");
+
+            var lib = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test_override.bll"));
+
+            var aType = lib.GetType("Default.A");
+
+            var instA = Activator.CreateInstance(aType);
+
+            var res1 = aType.GetMethod("Test")
+                .Invoke(instA, null);
+
+            Assert.Null(res1);
+
+            var bType = lib.GetType("Default.B");
+
+            var instB = Activator.CreateInstance(bType);
+
+            var res2 = aType.GetMethod("Test")
+                .Invoke(instB, null);
+
+            Assert.Equal(1, res2);
+        }
     }
 
 

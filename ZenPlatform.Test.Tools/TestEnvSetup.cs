@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Core.Settings;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Data;
@@ -14,31 +11,25 @@ using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Serialisers;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Tools;
-using ZenPlatform.Compiler.Platform;
-using ZenPlatform.Configuration;
-using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Network.Contracts;
-using ZenPlatform.Core.Test.Assemblies;
 using ZenPlatform.Networking;
-using ZenPlatform.Shell;
 using Xunit.Abstractions;
-using ZenPlatform.Shell.Terminal;
-using McMaster.Extensions.CommandLineUtils;
-using ZenPlatform.Cli;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
+using ZenPlatform.Compiler.Platform;
+using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Shell.Contracts;
+using ZenPlatform.Core.Test.Assemblies;
+using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Migration;
-using ZenPlatform.Configuration.Test;
+using ZenPlatform.Shell;
 
 namespace ZenPlatform.Core.Test
 {
-    public static class Initializer
+    public static class TestEnvSetup
     {
         public static ServiceProvider GetServerService(ITestOutputHelper testOutput)
         {
@@ -126,7 +117,6 @@ namespace ZenPlatform.Core.Test
             services.AddSingleton<IXCConfigurationStorage, XCMemoryStorage>();
             //services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
             services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
-
 
             services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
             services.AddScoped<IConfigurationManager, ConfigurationManager>();

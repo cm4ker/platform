@@ -50,7 +50,7 @@ namespace ZenPlatform.Compiler.Cecil
 
         public IMethodBuilder DefineMethod(string name, bool isPublic,
             bool isStatic,
-            bool isInterfaceImpl, IMethod overrideMethod = null)
+            bool isInterfaceImpl, IMethod overrideMethod = null, bool isVirtual = false)
         {
             var attrs = default(MethodAttributes);
             if (isPublic)

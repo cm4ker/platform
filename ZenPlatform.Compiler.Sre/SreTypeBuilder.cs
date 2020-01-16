@@ -40,7 +40,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public IMethodBuilder DefineMethod(string name,
             bool isPublic, bool isStatic,
-            bool isInterfaceImpl, IMethod overrideMethod)
+            bool isInterfaceImpl, IMethod overrideMethod = null, bool isVirtual = false)
         {
             var m = _tb.DefineMethod(name,
                 (isPublic ? MethodAttributes.Public : MethodAttributes.Private)

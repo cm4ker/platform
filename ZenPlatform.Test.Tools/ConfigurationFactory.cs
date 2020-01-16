@@ -1,21 +1,21 @@
 ﻿using System;
-using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.Contracts;
+using System.Xml.Serialization;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
 
-namespace ZenPlatform.ConfigurationExample
+namespace ZenPlatform.Test.Tools
 {
     /// <summary>
     /// Пример конфигурации
     /// </summary>
-    public static class Factory
+    public static class ConfigurationFactory
     {
         public static string GetDatabaseConnectionString() => "Host=db1; Username=user; Password=password;";
 
-        public static XCRoot CreateExampleConfiguration()
+        public static XCRoot Create()
         {
             var root = new XCRoot();
 
@@ -104,13 +104,13 @@ namespace ZenPlatform.ConfigurationExample
                 .SetText("public int Test(int i) { int _i = i; _i++; return _i; }")
                 .SetRelationTypeObject();
 
-
             invoiceEditor.CreateCommand()
                 .SetGuid(Guid.Parse("8008bbaa-7bc1-4c7d-aa56-3b9f728619ff"))
                 .SetName("HelloFromServer")
                 .SetDisplayName("Invoke the command")
                 .EditModule()
                 .SetText(@"
+
 
 [ClientCall] 
 public int ClientCallProc(int a)
@@ -128,6 +128,11 @@ public void OnClientClientCallProc()
 [ClientCall] 
 public string GetUserNameServer()
 { 
+    Entity.Custom i = $Entity.Custom.Create();
+
+    i.Name = ""My custom name"";
+    i.Save();
+
     return Context.UserName; 
 }
 

@@ -146,7 +146,7 @@ namespace ZenPlatform.Compiler
             }
 
             Property p =
-                new Property(context.start.ToLineInfo(), _syntaxStack.PopString(), _syntaxStack.PopType(),
+                new Property(context.start.ToLineInfo(), _syntaxStack.PopName().Value, _syntaxStack.PopType(),
                     context.GET() != null, context.SET() != null)
                 {
                     Getter = get,
@@ -198,7 +198,7 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitName(ZSharpParser.NameContext context)
         {
-            _syntaxStack.Push(context.GetText());
+            _syntaxStack.Push(new Name(context.start.ToLineInfo(), context.GetText()));
 
             return null;
         }
@@ -329,8 +329,17 @@ namespace ZenPlatform.Compiler
         {
             base.VisitLookupExpression(context);
 
-            var result = new LookupExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
-                _syntaxStack.PopExpression());
+            SyntaxNode result;
+            if (context.name() != null)
+            {
+                result = new PropertyLookupExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression());
+            }
+            else
+            {
+                result = new MethodLookupExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
+                    _syntaxStack.PopExpression());
+            }
 
             _syntaxStack.Push(result);
 
@@ -446,8 +455,7 @@ namespace ZenPlatform.Compiler
                 args = _syntaxStack.PopList<Argument>().ToImmutableList();
             }
 
-            var result = new Call(context.start.ToLineInfo(),args,
-                _syntaxStack.PopString(), null);
+            var result = new Call(context.start.ToLineInfo(), args,_syntaxStack.PopName(), null);
 
             _syntaxStack.Push(result);
 
@@ -464,35 +472,6 @@ namespace ZenPlatform.Compiler
         public override SyntaxNode VisitExpression(ZSharpParser.ExpressionContext context)
         {
             base.VisitExpression(context);
-
-            return null;
-        }
-
-
-        public override SyntaxNode VisitExpressionAtom(ZSharpParser.ExpressionAtomContext context)
-        {
-            base.VisitExpressionAtom(context);
-
-            if (context.name() != null)
-            {
-                var identifier = _syntaxStack.PopString().Split('.');
-                var li = context.name().start.ToLineInfo();
-                //Если мы пытаемся получить какое-то свойство у переменной, то мы обязательно должны пометить это как PropertyExpression
-                // Похожая механика реализована и в FunctionCall
-                if (identifier.Length > 1)
-                {
-                    _syntaxStack.Push(new Name(li, identifier[0]));
-
-                    foreach (var str in identifier.ToList().GetRange(1, identifier.Length - 1))
-                    {
-                        _syntaxStack.Push(new GetFieldExpression(_syntaxStack.PopExpression(), str));
-                    }
-                }
-                else
-                {
-                    _syntaxStack.Push(new Name(li, identifier[0]));
-                }
-            }
 
             return null;
         }
@@ -675,19 +654,18 @@ namespace ZenPlatform.Compiler
 
             if (context.indexExpression != null)
                 result = new Assignment(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
-                    _syntaxStack.PopExpression(),
-                    new Name(null, _syntaxStack.PopString()));
+                    _syntaxStack.PopExpression(), (ICanBeAssigned) _syntaxStack.PopExpression());
             else if (context.OP_INC() != null)
             {
-                result = new PostIncrementExpression(context.start.ToLineInfo(), _syntaxStack.PopString());
+                result = new PostIncrementExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression());
             }
             else if (context.OP_DEC() != null)
             {
-                result = new PostDecrementExpression(context.start.ToLineInfo(), _syntaxStack.PopString());
+                result = new PostDecrementExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression());
             }
             else
                 result = new Assignment(context.start.ToLineInfo(), _syntaxStack.PopExpression(), null,
-                    new Name(null, _syntaxStack.PopString()));
+                    (ICanBeAssigned) _syntaxStack.PopExpression());
 
             _syntaxStack.Push(result);
 
@@ -717,8 +695,21 @@ namespace ZenPlatform.Compiler
                 //перед тем как мы будем добавлять их в инструкции нужно обернуть их в инструкцию
                 if (node is Expression exp)
                 {
-                    if (exp is Call c)
-                        c.IsStatement = true;
+                    void CheckExpr(Expression exp)
+                    {
+                        if (exp is Call c)
+                            c.IsStatement = true;
+                        else if (exp is GlobalVar gv)
+                        {
+                            CheckExpr(gv.Expression);
+                        }
+                        else if (exp is LookupExpression le)
+                        {
+                            CheckExpr(le.Lookup);
+                        }
+                    }
+
+                    CheckExpr(exp);
 
                     node = new ExpressionStatement(exp);
                 }

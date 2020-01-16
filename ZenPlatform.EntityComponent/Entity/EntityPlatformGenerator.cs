@@ -100,7 +100,7 @@ namespace ZenPlatform.EntityComponent.Entity
         private void GenerateLink(IXCLinkType type, Root root)
         {
             var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name,
-                new TypeBody(new List<Member>())) {Base = "Documents.EntityLink", Namespace = "Documents"};
+                new TypeBody(new List<Member>())) {Base = "Entity.EntityLink", Namespace = "Entity"};
 
             cls.Bag = ObjectType.Link;
 
@@ -117,10 +117,10 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 var typeBody = ParserHelper.ParseTypeBody(command.Module.ModuleText);
                 var serverModule = new ComponentModule(CompilationMode.Server, _component, set, null,
-                    $"__cmd_{command.Name}", typeBody);
+                    $"__cmd_{command.Name}", typeBody) {Namespace = type.GetNamespace()};
 
                 var clientModule = new ComponentModule(CompilationMode.Client, _component, set, null,
-                    $"__cmd_{command.Name}", typeBody);
+                    $"__cmd_{command.Name}", typeBody) {Namespace = type.GetNamespace()};
 
 
                 foreach (var func in typeBody.Functions)
@@ -150,7 +150,6 @@ namespace ZenPlatform.EntityComponent.Entity
             _egClass.GenerateAstTree(type, r);
             _egManager.GenerateAstTree(type, r);
 
-            //GenerateServerObjectClass(type, r);
             GenerateCommands(type, r);
         }
 
@@ -355,7 +354,32 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void StageGlobalVar(IGlobalVarManager manager)
         {
-            manager.Register(new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "Test", (e) => { }));
+            var ts = manager.TypeSystem;
+
+            var root = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "Entity", (n, e) => { });
+
+            foreach (var type in _component.ObjectTypes)
+            {
+                var mrgName = $"{type.GetNamespace()}.{type.GetManagerName()}";
+
+                var mrg = ts.FindType(mrgName);
+
+                var mrgLeaf = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, type.GetObjectName(),
+                    (n, e) => { });
+
+                mrgLeaf.Attach(root);
+
+                var createMethod = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Shared,
+                    "Create", (n, e) =>
+                    {
+                        var call = n as Call ?? throw new Exception("Can't emit function if it is not a call");
+                        e.EmitCall(mrg.FindMethod("Create"), call.IsStatement);
+                    });
+
+                createMethod.Attach(mrgLeaf);
+            }
+
+            manager.Register(root);
 
             /*
              * $.Document.Invoice.Create();
@@ -394,21 +418,21 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
-            if (astTree is ComponentAstBase cc)
+            if (astTree is ComponentAstBase cc && cc.Bag != null)
             {
-                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
+                if ((ObjectType) cc.Bag == ObjectType.Dto)
                 {
                     _egDto.Stage2(cc, builder, dbType, mode);
                 }
-                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
+                else if ((ObjectType) cc.Bag == ObjectType.Object)
                 {
                     _egClass.Stage2(cc, builder, dbType, mode);
                 }
-                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
+                else if ((ObjectType) cc.Bag == ObjectType.Link)
                 {
                     _egLink.Stage2(cc, builder, dbType, mode);
                 }
-                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Manager)
+                else if ((ObjectType) cc.Bag == ObjectType.Manager)
                 {
                     _egManager.Stage2(cc, builder, dbType, mode);
                 }
@@ -419,7 +443,6 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             CreateMainLink(builder);
         }
-
 
         private void CreateMainLink(IAssemblyBuilder builder)
         {
@@ -433,13 +456,13 @@ namespace ZenPlatform.EntityComponent.Entity
 
             linkType.AddInterfaceImplementation(ts.FindType<ILink>());
 
-            var idBack = linkType.DefineField(b.Guid, СonventionsHelper.GetBackingFieldName("Id"), false, false);
+            var idBack = linkType.DefineField(b.Guid, ConventionsHelper.GetBackingFieldName("Id"), false, false);
             linkType.DefineProperty(b.Guid, "Id", idBack, true, false, true);
 
-            var typeBack = linkType.DefineField(b.Int, СonventionsHelper.GetBackingFieldName("Type"), false, false);
+            var typeBack = linkType.DefineField(b.Int, ConventionsHelper.GetBackingFieldName("Type"), false, false);
             linkType.DefineProperty(b.Int, "Type", typeBack, true, false, true);
 
-            var presentationBack = linkType.DefineField(b.String, СonventionsHelper.GetBackingFieldName("Presentation"),
+            var presentationBack = linkType.DefineField(b.String, ConventionsHelper.GetBackingFieldName("Presentation"),
                 false, false);
             linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false, true);
 
@@ -449,105 +472,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             e.LdArg_0()
                 .EmitCall(b.Object.Constructors[0])
-                .LdArg_0()
-                .LdArg(1)
-                .StFld(typeBack)
-                .LdArg_0()
-                .LdArg(2)
-                .StFld(idBack)
                 .Ret();
         }
     }
-
-
-    /*
-     
-     class EntityLink
-     {
-        StoreLink _store;
-        double _sum;
-        string _name;
-        Guid _id;        
-        bool _isLoaded;        
-        
-        ViewBagEntity _vb;
-                
-        public EntityLink(ViewBag vb)
-        {
-            //Required
-            if(vb.HasName("Name"))
-                _name = vb.Name;
-            
-            //Required
-            if(vb.HasName("Id"))
-                _id = vb.Id;
-            else
-                throw new Exception();
-            
-            if(vb.Has("Sum"))
-                _sum = (double)vb.Sum;
-                
-            if(vb.Has("Store"))
-                _store = StoreManager.GetLink(vb.Store);
-                
-        }   
-        
-        public string Name => _name;
-        
-        public EntityLink Link => this;
-        
-        public StoreLink Store => <k_platform_prefix>GetPropertyStore();
-        
-        public double Sum => <k_platform_prefix>GetPropertySum();
-       
-       public object CompositeProperty => 
-        
-        private object <k_platform_prefix>GetPropertyCompositeProperty()
-        {
-            if(_isLoaded)
-                FetchFromServer();
-        }
-        
-        private double <k_platform_prefix>GetPropertySum()
-        {
-            if(_isLoaded)
-                FetchFromServer();
-                
-            return _sum;    
-        }
-        
-        private StoreLink <k_platform_prefix>GetPropertyStore()
-        {
-            if(_isLoaded)
-                FetchFromServer();
-        
-            _store ??= StoreManager.GetLink(Service.GetProperty(TypeId: 5, "Store", _id));
-            return _store;
-        }
-        
-        private void FetchFromServer()
-        {
-            //fetching base layer from server
-            var props = Service.GetProperties(TypeId: 5, "Store", "Sum", _id);
-            
-            _store = StoreManager.GetLink(props["_store"]);
-            _sum = (double)props["Sum"];
-            _name = (string)props["Name"];
-            ...     
-            
-            _isLoaded = true;
-        }        
-        
-        public void Reload()
-        {
-            FetchFromServer();
-        }
-                
-        public override ToString()
-        {
-            return Name;
-        }      
-     }
-     
-     */
 }

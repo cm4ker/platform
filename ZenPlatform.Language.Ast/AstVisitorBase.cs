@@ -332,6 +332,16 @@ namespace ZenPlatform.Language.Ast
         {
             return DefaultVisit(obj);
         }
+
+        public virtual T VisitMethodLookupExpression(MethodLookupExpression obj)
+        {
+            return DefaultVisit(obj);
+        }
+
+        public virtual T VisitPropertyLookupExpression(PropertyLookupExpression obj)
+        {
+            return DefaultVisit(obj);
+        }
     }
 
     public class AstWalker<T> : AstVisitorBase<T>
