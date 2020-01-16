@@ -100,10 +100,12 @@ namespace ZenPlatform.Compiler.Generation
             {
                 var n = ple.Lookup as Name;
 
-                var expProp = _map.GetProperty(n.Type, n.Value);
-
                 //load context
                 EmitExpression(e, ple.Current, symbolTable);
+                
+                var expProp = _map.GetProperty(ple.Current.Type, n.Value);
+
+                
 
                 //load value
                 EmitExpression(e, assignment.Value, symbolTable);

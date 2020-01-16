@@ -134,9 +134,8 @@ string_literal
 	;
 
 expression:
-     lookupExpression
-     | expressionStructural
-  
+    expressionStructural
+    | lookupExpression
     ;
 
 lookupExpression:

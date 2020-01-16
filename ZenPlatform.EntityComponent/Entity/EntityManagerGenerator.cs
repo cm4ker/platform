@@ -318,11 +318,10 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 var m = property.FindCustomAttribute<MapToAttribute>();
                 if (m is null) continue;
-
+            
                 rg.LdLoc(cmdLoc)
                     .EmitCall(cmdType.FindMethod(nameof(DbCommand.CreateParameter)))
                     .StLoc(p_loc)
-                    .LdLoc(p_loc)
                     //add param to collection
                     .LdLoc(cmdLoc)
                     .EmitCall(cmdType.FindProperty(nameof(DbCommand.Parameters)).Getter)
@@ -338,7 +337,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     .EmitCall(property.Getter)
                     .Box(property.PropertyType)
                     .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter);
-
+            
                 indexp++;
             }
 

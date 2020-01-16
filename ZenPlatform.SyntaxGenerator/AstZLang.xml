@@ -180,7 +180,7 @@
     <Syntax Name="Call" Base="Expression">
         <Arguments>
             <List Name="Arguments" Type="IList&lt;Argument&gt;"/>
-            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Name" Type="Name" DenyChildrenFill="true"/>
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
@@ -292,15 +292,21 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="PostIncrementExpression" Base="Expression" NS="Expressions">
+    <Syntax Name="PostOperationExpression" Base="Expression" NS="Expressions" IsAbstract="true">
         <Arguments>
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="PostDecrementExpression" Base="Expression" NS="Expressions">
+    <Syntax Name="PostIncrementExpression" Base="PostOperationExpression" NS="Expressions">
         <Arguments>
-            <Single Name="Expression" Type="Expression"/>
+            <Single Name="Expression" Type="Expression" DenyChildrenFill="true" OnlyArgument="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="PostDecrementExpression" Base="PostOperationExpression" NS="Expressions">
+        <Arguments>
+            <Single Name="Expression" Type="Expression" DenyChildrenFill="true" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 

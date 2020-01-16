@@ -211,7 +211,9 @@ namespace ZenPlatform.Compiler.Generation
             {
                 var lca = mle.Lookup as Call;
 
-                var method = _map.GetMethod(mle.Current.Type, lca.Name,
+                EmitExpression(e, mle.Current, symbolTable);
+
+                var method = _map.GetMethod(mle.Current.Type, lca.Name.Value,
                     lca.Arguments.Select(x => x.Expression.Type).ToArray());
 
                 lca.Type = method.ReturnType.ToAstType();
@@ -222,30 +224,11 @@ namespace ZenPlatform.Compiler.Generation
 
             else if (expression is PostIncrementExpression pis)
             {
-                EmitPostIncrement(e, symbolTable, pis);
+                EmitPostOperation(e, symbolTable, pis);
             }
             else if (expression is PostDecrementExpression pds)
             {
-                var symbol = symbolTable.Find(pds.Name.Value, SymbolType.Variable, pds.GetScope()) ??
-                             throw new Exception($"Variable {pds.Name} not found");
-
-                IType opType = null;
-//                if (symbol.SyntaxObject is Parameter p)
-//                    opType = p.Type.Type;
-//                else if (symbol.SyntaxObject is Variable v)
-//                    opType = v.Type.Type;
-
-
-                EmitExpression(e, pds.Name, symbolTable);
-
-                EmitDecrement(e, opType);
-                e.Add();
-
-                if (symbol.CodeObject is IParameter pd)
-                    e.StArg(pd);
-
-                if (symbol.CodeObject is ILocal vd)
-                    e.StLoc(vd);
+                EmitPostOperation(e, symbolTable, pds);
             }
             else if (expression is Variable variable)
             {
@@ -309,23 +292,36 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        private void EmitPostIncrement(IEmitter e, SymbolTable symbolTable, Expression pis)
+        private void EmitPostOperation(IEmitter e, SymbolTable symbolTable, PostOperationExpression pis)
         {
             IType opType = pis.Type.ToClrType(_asm);
-
-            var loc = e.DefineLocal(opType);
-
-            EmitExpression(e, pis.Expression, symbolTable);
-
-            e.StLoc(loc);
-
 
             if (pis.Expression is Name n)
             {
                 var symbol = symbolTable.Find(n.Value, SymbolType.Variable | SymbolType.Property,
                     SymbolScopeBySecurity.Shared);
 
-                EmitIncrement(e, opType);
+                var needLoc = symbol.Type == SymbolType.Property;
+
+                ILocal loc = null;
+
+                if (needLoc)
+                    loc = e.DefineLocal(opType);
+
+                EmitExpression(e, pis.Expression, symbolTable);
+
+                if (needLoc)
+                {
+                    e.StLoc(loc)
+                        .LdLoc(loc);
+                }
+
+
+                if (pis is PostIncrementExpression)
+                    EmitIncrement(e, opType);
+                else
+                    EmitDecrement(e, opType);
+
                 e.Add();
 
                 if (symbol.CodeObject is IParameter pd)
@@ -333,15 +329,28 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (symbol.CodeObject is ILocal vd)
                     e.StLoc(vd);
+
+                if (symbol.CodeObject is IProperty prd)
+                {
+                    e.LdArg_0()
+                        .EmitCall(prd.Setter);
+                }
             }
             else if (pis.Expression is PropertyLookupExpression ple)
             {
+                var loc = e.DefineLocal(opType);
+                
                 //Load context
                 EmitExpression(e, ple.Current, symbolTable);
 
                 //Assign new value
                 var prop = _map.GetProperty(ple.Current.Type, (ple.Lookup as Name).Value);
                 e.LdLoc(loc);
+
+                if (pis is PostIncrementExpression)
+                    EmitIncrement(e, opType);
+                else
+                    EmitDecrement(e, opType);
 
                 e.EmitCall(prop.Setter);
             }

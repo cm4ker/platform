@@ -929,7 +929,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Call : Expression
     {
-        public Call(ILineInfo lineInfo, IList<Argument> arguments, String name, Expression expression): base(lineInfo)
+        public Call(ILineInfo lineInfo, IList<Argument> arguments, Name name, Expression expression): base(lineInfo)
         {
             var slot = 0;
             Arguments = arguments;
@@ -951,7 +951,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             get;
         }
 
-        public String Name
+        public Name Name
         {
             get;
         }
@@ -1407,9 +1407,9 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 
 namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
-    public partial class PostIncrementExpression : Expression
+    public abstract partial class PostOperationExpression : Expression
     {
-        public PostIncrementExpression(ILineInfo lineInfo, Expression expression): base(lineInfo)
+        public PostOperationExpression(ILineInfo lineInfo, Expression expression): base(lineInfo)
         {
             var slot = 0;
             Expression = expression;
@@ -1424,6 +1424,22 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
+            throw new NotImplementedException();
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions.Expressions
+{
+    public partial class PostIncrementExpression : PostOperationExpression
+    {
+        public PostIncrementExpression(ILineInfo lineInfo, Expression expression): base(lineInfo, expression)
+        {
+            var slot = 0;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
             return visitor.VisitPostIncrementExpression(this);
         }
     }
@@ -1431,19 +1447,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 
 namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
-    public partial class PostDecrementExpression : Expression
+    public partial class PostDecrementExpression : PostOperationExpression
     {
-        public PostDecrementExpression(ILineInfo lineInfo, Expression expression): base(lineInfo)
+        public PostDecrementExpression(ILineInfo lineInfo, Expression expression): base(lineInfo, expression)
         {
             var slot = 0;
-            Expression = expression;
-            if (Expression != null)
-                Childs.Add(Expression);
-        }
-
-        public Expression Expression
-        {
-            get;
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)

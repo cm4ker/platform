@@ -46,7 +46,12 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
 
         public ISymbol Add(IAstSymbol astSymbol)
         {
-            return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol.SymbolScope, astSymbol, null);
+            return Add(astSymbol, null);
+        }
+
+        public ISymbol Add(IAstSymbol astSymbol, object codeObject)
+        {
+            return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol.SymbolScope, astSymbol, codeObject);
         }
 
         public ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject,
@@ -98,7 +103,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             foreach (SymbolType val in Enum.GetValues(typeof(SymbolType)))
             {
                 if (!type.HasFlag(val)) continue;
-                
+
                 ISymbol result = null;
 
                 string prefix = PrefixFromType(val);
@@ -107,7 +112,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
                 {
                     return (Symbol) _hashtable[prefix + name];
                 }
-                    
+
                 if (_parent != null)
                 {
                     result = _parent.Find(name, type, scope);

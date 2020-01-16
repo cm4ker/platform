@@ -17,12 +17,12 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
     /// <summary>
     /// Выражение для постинкрементирования
     /// </summary>
-    public partial class PostIncrementExpression : Expression
+    public partial class PostIncrementExpression
     {
         public override TypeSyntax Type => Expression.Type;
     }
 
-    public partial class PostDecrementExpression : Expression
+    public partial class PostDecrementExpression
     {
         public override TypeSyntax Type => Expression.Type;
     }

@@ -128,9 +128,9 @@ public void OnClientClientCallProc()
 [ClientCall] 
 public string GetUserNameServer()
 { 
-    Entity.Invoice i = $Entity.Invoice.Create();
+    Entity.Custom i = $Entity.Custom.Create();
 
-    i.Name = ""My invoice name"";
+    i.Name = ""My custom name"";
     i.Save();
 
     return Context.UserName; 
