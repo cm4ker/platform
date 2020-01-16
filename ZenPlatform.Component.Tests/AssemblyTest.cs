@@ -112,6 +112,7 @@ namespace ZenPlatform.Component.Tests
             var we = service.GetRequiredService<IWorkEnvironment>();
             var a = we.CreateSession(new PlatformUser());
 
+
             we.Initialize(new StartupConfig
             {
                 DatabaseType = SqlDatabaseType.SqlServer,

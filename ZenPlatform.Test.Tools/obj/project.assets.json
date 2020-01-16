@@ -3050,7 +3050,8 @@
         "dependencies": {
           "ZenPlatform.Compiler": "1.0.0",
           "ZenPlatform.DataComponent": "1.0.0",
-          "ZenPlatform.Language.Ast": "1.0.0"
+          "ZenPlatform.Language.Ast": "1.0.0",
+          "ZenPlatform.Migration": "1.0.0"
         },
         "compile": {
           "bin/placeholder/ZenPlatform.EntityComponent.dll": {}

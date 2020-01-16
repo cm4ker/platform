@@ -122,7 +122,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 Types = {PlatformTypesFactory.GetString(150)},
                 IsSystemProperty = false,
                 Unique = false,
-                IsReadOnly = true
+                IsReadOnly = false
             };
         }
     }

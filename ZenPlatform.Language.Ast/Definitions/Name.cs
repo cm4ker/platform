@@ -28,6 +28,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
     }
 
+    public partial class PropertyLookupExpression : ICanBeAssigned
+    {
+        
+    }
+
 
     public partial class AssignFieldExpression : ICanBeAssigned
     {

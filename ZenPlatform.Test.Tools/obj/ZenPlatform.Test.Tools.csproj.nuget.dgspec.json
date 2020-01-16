@@ -1295,6 +1295,9 @@
               },
               "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
                 "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj"
+              },
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj"
               }
             }
           }
