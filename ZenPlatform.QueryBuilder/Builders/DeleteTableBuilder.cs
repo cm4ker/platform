@@ -20,6 +20,12 @@ namespace ZenPlatform.QueryBuilder.Builders
             _dropTable = table;
         }
 
+        public DeleteTableBuilder IfExists()
+        {
+            _dropTable.IfExists = true;
+            return this;
+        }
+
 
 
 

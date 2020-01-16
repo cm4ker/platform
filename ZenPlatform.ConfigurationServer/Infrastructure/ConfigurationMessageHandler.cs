@@ -99,7 +99,7 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
                     responce.RequestId = treeRequest.RequestId;
                     responce.ParentId = treeRequest.ItemId;
 
-                    var type = _conf.Data.ObjectTypes.FirstOrDefault(x => x.Guid == treeRequest.ItemId);
+                    var type = _conf.Data.StructureTypes.FirstOrDefault(x => x.Guid == treeRequest.ItemId);
                     var attachedComponents = type.Parent.AttachedComponents;
 
                     if (type.HasProperties)

@@ -15,7 +15,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Все типы, которые относятся к компонентам
         /// </summary>
-        IEnumerable<IXCObjectType> ObjectTypes { get; }
+        IEnumerable<IXCStructureType> StructureTypes { get; }
 
         /// <summary>
         /// Загрузить дерективу и все зависимости

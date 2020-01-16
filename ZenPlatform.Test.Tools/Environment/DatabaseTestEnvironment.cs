@@ -76,6 +76,7 @@ namespace ZenPlatform.Core.Environment
 
                 newProject.Save(configStorage);
             }
+            
             */
 
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
@@ -93,7 +94,6 @@ namespace ZenPlatform.Core.Environment
                 currentConfiguration = XCRoot.Load(configStorage);
             }
 
-            DataContextManager.Initialize(config.DatabaseType, config.ConnectionString);
 
             if (MigrationManager.CheckMigration(currentConfiguration, savedConfiguration))
             {

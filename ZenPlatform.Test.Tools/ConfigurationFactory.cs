@@ -34,34 +34,34 @@ namespace ZenPlatform.Test.Tools
                 componentManager.Create()
                     .SetName("Store")
                     .SetId(Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5"))
+                    .SetLinkId(Guid.Parse("9c4ab7a8-ccff-407a-806b-b27a7c72702e"))
                     .SetDescription("This is a store entity")
                     .SetRealTableName("Obj_0001");
-            storeEditor.Type.Initialize();
 
 
             var invoiceEditor =
                 componentManager.Create()
                     .SetName("Invoice")
                     .SetId(Guid.Parse("b9fee6cd-a834-4d72-9de5-1fc2087467e5"))
+                    .SetLinkId(Guid.Parse("688e8cb1-2dd7-4eec-8c88-805516bf0f31"))
                     .SetDescription("This is a invoice entity")
                     .SetRealTableName("Obj_0002");
-            invoiceEditor.Type.Initialize();
 
             var departmentEditor =
                 componentManager.Create()
                     .SetName("Department")
                     .SetId(Guid.Parse("953120f4-6e30-4056-9b8b-6eb0c8d406f0"))
+                    .SetLinkId(Guid.Parse("afbf0dfc-8c6f-4634-9dcb-56ca4cf6f647"))
                     .SetDescription("Some department")
                     .SetRealTableName("Obj_0003");
-            departmentEditor.Type.Initialize();
 
             var customEditor =
                 componentManager.Create()
                     .SetName("Custom")
                     .SetId(Guid.Parse("0265f6cd-dccc-4a85-8e14-af65e2c0066f"))
+                    .SetLinkId(Guid.Parse("1635682c-68e9-4c3c-8794-c12cbe9f52ef"))
                     .SetDescription("Some custom")
                     .SetRealTableName("Obj_0004");
-            customEditor.Type.Initialize();
 
 
             storeEditor.CreateProperty()
@@ -156,33 +156,37 @@ public void GetUserName()
 
             root.Data.Components.Add(component);
 
-            var componentManager = (SingleEntityConfigurationManager) component.ComponentImpl.ComponentManager;
+            var componentManager = (SingleEntityConfigurationManager)component.ComponentImpl.ComponentManager;
             var storeEditor =
                 componentManager.Create()
-                    .SetName("store")
+                    .SetName("Store")
                     .SetId(Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5"))
+                    .SetLinkId(Guid.Parse("9c4ab7a8-ccff-407a-806b-b27a7c72702e"))
                     .SetDescription("This is a store entity")
                     .SetRealTableName("Obj_0001");
 
 
             var invoiceEditor =
                 componentManager.Create()
-                    .SetName("invoice")
+                    .SetName("Invoice")
                     .SetId(Guid.Parse("b9fee6cd-a834-4d72-9de5-1fc2087467e5"))
+                    .SetLinkId(Guid.Parse("688e8cb1-2dd7-4eec-8c88-805516bf0f31"))
                     .SetDescription("This is a invoice entity")
                     .SetRealTableName("Obj_0002");
 
             var departmentEditor =
                 componentManager.Create()
-                    .SetName("department")
+                    .SetName("Department")
                     .SetId(Guid.Parse("953120f4-6e30-4056-9b8b-6eb0c8d406f0"))
+                    .SetLinkId(Guid.Parse("afbf0dfc-8c6f-4634-9dcb-56ca4cf6f647"))
                     .SetDescription("Some department")
                     .SetRealTableName("Obj_0003");
 
             var customEditor =
                 componentManager.Create()
-                    .SetName("custom")
+                    .SetName("Custom")
                     .SetId(Guid.Parse("0265f6cd-dccc-4a85-8e14-af65e2c0066f"))
+                    .SetLinkId(Guid.Parse("1635682c-68e9-4c3c-8794-c12cbe9f52ef"))
                     .SetDescription("Some custom")
                     .SetRealTableName("Obj_0004");
 
@@ -198,7 +202,6 @@ public void GetUserName()
                 .SetName("CompositeProperty")
                 .AddType(new XCBinary())
                 .AddType(new XCBoolean())
-                .AddType(new XCString())
                 .AddType(new XCDateTime())
                 .SetDatabaseColumnName("Fld_0004");
 
@@ -210,7 +213,11 @@ public void GetUserName()
                 .AddType(departmentEditor.Link)
                 .AddType(customEditor.Link)
                 .SetDatabaseColumnName("Fld_0002");
-
+            invoiceEditor.CreateProperty()
+                .SetGuid(Guid.Parse("175d1ade-75f0-416e-bd18-67793f79f133"))
+                .SetName("NewProperty")
+                .AddType(new XCInt())
+                .SetDatabaseColumnName("Fld_0003");
 
             invoiceEditor.CreateProperty()
                 .SetGuid(Guid.Parse("4925d3ee-d858-4a96-a65f-1f87c2cf1357"))

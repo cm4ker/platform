@@ -41,7 +41,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             if (other == null) return false;
 
             return (this.Guid == other.Guid) && (this.Name == other.Name) &&
-                   SequenceEqual<IXCType>(this.Types, other.Types)
+                   this.Types.SequenceEqual(other.Types)
                    && this.Unique == other.Unique && this.IsSystemProperty == other.IsSystemProperty;
         }
 
@@ -53,39 +53,9 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Guid, Name, Unique, IsSystemProperty, Types);
+            return HashCode.Combine(Guid, Name, Unique, IsSystemProperty);
         }
 
-
-        private bool SequenceEqual<T>(IEnumerable<T> list1, IEnumerable<T> list2)
-        {
-            var cnt = new Dictionary<T, int>();
-            foreach (T s in list1)
-            {
-                if (cnt.ContainsKey(s))
-                {
-                    cnt[s]++;
-                }
-                else
-                {
-                    cnt.Add(s, 1);
-                }
-            }
-
-            foreach (T s in list2)
-            {
-                if (cnt.ContainsKey(s))
-                {
-                    cnt[s]--;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return cnt.Values.All(c => c == 0);
-        }
 
         public override IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {

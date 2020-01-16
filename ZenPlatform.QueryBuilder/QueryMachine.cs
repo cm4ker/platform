@@ -261,8 +261,15 @@ namespace ZenPlatform.QueryBuilder
                     Push(new SSet(PopList<SAssign>()));
                     break;
                 case MachineContextType.Update:
-
                     Push(new SUpdate(Pop<SDataSource>(), Pop<SSet>(), TryPop<SWhere>(), TryPop<SFrom>()));
+                    break;
+                case MachineContextType.OrderBy:
+                    Push(new SOrderBy(TryPop<OrderDirection>(), PopList<SExpression>()));
+                    break;
+                case MachineContextType.Delete:
+                    Push(new SDelete(
+                        TryPop<SWhere>(),
+                        Pop<SFrom>()));
                     break;
             }
 
@@ -273,6 +280,12 @@ namespace ZenPlatform.QueryBuilder
         {
             ChangeContextType(MachineContextType.Select);
 
+            return this;
+        }
+
+        public QueryMachine m_delete()
+        {
+            ChangeContextType(MachineContextType.Delete);
             return this;
         }
 
@@ -535,14 +548,28 @@ namespace ZenPlatform.QueryBuilder
 
         #region Premitives
 
-        public void ld_str(string arg)
+        public QueryMachine ld_str(string arg)
         {
-            _syntaxStack.Push(arg);
+            Push(arg);
+            return this;
         }
 
-        public void ld_null()
+        public QueryMachine ld_null()
         {
-            _syntaxStack.Push(new SNull());
+            Push(new SNull());
+            return this;
+        }
+
+        public QueryMachine desc()
+        {
+            Push(OrderDirection.DESC);
+            return this;
+        }
+
+        public QueryMachine asc()
+        {
+            Push(OrderDirection.ASC);
+            return this;
         }
 
         #endregion

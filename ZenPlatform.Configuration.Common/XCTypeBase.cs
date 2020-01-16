@@ -60,7 +60,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
 
         public virtual bool Equals(IXCType other)
         {
-            return Guid.Equals(other?.Guid) && Id == other?.Id;
+            return Guid.Equals(other?.Guid);//&& Id == other?.Id;
         }
 
         public override bool Equals(object obj)
@@ -73,6 +73,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
 
         public override int GetHashCode()
         {
+            return Guid.GetHashCode();
             unchecked
             {
                 var hashCode = Guid.GetHashCode();
@@ -84,21 +85,4 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
         }
     }
 
-
-    public class XCTypeBaseEqualityComparer : IEqualityComparer<IXCType>
-    {
-        public bool Equals([AllowNull] IXCType x, [AllowNull] IXCType y)
-        {
-            if (x == null && y == null)
-                return true;
-            else if (x == null || y == null)
-                return false;
-            return x.Guid == y.Guid;
-        }
-
-        public int GetHashCode([DisallowNull] IXCType obj)
-        {
-            return obj.Guid.GetHashCode();
-        }
-    }
 }

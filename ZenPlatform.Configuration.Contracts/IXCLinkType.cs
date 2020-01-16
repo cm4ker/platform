@@ -6,7 +6,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// <summary>
     /// Описывает ссылку как часть метаданных
     /// </summary>
-    public interface IXCLinkType : IXCObjectReadOnlyType, IChildItem<IXCComponent>
+    public interface IXCLinkType : IXCStructureType
     {
         IXCObjectType ParentType { get; }
     }
