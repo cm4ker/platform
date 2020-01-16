@@ -13,12 +13,13 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Compiler.Tests
 {
     public class PlatformsTest
     {
-        private IXCRoot r = Factory.CreateExampleConfiguration();
+        private IXCRoot r = ConfigurationFactory.Create();
 
         // [Fact]
         // void TestCompileAndInvoke()

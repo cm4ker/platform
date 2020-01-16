@@ -17,21 +17,13 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
     /// <summary>
     /// Выражение для постинкрементирования
     /// </summary>
-    public partial class PostIncrementExpression : Expression
+    public partial class PostIncrementExpression
     {
-        public PostIncrementExpression(ILineInfo li, string name) : this(li, new Name(li, name))
-        {
-        }
-
-        public override TypeSyntax Type => Name.Type;
+        public override TypeSyntax Type => Expression.Type;
     }
 
-    public partial class PostDecrementExpression : Expression
+    public partial class PostDecrementExpression
     {
-        public PostDecrementExpression(ILineInfo li, string name) : this(li, new Name(li, name))
-        {
-        }
-
-        public override TypeSyntax Type => Name.Type;
+        public override TypeSyntax Type => Expression.Type;
     }
 }

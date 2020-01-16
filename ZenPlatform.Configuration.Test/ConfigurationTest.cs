@@ -7,6 +7,7 @@ using System.Linq;
 using ZenPlatform.Data;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Configuration.Test
 {
@@ -15,13 +16,13 @@ namespace ZenPlatform.Configuration.Test
         [Fact]
         public void EqualsExampleCofiguration()
         {
-            EqualsConfiguration(Factory.CreateExampleConfiguration(), Factory.CreateExampleConfiguration());
+            EqualsConfiguration(ConfigurationFactory.Create(), ConfigurationFactory.Create());
         }
 
         [Fact]
         public void SaveAndLoadCofigurationRepeatedly()
         {
-            IXCRoot config = Factory.CreateExampleConfiguration();
+            IXCRoot config = ConfigurationFactory.Create();
             
 
 
@@ -36,14 +37,14 @@ namespace ZenPlatform.Configuration.Test
            
 
 
-            var configOriginal = Factory.CreateExampleConfiguration();
+            var configOriginal = ConfigurationFactory.Create();
             EqualsConfiguration(config, configOriginal);
         }
 
         [Fact]
         public void SaveAndLoadCofiguration()
         {
-            var configuration = Factory.CreateExampleConfiguration();
+            var configuration = ConfigurationFactory.Create();
 
             var storage = new XCMemoryStorage();
 
@@ -62,7 +63,7 @@ namespace ZenPlatform.Configuration.Test
         {
 
             return;
-            var configuration = Factory.CreateExampleConfiguration();
+            var configuration = ConfigurationFactory.Create();
 
 
 
@@ -85,7 +86,7 @@ namespace ZenPlatform.Configuration.Test
         [Fact]
         public void FileSystemStorage()
         {
-            var configuration = Factory.CreateExampleConfiguration();
+            var configuration = ConfigurationFactory.Create();
 
             var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using (var storage = new XCFileSystemStorage(path, "Test"))

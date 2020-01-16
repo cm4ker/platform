@@ -23,10 +23,6 @@
         <ProjectReference Include="..\ZenPlatform.Migration\ZenPlatform.Migration.csproj" />
         <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
         <ProjectReference Include="..\ZenPlatform.Shell\ZenPlatform.Shell.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Test.Tools\ZenPlatform.Test.Tools.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Configuration\" />
-    </ItemGroup>
-
 </Project>

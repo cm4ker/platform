@@ -16,8 +16,8 @@ namespace ZenPlatform.Core.Test
 
         public void InvokeInClientServerContext(InvokeInClientServerContextDelegate action)
         {
-            var serverServices = Initializer.GetServerService(_testOutput);
-            var clientServices = Initializer.GetClientService(_testOutput);
+            var serverServices = TestEnvSetup.GetServerService(_testOutput);
+            var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
 
             var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();

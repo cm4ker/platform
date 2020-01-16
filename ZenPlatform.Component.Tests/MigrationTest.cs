@@ -17,6 +17,7 @@ using ZenPlatform.EntityComponent.Migrations;
 using ZenPlatform.Migration;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Builders;
+using ZenPlatform.Test.Tools;
 using ZenPlatform.QueryBuilder.Visitor;
 
 namespace ZenPlatform.Component.Tests

@@ -19,6 +19,7 @@ using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment.Contracts;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Core.Test.Environment
 {
@@ -38,7 +39,7 @@ namespace ZenPlatform.Core.Test.Environment
 
         public IDataContextManager DataContextManager => throw new NotImplementedException();
 
-        public IXCRoot Configuration => Factory.CreateExampleConfiguration();
+        public IXCRoot Configuration => ConfigurationFactory.Create();
 
         public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService,
             ILogger<TestEnvironment> logger,

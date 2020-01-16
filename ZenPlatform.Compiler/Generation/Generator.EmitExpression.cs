@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -11,6 +13,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -192,115 +195,40 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitCall(e, call, symbolTable);
             }
-            else if (expression is GetFieldExpression fe)
+            else if (expression is PropertyLookupExpression le)
             {
-                EmitExpression(e, fe.Expression, symbolTable);
-                var expType = fe.Expression.Type;
+                EmitExpression(e, le.Current, symbolTable);
 
-                IType extTypeScan = expType.ToClrType(_asm);
+                var lna = le.Lookup as Name;
 
-                var expProp = extTypeScan.Properties.First(x => x.Name == fe.FieldName);
+                var prop = _map.GetProperty(le.Current.Type, lna.Value);
+                lna.Type = prop.PropertyType.ToAstType();
 
-                SingleTypeSyntax singleType;
-
-                if (expProp.PropertyType.IsArray)
-                {
-                    singleType = new SingleTypeSyntax(null, expProp.PropertyType.ArrayElementType.FullName,
-                        TypeNodeKind.Unknown);
-                    fe.Type = new ArrayTypeSyntax(null, singleType);
-                }
-                else
-                {
-                    singleType = new SingleTypeSyntax(null, expProp.PropertyType.FullName, TypeNodeKind.Unknown);
-                    fe.Type = singleType;
-                }
-
-                var resolved = singleType.ToClrType(_asm);
-
-                if (resolved.IsPrimitive)
-                {
-                    singleType.ChangeKind(resolved.Name switch
-                    {
-                        "String" => TypeNodeKind.String,
-                        "Int32" => TypeNodeKind.Int,
-                        "Byte" => TypeNodeKind.Byte,
-                        "Boolean" => TypeNodeKind.Boolean,
-                        _ => throw new Exception($"New unknown primitive type {resolved.Name}")
-                    });
-                }
-                else
-                {
-                    singleType.ChangeKind(TypeNodeKind.Object);
-                }
-
-
-                if (expProp.Getter is null)
-                    throw new Exception($"Can't resolve property: {fe.FieldName}");
-
-                e.PropGetValue(expProp);
+                e.EmitCall(prop.Getter);
             }
-            else if (expression is LookupExpression le)
+
+            else if (expression is MethodLookupExpression mle)
             {
-                EmitExpression(e, le.Parent, symbolTable);
+                var lca = mle.Lookup as Call;
 
-                if (le.Lookup is Name lna)
-                {
-                    var prop = _map.GetProperty(le.Parent.Type, lna.Value);
-                    lna.Type = prop.PropertyType.ToAstType();
+                EmitExpression(e, mle.Current, symbolTable);
 
-                    e.EmitCall(prop.Getter);
-                }
-                else if (le.Lookup is Call lca)
-                {
-                    var method = _map.GetMethod(le.Parent.Type, lca.Name,
-                        lca.Arguments.Select(x => x.Expression.Type).ToArray());
+                var method = _map.GetMethod(mle.Current.Type, lca.Name.Value,
+                    lca.Arguments.Select(x => x.Expression.Type).ToArray());
 
-                    lca.Type = method.ReturnType.ToAstType();
+                lca.Type = method.ReturnType.ToAstType();
 
-                    EmitArguments(e, lca.Arguments, symbolTable);
-                    e.EmitCall(method);
-                }
+                EmitArguments(e, lca.Arguments, symbolTable);
+                e.EmitCall(method);
             }
+
             else if (expression is PostIncrementExpression pis)
             {
-                var symbol = symbolTable.Find(pis.Name.Value, SymbolType.Variable, pis.GetScope()) ??
-                             throw new Exception($"Variable {pis.Name} not found");
-
-                IType opType = pis.Type.ToClrType(_asm);
-
-                EmitExpression(e, pis.Name, symbolTable);
-
-                EmitIncrement(e, opType);
-                e.Add();
-
-                if (symbol.CodeObject is IParameter pd)
-                    e.StArg(pd);
-
-                if (symbol.CodeObject is ILocal vd)
-                    e.StLoc(vd);
+                EmitPostOperation(e, symbolTable, pis);
             }
             else if (expression is PostDecrementExpression pds)
             {
-                var symbol = symbolTable.Find(pds.Name.Value, SymbolType.Variable, pds.GetScope()) ??
-                             throw new Exception($"Variable {pds.Name} not found");
-
-                IType opType = null;
-//                if (symbol.SyntaxObject is Parameter p)
-//                    opType = p.Type.Type;
-//                else if (symbol.SyntaxObject is Variable v)
-//                    opType = v.Type.Type;
-
-
-                EmitExpression(e, pds.Name, symbolTable);
-
-                EmitDecrement(e, opType);
-                e.Add();
-
-                if (symbol.CodeObject is IParameter pd)
-                    e.StArg(pd);
-
-                if (symbol.CodeObject is ILocal vd)
-                    e.StLoc(vd);
+                EmitPostOperation(e, symbolTable, pds);
             }
             else if (expression is Variable variable)
             {
@@ -319,6 +247,8 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is GlobalVar gv)
             {
+                EmitGlobalVar(e, _varManager.Root, gv.Expression, symbolTable);
+
                 /*
                  Глобальное адрессное пространство.
                  
@@ -359,6 +289,70 @@ namespace ZenPlatform.Compiler.Generation
                  
                  
                  */
+            }
+        }
+
+        private void EmitPostOperation(IEmitter e, SymbolTable symbolTable, PostOperationExpression pis)
+        {
+            IType opType = pis.Type.ToClrType(_asm);
+
+            if (pis.Expression is Name n)
+            {
+                var symbol = symbolTable.Find(n.Value, SymbolType.Variable | SymbolType.Property,
+                    SymbolScopeBySecurity.Shared);
+
+                var needLoc = symbol.Type == SymbolType.Property;
+
+                ILocal loc = null;
+
+                if (needLoc)
+                    loc = e.DefineLocal(opType);
+
+                EmitExpression(e, pis.Expression, symbolTable);
+
+                if (needLoc)
+                {
+                    e.StLoc(loc)
+                        .LdLoc(loc);
+                }
+
+
+                if (pis is PostIncrementExpression)
+                    EmitIncrement(e, opType);
+                else
+                    EmitDecrement(e, opType);
+
+                e.Add();
+
+                if (symbol.CodeObject is IParameter pd)
+                    e.StArg(pd);
+
+                if (symbol.CodeObject is ILocal vd)
+                    e.StLoc(vd);
+
+                if (symbol.CodeObject is IProperty prd)
+                {
+                    e.LdArg_0()
+                        .EmitCall(prd.Setter);
+                }
+            }
+            else if (pis.Expression is PropertyLookupExpression ple)
+            {
+                var loc = e.DefineLocal(opType);
+                
+                //Load context
+                EmitExpression(e, ple.Current, symbolTable);
+
+                //Assign new value
+                var prop = _map.GetProperty(ple.Current.Type, (ple.Lookup as Name).Value);
+                e.LdLoc(loc);
+
+                if (pis is PostIncrementExpression)
+                    EmitIncrement(e, opType);
+                else
+                    EmitDecrement(e, opType);
+
+                e.EmitCall(prop.Setter);
             }
         }
 

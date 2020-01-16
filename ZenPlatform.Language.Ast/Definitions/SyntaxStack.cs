@@ -119,6 +119,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             return (Expression) internalStack.Pop();
         }
 
+        public Name PopName()
+        {
+            return (Name) internalStack.Pop();
+        }
+
         public T PeekType<T>()
         {
             return Stack.OfType<T>().First();

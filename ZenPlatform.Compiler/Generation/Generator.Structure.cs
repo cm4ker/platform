@@ -48,7 +48,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (_conf != null)
             {
-                _varManager = new GlobalVarManager(_mode);
+                _varManager = new GlobalVarManager(_mode, _ts);
 
                 foreach (var component in _conf.Data.Components)
                 {
@@ -336,7 +336,7 @@ namespace ZenPlatform.Compiler.Generation
                             EmitConstructor(constructor, tbcab, _stage1constructors[constructor]);
                         }
 
-                        
+
                         cab.Component.ComponentImpl.Generator.Stage2(cab, tbcab, _parameters.TargetDatabaseType, _mode);
                         break;
 
@@ -517,7 +517,8 @@ namespace ZenPlatform.Compiler.Generation
 
         private ITypeBuilder PreBuildModule(Module module)
         {
-            return _asm.DefineType((string.IsNullOrEmpty(@module.Namespace) ? DEFAULT_ASM_NAMESPACE : @module.Namespace), module.Name,
+            return _asm.DefineType(
+                (string.IsNullOrEmpty(@module.Namespace) ? DEFAULT_ASM_NAMESPACE : @module.Namespace), module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
         }

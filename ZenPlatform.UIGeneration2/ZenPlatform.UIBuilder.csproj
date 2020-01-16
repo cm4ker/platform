@@ -11,6 +11,7 @@
     <ProjectReference Include="..\ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj" />
     <ProjectReference Include="..\ZenPlatform.Core.Querying\ZenPlatform.Core.Querying.csproj" />
     <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Test.Tools\ZenPlatform.Test.Tools.csproj" />
     <ProjectReference Include="..\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj" />
   </ItemGroup>
   <ItemGroup>
