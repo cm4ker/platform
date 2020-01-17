@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Caching;
-using System.Xml.Serialization;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Core.Querying;
-using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -50,6 +43,11 @@ namespace ZenPlatform.EntityComponent.Configuration
         public IEnumerable<IXCProperty> Properties => GetProperties();
 
         /// <summary>
+        /// Коллекция таблиц сущности
+        /// </summary>
+        public IEnumerable<IXCTable> Tables => GetTables();
+
+        /// <summary>
         /// Коллекция модулей сущности
         /// </summary>
         public IEnumerable<XCSingleEntityModule> Modules => _metadata.Modules;
@@ -69,10 +67,9 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// </summary>
         public List<XCCommand> Commands => _metadata.Command;
 
-        /// <inheritdoc />
-        public override void LoadDependencies()
+        private void LoadDependenciesPrivate(IEnumerable<IXCProperty> properties)
         {
-            foreach (var property in Properties)
+            foreach (var property in properties)
             {
                 var configurationTypes = new List<XCTypeBase>();
 
@@ -94,6 +91,17 @@ namespace ZenPlatform.EntityComponent.Configuration
                 var id = property.Id;
                 Root.Counter.GetId(property.Guid, ref id);
                 property.Id = id;
+            }
+        }
+
+        /// <inheritdoc />
+        public override void LoadDependencies()
+        {
+            LoadDependenciesPrivate(GetProperties());
+
+            foreach (var table in Tables)
+            {
+                LoadDependenciesPrivate(table.GetProperties());
             }
         }
 
@@ -126,7 +134,10 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public override IEnumerable<IXCTable> GetTables()
         {
-            return null;
+            foreach (var table in _metadata.Tables)
+            {
+                yield return table;
+            }
         }
 
         public override IEnumerable<IXCProgramModule> GetProgramModules()
@@ -149,13 +160,5 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return HashCode.Combine(base.GetHashCode(), Guid);
         }
-    }
-
-    public class XCSingleEntityTable : XCTableBase
-    {
-        /// <summary>
-        /// Коллекция свойств табличной части
-        /// </summary>
-        public IEnumerable<IXCProperty> Properties => GetProperties();
     }
 }
