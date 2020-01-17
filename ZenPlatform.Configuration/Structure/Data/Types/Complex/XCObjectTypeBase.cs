@@ -137,16 +137,4 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             throw new NotSupportedException();
         }
     }
-    
-    public abstract class XCTableBase : IXCTable
-    {
-        public virtual IXCObjectType ParentType { get; }
-
-        public virtual string Name { get; }
-
-        public IEnumerable<IXCProperty> GetProperties()
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

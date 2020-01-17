@@ -13,7 +13,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public List<XCSingleEntityModule> Modules { get; set; }
 
         public List<XCSingleEntityTable> Tables { get; set; }
-        
+
         public List<XCCommand> Command { get; set; }
 
         public string Name { get; set; }
@@ -32,6 +32,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         public List<XCSingleEntityModule> Modules { get; }
 
         public List<XCCommand> Command { get; }
+
+        public List<XCSingleEntityTable> Tables { get; }
 
         public string Name { get; set; }
 
@@ -56,6 +58,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             Properties.AddRange(settings.Properties);
             Modules.AddRange(settings.Modules);
             Command.AddRange(settings.Command);
+            Tables.AddRange(settings.Tables);
 
             EntityId = settings.EntityId;
             LinkId = settings.LinkId;
