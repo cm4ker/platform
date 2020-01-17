@@ -93,7 +93,7 @@ namespace ZenPlatform.Test.Tools
             invoiceEditor.CreateProperty()
                 .SetGuid(Guid.Parse("4925d3ee-d858-4a96-a65f-1f87c2cf1357"))
                 .SetName("CompositeProperty")
-                .AddType(new XCBinary(){Size = 150})
+                .AddType(new XCBinary() {Size = 150})
                 .AddType(new XCBoolean())
                 .AddType(new XCString() {Size = 150})
                 .AddType(new XCDateTime())
@@ -168,7 +168,7 @@ public void GetUserName()
 
             root.Data.Components.Add(component);
 
-            var componentManager = (SingleEntityConfigurationManager)component.ComponentImpl.ComponentManager;
+            var componentManager = (SingleEntityConfigurationManager) component.ComponentImpl.ComponentManager;
             var storeEditor =
                 componentManager.Create()
                     .SetName("Store")

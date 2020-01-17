@@ -51,7 +51,6 @@ typeBody: (functionDeclaration | fieldDeclaration | propertyDeclaration)*;
 typeName:
     (namespace '.')? IDENTIFIER;
 
-
 instructionsBody : '{' statements '}';
 
 instructionsOrSingleStatement : 
