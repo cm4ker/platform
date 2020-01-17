@@ -12,9 +12,12 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public List<XCSingleEntityModule> Modules { get; set; }
 
+        public List<XCSingleEntityTable> Tables { get; set; }
+        
         public List<XCCommand> Command { get; set; }
 
         public string Name { get; set; }
+
         public string TableName { get; set; }
 
         public Guid EntityId { get; set; }

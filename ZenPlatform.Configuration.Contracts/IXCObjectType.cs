@@ -68,7 +68,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <returns></returns>
         IEnumerable<IXCTable> GetTables();
 
-        
+
         /// <summary>
         /// Получить доступные программные модули объекта
         /// </summary>
@@ -82,7 +82,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
         IEnumerable<IXCCommand> GetCommands();
-
     }
 
     public interface IXCObjectType : IXCStructureType
@@ -108,11 +107,16 @@ namespace ZenPlatform.Configuration.Contracts
         }
     }
 
-
     public interface IXCTable
     {
-        IXCStructureType Owner { get; }
+        /// <summary>
+        /// Владелец таблицы
+        /// </summary>
+        IXCObjectType ParentType { get; }
 
+        /// <summary>
+        /// Название таблицы
+        /// </summary>
         string Name { get; }
 
         /// <summary>
@@ -120,6 +124,5 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         /// <returns></returns>
         IEnumerable<IXCProperty> GetProperties();
-
     }
 }

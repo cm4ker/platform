@@ -22,6 +22,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// Это абстрактный тип
         /// </summary>
         public virtual bool IsAbstract => true;
+
         public virtual bool IsSealed => throw new NotImplementedException();
         public virtual bool HasCommands => throw new NotImplementedException();
 
@@ -64,9 +65,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         protected IXCData Data => Root.Data;
 
-       
-
-        
 
         /// <summary>
         /// Инициализировать сущность.
@@ -90,9 +88,13 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// У объекта есть поддержка свойств
         /// </summary>
-        
 
-        IXCComponent IChildItem<IXCComponent>.Parent { get => _parent; set => _parent = value; }
+
+        IXCComponent IChildItem<IXCComponent>.Parent
+        {
+            get => _parent;
+            set => _parent = value;
+        }
 
         /// <summary>
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
@@ -103,7 +105,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             throw new NotSupportedException();
         }
 
-        public IEnumerable<IXCTable> GetTables()
+        public virtual IEnumerable<IXCTable> GetTables()
         {
             throw new NotSupportedException();
         }
@@ -134,61 +136,17 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         {
             throw new NotSupportedException();
         }
-
     }
-
-    public abstract class XCLinkTypeBase : XCTypeBase, IXCLinkType
+    
+    public abstract class XCTableBase : IXCTable
     {
-        public bool IsLink => true;
+        public virtual IXCObjectType ParentType { get; }
 
-        public virtual bool IsAbstract => true;
+        public virtual string Name { get; }
 
-        public virtual bool IsSealed => throw new NotImplementedException();
-
-        public IXCType BaseType { get; }
-
-        public virtual bool HasProperties => throw new NotImplementedException();
-
-        public virtual bool HasModules => throw new NotImplementedException();
-
-        public virtual bool HasCommands => throw new NotImplementedException();
-
-        public virtual bool HasDatabaseUsed => throw new NotImplementedException();
-
-        public void Initialize()
-        {
-            //throw new NotImplementedException();
-        }
-
-        public void LoadDependencies()
-        {
-            
-        }
-
-
-        public virtual IEnumerable<IXCProperty> GetProperties()
+        public IEnumerable<IXCProperty> GetProperties()
         {
             throw new NotImplementedException();
         }
-
-        public IEnumerable<IXCTable> GetTables()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<IXCProgramModule> GetProgramModules()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<IXCCommand> GetCommands()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IXCComponent Parent { get; set; }
-
-        public IXCObjectType ParentType { get; protected set; }
-
     }
 }

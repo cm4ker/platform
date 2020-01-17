@@ -20,7 +20,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         private XCSingleEntityMetadata _metadata;
         private IXCProperty _linkProperty;
-        private bool _isInitialized = false;
+        private bool _isInitialized;
 
         public XCSingleEntity(XCSingleEntityMetadata metadata)
         {
@@ -33,10 +33,15 @@ namespace ZenPlatform.EntityComponent.Configuration
         }
 
         public override bool IsAbstract => false;
+
         public override bool IsSealed => false;
+
         public override bool HasCommands => true;
+
         public override bool HasProperties => true;
+
         public override bool HasModules => true;
+
         public override bool HasDatabaseUsed => true;
 
         /// <summary>
@@ -58,7 +63,6 @@ namespace ZenPlatform.EntityComponent.Configuration
         }
 
         public override Guid Guid => _metadata.EntityId;
-
 
         /// <summary>
         /// Комманды, которые привязаны к сущности
@@ -120,6 +124,11 @@ namespace ZenPlatform.EntityComponent.Configuration
                 yield return _linkProperty;
         }
 
+        public override IEnumerable<IXCTable> GetTables()
+        {
+            return null;
+        }
+
         public override IEnumerable<IXCProgramModule> GetProgramModules()
         {
             return Modules;
@@ -140,5 +149,13 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return HashCode.Combine(base.GetHashCode(), Guid);
         }
+    }
+
+    public class XCSingleEntityTable : XCTableBase
+    {
+        /// <summary>
+        /// Коллекция свойств табличной части
+        /// </summary>
+        public IEnumerable<IXCProperty> Properties => GetProperties();
     }
 }
