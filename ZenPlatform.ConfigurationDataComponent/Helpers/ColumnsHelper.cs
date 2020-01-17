@@ -17,7 +17,7 @@ namespace ZenPlatform.DataComponent.Helpers
     /// </summary>
     public static class ColumnsHelper
     {
-        public static List<DatabaseColumnDefinitionItem> GetColumnsFromProperty(this IXProperty prop)
+        public static List<DatabaseColumnDefinitionItem> GetColumnsFromProperty(this IXCProperty prop)
         {
             var result = new List<DatabaseColumnDefinitionItem>();
 
@@ -62,7 +62,7 @@ namespace ZenPlatform.DataComponent.Helpers
     /// </summary>
     public class DatabaseColumnDefinitionItem
     {
-        public DatabaseColumnDefinitionItem(IXProperty property, string databaseColumnName,
+        public DatabaseColumnDefinitionItem(IXCProperty property, string databaseColumnName,
             XCPrimitiveType type)
         {
             Property = property;
@@ -71,7 +71,7 @@ namespace ZenPlatform.DataComponent.Helpers
         }
 
         //К какому свойству колонка относится
-        public IXProperty Property { get; set; }
+        public IXCProperty Property { get; set; }
 
         /// <summary>
         /// Реальное имя колонки с префиксами и постфиксами

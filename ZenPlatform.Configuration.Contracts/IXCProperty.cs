@@ -13,7 +13,7 @@ namespace ZenPlatform.Configuration.Contracts
         CanSetDb = 1 << 3
     }
 
-    public interface IXProperty
+    public interface IXCProperty
     {
         /// <summary>
         /// Уникальный идентификатор свойства
@@ -36,7 +36,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// Свойство является ссылкой
         /// </summary>
         bool IsSelfLink { get; }
-
+        
         /// <summary>
         /// Указывает на то, что поле является только для
         /// чтения

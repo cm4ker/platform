@@ -98,7 +98,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<IXProperty> GetProperties()
+        public virtual IEnumerable<IXCProperty> GetProperties()
+        {
+            throw new NotSupportedException();
+        }
+
+        public IEnumerable<IXCTable> GetTables()
         {
             throw new NotSupportedException();
         }
@@ -115,7 +120,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         }
 
 
-        public virtual IXProperty GetPropertyByName(string name)
+        public virtual IXCProperty GetPropertyByName(string name)
         {
             return GetProperties().First(x => x.Name == name);
         }
@@ -161,7 +166,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         }
 
 
-        public virtual IEnumerable<IXProperty> GetProperties()
+        public virtual IEnumerable<IXCProperty> GetProperties()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IXCTable> GetTables()
         {
             throw new NotImplementedException();
         }

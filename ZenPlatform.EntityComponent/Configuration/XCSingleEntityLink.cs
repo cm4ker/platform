@@ -12,7 +12,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         private readonly XCSingleEntityMetadata _metadata;
 
-        private IXProperty _linkXProperty;
+        private IXCProperty _linkIxcProperty;
 
         public override string Name => $"{ParentType.Name}Link";
 
@@ -30,13 +30,13 @@ namespace ZenPlatform.EntityComponent.Configuration
             _metadata = metadata;
             ParentType = parentType;
 
-            _linkXProperty = StandardEntityPropertyHelper.CreateLinkProperty(this);
+            _linkIxcProperty = StandardEntityPropertyHelper.CreateLinkProperty(this);
         }
 
 
-        public override IEnumerable<IXProperty> GetProperties()
+        public override IEnumerable<IXCProperty> GetProperties()
         {
-            yield return _linkXProperty;
+            yield return _linkIxcProperty;
             
             foreach (var prop in _metadata.Properties)
             {

@@ -110,8 +110,6 @@ namespace ZenPlatform.Test.Tools
                 .SetDisplayName("Invoke the command")
                 .EditModule()
                 .SetText(@"
-
-
 [ClientCall] 
 public int ClientCallProc(int a)
 { 
@@ -125,13 +123,22 @@ public void OnClientClientCallProc()
     ClientCallProc(10);
 }
 
+
+
 [ClientCall] 
 public string GetUserNameServer()
 { 
     Entity.Invoice i = $Entity.Invoice.Create();
+    Entity.Store s = $Entity.Store.Create();
 
     i.Name = ""My custom name"";
-    i.CompositeProperty = ""My composite property"";
+    //i.CompositeProperty = ""Привет Костя"";
+
+    s.Name = ""Souths park"";
+    s.Save();    
+
+    i.Store = s.Link;
+
     i.Save();
 
     return Context.UserName; 

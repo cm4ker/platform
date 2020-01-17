@@ -24,7 +24,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public abstract class XCObjectPropertyBase : IXProperty
+    public abstract class XCObjectPropertyBase : IXCProperty
     {
         private List<IXCType> _serializedTypes;
         private readonly List<IXCType> _types;
@@ -158,14 +158,14 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// Свойство ссылки
     /// </summary>
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public class XCLinkProperty : IXProperty
+    public class XCLinkProperty : IXCProperty
     {
         private readonly IXCLinkType _typeLink;
-        private IXProperty _idProp;
+        private IXCProperty _idProp;
         private readonly uint _typeId;
         private List<IXCType> _types;
 
-        public XCLinkProperty(IXCLinkType typeLink, IXProperty idProp)
+        public XCLinkProperty(IXCLinkType typeLink, IXCProperty idProp)
         {
             _typeLink = typeLink;
             _idProp = idProp;
