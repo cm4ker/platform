@@ -53,8 +53,8 @@ namespace ZenPlatform.EntityComponent.Migrations
             var props = old.Properties.Where(p => !p.IsSelfLink)
                            .FullJoin(
                                actual.Properties.Where(p => !p.IsSelfLink), x => x.Guid,
-                               x => new { old = x, actual = default(IXProperty) },
-                               x => new { old = default(IXProperty), actual = x },
+                               x => new { old = x, actual = default(IXCProperty) },
+                               x => new { old = default(IXCProperty), actual = x },
                                (x, y) => new { old = x, actual = y });
 
             foreach (var property in props)
@@ -180,17 +180,17 @@ namespace ZenPlatform.EntityComponent.Migrations
         }
 
 
-        public void CreateProperty(IEntityMigrationScope plan, IXProperty property, string tableName)
+        public void CreateProperty(IEntityMigrationScope plan, IXCProperty property, string tableName)
         {
             property.GetPropertySchemas().ForEach(s =>  plan.AddColumn(s, tableName) );
         }
 
-        public void DeleteProperty(IEntityMigrationScope plan, IXProperty property, string tableName)
+        public void DeleteProperty(IEntityMigrationScope plan, IXCProperty property, string tableName)
         {
             property.GetPropertySchemas().ForEach(s =>  plan.DeleteColumn(s, tableName));
         }
 
-        public void ChangeProperty(IEntityMigrationScope plan, IXProperty old, IXProperty actual, string tableName)
+        public void ChangeProperty(IEntityMigrationScope plan, IXCProperty old, IXCProperty actual, string tableName)
         {
 
             //случай если в свойстве был один тип а стало много 

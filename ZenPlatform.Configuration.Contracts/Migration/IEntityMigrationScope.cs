@@ -17,6 +17,6 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         void SetFlagCopyTable(string src, string dst);
         void SetFlagDeleteTable(string tablename);
         void SetFlagRenameTable(string tablename);
-        void UpdateType(IXProperty property, string tableName, IXCType type);
+        void UpdateType(IXCProperty property, string tableName, IXCType type);
     }
 }

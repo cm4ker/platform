@@ -42,6 +42,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             ((IChildItem<IXCComponent>) link).Parent = component;
 
             component.RegisterType(link);
+            
+            entity.Initialize();
         }
 
         protected override XCDataRuleBase LoadRuleAction(IXCDataRuleContent content)

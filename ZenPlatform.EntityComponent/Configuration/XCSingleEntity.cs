@@ -11,6 +11,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using ZenPlatform.Core.Querying;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
@@ -18,7 +19,8 @@ namespace ZenPlatform.EntityComponent.Configuration
     public class XCSingleEntity : XCObjectTypeBase
     {
         private XCSingleEntityMetadata _metadata;
-        private IXProperty _linkProperty;
+        private IXCProperty _linkProperty;
+        private bool _isInitialized = false;
 
         public XCSingleEntity(XCSingleEntityMetadata metadata)
         {
@@ -37,13 +39,10 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override bool HasModules => true;
         public override bool HasDatabaseUsed => true;
 
-
         /// <summary>
         /// Коллекция свойств сущности
         /// </summary>
-        public IEnumerable<IXProperty> Properties => _metadata.Properties.Concat(_linkProperty != null
-            ? new List<IXProperty>() {_linkProperty}
-            : new List<IXProperty>());
+        public IEnumerable<IXCProperty> Properties => GetProperties();
 
         /// <summary>
         /// Коллекция модулей сущности
@@ -52,7 +51,11 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public override string Name => _metadata.Name;
 
-        public override string RelTableName { get => _metadata.TableName; set { _metadata.TableName = value; } }
+        public override string RelTableName
+        {
+            get => _metadata.TableName;
+            set { _metadata.TableName = value; }
+        }
 
         public override Guid Guid => _metadata.EntityId;
 
@@ -92,6 +95,8 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public override void Initialize()
         {
+            if (_isInitialized) return;
+
             if (Properties.FirstOrDefault(x => x.Unique) == null)
                 _metadata.Properties.Add(StandardEntityPropertyHelper.CreateUniqueProperty());
 
@@ -100,13 +105,21 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             if (_linkProperty == null)
                 _linkProperty = StandardEntityPropertyHelper.CreateLinkProperty(this);
+
+            _isInitialized = true;
         }
 
-        public override IEnumerable<IXProperty> GetProperties()
+        public override IEnumerable<IXCProperty> GetProperties()
         {
-            return Properties;
+            foreach (var property in _metadata.Properties)
+            {
+                yield return property;
+            }
+
+            if (_linkProperty != null)
+                yield return _linkProperty;
         }
-        
+
         public override IEnumerable<IXCProgramModule> GetProgramModules()
         {
             return Modules;

@@ -92,14 +92,14 @@ namespace ZenPlatform.EntityComponent.Configuration
             };
         }
 
-        public static IXProperty CreateLinkProperty(XCSingleEntity type)
+        public static IXCProperty CreateLinkProperty(XCSingleEntity type)
         {
             var linkType = type.Parent.Types.First(x => x is XCLinkTypeBase a && a.ParentType == type) as IXCLinkType;
 
             return CreateLinkProperty(linkType);
         }
         
-        public static IXProperty CreateLinkProperty(IXCLinkType linkType)
+        public static IXCProperty CreateLinkProperty(IXCLinkType linkType)
         {
             return new XCSingleEntityLinkProperty
             {

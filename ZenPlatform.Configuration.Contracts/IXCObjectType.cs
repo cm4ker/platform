@@ -60,8 +60,15 @@ namespace ZenPlatform.Configuration.Contracts
         /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IXProperty> GetProperties();
+        IEnumerable<IXCProperty> GetProperties();
 
+        /// <summary>
+        /// Получить свойства объекта. Если объект не поддерживает свойства будет выдано NotSupportedException
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<IXCTable> GetTables();
+
+        
         /// <summary>
         /// Получить доступные программные модули объекта
         /// </summary>
@@ -91,7 +98,7 @@ namespace ZenPlatform.Configuration.Contracts
         }
 
 
-        public static IXProperty GetPropertyByName(this IXCStructureType type, string propName)
+        public static IXCProperty GetPropertyByName(this IXCStructureType type, string propName)
         {
             if (type.HasProperties)
                 return type.GetProperties().FirstOrDefault(x => x.Name == propName) ??
@@ -99,5 +106,20 @@ namespace ZenPlatform.Configuration.Contracts
             else
                 throw new Exception($"Component not support properties: {type.Parent.Info.ComponentName}");
         }
+    }
+
+
+    public interface IXCTable
+    {
+        IXCStructureType Owner { get; }
+
+        string Name { get; }
+
+        /// <summary>
+        /// Получить свойства табличной части. Если объект не поддерживает свойства будет выдано NotSupportedException
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<IXCProperty> GetProperties();
+
     }
 }

@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Test.Tools\\ZenPlatform.Test.Tools.csproj": {}
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Test.Tools\\ZenPlatform.Test.Tools.csproj": {}
   },
   "projects": {
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj",
         "projectName": "ZenPlatform.Cli",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Builder\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Builder\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -35,26 +33,26 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj"
               }
             }
           }
@@ -115,47 +113,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj",
         "projectName": "ZenPlatform.ClientRuntime",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ClientRuntime\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ClientRuntime\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -169,8 +151,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj"
               }
             }
           }
@@ -193,47 +175,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj",
         "projectName": "ZenPlatform.Compiler.Cecil",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -247,8 +213,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
               }
             }
           }
@@ -281,47 +247,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj",
         "projectName": "ZenPlatform.Compiler.Contracts",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -335,14 +285,14 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
               }
             }
           }
@@ -365,47 +315,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj",
         "projectName": "ZenPlatform.Compiler.Dnlib",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Dnlib\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Dnlib\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -419,8 +353,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
               }
             }
           }
@@ -449,47 +383,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj",
         "projectName": "ZenPlatform.Compiler.Platform",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Platform\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Platform\\ZenPlatform.Compiler.Platform.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Platform\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -503,20 +421,20 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Dnlib\\ZenPlatform.Compiler.Dnlib.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj"
               }
             }
           }
@@ -539,47 +457,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj",
         "projectName": "ZenPlatform.Compiler",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -593,29 +495,29 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ClientRuntime\\ZenPlatform.ClientRuntime.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Cecil\\ZenPlatform.Compiler.Cecil.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj"
               }
             }
           }
@@ -667,47 +569,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj",
         "projectName": "ZenPlatform.Configuration.Common",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Common\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Common\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -721,8 +607,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj"
               }
             }
           }
@@ -751,47 +637,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj",
         "projectName": "ZenPlatform.Configuration.Contracts",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -805,11 +675,11 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
               }
             }
           }
@@ -832,47 +702,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj",
         "projectName": "ZenPlatform.DataComponent",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationDataComponent\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationDataComponent\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -886,14 +740,14 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.System\\ZenPlatform.System.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.System\\ZenPlatform.System.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.System\\ZenPlatform.System.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.System\\ZenPlatform.System.csproj"
               }
             }
           }
@@ -930,47 +784,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj",
         "projectName": "ZenPlatform.ConfigurationExample",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationExample\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationExample\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -984,8 +822,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj"
               }
             }
           }
@@ -1008,47 +846,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj",
         "projectName": "ZenPlatform.Configuration",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1062,26 +884,26 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj"
               }
             }
           }
@@ -1118,47 +940,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj",
         "projectName": "ZenPlatform.Core.Contracts",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Contracts\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Contracts\\ZenPlatform.Core.Contracts.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Contracts\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1172,8 +978,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
               }
             }
           }
@@ -1196,47 +1002,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj",
         "projectName": "ZenPlatform.Core.Querying",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Querying\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Querying\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1250,14 +1040,14 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Common\\ZenPlatform.Configuration.Common.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj"
               }
             }
           }
@@ -1292,47 +1082,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj",
         "projectName": "ZenPlatform.Core",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1346,17 +1120,17 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core.Querying\\ZenPlatform.Core.Querying.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj"
               }
             }
           }
@@ -1403,47 +1177,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj",
         "projectName": "ZenPlatform.Data",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1457,8 +1215,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj"
               }
             }
           }
@@ -1491,47 +1249,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj",
         "projectName": "ZenPlatform.EntityComponent",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.EntityComponent\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.EntityComponent\\ZenPlatform.EntityComponent.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.EntityComponent\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1545,17 +1287,17 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler\\ZenPlatform.Compiler.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationDataComponent\\ZenPlatform.DataComponent.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj"
               }
             }
           }
@@ -1578,47 +1320,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj",
         "projectName": "ZenPlatform.Initializer",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Initializer\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Initializer\\ZenPlatform.Initializer.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Initializer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1632,8 +1358,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj"
               }
             }
           }
@@ -1666,47 +1392,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj",
         "projectName": "ZenPlatform.Language.Ast",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Ast\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\ZenPlatform.Language.Ast.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Ast\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1720,14 +1430,14 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration.Contracts\\ZenPlatform.Configuration.Contracts.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
               }
             }
           }
@@ -1750,47 +1460,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj",
         "projectName": "ZenPlatform.Language.Infrastructure",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Language.Infrastructure\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Infrastructure\\ZenPlatform.Language.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Language.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.2"
@@ -1832,28 +1526,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj",
         "projectName": "ZenPlatform.Migration",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Migration\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1867,14 +1559,14 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
               }
             }
           }
@@ -1897,47 +1589,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj",
         "projectName": "ZenPlatform.Networking",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Networking\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Networking\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -1951,11 +1627,11 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Core\\ZenPlatform.Core.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj"
               }
             }
           }
@@ -1978,47 +1654,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj",
         "projectName": "ZenPlatform.QueryBuilder",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.QueryBuilder\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\ZenPlatform.QueryBuilder.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.QueryBuilder\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -2052,47 +1712,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj",
         "projectName": "ZenPlatform.ServerClientShared",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ServerClientShared\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\ZenPlatform.ServerClientShared.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ServerClientShared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -2106,11 +1750,11 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Compiler.Contracts\\ZenPlatform.Compiler.Contracts.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj"
               }
             }
           }
@@ -2151,47 +1795,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj",
         "projectName": "ZenPlatform.Shared",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -2225,47 +1853,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj",
         "projectName": "ZenPlatform.Shell.Contracts",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -2299,47 +1911,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj",
         "projectName": "ZenPlatform.Shell",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -2353,17 +1949,17 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Builder\\ZenPlatform.Cli.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj"
               }
             }
           }
@@ -2392,47 +1988,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj": {
       "version": "1.1.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj",
         "projectName": "ZenPlatform.SSH",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.SSH\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.SSH\\ZenPlatform.SSH.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.SSH\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -2446,8 +2026,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell.Contracts\\ZenPlatform.Shell.Contracts.csproj"
               }
             }
           }
@@ -2470,47 +2050,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.System\\ZenPlatform.System.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.System\\ZenPlatform.System.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.System\\ZenPlatform.System.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.System\\ZenPlatform.System.csproj",
         "projectName": "ZenPlatform.System",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.System\\ZenPlatform.System.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.System\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.System\\ZenPlatform.System.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.System\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -2524,8 +2088,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Data\\ZenPlatform.Data.csproj"
               }
             }
           }
@@ -2548,47 +2112,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.Test.Tools\\ZenPlatform.Test.Tools.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Test.Tools\\ZenPlatform.Test.Tools.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Test.Tools\\ZenPlatform.Test.Tools.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Test.Tools\\ZenPlatform.Test.Tools.csproj",
         "projectName": "ZenPlatform.Test.Tools",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Test.Tools\\ZenPlatform.Test.Tools.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Test.Tools\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Test.Tools\\ZenPlatform.Test.Tools.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Test.Tools\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -2602,20 +2150,20 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.ConfigurationExample\\ZenPlatform.ConfigurationExample.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Configuration\\ZenPlatform.Configuration.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Migration\\ZenPlatform.Migration.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Networking\\ZenPlatform.Networking.csproj"
               },
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shell\\ZenPlatform.Shell.csproj"
               }
             }
           }
@@ -2644,47 +2192,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\GitHub\\ZenPlatform\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj": {
+    "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\ZenPlatform\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj",
+        "projectUniqueName": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj",
         "projectName": "ZenPlatform.UI.Ast",
-        "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj",
-        "packagesPath": "C:\\Users\\qznc\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.UI.Ast\\obj\\",
+        "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.UI.Ast\\ZenPlatform.UI.Ast.csproj",
+        "packagesPath": "C:\\Users\\n.zenkov\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.UI.Ast\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\GitHub\\ZenPlatform\\NuGet.Config",
-          "C:\\Users\\qznc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\NuGet.Config",
+          "C:\\Users\\n.zenkov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
@@ -2698,8 +2230,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
-                "projectPath": "D:\\GitHub\\ZenPlatform\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
+              "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj": {
+                "projectPath": "C:\\projects\\ThePlatform\\SqlPlusDbSync\\SqlPlusDbSync\\ZenPlatform.Shared\\ZenPlatform.Shared.csproj"
               }
             }
           }
@@ -2722,26 +2254,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.0.1, 3.0.1]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }
