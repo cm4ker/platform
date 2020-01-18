@@ -23,7 +23,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Название таблицы
         /// </summary>
-        string Name { get; }
+        string Name { get; set; }
 
         /// <summary>
         /// Получить свойства табличной части. Если объект не поддерживает свойства будет выдано NotSupportedException

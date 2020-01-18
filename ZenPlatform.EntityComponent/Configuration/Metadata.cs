@@ -50,6 +50,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             Modules = new List<XCSingleEntityModule>();
 
             Command = new List<XCCommand>();
+            
+            Tables = new List<XCSingleEntityTable>();
         }
 
 
