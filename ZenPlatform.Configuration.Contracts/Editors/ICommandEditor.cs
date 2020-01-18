@@ -10,4 +10,12 @@ namespace ZenPlatform.Configuration.Contracts
         ICommandEditor SetGuid(Guid guid);
         ICommandEditor SetName(string name);
     }
+
+
+
+    public interface ITableEditor
+    {
+        ITableEditor SetName(string name);
+        IPropertyEditor CreateProperty();
+    }
 }

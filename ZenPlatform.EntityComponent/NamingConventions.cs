@@ -14,6 +14,11 @@ namespace ZenPlatform.EntityComponent
             return se.Parent.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
         }
 
+        public static string GetTableDtoName(this IXCTable tab)
+        {
+            return $"TB_{tab.ParentType.GetDtoName()}_{tab.Name}";
+        }
+
         public static string GetDtoName(this IXCObjectType se)
         {
             var component = se.Parent;

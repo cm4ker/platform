@@ -12,7 +12,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 
         public virtual IXCObjectType ParentType { get; }
 
-        public virtual string Name { get; }
+        public virtual string Name { get; set; }
 
         public IEnumerable<IXCProperty> GetProperties()
         {

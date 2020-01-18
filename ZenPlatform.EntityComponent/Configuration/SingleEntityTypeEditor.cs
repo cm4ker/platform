@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
@@ -26,10 +27,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             _link = new XCSingleEntityLink(_type, _metadata);
 
 
-            ((IChildItem<IXCComponent>)_type).Parent = component;
-            ((IChildItem<IXCComponent>)_link).Parent = component;
-
-
+            ((IChildItem<IXCComponent>) _type).Parent = component;
+            ((IChildItem<IXCComponent>) _link).Parent = component;
 
 
             _component = component;
@@ -41,7 +40,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             _component.Parent.RegisterType(_link);
 
             _type.Initialize();
-
         }
 
         public IXCObjectType Type => _type;
@@ -56,7 +54,6 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public ITypeEditor SetDescription(string description)
         {
-
             return this;
         }
 
@@ -76,6 +73,16 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             _type.RelTableName = tableName;
             return this;
+        }
+
+
+        public ITableEditor CreateTable()
+        {
+            var newTable = new XCSingleEntityTable();
+            newTable.Guid = Guid.NewGuid();
+            _metadata.Tables.Add(newTable);
+
+            return new SingleEntityTableEditor(newTable);
         }
 
         public IPropertyEditor CreateProperty()

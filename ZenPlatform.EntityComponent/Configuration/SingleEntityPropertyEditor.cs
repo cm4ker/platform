@@ -66,4 +66,30 @@ namespace ZenPlatform.EntityComponent.Configuration
             return this;
         }
     }
+
+
+    public class SingleEntityTableEditor : ITableEditor
+    {
+        private readonly XCSingleEntityTable _table;
+
+        public SingleEntityTableEditor(XCSingleEntityTable table)
+        {
+            _table = table;
+        }
+
+        public ITableEditor SetName(string name)
+        {
+            _table.Name = name;
+            return this;
+        }
+
+        public IPropertyEditor CreateProperty()
+        {
+            var newProperty = new XCSingleEntityProperty();
+            newProperty.Guid = Guid.NewGuid();
+            _table.Properties.Add(newProperty);
+
+            return new SingleEntityPropertyEditor(newProperty);
+        }
+    }
 }
