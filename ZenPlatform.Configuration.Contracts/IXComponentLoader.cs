@@ -1,4 +1,5 @@
 ﻿using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Configuration.Contracts.Store;
 
 namespace ZenPlatform.Configuration.Contracts
 {

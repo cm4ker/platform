@@ -6,6 +6,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Storages;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;

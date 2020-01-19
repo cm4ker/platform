@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Configuration.Storages

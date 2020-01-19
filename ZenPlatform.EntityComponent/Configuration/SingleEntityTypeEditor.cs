@@ -10,14 +10,14 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class SingleEntityTypeEditor : ITypeEditor
     {
-        private XCSingleEntityMetadata _metadata;
+        private ImdSingleEntity _metadata;
         private XCSingleEntity _type;
         private XCSingleEntityLink _link;
         private IXCComponent _component;
 
         public SingleEntityTypeEditor(IXCComponent component)
         {
-            _metadata = new XCSingleEntityMetadata();
+            _metadata = new ImdSingleEntity();
 
             _metadata.EntityId = Guid.NewGuid();
             _metadata.LinkId = Guid.NewGuid();

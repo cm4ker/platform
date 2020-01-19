@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
@@ -25,7 +26,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public Guid LinkId { get; set; }
     }
 
-    public class XCSingleEntityMetadata : IXCTypeMetadata<XCSingleEntityMetadataSettings>
+    public class ImdSingleEntity : IMDType<XCSingleEntityMetadataSettings>
     {
         public List<XCSingleEntityProperty> Properties { get; }
 
@@ -43,7 +44,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public Guid LinkId { get; set; }
 
-        public XCSingleEntityMetadata()
+        public ImdSingleEntity()
         {
             Properties = new List<XCSingleEntityProperty>();
 

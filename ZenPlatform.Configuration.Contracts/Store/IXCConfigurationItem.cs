@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ZenPlatform.Configuration.Contracts
+﻿namespace ZenPlatform.Configuration.Contracts.Store
 {
     public interface IXCConfigurationItem
     {
