@@ -11,16 +11,16 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class XCSingleEntity : XCObjectTypeBase
     {
-        private XCSingleEntityMetadata _metadata;
+        private ImdSingleEntity _metadata;
         private IXCProperty _linkProperty;
         private bool _isInitialized;
 
-        public XCSingleEntity(XCSingleEntityMetadata metadata)
+        public XCSingleEntity(ImdSingleEntity metadata)
         {
             _metadata = metadata;
         }
 
-        public XCSingleEntityMetadata GetMetadata()
+        public ImdSingleEntity GetMetadata()
         {
             return _metadata;
         }

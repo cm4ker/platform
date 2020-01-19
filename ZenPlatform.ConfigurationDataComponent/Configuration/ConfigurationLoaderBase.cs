@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Exceptions;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -13,7 +14,7 @@ namespace ZenPlatform.DataComponent.Configuration
 {
     public abstract class ConfigurationLoaderBase<TTypeMetadata, TSettings> : IXComponentLoader
         where TSettings : IXCSettingsItem
-        where TTypeMetadata : IXCTypeMetadata<TSettings>, new()
+        where TTypeMetadata : IMDType<TSettings>, new()
     {
         /*
         #region Events
@@ -60,7 +61,8 @@ namespace ZenPlatform.DataComponent.Configuration
         /// Загрузить объект компонента
         /// </summary>
         /// <param name="component"></param>
-        /// <param name="blob"></param>
+        /// <param name="loader"></param>
+        /// <param name="reference"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
         public virtual void LoadObject(IXCComponent component, IXCLoader loader, string reference)

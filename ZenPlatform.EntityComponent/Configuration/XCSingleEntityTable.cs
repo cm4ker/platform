@@ -7,6 +7,12 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
+    public class MDSingleEntityTable
+    {
+        
+    }
+
+
     public class XCSingleEntityTable : XCTableBase, IChildItem<XCSingleEntity>, IEquatable<XCSingleEntityTable>
     {
         private XCSingleEntity _parent;
