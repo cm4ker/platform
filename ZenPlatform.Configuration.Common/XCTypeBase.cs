@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Contracts;
 
-namespace ZenPlatform.Configuration.Structure.Data.Types
+namespace ZenPlatform.Configuration.Common
 {
     public abstract class XCTypeBase : IXCType
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Shared.ParenChildCollection;
 

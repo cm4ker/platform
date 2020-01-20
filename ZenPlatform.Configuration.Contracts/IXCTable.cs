@@ -8,17 +8,22 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Уникальный идентификатор свойства
         /// </summary>
-        public Guid Guid { get; set; }
+        Guid Guid { get; set; }
 
         /// <summary>
         /// Уникальный идентификатор объекта в разрезе базы данных
         /// </summary>
-        public uint Id { get; set; }
+        uint Id { get; set; }
 
         /// <summary>
         /// Владелец таблицы
         /// </summary>
         IXCObjectType ParentType { get; }
+
+        /// <summary>
+        /// Наз
+        /// </summary>
+        string RelTableName { get; }
 
         /// <summary>
         /// Название таблицы

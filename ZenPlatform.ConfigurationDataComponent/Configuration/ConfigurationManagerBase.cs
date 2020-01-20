@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Editors;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 

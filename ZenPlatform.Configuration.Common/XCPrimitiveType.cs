@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive

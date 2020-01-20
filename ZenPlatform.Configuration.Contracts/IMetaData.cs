@@ -7,14 +7,14 @@ namespace ZenPlatform.Configuration.Contracts
     /// <summary>
     /// Метаданные типа
     /// </summary>
-    public interface IMDType 
+    public interface IMetaData 
     {
 
     }
 
 
-    public interface IMDType<T> : IMDType, IXCConfigurationItem<T>
-        where T: IXCSettingsItem
+    public interface IMetaData<T> : IMetaData, IMetaDataItem<T>
+        where T: IMDSettingsItem
     {
 
     }

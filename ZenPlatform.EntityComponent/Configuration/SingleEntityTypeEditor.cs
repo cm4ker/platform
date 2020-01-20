@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Editors;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -10,14 +11,14 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class SingleEntityTypeEditor : ITypeEditor
     {
-        private ImdSingleEntity _metadata;
+        private MDSingleEntity _metadata;
         private XCSingleEntity _type;
         private XCSingleEntityLink _link;
         private IXCComponent _component;
 
         public SingleEntityTypeEditor(IXCComponent component)
         {
-            _metadata = new ImdSingleEntity();
+            _metadata = new MDSingleEntity();
 
             _metadata.EntityId = Guid.NewGuid();
             _metadata.LinkId = Guid.NewGuid();
@@ -75,10 +76,9 @@ namespace ZenPlatform.EntityComponent.Configuration
             return this;
         }
 
-
         public ITableEditor CreateTable()
         {
-            var newTable = new XCSingleEntityTable();
+            var newTable = new MDSingleEntityTable();
             newTable.Guid = Guid.NewGuid();
             _metadata.Tables.Add(newTable);
 

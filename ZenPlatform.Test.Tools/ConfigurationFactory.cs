@@ -100,6 +100,15 @@ namespace ZenPlatform.Test.Tools
                 .AddType(storeEditor.Link)
                 .SetDatabaseColumnName("Fld_0001");
 
+            invoiceEditor.CreateTable()
+                .SetName("Goods")
+                .CreateProperty()
+                .SetGuid(Guid.Parse("74445120-6DA2-476A-AC90-A636CD6CFAED"))
+                .SetName("Nomenclature")
+                .AddType(new XCString() {Size = 30})
+                .SetDatabaseColumnName("Fld_0011");
+
+
             invoiceEditor.CreateModule()
                 .SetText("public int Test(int i) { int _i = i; _i++; return _i; }")
                 .SetRelationTypeObject();
