@@ -5,7 +5,9 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -15,7 +17,7 @@ using static ZenPlatform.Configuration.Structure.XCData;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCDataConfig : IXCSettingsItem
+    public class XCDataConfig : IMDSettingsItem
     {
         public XCDataConfig()
         {
@@ -24,7 +26,7 @@ namespace ZenPlatform.Configuration.Structure
         public List<string> ComponentReferences { get; set; }
 
     }
-    public class XCData : IXCData, IXCConfigurationItem<XCDataConfig>
+    public class XCData : IXCData, IMetaDataItem<XCDataConfig>
     {
         private IXCRoot _parent;
         private readonly ObservableCollection<IXCType> _platformTypes;
@@ -185,7 +187,7 @@ namespace ZenPlatform.Configuration.Structure
 
         }
 
-        public IXCSettingsItem Store(IXCSaver saver)
+        public IMDSettingsItem Store(IXCSaver saver)
         {
             XCDataConfig settings = new XCDataConfig();
             foreach (var component in _components)

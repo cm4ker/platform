@@ -1,3 +1,5 @@
+using ZenPlatform.Configuration.Common;
+
 namespace ZenPlatform.Configuration.Structure.Data.Types
 {
     /// <summary>

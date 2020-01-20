@@ -24,7 +24,7 @@ namespace ZenPlatform.Migration
             Add(new DeleteColumnItem(schema, tableName));
         }
 
-        public void UpdateType(IXProperty property, string tableName, IXCType type)
+        public void UpdateType(IXCProperty property, string tableName, IXCType type)
         {
             Add(new UpdateTypeItem(property, tableName, type));
         }

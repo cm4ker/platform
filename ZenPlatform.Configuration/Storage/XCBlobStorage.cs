@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Core.Crypto;
-using ZenPlatform.Data;
-using ZenPlatform.Shared.ParenChildCollection;
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Core.Crypto;
+using ZenPlatform.Data;
 
-namespace ZenPlatform.Configuration
+namespace ZenPlatform.Configuration.Storage
 {
 
     public interface IDataStorage

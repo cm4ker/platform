@@ -45,10 +45,10 @@ namespace ZenPlatform.Configuration.Contracts.Data.Entity
         /// </summary>
         /// <param name="property">Свойство для которого нужно сгенерировать мультикласс</param>
         /// <returns>Название класса</returns>
-        string GetMultiDataStorageClassName(IXProperty property);
+        string GetMultiDataStorageClassName(IXCProperty property);
 
 
-        string GetMultiDataStoragePrivateFieldName(IXProperty property);
+        string GetMultiDataStoragePrivateFieldName(IXCProperty property);
 
         /// <summary>
         /// Получить код для setter'a в свойстве чужого объекта

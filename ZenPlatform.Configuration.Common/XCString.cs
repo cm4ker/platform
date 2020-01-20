@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
     /// <summary>
-    /// ��� ������� ������
+    ///  Тип строки
     /// </summary>
     public class XCString : XCPrimitiveType, IEquatable<XCString>
     {

@@ -65,7 +65,6 @@ namespace ZenPlatform.Component.Tests
                     .SetDescription("This is a store entity")
                     .SetRealTableName("Obj_0001");
 
-
             entity1.CreateProperty()
                 .SetGuid(Guid.Parse("252e804b-8c16-407a-8d3c-3c0e5bf461df"))
                 .SetName("Property1")
@@ -325,7 +324,7 @@ namespace ZenPlatform.Component.Tests
 
             return root;
         }
-
+        
         [Fact]
         public void CreateTest()
         {
@@ -508,8 +507,6 @@ namespace ZenPlatform.Component.Tests
 
         }
 
-        
-
         [Fact]
         public void SingleToMultiDataTypeTest()
         {
@@ -547,10 +544,5 @@ namespace ZenPlatform.Component.Tests
 
 
         }
-
-
-        
-
-
     }
 }

@@ -12,6 +12,8 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class TypeBody
     {
+        public static TypeBody Empty => new TypeBody(new List<Member>());
+
         public TypeBody(IList<Member> members) : this(null,
             members.Where(x => x is Function).Cast<Function>().ToList(),
             members.Where(x => x is Field).Cast<Field>().ToList(),
@@ -24,7 +26,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         public void AddFunction(Function function)
         {
             if (function == null) throw new ArgumentNullException(nameof(function));
-            
+
             Functions.Add(function);
             Childs.Add(function);
         }
@@ -32,9 +34,22 @@ namespace ZenPlatform.Language.Ast.Definitions
         public void AddConstructor(Constructor constructor)
         {
             if (constructor == null) throw new ArgumentNullException(nameof(constructor));
-            
+
             Constructors.Add(constructor);
             Childs.Add(constructor);
+        }
+    }
+
+
+    public partial class CompilationUnit
+    {
+        public static CompilationUnit Empty =>
+            new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>());
+
+        public void AddEntity(TypeEntity type)
+        {
+            this.Entityes.Add(type);
+            Childs.Add(type);
         }
     }
 }

@@ -64,11 +64,11 @@ namespace ZenPlatform.Configuration.Contracts.Migration
 
     public class UpdateTypeItem : IEntityMigrationItem
     {
-        public IXProperty Property { get; }
+        public IXCProperty Property { get; }
         public string TableName { get; }
 
         public IXCType XCType { get; }
-        public UpdateTypeItem(IXProperty property, string tableName, IXCType type)
+        public UpdateTypeItem(IXCProperty property, string tableName, IXCType type)
         {
             Property = property;
             TableName = tableName;

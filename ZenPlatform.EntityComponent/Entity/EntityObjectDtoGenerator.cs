@@ -31,33 +31,73 @@ namespace ZenPlatform.EntityComponent.Entity
             var dtoClassName = type.GetDtoName();
 
             var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, dtoClassName,
-                new TypeBody(new List<Member>())) {Namespace = type.GetNamespace()};
+                TypeBody.Empty) {Namespace = type.GetNamespace()};
 
             cls.Bag = ObjectType.Dto;
 
-            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+            var cu = CompilationUnit.Empty;
+
+            cu.AddEntity(cls);
+
+            /*
+             Табличные части именуются следующим принципом:
+             TB_{ObjectName}_{TableName}
+             */
+            foreach (var table in type.GetTables())
+            {
+                var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, type, null,
+                    table.GetTableDtoName(), TypeBody.Empty)
+                {
+                    Namespace = type.GetNamespace(),
+                    Bag = table
+                };
+
+                cu.AddEntity(dtoTableCls);
+            }
+
             root.Add(cu);
         }
 
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
-            if (astTree is ComponentClass cc && (ObjectType) cc.Bag == ObjectType.Dto)
-            {
-                if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Server))
+            if (astTree is ComponentClass cc)
+                if ((ObjectType) cc.Bag == ObjectType.Dto)
                 {
-                    EmitBody(cc, builder, dbType);
-                    EmitVersionField(builder);
-                    EmitMappingSupport(cc, builder);
+                    if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Server))
+                    {
+                        EmitBody(cc, builder, dbType);
+                        EmitVersionField(builder);
+                        EmitMappingSupport(cc, builder);
+                    }
+                    else if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Client))
+                    {
+                        EmitBody(cc, builder, dbType);
+                    }
                 }
-                else if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Client))
+                else if (cc.Bag is IXCTable tbl)
                 {
-                    EmitBody(cc, builder, dbType);
+                    EmitTable(cc, builder, tbl);
                 }
-            }
         }
 
         public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
+        }
+
+        private void EmitTable(ComponentClass cc, ITypeBuilder builder, IXCTable table)
+        {
+            var ts = builder.Assembly.TypeSystem;
+            var set = table.ParentType;
+            
+            var dtoClassName = set.GetDtoName();
+            var @namespace = set.GetNamespace();
+
+            var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
+
+            foreach (var prop in table.GetProperties())
+            {
+                
+            }
         }
 
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
@@ -217,4 +257,62 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
     }
+
+
+    /*
+    private Guid <Id>k__BackingField;
+
+	private string <Name>k__BackingField;
+
+	private byte[] <Version>k__BackingField;
+
+	[MapTo("Id")]
+	public Guid Id
+	{
+		get
+		{
+			return <Id>k__BackingField;
+		}
+		set
+		{
+			<Id>k__BackingField = value;
+		}
+	}
+
+	[MapTo("Name")]
+	[NeedInit]
+	public string Name
+	{
+		get
+		{
+			return <Name>k__BackingField;
+		}
+		set
+		{
+			<Name>k__BackingField = value;
+		}
+	}
+
+	public byte[] Version
+	{
+		get
+		{
+			return <Version>k__BackingField;
+		}
+		set
+		{
+			<Version>k__BackingField = value;
+		}
+	}
+
+!!! public List<TB__Department_Tb1> Tb1{ get; set; }
+
+    
+
+	public virtual void Map(DbDataReader reader)
+	{
+		Id = (Guid)reader["Id"];
+		Name = (string)reader["Name"];
+	}
+     */
 }

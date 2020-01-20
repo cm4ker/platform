@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ZenPlatform.Configuration.Contracts
+﻿namespace ZenPlatform.Configuration.Contracts.Store
 {
     public interface IXCLoader
     {
         T LoadObject<T, C>(string path, bool loadTree = true)
             where
-            T : IXCConfigurationItem<C>, new()
+            T : IMetaDataItem<C>, new()
             where
-            C : IXCSettingsItem;
+            C : IMDSettingsItem;
 
 
         byte[] LoadBytes(string path);
