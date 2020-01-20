@@ -1,32 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class XCSingleEntityMetadataSettings : IXCSettingsItem
-    {
-        public List<XCSingleEntityProperty> Properties { get; set; }
-
-        public List<XCSingleEntityModule> Modules { get; set; }
-
-        public List<XCSingleEntityTable> Tables { get; set; }
-
-        public List<XCCommand> Command { get; set; }
-
-        public string Name { get; set; }
-
-        public string TableName { get; set; }
-
-        public Guid EntityId { get; set; }
-
-        public Guid LinkId { get; set; }
-    }
-
-    public class ImdSingleEntity : IMDType<XCSingleEntityMetadataSettings>
+    public class MDSingleEntity : IMetaData<MDSingleEntitySettings>
     {
         public List<XCSingleEntityProperty> Properties { get; }
 
@@ -34,7 +15,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public List<XCCommand> Command { get; }
 
-        public List<XCSingleEntityTable> Tables { get; }
+        public List<MDSingleEntityTable> Tables { get; }
 
         public string Name { get; set; }
 
@@ -44,34 +25,37 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public Guid LinkId { get; set; }
 
-        public ImdSingleEntity()
+        public MDSingleEntity()
         {
             Properties = new List<XCSingleEntityProperty>();
 
             Modules = new List<XCSingleEntityModule>();
 
             Command = new List<XCCommand>();
-            
-            Tables = new List<XCSingleEntityTable>();
+
+            Tables = new List<MDSingleEntityTable>();
         }
 
-
-        public void Initialize(IXCLoader loader, XCSingleEntityMetadataSettings settings)
+        public void Initialize(IXCLoader loader, MDSingleEntitySettings settings)
         {
             Properties.AddRange(settings.Properties);
             Modules.AddRange(settings.Modules);
             Command.AddRange(settings.Command);
-            Tables.AddRange(settings.Tables);
 
             EntityId = settings.EntityId;
             LinkId = settings.LinkId;
             Name = settings.Name;
             TableName = settings.TableName;
+
+            foreach (var tabRef in settings.TableDefReferences)
+            {
+                Tables.Add(loader.LoadObject<MDSingleEntityTable, MDSingleEntityTableSettings>(tabRef));
+            }
         }
 
-        public IXCSettingsItem Store(IXCSaver saver)
+        public IMDSettingsItem Store(IXCSaver saver)
         {
-            var settings = new XCSingleEntityMetadataSettings()
+            var settings = new MDSingleEntitySettings()
             {
                 Modules = Modules,
                 Properties = Properties,
@@ -79,8 +63,15 @@ namespace ZenPlatform.EntityComponent.Configuration
                 Name = Name,
                 LinkId = LinkId,
                 EntityId = EntityId,
-                TableName = TableName
+                TableName = TableName,
             };
+
+            foreach (var table in Tables)
+            {
+                var tabRef = $"tbl_{table.Name}_{table.Guid}";
+                settings.TableDefReferences.Add(tabRef);
+                saver.SaveObject(tabRef, table);
+            }
 
             return settings;
         }

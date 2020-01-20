@@ -7,13 +7,13 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
-using ZenPlatform.Configuration.Storages;
+using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCRootConfig : IXCSettingsItem
+    public class XCRootConfig : IMDSettingsItem
     {
         public string DataReference { get; set; }
 
@@ -28,7 +28,7 @@ namespace ZenPlatform.Configuration.Structure
 
 
     [XmlRoot("Root")]
-    public class XCRoot : IXCRoot, IXCConfigurationItem<XCRootConfig>
+    public class XCRoot : IXCRoot, IMetaDataItem<XCRootConfig>
     {
         private XCData _data;
         private IXCRoles _roles;
@@ -128,7 +128,7 @@ namespace ZenPlatform.Configuration.Structure
         public static IXCRoot Load(IXCConfigurationStorage storage)
         {
 
-            XCSaverLoader loader = new XCSaverLoader(storage);
+            MDManager loader = new MDManager(storage);
 
             /*
             XCRoot conf;
@@ -226,7 +226,7 @@ namespace ZenPlatform.Configuration.Structure
         {
 
 
-            XCSaverLoader loader = new XCSaverLoader(storage);
+            MDManager loader = new MDManager(storage);
 
             loader.SaveObject("root", this);
             /*
@@ -264,7 +264,7 @@ namespace ZenPlatform.Configuration.Structure
             _data.Load();
         }
 
-        public IXCSettingsItem Store(IXCSaver saver)
+        public IMDSettingsItem Store(IXCSaver saver)
         {
             saver.SaveObject("Data", _data);
 

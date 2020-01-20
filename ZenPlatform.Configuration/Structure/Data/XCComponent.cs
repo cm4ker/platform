@@ -20,9 +20,10 @@ using ZenPlatform.Configuration.Contracts.Store;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
-    public class XCComponentConfig : IXCSettingsItem
+    public class XCComponentConfig : IMDSettingsItem
     {
         public string AssemblyReference { get; set; }
+        
         public List<string> EntityReferences { get; set; }
 
         public XCComponentConfig()
@@ -34,7 +35,7 @@ namespace ZenPlatform.Configuration.Structure.Data
     /// <summary>
     /// Компонент конфигурации
     /// </summary>
-    public class XCComponent : IXCComponent, IXCConfigurationItem<XCComponentConfig>
+    public class XCComponent : IXCComponent, IMetaDataItem<XCComponentConfig>
     {
         private IXCData _parent;
         private bool _isLoaded;
@@ -206,7 +207,7 @@ namespace ZenPlatform.Configuration.Structure.Data
             _isLoaded = true;
         }
 
-        public IXCSettingsItem Store(IXCSaver saver)
+        public IMDSettingsItem Store(IXCSaver saver)
         {
             XCComponentConfig settings = new XCComponentConfig();
 

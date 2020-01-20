@@ -70,9 +70,9 @@ namespace ZenPlatform.EntityComponent.Configuration
 
     public class SingleEntityTableEditor : ITableEditor
     {
-        private readonly XCSingleEntityTable _table;
+        private readonly MDSingleEntityTable _table;
 
-        public SingleEntityTableEditor(XCSingleEntityTable table)
+        public SingleEntityTableEditor(MDSingleEntityTable table)
         {
             _table = table;
         }

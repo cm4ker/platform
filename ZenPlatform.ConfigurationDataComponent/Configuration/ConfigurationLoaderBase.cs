@@ -13,8 +13,8 @@ using ZenPlatform.Shared.ParenChildCollection;
 namespace ZenPlatform.DataComponent.Configuration
 {
     public abstract class ConfigurationLoaderBase<TTypeMetadata, TSettings> : IXComponentLoader
-        where TSettings : IXCSettingsItem
-        where TTypeMetadata : IMDType<TSettings>, new()
+        where TSettings : IMDSettingsItem
+        where TTypeMetadata : IMetaData<TSettings>, new()
     {
         /*
         #region Events

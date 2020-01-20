@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Structure;
 
-namespace ZenPlatform.Configuration.Storages
+namespace ZenPlatform.Configuration.Storage
 {
-    public class XCSaverLoader : IXCLoader, IXCSaver
+    public class MDManager : IXCLoader, IXCSaver
     {
-        public XCSaverLoader(IXCConfigurationStorage storage)
+        public MDManager(IXCConfigurationStorage storage)
         {
             _storage = storage;
         }
@@ -19,9 +16,9 @@ namespace ZenPlatform.Configuration.Storages
 
         public T LoadObject<T, C>(string path, bool loadTree = true)
             where
-            T : IXCConfigurationItem<C>, new()
+            T : IMetaDataItem<C>, new()
             where
-            C : IXCSettingsItem
+            C : IMDSettingsItem
         {
             try
             {
@@ -55,9 +52,9 @@ namespace ZenPlatform.Configuration.Storages
             }
         }
 
-        public void SaveObject<T>(string path, IXCConfigurationItem<T> item)
+        public void SaveObject<T>(string path, IMetaDataItem<T> item)
             where
-            T : IXCSettingsItem
+            T : IMDSettingsItem
         {
             var config = item.Store(this);
 

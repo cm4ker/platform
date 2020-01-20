@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types;
@@ -11,16 +12,16 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class XCSingleEntity : XCObjectTypeBase
     {
-        private ImdSingleEntity _metadata;
+        private MDSingleEntity _metadata;
         private IXCProperty _linkProperty;
         private bool _isInitialized;
 
-        public XCSingleEntity(ImdSingleEntity metadata)
+        public XCSingleEntity(MDSingleEntity metadata)
         {
             _metadata = metadata;
         }
 
-        public ImdSingleEntity GetMetadata()
+        public MDSingleEntity GetMetadata()
         {
             return _metadata;
         }
@@ -67,7 +68,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// </summary>
         public List<XCCommand> Commands => _metadata.Command;
 
-        private void LoadDependenciesPrivate(IEnumerable<IXCProperty> properties)
+        private void LoadDependenciesProperties(IEnumerable<IXCProperty> properties)
         {
             foreach (var property in properties)
             {
@@ -97,11 +98,15 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <inheritdoc />
         public override void LoadDependencies()
         {
-            LoadDependenciesPrivate(GetProperties());
+            LoadDependenciesProperties(GetProperties());
 
             foreach (var table in Tables)
             {
-                LoadDependenciesPrivate(table.GetProperties());
+                var id = table.Id;
+                Root.Counter.GetId(table.Guid, ref id);
+                table.Id = id;
+
+                LoadDependenciesProperties(table.GetProperties());
             }
         }
 
@@ -136,7 +141,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             foreach (var table in _metadata.Tables)
             {
-                yield return table;
+                yield return new XCSingleEntityTable(table);
             }
         }
 
