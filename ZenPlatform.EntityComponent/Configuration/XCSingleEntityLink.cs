@@ -10,9 +10,9 @@ namespace ZenPlatform.EntityComponent.Configuration
     /// </summary>
     public class XCSingleEntityLink : XCLinkTypeBase
     {
-        private readonly XCSingleEntityMetadata _metadata;
+        private readonly MDSingleEntity _metadata;
 
-        private IXProperty _linkXProperty;
+        private IXCProperty _linkIxcProperty;
 
         public override string Name => $"{ParentType.Name}Link";
 
@@ -25,18 +25,18 @@ namespace ZenPlatform.EntityComponent.Configuration
         public override bool HasCommands => false;
         public override bool HasDatabaseUsed => false;
 
-        internal XCSingleEntityLink(IXCObjectType parentType, XCSingleEntityMetadata metadata)
+        internal XCSingleEntityLink(IXCObjectType parentType, MDSingleEntity metadata)
         {
             _metadata = metadata;
             ParentType = parentType;
 
-            _linkXProperty = StandardEntityPropertyHelper.CreateLinkProperty(this);
+            _linkIxcProperty = StandardEntityPropertyHelper.CreateLinkProperty(this);
         }
 
 
-        public override IEnumerable<IXProperty> GetProperties()
+        public override IEnumerable<IXCProperty> GetProperties()
         {
-            yield return _linkXProperty;
+            yield return _linkIxcProperty;
             
             foreach (var prop in _metadata.Properties)
             {

@@ -93,11 +93,8 @@ namespace ZenPlatform.EntityComponent.Entity
             var set = cc.Type as XCSingleEntity ?? throw new Exception("This component can generate only SingleEntity");
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
-
-
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+            var dtoClassName = set.GetDtoName();
+            var @namespace = set.GetNamespace();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
 
@@ -132,11 +129,10 @@ namespace ZenPlatform.EntityComponent.Entity
             }
 
             var saveBuilder = builder.DefineMethod("Save", true, false, false);
-            
+
             cc.TypeBody.SymbolTable.Add(
                 new Function(null, null, null, null, saveBuilder.Name, saveBuilder.ReturnType.ToAstType()),
                 saveBuilder);
-
         }
 
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
@@ -324,8 +320,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 .LdFld(dtoPrivate)
                 .EmitCall(mrg.FindMethod("Save", dtoType))
                 .Ret();
-
-         }
+        }
 
         private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)
         {

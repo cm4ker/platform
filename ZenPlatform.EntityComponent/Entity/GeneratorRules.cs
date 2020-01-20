@@ -37,12 +37,12 @@ namespace ZenPlatform.EntityComponent.Entity
             return $"{preffix}{obj.Name}{postfix}";
         }
 
-        public virtual string GetMultiDataStorageClassName(IXProperty property)
+        public virtual string GetMultiDataStorageClassName(IXCProperty property)
         {
             return $"MultiDataStorage_{property.DatabaseColumnName}";
         }
 
-        public virtual string GetMultiDataStoragePrivateFieldName(IXProperty property)
+        public virtual string GetMultiDataStoragePrivateFieldName(IXCProperty property)
         {
             return $"_mds{property.DatabaseColumnName}";
         }

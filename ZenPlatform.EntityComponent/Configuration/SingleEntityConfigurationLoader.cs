@@ -14,7 +14,7 @@ namespace ZenPlatform.EntityComponent.Configuration
     /// Этот клас автоматически будет использован в качестве загрузчика
     /// </summary>
     public class
-        SingleEntityConfigurationLoader : ConfigurationLoaderBase<XCSingleEntityMetadata, XCSingleEntityMetadataSettings
+        SingleEntityConfigurationLoader : ConfigurationLoaderBase<MDSingleEntity, MDSingleEntitySettings
         >
     {
         public override IDataComponent GetComponentImpl(IXCComponent component)
@@ -30,7 +30,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             }
         }
 
-        protected override void CreateType(XCSingleEntityMetadata metadata, IXCComponent component)
+        protected override void CreateType(MDSingleEntity metadata, IXCComponent component)
         {
             var entity = new XCSingleEntity(metadata);
             ((IChildItem<IXCComponent>) entity).Parent = component;
@@ -42,6 +42,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             ((IChildItem<IXCComponent>) link).Parent = component;
 
             component.RegisterType(link);
+            
+            entity.Initialize();
         }
 
         protected override XCDataRuleBase LoadRuleAction(IXCDataRuleContent content)

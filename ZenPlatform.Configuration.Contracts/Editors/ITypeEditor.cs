@@ -1,7 +1,6 @@
 ﻿using System;
 
-
-namespace ZenPlatform.Configuration.Contracts
+namespace ZenPlatform.Configuration.Contracts.Editors
 {
     public interface ITypeEditor
     {
@@ -11,6 +10,9 @@ namespace ZenPlatform.Configuration.Contracts
         ICommandEditor CreateCommand();
         IModuleEditor CreateModule();
         IPropertyEditor CreateProperty();
+
+        ITableEditor CreateTable();
+        
         ITypeEditor SetDescription(string description);
         ITypeEditor SetId(Guid id);
         ITypeEditor SetLinkId(Guid id);

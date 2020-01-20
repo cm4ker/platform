@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;

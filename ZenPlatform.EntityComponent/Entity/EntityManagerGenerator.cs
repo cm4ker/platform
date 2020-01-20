@@ -193,6 +193,12 @@ namespace ZenPlatform.EntityComponent.Entity
                             .NewArr(sb.Byte)
                             .EmitCall(property.Setter);
                     }
+                    else if (property.PropertyType.Equals(sb.String))
+                    {
+                        cg.LdLoc(dto)
+                            .LdStr("")
+                            .EmitCall(property.Setter);
+                    }
                 }
             }
 

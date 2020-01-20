@@ -16,25 +16,27 @@ using ZenPlatform.Shared.ParenChildCollection;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Configuration.Contracts.Store;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
-    public class XCComponentConfig : IXCSettingsItem
+    public class XCComponentConfig : IMDSettingsItem
     {
         public string AssemblyReference { get; set; }
+        
         public List<string> EntityReferences { get; set; }
+
         public XCComponentConfig()
         {
             EntityReferences = new List<string>();
         }
-
     }
+
     /// <summary>
     /// Компонент конфигурации
     /// </summary>
-    public class XCComponent : IXCComponent, IXCConfigurationItem<XCComponentConfig>
+    public class XCComponent : IXCComponent, IMetaDataItem<XCComponentConfig>
     {
-        
         private IXCData _parent;
         private bool _isLoaded;
         private XCComponentInformation _info;
@@ -195,19 +197,17 @@ namespace ZenPlatform.Configuration.Structure.Data
             else
                 ComponentAssembly = Assembly.Load(bytes);
 
-
             // load entitys
             foreach (var reference in settings.EntityReferences)
             {
-               // XCSingleEntityMetadata loader.LoadObject<>(reference)
+                // XCSingleEntityMetadata loader.LoadObject<>(reference)
                 Loader.LoadObject(this, loader, reference);
             }
 
             _isLoaded = true;
-
         }
 
-        public IXCSettingsItem Store(IXCSaver saver)
+        public IMDSettingsItem Store(IXCSaver saver)
         {
             XCComponentConfig settings = new XCComponentConfig();
 
@@ -233,9 +233,6 @@ namespace ZenPlatform.Configuration.Structure.Data
             }
 
             return settings;
-    
         }
-
     }
-
 }

@@ -93,12 +93,21 @@ namespace ZenPlatform.Test.Tools
             invoiceEditor.CreateProperty()
                 .SetGuid(Guid.Parse("4925d3ee-d858-4a96-a65f-1f87c2cf1357"))
                 .SetName("CompositeProperty")
-                .AddType(new XCBinary(){Size = 150})
+                .AddType(new XCBinary() {Size = 150})
                 .AddType(new XCBoolean())
                 .AddType(new XCString() {Size = 150})
                 .AddType(new XCDateTime())
                 .AddType(storeEditor.Link)
                 .SetDatabaseColumnName("Fld_0001");
+
+            invoiceEditor.CreateTable()
+                .SetName("Goods")
+                .CreateProperty()
+                .SetGuid(Guid.Parse("74445120-6DA2-476A-AC90-A636CD6CFAED"))
+                .SetName("Nomenclature")
+                .AddType(new XCString() {Size = 30})
+                .SetDatabaseColumnName("Fld_0011");
+
 
             invoiceEditor.CreateModule()
                 .SetText("public int Test(int i) { int _i = i; _i++; return _i; }")
@@ -110,8 +119,6 @@ namespace ZenPlatform.Test.Tools
                 .SetDisplayName("Invoke the command")
                 .EditModule()
                 .SetText(@"
-
-
 [ClientCall] 
 public int ClientCallProc(int a)
 { 
@@ -125,13 +132,22 @@ public void OnClientClientCallProc()
     ClientCallProc(10);
 }
 
+
+
 [ClientCall] 
 public string GetUserNameServer()
 { 
     Entity.Invoice i = $Entity.Invoice.Create();
+    Entity.Store s = $Entity.Store.Create();
 
     i.Name = ""My custom name"";
-    i.CompositeProperty = ""My composite property"";
+    //i.CompositeProperty = ""Привет Костя"";
+
+    s.Name = ""Souths park"";
+    s.Save();    
+
+    i.Store = s.Link;
+
     i.Save();
 
     return Context.UserName; 
@@ -161,7 +177,7 @@ public void GetUserName()
 
             root.Data.Components.Add(component);
 
-            var componentManager = (SingleEntityConfigurationManager)component.ComponentImpl.ComponentManager;
+            var componentManager = (SingleEntityConfigurationManager) component.ComponentImpl.ComponentManager;
             var storeEditor =
                 componentManager.Create()
                     .SetName("Store")
