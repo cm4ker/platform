@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Models\" />
@@ -17,10 +17,10 @@
     <None Remove="Views\ConfigurationView.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.9.0-preview5" />
+    <PackageReference Include="Avalonia" Version="0.9.1" />
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.9.0-preview1" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.0-preview5" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.0-preview5" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.1" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Views\ConfigurationView.xaml">
