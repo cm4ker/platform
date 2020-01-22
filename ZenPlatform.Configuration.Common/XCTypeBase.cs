@@ -72,14 +72,6 @@ namespace ZenPlatform.Configuration.Common
         public override int GetHashCode()
         {
             return Guid.GetHashCode();
-            unchecked
-            {
-                var hashCode = Guid.GetHashCode();
-                hashCode = (hashCode * 397) ^ (int) Id;
-                hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
-                return hashCode;
-            }
         }
     }
 

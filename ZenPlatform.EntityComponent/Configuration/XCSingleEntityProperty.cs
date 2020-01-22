@@ -20,6 +20,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public XCSingleEntityProperty()
         {
+           
         }
 
         public XCSingleEntity Parent => _parent;

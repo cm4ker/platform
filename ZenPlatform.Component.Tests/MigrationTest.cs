@@ -115,7 +115,6 @@ namespace ZenPlatform.Component.Tests
                     .SetDescription("This is a store entity")
                     .SetRealTableName("Obj_0001");
 
-
             entity1.CreateProperty()
                 .SetGuid(Guid.Parse("252e804b-8c16-407a-8d3c-3c0e5bf461df"))
                 .SetName("Property1")
@@ -127,7 +126,6 @@ namespace ZenPlatform.Component.Tests
                 .SetName("Property2")
                 .AddType(customType1.Link)
                 .SetDatabaseColumnName("Fld_0002");
-
 
             return root;
         }

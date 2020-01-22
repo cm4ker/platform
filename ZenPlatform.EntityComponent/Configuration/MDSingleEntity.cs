@@ -64,14 +64,15 @@ namespace ZenPlatform.EntityComponent.Configuration
                 LinkId = LinkId,
                 EntityId = EntityId,
                 TableName = TableName,
+                Tables = Tables
             };
 
-            foreach (var table in Tables)
-            {
-                var tabRef = $"tbl_{table.Name}_{table.Guid}";
-                settings.TableDefReferences.Add(tabRef);
-                saver.SaveObject(tabRef, table);
-            }
+            // foreach (var table in Tables)
+            // {
+            //     var tabRef = $"tbl_{table.Name}_{table.Guid}";
+            //     settings.TableDefReferences.Add(tabRef);
+            //     saver.SaveObject(tabRef, table);
+            // }
 
             return settings;
         }
