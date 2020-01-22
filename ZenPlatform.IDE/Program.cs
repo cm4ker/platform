@@ -11,7 +11,7 @@ namespace ZenPlatform.IDE
     {
         static void Main(string[] args)
         {
-            BuildAvaloniaApp().Start<MainWindow>(() => new MainWindowViewModel());
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
 
         public static AppBuilder BuildAvaloniaApp()
