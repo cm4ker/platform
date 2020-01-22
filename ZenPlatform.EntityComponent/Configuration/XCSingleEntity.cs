@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.Cecil;
+using MoreLinq;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
@@ -16,10 +18,13 @@ namespace ZenPlatform.EntityComponent.Configuration
         private IXCProperty _linkProperty;
         private bool _isInitialized;
 
-        public XCSingleEntity(MDSingleEntity metadata)
+        private List<IXCProperty> _list;
+
+        public XCSingleEntity(Guid guid, TypeSystem ts)
         {
             _metadata = metadata;
         }
+
 
         public MDSingleEntity GetMetadata()
         {
