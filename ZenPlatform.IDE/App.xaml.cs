@@ -1,5 +1,7 @@
 ﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using ZenPlatform.IDE.Views;
 
 namespace ZenPlatform.IDE
 {
@@ -8,6 +10,13 @@ namespace ZenPlatform.IDE
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+        
+        public override void OnFrameworkInitializationCompleted()
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                desktop.MainWindow = new MainWindow();
+            base.OnFrameworkInitializationCompleted();
         }
     }
 }
