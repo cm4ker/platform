@@ -137,7 +137,7 @@ namespace ConfCore
             _type = type;
         }
 
-        public override string Name => _name ??= "";
+        public override string Name => _name ??= CalcName();
 
         public override Guid? ParentId => _type.Id;
 
@@ -157,11 +157,12 @@ namespace ConfCore
 
             if (IsNullable)
                 result += "?";
-
             if (_type.IsSizable)
-            {
-                
-            }
+                result += $"({Size})";
+            if (_type.IsScalePrecision)
+                result += $"({Scale},{Precision})";
+
+            return result;
         }
     }
 
