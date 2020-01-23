@@ -5,7 +5,7 @@ using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 {
-    public abstract class XCLinkTypeBase : XCTypeBase, IXCLinkType
+    public abstract class XCLinkTypeBase : TypeBase, IXCLinkType
     {
         public bool IsLink => true;
 

@@ -13,7 +13,7 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCRootConfig : IMDSettingsItem
+    public class XCRootConfig : IMDItem
     {
         public string DataReference { get; set; }
 
@@ -264,7 +264,7 @@ namespace ZenPlatform.Configuration.Structure
             _data.Load();
         }
 
-        public IMDSettingsItem Store(IXCSaver saver)
+        public IMDItem Store(IXCSaver saver)
         {
             saver.SaveObject("Data", _data);
 

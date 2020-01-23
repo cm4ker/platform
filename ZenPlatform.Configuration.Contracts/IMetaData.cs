@@ -14,7 +14,7 @@ namespace ZenPlatform.Configuration.Contracts
 
 
     public interface IMetaData<T> : IMetaData, IMetaDataItem<T>
-        where T: IMDSettingsItem
+        where T: IMDItem
     {
 
     }

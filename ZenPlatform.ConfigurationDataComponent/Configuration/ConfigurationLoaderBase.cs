@@ -13,7 +13,7 @@ using ZenPlatform.Shared.ParenChildCollection;
 namespace ZenPlatform.DataComponent.Configuration
 {
     public abstract class ConfigurationLoaderBase<TTypeMetadata, TSettings> : IXComponentLoader
-        where TSettings : IMDSettingsItem
+        where TSettings : IMDItem
         where TTypeMetadata : IMetaData<TSettings>, new()
     {
         /*

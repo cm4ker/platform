@@ -2,16 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Xml;
-using System.Xml.Schema;
 using System.Xml.Serialization;
-using Portable.Xaml.Schema;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 {
@@ -19,12 +13,12 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public abstract class XCObjectPropertyBase : IXCProperty
+    public class MDProperty : Metadata
     {
         private List<IXCType> _serializedTypes;
         private readonly List<IXCType> _types;
 
-        protected XCObjectPropertyBase()
+        protected MDProperty()
         {
             _types = new List<IXCType>();
             Guid = Guid.NewGuid();
@@ -66,7 +60,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         public bool Unique { get; set; }
 
-
         /// <summary>
         /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
         /// </summary>
@@ -92,8 +85,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             foreach (var type in Types)
             {
                 if (type is IXCPrimitiveType) yield return type;
-                if (type is XCObjectTypeBase objType) yield return new XCUnknownType {Guid = objType.Guid};
-                if (type is XCLinkTypeBase objLink) yield return new XCUnknownType {Guid = objLink.Guid};
+                else yield return new RefType {Guid = type.Guid};
             }
         }
 
@@ -107,7 +99,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             return true;
         }
 
-
         private bool ShouldSerializeId()
         {
             return false;
@@ -118,25 +109,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         /// <returns></returns>
         public IEnumerable<IXCType> GetUnprocessedPropertyTypes() => _serializedTypes;
-
-        /*
-         * Ниже представлен алгоритм, как будет колонка разворачиваться в базу данных:
-         *
-         * DatabaseColumnName = Fld_035
-         * |Fld_035_TypeId|Fld_035_TypeRef|Fld_035_Binary|Fld_035_Guid|Fld_035_Int|Fld_035_DateTime|Fld_035_String
-         *
-         * Когда Types.Count() == 1 и Types[0] is XCPrimitiveType
-         * В таком случае выделяется единственная колонка колонка для хранения
-         *      Guid || binary || bool || int || datetime
-         * Когда Types.Count() == 1 и Types[0] is XCObjectType и Type.IsAabstract в таком случае выделяются две колонки
-         *      IntTypeId, GuidRef
-         * Когда Types.Count() == 1 и Types[0] is XCObjectType и !Type.IsAabstract в таком случае выделяется две или одна колонка.
-         * Примечание. Всё зависит от того, есть ли унаследованные объекты от текущего объекта
-         *      GuidRef \ IntTypeId, GuidRef
-         * Когда Types.Count() > 1 и все Types is XCPrimitiveType
-         *      В таком случае на каждый тип отводится своя колонка. Биндинг должен осуществляться таким
-         *      не хитрым мапированием: Свойство, Тип -> Колонка
-         */
 
         public virtual IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {

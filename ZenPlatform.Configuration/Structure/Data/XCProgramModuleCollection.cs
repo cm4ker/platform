@@ -7,7 +7,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// Коллекция программных модулей для объекта
     /// </summary>
     public class XCProgramModuleCollection<TBaseType, TProperty> : ChildItemCollection<TBaseType, TProperty>
-        where TProperty : XCProgramModuleBase, IChildItem<TBaseType> where TBaseType : class
+        where TProperty : MDProgramModuleBase, IChildItem<TBaseType> where TBaseType : class
     {
         public XCProgramModuleCollection(TBaseType parent) : base(parent)
         {
