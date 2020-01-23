@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class Table
+    public class Table : ITable
     {
-        private readonly TypeSystem _ts;
+        private readonly TypeManager _ts;
 
-        public Table(TypeSystem ts)
+        public Table(TypeManager ts)
         {
             _ts = ts;
         }
@@ -19,6 +20,6 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public Guid ParentId { get; set; }
 
-        public IEnumerable<Property> Properties => _ts.Properties.Where(x => x.ParentId == Id);
+        public IEnumerable<IProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
     }
 }

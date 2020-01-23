@@ -20,7 +20,7 @@ namespace ZenPlatform.Configuration.Contracts
     }
 
 
-    public interface IXCComponent : IChildItem<IXCData>
+    public interface IXCComponent : IChildItem<IXCRoot>
     {
         /// <summary>
         /// Информация о компоненте

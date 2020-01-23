@@ -14,7 +14,7 @@ namespace ZenPlatform.Configuration.TypeSystem
             get { return "Numeric"; }
         }
 
-        internal NumericType(TypeSystem ts) : base(ts)
+        internal NumericType(TypeManager ts) : base(ts)
         {
         }
     }

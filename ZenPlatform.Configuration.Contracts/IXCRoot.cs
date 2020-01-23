@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
@@ -9,7 +10,7 @@ namespace ZenPlatform.Configuration.Contracts
         IXCRoot Load(IXCConfigurationStorage storage);
 
         IXCRoot Create(string projectName);
-        
+
         Stream SaveToStream(IXCRoot root);
 
         string GetHash(IXCRoot root);
@@ -43,39 +44,9 @@ namespace ZenPlatform.Configuration.Contracts
         ChildItemCollection<IXCRoot, IXCSessionSetting> SessionSettings { get; }
 
         /// <summary>
-        /// Раздел данных
+        /// Менеджер типов платформы
         /// </summary>
-        IXCData Data { get; }
-
-        /// <summary>
-        /// Раздел  интерфейсов (UI)
-        /// </summary>
-        IXCInterface Interface { get; set; }
-
-        /// <summary>
-        /// Раздел ролей
-        /// </summary>
-        IXCRoles Roles { get; set; }
-
-        /// <summary>
-        /// Раздел модулей
-        /// </summary>
-        IXCModules Modules { get; set; }
-
-        /// <summary>
-        /// Раздел переодических заданий
-        /// </summary>
-        IXCSchedules Schedules { get; set; }
-
-        /// <summary>
-        /// Раздел языков
-        /// </summary>
-        IXCLanguageList Languages { get; set; }
-
-        /// <summary>
-        /// Сохранить конфигурацию
-        /// </summary>
-        void Save();
+        ITypeManager TypeManager { get; }
 
         /// <summary>
         /// Созранить объект в контексте другого хранилища

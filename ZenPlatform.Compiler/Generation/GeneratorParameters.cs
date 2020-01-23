@@ -17,9 +17,7 @@ namespace ZenPlatform.Compiler.Generation
         /// </summary>
         public SqlDatabaseType TargetDatabaseType { get; }
 
-
         public IXCRoot Configuration { get; }
-
 
         /// <summary>
         /// Юниты компиляции

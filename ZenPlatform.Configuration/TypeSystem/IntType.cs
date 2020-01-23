@@ -4,7 +4,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 {
     public class IntType : Type
     {
-        internal IntType(TypeSystem ts) : base(ts)
+        internal IntType(TypeManager ts) : base(ts)
         {
             ParentId = null;
         }

@@ -19,19 +19,13 @@ namespace ZenPlatform.Configuration.Structure
 {
     public class XCDataConfig : IMDItem
     {
-        public XCDataConfig()
-        {
-            ComponentReferences = new List<string>();
-        }
-        public List<string> ComponentReferences { get; set; }
+    
 
     }
     public class XCData : IXCData, IMetaDataItem<XCDataConfig>
     {
         private IXCRoot _parent;
         private readonly ObservableCollection<IXCType> _platformTypes;
-        private readonly ChildItemCollection<IXCData, IXCComponent> _components;
-
         
 
         public XCData()
@@ -64,22 +58,10 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public void Load()
         {
-            //Инициализируем примитивные типы платформы, они нужны для правильного построения зависимостей
-            /*
-            _platformTypes.Add(new XCBinary());
-            _platformTypes.Add(new XCString());
-            _platformTypes.Add(new XCDateTime());
-            _platformTypes.Add(new XCBoolean());
-            _platformTypes.Add(new XCNumeric());
-            _platformTypes.Add(new XCGuid());
-            */
-            //LoadComponents();
-
             foreach(var component in _components)
                 foreach (var type in component.Types)
                     _platformTypes.Add(type);
 
-            LoadDependencies();
         }
 
         #region Loading
@@ -180,11 +162,7 @@ namespace ZenPlatform.Configuration.Structure
                 ((IChildItem<IXCData>)component).Parent = this;
                 
                 _components.Add(component);
-                
             }
-
-            
-
         }
 
         public IMDItem Store(IXCSaver saver)
