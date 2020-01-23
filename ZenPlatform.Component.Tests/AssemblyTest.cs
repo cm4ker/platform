@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -54,13 +55,10 @@ namespace ZenPlatform.Component.Tests
             var rootServer = new Root(null, new List<CompilationUnit>());
             var rootClient = new Root(null, new List<CompilationUnit>());
 
-            foreach (var component in conf.Data.Components)
+            foreach (var component in conf.TypeManager.Types.Where(x => x.IsObject))
             {
-                foreach (var type in component.ObjectTypes)
-                {
-                    new EntityPlatformGenerator(component).StageServer(type, rootServer, SqlDatabaseType.SqlServer);
-                    new EntityPlatformGenerator(component).StageClient(type, rootClient, SqlDatabaseType.SqlServer);
-                }
+                new EntityPlatformGenerator(component).StageServer(type, rootServer, SqlDatabaseType.SqlServer);
+                new EntityPlatformGenerator(component).StageClient(type, rootClient, SqlDatabaseType.SqlServer);
             }
 
             AstScopeRegister.Apply(rootServer);

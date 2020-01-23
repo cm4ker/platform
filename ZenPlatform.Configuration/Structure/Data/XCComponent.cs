@@ -23,7 +23,7 @@ namespace ZenPlatform.Configuration.Structure.Data
     public class XCComponentConfig : IMDItem
     {
         public string AssemblyReference { get; set; }
-        
+
         public List<string> EntityReferences { get; set; }
 
         public XCComponentConfig()
@@ -37,25 +37,23 @@ namespace ZenPlatform.Configuration.Structure.Data
     /// </summary>
     public class XCComponent : IXCComponent, IMetaDataItem<XCComponentConfig>
     {
-        private IXCData _parent;
         private bool _isLoaded;
         private XCComponentInformation _info;
         private IXComponentLoader _loader;
         private IDataComponent _componentImpl;
 
-        private List<IXCType> _allTypes;
+        private List<MDType> _mdTypes;
 
         private readonly IDictionary<CodeGenRuleType, CodeGenRule> _codeGenRules;
         private Assembly _componentAssembly;
 
+
+        private IXCRoot _parent;
+
         public XCComponent()
         {
             _codeGenRules = new ConcurrentDictionary<CodeGenRuleType, CodeGenRule>();
-            _allTypes = new List<IXCType>();
-
-            //Include = new XCBlobCollection();
-            AttachedComponentIds = new List<Guid>();
-            AttachedComponents = new List<IXCComponent>();
+            _mdTypes = new List<MDType>();
         }
 
         /// <summary>
@@ -70,17 +68,6 @@ namespace ZenPlatform.Configuration.Structure.Data
         {
             get => _isLoaded;
         }
-
-
-        /// <summary>
-        /// Список идентификаторов присоединённых компонентов
-        /// </summary>
-        internal List<Guid> AttachedComponentIds { get; set; }
-
-        /// <summary>
-        /// Присоединённые компоненты. Это свойство инициализируется после загрузки всех компонентов
-        /// </summary>
-        public List<IXCComponent> AttachedComponents { get; private set; }
 
         public Assembly ComponentAssembly
         {
@@ -120,21 +107,14 @@ namespace ZenPlatform.Configuration.Structure.Data
             _componentImpl.OnInitializing();
         }
 
-        public IXCRoot Root => _parent.Parent;
-
-        public IXCData Parent => _parent;
+        public IXCRoot Parent => _parent;
 
         public IXComponentLoader Loader => _loader;
 
-
         public IDataComponent ComponentImpl => _componentImpl;
 
-        public IEnumerable<IXCType> Types => _allTypes;
 
-        public IEnumerable<IXCObjectType> ObjectTypes =>
-            _allTypes.Where(x => x is IXCObjectType).Cast<IXCObjectType>();
-
-        IXCData IChildItem<IXCData>.Parent
+        IXCRoot IChildItem<IXCRoot>.Parent
         {
             get => _parent;
             set => _parent = value;
@@ -172,14 +152,7 @@ namespace ZenPlatform.Configuration.Structure.Data
 
         public IXCObjectType GetTypeByName(string typeName)
         {
-            return ObjectTypes.FirstOrDefault(x => x.Name == typeName) ??
-                   throw new Exception($"Type with name {typeName} not found");
-        }
-
-        public void RegisterType(IXCType type)
-        {
-            _allTypes.Add(type);
-            //Parent.RegisterType(type);
+            throw new NotImplementedException();
         }
 
         public void Initialize(IXCLoader loader, XCComponentConfig settings)
@@ -213,9 +186,9 @@ namespace ZenPlatform.Configuration.Structure.Data
 
             if (ComponentAssembly is null) return settings;
 
-            foreach (var type in ObjectTypes)
+            foreach (var type in _mdTypes)
             {
-                Loader.SaveObject(type, saver);
+                Loader.SaveTypeMD(type, saver);
                 settings.EntityReferences.Add(type.Name);
             }
 

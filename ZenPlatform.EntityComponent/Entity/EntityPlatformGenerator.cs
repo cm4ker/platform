@@ -358,7 +358,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var root = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "Entity", (n, e) => { });
 
-            foreach (var type in _component.ObjectTypes)
+            foreach (var type in _component.MDTypes)
             {
                 var mrgName = $"{type.GetNamespace()}.{type.GetManagerName()}";
 

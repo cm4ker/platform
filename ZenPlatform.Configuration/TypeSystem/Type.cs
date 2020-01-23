@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
@@ -45,7 +47,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         internal bool IsRegistrated { get; set; }
 
-        public IMetadata Metadata { get; set; }
+        public IMDType Metadata { get; set; }
 
         public object Bag { get; set; }
 
@@ -57,5 +59,13 @@ namespace ZenPlatform.Configuration.TypeSystem
         {
             return _ts.Type(this);
         }
+    }
+
+
+    public class Component
+    {
+        public Guid ComponentId { get; set; }
+
+        public IXCComponent Metadata { get; set; }
     }
 }

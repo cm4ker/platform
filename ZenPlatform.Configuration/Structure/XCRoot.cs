@@ -48,7 +48,7 @@ namespace ZenPlatform.Configuration.Structure
 
             _components = new ChildItemCollection<IXCRoot, IXCComponent>(this);
 
-            SessionSettings = new ChildItemCollection<IXCRoot, IXCSessionSetting>(this);
+            
 
             //Берем счетчик по умолчанию
             _counter = new XCSimpleCounter();
@@ -71,10 +71,7 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public string ProjectVersion { get; set; }
 
-        /// <summary>
-        /// Настройки сессии
-        /// </summary>
-        public ChildItemCollection<IXCRoot, IXCSessionSetting> SessionSettings { get; }
+        public ChildItemCollection<IXCRoot, IXCComponent> Components => _components;
 
         public ITypeManager TypeManager => _manager;
 
