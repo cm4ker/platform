@@ -23,5 +23,14 @@ namespace ZenPlatform.EntityComponent.Configuration
         public Guid EntityId { get; set; }
 
         public Guid LinkId { get; set; }
+
+        public Guid ObjectId { get; set; }
+
+        public Guid DtoId { get; set; }
+    }
+
+
+    public class MDProperty
+    {
     }
 }

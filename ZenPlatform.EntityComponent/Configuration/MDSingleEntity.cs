@@ -63,8 +63,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                 Name = Name,
                 LinkId = LinkId,
                 EntityId = EntityId,
-                TableName = TableName,
-                Tables = Tables
+                TableName = TableName
             };
 
             // foreach (var table in Tables)
