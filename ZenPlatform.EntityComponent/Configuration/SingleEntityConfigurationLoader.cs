@@ -22,7 +22,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             return new EntityComponent(component);
         }
 
-        public override void SaveObject(IXCObjectType conf, IXCSaver saver)
+        public override void SaveTypeMD(IXCObjectType conf, IXCSaver saver)
         {
             if (conf is XCSingleEntity entity)
             {

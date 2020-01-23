@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
@@ -30,29 +31,17 @@ namespace ZenPlatform.Configuration.Contracts
         bool IsLoaded { get; }
 
 
-
-        /// <summary>
-        /// Присоединённые компоненты. Это свойство инициализируется после загрузки всех компонентов
-        /// </summary>
-        List<IXCComponent> AttachedComponents { get; }
-
         /// <summary>
         /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
         /// </summary>
-       // IXCBlobCollection Include { get; set; }
+        // IXCBlobCollection Include { get; set; }
 
         Assembly ComponentAssembly { get; set; }
-
-        IXCRoot Root { get; }
 
         IXComponentLoader Loader { get; }
 
         IDataComponent ComponentImpl { get; }
 
-        IEnumerable<IXCType> Types { get; }
-
-        IEnumerable<IXCObjectType> ObjectTypes { get; }
-        
         /// <summary>
         /// Зарегистрировать правило для генерации кода
         /// Это действие иммутабельно. В последствии нельзя отменить регистрацию.
@@ -73,10 +62,6 @@ namespace ZenPlatform.Configuration.Contracts
 
         IXCObjectType GetTypeByName(string typeName);
 
-        /// <summary>
-        /// Зарегистрировать тип данных на уровне конфигурации платформы
-        /// </summary>
-        /// <param name="type"></param>
-        void RegisterType(IXCType type);
+
     }
 }

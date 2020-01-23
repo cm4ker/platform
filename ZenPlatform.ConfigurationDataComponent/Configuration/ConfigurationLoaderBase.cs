@@ -84,7 +84,7 @@ namespace ZenPlatform.DataComponent.Configuration
         /// </summary>
         /// <param name="conf"></param>
         /// 
-        public abstract void SaveObject(IXCObjectType conf, IXCSaver saver);
+        public abstract void SaveTypeMD(IXCObjectType conf, IXCSaver saver);
 
         //{
 

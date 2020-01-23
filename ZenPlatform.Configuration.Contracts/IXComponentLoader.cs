@@ -1,6 +1,7 @@
 ﻿using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Editors;
 using ZenPlatform.Configuration.Contracts.Store;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.Contracts
 {
@@ -30,7 +31,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// Сохранить обхект
         /// </summary>
         /// <param name="conf"></param>
-        void SaveObject(IXCObjectType conf, IXCSaver saver);
+        void SaveTypeMD(IMDType type, IXCSaver saver);
 
         /// <summary>
         /// Загрузить правила компонента, необходимо для RLS

@@ -39,9 +39,9 @@ namespace ZenPlatform.Configuration.Contracts
         string ProjectVersion { get; set; }
 
         /// <summary>
-        /// Настройки сессии
+        /// Компоненты
         /// </summary>
-        ChildItemCollection<IXCRoot, IXCSessionSetting> SessionSettings { get; }
+        public ChildItemCollection<IXCRoot, IXCComponent> Components { get; }
 
         /// <summary>
         /// Менеджер типов платформы
