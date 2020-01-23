@@ -9,7 +9,7 @@ namespace ZenPlatform.Configuration.Contracts
     {
         void SaveObject<T>(string path, IMetaDataItem<T> item)
             where
-            T : IMDSettingsItem;
+            T : IMDItem;
 
         void SaveBytes(string path, byte[] data);
     }

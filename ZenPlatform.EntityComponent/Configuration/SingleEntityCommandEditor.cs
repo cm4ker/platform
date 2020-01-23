@@ -8,9 +8,9 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class SingleEntityCommandEditor : ICommandEditor
     {
-        private XCCommand _command;
+        private MDCommand _command;
 
-        public SingleEntityCommandEditor(XCCommand command)
+        public SingleEntityCommandEditor(MDCommand command)
         {
             _command = command;
         }

@@ -89,12 +89,12 @@ namespace ZenPlatform.Compiler.Platform
             _cl = cl;
         }
 
-        public ClassBuilder WithProperty(string name, XCTypeBase type)
+        public ClassBuilder WithProperty(string name, TypeBase type)
         {
             return this;
         }
 
-        public ClassBuilder WithProperty(string name, IEnumerable<XCTypeBase> types)
+        public ClassBuilder WithProperty(string name, IEnumerable<TypeBase> types)
         {
             var propTypes = new TypeCollection();
             return this;

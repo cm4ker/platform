@@ -15,6 +15,10 @@ namespace ZenPlatform.Language.Ast
 
         public IXCComponent Component { get; }
 
+        
+        /*
+         Type(Id) + Metadata(Stuff)
+         */
         public IXCType Type { get; }
 
         public object Bag { get; set; }

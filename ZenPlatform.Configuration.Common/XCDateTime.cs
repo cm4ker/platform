@@ -1,4 +1,5 @@
 using System;
+using System.Xml.Serialization;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
@@ -31,8 +32,14 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         {
             return HashCode.Combine(Guid, IsNullable);
         }
+    }
+    
+    public enum XCDateCaseType
+    {
+        [XmlEnum("DateTime")] DateTime,
 
+        [XmlEnum("Date")] Date,
 
-
+        [XmlEnum("Time")] Time,
     }
 }
