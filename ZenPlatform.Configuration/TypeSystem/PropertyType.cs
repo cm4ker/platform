@@ -1,10 +1,11 @@
 using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class PropertyType
+    public class PropertyType : IPropertyType
     {
-        public PropertyType(TypeSystem ts)
+        public PropertyType(TypeManager ts)
         {
         }
 

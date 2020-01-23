@@ -1,14 +1,17 @@
 using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class TypeSpec : Type
+    
+
+    public class TypeSpec : Type, ITypeSpec
     {
-        private readonly Type _type;
+        private readonly IType _type;
         private string _name;
 
 
-        internal TypeSpec(Type type, TypeSystem ts) : base(ts)
+        internal TypeSpec(IType type, TypeManager ts) : base(ts)
         {
             _type = type;
         }

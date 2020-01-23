@@ -2,18 +2,26 @@
 using System.IO;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Storage
 {
     public class MDManager : IXCLoader, IXCSaver
     {
-        public MDManager(IXCConfigurationStorage storage)
+        private IXCConfigurationStorage _storage;
+        private ITypeManager _typeManager;
+
+        public MDManager(IXCConfigurationStorage storage, ITypeManager typeManager)
         {
             _storage = storage;
+            _typeManager = typeManager;
         }
 
-        public IXCConfigurationStorage _storage;
+
+        public IXCConfigurationStorage Storage => _storage;
+        public ITypeManager TypeManager => _typeManager;
 
         public T LoadObject<T, C>(string path, bool loadTree = true)
             where

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class Type
+    public class Type : IType
     {
-        private readonly TypeSystem _ts;
+        private readonly TypeManager _ts;
 
-        internal Type(TypeSystem ts)
+        internal Type(TypeManager ts)
         {
             _ts = ts;
         }
@@ -44,15 +45,15 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         internal bool IsRegistrated { get; set; }
 
-        public Metadata Metadata { get; set; }
+        public IMetadata Metadata { get; set; }
 
         public object Bag { get; set; }
 
-        public IEnumerable<Property> Properties => _ts.Properties.Where(x => x.ParentId == Id);
-        public IEnumerable<Table> Tables => _ts.Tables.Where(x => x.ParentId == Id);
+        public IEnumerable<IProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
+        public IEnumerable<ITable> Tables => _ts.Tables.Where(x => x.ParentId == Id);
 
 
-        public TypeSpec GetSpec()
+        public ITypeSpec GetSpec()
         {
             return _ts.Type(this);
         }
