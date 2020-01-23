@@ -6,7 +6,6 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.DataComponent.Entity;
-using ZenPlatform.DataComponent.Helpers;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.QueryBuilder.Model;
 

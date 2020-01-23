@@ -88,7 +88,7 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             var ts = builder.Assembly.TypeSystem;
             var set = table.ParentType;
-            
+
             var dtoClassName = set.GetDtoName();
             var @namespace = set.GetNamespace();
 
@@ -96,7 +96,6 @@ namespace ZenPlatform.EntityComponent.Entity
 
             foreach (var prop in table.GetProperties())
             {
-                
             }
         }
 
@@ -201,6 +200,13 @@ namespace ZenPlatform.EntityComponent.Entity
                         }
                     }
                 }
+            }
+
+            foreach (var table in set.Tables)
+            {
+                var tableDto = ts.GetType(table.GetTableDtoName());
+
+                var result = builder.DefineProperty(tableDto, table.Name, true, true, false);
             }
         }
 

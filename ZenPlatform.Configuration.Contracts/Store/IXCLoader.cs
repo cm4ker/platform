@@ -4,9 +4,9 @@
     {
         T LoadObject<T, C>(string path, bool loadTree = true)
             where
-            T : IMetaDataItem<C>, new()
+            T : class, IMetaDataItem<C>, new()
             where
-            C : IMDSettingsItem;
+            C : IMDItem;
 
 
         byte[] LoadBytes(string path);

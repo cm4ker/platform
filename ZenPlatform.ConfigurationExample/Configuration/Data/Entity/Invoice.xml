@@ -1,32 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<SingleEntity>
-    <Guid>351badbe-7887-4c1e-800c-5507dc0c2905</Guid>
-    <Name>Invoice</Name>
-    <Description>Накладная</Description>
-    <IsAbstract>false</IsAbstract>
-    <Properties>
-        <Property Id="923F752B-CA2C-48FA-A50F-B788250180C0" DateCase="DateTime" Name="ComplexTypeField">
-            <Types>
-                <Type>
-                    <Guid>00000001-0002-0004-3848-eaea177b0c03</Guid>
-                </Type>
-                <Type>
-                    <Guid>00000001-0002-0004-3848-eaea177b0c01</Guid>
-                </Type>
-                <Type>
-                    <Guid>00000001-0002-0004-3848-eaea177b0c02</Guid>
-                </Type>
-                <Type>
-                    <Guid>00000001-0002-0004-3848-eaea177b0c04</Guid>
-                </Type>
-            </Types>
-        </Property>
-    </Properties>
-    <DocumentModule>
-        // Здесь могла бы быть ваша бизнес - логика!
-    </DocumentModule>
-    <DocumentInterface>
-        <Include>
-        </Include>
-    </DocumentInterface>
-</SingleEntity>
+<MDDocument>
+    <ObjectGuid>351badbe-7887-4c1e-800c-5507dc0c2905</ObjectGuid>
+    <LinkGuid>351badbe-7887-4c1e-800c-5507dc0c2906</LinkGuid>
+    <ManagerGuid>351badbe-7887-4c1e-800c-5507dc0c2907</ManagerGuid>
+    <DtoGuid>351badbe-7887-4c1e-800c-5507dc0c2907</DtoGuid>
+
+    <CanPost>true/false</CanPost>
+    <Registers>
+        <Type Id="10" />
+        <Type Id="10" />
+    </Registers>
+
+    <ObjectModule>
+    
+    </ObjectModule>
+
+    <ManagerModule>
+        var a = 1;
+    </ManagerModule>
+
+    <Props>
+        <Boolean Size="30"/>
+        <RefType Type="351badbe-7887-4c1e-800c-5507dc0c2906" />
+    </Props>
+</MDDocument>
+
+<!--
+
+    int(32)
+    int(32)
+
+    Nullable<T>
+
+    Nullable<int> <> Nullable<string> - TypeSpec
+    Binary(40) <> Binary(30) - TypeSpec
+    IsAssignable(Type)
+
+    351badbe-7887-4c1e-800c-5507dc0c2906 - Binary     (BinaryType)
+    351badbe-7887-4c1e-800c-212341234456 - Binary(30) (TypeSpec(BinaryType))
+ -->
+
+
+

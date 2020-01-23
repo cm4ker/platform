@@ -25,7 +25,7 @@ namespace ZenPlatform.Configuration.Structure
         /// Тип параметра сессии
         /// </summary>
         [XmlArray]
-        [XmlArrayItem(ElementName = "Type", Type = typeof(XCUnknownType))]
+        [XmlArrayItem(ElementName = "Type", Type = typeof(UnknownType))]
         public List<IXCType> Types { get; }
 
         IXCRoot IChildItem<IXCRoot>.Parent

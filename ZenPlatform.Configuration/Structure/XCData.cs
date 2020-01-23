@@ -17,7 +17,7 @@ using static ZenPlatform.Configuration.Structure.XCData;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCDataConfig : IMDSettingsItem
+    public class XCDataConfig : IMDItem
     {
         public XCDataConfig()
         {
@@ -44,7 +44,7 @@ namespace ZenPlatform.Configuration.Structure
             {
                 if (e.Action == NotifyCollectionChangedAction.Add)
                 {
-                    var item = (e.NewItems[0] as XCTypeBase);
+                    var item = (e.NewItems[0] as TypeBase);
                     if (item != null)
                     {
                         uint id = item.Id;
@@ -187,7 +187,7 @@ namespace ZenPlatform.Configuration.Structure
 
         }
 
-        public IMDSettingsItem Store(IXCSaver saver)
+        public IMDItem Store(IXCSaver saver)
         {
             XCDataConfig settings = new XCDataConfig();
             foreach (var component in _components)
