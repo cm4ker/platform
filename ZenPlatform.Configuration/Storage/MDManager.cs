@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Structure;
@@ -16,9 +17,9 @@ namespace ZenPlatform.Configuration.Storage
 
         public T LoadObject<T, C>(string path, bool loadTree = true)
             where
-            T : IMetaDataItem<C>, new()
+            T : class, IMetaDataItem<C>, new()
             where
-            C : IMDSettingsItem
+            C : IMDItem
         {
             try
             {
@@ -26,8 +27,15 @@ namespace ZenPlatform.Configuration.Storage
                 {
                     var config = XCHelper.DeserializeFromStream<C>(stream);
 
+                    T result;
 
-                    var result = new T();
+                    if (config.GetType() == typeof(T))
+                        result = config as T;
+                    else
+                        result = new T();
+
+                    if (result == null)
+                        throw new Exception("The result is null");
 
                     if (loadTree)
                         result.Initialize(this, config);
@@ -54,7 +62,7 @@ namespace ZenPlatform.Configuration.Storage
 
         public void SaveObject<T>(string path, IMetaDataItem<T> item)
             where
-            T : IMDSettingsItem
+            T : IMDItem
         {
             var config = item.Store(this);
 

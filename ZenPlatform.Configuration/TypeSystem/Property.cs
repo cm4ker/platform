@@ -19,5 +19,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         public bool IsSystem { get; set; }
 
         public bool IsReadOnly { get; set; }
+
+        public Metadata Metadata { get; set; }
     }
 }

@@ -4,11 +4,11 @@
     {
 
     }
-    public interface IMetaDataItem<T>: IMetaDataItem where T: IMDSettingsItem
+    public interface IMetaDataItem<T>: IMetaDataItem where T: IMDItem
     {
         void Initialize(IXCLoader loader, T settings);
 
-        IMDSettingsItem Store(IXCSaver saver);
+        IMDItem Store(IXCSaver saver);
 
     }
 }

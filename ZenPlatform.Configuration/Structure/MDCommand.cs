@@ -9,13 +9,13 @@ namespace ZenPlatform.Configuration.Structure
     /// <summary>
     /// Комманда
     /// </summary>
-    public class XCCommand : IXCCommand
+    public class MDCommand : IXCCommand
     {
-        public XCCommand()
+        public MDCommand()
         {
         }
 
-        public XCCommand(bool predefined)
+        public MDCommand(bool predefined)
         {
             IsPredefined = predefined;
             Module = new XCProgramModule();

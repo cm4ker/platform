@@ -4,9 +4,9 @@ using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration.Common
 {
-    public abstract class XCTypeBase : IXCType
+    public abstract class TypeBase : IXCType
     {
-        protected XCTypeBase()
+        protected TypeBase()
         {
         }
 

@@ -10,7 +10,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
     /// <summary>
     /// Примитивный тип данных
     /// </summary>
-    public abstract class XCPrimitiveType : XCTypeBase, IXCPrimitiveType
+    public abstract class XCPrimitiveType : TypeBase, IXCPrimitiveType
     {
         /// <summary>
         /// Может быть равна NULL

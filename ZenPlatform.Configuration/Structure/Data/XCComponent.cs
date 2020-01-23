@@ -20,7 +20,7 @@ using ZenPlatform.Configuration.Contracts.Store;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
-    public class XCComponentConfig : IMDSettingsItem
+    public class XCComponentConfig : IMDItem
     {
         public string AssemblyReference { get; set; }
         
@@ -207,7 +207,7 @@ namespace ZenPlatform.Configuration.Structure.Data
             _isLoaded = true;
         }
 
-        public IMDSettingsItem Store(IXCSaver saver)
+        public IMDItem Store(IXCSaver saver)
         {
             XCComponentConfig settings = new XCComponentConfig();
 

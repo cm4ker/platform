@@ -10,9 +10,9 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public class QSum : QExpression
     {
-        private readonly XCTypeBase _baseType;
+        private readonly TypeBase _baseType;
 
-        public QSum(XCTypeBase baseType)
+        public QSum(TypeBase baseType)
         {
             _baseType = baseType;
         }

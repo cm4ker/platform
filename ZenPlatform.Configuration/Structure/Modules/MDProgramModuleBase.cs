@@ -8,7 +8,7 @@ namespace ZenPlatform.Configuration.Structure
     /// Программный модуль. Если необходимо организовать поддержку программных модулей на языке платформы
     /// В таком случае необходимо наследоваться от этого класса
     /// </summary>
-    public abstract class XCProgramModuleBase : IXCProgramModule
+    public abstract class MDProgramModuleBase : IXCProgramModule
     {
         /// <summary>
         /// Имя модуля

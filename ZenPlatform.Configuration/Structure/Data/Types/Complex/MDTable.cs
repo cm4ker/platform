@@ -4,7 +4,7 @@ using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 {
-    public abstract class XCTableBase : IXCTable
+    public class MDTable
     {
         public virtual Guid Guid { get; set; }
 

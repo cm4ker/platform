@@ -42,6 +42,8 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public virtual bool IsTypeSpec => false;
 
+        internal bool IsRegistrated { get; set; }
+
         public Metadata Metadata { get; set; }
 
         public object Bag { get; set; }
