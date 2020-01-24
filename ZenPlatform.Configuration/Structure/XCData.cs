@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -30,7 +31,7 @@ namespace ZenPlatform.Configuration.Structure
 
         public XCData()
         {
-            _components = new ChildItemCollection<IXCData, IXCComponent>(this);
+            _components = new ChildItemCollection<IXCData, IComponent>(this);
             _platformTypes = new ObservableCollection<IXCType>();
 
             //Инициализируем каждый тип, присваеваем ему идентификатор базы данных
@@ -51,7 +52,7 @@ namespace ZenPlatform.Configuration.Structure
             };
         }
 
-        public ChildItemCollection<IXCData, IXCComponent> Components => _components;
+        public ChildItemCollection<IXCData, IComponent> Components => _components;
 
         /// <summary>
         /// Загрузить дерективу и все зависимости
@@ -148,13 +149,13 @@ namespace ZenPlatform.Configuration.Structure
             _platformTypes.Add(type);
         }
 
-        public IXCComponent GetComponentByName(string name)
+        public IComponent GetComponentByName(string name)
         {
             return Components.FirstOrDefault(x => x.Info.ComponentName == name) ??
                    throw new Exception($"Component with name {name} not found");
         }
 
-        public void Initialize(IXCLoader loader, XCDataConfig settings)
+        public void Initialize(ILoader loader, XCDataConfig settings)
         {
             foreach (var reference in settings.ComponentReferences)
             {

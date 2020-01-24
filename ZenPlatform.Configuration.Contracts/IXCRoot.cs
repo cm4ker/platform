@@ -21,7 +21,7 @@ namespace ZenPlatform.Configuration.Contracts
 
     public interface IXCRoot
     {
-        IXCConfigurationUniqueCounter Counter { get; }
+        IUniqueCounter Counter { get; }
 
         /// <summary>
         /// Идентификатор конфигурации
@@ -37,11 +37,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// Версия конфигурации
         /// </summary>
         string ProjectVersion { get; set; }
-
-        /// <summary>
-        /// Компоненты
-        /// </summary>
-        public ChildItemCollection<IXCRoot, IXCComponent> Components { get; }
 
         /// <summary>
         /// Менеджер типов платформы

@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 
 namespace ZenPlatform.Core.Querying.Model
 {
     public class LogicStack : Stack<object>
     {
-        public IXCComponent PopComponent()
+        public IComponent PopComponent()
         {
-            return (IXCComponent) this.Pop();
+            return (IComponent) this.Pop();
         }
 
         public QDataSource PopDataSource()

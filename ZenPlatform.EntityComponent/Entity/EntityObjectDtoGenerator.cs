@@ -7,6 +7,7 @@ using Newtonsoft.Json.Bson;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
@@ -14,14 +15,15 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.Shared.Tree;
+using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
     public class EntityObjectDtoGenerator
     {
-        private readonly IXCComponent _component;
+        private readonly IComponent _component;
 
-        public EntityObjectDtoGenerator(IXCComponent component)
+        public EntityObjectDtoGenerator(IComponent component)
         {
             _component = component;
         }

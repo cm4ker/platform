@@ -8,7 +8,7 @@ using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Storage
 {
-    public class MDManager : IXCLoader, IXCSaver
+    public class MDManager : ILoader, IXCSaver
     {
         private IXCConfigurationStorage _storage;
         private ITypeManager _typeManager;
@@ -21,6 +21,8 @@ namespace ZenPlatform.Configuration.Storage
 
 
         public IXCConfigurationStorage Storage => _storage;
+
+        public IUniqueCounter Counter => _storage;
         public ITypeManager TypeManager => _typeManager;
 
         public T LoadObject<T, C>(string path, bool loadTree = true)

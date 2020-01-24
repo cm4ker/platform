@@ -4,6 +4,7 @@ using System.Security.Policy;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.DataComponent;
@@ -18,7 +19,7 @@ namespace ZenPlatform.EntityComponent
 {
     public class EntityComponent : DataComponentBase
     {
-        public EntityComponent(IXCComponent component) : base(component)
+        public EntityComponent(IComponent component) : base(component)
         {
         }
 
@@ -37,6 +38,10 @@ namespace ZenPlatform.EntityComponent
             Generator = new EntityPlatformGenerator(Component); // new StagedGeneratorAst(Component);
 
             Migrator = new SingleEntityMigrator();
+
+            Loader = new ComponentLoader();
+            
+            
 
             RegisterSupportedTypes();
             RegisterCodeRules();

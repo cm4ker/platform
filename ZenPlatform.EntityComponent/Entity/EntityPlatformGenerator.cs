@@ -11,6 +11,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
@@ -25,6 +26,7 @@ using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.Shared.Tree;
+using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
@@ -39,14 +41,14 @@ namespace ZenPlatform.EntityComponent.Entity
     public class EntityPlatformGenerator : IPlatformGenerator
     {
         private Dictionary<XCSingleEntity, IType> _dtoCollections;
-        private readonly IXCComponent _component;
+        private readonly IComponent _component;
         private GeneratorRules _rules;
         private EntityObjectDtoGenerator _egDto;
         private EntityObjectClassGenerator _egClass;
         private EntityLinkClassGenerator _egLink;
         private EntityManagerGenerator _egManager;
 
-        public EntityPlatformGenerator(IXCComponent component)
+        public EntityPlatformGenerator(IComponent component)
         {
             _component = component;
             _rules = new GeneratorRules(component);

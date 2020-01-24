@@ -12,6 +12,7 @@ using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Configuration.Contracts.Migration;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Migration
 {
@@ -266,8 +267,8 @@ namespace ZenPlatform.Migration
         {
             var components = old.Data.Components.FullJoin(actual.Data.Components,
                 c => c.Info.ComponentId,
-                x => new { old = x, actual = default(IXCComponent) },
-                x => new { old = default(IXCComponent), actual = x },
+                x => new { old = x, actual = default(IComponent) },
+                x => new { old = default(IComponent), actual = x },
                 (x, y) => new { old = x, actual = y });
 
             var plan = new EntityMigrationPlan();

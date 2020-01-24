@@ -40,6 +40,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         IEnumerable<IProperty> Properties { get; }
 
         IEnumerable<ITable> Tables { get; }
+        Guid ComponentId { get; set; }
 
         ITypeSpec GetSpec();
     }

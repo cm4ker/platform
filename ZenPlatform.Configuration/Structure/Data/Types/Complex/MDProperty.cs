@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
@@ -13,7 +14,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     /// Если ваш компонент поддерживает свойства, их необходимо реализовывать через этот компонент
     /// </summary>
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public class MDProperty : Metadata
+    public class MDProperty : IMDProperty
     {
         private List<IXCType> _serializedTypes;
         private readonly List<IXCType> _types;
@@ -63,7 +64,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// <summary>
         /// Колонка привязанная к базе данных. При загрузке должна присваиваться движком
         /// </summary>
-        [XmlIgnore]
         public string DatabaseColumnName { get; set; }
 
         /// <summary>

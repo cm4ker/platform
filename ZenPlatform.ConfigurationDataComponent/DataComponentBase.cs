@@ -3,6 +3,7 @@ using System.Runtime.Caching;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.DataComponent.Entity;
@@ -30,7 +31,7 @@ namespace ZenPlatform.DataComponent
         /// Базовый компонент данных. Является основой для всех компонентов.
         /// </summary>
         /// <param name="component">Настройки компонента, сюда компонент может публиковать какие-то структуры для общения с другими компонентами</param>
-        protected DataComponentBase(IXCComponent component)
+        protected DataComponentBase(IComponent component)
         {
             Component = component;
 
@@ -43,7 +44,7 @@ namespace ZenPlatform.DataComponent
             //SupportedTypesManager = new SupportedTypeManager();
         }
 
-        protected IXCComponent Component { get; }
+        protected IComponent Component { get; }
 
 
         /// <summary>
@@ -60,6 +61,7 @@ namespace ZenPlatform.DataComponent
         public IDatabaseObjectsGenerator DatabaseObjectsGenerator { get; protected set; }
         public IEntityMigrator Migrator { get; protected set; }
         public IQueryInjector QueryInjector { get; protected set; }
+        public IComponentLoader Loader { get; protected set; }
 
 
         /*
