@@ -5,17 +5,25 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using dnlib.DotNet.Writer;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Storage;
+using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Configuration.TypeSystem;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
     public class XCRootConfig : IMDItem
     {
-        public string DataReference { get; set; }
+        public XCRootConfig()
+        {
+            ComponentReferences = new List<string>();
+        }
 
         public Guid ProjectId { get; set; }
 
@@ -23,42 +31,32 @@ namespace ZenPlatform.Configuration.Structure
 
         public string ProjectVersion { get; set; }
 
-
+        public List<string> ComponentReferences { get; set; }
     }
 
 
     [XmlRoot("Root")]
     public class XCRoot : IXCRoot, IMetaDataItem<XCRootConfig>
     {
-        private XCData _data;
-        private IXCRoles _roles;
-        private IXCConfigurationUniqueCounter _counter;
-        
+        private IUniqueCounter _counter;
+        private ITypeManager _manager;
+        private readonly ChildItemCollection<IXCRoot, IComponent> _components;
+
 
         public XCRoot()
         {
             ProjectId = Guid.NewGuid();
-
-            _data = new XCData();
-            _data.SetParent(this);
-            
-            Interface = new XCInterface();
-            Roles = new XCRoles();
-            Modules = new XCModules();
-            Schedules = new XCSchedules();
-            Languages = new XCLanguageList();
-            SessionSettings = new ChildItemCollection<IXCRoot, IXCSessionSetting>(this);
-
-            //Берем счетчик по умолчанию
+            _components = new ChildItemCollection<IXCRoot, IComponent>(this);
             _counter = new XCSimpleCounter();
         }
 
-        public IXCConfigurationUniqueCounter Counter => _counter;
+        public IUniqueCounter Counter => _counter;
 
         /// <summary>
         /// Идентификатор конфигурации
         /// </summary>
         public Guid ProjectId { get; set; }
+
 
         /// <summary>
         /// Имя конфигурации
@@ -70,55 +68,8 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public string ProjectVersion { get; set; }
 
-        /// <summary>
-        /// Настройки сессии
-        /// </summary>
-        public ChildItemCollection<IXCRoot, IXCSessionSetting> SessionSettings { get; }
 
-
-        /// <summary>
-        /// Раздел данных
-        /// </summary>
-        public IXCData Data
-        {
-            get => _data;
-        }
-
-        /// <summary>
-        /// Раздел  интерфейсов (UI)
-        /// </summary>
-        public IXCInterface Interface { get; set; }
-
-
-        /// <summary>
-        /// Раздел ролей
-        /// </summary>
-        public IXCRoles Roles
-        {
-            get => _roles;
-            set
-            {
-                _roles = value;
-                _roles.Parent = this;
-            }
-        }
-
-        /// <summary>
-        /// Раздел модулей
-        /// </summary>
-        public IXCModules Modules { get; set; }
-
-
-        /// <summary>
-        /// Раздел переодических заданий
-        /// </summary>
-        public IXCSchedules Schedules { get; set; }
-
-
-        /// <summary>
-        /// Раздел языков
-        /// </summary>
-        public IXCLanguageList Languages { get; set; }
+        public ITypeManager TypeManager => _manager;
 
         /// <summary>
         /// Загрузить концигурацию
@@ -127,53 +78,12 @@ namespace ZenPlatform.Configuration.Structure
         /// <returns></returns>
         public static IXCRoot Load(IXCConfigurationStorage storage)
         {
+            MDManager loader = new MDManager(storage, new TypeManager());
 
-            MDManager loader = new MDManager(storage);
+            var root = loader.LoadObject<XCRoot, XCRootConfig>("root");
+            root._manager = loader.TypeManager;
 
-            /*
-            XCRoot conf;
-            using (var stream = storage.GetRootBlob())
-                //Начальная загрузка 
-                conf = XCHelper.DeserializeFromStream<XCRoot>(stream);
-
-            //Сохраняем хранилище
-           // conf._storage = storage;
-            conf._counter = storage;
-
-            //Инициализация компонентов данных
-            conf.Data.Load();
-
-            //Инициализация ролевой системы
-            conf.Roles.Load();
-
-            //Инициализация параметров сессии
-            conf.LoadSessionSettings();
-
-            return conf;
-            */
-
-            return loader.LoadObject<XCRoot,XCRootConfig>("root");
-        }
-
-        private void LoadSessionSettings()
-        {
-            foreach (var setting in SessionSettings)
-            {
-                var configurationTypes = new List<IXCType>();
-
-                foreach (var propertyType in setting.Types)
-                {
-                    var type = Data.PlatformTypes.FirstOrDefault(x => x.Guid == propertyType.Guid);
-                    //Если по какой то причине тип поля не найден, в таком случае считаем, что конфигурация битая и выкидываем исключение
-                    if (type == null) throw new Exception("Invalid configuration");
-
-                    configurationTypes.Add(type);
-                }
-
-                //После того, как мы получили все типы мы обязаны очистить битые ссылки и заменить их на нормальные 
-                setting.Types.Clear();
-                setting.Types.AddRange(configurationTypes);
-            }
+            return root;
         }
 
         /// <summary>
@@ -194,51 +104,14 @@ namespace ZenPlatform.Configuration.Structure
         }
 
         /// <summary>
-        /// Сохранить конфигурацию
-        /// </summary>
-        public void Save()
-        {
-            /*
-            //Сохранение раздела данных
-            Data.Save();
-
-            //Сохранение раздела ролей
-            Roles.Save();
-
-            //Сохранение раздела интерфейсов
-
-            //Сохранение раздела ...
-
-            var ms = this.SerializeToStream();
-           // _storage.SaveRootBlob(ms);
-            //TODO: Необходимо инициировать сохранение для всех компонентов
-            */
-            throw new NotImplementedException();
-
-
-        }
-
-        /// <summary>
         /// Созранить объект в контексте другого хранилища
         /// </summary>
         /// <param name="storage"></param>
         public void Save(IXCConfigurationStorage storage)
         {
-
-
-            MDManager loader = new MDManager(storage);
+            MDManager loader = new MDManager(storage, _manager);
 
             loader.SaveObject("root", this);
-            /*
-            //Всё просто, подменяем хранилище, сохраняем, заменяем обратно
-            //var actualStorage = _storage;
-            var actualCounter = _counter;
-           // _storage = storage;
-            _counter = storage;
-            Save();
-            //_storage = actualStorage;
-            _counter = actualCounter;
-            */
         }
 
         /// <summary>
@@ -253,30 +126,34 @@ namespace ZenPlatform.Configuration.Structure
             throw new NotImplementedException();
         }
 
-        public void Initialize(IXCLoader loader, XCRootConfig settings)
+        public void Initialize(ILoader loader, XCRootConfig settings)
         {
             ProjectId = settings.ProjectId;
             ProjectName = settings.ProjectName;
             ProjectVersion = settings.ProjectVersion;
 
-            _data = loader.LoadObject<XCData, XCDataConfig>(settings.DataReference);
-            _data.SetParent(this);
-            _data.Load();
+            foreach (var reference in settings.ComponentReferences)
+            {
+                loader.LoadObject<MDComponent, MDComponent>(reference);
+            }
         }
 
         public IMDItem Store(IXCSaver saver)
         {
-            saver.SaveObject("Data", _data);
-
-            return new XCRootConfig()
-            { 
-                DataReference = "Data",
+            var settings = new XCRootConfig()
+            {
                 ProjectId = ProjectId,
                 ProjectName = ProjectName,
                 ProjectVersion = ProjectVersion
-
             };
-            
+
+            foreach (var component in TypeManager.Components)
+            {
+                saver.SaveObject(component.Info.ComponentName, component.Metadata);
+                settings.ComponentReferences.Add(component.Info.ComponentName);
+            }
+
+            return settings;
         }
     }
 }

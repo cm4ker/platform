@@ -8,8 +8,6 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     {
         public virtual Guid Guid { get; set; }
 
-        public virtual uint Id { get; set; }
-
         public virtual IXCObjectType ParentType => throw new NotImplementedException();
 
         public virtual string Name { get; set; }

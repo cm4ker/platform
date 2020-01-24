@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 {
@@ -54,7 +55,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
             throw new NotImplementedException();
         }
 
-        public IXCComponent Parent { get; set; }
+        public IComponent Parent { get; set; }
 
         public IXCObjectType ParentType { get; protected set; }
 

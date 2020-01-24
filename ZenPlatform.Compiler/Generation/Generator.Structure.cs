@@ -50,7 +50,7 @@ namespace ZenPlatform.Compiler.Generation
             {
                 _varManager = new GlobalVarManager(_mode, _ts);
 
-                foreach (var component in _conf.Data.Components)
+                foreach (var component in _conf.Components)
                 {
                     component.ComponentImpl.Generator.StageGlobalVar(_varManager);
                 }
@@ -88,14 +88,13 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-
         /// <summary>
         /// Создание инфраструктуры всеми компонентами, для последующего использования внутри компонентов
         /// </summary>
         private void BuildInfrastructure()
         {
             if (_conf != null)
-                foreach (var dataComponent in _conf.Data.Components)
+                foreach (var dataComponent in _conf.Components)
                 {
                     dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm, _parameters.TargetDatabaseType,
                         _mode);

@@ -13,7 +13,7 @@ namespace ZenPlatform.Configuration.TypeSystem
             get { return "DateTime"; }
         }
 
-        internal DateTimeType(TypeSystem ts) : base(ts)
+        internal DateTimeType(TypeManager ts) : base(ts)
         {
         }
     }

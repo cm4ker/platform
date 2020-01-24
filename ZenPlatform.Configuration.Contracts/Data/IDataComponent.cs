@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Configuration.Contracts.Data.Entity;
+﻿using System;
+using ZenPlatform.Configuration.Contracts.Data.Entity;
 
 namespace ZenPlatform.Configuration.Contracts.Data
 {
@@ -40,10 +41,11 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// </summary>
         IEntityMigrator Migrator { get; }
 
-
         /// <summary>
         /// Инъектор запросов
         /// </summary>
         IQueryInjector QueryInjector { get; }
+
+        IComponentLoader Loader { get; }
     }
 }

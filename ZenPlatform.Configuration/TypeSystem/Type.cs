@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using dnlib.DotNet;
+using ZenPlatform.Configuration.Contracts.Store;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
+using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class Type
+    public class Type : IType
     {
-        private readonly TypeSystem _ts;
+        private readonly TypeManager _ts;
 
-        internal Type(TypeSystem ts)
+        internal Type(TypeManager ts)
         {
             _ts = ts;
         }
@@ -16,6 +21,8 @@ namespace ZenPlatform.Configuration.TypeSystem
         public virtual Guid Id { get; set; }
 
         public virtual Guid? ParentId { get; set; }
+
+        public virtual Guid ComponentId { get; set; }
 
         public virtual uint SystemId { get; set; }
 
@@ -38,21 +45,23 @@ namespace ZenPlatform.Configuration.TypeSystem
         public virtual bool IsScalePrecision { get; set; }
 
         //TODO: Use scope in main project
-        public bool IsCodeAccess { get; set; }
+        public bool IsCodeAvaliable { get; set; }
+        
+        public bool IsQueryAvaliable { get; set; }
 
         public virtual bool IsTypeSpec => false;
 
         internal bool IsRegistrated { get; set; }
 
-        public Metadata Metadata { get; set; }
+        public IMDType Metadata { get; set; }
 
         public object Bag { get; set; }
 
-        public IEnumerable<Property> Properties => _ts.Properties.Where(x => x.ParentId == Id);
-        public IEnumerable<Table> Tables => _ts.Tables.Where(x => x.ParentId == Id);
+        public IEnumerable<IProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
+        public IEnumerable<ITable> Tables => _ts.Tables.Where(x => x.ParentId == Id);
 
 
-        public TypeSpec GetSpec()
+        public ITypeSpec GetSpec()
         {
             return _ts.Type(this);
         }

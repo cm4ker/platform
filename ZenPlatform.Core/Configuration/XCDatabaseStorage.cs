@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
@@ -14,6 +15,8 @@ namespace ZenPlatform.Core.Configuration
     {
         private readonly string _tableName;
         private readonly DataContext _context;
+        private Hashtable _systemIds;
+
         private uint _maxId = 100;
 
         //TODO: Посмотерть использование класса InternalDbContext в качестве аргумента конструктора
@@ -21,6 +24,7 @@ namespace ZenPlatform.Core.Configuration
         {
             _tableName = tableName;
             _context = context;
+            _systemIds = new Hashtable();
         }
 
         public Stream GetBlob(string name, string route)
@@ -133,10 +137,15 @@ namespace ZenPlatform.Core.Configuration
 
         public void GetId(Guid confId, ref uint uid)
         {
-            if (uid != 0)
-                return;
-
-            uid = _maxId++;
+            if (_systemIds.Contains(confId))
+            {
+                uid = (uint) _systemIds[confId];
+            }
+            else
+            {
+                uid = _maxId++;
+                _systemIds.Add(confId, uid);
+            }
         }
     }
 }

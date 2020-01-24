@@ -1,6 +1,7 @@
 ﻿using System;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.EntityComponent.Configuration;
@@ -10,9 +11,9 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
 {
     public class SingleEntityQueryInjector : IQueryInjector
     {
-        private readonly IXCComponent _component;
+        private readonly IComponent _component;
 
-        public SingleEntityQueryInjector(IXCComponent component)
+        public SingleEntityQueryInjector(IComponent component)
         {
             _component = component;
         }

@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
@@ -19,24 +20,18 @@ namespace ZenPlatform.Configuration.Structure
 {
     public class XCDataConfig : IMDItem
     {
-        public XCDataConfig()
-        {
-            ComponentReferences = new List<string>();
-        }
-        public List<string> ComponentReferences { get; set; }
+    
 
     }
     public class XCData : IXCData, IMetaDataItem<XCDataConfig>
     {
         private IXCRoot _parent;
         private readonly ObservableCollection<IXCType> _platformTypes;
-        private readonly ChildItemCollection<IXCData, IXCComponent> _components;
-
         
 
         public XCData()
         {
-            _components = new ChildItemCollection<IXCData, IXCComponent>(this);
+            _components = new ChildItemCollection<IXCData, IComponent>(this);
             _platformTypes = new ObservableCollection<IXCType>();
 
             //Инициализируем каждый тип, присваеваем ему идентификатор базы данных
@@ -57,29 +52,17 @@ namespace ZenPlatform.Configuration.Structure
             };
         }
 
-        public ChildItemCollection<IXCData, IXCComponent> Components => _components;
+        public ChildItemCollection<IXCData, IComponent> Components => _components;
 
         /// <summary>
         /// Загрузить дерективу и все зависимости
         /// </summary>
         public void Load()
         {
-            //Инициализируем примитивные типы платформы, они нужны для правильного построения зависимостей
-            /*
-            _platformTypes.Add(new XCBinary());
-            _platformTypes.Add(new XCString());
-            _platformTypes.Add(new XCDateTime());
-            _platformTypes.Add(new XCBoolean());
-            _platformTypes.Add(new XCNumeric());
-            _platformTypes.Add(new XCGuid());
-            */
-            //LoadComponents();
-
             foreach(var component in _components)
                 foreach (var type in component.Types)
                     _platformTypes.Add(type);
 
-            LoadDependencies();
         }
 
         #region Loading
@@ -166,13 +149,13 @@ namespace ZenPlatform.Configuration.Structure
             _platformTypes.Add(type);
         }
 
-        public IXCComponent GetComponentByName(string name)
+        public IComponent GetComponentByName(string name)
         {
             return Components.FirstOrDefault(x => x.Info.ComponentName == name) ??
                    throw new Exception($"Component with name {name} not found");
         }
 
-        public void Initialize(IXCLoader loader, XCDataConfig settings)
+        public void Initialize(ILoader loader, XCDataConfig settings)
         {
             foreach (var reference in settings.ComponentReferences)
             {
@@ -180,11 +163,7 @@ namespace ZenPlatform.Configuration.Structure
                 ((IChildItem<IXCData>)component).Parent = this;
                 
                 _components.Add(component);
-                
             }
-
-            
-
         }
 
         public IMDItem Store(IXCSaver saver)

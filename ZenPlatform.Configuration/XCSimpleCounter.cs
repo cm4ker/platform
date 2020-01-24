@@ -6,7 +6,7 @@ using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Configuration
 {
-    public class XCSimpleCounter : IXCConfigurationUniqueCounter
+    public class XCSimpleCounter : IUniqueCounter
     {
         private uint _maxId = 100;
 
