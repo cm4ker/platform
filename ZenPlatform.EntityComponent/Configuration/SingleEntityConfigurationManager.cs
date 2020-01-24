@@ -7,13 +7,14 @@ using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.DataComponent.Configuration;
 using ZenPlatform.Shared.ParenChildCollection;
+using IComponent = ZenPlatform.Configuration.Contracts.TypeSystem.IComponent;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
     /// <inheritdoc />
     public class SingleEntityConfigurationManager : ConfigurationManagerBase
     {
-        public SingleEntityConfigurationManager(IXCComponent component) : base(component)
+        public SingleEntityConfigurationManager(IComponent component) : base(component)
         {
         }
 

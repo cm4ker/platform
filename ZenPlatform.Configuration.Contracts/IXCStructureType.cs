@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
 {
-    public interface IXCStructureType : IXCType, IChildItem<IXCComponent>
+    public interface IXCStructureType : IXCType, IChildItem<IComponent>
     {
         /// <summary>
         /// Это ссылочный тип

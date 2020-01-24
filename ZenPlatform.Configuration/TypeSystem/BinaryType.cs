@@ -4,7 +4,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 {
     public class BinaryType : Type
     {
-        internal BinaryType(TypeSystem ts) : base(ts)
+        internal BinaryType(TypeManager ts) : base(ts)
         {
         }
 

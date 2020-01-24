@@ -8,7 +8,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// Стратегия загрузки/сохранения данных конфигурации.
     /// Есть возмо
     /// </summary>
-    public interface IXCConfigurationStorage : IXCConfigurationUniqueCounter
+    public interface IXCConfigurationStorage : IUniqueCounter
     {
         /// <summary>
         /// Получить двоичный объект
@@ -101,7 +101,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// <summary>
     /// Интерфейс уникального счётчика
     /// </summary>
-    public interface IXCConfigurationUniqueCounter
+    public interface IUniqueCounter
     {
         /// <summary>
         /// Получить идентификатор. Для файлового хранилища всё просто, он не привязан к данным, поэтому здесь будет просто
@@ -109,6 +109,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         /// <param name="confId">Идентификатор конфигурации</param>
         /// <param name="oldId">Старый идентификатор, елси 0, в таком случае присваивается новый, елси не 0, тогда присваивается старый идентификатор</param>
-        void GetId(Guid confId, ref uint oldId);
+        uint GetId(Guid confId);
     }
 }

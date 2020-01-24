@@ -7,7 +7,7 @@ namespace ZenPlatform.Configuration.TypeSystem
     /// </summary>
     public class StringType : Type
     {
-        internal StringType(TypeSystem ts) : base(ts)
+        internal StringType(TypeManager ts) : base(ts)
         {
         }
 

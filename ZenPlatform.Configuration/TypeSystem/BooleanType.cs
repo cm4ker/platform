@@ -4,7 +4,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 {
     public class BooleanType : Type
     {
-        internal BooleanType(TypeSystem ts) : base(ts)
+        internal BooleanType(TypeManager ts) : base(ts)
         {
         }
 

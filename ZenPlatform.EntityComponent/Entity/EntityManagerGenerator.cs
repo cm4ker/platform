@@ -12,6 +12,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Data;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
@@ -45,10 +46,10 @@ namespace ZenPlatform.EntityComponent.Entity
      */
     public class EntityManagerGenerator
     {
-        private readonly IXCComponent _component;
+        private readonly IComponent _component;
         private readonly QueryMachine _qm;
 
-        public EntityManagerGenerator(IXCComponent component)
+        public EntityManagerGenerator(IComponent component)
         {
             _component = component;
             _qm = new QueryMachine();

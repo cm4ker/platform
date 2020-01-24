@@ -13,7 +13,7 @@ namespace ZenPlatform.Configuration.TypeSystem
             get { return "Guid"; }
         }
 
-        internal GuidType(TypeSystem ts) : base(ts)
+        internal GuidType(TypeManager ts) : base(ts)
         {
         }
     }
