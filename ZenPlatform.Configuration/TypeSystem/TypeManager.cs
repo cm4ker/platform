@@ -4,6 +4,15 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
+    public class TypeSettings
+    {
+        public Guid TypeId { get; set; }
+
+        public uint SystemId { get; set; }
+
+        public string DatabaseName { get; set; }
+    }
+
     public class TypeManager : ITypeManager
     {
         private List<IType> _types;
@@ -11,7 +20,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         private List<IPropertyType> _propertyTypes;
         private List<ITable> _tables;
         private List<IComponent> _components;
-
+        private List<TypeSettings> _typeSettings;
 
         private IntType _intType;
         private DateTimeType _dateTimeType;
@@ -74,7 +83,7 @@ namespace ZenPlatform.Configuration.TypeSystem
             _propertyTypes.Add(type);
         }
 
-        public void Regsiter(IComponent component)
+        public void Register(IComponent component)
         {
             _components.Add(component);
         }
