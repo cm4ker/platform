@@ -26,7 +26,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         IPropertyType PropertyType();
         ITable Table();
         void Verify();
-        void Regsiter(IComponent component);
+        void Register(IComponent component);
         IComponent Component();
     }
 }
