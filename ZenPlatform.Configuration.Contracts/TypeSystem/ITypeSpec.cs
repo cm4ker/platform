@@ -5,6 +5,5 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         int Scale { get; set; }
         int Precision { get; set; }
         int Size { get; set; }
-        bool IsNullable { get; set; }
     }
 }
