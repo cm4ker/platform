@@ -6,19 +6,6 @@ using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Configuration
 {
-    public class XCSimpleCounter : IUniqueCounter
-    {
-        private uint _maxId = 100;
-
-        public void GetId(Guid confId, ref uint oldId)
-        {
-            if (oldId != 0)
-                return;
-
-            oldId = _maxId++;
-        }
-    }
-
     public class XCConfManipulator : IConfigurationManipulator
     {
         public IXCRoot Load(IXCConfigurationStorage storage)
@@ -52,12 +39,11 @@ namespace ZenPlatform.Configuration
 
             if (storage1.Blobs.Count != storage2.Blobs.Count) return false;
 
-            var join = storage1.Blobs.Join(storage2.Blobs, k => k.Key, k => k.Key, (l, r) => new { left = l, right = r });
+            var join = storage1.Blobs.Join(storage2.Blobs, k => k.Key, k => k.Key, (l, r) => new {left = l, right = r});
 
             foreach (var item in join)
             {
                 if (!item.left.Value.SequenceEqual(item.right.Value)) return false;
-
             }
 
             return true;

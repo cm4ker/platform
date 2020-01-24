@@ -15,5 +15,6 @@ namespace ZenPlatform.Configuration.Contracts.Store
 
         IUniqueCounter Counter { get; }
         ITypeManager TypeManager { get; }
+        ISettingsManager Settings { get; }
     }
 }

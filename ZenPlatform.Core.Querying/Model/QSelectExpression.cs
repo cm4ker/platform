@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 
 namespace ZenPlatform.Core.Querying.Model
@@ -10,7 +11,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QSelectExpression : QField
     {
-        public override IEnumerable<IXCType> GetExpressionType()
+        public override IEnumerable<IType> GetExpressionType()
         {
             return ((QExpression) Childs.First()).GetExpressionType();
         }
@@ -39,7 +40,7 @@ namespace ZenPlatform.Core.Querying.Model
             return Property.Name;
         }
 
-        public override IEnumerable<IXCType> GetExpressionType()
+        public override IEnumerable<IType> GetExpressionType()
         {
             return Property.Types;
         }
@@ -52,18 +53,16 @@ namespace ZenPlatform.Core.Querying.Model
 
     public partial class QLookupField : QField
     {
-        public IEnumerable<IXCProperty> GetProperties()
+        public IEnumerable<IProperty> GetProperties()
         {
             return BaseExpression.GetExpressionType().Where(x =>
-                    x is IXCObjectType ot && ot.GetProperties().Any(p => p.Name == PropName))
-                .Select(x => ((IXCObjectType) x).GetPropertyByName(PropName));
+                    x.IsObject && x.Properties.Any(p => p.Name == PropName))
+                .Select(x => x.FindPropertyByName(PropName));
         }
 
-        public override IEnumerable<IXCType> GetExpressionType()
+        public override IEnumerable<IType> GetExpressionType()
         {
-            return BaseExpression.GetExpressionType().Where(x =>
-                    x is IXCObjectType ot && ot.GetProperties().Any(p => p.Name == PropName))
-                .SelectMany(x => ((IXCObjectType) x).GetPropertyByName(PropName).Types);
+            return GetProperties().SelectMany(x => x.Types);
         }
 
         public override string GetName()

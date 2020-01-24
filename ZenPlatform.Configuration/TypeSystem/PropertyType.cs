@@ -11,5 +11,6 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public Guid PropertyId { get; set; }
         public Guid TypeId { get; set; }
+        public ITypeManager TypeManager { get; }
     }
 }

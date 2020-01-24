@@ -46,7 +46,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         //TODO: Use scope in main project
         public bool IsCodeAvaliable { get; set; }
-        
+
         public bool IsQueryAvaliable { get; set; }
 
         public virtual bool IsTypeSpec => false;
@@ -65,5 +65,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         {
             return _ts.Type(this);
         }
+
+        public ITypeManager TypeManager => _ts;
     }
 }

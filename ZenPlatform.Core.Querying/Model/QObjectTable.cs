@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 
 namespace ZenPlatform.Core.Querying.Model
@@ -13,7 +14,7 @@ namespace ZenPlatform.Core.Querying.Model
         private List<QField> _fields;
 
 
-        public QObjectTable(IXCObjectType type)
+        public QObjectTable(IType type)
         {
             ObjectType = type;
         }
@@ -21,11 +22,11 @@ namespace ZenPlatform.Core.Querying.Model
         /// <summary>
         /// Ссылка на тип объекта
         /// </summary>
-        public IXCObjectType ObjectType { get; }
+        public IType ObjectType { get; }
 
         public override IEnumerable<QField> GetFields()
         {
-            return _fields ??= ObjectType.GetProperties().Select(x => (QField) new QSourceFieldExpression(this, x))
+            return _fields ??= ObjectType.Properties.Select(x => (QField) new QSourceFieldExpression(this, x))
                 .ToList();
         }
 

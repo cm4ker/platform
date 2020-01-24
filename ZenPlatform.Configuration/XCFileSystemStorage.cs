@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Xml.Linq;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration
 {
@@ -73,6 +74,21 @@ namespace ZenPlatform.Configuration
             {
                 d.Dispose();
             }
+        }
+
+        public uint GetId(Guid confId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IObjectSetting> GetSettings()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddOrUpdateSetting(IObjectSetting setting)
+        {
+            throw new NotImplementedException();
         }
     }
 }

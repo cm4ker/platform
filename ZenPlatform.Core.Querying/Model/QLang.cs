@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
@@ -11,7 +12,7 @@ namespace ZenPlatform.Core.Querying.Model
     public class QLang
     {
         private readonly IXCRoot _conf;
-        
+
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
@@ -131,7 +132,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void ld_component(string componentName)
         {
-            var component = _conf.Data.Components.First(x => x.Info.ComponentName == componentName);
+            var component = _conf.TypeManager.FindComponentByName(componentName);
             _logicStack.Push(component);
         }
 
@@ -143,7 +144,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void ld_object_type(string typeName)
         {
-            var type = _logicStack.PopComponent().GetTypeByName(typeName);
+            var type = _logicStack.PopComponent().FindTypeByName(typeName);
             var ds = new QObjectTable(type);
             _logicStack.Push(ds);
             if (CurrentScope != null)

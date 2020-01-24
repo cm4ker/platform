@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.Contracts
 {
@@ -8,7 +10,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// Стратегия загрузки/сохранения данных конфигурации.
     /// Есть возмо
     /// </summary>
-    public interface IXCConfigurationStorage : IUniqueCounter
+    public interface IXCConfigurationStorage : IUniqueCounter, ISettingsManager
     {
         /// <summary>
         /// Получить двоичный объект
@@ -36,7 +38,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// Сохранить корневой объект
         /// </summary>
         void SaveRootBlob(Stream stream);
-
     }
 
 
@@ -110,5 +111,13 @@ namespace ZenPlatform.Configuration.Contracts
         /// <param name="confId">Идентификатор конфигурации</param>
         /// <param name="oldId">Старый идентификатор, елси 0, в таком случае присваивается новый, елси не 0, тогда присваивается старый идентификатор</param>
         uint GetId(Guid confId);
+    }
+
+
+    public interface ISettingsManager
+    {
+        IEnumerable<IObjectSetting> GetSettings();
+
+        void AddOrUpdateSetting(IObjectSetting setting);
     }
 }
