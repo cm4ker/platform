@@ -34,7 +34,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         private ITypeManager _tm;
 
         public Guid Id => _info?.ComponentId ?? Guid.Empty;
-
+        public string Name => _info?.ComponentName;
 
         public Component(ITypeManager tm)
         {
@@ -55,6 +55,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         {
             get => _isLoaded;
         }
+
 
         public Assembly ComponentAssembly
         {
@@ -137,5 +138,6 @@ namespace ZenPlatform.Configuration.TypeSystem
         }
 
         public IMDComponent Metadata { get; set; }
+        public ITypeManager TypeManager { get; }
     }
 }

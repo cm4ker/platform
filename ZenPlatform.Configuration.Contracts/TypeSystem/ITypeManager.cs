@@ -28,5 +28,6 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         void Verify();
         void Register(IComponent component);
         IComponent Component();
+        void LoadSettings(IEnumerable<IObjectSetting> settings);
     }
 }

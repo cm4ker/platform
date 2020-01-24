@@ -21,8 +21,6 @@ namespace ZenPlatform.Configuration.Contracts
 
     public interface IXCRoot
     {
-        IUniqueCounter Counter { get; }
-
         /// <summary>
         /// Идентификатор конфигурации
         /// </summary>

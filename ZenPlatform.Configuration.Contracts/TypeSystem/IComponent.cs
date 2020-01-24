@@ -5,9 +5,13 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts.TypeSystem
 {
-    public interface IComponent : IChildItem<IXCRoot>
+    public interface ITypeManagerProvider
     {
+        ITypeManager TypeManager { get; }
+    }
 
+    public interface IComponent : ITypeManagerProvider, IChildItem<IXCRoot>
+    {
         public Guid Id { get; }
 
         /// <summary>
@@ -16,12 +20,15 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         IXCComponentInformation Info { get; }
 
         bool IsLoaded { get; }
-        
+
+        string Name { get; }
+
         Assembly ComponentAssembly { get; set; }
 
         IComponentLoader Loader { get; }
 
         IDataComponent ComponentImpl { get; }
+
         IMDComponent Metadata { get; set; }
 
         /// <summary>
