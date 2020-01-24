@@ -10,7 +10,9 @@ namespace ZenPlatform.Configuration.TypeSystem
         private List<IProperty> _properties;
         private List<IPropertyType> _propertyTypes;
         private List<ITable> _tables;
-        
+        private List<IComponent> _components;
+
+
         private IntType _intType;
         private DateTimeType _dateTimeType;
         private BinaryType _binaryType;
@@ -49,6 +51,8 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public IReadOnlyList<ITable> Tables => _tables;
 
+        public IReadOnlyList<IComponent> Components => _components;
+
         public void Register(IType type)
         {
             if (_types.Exists(x => x.Id == type.Id))
@@ -68,6 +72,16 @@ namespace ZenPlatform.Configuration.TypeSystem
         public void Register(IPropertyType type)
         {
             _propertyTypes.Add(type);
+        }
+
+        public void Regsiter(IComponent component)
+        {
+            _components.Add(component);
+        }
+
+        public IComponent Component()
+        {
+            return new Component(this);
         }
 
         public IType Type()

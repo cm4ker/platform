@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Editors;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
@@ -13,9 +14,9 @@ namespace ZenPlatform.DataComponent.Configuration
     /// </summary>
     public abstract class ConfigurationManagerBase : IXComponentManager
     {
-        private readonly IXCComponent _component;
+        private readonly IComponent _component;
 
-        protected ConfigurationManagerBase(IXCComponent component)
+        protected ConfigurationManagerBase(IComponent component)
         {
             _component = component;
         }
@@ -23,7 +24,7 @@ namespace ZenPlatform.DataComponent.Configuration
         /// <summary>
         /// Компонент
         /// </summary>
-        protected IXCComponent Component => _component;
+        protected IComponent Component => _component;
 
         /// <inheritdoc />
         public virtual ITypeEditor Create()

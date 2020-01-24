@@ -11,6 +11,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
@@ -26,9 +27,9 @@ namespace ZenPlatform.EntityComponent.Entity
 {
     public class EntityObjectClassGenerator
     {
-        private readonly IXCComponent _component;
+        private readonly IComponent _component;
 
-        public EntityObjectClassGenerator(IXCComponent component)
+        public EntityObjectClassGenerator(IComponent component)
         {
             _component = component;
         }

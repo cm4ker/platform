@@ -16,6 +16,8 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public Guid Id { get; set; }
 
+        public virtual uint SystemId { get; set; }
+        
         public string Name { get; set; }
 
         public Guid ParentId { get; set; }

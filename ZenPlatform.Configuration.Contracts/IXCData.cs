@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCData : IChildItem<IXCRoot>
     {
-        ChildItemCollection<IXCData, IXCComponent> Components { get; }
+        ChildItemCollection<IXCData, IComponent> Components { get; }
 
         /// <summary>
         /// Все типы платформы
@@ -33,6 +34,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// <param name="type"></param>
         void RegisterType(IXCType type);
 
-        IXCComponent GetComponentByName(string name);
+        IComponent GetComponentByName(string name);
     }
 }

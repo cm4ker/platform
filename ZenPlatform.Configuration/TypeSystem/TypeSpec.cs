@@ -3,8 +3,6 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    
-
     public class TypeSpec : Type, ITypeSpec
     {
         private readonly IType _type;
@@ -26,16 +24,12 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public int Size { get; set; }
 
-        public bool IsNullable { get; set; }
-
         public override bool IsTypeSpec => true;
 
         private string CalcName()
         {
             var result = _type.Name;
 
-            if (IsNullable)
-                result += "?";
             if (_type.IsSizable)
                 result += $"({Size})";
             if (_type.IsScalePrecision)

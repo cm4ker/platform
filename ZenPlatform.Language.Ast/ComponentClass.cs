@@ -1,6 +1,7 @@
 ﻿using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 
@@ -13,7 +14,7 @@ namespace ZenPlatform.Language.Ast
             return visitor.VisitTypeEntity(this);
         }
 
-        public IXCComponent Component { get; }
+        public IComponent Component { get; }
 
         
         /*
@@ -23,7 +24,7 @@ namespace ZenPlatform.Language.Ast
 
         public object Bag { get; set; }
 
-        public ComponentAstBase(CompilationMode compilationMode, IXCComponent component, IXCType type,
+        public ComponentAstBase(CompilationMode compilationMode, IComponent component, IXCType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(lineInfo
             , tb, name)
@@ -49,7 +50,7 @@ namespace ZenPlatform.Language.Ast
     /// </summary>
     public class ComponentClass : ComponentAstBase
     {
-        public ComponentClass(CompilationMode compilationMode, IXCComponent component, IXCType type,
+        public ComponentClass(CompilationMode compilationMode, IComponent component, IXCType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
         {
@@ -62,7 +63,7 @@ namespace ZenPlatform.Language.Ast
     /// </summary>
     public class ComponentModule : ComponentAstBase
     {
-        public ComponentModule(CompilationMode compilationMode, IXCComponent component, IXCObjectType type,
+        public ComponentModule(CompilationMode compilationMode, IComponent component, IXCObjectType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
         {

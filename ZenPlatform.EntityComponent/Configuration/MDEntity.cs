@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class MDEntity : Metadata, IMDItem, IMetaData<MDEntity>
+    public class MDEntity : IMDType, IMDItem, IMetaData<MDEntity>
     {
         public MDEntity()
         {
@@ -44,7 +45,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public Guid DtoId { get; set; }
 
-        public void Initialize(IXCLoader loader, MDEntity settings)
+        public void Initialize(ILoader loader, MDEntity settings)
         {
         }
 

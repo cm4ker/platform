@@ -13,6 +13,7 @@ using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.TypeSystem;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
@@ -37,29 +38,25 @@ namespace ZenPlatform.Configuration.Structure
     [XmlRoot("Root")]
     public class XCRoot : IXCRoot, IMetaDataItem<XCRootConfig>
     {
-        private IXCConfigurationUniqueCounter _counter;
+        private IUniqueCounter _counter;
         private ITypeManager _manager;
-        private readonly ChildItemCollection<IXCRoot, IXCComponent> _components;
+        private readonly ChildItemCollection<IXCRoot, IComponent> _components;
 
 
         public XCRoot()
         {
             ProjectId = Guid.NewGuid();
-
-            _components = new ChildItemCollection<IXCRoot, IXCComponent>(this);
-
-            
-
-            //Берем счетчик по умолчанию
+            _components = new ChildItemCollection<IXCRoot, IComponent>(this);
             _counter = new XCSimpleCounter();
         }
 
-        public IXCConfigurationUniqueCounter Counter => _counter;
+        public IUniqueCounter Counter => _counter;
 
         /// <summary>
         /// Идентификатор конфигурации
         /// </summary>
         public Guid ProjectId { get; set; }
+
 
         /// <summary>
         /// Имя конфигурации
@@ -71,7 +68,6 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         public string ProjectVersion { get; set; }
 
-        public ChildItemCollection<IXCRoot, IXCComponent> Components => _components;
 
         public ITypeManager TypeManager => _manager;
 
@@ -130,7 +126,7 @@ namespace ZenPlatform.Configuration.Structure
             throw new NotImplementedException();
         }
 
-        public void Initialize(IXCLoader loader, XCRootConfig settings)
+        public void Initialize(ILoader loader, XCRootConfig settings)
         {
             ProjectId = settings.ProjectId;
             ProjectName = settings.ProjectName;
@@ -138,9 +134,7 @@ namespace ZenPlatform.Configuration.Structure
 
             foreach (var reference in settings.ComponentReferences)
             {
-                var component = loader.LoadObject<XCComponent, XCComponentConfig>(reference);
-                ((IChildItem<IXCRoot>) component).Parent = this;
-                _components.Add(component);
+                loader.LoadObject<MDComponent, MDComponent>(reference);
             }
         }
 
@@ -153,9 +147,9 @@ namespace ZenPlatform.Configuration.Structure
                 ProjectVersion = ProjectVersion
             };
 
-            foreach (var component in _components)
+            foreach (var component in TypeManager.Components)
             {
-                saver.SaveObject(component.Info.ComponentName, (XCComponent) component);
+                saver.SaveObject(component.Info.ComponentName, component.Metadata);
                 settings.ComponentReferences.Add(component.Info.ComponentName);
             }
 

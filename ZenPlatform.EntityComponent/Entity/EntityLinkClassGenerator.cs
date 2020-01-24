@@ -6,19 +6,21 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
+using IProperty = ZenPlatform.Compiler.Contracts.IProperty;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
     public class EntityLinkClassGenerator
     {
-        private readonly IXCComponent _component;
+        private readonly IComponent _component;
 
-        public EntityLinkClassGenerator(IXCComponent component)
+        public EntityLinkClassGenerator(IComponent component)
         {
             _component = component;
         }

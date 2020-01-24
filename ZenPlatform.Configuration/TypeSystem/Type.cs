@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using ZenPlatform.Configuration.Contracts;
+using dnlib.DotNet;
+using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
@@ -19,6 +21,8 @@ namespace ZenPlatform.Configuration.TypeSystem
         public virtual Guid Id { get; set; }
 
         public virtual Guid? ParentId { get; set; }
+
+        public virtual Guid ComponentId { get; set; }
 
         public virtual uint SystemId { get; set; }
 
@@ -59,13 +63,5 @@ namespace ZenPlatform.Configuration.TypeSystem
         {
             return _ts.Type(this);
         }
-    }
-
-
-    public class Component
-    {
-        public Guid ComponentId { get; set; }
-
-        public IXCComponent Metadata { get; set; }
     }
 }

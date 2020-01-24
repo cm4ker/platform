@@ -6,7 +6,7 @@
         Title="ZenPlatform.IDE"
         Height="500" Width="800"
         Design.Height="200" Design.Width="300"
-        x:Class="ZenPlatform.IDE.Views.MainWindow">
+        x:Class="ZenPlatform.IDE.Views.MainWindow" >
 <Design.DataContext>
     <vm:MainWindowViewModel/>
   </Design.DataContext>

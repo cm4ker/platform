@@ -1,46 +1,28 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using ZenPlatform.Configuration.Contracts.Data;
-using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Shared.ParenChildCollection;
 
-namespace ZenPlatform.Configuration.Contracts
+namespace ZenPlatform.Configuration.Contracts.TypeSystem
 {
-    public interface IXCBlob
+    public interface IComponent : IChildItem<IXCRoot>
     {
-        string Name { get; set; }
 
-        Uri URI { get; set; }
+        public Guid Id { get; }
 
-        string Hash { get; set; }
-    }
-
-    public interface IXCBlobCollection : IList<IXCBlob>
-    {
-    }
-
-
-    public interface IXCComponent : IChildItem<IXCRoot>
-    {
         /// <summary>
         /// Информация о компоненте
         /// </summary>
         IXCComponentInformation Info { get; }
 
         bool IsLoaded { get; }
-
-
-        /// <summary>
-        /// Включенные файлы в компонент. Эти файлы будут загружены строго после загрузки компонента
-        /// </summary>
-        // IXCBlobCollection Include { get; set; }
-
+        
         Assembly ComponentAssembly { get; set; }
 
-        IXComponentLoader Loader { get; }
+        IComponentLoader Loader { get; }
 
         IDataComponent ComponentImpl { get; }
+        IMDComponent Metadata { get; set; }
 
         /// <summary>
         /// Зарегистрировать правило для генерации кода
@@ -58,10 +40,5 @@ namespace ZenPlatform.Configuration.Contracts
         CodeGenRule GetCodeRule(CodeGenRuleType type);
 
         string GetCodeRuleExpression(CodeGenRuleType type);
-
-
-        IXCObjectType GetTypeByName(string typeName);
-
-
     }
 }

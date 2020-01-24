@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
@@ -10,12 +11,12 @@ namespace ZenPlatform.EntityComponent.Entity
 {
     public class GeneratorRules : IEntityGenerator
     {
-        public GeneratorRules(IXCComponent component)
+        public GeneratorRules(IComponent component)
         {
             Component = component;
         }
 
-        protected IXCComponent Component { get; }
+        protected IComponent Component { get; }
 
         /// <summary>
         /// Префикс объектов DTO, необходим для внутренних нужд класса
