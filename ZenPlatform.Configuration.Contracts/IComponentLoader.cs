@@ -1,7 +1,4 @@
-﻿
-
-using ZenPlatform.Configuration.Contracts.Data;
-using ZenPlatform.Configuration.Contracts.Editors;
+﻿using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
@@ -13,7 +10,6 @@ namespace ZenPlatform.Configuration.Contracts
     /// </summary>
     public interface IComponentLoader
     {
- 
         /// <summary>
         /// Загрузить тип компонента
         /// </summary>
@@ -23,24 +19,5 @@ namespace ZenPlatform.Configuration.Contracts
         void LoadObject(IComponent com, ILoader loader, string reference);
 
         IDataComponent GetComponentImpl(IComponent c);
-    }
-
-
-    /// <summary>
-    /// Менеджер конфигурации компонента. Отвечает за создание и удаление сущности
-    /// </summary>
-    public interface IXComponentManager
-    {
-        /// <summary>
-        /// Создать новую сущност 
-        /// </summary>
-        /// <returns>Редактор нового объект конфигурации</returns>
-        ITypeEditor Create();
-
-        /// <summary>
-        /// Удалить объект конфигурации. Причём конфигурация остаётся в целостном состоянии до и после удаления
-        /// </summary>
-        /// <param name="type"></param>
-        void Delete(IXCObjectType type);
     }
 }

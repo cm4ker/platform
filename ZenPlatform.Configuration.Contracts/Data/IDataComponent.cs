@@ -19,11 +19,6 @@ namespace ZenPlatform.Configuration.Contracts.Data
         IEntityManager Manager { get; }
 
         /// <summary>
-        /// Менеджер компонента. Обеспечивает корректное добавление, удаление объектов и другие операции с конфигурацией, касаемо данного комопнента
-        /// </summary>
-        IXComponentManager ComponentManager { get; }
-
-        /// <summary>
         /// Генератор сущностей необходимо на стадии сборки проекта
         /// </summary>
         //IEntityGenerator Generator { get; }
