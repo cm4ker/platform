@@ -1,18 +1,8 @@
 using System;
-using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.Contracts
 {
-    [Flags]
-    public enum XCPropertyAccessPolicy
-    {
-        CanGetCode = 1 << 0,
-        CanGetDb = 1 << 1,
-
-        CanSetCode = 1 << 2,
-        CanSetDb = 1 << 3
-    }
-
     /// <summary>
     /// Детерминированный тип колонки реквизита конфигурации
     /// Реквизит может быть нескольких типов одновременно
@@ -46,7 +36,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// </summary>
     public class XCColumnSchemaDefinition
     {
-        public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, IXCType platformType, string name,
+        public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, IType platformType, string name,
             string prefix = "", string postfix = "")
         {
             SchemaType = schemaType;
@@ -81,6 +71,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Тип платформы, закреплённый за схемой
         /// </summary>
-        public IXCType PlatformType { get; set; }
+        public IType PlatformType { get; set; }
     }
 }

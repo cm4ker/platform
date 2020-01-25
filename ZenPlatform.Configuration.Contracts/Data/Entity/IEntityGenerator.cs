@@ -41,16 +41,6 @@ namespace ZenPlatform.Configuration.Contracts.Data.Entity
         string GetEntityClassName(object obj);
 
         /// <summary>
-        /// Поулчить имя класса, который оперирует мультитипом для определённого свойства
-        /// </summary>
-        /// <param name="property">Свойство для которого нужно сгенерировать мультикласс</param>
-        /// <returns>Название класса</returns>
-        string GetMultiDataStorageClassName(IXCProperty property);
-
-
-        string GetMultiDataStoragePrivateFieldName(IXCProperty property);
-
-        /// <summary>
         /// Получить код для setter'a в свойстве чужого объекта
         /// </summary>
         /// <returns>Правило генерации кода</returns>

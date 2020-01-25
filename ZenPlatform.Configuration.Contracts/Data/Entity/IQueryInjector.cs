@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Configuration.Contracts.Data.Entity
@@ -13,7 +14,7 @@ namespace ZenPlatform.Configuration.Contracts.Data.Entity
         /// </summary>
         /// <param name="logicalTreeNode">Элемент логического дерева, связанный с данным источником данных</param>
         /// <returns></returns>
-        void InjectDataSource(QueryMachine qm, IXCObjectType t, IQueryModelContext logicalTreeNode);
+        void InjectDataSource(QueryMachine qm, IType t, IQueryModelContext logicalTreeNode);
     }
 
 

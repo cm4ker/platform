@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.Contracts.Data.Entity
 {
@@ -26,7 +27,7 @@ namespace ZenPlatform.Configuration.Contracts.Data.Entity
         /// Key - Имя столбца
         /// Value - Тип столбца
         /// </summary>
-        Dictionary<string, IXCPrimitiveType> GetColumnOptions();
+        Dictionary<string, IType> GetColumnOptions();
 
         /// <summary>
         /// Колонка относится к основному объекту, как принимающая сторона.
