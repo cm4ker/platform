@@ -16,7 +16,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public override string Name => _name ??= CalcName();
 
-        public override Guid? ParentId => _type.Id;
+        public override Guid? BaseId => _type.Id;
 
         public int Scale { get; set; }
 

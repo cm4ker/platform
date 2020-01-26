@@ -3,7 +3,7 @@ using System.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCGuid : XCPrimitiveType, IEquatable<XCGuid>
+    public class XCGuid : MDType, IEquatable<XCGuid>
     {
         public override uint Id => 4;
 
@@ -17,8 +17,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         {
             if (other == null) return false;
 
-            return this.Guid == other.Guid
-                && this.IsNullable == other.IsNullable;
+            return this.Guid == other.Guid;
         }
 
         public override bool Equals(object obj)
@@ -29,7 +28,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Guid, IsNullable);
+            return HashCode.Combine(Guid);
         }
     }
 }

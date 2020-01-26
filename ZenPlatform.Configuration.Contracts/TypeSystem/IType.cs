@@ -7,7 +7,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
     {
         Guid Id { get; set; }
 
-        Guid? ParentId { get; set; }
+        Guid? BaseId { get; set; }
 
         uint SystemId { get; set; }
 

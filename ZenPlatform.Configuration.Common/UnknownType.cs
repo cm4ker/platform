@@ -1,11 +1,36 @@
-using ZenPlatform.Configuration.Common;
+using System;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types
 {
+    public class MDType
+    {
+        public virtual uint Id { get; }
+
+        public virtual Guid Guid { get; }
+
+
+        public virtual string Name { get; }
+
+        protected virtual bool ShouldSerializeDescription()
+        {
+            return false;
+        }
+
+        protected virtual bool ShouldSerializeName()
+        {
+            return false;
+        }
+
+        protected virtual bool ShouldSerializeId()
+        {
+            return false;
+        }
+    }
+
     /// <summary>
     /// Неопределённый тип, при загрузке конфигурации сначала всё приводится к нему
     /// </summary>
-    public class UnknownType : TypeBase
+    public class UnknownType : MDType
     {
         protected override bool ShouldSerializeDescription()
         {
@@ -16,17 +41,17 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
         {
             return false;
         }
-        
+
         protected override bool ShouldSerializeId()
         {
             return false;
         }
     }
-    
+
     /// <summary>
     /// Неопределённый тип, при загрузке конфигурации сначала всё приводится к нему
     /// </summary>
-    public class RefType : TypeBase
+    public class RefType : MDType
     {
         protected override bool ShouldSerializeDescription()
         {
@@ -37,7 +62,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
         {
             return false;
         }
-        
+
         protected override bool ShouldSerializeId()
         {
             return false;

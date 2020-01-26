@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Common;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Core.Querying.Model
 {
@@ -10,14 +8,14 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public class QSum : QExpression
     {
-        private readonly TypeBase _baseType;
+        private readonly IType _baseType;
 
-        public QSum(TypeBase baseType)
+        public QSum(IType baseType)
         {
             _baseType = baseType;
         }
 
-        public override IEnumerable<IXCType> GetExpressionType()
+        public override IEnumerable<IType> GetExpressionType()
         {
             yield return _baseType;
         }

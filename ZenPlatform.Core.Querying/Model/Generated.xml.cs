@@ -1027,14 +1027,14 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCast : QExpression
     {
-        public QCast(IXCType type, QExpression baseExpression) : base()
+        public QCast(IType type, QExpression baseExpression) : base()
         {
             Type = type;
             Childs.Add(baseExpression);
             BaseExpression = baseExpression;
         }
 
-        public IXCType Type { get; set; }
+        public IType Type { get; set; }
 
         public QExpression BaseExpression { get; set; }
 

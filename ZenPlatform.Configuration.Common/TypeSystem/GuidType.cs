@@ -1,4 +1,5 @@
 using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
@@ -13,7 +14,7 @@ namespace ZenPlatform.Configuration.TypeSystem
             get { return "Guid"; }
         }
 
-        internal GuidType(TypeManager ts) : base(ts)
+        internal GuidType(ITypeManager ts) : base(ts)
         {
         }
     }

@@ -61,8 +61,8 @@ namespace ZenPlatform.Core.Environment
 
             var context = DataContextManager.GetContext();
 
-            var savedTypes = SavedConfiguration.Data.StructureTypes;
-            var dbTypes = Configuration.Data.StructureTypes;
+            // var savedTypes = SavedConfiguration.TypeManager.StructureTypes;
+            // var dbTypes = Configuration.Data.StructureTypes;
 
             /*
             var types = dbTypes.FullJoin(savedTypes, x => x.Guid,

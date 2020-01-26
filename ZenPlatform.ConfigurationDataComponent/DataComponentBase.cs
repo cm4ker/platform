@@ -55,8 +55,6 @@ namespace ZenPlatform.DataComponent
         }
 
         public IEntityManager Manager { get; protected set; }
-        public IXComponentManager ComponentManager { get; protected set; }
-
         public IPlatformGenerator Generator { get; protected set; }
         public IDatabaseObjectsGenerator DatabaseObjectsGenerator { get; protected set; }
         public IEntityMigrator Migrator { get; protected set; }

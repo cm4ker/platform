@@ -6,10 +6,7 @@ using System.Reflection;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Exceptions;
-using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Language.Ast;
+using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.TypeSystem
@@ -85,7 +82,7 @@ namespace ZenPlatform.Configuration.TypeSystem
                                  .FirstOrDefault(x =>
                                      x.IsPublic && !x.IsAbstract &&
                                      x.GetInterfaces().Contains(typeof(IComponentLoader))) ??
-                             throw new InvalidComponentException();
+                             throw new Exception("Invalid component");
 
             _loader = (IComponentLoader) Activator.CreateInstance(loaderType);
 

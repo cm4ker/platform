@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using dnlib;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
@@ -31,15 +31,6 @@ namespace ZenPlatform.Configuration.TypeSystem
             _tables = new List<ITable>();
             _components = new List<IComponent>();
             _objectSettings = new List<IObjectSetting>();
-
-            //Register base types
-            _types.Add(Int);
-            _types.Add(DateTime);
-            _types.Add(Binary);
-            _types.Add(String);
-            _types.Add(Boolean);
-            _types.Add(Guid);
-            _types.Add(Numeric);
         }
 
         public IType Int => _intType ??= new IntType(this);
