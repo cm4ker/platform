@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
@@ -16,6 +17,7 @@ namespace ZenPlatform.Core.Querying.Model
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
+        private ITypeManager _tm;
 
         private enum InstructionContext
         {
@@ -29,7 +31,10 @@ namespace ZenPlatform.Core.Querying.Model
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
             _tb = new QLangTypeBuilder(_conf);
+            _tm = conf.TypeManager;
         }
+
+        public ITypeManager TypeManager => _tm;
 
         public LogicScope CurrentScope => _scope.TryPeek(out var res) ? res : null;
 
@@ -443,12 +448,12 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void ld_const(string str)
         {
-            _logicStack.Push(new QConst(new XCString(), str));
+            _logicStack.Push(new QConst(_tm.String, str));
         }
 
         public void ld_const(double number)
         {
-            _logicStack.Push(new QConst(new XCNumeric(), number));
+            _logicStack.Push(new QConst(_tm.Numeric, number));
         }
     }
 

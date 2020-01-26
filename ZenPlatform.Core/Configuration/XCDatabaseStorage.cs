@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Core.Helpers;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
@@ -146,6 +148,21 @@ namespace ZenPlatform.Core.Configuration
                 uid = _maxId++;
                 _systemIds.Add(confId, uid);
             }
+        }
+
+        public uint GetId(Guid confId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IObjectSetting> GetSettings()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddOrUpdateSetting(IObjectSetting setting)
+        {
+            throw new NotImplementedException();
         }
     }
 }

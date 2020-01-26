@@ -17,4 +17,7 @@
     <PackageReference Include="morelinq" Version="3.0.0" />
     <PackageReference Include="Portable.Xaml" Version="0.24.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TypeSystem" />
+  </ItemGroup>
 </Project>

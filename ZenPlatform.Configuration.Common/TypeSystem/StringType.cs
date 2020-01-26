@@ -1,4 +1,5 @@
 using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
@@ -7,7 +8,7 @@ namespace ZenPlatform.Configuration.TypeSystem
     /// </summary>
     public class StringType : Type
     {
-        internal StringType(TypeManager ts) : base(ts)
+        internal StringType(ITypeManager ts) : base(ts)
         {
         }
 

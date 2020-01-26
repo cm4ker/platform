@@ -1,5 +1,6 @@
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
@@ -28,7 +29,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
             }
         }
 
-        private void EmitValueExpr(QExpression exp, XCPrimitiveType type)
+        private void EmitValueExpr(QExpression exp, IType type)
         {
             var texpr = exp.GetExpressionType().ToList();
 
@@ -51,7 +52,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
         {
             var texpr = exp.GetExpressionType().ToList();
 
-            if (texpr.Any(x => x is IXCObjectType))
+            if (texpr.Any(x => x.IsObject))
                 if (texpr.Count > 1)
                 {
                     TypedExprFactory.CreateMultiTypedExpr(exp, Qm, Rw).EmitRefColumn();
@@ -81,7 +82,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
             Qm.@case();
         }
 
-        public override void EmitValueColumn(XCPrimitiveType type)
+        public override void EmitValueColumn(IType type)
         {
             foreach (var w in _c.Whens)
             {

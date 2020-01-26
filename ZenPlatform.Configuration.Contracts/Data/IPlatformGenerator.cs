@@ -1,6 +1,7 @@
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
+using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 
 namespace ZenPlatform.Configuration.Contracts.Data
 {

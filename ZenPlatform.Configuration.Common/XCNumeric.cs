@@ -3,7 +3,7 @@ using System.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCNumeric : XCPrimitiveType, IEquatable<XCNumeric>
+    public class XCNumeric : MDType, IEquatable<XCNumeric>
     {
         public override uint Id => 5;
 
@@ -23,7 +23,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         {
             if (other == null) return false;
 
-            return this.Guid == other.Guid && this.IsNullable == other.IsNullable &&
+            return this.Guid == other.Guid  &&
                 this.Scale == other.Scale && this.Precision == other.Precision;
         }
 
@@ -35,7 +35,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Guid, IsNullable, Scale, Precision);
+            return HashCode.Combine(Guid, Scale, Precision);
         }
     }
 }

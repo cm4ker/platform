@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.Core.Querying.Optimizers;
@@ -101,15 +102,19 @@ namespace ZenPlatform.Core.Querying
     /// </summary>
     public class RealWalker : QLangWalker
     {
+        private readonly ITypeManager _tm;
         private QueryMachine _qm;
         private StringWriter _l;
         private bool _hasNamedSource = false;
         private bool _hasAlias = false;
 
+        public ITypeManager TypeManager => _tm;
+        
         public string Log => _l.ToString();
 
-        public RealWalker()
+        public RealWalker(ITypeManager tm)
         {
+            _tm = tm;
             _qm = new QueryMachine();
             _l = new StringWriter();
         }
@@ -151,7 +156,7 @@ namespace ZenPlatform.Core.Querying
         {
             var ot = node.ObjectType;
 
-            ot.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
+            ot.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
 
             if (!_hasAlias)
                 _qm.@as(node.GetDbName());
@@ -188,9 +193,9 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
-        private List<IXCType> CommonTypes(List<IXCType> types1, List<IXCType> types2)
+        private List<IType> CommonTypes(List<IType> types1, List<IType> types2)
         {
-            var result = new List<IXCType>();
+            var result = new List<IType>();
             foreach (var t1 in types1)
             {
                 foreach (var t2 in types2)
@@ -231,13 +236,13 @@ namespace ZenPlatform.Core.Querying
                 bool hasCompareTop = false;
                 foreach (var type in commonTypes)
                 {
-                    if (type is XCPrimitiveType pt)
+                    if (type.IsPrimitive)
                     {
-                        left.EmitValueColumn(pt);
-                        right.EmitValueColumn(pt);
+                        left.EmitValueColumn(type);
+                        right.EmitValueColumn(type);
                     }
 
-                    if (!refEmitted && type is IXCObjectType)
+                    if (!refEmitted && type.IsObject)
                     {
                         left.EmitRefColumn();
                         right.EmitRefColumn();
@@ -272,7 +277,7 @@ namespace ZenPlatform.Core.Querying
         }
 
         void IfLeftOrRightOneType(QExpression left, QExpression right, Action compareAction, Action concatAction,
-            List<IXCType> leftTypes,
+            List<IType> leftTypes,
             bool flip = false)
         {
             var mt = TypedExprFactory.CreateMultiTypedExpr(right, _qm, this);
@@ -282,11 +287,11 @@ namespace ZenPlatform.Core.Querying
             if (flip)
                 Visit(left);
 
-            if (leftType is XCPrimitiveType pType)
+            if (leftType.IsPrimitive)
             {
-                mt.EmitValueColumn(pType);
+                mt.EmitValueColumn(leftType);
             }
-            else if (leftType is IXCObjectType)
+            else if (leftType.IsObject)
             {
                 mt.EmitRefColumn();
             }
@@ -363,7 +368,8 @@ namespace ZenPlatform.Core.Querying
             }
             else if (node.DataSource is QNestedQuery)
             {
-                var schema = PropertyHelper.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
+                var schema =
+                    PropertyHelper.GetPropertySchemas(_tm, node.GetDbName(), node.GetExpressionType().ToList());
                 GenColumn(schema);
             }
 
@@ -380,7 +386,8 @@ namespace ZenPlatform.Core.Querying
             }
             else if (node.DataSource is QNestedQuery)
             {
-                var schema = PropertyHelper.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
+                var schema =
+                    PropertyHelper.GetPropertySchemas(_tm, node.GetDbName(), node.GetExpressionType().ToList());
                 GenColumn(schema);
             }
 
@@ -389,7 +396,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
-            var schema = node.Property.GetPropertySchemas();
+            List<XCColumnSchemaDefinition> schema = null; //node.Property.GetPropertySchemas();
 
             LoadNamedSource(node.ObjectTable.GetDbName());
 

@@ -4,6 +4,7 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
+using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 
 namespace ZenPlatform.Language.Ast
 {
@@ -20,11 +21,11 @@ namespace ZenPlatform.Language.Ast
         /*
          Type(Id) + Metadata(Stuff)
          */
-        public IXCType Type { get; }
+        public IType Type { get; }
 
         public object Bag { get; set; }
 
-        public ComponentAstBase(CompilationMode compilationMode, IComponent component, IXCType type,
+        public ComponentAstBase(CompilationMode compilationMode, IComponent component, IType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(lineInfo
             , tb, name)
@@ -50,7 +51,7 @@ namespace ZenPlatform.Language.Ast
     /// </summary>
     public class ComponentClass : ComponentAstBase
     {
-        public ComponentClass(CompilationMode compilationMode, IComponent component, IXCType type,
+        public ComponentClass(CompilationMode compilationMode, IComponent component, IType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
         {
@@ -63,7 +64,7 @@ namespace ZenPlatform.Language.Ast
     /// </summary>
     public class ComponentModule : ComponentAstBase
     {
-        public ComponentModule(CompilationMode compilationMode, IComponent component, IXCObjectType type,
+        public ComponentModule(CompilationMode compilationMode, IComponent component, IType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
         {

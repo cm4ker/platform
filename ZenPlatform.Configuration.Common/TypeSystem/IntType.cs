@@ -1,12 +1,13 @@
 using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
     public class IntType : Type
     {
-        internal IntType(TypeManager ts) : base(ts)
+        internal IntType(ITypeManager ts) : base(ts)
         {
-            ParentId = null;
+            BaseId = null;
         }
 
         public override uint SystemId => 7;

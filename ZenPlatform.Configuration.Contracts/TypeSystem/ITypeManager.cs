@@ -11,6 +11,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         IType Boolean { get; }
         IType Guid { get; }
         IType Numeric { get; }
+        
         IReadOnlyList<IType> Types { get; }
         IReadOnlyList<IProperty> Properties { get; }
         IReadOnlyList<ITable> Tables { get; }
