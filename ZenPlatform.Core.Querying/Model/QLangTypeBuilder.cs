@@ -10,9 +10,9 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public class QLangTypeBuilder
     {
-        private readonly IRoot _conf;
+        private readonly IProject _conf;
 
-        public QLangTypeBuilder(IRoot conf)
+        public QLangTypeBuilder(IProject conf)
         {
             _conf = conf;
         }

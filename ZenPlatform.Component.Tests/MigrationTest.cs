@@ -31,20 +31,20 @@ namespace ZenPlatform.Component.Tests
             _testOutputHelper = testOutputHelper;
         }
 
-        private Root CreateConfiguration()
+        private Project CreateConfiguration()
         {
-            Root root = new Root();
+            Project project = new Project();
 
-            root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            root.ProjectName = "Library";
-            root.ProjectVersion = "0.0.0.1";
+            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
+            project.ProjectName = "Library";
+            project.ProjectVersion = "0.0.0.1";
 
             var component = new XCComponent()
             {
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
-            root.Data.Components.Add(component);
+            project.Data.Components.Add(component);
 
             var componentManager = (SingleEntityConfigurationManager)component.ComponentImpl.ComponentManager;
 
@@ -78,23 +78,23 @@ namespace ZenPlatform.Component.Tests
                 .SetDatabaseColumnName("Fld_0002");
 
 
-            return root;
+            return project;
         }
 
-        private Root CreateConfigurationChangeDataType()
+        private Project CreateConfigurationChangeDataType()
         {
-            Root root = new Root();
+            Project project = new Project();
 
-            root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            root.ProjectName = "Library";
-            root.ProjectVersion = "0.0.0.1";
+            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
+            project.ProjectName = "Library";
+            project.ProjectVersion = "0.0.0.1";
 
             var component = new XCComponent()
             {
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
-            root.Data.Components.Add(component);
+            project.Data.Components.Add(component);
 
             var componentManager = (SingleEntityConfigurationManager)component.ComponentImpl.ComponentManager;
 
@@ -127,23 +127,23 @@ namespace ZenPlatform.Component.Tests
                 .AddType(customType1.Link)
                 .SetDatabaseColumnName("Fld_0002");
 
-            return root;
+            return project;
         }
 
-        private Root CreateConfigurationAddDataType()
+        private Project CreateConfigurationAddDataType()
         {
-            Root root = new Root();
+            Project project = new Project();
 
-            root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            root.ProjectName = "Library";
-            root.ProjectVersion = "0.0.0.1";
+            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
+            project.ProjectName = "Library";
+            project.ProjectVersion = "0.0.0.1";
 
             var component = new XCComponent()
             {
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
-            root.Data.Components.Add(component);
+            project.Data.Components.Add(component);
 
             var componentManager = (SingleEntityConfigurationManager)component.ComponentImpl.ComponentManager;
 
@@ -179,23 +179,23 @@ namespace ZenPlatform.Component.Tests
                 .SetDatabaseColumnName("Fld_0002");
 
 
-            return root;
+            return project;
         }
 
-        private Root CreateConfigurationAddDeleteNewProperty()
+        private Project CreateConfigurationAddDeleteNewProperty()
         {
-            Root root = new Root();
+            Project project = new Project();
 
-            root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            root.ProjectName = "Library";
-            root.ProjectVersion = "0.0.0.1";
+            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
+            project.ProjectName = "Library";
+            project.ProjectVersion = "0.0.0.1";
 
             var component = new XCComponent()
             {
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
-            root.Data.Components.Add(component);
+            project.Data.Components.Add(component);
 
             var componentManager = (SingleEntityConfigurationManager)component.ComponentImpl.ComponentManager;
 
@@ -236,23 +236,23 @@ namespace ZenPlatform.Component.Tests
                 .SetDatabaseColumnName("Fld_0003");
 
 
-            return root;
+            return project;
         }
 
-        private Root CreateConfigurationAddDeleteEntityType()
+        private Project CreateConfigurationAddDeleteEntityType()
         {
-            Root root = new Root();
+            Project project = new Project();
 
-            root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            root.ProjectName = "Library";
-            root.ProjectVersion = "0.0.0.1";
+            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
+            project.ProjectName = "Library";
+            project.ProjectVersion = "0.0.0.1";
 
             var component = new XCComponent()
             {
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
-            root.Data.Components.Add(component);
+            project.Data.Components.Add(component);
 
             var componentManager = (SingleEntityConfigurationManager)component.ComponentImpl.ComponentManager;
 
@@ -302,25 +302,25 @@ namespace ZenPlatform.Component.Tests
                 .SetDatabaseColumnName("Fld_0001");
 
 
-            return root;
+            return project;
         }
 
-        private Root CreateEmptyConfiguration()
+        private Project CreateEmptyConfiguration()
         {
-            Root root = new Root();
+            Project project = new Project();
 
-            root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            root.ProjectName = "Library";
-            root.ProjectVersion = "0.0.0.1";
+            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
+            project.ProjectName = "Library";
+            project.ProjectVersion = "0.0.0.1";
 
             var component = new XCComponent()
             {
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
-            root.Data.Components.Add(component);
+            project.Data.Components.Add(component);
 
-            return root;
+            return project;
         }
         
         [Fact]

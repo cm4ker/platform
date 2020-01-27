@@ -7,19 +7,19 @@ namespace ZenPlatform.Configuration.Contracts
 {
     public interface IConfigurationManipulator
     {
-        IRoot Load(IXCConfigurationStorage storage);
+        IProject Load(IXCConfigurationStorage storage);
 
-        IRoot Create(string projectName);
+        IProject Create(string projectName);
 
-        Stream SaveToStream(IRoot root);
+        Stream SaveToStream(IProject project);
 
-        string GetHash(IRoot root);
+        string GetHash(IProject project);
 
-        bool Equals(IRoot a, IRoot b);
+        bool Equals(IProject a, IProject b);
     }
 
 
-    public interface IRoot
+    public interface IProject
     {
         /// <summary>
         /// Идентификатор конфигурации

@@ -41,7 +41,7 @@ namespace ZenPlatform.Core.Environment
         /// После того, как сохранённая конфигурация будет отличаться от конфигурации базы данных <see cref="PlatformEnvironment.Configuration"/> Выполняется применение.
         /// Причем при этом за кулисами происходит генерирование скрипта миграции
         /// </summary>
-        public IRoot SavedConfiguration { get; private set; }
+        public IProject SavedConfiguration { get; private set; }
 
         public override IInvokeService InvokeService => throw new NotImplementedException();
 

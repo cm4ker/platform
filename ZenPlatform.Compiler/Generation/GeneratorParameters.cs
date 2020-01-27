@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.Generation
         /// </summary>
         public SqlDatabaseType TargetDatabaseType { get; }
 
-        public IRoot Configuration { get; }
+        public IProject Configuration { get; }
 
         /// <summary>
         /// Юниты компиляции
@@ -36,7 +36,7 @@ namespace ZenPlatform.Compiler.Generation
 
 
         public GeneratorParameters(List<CompilationUnit> units, IAssemblyBuilder builder, CompilationMode mode,
-            SqlDatabaseType targetDatabaseType, IRoot configuration)
+            SqlDatabaseType targetDatabaseType, IProject configuration)
         {
             TargetDatabaseType = targetDatabaseType;
             Configuration = configuration;

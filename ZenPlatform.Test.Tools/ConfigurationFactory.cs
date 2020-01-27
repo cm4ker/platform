@@ -17,9 +17,9 @@ namespace ZenPlatform.Test.Tools
     {
         public static string GetDatabaseConnectionString() => "Host=db1; Username=user; Password=password;";
 
-        public static Root Create()
+        public static Project Create()
         {
-            var root = new Root(new TypeManager());
+            var root = new Project(new TypeManager());
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";
@@ -166,9 +166,9 @@ public void GetUserName()
             return root;
         }
 
-        public static Root CreateChangedExampleConfiguration()
+        public static Project CreateChangedExampleConfiguration()
         {
-            var root = new Root();
+            var root = new Project();
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";

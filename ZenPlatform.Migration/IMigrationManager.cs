@@ -5,7 +5,7 @@ namespace ZenPlatform.Migration
 {
     public interface IMigrationManager
     {
-        bool CheckMigration(IRoot old, IRoot actual);
-        void Migrate(IRoot old, IRoot actual);
+        bool CheckMigration(IProject old, IProject actual);
+        void Migrate(IProject old, IProject actual);
     }
 }

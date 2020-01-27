@@ -10,7 +10,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         ITypeManager TypeManager { get; }
     }
 
-    public interface IComponent : ITypeManagerProvider, IChildItem<IRoot>
+    public interface IComponent : ITypeManagerProvider, IChildItem<IProject>
     {
         public Guid Id { get; }
 
