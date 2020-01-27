@@ -8,27 +8,27 @@ namespace ZenPlatform.Configuration
 {
     public class XCConfManipulator : IConfigurationManipulator
     {
-        public IXCRoot Load(IXCConfigurationStorage storage)
+        public IRoot Load(IXCConfigurationStorage storage)
         {
-            return XCRoot.Load(storage);
+            return Structure.Root.Load(storage);
         }
 
-        public IXCRoot Create(string projectName)
+        public IRoot Create(string projectName)
         {
-            return XCRoot.Create(projectName);
+            return Structure.Root.Create(projectName);
         }
 
-        public Stream SaveToStream(IXCRoot root)
+        public Stream SaveToStream(IRoot root)
         {
             return root.SerializeToStream();
         }
 
-        public string GetHash(IXCRoot root)
+        public string GetHash(IRoot root)
         {
-            return ((XCRoot) root).GetHash();
+            return ((Structure.Root) root).GetHash();
         }
 
-        public bool Equals(IXCRoot a, IXCRoot b)
+        public bool Equals(IRoot a, IRoot b)
         {
             var storage1 = new XCMemoryStorage();
 

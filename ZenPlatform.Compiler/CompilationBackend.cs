@@ -37,9 +37,9 @@ namespace ZenPlatform.Compiler
 
     public class CompilationBackend : ICompilationBackend
     {
-        private readonly IXCRoot _root;
+        private readonly IRoot _root;
 
-        public CompilationBackend(IXCRoot root)
+        public CompilationBackend(IRoot root)
         {
             _root = root;
         }

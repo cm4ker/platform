@@ -22,7 +22,7 @@ namespace ZenPlatform.Configuration.Test
         [Fact]
         public void SaveAndLoadCofigurationRepeatedly()
         {
-            IXCRoot config = ConfigurationFactory.Create();
+            IRoot config = ConfigurationFactory.Create();
             
 
 
@@ -32,7 +32,7 @@ namespace ZenPlatform.Configuration.Test
                 var storage = new XCMemoryStorage();
                 config.Save(storage);
 
-                config = XCRoot.Load(storage);
+                config = Structure.Root.Load(storage);
             }
            
 
@@ -53,7 +53,7 @@ namespace ZenPlatform.Configuration.Test
 
             var xml1 = new StreamReader(new MemoryStream(storage.Blobs.First(f => f.Key == "Store").Value)).ReadToEnd();
 
-            var loadedConfiguration = XCRoot.Load(storage);
+            var loadedConfiguration = Structure.Root.Load(storage);
 
             EqualsConfiguration(configuration, loadedConfiguration);
         }
@@ -75,7 +75,7 @@ namespace ZenPlatform.Configuration.Test
 
                 configuration.Save(storage);
 
-                var loadedConfiguration = XCRoot.Load(storage);
+                var loadedConfiguration = Structure.Root.Load(storage);
 
                 EqualsConfiguration(configuration, loadedConfiguration);
             }
@@ -94,7 +94,7 @@ namespace ZenPlatform.Configuration.Test
 
                 configuration.Save(storage);
 
-                var loadedConfiguration = XCRoot.Load(storage);
+                var loadedConfiguration = Structure.Root.Load(storage);
 
 
 
@@ -106,7 +106,7 @@ namespace ZenPlatform.Configuration.Test
 
 
 
-        private void EqualsConfiguration(IXCRoot l, IXCRoot r)
+        private void EqualsConfiguration(IRoot l, IRoot r)
         {
 
 

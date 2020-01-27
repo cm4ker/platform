@@ -6,7 +6,7 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class ComponentLoader : IComponentLoader
+    public class ComponentLoader : IComponentManager
     {
         /// <summary>
         /// Загрузить объект компонента
@@ -126,6 +126,12 @@ namespace ZenPlatform.EntityComponent.Configuration
             }
         }
 
+
+        public IComponent LoadComponent(IComponentRef comRef, ILoader loader)
+        {
+            var c = loader.TypeManager.Component();
+            return null;
+        }
 
         public IDataComponent GetComponentImpl(IComponent c)
         {

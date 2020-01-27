@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Xml.Serialization;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 
 namespace ZenPlatform.Test.Tools
@@ -15,20 +17,22 @@ namespace ZenPlatform.Test.Tools
     {
         public static string GetDatabaseConnectionString() => "Host=db1; Username=user; Password=password;";
 
-        public static XCRoot Create()
+        public static Root Create()
         {
-            var root = new XCRoot();
+            var root = new Root(new TypeManager());
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";
             root.ProjectVersion = "0.0.0.1";
 
-            var component = new XCComponent()
+            var comRef = new ComponentRef()
             {
-                ComponentAssembly = typeof(XCSingleEntity).Assembly,
+                DllRef = typeof(MDEntity).Assembly.Location,
+                MDRef = "Entity.xml"
             };
 
-            root.Data.Components.Add(component);
+            comRef.ToComponent(root.TypeManager);
+
 
             var componentManager = (SingleEntityConfigurationManager) component.ComponentImpl.ComponentManager;
             var storeEditor =
@@ -162,9 +166,9 @@ public void GetUserName()
             return root;
         }
 
-        public static XCRoot CreateChangedExampleConfiguration()
+        public static Root CreateChangedExampleConfiguration()
         {
-            var root = new XCRoot();
+            var root = new Root();
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";

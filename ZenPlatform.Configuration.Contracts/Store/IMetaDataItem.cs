@@ -6,9 +6,9 @@
     }
     public interface IMetaDataItem<T>: IMetaDataItem where T: IMDItem
     {
-        void Initialize(ILoader loader, T settings);
+        void OnLoad(ILoader loader, T settings);
 
-        IMDItem Store(IXCSaver saver);
+        IMDItem OnStore(IXCSaver saver);
 
     }
 }

@@ -8,20 +8,21 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
+using Root = ZenPlatform.Configuration.Structure.Root;
 
 namespace ZenPlatform.Component.Tests
 {
     public class TypeEqualsTest
     {
 
-        private XCRoot _root;
+        private Root _root;
         private XCComponent _component;
         private SingleEntityConfigurationManager _componentManager;
         private ITypeEditor Entity1;
         private ITypeEditor Entity2;
         public TypeEqualsTest()
         {
-            _root = new XCRoot();
+            _root = new Root();
 
             _root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             _root.ProjectName = "Library";

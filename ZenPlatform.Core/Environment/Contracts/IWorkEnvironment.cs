@@ -8,6 +8,6 @@ namespace ZenPlatform.Core.Environment.Contracts
     /// </summary>
     public interface IWorkEnvironment : IPlatformEnvironment
     {
-        IXCRoot Configuration { get; }
+        IRoot Configuration { get; }
     }
 }

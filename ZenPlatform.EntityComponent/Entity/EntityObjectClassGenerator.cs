@@ -22,6 +22,7 @@ using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
+using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 namespace ZenPlatform.EntityComponent.Entity
 {

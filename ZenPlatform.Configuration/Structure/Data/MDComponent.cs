@@ -18,23 +18,21 @@ using dnlib.DotNet.Emit;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using IComponent = ZenPlatform.Configuration.Contracts.TypeSystem.IComponent;
+using MDType = ZenPlatform.Configuration.Structure.Data.Types.MDType;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
-    public class MDComponent : IMDComponent, IMDItem, IMetaData<MDComponent>
+    public class ComponentModel : IMetaData<MDComponent>
     {
-        public Guid ComponentId { get; set; }
+        public ITypeManager _tm;
 
-        public string AssemblyReference { get; set; }
+        private IComponent _component;
+        private MDComponent _metadata;
 
-        public List<string> EntityReferences { get; set; }
+        public Guid ComponentId => _component.Info.ComponentId;
 
-        public MDComponent()
-        {
-            EntityReferences = new List<string>();
-        }
-
-        public void Initialize(ILoader loader, IMDComponent settings)
+        public void OnLoad(ILoader loader, MDComponent settings)
         {
             //load assembly
             var bytes = loader.LoadBytes(settings.AssemblyReference);
@@ -57,30 +55,104 @@ namespace ZenPlatform.Configuration.Structure.Data
                 c.ComponentImpl.Loader.LoadObject(c, loader, reference);
             }
 
-            ComponentId = c.Info.ComponentId;
+            _component = c;
+            loader.TypeManager.Register(c);
         }
 
-        public void Initialize(ILoader loader, MDComponent settings)
+        public IMDItem OnStore(IXCSaver saver)
         {
-            throw new NotImplementedException();
-        }
+            var asm = _component.ComponentAssembly;
 
-        public IMDItem Store(IXCSaver saver)
-        {
-            var asm = saver.TypeManager.FindComponent(ComponentId).ComponentAssembly;
+            var refModule = asm.Modules.FirstOrDefault() ?? throw new Exception("Module not found");
 
-            var refelectionModule = asm.Modules.FirstOrDefault();
-            ModuleDefMD module = ModuleDefMD.Load(refelectionModule);
+            ModuleDefMD module = ModuleDefMD.Load(refModule);
 
             using (var ms = new MemoryStream())
             {
                 module.Write(ms);
                 ms.Seek(0, SeekOrigin.Begin);
-                saver.SaveBytes(refelectionModule.Name, ms.ToArray());
-                AssemblyReference = refelectionModule.Name;
+                saver.SaveBytes(refModule.Name, ms.ToArray());
+
+                _metadata.AssemblyReference = refModule.Name;
             }
 
-            return this;
+            return _metadata;
+        }
+    }
+
+    /*
+       - Root 
+       - ComAsmRef (DllPath: C:\test\a.dll, MDComponent:C:\test\Com\Entity.xml) 
+       ---------- Component level
+            IDataComponent.Loader(ILoader, MDPath);
+                        
+            IDataComponent.ListMD() : List<object> -- Список метаданных;
+            IDataComponent.Create() : object
+            IDataComponent.Delete(object);
+     */
+
+    public class MDEntityComponent : MDComponent
+    {
+        public List<string> EntityReferences { get; set; }
+    }
+
+    /*
+    
+     CatalogStructure
+     \
+        Root.xml
+        Entity.xml
+        Document.xml
+        Reference.xml
+        
+        AccumulateRefister
+     
+     <Project>
+        <Name>Test</Name>
+        <Id>SOME_GUID</Id>
+        
+        <ComRef Name="Entity" Version="1.0.0.0" Entry="./Entity.xml" />
+        <ComRef Name="Document" Version="1.0.0.0" Entry="./Document.xml" />
+        <ComRef Name="Reference" Version="1.0.0.0" Entry="./Reference.xml" />
+        
+        <ComRef Name="AccumulateRegister" Version="1.0.0.0" />
+        <ComRef Name="InfoRegister" Version="1.0.0.0" />
+        
+        <ComRef Name="InfoRegister" Version="1.0.0.0" />
+        <ComRef Name="InfoRegister" Version="1.0.0.0" />
+     </Project>
+     
+     
+     
+     */
+
+
+    public class ComponentRef
+    {
+        public string DllRef { get; set; }
+        public string MDRef { get; set; }
+
+        public IComponent ToComponent(ITypeManager tm)
+        {
+            var com = tm.Component();
+            var mrg = Assembly.LoadFile(DllRef);
+
+            if (string.IsNullOrEmpty(MDRef))
+                return null;
+
+            return com;
+        }
+    }
+
+    public class MDComponent : IMDItem
+    {
+        public string AssemblyReference { get; set; }
+        //
+        // public List<string> EntityReferences { get; set; }
+
+        public MDComponent()
+        {
+            // EntityReferences = new List<string>();
         }
     }
 }

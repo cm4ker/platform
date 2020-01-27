@@ -26,6 +26,7 @@ using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Test.Tools;
+using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 
 namespace ZenPlatform.Component.Tests
