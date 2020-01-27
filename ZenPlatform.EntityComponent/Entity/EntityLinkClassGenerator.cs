@@ -13,6 +13,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
 using IProperty = ZenPlatform.Compiler.Contracts.IProperty;
+using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 namespace ZenPlatform.EntityComponent.Entity
 {

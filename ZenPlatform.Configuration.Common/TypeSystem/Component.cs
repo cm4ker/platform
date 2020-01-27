@@ -18,7 +18,7 @@ namespace ZenPlatform.Configuration.TypeSystem
     {
         private bool _isLoaded;
         private XCComponentInformation _info;
-        private IComponentLoader _loader;
+        private IComponentManager _loader;
         private IDataComponent _componentImpl;
 
         private List<MDType> _mdTypes;
@@ -26,7 +26,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         private readonly IDictionary<CodeGenRuleType, CodeGenRule> _codeGenRules;
         private Assembly _componentAssembly;
 
-        private IXCRoot _parent;
+        private IRoot _parent;
 
         private ITypeManager _tm;
 
@@ -81,10 +81,10 @@ namespace ZenPlatform.Configuration.TypeSystem
             var loaderType = ComponentAssembly.GetTypes()
                                  .FirstOrDefault(x =>
                                      x.IsPublic && !x.IsAbstract &&
-                                     x.GetInterfaces().Contains(typeof(IComponentLoader))) ??
+                                     x.GetInterfaces().Contains(typeof(IComponentManager))) ??
                              throw new Exception("Invalid component");
 
-            _loader = (IComponentLoader) Activator.CreateInstance(loaderType);
+            _loader = (IComponentManager) Activator.CreateInstance(loaderType);
 
             _componentImpl = _loader.GetComponentImpl(this);
 
@@ -92,15 +92,15 @@ namespace ZenPlatform.Configuration.TypeSystem
             _componentImpl.OnInitializing();
         }
 
-        public IXCRoot Parent => _parent;
+        public IRoot Parent => _parent;
 
-        IXCRoot IChildItem<IXCRoot>.Parent
+        IRoot IChildItem<IRoot>.Parent
         {
             get => _parent;
             set => _parent = value;
         }
 
-        public IComponentLoader Loader => _loader;
+        public IComponentManager Loader => _loader;
 
         public IDataComponent ComponentImpl => _componentImpl;
 

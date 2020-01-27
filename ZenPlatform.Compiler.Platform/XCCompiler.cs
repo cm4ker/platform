@@ -25,7 +25,7 @@ namespace ZenPlatform.Compiler.Platform
             _platform = platform;
         }
 
-        public IAssembly Build(IXCRoot configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
+        public IAssembly Build(IRoot configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
         {
             var assemblyBuilder = _platform.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
             

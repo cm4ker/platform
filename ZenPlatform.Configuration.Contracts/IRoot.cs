@@ -7,19 +7,19 @@ namespace ZenPlatform.Configuration.Contracts
 {
     public interface IConfigurationManipulator
     {
-        IXCRoot Load(IXCConfigurationStorage storage);
+        IRoot Load(IXCConfigurationStorage storage);
 
-        IXCRoot Create(string projectName);
+        IRoot Create(string projectName);
 
-        Stream SaveToStream(IXCRoot root);
+        Stream SaveToStream(IRoot root);
 
-        string GetHash(IXCRoot root);
+        string GetHash(IRoot root);
 
-        bool Equals(IXCRoot a, IXCRoot b);
+        bool Equals(IRoot a, IRoot b);
     }
 
 
-    public interface IXCRoot
+    public interface IRoot
     {
         /// <summary>
         /// Идентификатор конфигурации
@@ -46,13 +46,5 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         /// <param name="storage"></param>
         void Save(IXCConfigurationStorage storage);
-
-        /// <summary>
-        /// Сравнивает две конфигурации
-        /// </summary>
-        /// <param name="another"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        object CompareConfiguration(IXCRoot another);
     }
 }

@@ -51,7 +51,7 @@ namespace ZenPlatform.Configuration.Storage
                         throw new Exception("The result is null");
 
                     if (loadTree)
-                        result.Initialize(this, config);
+                        result.OnLoad(this, config);
 
                     return result;
                 }
@@ -77,7 +77,7 @@ namespace ZenPlatform.Configuration.Storage
             where
             T : IMDItem
         {
-            var config = item.Store(this);
+            var config = item.OnStore(this);
 
             _storage.SaveBlob("", path, config.SerializeToStream());
         }
