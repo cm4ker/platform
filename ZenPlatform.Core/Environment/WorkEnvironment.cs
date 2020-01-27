@@ -71,7 +71,6 @@ namespace ZenPlatform.Core.Environment
             Globals = new Dictionary<string, object>();
 
             Managers = new Dictionary<Type, IEntityManager>();
-            Entityes = new Dictionary<Guid, EntityMetadata>();
 
             AuthenticationManager = authenticationManager;
         }
@@ -143,11 +142,6 @@ namespace ZenPlatform.Core.Environment
         /// Глобальные объекты
         /// </summary>
         public Dictionary<string, object> Globals { get; set; }
-
-        /// <summary>
-        /// Сущности
-        /// </summary>
-        public IDictionary<Guid, EntityMetadata> Entityes { get; }
 
         /// <summary>
         /// Менеджеры
@@ -236,43 +230,6 @@ namespace ZenPlatform.Core.Environment
             }
 
             throw new Exception($"Manager for type {type.Name} not found");
-        }
-
-        /// <summary>
-        /// Зарегистрировать метаданные сущности
-        /// </summary>
-        /// <param name="metadata"></param>
-        public void RegisterEntity(EntityMetadata metadata)
-        {
-            Entityes.Add(metadata.Key, metadata);
-        }
-
-
-        /// <summary>
-        /// Получить метаданные сущности по её ключу
-        /// </summary>
-        /// <param name="key">Ключ типа сущности</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public EntityMetadata GetMetadata(Guid key)
-        {
-            if (Entityes.TryGetValue(key, out var entityDefinition))
-            {
-                return entityDefinition;
-            }
-
-            throw new Exception($"Entity definition {key} not found");
-        }
-
-        /// <summary>
-        /// Получить описание по типу
-        /// </summary>
-        /// <param name="type">Типом может быть объект DTO или объект Entity</param>
-        /// <returns></returns>
-        public EntityMetadata GetMetadata(Type type)
-        {
-            var entityDefinition = Entityes.First(x => x.Value.EntityType == type || x.Value.DtoType == type).Value;
-            return entityDefinition;
         }
     }
 }

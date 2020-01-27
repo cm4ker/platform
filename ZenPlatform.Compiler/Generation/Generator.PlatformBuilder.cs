@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.Definitions;
@@ -11,9 +12,9 @@ namespace ZenPlatform.Compiler.Generation
         {
             var root = new Root(null, new List<CompilationUnit>());
 
-            foreach (var component in _conf.Data.Components)
+            foreach (var component in _conf.TypeManager.Components)
             {
-                foreach (var type in component.ObjectTypes)
+                foreach (var type in _conf.TypeManager.Types.Where(x => x.ComponentId == component.Id))
                 {
                     if (_mode == CompilationMode.Client)
                         component.ComponentImpl.Generator.StageClient(type, root, _parameters.TargetDatabaseType);
@@ -25,8 +26,7 @@ namespace ZenPlatform.Compiler.Generation
             _cus = root.Units;
             AstScopeRegister.Apply(root);
 
-           
-            
+
             Build();
         }
     }

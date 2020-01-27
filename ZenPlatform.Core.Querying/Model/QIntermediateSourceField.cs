@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 
 namespace ZenPlatform.Core.Querying.Model
@@ -14,7 +15,7 @@ namespace ZenPlatform.Core.Querying.Model
             return Field.GetName();
         }
 
-        public override IEnumerable<IXCType> GetExpressionType()
+        public override IEnumerable<IType> GetExpressionType()
         {
             return Field.GetExpressionType();
         }
@@ -35,7 +36,7 @@ namespace ZenPlatform.Core.Querying.Model
             return Field.GetName();
         }
 
-        public override IEnumerable<IXCType> GetExpressionType()
+        public override IEnumerable<IType> GetExpressionType()
         {
             return Field.GetExpressionType();
         }

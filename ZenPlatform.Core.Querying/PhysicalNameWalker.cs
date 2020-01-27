@@ -33,7 +33,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
-            node.SetDbNameIfEmpty($"{node.Property.DatabaseColumnName}");
+            node.SetDbNameIfEmpty($"{node.Property.Metadata.DatabaseColumnName}");
             return base.VisitQSourceFieldExpression(node);
         }
 

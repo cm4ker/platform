@@ -1,4 +1,5 @@
 using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
@@ -14,7 +15,7 @@ namespace ZenPlatform.Configuration.TypeSystem
             get { return "Numeric"; }
         }
 
-        internal NumericType(TypeManager ts) : base(ts)
+        internal NumericType(ITypeManager ts) : base(ts)
         {
         }
     }

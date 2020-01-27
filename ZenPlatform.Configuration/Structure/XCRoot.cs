@@ -18,9 +18,9 @@ using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class XCRootConfig : IMDItem
+    public class MDRoot : IMDItem
     {
-        public XCRootConfig()
+        public MDRoot()
         {
             ComponentReferences = new List<string>();
         }
@@ -36,21 +36,15 @@ namespace ZenPlatform.Configuration.Structure
 
 
     [XmlRoot("Root")]
-    public class XCRoot : IXCRoot, IMetaDataItem<XCRootConfig>
+    public class XCRoot : IXCRoot, IMetaDataItem<MDRoot>
     {
-        private IUniqueCounter _counter;
         private ITypeManager _manager;
-        private readonly ChildItemCollection<IXCRoot, IComponent> _components;
-
 
         public XCRoot()
         {
             ProjectId = Guid.NewGuid();
-            _components = new ChildItemCollection<IXCRoot, IComponent>(this);
-            _counter = new XCSimpleCounter();
         }
 
-        public IUniqueCounter Counter => _counter;
 
         /// <summary>
         /// Идентификатор конфигурации
@@ -80,8 +74,7 @@ namespace ZenPlatform.Configuration.Structure
         {
             MDManager loader = new MDManager(storage, new TypeManager());
 
-            var root = loader.LoadObject<XCRoot, XCRootConfig>("root");
-            root._manager = loader.TypeManager;
+            var root = loader.LoadObject<XCRoot, MDRoot>("root");
 
             return root;
         }
@@ -99,7 +92,8 @@ namespace ZenPlatform.Configuration.Structure
             return new XCRoot()
             {
                 ProjectId = Guid.NewGuid(),
-                ProjectName = projectName
+                ProjectName = projectName,
+                _manager = new TypeManager()
             };
         }
 
@@ -126,11 +120,14 @@ namespace ZenPlatform.Configuration.Structure
             throw new NotImplementedException();
         }
 
-        public void Initialize(ILoader loader, XCRootConfig settings)
+        public void Initialize(ILoader loader, MDRoot settings)
         {
             ProjectId = settings.ProjectId;
             ProjectName = settings.ProjectName;
             ProjectVersion = settings.ProjectVersion;
+
+            _manager = loader.TypeManager;
+            _manager.LoadSettings(loader.Settings.GetSettings());
 
             foreach (var reference in settings.ComponentReferences)
             {
@@ -140,7 +137,7 @@ namespace ZenPlatform.Configuration.Structure
 
         public IMDItem Store(IXCSaver saver)
         {
-            var settings = new XCRootConfig()
+            var settings = new MDRoot()
             {
                 ProjectId = ProjectId,
                 ProjectName = ProjectName,
@@ -149,7 +146,7 @@ namespace ZenPlatform.Configuration.Structure
 
             foreach (var component in TypeManager.Components)
             {
-                saver.SaveObject(component.Info.ComponentName, component.Metadata);
+                saver.SaveObject(component.Info.ComponentName, (MDComponent) component.Metadata);
                 settings.ComponentReferences.Add(component.Info.ComponentName);
             }
 

@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
 
@@ -61,7 +63,7 @@ namespace ZenPlatform.Core.Querying
                 From(x=> x.FromRaw("Select * From Test"))
              */
 
-            ot.ObjectType.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot.ObjectType, null);
+            ot.ObjectType.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, ot.ObjectType, null);
         }
 
         private void GenerateFrom(QFrom from)
@@ -154,7 +156,7 @@ namespace ZenPlatform.Core.Querying
 
         private void GenerateSourceField(QSourceFieldExpression sf, string alias = null)
         {
-            var schema = sf.Property.GetPropertySchemas();
+            List<XCColumnSchemaDefinition> schema = null; //sf.Property.GetPropertySchemas();
 
             foreach (var def in schema)
             {

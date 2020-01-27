@@ -6,6 +6,7 @@ using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
@@ -16,7 +17,7 @@ namespace ZenPlatform.DataComponent.Entity
     /// </summary>
     public abstract class EntityGeneratorBase : IEntityGenerator
     {
-        protected EntityGeneratorBase(XCComponent component)
+        protected EntityGeneratorBase(IComponent component)
         {
             Component = component;
 
@@ -28,7 +29,7 @@ namespace ZenPlatform.DataComponent.Entity
         protected Workspace Workspace { get; }
         protected SyntaxGenerator Generator { get; }
 
-        protected XCComponent Component { get; }
+        protected IComponent Component { get; }
 
         /// <summary>
         /// Префикс объектов DTO, необходим для внутренних нужд класса
@@ -37,15 +38,15 @@ namespace ZenPlatform.DataComponent.Entity
 
         public virtual string DtoPrivateFieldName { get; } = "_dto";
 
-        public virtual string GetDtoClassName(IXCObjectType obj)
+        public virtual string GetDtoClassName(IType obj)
         {
             return $"{obj.Name}{DtoPrefix}";
         }
 
-        public virtual string GetEntityClassName(XCObjectTypeBase obj)
+        public virtual string GetEntityClassName(IType obj)
         {
-            var preffix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
-            var postfix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
+            var preffix = obj.GetComponent().GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
+            var postfix = obj.GetComponent().GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
 
             return $"{preffix}{obj.Name}{postfix}";
         }
@@ -69,14 +70,14 @@ namespace ZenPlatform.DataComponent.Entity
          * 
          */
 
-        public virtual string GetMultiDataStorageClassName(IXCProperty property)
+        public virtual string GetMultiDataStorageClassName(IProperty property)
         {
-            return $"MultiDataStorage_{property.DatabaseColumnName}";
+            return $"MultiDataStorage_{property.Metadata.DatabaseColumnName}";
         }
 
-        public virtual string GetMultiDataStoragePrivateFieldName(IXCProperty property)
+        public virtual string GetMultiDataStoragePrivateFieldName(IProperty property)
         {
-            return $"_mds{property.DatabaseColumnName}";
+            return $"_mds{property.Metadata.DatabaseColumnName}";
         }
         //TODO: Необходимо реализовать все типы правил в базовом классе и выдавать Exception
         //в случае, если свойство не реализовано, а оно где-то вызвалось. 
@@ -103,12 +104,12 @@ namespace ZenPlatform.DataComponent.Entity
 
         public string GetDtoClassName(object obj)
         {
-            return GetDtoClassName(obj as XCObjectTypeBase);
+            return GetDtoClassName(obj as IType);
         }
 
         public string GetEntityClassName(object obj)
         {
-            return GetEntityClassName(obj as XCObjectTypeBase);
+            return GetEntityClassName(obj as IType);
         }
 
         public virtual CodeGenRule GetInForeignPropertySetActionRule()

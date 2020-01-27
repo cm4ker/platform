@@ -16,14 +16,14 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     [DebuggerDisplay("{" + nameof(Name) + "}")]
     public class MDProperty : IMDProperty
     {
-        private List<IXCType> _serializedTypes;
-        private readonly List<IXCType> _types;
+        private List<IMDType> _serializedTypes;
+        private readonly List<IMDType> _types;
 
         protected MDProperty()
         {
-            _types = new List<IXCType>();
+            _types = new List<IMDType>();
             Guid = Guid.NewGuid();
-            _serializedTypes = new List<IXCType>();
+            _serializedTypes = new List<IMDType>();
         }
 
         /// <summary>
@@ -70,22 +70,21 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// Типы, описывающие поле
         /// </summary>
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public List<IXCType> Types => _types;
-
-        public XCPropertyAccessPolicy AccessPolicy { get; set; }
+        public List<IMDType> Types => _types;
 
         /// <summary>
         /// Поля для выгрузки конфигурации здесь происходит подмена XCObjectType на XCUnknownType
         /// </summary>
         [XCDecoratedForSerialization]
-        internal List<IXCType> SerializedTypes => _serializedTypes;
+        internal List<IMDType> SerializedTypes => _serializedTypes;
 
-        private IEnumerable<IXCType> GetTypes()
+        private IEnumerable<IMDType> GetTypes()
         {
+            return null;
             foreach (var type in Types)
             {
-                if (type is IXCPrimitiveType) yield return type;
-                else yield return new RefType {Guid = type.Guid};
+                // if (type is IXCPrimitiveType) yield return type;
+                // else yield return new RefType {Guid = type.Guid};
             }
         }
 
@@ -108,7 +107,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// Получить необработанные типы свойств. Вызывается во время конструирования типа при загрузке конфигурации.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IXCType> GetUnprocessedPropertyTypes() => _serializedTypes;
+        public IEnumerable<IMDType> GetUnprocessedPropertyTypes() => _serializedTypes;
 
         public virtual IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(string propName = null)
         {

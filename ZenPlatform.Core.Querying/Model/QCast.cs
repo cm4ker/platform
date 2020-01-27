@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 
 namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCast
     {
-        public override IEnumerable<IXCType> GetExpressionType()
+        public override IEnumerable<IType> GetExpressionType()
         {
             yield return Type;
         }

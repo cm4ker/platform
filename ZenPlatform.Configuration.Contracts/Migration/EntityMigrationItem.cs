@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.QueryBuilder.Builders;
 
 namespace ZenPlatform.Configuration.Contracts.Migration
@@ -11,27 +12,28 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         void Visit(IEntityMigrationPlanBuilder visitor, DDLQuery query);
     }
 
-    public class AddColumnItem: IEntityMigrationItem
+    public class AddColumnItem : IEntityMigrationItem
     {
         public XCColumnSchemaDefinition Schema { get; }
         public string TableName { get; }
+
         public AddColumnItem(XCColumnSchemaDefinition schema, string tableName)
         {
             Schema = schema;
             TableName = tableName;
         }
+
         public void Visit(IEntityMigrationPlanBuilder visitor, DDLQuery query)
         {
             visitor.AddColumnItemVisit(query, this);
         }
-
-
     }
 
     public class AlterColumnItem : IEntityMigrationItem
     {
         public XCColumnSchemaDefinition Schema { get; }
         public string TableName { get; }
+
         public AlterColumnItem(XCColumnSchemaDefinition schema, string tableName)
         {
             Schema = schema;
@@ -42,13 +44,13 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         {
             visitor.AlterColumnItemVisit(query, this);
         }
-
     }
 
     public class DeleteColumnItem : IEntityMigrationItem
     {
         public XCColumnSchemaDefinition Schema { get; }
         public string TableName { get; }
+
         public DeleteColumnItem(XCColumnSchemaDefinition schema, string tableName)
         {
             Schema = schema;
@@ -59,16 +61,16 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         {
             visitor.DeleteColumnItemVisit(query, this);
         }
-
     }
 
     public class UpdateTypeItem : IEntityMigrationItem
     {
-        public IXCProperty Property { get; }
+        public IProperty Property { get; }
         public string TableName { get; }
 
-        public IXCType XCType { get; }
-        public UpdateTypeItem(IXCProperty property, string tableName, IXCType type)
+        public IType XCType { get; }
+
+        public UpdateTypeItem(IProperty property, string tableName, IType type)
         {
             Property = property;
             TableName = tableName;
@@ -79,7 +81,6 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         {
             visitor.UpdateTypeItemVisit(query, this);
         }
-
     }
 
     public class RenameColumnItem : IEntityMigrationItem
@@ -88,24 +89,24 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         public XCColumnSchemaDefinition DstSchema { get; }
 
         public string TableName { get; }
+
         public RenameColumnItem(XCColumnSchemaDefinition src, XCColumnSchemaDefinition dst, string tableName)
         {
             SrcSchema = src;
             DstSchema = dst;
             TableName = tableName;
-
         }
 
         public void Visit(IEntityMigrationPlanBuilder visitor, DDLQuery query)
         {
             visitor.RenameColumnItemVisit(query, this);
         }
-
     }
 
     public class DeleteTableItem : IEntityMigrationItem
     {
         public string TableName { get; }
+
         public DeleteTableItem(string tableName)
         {
             TableName = tableName;
@@ -115,13 +116,13 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         {
             visitor.DeleteTableItemVisit(query, this);
         }
-
     }
 
     public class RenameTableItem : IEntityMigrationItem
     {
         public string SrcTableName { get; }
         public string DstTableName { get; }
+
         public RenameTableItem(string src, string dst)
         {
             SrcTableName = src;
@@ -132,13 +133,13 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         {
             visitor.RenameTableItemVisit(query, this);
         }
-
     }
 
     public class CopyTableItem : IEntityMigrationItem
     {
         public string SrcTableName { get; }
         public string DstTableName { get; }
+
         public CopyTableItem(string src, string dst)
         {
             SrcTableName = src;
@@ -149,7 +150,6 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         {
             visitor.CopyTableItemVisit(query, this);
         }
-
     }
 
 
@@ -172,13 +172,13 @@ namespace ZenPlatform.Configuration.Contracts.Migration
         {
             visitor.CreateTableItemVisit(query, this);
         }
-
     }
 
     public class SetFlagCopyTableItem : IEntityMigrationItem
     {
         public string SrcTableName { get; }
         public string DstTableName { get; }
+
         public SetFlagCopyTableItem(string src, string dst)
         {
             SrcTableName = src;
@@ -194,6 +194,7 @@ namespace ZenPlatform.Configuration.Contracts.Migration
     public class SetFlagChangeTableItem : IEntityMigrationItem
     {
         public string TableName { get; }
+
         public SetFlagChangeTableItem(string tableName)
         {
             TableName = tableName;
@@ -209,6 +210,7 @@ namespace ZenPlatform.Configuration.Contracts.Migration
     public class SetFlagDeleteTableItem : IEntityMigrationItem
     {
         public string TableName { get; }
+
         public SetFlagDeleteTableItem(string tableName)
         {
             TableName = tableName;
@@ -223,6 +225,7 @@ namespace ZenPlatform.Configuration.Contracts.Migration
     public class SetFlagRenameTableItem : IEntityMigrationItem
     {
         public string TableName { get; }
+
         public SetFlagRenameTableItem(string tableName)
         {
             TableName = tableName;
@@ -233,7 +236,4 @@ namespace ZenPlatform.Configuration.Contracts.Migration
             visitor.SetFlagRenameTableItemVisit(query, this);
         }
     }
-
-
-
 }

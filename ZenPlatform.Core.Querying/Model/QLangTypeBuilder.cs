@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
@@ -16,28 +17,33 @@ namespace ZenPlatform.Core.Querying.Model
             _conf = conf;
         }
 
-        public IXCType String(int size)
+        public IType String(int size)
         {
-            return new XCString {Size = size};
+            var spec = _conf.TypeManager.String.GetSpec();
+            spec.Size = size;
+            return spec;
         }
 
-        public IXCType Numeric(int scale, int precision)
+        public IType Numeric(int scale, int precision)
         {
-            return new XCNumeric {Scale = scale, Precision = precision};
+            var spec = _conf.TypeManager.Numeric.GetSpec();
+            spec.Scale = scale;
+            spec.Precision = precision;
+            return spec;
         }
 
-        public IXCType Date()
+        public IType Date()
         {
-            return new XCDateTime();
+            return _conf.TypeManager.DateTime;
         }
 
-        public IXCType Parse(string typeName)
+        public IType Parse(string typeName)
         {
             if (typeName.Contains("."))
             {
                 var parts = typeName.Split(".");
 
-                return _conf.Data.GetComponentByName(parts[0]).GetTypeByName(parts[1]);
+                return _conf.TypeManager.FindComponentByName(parts[0]).FindTypeByName(parts[1]);
             }
 
             Regex r = new Regex(@"(\b[^()]+)(\((.*)\))?$");

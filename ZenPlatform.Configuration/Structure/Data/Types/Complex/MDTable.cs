@@ -8,7 +8,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
     {
         public virtual Guid Guid { get; set; }
 
-        public virtual IXCObjectType ParentType => throw new NotImplementedException();
+        public virtual MDType ParentType => throw new NotImplementedException();
 
         public virtual string Name { get; set; }
 
@@ -17,7 +17,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
         /// </summary>
         public virtual string RelTableName { get; set; }
 
-        public virtual IEnumerable<IXCProperty> GetProperties()
+        public virtual IEnumerable<MDProperty> GetProperties()
         {
             throw new NotImplementedException();
         }

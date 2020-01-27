@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using dnlib.DotNet;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
@@ -11,16 +10,16 @@ namespace ZenPlatform.Configuration.TypeSystem
 {
     public class Type : IType
     {
-        private readonly TypeManager _ts;
+        private readonly ITypeManager _ts;
 
-        internal Type(TypeManager ts)
+        internal Type(ITypeManager ts)
         {
             _ts = ts;
         }
 
         public virtual Guid Id { get; set; }
 
-        public virtual Guid? ParentId { get; set; }
+        public virtual Guid? BaseId { get; set; }
 
         public virtual Guid ComponentId { get; set; }
 
@@ -46,7 +45,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         //TODO: Use scope in main project
         public bool IsCodeAvaliable { get; set; }
-        
+
         public bool IsQueryAvaliable { get; set; }
 
         public virtual bool IsTypeSpec => false;
@@ -65,5 +64,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         {
             return _ts.Type(this);
         }
+
+        public ITypeManager TypeManager => _ts;
     }
 }
