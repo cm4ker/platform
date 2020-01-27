@@ -30,8 +30,8 @@ namespace ZenPlatform.Core.Querying.Optimizers
 
             var mte = TypedExprFactory.CreateMultiTypedExpr(_cast.BaseExpression, Qm, Rw);
 
-            var valueTypes = baseTypes.Where(x => x is XCPrimitiveType).Cast<XCPrimitiveType>().ToList();
-            var refTypes = baseTypes.Where(x => x is IXCObjectType).ToList();
+            var valueTypes = baseTypes.Where(x => x.IsPrimitive).ToList();
+            var refTypes = baseTypes.Where(x => x.IsObject).ToList();
 
             foreach (var type in valueTypes)
             {

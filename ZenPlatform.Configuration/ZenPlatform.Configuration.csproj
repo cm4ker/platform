@@ -4,11 +4,6 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Role\" />
-    <Folder Include="Structure\Data\Types\Primitive" />
-    <Folder Include="Structure\Helper" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration.Common\ZenPlatform.Configuration.Common.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration.Contracts\ZenPlatform.Configuration.Contracts.csproj" />
     <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
@@ -21,5 +16,8 @@
     <PackageReference Include="dnlib" Version="3.3.1" />
     <PackageReference Include="morelinq" Version="3.0.0" />
     <PackageReference Include="Portable.Xaml" Version="0.24.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TypeSystem" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
+using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 
 namespace ZenPlatform.Configuration.Contracts.Data
 {
@@ -14,21 +15,21 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageServer(IXCObjectType type, Node root, SqlDatabaseType dbType);
+        void StageServer(IType type, Node root, SqlDatabaseType dbType);
 
         /// <summary>
         /// Генерация клиентского кода
         /// </summary>
         /// <param name="type">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageClient(IXCObjectType type, Node root, SqlDatabaseType dbType);
+        void StageClient(IType type, Node root, SqlDatabaseType dbType);
 
         /// <summary>
         /// Стадия генерации UI интерфейса для пользователя на клиенте
         /// </summary>
         /// <param name="type"></param>
         /// <param name="uiNode"></param>
-        void StageUI(IXCObjectType type, Node uiNode);
+        void StageUI(IType type, Node uiNode);
 
         /// <summary>
         /// Стадия генерации глобального пространства

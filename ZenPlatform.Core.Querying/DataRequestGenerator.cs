@@ -1,4 +1,5 @@
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
 
@@ -38,7 +39,7 @@ namespace ZenPlatform.Core.Querying
             _qm.m_from();
 
             var ot = sfe.Object.ObjectType;
-            ot.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
+            ot.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
 
 
             foreach (var propType in sfe.GetExpressionType())
@@ -62,9 +63,9 @@ namespace ZenPlatform.Core.Querying
 
                 foreach (var type in lu.GetExpressionType())
                 {
-                    if (type is IXCObjectType ot)
+                    if (type.IsObject)
                     {
-                        ot.Parent.ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
+                        type.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, type, null);
 
                         //condition
                         _qm.ld_column("A1");
@@ -73,7 +74,7 @@ namespace ZenPlatform.Core.Querying
                         _qm.eq();
 
                         _qm.ld_column("A1");
-                        _qm.ld_const(ot.Id);
+                        _qm.ld_const(type.SystemId);
 
                         _qm.left_join();
                     }

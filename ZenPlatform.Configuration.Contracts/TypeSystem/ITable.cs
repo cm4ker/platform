@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ZenPlatform.Configuration.Contracts.TypeSystem
 {
-    public interface ITable
+    public interface ITable : ITypeManagerProvider
     {
         Guid Id { get; set; }
         

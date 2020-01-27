@@ -23,6 +23,9 @@ namespace ZenPlatform.Configuration.Storage
         public IXCConfigurationStorage Storage => _storage;
 
         public IUniqueCounter Counter => _storage;
+
+        public ISettingsManager Settings => _storage;
+
         public ITypeManager TypeManager => _typeManager;
 
         public T LoadObject<T, C>(string path, bool loadTree = true)

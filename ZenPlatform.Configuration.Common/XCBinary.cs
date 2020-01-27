@@ -3,7 +3,7 @@ using System.Data;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCBinary : XCPrimitiveType, IEquatable<XCBinary>
+    public class XCBinary : MDType, IEquatable<XCBinary>
     {
         public override uint Id => 1;
 
@@ -21,8 +21,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         {
             if (other == null) return false;
 
-            return this.Guid == other.Guid && this.Size == other.Size
-                && this.IsNullable == other.IsNullable;
+            return this.Guid == other.Guid && this.Size == other.Size;
         }
 
         public override bool Equals(object obj)
@@ -34,7 +33,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Guid, IsNullable, Size);
+            return HashCode.Combine(Guid,  Size);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 
 namespace ZenPlatform.Configuration
@@ -63,6 +64,21 @@ namespace ZenPlatform.Configuration
         public void SaveRootBlob(Stream stream)
         {
             SaveBlob("root", "", stream);
+        }
+
+        public uint GetId(Guid confId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IObjectSetting> GetSettings()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddOrUpdateSetting(IObjectSetting setting)
+        {
+            throw new NotImplementedException();
         }
     }
 }

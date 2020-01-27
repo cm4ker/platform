@@ -1,0 +1,76 @@
+using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
+
+namespace ZenPlatform.Configuration.Contracts
+{
+    /// <summary>
+    /// Детерминированный тип колонки реквизита конфигурации
+    /// Реквизит может быть нескольких типов одновременно
+    /// Это перечисление представляет все типы колонок которые могут быть 
+    /// </summary>
+    public enum XCColumnSchemaType
+    {
+        /// <summary>
+        /// Не специализированная колонка. Говорит о том, что значение одно
+        /// </summary>
+        NoSpecial,
+
+        /// <summary>
+        /// Колонка значения (строка, число, дата и т.д.)
+        /// </summary>
+        Value,
+
+        /// <summary>
+        /// Колонка ссылки
+        /// </summary>
+        Ref,
+
+        /// <summary>
+        /// Колонка хранящая тип
+        /// </summary>
+        Type
+    }
+
+    /// <summary>
+    /// Описывает тип и название колонки
+    /// </summary>
+    public class XCColumnSchemaDefinition
+    {
+        public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, IType platformType, string name,
+            string prefix = "", string postfix = "")
+        {
+            SchemaType = schemaType;
+            Name = name;
+            PlatformType = platformType;
+            Prefix = prefix ?? throw new ArgumentNullException();
+            Postfix = postfix ?? throw new ArgumentNullException();
+        }
+
+        /// <summary>
+        /// Тип колонки
+        /// </summary>
+        public XCColumnSchemaType SchemaType { get; set; }
+
+        /// <summary>
+        /// Полное название
+        /// </summary>
+        public string FullName => $"{Prefix}{Name}{Postfix}";
+
+        public string Name { get; }
+
+        /// <summary>
+        /// Префикс
+        /// </summary>
+        public string Prefix { get; }
+
+        /// <summary>
+        /// Постфикс
+        /// </summary>
+        public string Postfix { get; }
+
+        /// <summary>
+        /// Тип платформы, закреплённый за схемой
+        /// </summary>
+        public IType PlatformType { get; set; }
+    }
+}

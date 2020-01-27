@@ -23,5 +23,6 @@ namespace ZenPlatform.Configuration.TypeSystem
         public Guid ParentId { get; set; }
 
         public IEnumerable<IProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
+        public ITypeManager TypeManager { get; }
     }
 }

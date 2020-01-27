@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 
@@ -11,10 +13,11 @@ namespace ZenPlatform.Core.Querying.Model
     public class QLang
     {
         private readonly IXCRoot _conf;
-        
+
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
+        private ITypeManager _tm;
 
         private enum InstructionContext
         {
@@ -28,7 +31,10 @@ namespace ZenPlatform.Core.Querying.Model
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
             _tb = new QLangTypeBuilder(_conf);
+            _tm = conf.TypeManager;
         }
+
+        public ITypeManager TypeManager => _tm;
 
         public LogicScope CurrentScope => _scope.TryPeek(out var res) ? res : null;
 
@@ -131,7 +137,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void ld_component(string componentName)
         {
-            var component = _conf.Data.Components.First(x => x.Info.ComponentName == componentName);
+            var component = _conf.TypeManager.FindComponentByName(componentName);
             _logicStack.Push(component);
         }
 
@@ -143,7 +149,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void ld_object_type(string typeName)
         {
-            var type = _logicStack.PopComponent().GetTypeByName(typeName);
+            var type = _logicStack.PopComponent().FindTypeByName(typeName);
             var ds = new QObjectTable(type);
             _logicStack.Push(ds);
             if (CurrentScope != null)
@@ -442,12 +448,12 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void ld_const(string str)
         {
-            _logicStack.Push(new QConst(new XCString(), str));
+            _logicStack.Push(new QConst(_tm.String, str));
         }
 
         public void ld_const(double number)
         {
-            _logicStack.Push(new QConst(new XCNumeric(), number));
+            _logicStack.Push(new QConst(_tm.Numeric, number));
         }
     }
 

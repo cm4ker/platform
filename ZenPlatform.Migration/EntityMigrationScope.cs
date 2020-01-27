@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Migration;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Migration
 {
     public class EntityMigrationScope : List<IEntityMigrationItem>, IEntityMigrationScope
     {
-
         public void AddColumn(XCColumnSchemaDefinition schema, string tableName)
         {
             Add(new AddColumnItem(schema, tableName));
@@ -24,7 +24,7 @@ namespace ZenPlatform.Migration
             Add(new DeleteColumnItem(schema, tableName));
         }
 
-        public void UpdateType(IXCProperty property, string tableName, IXCType type)
+        public void UpdateType(IProperty property, string tableName, IType type)
         {
             Add(new UpdateTypeItem(property, tableName, type));
         }
@@ -74,7 +74,5 @@ namespace ZenPlatform.Migration
         {
             Add(new SetFlagCopyTableItem(src, dst));
         }
-
-
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.QueryBuilder;
 
@@ -20,7 +21,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
             throw new NotImplementedException();
         }
 
-        public virtual void EmitValueColumn(XCPrimitiveType type)
+        public virtual void EmitValueColumn(IType type)
         {
             throw new NotImplementedException();
         }

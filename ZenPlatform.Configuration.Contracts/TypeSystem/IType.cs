@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace ZenPlatform.Configuration.Contracts.TypeSystem
 {
-    public interface IType
+    public interface IType : ITypeManagerProvider
     {
         Guid Id { get; set; }
 
-        Guid? ParentId { get; set; }
+        Guid? BaseId { get; set; }
 
         uint SystemId { get; set; }
 

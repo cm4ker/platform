@@ -32,6 +32,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             oType.Id = md.ObjectId;
             oType.Name = md.Name;
             oType.IsCodeAvaliable = true;
+            oType.IsQueryAvaliable = true;
 
             oType.ComponentId = component.Info.ComponentId;
             oType.Metadata = md;
@@ -64,8 +65,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             oType.IsDto = true;
 
             oType.Id = md.ObjectId;
-            oType.Name = md.Name;
-            oType.IsCodeAvaliable = true;
+            oType.Name = "_" + md.Name;
 
             oType.ComponentId = component.Info.ComponentId;
             oType.Metadata = md;
@@ -97,10 +97,9 @@ namespace ZenPlatform.EntityComponent.Configuration
             var oType = tm.Type();
             oType.IsLink = true;
             oType.IsQueryAvaliable = true;
-            oType.IsCodeAvaliable = true;
 
             oType.Id = md.LinkId;
-            oType.Name = md.Name;
+            oType.Name = md.Name + "Link";
 
             oType.ComponentId = component.Info.ComponentId;
             oType.Metadata = md;

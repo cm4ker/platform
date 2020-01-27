@@ -1,18 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class TypeSettings
-    {
-        public Guid TypeId { get; set; }
-
-        public uint SystemId { get; set; }
-
-        public string DatabaseName { get; set; }
-    }
-
     public class TypeManager : ITypeManager
     {
         private List<IType> _types;
@@ -20,7 +13,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         private List<IPropertyType> _propertyTypes;
         private List<ITable> _tables;
         private List<IComponent> _components;
-        private List<TypeSettings> _typeSettings;
+        private List<IObjectSetting> _objectSettings;
 
         private IntType _intType;
         private DateTimeType _dateTimeType;
@@ -35,15 +28,9 @@ namespace ZenPlatform.Configuration.TypeSystem
             _types = new List<IType>();
             _properties = new List<IProperty>();
             _propertyTypes = new List<IPropertyType>();
-
-            //Register base types
-            _types.Add(Int);
-            _types.Add(DateTime);
-            _types.Add(Binary);
-            _types.Add(String);
-            _types.Add(Boolean);
-            _types.Add(Guid);
-            _types.Add(Numeric);
+            _tables = new List<ITable>();
+            _components = new List<IComponent>();
+            _objectSettings = new List<IObjectSetting>();
         }
 
         public IType Int => _intType ??= new IntType(this);
@@ -58,9 +45,13 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public IReadOnlyList<IProperty> Properties => _properties;
 
+        public IReadOnlyList<IPropertyType> PropertyTypes => _propertyTypes;
+
         public IReadOnlyList<ITable> Tables => _tables;
 
         public IReadOnlyList<IComponent> Components => _components;
+
+        public IReadOnlyList<IObjectSetting> Settings => _objectSettings;
 
         public void Register(IType type)
         {
@@ -116,6 +107,11 @@ namespace ZenPlatform.Configuration.TypeSystem
         public ITable Table()
         {
             return new Table(this);
+        }
+
+        public void LoadSettings(IEnumerable<IObjectSetting> settings)
+        {
+            _objectSettings = settings.ToList();
         }
 
         public void Verify()

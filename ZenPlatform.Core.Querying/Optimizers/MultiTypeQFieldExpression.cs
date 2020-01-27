@@ -1,7 +1,8 @@
 using System;
 using System.Linq;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
@@ -42,7 +43,8 @@ namespace ZenPlatform.Core.Querying.Optimizers
             var res = HandleIntermediate(_field);
 
             var schemas =
-                PropertyHelper.GetPropertySchemas(res.Item1.GetDbName(), res.Item1.GetExpressionType().ToList());
+                PropertyHelper.GetPropertySchemas(Rw.TypeManager, res.Item1.GetDbName(),
+                    res.Item1.GetExpressionType().ToList());
             var schema = schemas.FirstOrDefault(criteria);
 
 
@@ -62,7 +64,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
             EmitColumn(x => x.SchemaType == XCColumnSchemaType.Type);
         }
 
-        public override void EmitValueColumn(XCPrimitiveType type)
+        public override void EmitValueColumn(IType type)
         {
             EmitColumn(x => x.SchemaType == XCColumnSchemaType.Value && x.PlatformType.IsAssignableFrom(type));
         }
