@@ -39,7 +39,7 @@ namespace ZenPlatform.Core.Configuration
             newProject.Save(configSaveStorage);
         }
 
-        public void DeployConfiguration(IXCRoot xcRoot, SqlDatabaseType databaseType, string connectionString)
+        public void DeployConfiguration(IRoot xcRoot, SqlDatabaseType databaseType, string connectionString)
         {
             MigrationRunner.Migrate(connectionString, databaseType);
 

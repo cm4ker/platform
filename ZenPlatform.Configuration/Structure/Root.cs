@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
-using dnlib.DotNet.Writer;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Configuration.TypeSystem;
-using ZenPlatform.Language.Ast.Definitions.Statements;
-using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -22,7 +13,7 @@ namespace ZenPlatform.Configuration.Structure
     {
         public MDRoot()
         {
-            ComponentReferences = new List<string>();
+            ComponentReferences = new List<ComponentRef>();
         }
 
         public Guid ProjectId { get; set; }
@@ -31,18 +22,17 @@ namespace ZenPlatform.Configuration.Structure
 
         public string ProjectVersion { get; set; }
 
-        public List<string> ComponentReferences { get; set; }
+        public List<ComponentRef> ComponentReferences { get; set; }
     }
 
-
-    [XmlRoot("Root")]
-    public class XCRoot : IXCRoot, IMetaDataItem<MDRoot>
+    public class Root : IRoot, IMetaDataItem<MDRoot>
     {
         private ITypeManager _manager;
 
-        public XCRoot()
+        public Root(ITypeManager manager)
         {
             ProjectId = Guid.NewGuid();
+            _manager = manager;
         }
 
 
@@ -70,11 +60,11 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         /// <param name="storage"></param>
         /// <returns></returns>
-        public static IXCRoot Load(IXCConfigurationStorage storage)
+        public static Contracts.IRoot Load(IXCConfigurationStorage storage)
         {
             MDManager loader = new MDManager(storage, new TypeManager());
 
-            var root = loader.LoadObject<XCRoot, MDRoot>("root");
+            var root = loader.LoadObject<Root, MDRoot>("root");
 
             return root;
         }
@@ -84,12 +74,12 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static XCRoot Create(string projectName)
+        public static Root Create(string projectName)
         {
             if (string.IsNullOrEmpty(projectName))
                 throw new InvalidOperationException();
 
-            return new XCRoot()
+            return new Root()
             {
                 ProjectId = Guid.NewGuid(),
                 ProjectName = projectName,
@@ -108,19 +98,7 @@ namespace ZenPlatform.Configuration.Structure
             loader.SaveObject("root", this);
         }
 
-        /// <summary>
-        /// Сравнивает две конфигурации
-        /// </summary>
-        /// <param name="another"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public object CompareConfiguration(IXCRoot another)
-        {
-            //TODO: Сделать механизм сравнения двух конфигураций
-            throw new NotImplementedException();
-        }
-
-        public void Initialize(ILoader loader, MDRoot settings)
+        public void OnLoad(ILoader loader, MDRoot settings)
         {
             ProjectId = settings.ProjectId;
             ProjectName = settings.ProjectName;
@@ -131,11 +109,11 @@ namespace ZenPlatform.Configuration.Structure
 
             foreach (var reference in settings.ComponentReferences)
             {
-                loader.LoadObject<MDComponent, MDComponent>(reference);
+                //test;
             }
         }
 
-        public IMDItem Store(IXCSaver saver)
+        public IMDItem OnStore(IXCSaver saver)
         {
             var settings = new MDRoot()
             {
@@ -146,8 +124,7 @@ namespace ZenPlatform.Configuration.Structure
 
             foreach (var component in TypeManager.Components)
             {
-                saver.SaveObject(component.Info.ComponentName, (MDComponent) component.Metadata);
-                settings.ComponentReferences.Add(component.Info.ComponentName);
+                component.Loader.Save(component);
             }
 
             return settings;

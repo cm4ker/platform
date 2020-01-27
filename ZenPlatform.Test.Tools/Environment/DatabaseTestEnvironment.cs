@@ -83,7 +83,7 @@ namespace ZenPlatform.Core.Environment
 
 
             var savedConfiguration = ConfigurationFactory.Create();
-            IXCRoot currentConfiguration = null;
+            IRoot currentConfiguration = null;
             ;
             using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
             {
@@ -91,11 +91,11 @@ namespace ZenPlatform.Core.Environment
                     dataContext);
 
 
-                currentConfiguration = XCRoot.Load(configStorage);
+                currentConfiguration = ZenPlatform.Configuration.Structure.Root.Load(configStorage);
 
                 if (currentConfiguration == null)
                 {
-                    currentConfiguration = new XCRoot();
+                    currentConfiguration = new ZenPlatform.Configuration.Structure.Root();
                 }
             }
 

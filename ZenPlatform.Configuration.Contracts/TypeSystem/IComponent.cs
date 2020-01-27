@@ -10,7 +10,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         ITypeManager TypeManager { get; }
     }
 
-    public interface IComponent : ITypeManagerProvider, IChildItem<IXCRoot>
+    public interface IComponent : ITypeManagerProvider, IChildItem<IRoot>
     {
         public Guid Id { get; }
 
@@ -25,7 +25,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         Assembly ComponentAssembly { get; set; }
 
-        IComponentLoader Loader { get; }
+        IComponentManager Loader { get; }
 
         IDataComponent ComponentImpl { get; }
 
