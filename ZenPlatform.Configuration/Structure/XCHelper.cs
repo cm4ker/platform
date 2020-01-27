@@ -69,6 +69,22 @@ namespace ZenPlatform.Configuration.Structure
             return ms;
         }
 
+        public static string SerializeToString(this object obj)
+        {
+            MemoryStream ms = new MemoryStream();
+            XamlSchemaContext context = new XCXamlSchemaContext();
+            XamlObjectReader reader = new XamlObjectReader(obj, context);
+            XamlXmlWriter writer = new XamlXmlWriter(ms, context);
+            XamlServices.Transform(reader, writer);
+
+            ms.Seek(0, SeekOrigin.Begin);
+            using (var textReader = new StreamReader(ms))
+            {
+                return textReader.ReadToEnd();
+            }
+
+        }
+
         public static string GetHash(this IXCRoot root)
         {
             return HashHelper.HashMD5(root.SerializeToStream());
