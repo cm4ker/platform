@@ -101,12 +101,27 @@ namespace ZenPlatform.Configuration.Structure.Data
      CatalogStructure
      \
         Root.xml
+        
         Entity.xml
         Document.xml
         Reference.xml
         
-        AccumulateRefister
-     
+        Entity
+            etc files...
+        Document
+            etc files...
+        Reference
+            etc files...
+        
+        AccumulateRegister
+            Main.xml
+        
+        packages
+            Entity.dll
+            Document.dll
+            Reference.dll
+            AccumulateRegister.dll
+        
      <Project>
         <Name>Test</Name>
         <Id>SOME_GUID</Id>
@@ -116,10 +131,6 @@ namespace ZenPlatform.Configuration.Structure.Data
         <ComRef Name="Reference" Version="1.0.0.0" Entry="./Reference.xml" />
         
         <ComRef Name="AccumulateRegister" Version="1.0.0.0" />
-        <ComRef Name="InfoRegister" Version="1.0.0.0" />
-        
-        <ComRef Name="InfoRegister" Version="1.0.0.0" />
-        <ComRef Name="InfoRegister" Version="1.0.0.0" />
      </Project>
      
      
@@ -127,21 +138,10 @@ namespace ZenPlatform.Configuration.Structure.Data
      */
 
 
-    public class ComponentRef
+    public class ComponentRef : IComponentRef
     {
-        public string DllRef { get; set; }
-        public string MDRef { get; set; }
-
-        public IComponent ToComponent(ITypeManager tm)
-        {
-            var com = tm.Component();
-            var mrg = Assembly.LoadFile(DllRef);
-
-            if (string.IsNullOrEmpty(MDRef))
-                return null;
-
-            return com;
-        }
+        public string Name { get; set; }
+        public string Entry { get; set; }
     }
 
     public class MDComponent : IMDItem

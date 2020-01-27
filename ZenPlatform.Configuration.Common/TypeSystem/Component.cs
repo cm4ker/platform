@@ -26,7 +26,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         private readonly IDictionary<CodeGenRuleType, CodeGenRule> _codeGenRules;
         private Assembly _componentAssembly;
 
-        private IRoot _parent;
+        private IProject _parent;
 
         private ITypeManager _tm;
 
@@ -86,15 +86,15 @@ namespace ZenPlatform.Configuration.TypeSystem
 
             _loader = (IComponentManager) Activator.CreateInstance(loaderType);
 
-            _componentImpl = _loader.GetComponentImpl(this);
+            //_componentImpl = _loader.(this);
 
             //Инициализируем компонент
             _componentImpl.OnInitializing();
         }
 
-        public IRoot Parent => _parent;
+        public IProject Parent => _parent;
 
-        IRoot IChildItem<IRoot>.Parent
+        IProject IChildItem<IProject>.Parent
         {
             get => _parent;
             set => _parent = value;

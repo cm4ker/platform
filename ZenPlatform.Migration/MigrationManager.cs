@@ -263,7 +263,7 @@ namespace ZenPlatform.Migration
             }
         }
 
-        private void RunMigration(IRoot old, IRoot actual, Guid id, DataContext context)
+        private void RunMigration(IProject old, IProject actual, Guid id, DataContext context)
         {
             var components = old.Data.Components.FullJoin(actual.Data.Components,
                 c => c.Info.ComponentId,
@@ -287,7 +287,7 @@ namespace ZenPlatform.Migration
             }
         }
 
-        public void Migrate(IRoot old, IRoot actual)
+        public void Migrate(IProject old, IProject actual)
         {
             // Try 
             //_assemblyManager.BuildConfiguration(actual, _dataContextManager.DatabaseType);
@@ -329,7 +329,7 @@ namespace ZenPlatform.Migration
         /// <param name="old"></param>
         /// <param name="actual"></param>
         /// <returns></returns>
-        public bool CheckMigration(IRoot old, IRoot actual)
+        public bool CheckMigration(IProject old, IProject actual)
         {
             return !_m.Equals(old, actual);
         }

@@ -83,7 +83,7 @@ namespace ZenPlatform.Core.Environment
 
 
             var savedConfiguration = ConfigurationFactory.Create();
-            IRoot currentConfiguration = null;
+            IProject currentConfiguration = null;
             ;
             using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
             {
@@ -91,11 +91,11 @@ namespace ZenPlatform.Core.Environment
                     dataContext);
 
 
-                currentConfiguration = ZenPlatform.Configuration.Structure.Root.Load(configStorage);
+                currentConfiguration = ZenPlatform.Configuration.Structure.Project.Load(configStorage);
 
                 if (currentConfiguration == null)
                 {
-                    currentConfiguration = new ZenPlatform.Configuration.Structure.Root();
+                    currentConfiguration = new ZenPlatform.Configuration.Structure.Project();
                 }
             }
 
