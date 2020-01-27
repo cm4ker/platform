@@ -19,11 +19,11 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         }
 
         /// <inheritdoc />
-        public void InjectDataSource(QueryMachine qm, IXCObjectType t,
+        public void InjectDataSource(QueryMachine qm, IType t,
             IQueryModelContext logicalTreeNode)
         {
-            var set = t as XCSingleEntity ?? throw new Exception($"This component can't host next type: {t.GetType()}");
-            qm.ld_table(set.RelTableName);
+            var set = t ?? throw new Exception($"This component can't host next type: {t.GetType()}");
+            qm.ld_table(set.Metadata.RelTableName);
         }
     }
 }

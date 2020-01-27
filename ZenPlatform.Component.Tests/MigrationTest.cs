@@ -31,9 +31,9 @@ namespace ZenPlatform.Component.Tests
             _testOutputHelper = testOutputHelper;
         }
 
-        private XCRoot CreateConfiguration()
+        private Root CreateConfiguration()
         {
-            XCRoot root = new XCRoot();
+            Root root = new Root();
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";
@@ -81,9 +81,9 @@ namespace ZenPlatform.Component.Tests
             return root;
         }
 
-        private XCRoot CreateConfigurationChangeDataType()
+        private Root CreateConfigurationChangeDataType()
         {
-            XCRoot root = new XCRoot();
+            Root root = new Root();
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";
@@ -130,9 +130,9 @@ namespace ZenPlatform.Component.Tests
             return root;
         }
 
-        private XCRoot CreateConfigurationAddDataType()
+        private Root CreateConfigurationAddDataType()
         {
-            XCRoot root = new XCRoot();
+            Root root = new Root();
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";
@@ -182,9 +182,9 @@ namespace ZenPlatform.Component.Tests
             return root;
         }
 
-        private XCRoot CreateConfigurationAddDeleteNewProperty()
+        private Root CreateConfigurationAddDeleteNewProperty()
         {
-            XCRoot root = new XCRoot();
+            Root root = new Root();
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";
@@ -239,9 +239,9 @@ namespace ZenPlatform.Component.Tests
             return root;
         }
 
-        private XCRoot CreateConfigurationAddDeleteEntityType()
+        private Root CreateConfigurationAddDeleteEntityType()
         {
-            XCRoot root = new XCRoot();
+            Root root = new Root();
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";
@@ -305,9 +305,9 @@ namespace ZenPlatform.Component.Tests
             return root;
         }
 
-        private XCRoot CreateEmptyConfiguration()
+        private Root CreateEmptyConfiguration()
         {
-            XCRoot root = new XCRoot();
+            Root root = new Root();
 
             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
             root.ProjectName = "Library";

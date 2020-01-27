@@ -32,4 +32,8 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         List<IXCDataExpression> Arguments { get; }
     }
+
+    public interface IComponentRef
+    {
+    }
 }

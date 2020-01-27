@@ -45,11 +45,11 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public Guid DtoId { get; set; }
 
-        public void Initialize(ILoader loader, MDEntity settings)
+        public void OnLoad(ILoader loader, MDEntity settings)
         {
         }
 
-        public IMDItem Store(IXCSaver saver)
+        public IMDItem OnStore(IXCSaver saver)
         {
             return this;
         }

@@ -69,7 +69,7 @@ namespace ZenPlatform.Configuration.Structure
             return ms;
         }
 
-        public static string GetHash(this IXCRoot root)
+        public static string GetHash(this Contracts.IRoot root)
         {
             return HashHelper.HashMD5(root.SerializeToStream());
         }

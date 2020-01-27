@@ -64,7 +64,7 @@ namespace ZenPlatform.Cli.Commands.Db
 
             //Создаём пустой проект с именем Project Name
 
-            var newProject = XCRoot.Create(projectName);
+            var newProject = Root.Create(projectName);
 
             // Необходимо создать контекст данных
 

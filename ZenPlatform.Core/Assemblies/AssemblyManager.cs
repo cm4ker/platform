@@ -37,7 +37,7 @@ namespace ZenPlatform.Core.Assemblies
         }
 
 
-        public bool CheckConfiguration(IXCRoot configuration)
+        public bool CheckConfiguration(IRoot configuration)
         {
             var hash = HashHelper.HashMD5(_m.SaveToStream(configuration));
 
@@ -53,7 +53,7 @@ namespace ZenPlatform.Core.Assemblies
             return false;
         }
 
-        public IEnumerable<AssemblyDescription> GetAssemblies(IXCRoot conf)
+        public IEnumerable<AssemblyDescription> GetAssemblies(IRoot conf)
         {
             return _assemblyStorage.GetAssemblies(_m.GetHash(conf));
         }
@@ -63,7 +63,7 @@ namespace ZenPlatform.Core.Assemblies
             return _assemblyStorage.GetAssembly(description);
         }
 
-        public void BuildConfiguration(IXCRoot configuration, SqlDatabaseType dbType)
+        public void BuildConfiguration(IRoot configuration, SqlDatabaseType dbType)
         {
             _logger.Info("Build configuration.");
             var assembly = _compiller.Build(configuration, CompilationMode.Server, dbType);

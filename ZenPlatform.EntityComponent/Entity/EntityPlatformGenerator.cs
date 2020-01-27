@@ -27,6 +27,7 @@ using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.Shared.Tree;
 using IType = ZenPlatform.Compiler.Contracts.IType;
+using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 namespace ZenPlatform.EntityComponent.Entity
 {

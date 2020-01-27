@@ -40,7 +40,5 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// Инъектор запросов
         /// </summary>
         IQueryInjector QueryInjector { get; }
-
-        IComponentLoader Loader { get; }
     }
 }

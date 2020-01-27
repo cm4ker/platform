@@ -12,7 +12,7 @@ namespace ZenPlatform.Core.Querying
     {
         private readonly QLang _stack;
 
-        public ZSqlGrammarVisitor(IXCRoot configuration, DataQueryConstructorContext context)
+        public ZSqlGrammarVisitor(IRoot configuration, DataQueryConstructorContext context)
         {
             _stack = new QLang(configuration);
         }
