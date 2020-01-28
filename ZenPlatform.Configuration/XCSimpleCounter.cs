@@ -15,7 +15,7 @@ namespace ZenPlatform.Configuration
 
         public IProject Create(string projectName)
         {
-            return Structure.Project.Create(projectName);
+            return null;
         }
 
         public Stream SaveToStream(IProject project)
@@ -25,7 +25,7 @@ namespace ZenPlatform.Configuration
 
         public string GetHash(IProject project)
         {
-            return ((Structure.Project) project).GetHash();
+            return ((Project) project).GetHash();
         }
 
         public bool Equals(IProject a, IProject b)

@@ -35,5 +35,7 @@ namespace ZenPlatform.Configuration.Contracts
 
     public interface IComponentRef
     {
+        string Name { get; set; }
+        string Entry { get; set; }
     }
 }

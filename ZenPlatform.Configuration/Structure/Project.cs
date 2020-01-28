@@ -29,7 +29,7 @@ namespace ZenPlatform.Configuration.Structure
         public List<ComponentRef> ComponentReferences { get; set; }
     }
 
-    public class Project : IProject, IMetaDataItem<MDRoot>
+    public class Project : IProject
     {
         private ITypeManager _manager;
 
@@ -70,7 +70,7 @@ namespace ZenPlatform.Configuration.Structure
         {
             MDManager loader = new MDManager(storage, new TypeManager());
 
-            var root = loader.LoadObject<Project, MDRoot>("root");
+            var root = loader.LoadObject<Project>("root");
 
             return root;
         }
@@ -115,23 +115,6 @@ namespace ZenPlatform.Configuration.Structure
 
                 manager.Load(reference, loader);
             }
-        }
-
-        public IMDItem OnStore(IXCSaver saver)
-        {
-            var settings = new MDRoot()
-            {
-                ProjectId = ProjectId,
-                ProjectName = ProjectName,
-                ProjectVersion = ProjectVersion
-            };
-
-            foreach (var component in TypeManager.Components)
-            {
-                component.Loader.Save(component);
-            }
-
-            return settings;
         }
     }
 }

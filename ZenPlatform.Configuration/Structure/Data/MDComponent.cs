@@ -23,63 +23,6 @@ using MDType = ZenPlatform.Configuration.Structure.Data.Types.MDType;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
-    public class ComponentModel : IMetaData<MDComponent>
-    {
-        public ITypeManager _tm;
-
-        private IComponent _component;
-        private MDComponent _metadata;
-
-        public Guid ComponentId => _component.Info.ComponentId;
-
-        public void OnLoad(ILoader loader, MDComponent settings)
-        {
-            //load assembly
-            var bytes = loader.LoadBytes(settings.AssemblyReference);
-
-            var module = ModuleDefMD.Load(bytes);
-
-            var alreadyLoaded = AppDomain.CurrentDomain.GetAssemblies()
-                .FirstOrDefault(x => x.FullName == module.Assembly.FullName);
-
-            var c = loader.TypeManager.Component();
-
-            if (alreadyLoaded != null)
-                c.ComponentAssembly = alreadyLoaded;
-            else
-                c.ComponentAssembly = Assembly.Load(bytes);
-
-            // load entitys
-            foreach (var reference in settings.EntityReferences)
-            {
-                c.ComponentImpl.Loader.LoadObject(c, loader, reference);
-            }
-
-            _component = c;
-            loader.TypeManager.Register(c);
-        }
-
-        public IMDItem OnStore(IXCSaver saver)
-        {
-            var asm = _component.ComponentAssembly;
-
-            var refModule = asm.Modules.FirstOrDefault() ?? throw new Exception("Module not found");
-
-            ModuleDefMD module = ModuleDefMD.Load(refModule);
-
-            using (var ms = new MemoryStream())
-            {
-                module.Write(ms);
-                ms.Seek(0, SeekOrigin.Begin);
-                saver.SaveBytes(refModule.Name, ms.ToArray());
-
-                _metadata.AssemblyReference = refModule.Name;
-            }
-
-            return _metadata;
-        }
-    }
-
     /*
        - Root 
        - ComAsmRef (DllPath: C:\test\a.dll, MDComponent:C:\test\Com\Entity.xml) 
@@ -144,15 +87,8 @@ namespace ZenPlatform.Configuration.Structure.Data
         public string Entry { get; set; }
     }
 
-    public class MDComponent : IMDItem
+    public class MDComponent : IMDComponent
     {
-        public string AssemblyReference { get; set; }
-        //
-        // public List<string> EntityReferences { get; set; }
-
-        public MDComponent()
-        {
-            // EntityReferences = new List<string>();
-        }
+        public List<string> EntityReferences { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
@@ -9,16 +8,14 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types;
 using ZenPlatform.Shared.ParenChildCollection;
 
-namespace ZenPlatform.Configuration.TypeSystem
+namespace ZenPlatform.Configuration.Common.TypeSystem
 {
     /// <summary>
     /// Компонент конфигурации
     /// </summary>
     public class Component : IComponent
     {
-        private bool _isLoaded;
-        private XCComponentInformation _info;
-        private IComponentManager _loader;
+        private IXCComponentInformation _info;
         private IDataComponent _componentImpl;
 
         private List<MDType> _mdTypes;
@@ -46,13 +43,8 @@ namespace ZenPlatform.Configuration.TypeSystem
         public IXCComponentInformation Info
         {
             get => _info;
+            set => _info = value;
         }
-
-        public bool IsLoaded
-        {
-            get => _isLoaded;
-        }
-
 
         public Assembly ComponentAssembly
         {
@@ -60,36 +52,8 @@ namespace ZenPlatform.Configuration.TypeSystem
             set
             {
                 _componentAssembly = value;
-                LoadComponentInformation();
+                //LoadComponentInformation();
             }
-        }
-
-
-        /// <summary>
-        /// Загрузить инфомрацию о компоненте включая загрузчики, инфо, и так далее
-        /// </summary>
-        private void LoadComponentInformation()
-        {
-            var typeInfo = ComponentAssembly.GetTypes()
-                .FirstOrDefault(x => x.BaseType == typeof(XCComponentInformation));
-
-            if (typeInfo != null)
-                _info = (XCComponentInformation) Activator.CreateInstance(typeInfo);
-            else
-                _info = new XCComponentInformation();
-
-            var loaderType = ComponentAssembly.GetTypes()
-                                 .FirstOrDefault(x =>
-                                     x.IsPublic && !x.IsAbstract &&
-                                     x.GetInterfaces().Contains(typeof(IComponentManager))) ??
-                             throw new Exception("Invalid component");
-
-            _loader = (IComponentManager) Activator.CreateInstance(loaderType);
-
-            //_componentImpl = _loader.(this);
-
-            //Инициализируем компонент
-            _componentImpl.OnInitializing();
         }
 
         public IProject Parent => _parent;
@@ -100,9 +64,11 @@ namespace ZenPlatform.Configuration.TypeSystem
             set => _parent = value;
         }
 
-        public IComponentManager Loader => _loader;
-
-        public IDataComponent ComponentImpl => _componentImpl;
+        public IDataComponent ComponentImpl
+        {
+            get => _componentImpl;
+            set => _componentImpl = value;
+        }
 
 
         /// <summary>
