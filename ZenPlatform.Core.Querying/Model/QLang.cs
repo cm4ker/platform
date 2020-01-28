@@ -12,7 +12,7 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public class QLang
     {
-        private readonly IRoot _conf;
+        private readonly IProject _conf;
 
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
@@ -25,7 +25,7 @@ namespace ZenPlatform.Core.Querying.Model
             Component
         }
 
-        public QLang(IRoot conf)
+        public QLang(IProject conf)
         {
             _conf = conf;
             _logicStack = new LogicStack();

@@ -45,7 +45,7 @@ namespace ZenPlatform.Cli.Commands.Db
             }
             
             var storage = new XCFileSystemStorage(pathTo, Name);
-            var configuration = Root.Load(storage);
+            var configuration = Project.Load(storage);
 
             var env = _environmentManager.GetEnvironment(Name);
             if (env is IPlatformEnvironment platform)

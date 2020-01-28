@@ -15,16 +15,16 @@ namespace ZenPlatform.Core.Assemblies
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="dbType">Тип базы данных</param>
-        void BuildConfiguration(IRoot configuration , SqlDatabaseType dbType);
+        void BuildConfiguration(IProject configuration , SqlDatabaseType dbType);
 
         /// <summary>
         /// Проверяет, нужно ли пересобирать конфигурацию
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns>True - Необходимо пересобрать конфигурацию; False - Всё ок</returns>
-        bool CheckConfiguration(IRoot configuration);
+        bool CheckConfiguration(IProject configuration);
 
-        IEnumerable<AssemblyDescription> GetAssemblies(IRoot conf);
+        IEnumerable<AssemblyDescription> GetAssemblies(IProject conf);
 
         byte[] GetAssemblyBytes(AssemblyDescription description);
     }

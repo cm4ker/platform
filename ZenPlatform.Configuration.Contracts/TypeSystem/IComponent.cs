@@ -10,24 +10,18 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         ITypeManager TypeManager { get; }
     }
 
-    public interface IComponent : ITypeManagerProvider, IChildItem<IRoot>
+    public interface IComponent : ITypeManagerProvider, IChildItem<IProject>
     {
         public Guid Id { get; }
 
         /// <summary>
         /// Информация о компоненте
         /// </summary>
-        IXCComponentInformation Info { get; }
-
-        bool IsLoaded { get; }
-
+        IXCComponentInformation Info { get; set; }
+        
         string Name { get; }
-
-        Assembly ComponentAssembly { get; set; }
-
-        IComponentManager Loader { get; }
-
-        IDataComponent ComponentImpl { get; }
+        
+        IDataComponent ComponentImpl { get; set; }
 
         IMDComponent Metadata { get; set; }
 

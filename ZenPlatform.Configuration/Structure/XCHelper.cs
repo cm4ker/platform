@@ -69,9 +69,9 @@ namespace ZenPlatform.Configuration.Structure
             return ms;
         }
 
-        public static string GetHash(this Contracts.IRoot root)
+        public static string GetHash(this Contracts.IProject project)
         {
-            return HashHelper.HashMD5(root.SerializeToStream());
+            return HashHelper.HashMD5(project.SerializeToStream());
         }
     }
 }

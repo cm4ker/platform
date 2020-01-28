@@ -8,9 +8,7 @@ namespace ZenPlatform.Configuration.Contracts
 {
     public interface IXCSaver
     {
-        void SaveObject<T>(string path, IMetaDataItem<T> item)
-            where
-            T : IMDItem;
+        void SaveObject(string path, object item);
 
         void SaveBytes(string path, byte[] data);
 

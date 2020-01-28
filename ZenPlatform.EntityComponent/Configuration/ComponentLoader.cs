@@ -1,13 +1,27 @@
 using System;
+using System.Linq;
+using System.Reflection;
+using Microsoft.CodeAnalysis.Completion;
+using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
     public class ComponentLoader : IComponentManager
     {
+        private Assembly _asm;
+
+        public ComponentLoader()
+        {
+            _asm = typeof(ComponentLoader).Assembly;
+        }
+
         /// <summary>
         /// Загрузить объект компонента
         /// </summary>
@@ -16,12 +30,12 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// <param name="reference"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public virtual void LoadObject(IComponent component, ILoader loader, string reference)
+        public virtual void LoadObject(IComponent component, ILoader loader, MDEntity typeMd)
         {
-            var md = loader.LoadObject<MDEntity, MDEntity>(reference);
             var tm = loader.TypeManager;
 
-            BuildObject(component, loader.Counter, tm, md);
+            BuildObject(component, loader.Counter, tm, typeMd);
+            BuildDto(component, loader.Counter, tm, typeMd);
         }
 
         private void BuildObject(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)
@@ -127,15 +141,66 @@ namespace ZenPlatform.EntityComponent.Configuration
         }
 
 
-        public IComponent LoadComponent(IComponentRef comRef, ILoader loader)
+        public IXCComponentInformation GetComponentInfo()
         {
-            var c = loader.TypeManager.Component();
-            return null;
+            return new Info();
         }
 
         public IDataComponent GetComponentImpl(IComponent c)
         {
-            return new EntityComponent(c);
+            var impl = new EntityComponent(c);
+            impl.OnInitializing();
+            return impl;
+        }
+
+        public void Load(IComponentRef comRef, ILoader loader)
+        {
+            var com = loader.LoadObject<MDComponent>(comRef.Entry);
+
+            var c = loader.TypeManager.Component();
+
+            c.ComponentImpl = GetComponentImpl(c);
+            c.Info = GetComponentInfo();
+            c.Metadata = com;
+
+            loader.TypeManager.Register(c);
+
+            foreach (var typeRef in com.EntityReferences)
+            {
+                var type = loader.LoadObject<MDEntity>(typeRef);
+
+                LoadObject(c, loader, type);
+            }
+        }
+
+        public void Save(IComponentRef comRef, IXCSaver saver)
+        {
+            var info = GetComponentInfo();
+            var com = saver.TypeManager.FindComponent(info.ComponentId);
+            var md = (MDComponent) com.Metadata;
+
+            foreach (var type in com.GetTypes().Where(x => x.IsObject))
+            {
+                var typeMd = type.Metadata as MDEntity ??
+                             throw new Exception("This type not support by this component");
+                /*
+                 Model()
+                 {
+                    MD
+                    Path
+                 }
+                 
+                 Before:
+                    RefA - MDA
+                    RefB - MDB -
+                    RefC - MDC
+                After
+                    RefA - MDA*
+                 */
+                saver.SaveObject("some path", typeMd);
+            }
+
+            saver.SaveObject(comRef.Entry, md);
         }
     }
 }
