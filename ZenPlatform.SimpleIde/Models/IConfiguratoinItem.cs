@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ZenPlatform.SimpleIde.Models
 {
-    public interface IConfiguratoinItem: INotifyPropertyChanged
+    public interface IConfiguratoinItem
     {
         string Content { get; }
         IBitmap Bitmap { get; }
@@ -14,7 +14,7 @@ namespace ZenPlatform.SimpleIde.Models
         bool IsExpanded { get; }
         bool CanOpen { get; }
         bool HasContext { get; }
-        object Context { get; }
+        object Context { get; set; }
         IEnumerable<IConfiguratoinItem> Childs { get; }
     }
 }

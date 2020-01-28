@@ -25,7 +25,14 @@ namespace ZenPlatform.SimpleIde.Models
 
         public bool HasContext => true;
 
-        public object Context => _component;
+        public object Context
+        {
+            get => _component;
+            set
+            {
+                _component = value as IComponent;
+            }
+        }
 
         public IEnumerable<IConfiguratoinItem> Childs => null;
     }
