@@ -11,7 +11,7 @@ namespace ZenPlatform.Core.Querying.Test
 {
     public class TranspilingTest
     {
-        private Root conf;
+        private Project conf;
         private Querying.Model.QLang _m;
 
         public TranspilingTest()

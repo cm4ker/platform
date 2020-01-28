@@ -23,63 +23,6 @@ using MDType = ZenPlatform.Configuration.Structure.Data.Types.MDType;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
-    public class ComponentModel : IMetaData<MDComponent>
-    {
-        public ITypeManager _tm;
-
-        private IComponent _component;
-        private MDComponent _metadata;
-
-        public Guid ComponentId => _component.Info.ComponentId;
-
-        public void OnLoad(ILoader loader, MDComponent settings)
-        {
-            //load assembly
-            var bytes = loader.LoadBytes(settings.AssemblyReference);
-
-            var module = ModuleDefMD.Load(bytes);
-
-            var alreadyLoaded = AppDomain.CurrentDomain.GetAssemblies()
-                .FirstOrDefault(x => x.FullName == module.Assembly.FullName);
-
-            var c = loader.TypeManager.Component();
-
-            if (alreadyLoaded != null)
-                c.ComponentAssembly = alreadyLoaded;
-            else
-                c.ComponentAssembly = Assembly.Load(bytes);
-
-            // load entitys
-            foreach (var reference in settings.EntityReferences)
-            {
-                c.ComponentImpl.Loader.LoadObject(c, loader, reference);
-            }
-
-            _component = c;
-            loader.TypeManager.Register(c);
-        }
-
-        public IMDItem OnStore(IXCSaver saver)
-        {
-            var asm = _component.ComponentAssembly;
-
-            var refModule = asm.Modules.FirstOrDefault() ?? throw new Exception("Module not found");
-
-            ModuleDefMD module = ModuleDefMD.Load(refModule);
-
-            using (var ms = new MemoryStream())
-            {
-                module.Write(ms);
-                ms.Seek(0, SeekOrigin.Begin);
-                saver.SaveBytes(refModule.Name, ms.ToArray());
-
-                _metadata.AssemblyReference = refModule.Name;
-            }
-
-            return _metadata;
-        }
-    }
-
     /*
        - Root 
        - ComAsmRef (DllPath: C:\test\a.dll, MDComponent:C:\test\Com\Entity.xml) 
@@ -101,12 +44,27 @@ namespace ZenPlatform.Configuration.Structure.Data
      CatalogStructure
      \
         Root.xml
+        
         Entity.xml
         Document.xml
         Reference.xml
         
-        AccumulateRefister
-     
+        Entity
+            etc files...
+        Document
+            etc files...
+        Reference
+            etc files...
+        
+        AccumulateRegister
+            Main.xml
+        
+        packages
+            Entity.dll
+            Document.dll
+            Reference.dll
+            AccumulateRegister.dll
+        
      <Project>
         <Name>Test</Name>
         <Id>SOME_GUID</Id>
@@ -116,10 +74,6 @@ namespace ZenPlatform.Configuration.Structure.Data
         <ComRef Name="Reference" Version="1.0.0.0" Entry="./Reference.xml" />
         
         <ComRef Name="AccumulateRegister" Version="1.0.0.0" />
-        <ComRef Name="InfoRegister" Version="1.0.0.0" />
-        
-        <ComRef Name="InfoRegister" Version="1.0.0.0" />
-        <ComRef Name="InfoRegister" Version="1.0.0.0" />
      </Project>
      
      
@@ -127,32 +81,14 @@ namespace ZenPlatform.Configuration.Structure.Data
      */
 
 
-    public class ComponentRef
+    public class ComponentRef : IComponentRef
     {
-        public string DllRef { get; set; }
-        public string MDRef { get; set; }
-
-        public IComponent ToComponent(ITypeManager tm)
-        {
-            var com = tm.Component();
-            var mrg = Assembly.LoadFile(DllRef);
-
-            if (string.IsNullOrEmpty(MDRef))
-                return null;
-
-            return com;
-        }
+        public string Name { get; set; }
+        public string Entry { get; set; }
     }
 
-    public class MDComponent : IMDItem
+    public class MDComponent : IMDComponent
     {
-        public string AssemblyReference { get; set; }
-        //
-        // public List<string> EntityReferences { get; set; }
-
-        public MDComponent()
-        {
-            // EntityReferences = new List<string>();
-        }
+        public List<string> EntityReferences { get; set; }
     }
 }

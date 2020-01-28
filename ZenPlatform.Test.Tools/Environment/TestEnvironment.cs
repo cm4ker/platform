@@ -39,7 +39,7 @@ namespace ZenPlatform.Core.Test.Environment
 
         public IDataContextManager DataContextManager => throw new NotImplementedException();
 
-        public IRoot Configuration => ConfigurationFactory.Create();
+        public IProject Configuration => ConfigurationFactory.Create();
 
         public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService,
             ILogger<TestEnvironment> logger,

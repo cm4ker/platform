@@ -13,7 +13,7 @@ namespace ZenPlatform.Core.Querying.Test
 {
     public class QLangTest
     {
-        private Root conf;
+        private Project conf;
         private Querying.Model.QLang _m;
 
         public QLangTest()

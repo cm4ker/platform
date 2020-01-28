@@ -8,32 +8,31 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.EntityComponent.Configuration;
-using Root = ZenPlatform.Configuration.Structure.Root;
 
 namespace ZenPlatform.Component.Tests
 {
     public class TypeEqualsTest
     {
 
-        private Root _root;
+        private Project _project;
         private XCComponent _component;
         private SingleEntityConfigurationManager _componentManager;
         private ITypeEditor Entity1;
         private ITypeEditor Entity2;
         public TypeEqualsTest()
         {
-            _root = new Root();
+            _project = new Project();
 
-            _root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            _root.ProjectName = "Library";
-            _root.ProjectVersion = "0.0.0.1";
+            _project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
+            _project.ProjectName = "Library";
+            _project.ProjectVersion = "0.0.0.1";
 
             _component = new XCComponent()
             {
                 ComponentAssembly = typeof(XCSingleEntity).Assembly,
             };
 
-            _root.Data.Components.Add(_component);
+            _project.Data.Components.Add(_component);
 
             _componentManager  = (SingleEntityConfigurationManager)_component.ComponentImpl.ComponentManager;
 

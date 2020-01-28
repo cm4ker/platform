@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -25,22 +29,24 @@ namespace ZenPlatform.Configuration.Structure
         public List<ComponentRef> ComponentReferences { get; set; }
     }
 
-    public class Root : IRoot, IMetaDataItem<MDRoot>
+    public class Project : IProject
     {
         private ITypeManager _manager;
 
-        public Root(ITypeManager manager)
+        public Project()
+        {
+        }
+
+        public Project(ITypeManager manager)
         {
             ProjectId = Guid.NewGuid();
             _manager = manager;
         }
 
-
         /// <summary>
         /// Идентификатор конфигурации
         /// </summary>
         public Guid ProjectId { get; set; }
-
 
         /// <summary>
         /// Имя конфигурации
@@ -60,32 +66,15 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         /// <param name="storage"></param>
         /// <returns></returns>
-        public static Contracts.IRoot Load(IXCConfigurationStorage storage)
+        public static IProject Load(IXCConfigurationStorage storage)
         {
             MDManager loader = new MDManager(storage, new TypeManager());
 
-            var root = loader.LoadObject<Root, MDRoot>("root");
+            var root = loader.LoadObject<Project>("root");
 
             return root;
         }
 
-        /// <summary>
-        /// Создать новую концигурацию
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static Root Create(string projectName)
-        {
-            if (string.IsNullOrEmpty(projectName))
-                throw new InvalidOperationException();
-
-            return new Root()
-            {
-                ProjectId = Guid.NewGuid(),
-                ProjectName = projectName,
-                _manager = new TypeManager()
-            };
-        }
 
         /// <summary>
         /// Созранить объект в контексте другого хранилища
@@ -107,27 +96,25 @@ namespace ZenPlatform.Configuration.Structure
             _manager = loader.TypeManager;
             _manager.LoadSettings(loader.Settings.GetSettings());
 
+            var pkgFolder = "packages";
+
             foreach (var reference in settings.ComponentReferences)
             {
-                //test;
+                var asmPath = Path.Combine(pkgFolder, $"{reference.Name}.dll");
+
+                var asm = Assembly.Load(loader.LoadBytes(asmPath) ??
+                                        throw new Exception($"Unknown reference {reference.Name}"));
+
+                var loaderType = asm.GetTypes()
+                                     .FirstOrDefault(x =>
+                                         x.IsPublic && !x.IsAbstract &&
+                                         x.GetInterfaces().Contains(typeof(IComponentManager))) ??
+                                 throw new Exception("Invalid component");
+
+                var manager = (IComponentManager) Activator.CreateInstance(loaderType);
+
+                manager.Load(reference, loader);
             }
-        }
-
-        public IMDItem OnStore(IXCSaver saver)
-        {
-            var settings = new MDRoot()
-            {
-                ProjectId = ProjectId,
-                ProjectName = ProjectName,
-                ProjectVersion = ProjectVersion
-            };
-
-            foreach (var component in TypeManager.Components)
-            {
-                component.Loader.Save(component);
-            }
-
-            return settings;
         }
     }
 }

@@ -58,7 +58,7 @@ namespace ZenPlatform.Core.Environment
         /// <summary>
         /// Конфигурация базы данных
         /// </summary>
-        public IRoot Configuration { get; private set; }
+        public IProject Configuration { get; private set; }
 
         /// <summary>
         /// Сессии

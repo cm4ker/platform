@@ -39,7 +39,7 @@ namespace ZenPlatform.Core.Configuration
             newProject.Save(configSaveStorage);
         }
 
-        public void DeployConfiguration(IRoot xcRoot, SqlDatabaseType databaseType, string connectionString)
+        public void DeployConfiguration(IProject xcProject, SqlDatabaseType databaseType, string connectionString)
         {
             MigrationRunner.Migrate(connectionString, databaseType);
 
@@ -52,8 +52,8 @@ namespace ZenPlatform.Core.Configuration
                 SqlCompillerBase.FormEnum(databaseType));
 
 
-            xcRoot.Save(configStorage);
-            xcRoot.Save(configSaveStorage);
+            xcProject.Save(configStorage);
+            xcProject.Save(configSaveStorage);
         }
     }
 }

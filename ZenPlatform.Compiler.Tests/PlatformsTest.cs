@@ -19,7 +19,7 @@ namespace ZenPlatform.Compiler.Tests
 {
     public class PlatformsTest
     {
-        private IRoot r = ConfigurationFactory.Create();
+        private IProject r = ConfigurationFactory.Create();
 
         // [Fact]
         // void TestCompileAndInvoke()
