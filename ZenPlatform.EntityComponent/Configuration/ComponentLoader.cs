@@ -35,6 +35,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             var tm = loader.TypeManager;
 
             BuildObject(component, loader.Counter, tm, typeMd);
+            BuildDto(component, loader.Counter, tm, typeMd);
         }
 
         private void BuildObject(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)
@@ -182,7 +183,20 @@ namespace ZenPlatform.EntityComponent.Configuration
             {
                 var typeMd = type.Metadata as MDEntity ??
                              throw new Exception("This type not support by this component");
-
+                /*
+                 Model()
+                 {
+                    MD
+                    Path
+                 }
+                 
+                 Before:
+                    RefA - MDA
+                    RefB - MDB -
+                    RefC - MDC
+                After
+                    RefA - MDA*
+                 */
                 saver.SaveObject("some path", typeMd);
             }
 

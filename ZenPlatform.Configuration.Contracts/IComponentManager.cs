@@ -14,7 +14,5 @@ namespace ZenPlatform.Configuration.Contracts
         void Load(IComponentRef comRef, ILoader loader);
 
         void Save(IComponentRef comRef, IXCSaver saver);
-
-        IDataComponent GetComponentImpl(IComponent c);
     }
 }
