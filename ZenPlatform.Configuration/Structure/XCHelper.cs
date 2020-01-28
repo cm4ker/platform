@@ -39,6 +39,23 @@ namespace ZenPlatform.Configuration.Structure
             return (T) writer.Result;
         }
 
+        public static object DeserializeFromString(string text)
+        {
+            XamlSchemaContext context = new XCXamlSchemaContext();
+
+            XamlObjectWriter writer = new XamlObjectWriter(context);
+            var stream = new MemoryStream();
+            var strwriter = new StreamWriter(stream);
+            strwriter.Write(text);
+            strwriter.Flush();
+            stream.Position = 0;
+
+            XamlXmlReader reader = new XamlXmlReader(stream, context);
+            XamlServices.Transform(reader, writer);
+
+            return writer.Result;
+        }
+
         public static string BaseDirectory { get; private set; }
 
         public static string Serialize(this object obj)

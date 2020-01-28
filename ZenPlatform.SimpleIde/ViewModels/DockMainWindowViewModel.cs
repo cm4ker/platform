@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Text;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.SimpleIde.Models;
 
 namespace ZenPlatform.SimpleIde.ViewModels
 {
@@ -23,7 +24,7 @@ namespace ZenPlatform.SimpleIde.ViewModels
             LayoutFactory = new LayoutFactory();
             Documents = new ObservableCollection<IDockable>();
             LeftTools = new ObservableCollection<IDockable>();
-            Configuration = new ConfigurationTreeViewModel(XCRoot.Create("test"));
+            Configuration = new ConfigurationTreeViewModel();
             Configuration.OnOpenItem += OpenItem;
             LeftTools.Add(Configuration);
 
@@ -34,7 +35,7 @@ namespace ZenPlatform.SimpleIde.ViewModels
         {
            if (e.HasContext)
            {
-                Documents.Add();
+                Documents.Add(new CodeEditorViewModel(new ObjectConfigurationDocument(e)));
            }
         }
 

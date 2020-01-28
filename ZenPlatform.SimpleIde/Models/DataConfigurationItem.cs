@@ -29,8 +29,9 @@ namespace ZenPlatform.SimpleIde.Models
 
         public bool CanOpen => false;
         public bool HasContext => false;
-        public object Context => throw new NotImplementedException();
 
         public IEnumerable<IConfiguratoinItem> Childs => _childs;
+
+        public object Context { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

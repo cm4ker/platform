@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using System.Text;
 using Avalonia.Media.Imaging;
-using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.SimpleIde.Models
 {
-    public class RootConfigurationItem : IConfiguratoinItem
+    public class SimpleConfigurationItem : IConfiguratoinItem
     {
         private List<IConfiguratoinItem> _childs;
-        private MDRoot _root;
-
-
-        public RootConfigurationItem(MDRoot root)
+        public SimpleConfigurationItem(string content, object context)
         {
-            _root = root;
-
-           
-
+            Content = content;
+            Context = context;
+            _childs = new List<IConfiguratoinItem>();
         }
 
-        public string Content => _root.ProjectName;
+        public void AddChild(IConfiguratoinItem item)
+        {
+            _childs.Add(item);
+        }
+        public string Content { get; }
 
         public IBitmap Bitmap => null;
 
@@ -31,15 +30,8 @@ namespace ZenPlatform.SimpleIde.Models
         public bool CanOpen => true;
 
         public bool HasContext => true;
-        public object Context
-        {
-            get => _root;
-            set
-            {
-                _root = value as MDRoot;
 
-            }
-        }
+        public object Context { get; set; }
 
         public IEnumerable<IConfiguratoinItem> Childs => _childs;
     }

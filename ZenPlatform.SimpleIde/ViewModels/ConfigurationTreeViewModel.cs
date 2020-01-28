@@ -18,17 +18,16 @@ namespace ZenPlatform.SimpleIde.ViewModels
         private MDRoot _root;
         public ConfigurationTreeViewModel()
         {
+            _root = new MDRoot();
             Configuration = new List<IConfiguratoinItem>()
-            { 
-                new RootConfigurationItem(root)
+            {
+                new SimpleConfigurationItem("test", new MDRoot())
             };
 
-            _root = root;
            
 
         }
 
-        public XCRoot Root => _root;
 
         public void OpenItem(IConfiguratoinItem item)
         {
