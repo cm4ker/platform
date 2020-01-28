@@ -4,12 +4,7 @@ namespace ZenPlatform.Configuration.Contracts.Store
 {
     public interface ILoader
     {
-        T LoadObject<T, C>(string path, bool loadTree = true)
-            where
-            T : class, IMetaDataItem<C>, new()
-            where
-            C : IMDItem;
-
+        T LoadObject<T>(string path);
 
         byte[] LoadBytes(string path);
 

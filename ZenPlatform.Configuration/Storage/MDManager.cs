@@ -28,32 +28,13 @@ namespace ZenPlatform.Configuration.Storage
 
         public ITypeManager TypeManager => _typeManager;
 
-        public T LoadObject<T, C>(string path, bool loadTree = true)
-            where
-            T : class, IMetaDataItem<C>, new()
-            where
-            C : IMDItem
+        public T LoadObject<T>(string path)
         {
             try
             {
                 using (var stream = _storage.GetBlob("", path))
                 {
-                    var config = XCHelper.DeserializeFromStream<C>(stream);
-
-                    T result;
-
-                    if (config.GetType() == typeof(T))
-                        result = config as T;
-                    else
-                        result = new T();
-
-                    if (result == null)
-                        throw new Exception("The result is null");
-
-                    if (loadTree)
-                        result.OnLoad(this, config);
-
-                    return result;
+                    return XCHelper.DeserializeFromStream<T>(stream);
                 }
             }
             catch
@@ -73,13 +54,9 @@ namespace ZenPlatform.Configuration.Storage
             }
         }
 
-        public void SaveObject<T>(string path, IMetaDataItem<T> item)
-            where
-            T : IMDItem
+        public void SaveObject(string path, object obj)
         {
-            var config = item.OnStore(this);
-
-            _storage.SaveBlob("", path, config.SerializeToStream());
+            _storage.SaveBlob("", path, obj.SerializeToStream());
         }
 
         public void SaveBytes(string path, byte[] data)
