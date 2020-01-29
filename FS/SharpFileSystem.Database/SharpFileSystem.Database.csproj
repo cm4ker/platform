@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SharpFileSystem\SharpFileSystem.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="obj\Debug\netstandard2.0" />
+    </ItemGroup>
+
+</Project>

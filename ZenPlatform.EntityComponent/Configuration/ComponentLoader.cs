@@ -14,18 +14,15 @@ using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-
-    
     public class ComponentLoader : IComponentManager
     {
         private Assembly _asm;
 
         private Dictionary<string, object> _loadedObjects;
-        
+
         public ComponentLoader()
         {
             _asm = typeof(ComponentLoader).Assembly;
-            
         }
 
         /// <summary>

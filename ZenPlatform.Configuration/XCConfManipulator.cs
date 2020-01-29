@@ -10,7 +10,7 @@ namespace ZenPlatform.Configuration
     {
         public IProject Load(IXCConfigurationStorage storage)
         {
-            return Structure.Project.Load(storage);
+            return Project.Load(storage);
         }
 
         public IProject Create(string projectName)
