@@ -37,9 +37,6 @@
     <ProjectReference Include="..\SharpFileSystem\SharpFileSystem.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="obj\Debug\netstandard2.0" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="SharpFileSystem.SevenZip.nuspec" />
   </ItemGroup>
 </Project>
