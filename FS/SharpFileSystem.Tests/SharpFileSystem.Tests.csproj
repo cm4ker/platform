@@ -41,7 +41,4 @@
     <ProjectReference Include="..\SharpFileSystem.SharpZipLib\SharpFileSystem.SharpZipLib.csproj" />
     <ProjectReference Include="..\SharpFileSystem\SharpFileSystem.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="obj\Debug\netcoreapp3.0" />
-  </ItemGroup>
 </Project>
