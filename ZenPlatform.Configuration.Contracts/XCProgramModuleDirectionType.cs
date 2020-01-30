@@ -20,4 +20,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         ClientServer
     }
+    
+    
+    
 }
