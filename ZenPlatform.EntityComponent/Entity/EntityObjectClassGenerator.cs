@@ -94,10 +94,10 @@ namespace ZenPlatform.EntityComponent.Entity
         public void EmitStructure(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = cc.Type;
-            var set = cc.Type as XCSingleEntity ?? throw new Exception("This component can generate only SingleEntity");
+            var set = cc.Type;
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
-            var dtoClassName = set.GetDtoName();
+            var dtoClassName = set.GetDtoType().Name;
             var @namespace = set.GetNamespace();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
@@ -121,9 +121,9 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 var propName = prop.Name;
 
-                var propType = (prop.Types.Count > 1)
+                var propType = (prop.Types.Count() > 1)
                     ? sb.Object
-                    : prop.Types[0].ConvertType(sb);
+                    : prop.Types.First().ConvertType(sb);
 
                 var hasSet = !prop.IsReadOnly;
 
@@ -142,7 +142,7 @@ namespace ZenPlatform.EntityComponent.Entity
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = cc.Type;
-            var set = cc.Type as XCSingleEntity ?? throw new Exception("This component can generate only SingleEntity");
+            var set = cc.Type;
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
             var dtoClassName =
@@ -164,17 +164,17 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 var propName = prop.Name;
 
-                var propType = (prop.Types.Count > 1)
+                var propType = (prop.Types.Count() > 1)
                     ? sb.Object
-                    : prop.Types[0].ConvertType(sb);
+                    : prop.Types.First().ConvertType(sb);
 
                 var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
                 var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
                 var setBuilder = ((IMethodBuilder) propBuilder.Setter)?.Generator;
 
-                if (prop.Types.Count > 1)
+                if (prop.Types.Count() > 1)
                 {
-                    var typeField = prop.GetPropertySchemas(prop.Name)
+                    var typeField = prop.GetObjSchema()
                         .First(x => x.SchemaType == XCColumnSchemaType.Type);
                     var dtoTypeProp = dtoType.FindProperty(typeField.FullName);
 
@@ -182,14 +182,14 @@ namespace ZenPlatform.EntityComponent.Entity
                     {
                         XCColumnSchemaDefinition dtoPropSchema;
 
-                        if (ctype is IXCLinkType)
+                        if (ctype.IsLink)
                         {
-                            dtoPropSchema = prop.GetPropertySchemas(prop.Name)
+                            dtoPropSchema = prop.GetObjSchema()
                                 .First(x => x.SchemaType == XCColumnSchemaType.Ref);
                         }
                         else
                         {
-                            dtoPropSchema = prop.GetPropertySchemas(prop.Name).First(x => x.PlatformType == ctype);
+                            dtoPropSchema = prop.GetObjSchema().First(x => x.PlatformType == ctype);
                         }
 
                         var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
@@ -203,18 +203,18 @@ namespace ZenPlatform.EntityComponent.Entity
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .EmitCall(dtoTypeProp.Getter)
-                            .LdcI4((int) ctype.Id)
+                            .LdcI4((int) ctype.SystemId)
                             .BneUn(label)
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .EmitCall(dtoProp.Getter);
 
-                        if (ctype is IXCLinkType lt)
+                        if (ctype.IsLink)
                         {
                             //Call Manager.Get(Id)
                             //Мы не можем ссылаться на методы, когда они ещё не готовы.
                             //нужно либо разбивать все на стадии, либо вводить понятие шаблона
-                            var mrgRemote = ts.FindType($"{@namespace}.{lt.ParentType.Name}Manager");
+                            var mrgRemote = ts.FindType($"{@namespace}.{ctype.GetManagerType().Name}");
                             var mrgRemoteGet = mrgRemote.FindMethod("Get", sb.Guid);
                             getBuilder.EmitCall(mrgRemoteGet);
                         }
@@ -239,13 +239,13 @@ namespace ZenPlatform.EntityComponent.Entity
                                 .LdArg(1)
                                 .Unbox_Any(compileType);
 
-                            if (ctype is IXCLinkType)
+                            if (ctype.IsLink)
                                 setBuilder.EmitCall(compileType.FindProperty("Id").Getter);
 
                             setBuilder.EmitCall(dtoProp.Setter)
                                 .LdArg_0()
                                 .LdFld(dtoPrivate)
-                                .LdcI4((int) ctype.Id)
+                                .LdcI4((int) ctype.SystemId)
                                 .EmitCall(dtoTypeProp.Setter)
                                 .Ret()
                                 .MarkLabel(label);
@@ -262,12 +262,12 @@ namespace ZenPlatform.EntityComponent.Entity
                 {
                     if (!prop.IsSelfLink)
                     {
-                        var dtoPropSchema = prop.GetPropertySchemas(prop.Name)
+                        var dtoPropSchema = prop.GetObjSchema()
                             .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
 
                         var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
 
-                        var ctype = prop.Types[0];
+                        var ctype = prop.Types.First();
 
                         var compileType = ctype.ConvertType(sb);
 
@@ -277,12 +277,12 @@ namespace ZenPlatform.EntityComponent.Entity
                             .LdFld(dtoPrivate)
                             .EmitCall(dtoProp.Getter);
 
-                        if (ctype is IXCLinkType lt)
+                        if (ctype.IsLink)
                         {
                             //Call Manager.Get(Id)
                             //Мы не можем ссылаться на методы, когда они ещё не готовы.
                             //нужно либо разбивать все на стадии, либо вводить понятие шаблона
-                            var mrgRemote = ts.FindType($"{@namespace}.{lt.ParentType.Name}Manager");
+                            var mrgRemote = ts.FindType($"{@namespace}.{ctype.GetManagerType().Name}");
                             var mrgRemoteGet = mrgRemote.FindMethod("Get", sb.Guid);
                             getBuilder.EmitCall(mrgRemoteGet);
                         }
@@ -297,7 +297,7 @@ namespace ZenPlatform.EntityComponent.Entity
                                 .LdFld(dtoPrivate)
                                 .LdArg(1);
 
-                            if (ctype is IXCLinkType)
+                            if (ctype.IsLink)
                                 setBuilder.EmitCall(compileType.FindProperty("Id").Getter);
 
                             setBuilder.EmitCall(dtoProp.Setter)
