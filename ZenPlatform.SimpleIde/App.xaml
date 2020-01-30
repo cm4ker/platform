@@ -25,7 +25,7 @@
       
       <StyleInclude Source="resm:AvaloniaEdit.AvaloniaEdit.xaml?assembly=AvaloniaEdit" />
       -->
-      <StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseDark.xaml"/>
+      <StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseLight.xaml"/>
       <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml"/>
 
       <StyleInclude Source="resm:AvaloniaEdit.AvaloniaEdit.xaml?assembly=AvaloniaEdit" />

@@ -1,4 +1,5 @@
 ﻿using AvaloniaEdit.Document;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,15 +9,19 @@ using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.SimpleIde.Models
 {
-    public class ObjectConfigurationDocument : IConfigurationDocument
+    public class ObjectConfigurationDocument : ReactiveObject, IConfigurationDocument
     {
         private IConfiguratoinItem _item;
+        private bool _isChanged;
         public ObjectConfigurationDocument(IConfiguratoinItem item)
         {
-            Text = new TextDocument();
-            Text.Changed += Text_Changed;
+            Content = new TextDocument();
+            
             _item = item;
-            Text.Text = FormatXML(_item.Context.SerializeToString());
+           
+            Content.Text = FormatXML(_item.Context.SerializeToString());
+            IsChanged = false;
+            Content.Changed += Text_Changed;
         }
 
         private void Text_Changed(object sender, DocumentChangeEventArgs e)
@@ -27,7 +32,7 @@ namespace ZenPlatform.SimpleIde.Models
         {
             try
             {
-                _item.Context = XCHelper.DeserializeFromString(Text.Text);
+                _item.Context = XCHelper.DeserializeFromString(Content.Text);
                 IsChanged = false;
             }
             catch (Exception ex)
@@ -81,7 +86,13 @@ namespace ZenPlatform.SimpleIde.Models
 
             return result;
         }
-        public bool IsChanged { get; private set; }
-        public TextDocument Text { get; }
+        public bool IsChanged
+        {
+            get { return _isChanged; }
+            set { this.RaiseAndSetIfChanged(ref _isChanged, value); }
+        }
+        public TextDocument Content { get; }
+
+        public string Title => _item.Content;
     }
 }
