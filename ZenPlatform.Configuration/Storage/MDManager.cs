@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SharpFileSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -10,17 +11,17 @@ namespace ZenPlatform.Configuration.Storage
 {
     public class MDManager : ILoader, IXCSaver
     {
-        private IXCConfigurationStorage _storage;
+        private IFileSystem _storage;
         private ITypeManager _typeManager;
 
-        public MDManager(IXCConfigurationStorage storage, ITypeManager typeManager)
+        public MDManager(IFileSystem storage, ITypeManager typeManager)
         {
             _storage = storage;
             _typeManager = typeManager;
         }
 
 
-        public IXCConfigurationStorage Storage => _storage;
+        public IFileSystem Storage => _storage;
 
         public IUniqueCounter Counter => _storage;
 

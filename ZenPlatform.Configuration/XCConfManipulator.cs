@@ -2,13 +2,14 @@
 using System.IO;
 using ZenPlatform.Configuration.Contracts;
 using System.Linq;
+using SharpFileSystem;
 using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Configuration
 {
     public class XCConfManipulator : IConfigurationManipulator
     {
-        public IProject Load(IXCConfigurationStorage storage)
+        public IProject Load(IFileSystem storage)
         {
             return Project.Load(storage);
         }

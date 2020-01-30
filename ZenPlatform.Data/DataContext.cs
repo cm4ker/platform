@@ -20,23 +20,23 @@ namespace ZenPlatform.Data
 
         public ISqlCompiler SqlCompiller { get; }
 
-        
 
         private int _tranCount;
         private QueryMachine _machine;
 
-        public DataContext(SqlDatabaseType compilerType, string connectionString)
+        public DataContext(SqlDatabaseType compilerType, string connectionString,
+            IsolationLevel isolationLevel = IsolationLevel.Snapshot)
         {
             _connection = DatabaseFactory.Get(compilerType, connectionString);
             SqlCompiller = SqlCompillerBase.FormEnum(compilerType);
             Types = new SqlServerDbTypesContract();
             _connection.Open();
-            _isolationLevel = IsolationLevel.Snapshot;
+            _isolationLevel = isolationLevel;
             _machine = new QueryMachine();
         }
 
         public IDbTypesContract Types { get; }
-        
+
         public void BeginTransaction()
         {
             if (_activeTransaction == null)
@@ -92,6 +92,7 @@ namespace ZenPlatform.Data
         public void Dispose()
         {
             _connection.Close();
+            _connection.Dispose();
         }
     }
 }

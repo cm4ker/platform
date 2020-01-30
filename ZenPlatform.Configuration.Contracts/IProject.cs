@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using SharpFileSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -7,7 +8,7 @@ namespace ZenPlatform.Configuration.Contracts
 {
     public interface IConfigurationManipulator
     {
-        IProject Load(IXCConfigurationStorage storage);
+        IProject Load(IFileSystem storage);
 
         IProject Create(string projectName);
 
@@ -45,6 +46,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// Созранить объект в контексте другого хранилища
         /// </summary>
         /// <param name="storage"></param>
-        void Save(IXCConfigurationStorage storage);
+        void Save(IFileSystem fileSystem);
     }
 }
