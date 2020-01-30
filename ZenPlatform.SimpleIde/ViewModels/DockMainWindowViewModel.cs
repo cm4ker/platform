@@ -16,7 +16,7 @@ namespace ZenPlatform.SimpleIde.ViewModels
         private LayoutFactory LayoutFactory { get; }
         public ConfigurationTreeViewModel Configuration { get; set; }
 
-
+        private IDocumentDock documentDock;
         public IList<IDockable> LeftTools { get; }
         public IList<IDockable> Documents { get; }
         public DockMainWindowViewModel()
@@ -28,11 +28,21 @@ namespace ZenPlatform.SimpleIde.ViewModels
             Configuration.OnOpenItem += OpenItem;
             LeftTools.Add(Configuration);
 
-           InitializeDocks();
+            documentDock = LayoutFactory.CreateDocumentDock();
+            documentDock.Id = "DocumentsPane";
+            documentDock.Title = "DocumentsPane";
+            //    documents.IsCollapsable = false;
+            documentDock.Proportion = double.NaN;
+            documentDock.VisibleDockables = Documents;
+
+            // ReactiveCommand.Create<Unit, Unit>((u)=> { })
+
+            InitializeDocks();
         }
 
         private void OpenItem(object sender, Models.IConfiguratoinItem e)
         {
+           
            if (e.HasContext)
            {
                 Documents.Add(new CodeEditorViewModel(new ObjectConfigurationDocument(e)));
@@ -71,7 +81,7 @@ namespace ZenPlatform.SimpleIde.ViewModels
             mainLayout.VisibleDockables = LayoutFactory.CreateList<IDockable>(
                 treeTool,
                 LayoutFactory.CreateSplitterDock(),
-                documents
+                documentDock
             );
 
 
