@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SharpFileSystem.Database;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Authentication;
@@ -46,9 +47,8 @@ namespace ZenPlatform.Core.Environment
 
             //TODO: Дать возможность выбрать, какую конфигурацию загружать, с базы данных или из файловой системы
 
-            var storage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
-                DataContextManager.GetContext(),
-                DataContextManager.SqlCompiler);
+            var storage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME,
+                DataContextManager.GetContext());
 
             Configuration = _m.Load(storage);
         }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+using ZenPlatform.Configuration.Contracts.Data;
 
 namespace ZenPlatform.Configuration.Contracts.TypeSystem
 {
@@ -10,6 +10,16 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         public static IComponent GetComponent(this IType type)
         {
             return FindComponent(type.TypeManager, type.ComponentId);
+        }
+
+        public static IType GetBase(this IType type)
+        {
+            return FindType(type.TypeManager, type.BaseId ?? Guid.Empty);
+        }
+
+        public static string GetNamespace(this IType type)
+        {
+            return type.GetComponent().GetCodeRuleExpression(CodeGenRuleType.NamespaceRule);
         }
 
         public static IComponent FindComponent(this ITypeManager tm, Guid componentId)
@@ -54,7 +64,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
             return typeA.TypeManager.FindType(typeA.BaseId.Value)?.IsAssignableFrom(typeB) ?? false;
         }
 
-        public static IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(ITypeManager manager,
+        public static IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(this ITypeManager manager,
             string propName, IEnumerable<IType> types)
         {
             if (string.IsNullOrEmpty(propName)) throw new ArgumentNullException(nameof(propName));

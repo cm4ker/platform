@@ -14,6 +14,9 @@ namespace ZenPlatform.Configuration.TypeSystem
             get { return "Guid"; }
         }
 
+        public override bool IsPrimitive => true;
+        public override PrimitiveKind PrimitiveKind => PrimitiveKind.Guid;
+        
         internal GuidType(ITypeManager ts) : base(ts)
         {
         }

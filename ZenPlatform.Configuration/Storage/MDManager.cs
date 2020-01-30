@@ -23,9 +23,9 @@ namespace ZenPlatform.Configuration.Storage
 
         public IFileSystem Storage => _storage;
 
-        public IUniqueCounter Counter => _storage;
+        public IUniqueCounter Counter => null;
 
-        public ISettingsManager Settings => _storage;
+        public ISettingsManager Settings => null;
 
         public ITypeManager TypeManager => _typeManager;
 
@@ -33,7 +33,7 @@ namespace ZenPlatform.Configuration.Storage
         {
             try
             {
-                using (var stream = _storage.GetBlob("", path))
+                using (var stream = _storage.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
                 {
                     return XCHelper.DeserializeFromStream<T>(stream);
                 }
@@ -46,7 +46,7 @@ namespace ZenPlatform.Configuration.Storage
 
         public byte[] LoadBytes(string path)
         {
-            using (var stream = _storage.GetBlob("", path))
+            using (var stream = _storage.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
             {
                 var memoryStream = new MemoryStream();
                 stream.CopyTo(memoryStream);
@@ -57,12 +57,14 @@ namespace ZenPlatform.Configuration.Storage
 
         public void SaveObject(string path, object obj)
         {
-            _storage.SaveBlob("", path, obj.SerializeToStream());
+            using (var stream = _storage.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                obj.SerializeToStream().CopyTo(stream);
         }
 
         public void SaveBytes(string path, byte[] data)
         {
-            _storage.SaveBlob("", path, new MemoryStream(data));
+            using (var stream = _storage.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                stream.Write(data, 0, data.Length);
         }
     }
 }
