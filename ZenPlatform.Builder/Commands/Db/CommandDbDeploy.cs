@@ -8,6 +8,8 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Core.Environment;
 using System.IO.Compression;
+using SharpFileSystem.Database;
+using SharpFileSystem.FileSystems;
 using ZenPlatform.Initializer;
 
 namespace ZenPlatform.Cli.Commands.Db
@@ -15,7 +17,7 @@ namespace ZenPlatform.Cli.Commands.Db
     [Command("deploy")]
     class CommandDbDeploy
     {
-        [Argument(0,Name = "name", Description = "Database name")]
+        [Argument(0, Name = "name", Description = "Database name")]
         public string Name { get; }
 
         [Option("-z ", "if file 7Zip", CommandOptionType.NoValue)]
@@ -23,13 +25,15 @@ namespace ZenPlatform.Cli.Commands.Db
 
         private IConsole _console;
         private IPlatformEnvironmentManager _environmentManager;
+
         public CommandDbDeploy(IConsole console, IPlatformEnvironmentManager environmentManager)
         {
             _console = console;
             _environmentManager = environmentManager;
         }
+
         public async void OnExecute()
-        { 
+        {
             var downloadFilePath = Path.GetTempFileName();
 
             using (var downloadFile = new StreamWriter(new FileStream(downloadFilePath, FileMode.OpenOrCreate)))
@@ -43,18 +47,17 @@ namespace ZenPlatform.Cli.Commands.Db
             {
                 ZipFile.ExtractToDirectory(downloadFilePath, pathTo);
             }
-            
-            var storage = new XCFileSystemStorage(pathTo, Name);
+
+            var storage = new PhysicalFileSystem(pathTo);
             var configuration = Project.Load(storage);
 
             var env = _environmentManager.GetEnvironment(Name);
             if (env is IPlatformEnvironment platform)
             {
-                var databaseStorage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
-                platform.DataContextManager.GetContext(), platform.DataContextManager.SqlCompiler);
+                var databaseStorage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
+                    platform.DataContextManager.GetContext());
                 configuration.Save(databaseStorage);
             }
-            
         }
     }
 }

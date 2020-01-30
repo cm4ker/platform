@@ -43,7 +43,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
             var res = HandleIntermediate(_field);
 
             var schemas =
-                PropertyHelper.GetPropertySchemas(Rw.TypeManager, res.Item1.GetDbName(),
+                Rw.TypeManager.GetPropertySchemas(res.Item1.GetDbName(),
                     res.Item1.GetExpressionType().ToList());
             var schema = schemas.FirstOrDefault(criteria);
 

@@ -27,20 +27,6 @@ namespace ZenPlatform.Configuration.Contracts.Data.Entity
         CodeGenRule GetEntityClassPrefixRule();
 
         /// <summary>
-        /// Получить имя класса dto
-        /// </summary>
-        /// <param name="obj">XCObjectTypeBase</param>
-        /// <returns></returns>
-        string GetDtoClassName(object obj);
-
-        /// <summary>
-        /// Получить имя класса сущности
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        string GetEntityClassName(object obj);
-
-        /// <summary>
         /// Получить код для setter'a в свойстве чужого объекта
         /// </summary>
         /// <returns>Правило генерации кода</returns>

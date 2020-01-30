@@ -109,7 +109,7 @@ namespace ZenPlatform.Core.Querying
         private bool _hasAlias = false;
 
         public ITypeManager TypeManager => _tm;
-        
+
         public string Log => _l.ToString();
 
         public RealWalker(ITypeManager tm)
@@ -368,8 +368,7 @@ namespace ZenPlatform.Core.Querying
             }
             else if (node.DataSource is QNestedQuery)
             {
-                var schema =
-                    PropertyHelper.GetPropertySchemas(_tm, node.GetDbName(), node.GetExpressionType().ToList());
+                var schema = _tm.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
                 GenColumn(schema);
             }
 
@@ -386,8 +385,7 @@ namespace ZenPlatform.Core.Querying
             }
             else if (node.DataSource is QNestedQuery)
             {
-                var schema =
-                    PropertyHelper.GetPropertySchemas(_tm, node.GetDbName(), node.GetExpressionType().ToList());
+                var schema =_tm.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
                 GenColumn(schema);
             }
 

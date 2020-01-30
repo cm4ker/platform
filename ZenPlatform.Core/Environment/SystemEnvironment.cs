@@ -1,5 +1,6 @@
 ﻿using System;
 using MoreLinq;
+using SharpFileSystem.Database;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Authentication;
@@ -30,8 +31,9 @@ namespace ZenPlatform.Core.Environment
         {
             base.Initialize(config);
 
-            var storage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
-                this.DataContextManager.GetContext(), DataContextManager.SqlCompiler);
+
+            var storage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
+                DataContextManager.GetContext());
 
             SavedConfiguration = _manipulator.Load(storage);
         }
@@ -76,14 +78,14 @@ namespace ZenPlatform.Core.Environment
 //            Expression query4 = new Expression();
 
             //foreach (var type in types)
-           // {
-                /*
-                 * Все DDL (data definition language) происходят вне транзакции. Поэтому должны быть полностью
-                 * безопасны для внезапного прерывания.
-                 *
-                 * Необходимо логировать мигрирование каждого объекта 
-                 */
-                //var migrateScript = type.component.ComponentImpl.Migrator.GetScript(type.old, type.actual);
+            // {
+            /*
+             * Все DDL (data definition language) происходят вне транзакции. Поэтому должны быть полностью
+             * безопасны для внезапного прерывания.
+             *
+             * Необходимо логировать мигрирование каждого объекта 
+             */
+            //var migrateScript = type.component.ComponentImpl.Migrator.GetScript(type.old, type.actual);
 
 //                query1.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep1(type.old, type.actual).Expression);
 //                query2.Nodes.Add(type.component.ComponentImpl.Migrator.GetStep2(type.old, type.actual).Expression);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Completion;
@@ -16,6 +17,8 @@ namespace ZenPlatform.EntityComponent.Configuration
     public class ComponentLoader : IComponentManager
     {
         private Assembly _asm;
+
+        private Dictionary<string, object> _loadedObjects;
 
         public ComponentLoader()
         {
@@ -183,20 +186,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             {
                 var typeMd = type.Metadata as MDEntity ??
                              throw new Exception("This type not support by this component");
-                /*
-                 Model()
-                 {
-                    MD
-                    Path
-                 }
-                 
-                 Before:
-                    RefA - MDA
-                    RefB - MDB -
-                    RefC - MDC
-                After
-                    RefA - MDA*
-                 */
+
                 saver.SaveObject("some path", typeMd);
             }
 

@@ -389,6 +389,7 @@
     <Arguments>
       <List Name="Columns" Type="ColumnDefinition" />
       <List Name="Constraints" Type="ConstraintDefinition"/>
+      <Single Name="CheckExists" Type="bool" Ddl="true" />
     </Arguments>
   </Syntax>
 
