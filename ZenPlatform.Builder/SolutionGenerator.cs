@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data;
 
 namespace ZenPlatform.Cli
@@ -11,7 +12,7 @@ namespace ZenPlatform.Cli
     {
         private const string folderName = "bin";
 
-        public void Generate(XCComponent component)
+        public void Generate(IComponent component)
         {
             //TODO : Необходимо сделать единую точку входа для генерации файлов
             /*

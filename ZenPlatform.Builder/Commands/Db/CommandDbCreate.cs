@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using SharpFileSystem.Database;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Data;
 using ZenPlatform.Data.Tools;
@@ -12,9 +14,8 @@ using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Cli.Commands.Db
 {
-    
     [Command("create")]
-    public  class CommandDbCreate
+    public class CommandDbCreate
     {
         [Option("--project_name", "Name of new project", CommandOptionType.SingleValue)]
         [Required]
@@ -64,17 +65,15 @@ namespace ZenPlatform.Cli.Commands.Db
 
             //Создаём пустой проект с именем Project Name
 
-            var newProject = Project.Create(projectName);
+            var newProject = new Project(new TypeManager()) {ProjectName = projectName};
 
             // Необходимо создать контекст данных
 
             var dataContext = new DataContext(databaseType, connectionString);
 
-            var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext,
-                SqlCompillerBase.FormEnum(databaseType));
+            var configStorage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext);
 
-            var configSaveStorage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext,
-                SqlCompillerBase.FormEnum(databaseType));
+            var configSaveStorage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext);
 
             //Сохраняем новоиспечённый проект в сохранённую и конфигураци базы данных
             newProject.Save(configStorage);

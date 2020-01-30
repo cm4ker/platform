@@ -84,7 +84,6 @@ namespace ZenPlatform.Configuration.Structure
         public void Save(IFileSystem storage)
         {
             MDManager loader = new MDManager(storage, _manager);
-
             loader.SaveObject("root", this);
         }
 

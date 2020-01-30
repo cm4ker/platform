@@ -13,6 +13,7 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using ZenPlatform.Core.Authentication;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -22,6 +23,7 @@ using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
+using IType = ZenPlatform.Compiler.Contracts.IType;
 using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -35,7 +37,7 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(IXCObjectType type, Root root)
+        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Root root)
         {
             var className = type.Name;
 
@@ -324,22 +326,26 @@ namespace ZenPlatform.EntityComponent.Entity
                 .Ret();
         }
 
-        private void GenerateObjectClassUserModules(IXCObjectType type, ComponentClass cls)
+        private void GenerateObjectClassUserModules(ZenPlatform.Configuration.Contracts.TypeSystem.IType type,
+            ComponentClass cls)
         {
-            foreach (var module in type.GetProgramModules())
-            {
-                if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
-                {
-                    var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
+            //TODO: Нужно добавить поддержку программных модулей в метаданные
+            throw new NotImplementedException();
 
-
-                    foreach (var func in typeBody.Functions)
-                    {
-                        func.SymbolScope = SymbolScopeBySecurity.User;
-                        cls.AddFunction(func);
-                    }
-                }
-            }
+            // foreach (var module in type.GetProgramModules())
+            // {
+            //     if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
+            //     {
+            //         var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
+            //
+            //
+            //         foreach (var func in typeBody.Functions)
+            //         {
+            //             func.SymbolScope = SymbolScopeBySecurity.User;
+            //             cls.AddFunction(func);
+            //         }
+            //     }
+            // }
         }
     }
 }

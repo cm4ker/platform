@@ -37,10 +37,10 @@ namespace ZenPlatform.Migration
             using (var cmd = context.CreateCommand(qm =>
             {
                 qm
-                .bg_query()
-                .m_from()
+                    .bg_query()
+                    .m_from()
                     .ld_table("migration_status")
-                .m_where()
+                    .m_where()
                     .ld_const(true)
                     .ld_column("delete_table")
                     .eq()
@@ -48,10 +48,10 @@ namespace ZenPlatform.Migration
                     .ld_column("rename_table")
                     .eq()
                     .and()
-                .m_select()
+                    .m_select()
                     .ld_column("original_table")
                     .ld_column("temp_table")
-                .st_query();
+                    .st_query();
             }))
             {
                 try
@@ -102,21 +102,19 @@ namespace ZenPlatform.Migration
             using (var cmd = context.CreateCommand(qm =>
             {
                 qm
-                .bg_query()
-                .m_from()
+                    .bg_query()
+                    .m_from()
                     .ld_table("migrations")
-                .m_where()
+                    .m_where()
                     .ld_const(false)
-
                     .ld_column("complited")
-                    
                     .eq()
-                .m_order_by()
+                    .m_order_by()
                     .ld_column("datetime")
                     .desc()
-                .m_select()
+                    .m_select()
                     .ld_column("migration_id")
-                .st_query();
+                    .st_query();
             }))
             {
                 try
@@ -126,7 +124,6 @@ namespace ZenPlatform.Migration
                         migration_id = id;
                         return true;
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -141,25 +138,23 @@ namespace ZenPlatform.Migration
 
         public Guid CreateMigration(DataContext context)
         {
-
             var id = Guid.NewGuid();
 
             using (var cmd = context.CreateCommand(qm =>
             {
                 qm
-                .bg_query()
-                .m_values()
+                    .bg_query()
+                    .m_values()
                     .ld_const(id)
-                .m_insert()
+                    .m_insert()
                     .ld_table("migrations")
                     .ld_column("migration_id")
-                .st_query();
+                    .st_query();
             }))
             {
                 try
                 {
                     cmd.ExecuteNonQuery();
-
                 }
                 catch (Exception ex)
                 {
@@ -173,29 +168,26 @@ namespace ZenPlatform.Migration
 
         public void CompliteMigration(DataContext context, Guid id)
         {
-
-
             using (var cmd = context.CreateCommand(qm =>
             {
                 qm
-                .bg_query()
-                .m_where()
+                    .bg_query()
+                    .m_where()
                     .ld_const(id)
                     .ld_column("migration_id")
                     .eq()
-                .m_set()
+                    .m_set()
                     .ld_column("complited")
-                    .ld_const(true)  
+                    .ld_const(true)
                     .assign()
-                .m_update()
+                    .m_update()
                     .ld_table("migrations")
-                .st_query();
+                    .st_query();
             }))
             {
                 try
                 {
                     cmd.ExecuteNonQuery();
-
                 }
                 catch (Exception ex)
                 {
@@ -203,7 +195,6 @@ namespace ZenPlatform.Migration
                     throw ex;
                 }
             }
-
         }
 
         private void ClearMigrationStatus(Guid id, DataContext context)
@@ -211,21 +202,20 @@ namespace ZenPlatform.Migration
             using (var cmd = context.CreateCommand(qm =>
             {
                 qm
-                .bg_query()
-                .m_from()
+                    .bg_query()
+                    .m_from()
                     .ld_table("migration_status")
-                .m_where()
+                    .m_where()
                     .ld_const(id)
                     .ld_column("migration_id")
                     .eq()
-                .m_delete()
-                .st_query();
+                    .m_delete()
+                    .st_query();
             }))
             {
                 try
                 {
                     cmd.ExecuteNonQuery();
-
                 }
                 catch (Exception ex)
                 {
@@ -265,25 +255,25 @@ namespace ZenPlatform.Migration
 
         private void RunMigration(IProject old, IProject actual, Guid id, DataContext context)
         {
-            var components = old.Data.Components.FullJoin(actual.Data.Components,
+            var components = old.TypeManager.Components.FullJoin(actual.TypeManager.Components,
                 c => c.Info.ComponentId,
-                x => new { old = x, actual = default(IComponent) },
-                x => new { old = default(IComponent), actual = x },
-                (x, y) => new { old = x, actual = y });
+                x => new {old = x, actual = default(IComponent)},
+                x => new {old = default(IComponent), actual = x},
+                (x, y) => new {old = x, actual = y});
 
             var plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
                 component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
-
             }
+
             if (plan.Count() > 0)
             {
                 ExecPlan(plan, id, context);
             }
             else
             {
-                _logger.Info("Migraion plan is empty.");
+                _logger.Info("Migration plan is empty.");
             }
         }
 
@@ -307,10 +297,9 @@ namespace ZenPlatform.Migration
                     CompliteMigration(context, last_fail_migration_id);
                     _logger.Info($"Migration '{last_fail_migration_id}' complite.");
                 }
-            } else
+            }
+            else
             {
-
-
                 var id = CreateMigration(context);
                 _logger.Info($"Create migration '{id}'");
 
