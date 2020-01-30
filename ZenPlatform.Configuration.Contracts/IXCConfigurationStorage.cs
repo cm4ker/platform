@@ -7,41 +7,6 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 namespace ZenPlatform.Configuration.Contracts
 {
     /// <summary>
-    /// Стратегия загрузки/сохранения данных конфигурации.
-    /// Есть возмо
-    /// </summary>
-    public interface IXCConfigurationStorage : IUniqueCounter, ISettingsManager
-    {
-        /// <summary>
-        /// Получить двоичный объект
-        /// </summary>
-        /// <param name="name">Имя объекта</param>
-        /// <param name="route">Параметр маршрутизации</param>
-        /// <returns></returns>
-        Stream GetBlob(string name, string route);
-
-        /// <summary>
-        /// Сохранить двоичный объект
-        /// </summary>
-        /// <param name="name">Имя объекта</param>
-        /// <param name="route">Параметр маршрутизации</param>
-        /// <param name="bytes">Данные</param>
-        void SaveBlob(string name, string route, Stream stream);
-
-        /// <summary>
-        /// Получить корневой объект
-        /// </summary>
-        /// <returns></returns>
-        Stream GetRootBlob();
-
-        /// <summary>
-        /// Сохранить корневой объект
-        /// </summary>
-        void SaveRootBlob(Stream stream);
-    }
-
-
-    /// <summary>
     /// Интерфейс предоставляет доступ к дополнительным настройкам конфигурации
     /// Эти настройки могут быть переменны от одной базы к другой.
     ///

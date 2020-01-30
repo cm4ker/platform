@@ -1,27 +1,35 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using SharpFileSystem.Database;
 using SharpFileSystem.IO;
 using Xunit;
+using ZenPlatform.Data;
+using ZenPlatform.QueryBuilder;
 
 namespace SharpFileSystem.Tests.FileSystems
 {
     public abstract class DbFileSystemTestBase : IDisposable
     {
+        private readonly DataContext _context;
         protected DatabaseFileSystem FileSystem { get; set; }
 
         public DbFileSystemTestBase()
         {
-            FileSystem = new DatabaseFileSystem(
-                "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = testdb; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False");
+            _context = new DataContext(SqlDatabaseType.SqlServer,
+                "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = testdb; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False"
+                , IsolationLevel.ReadCommitted);
+
+            FileSystem = new DatabaseFileSystem("vTable", _context);
         }
 
         public void Dispose()
         {
             FileSystem.ClearTable();
             FileSystem.Dispose();
+            _context.Dispose();
         }
     }
 

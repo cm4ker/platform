@@ -1,50 +1,68 @@
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Data.SqlClient;
 using System.IO;
+using ZenPlatform.Core.Helpers;
+using ZenPlatform.Data;
+using ZenPlatform.QueryBuilder;
+using ZenPlatform.QueryBuilder.Builders;
+using ZenPlatform.QueryBuilder.Model;
 
 namespace SharpFileSystem.Database
 {
     public class DatabaseFileSystem : IFileSystem
     {
-        private DbConnection _conn;
-        private string _tableName;
+        internal DataContext Context { get; }
+        internal string TableName { get; }
 
-        /*
-         TABLE SCRIPT
-
-         Create table
-            vTable(
-	            Path varchar(3000),
-	            Name varchar(3000),
-	            IsDirectory bit,
-	            Data varbinary(max)
-            )
-
-         */
-
-        public DatabaseFileSystem(string connectionString, string tableName = "vTable")
+        public DatabaseFileSystem(string tableName, DataContext context)
         {
-            _conn = new SqlConnection(connectionString);
-            _conn.Open();
-            _tableName = tableName;
+            TableName = tableName;
+            Context = context;
+
+            CheckTableExists();
+        }
+
+        private void CheckTableExists()
+        {
+            var q = DDLQuery.New();
+            var tab = q.Create()
+                .Table(TableName)
+                .CheckExists();
+
+            tab.WithColumn("Path").SetType(new ColumnTypeVarChar() {Size = 3000});
+            tab.WithColumn("Name").SetType(new ColumnTypeVarChar() {Size = 3000});
+            tab.WithColumn("IsDirectory").SetType(new ColumnTypeBool());
+            tab.WithColumn("Data").SetType(new ColumnTypeVarBinary());
+
+            using var a = Context.CreateCommand(q.Expression);
+            a.ExecuteNonQuery();
         }
 
         public void Dispose()
         {
-            _conn.Close();
         }
 
         public ICollection<FileSystemPath> GetEntities(FileSystemPath path)
         {
-            var result = new List<FileSystemPath>();
-            using (var cmd = _conn.CreateCommand())
+            void Gen(QueryMachine qm)
             {
-                cmd.CommandText = $"SELECT Path, Name FROM {_tableName} WHERE Path = @Path";
-                var param = cmd.CreateParameter();
-                param.Value = path.Path;
-                param.ParameterName = "path";
-                cmd.Parameters.Add(param);
+                qm.bg_query()
+                    .m_from()
+                    .ld_table(TableName)
+                    .m_where()
+                    .ld_column("Path")
+                    .ld_param("Path")
+                    .eq()
+                    .m_select()
+                    .ld_column("Path")
+                    .ld_column("Name")
+                    .st_query();
+            }
+
+
+            using (var cmd = Context.CreateCommand(Gen))
+            {
+                cmd.AddParameterWithValue("Path", path.Path);
+                var result = new List<FileSystemPath>();
 
                 using (var r = cmd.ExecuteReader())
                 {
@@ -53,25 +71,36 @@ namespace SharpFileSystem.Database
                         result.Add(FileSystemPath.Parse($"{r["Path"]}{r["Name"]}"));
                     }
                 }
-            }
 
-            return result;
+                return result;
+            }
         }
 
         public bool Exists(FileSystemPath path)
         {
-            using (var cmd = _conn.CreateCommand())
+            void Gen(QueryMachine qm)
             {
-                cmd.CommandText = $"SELECT 1 Name FROM {_tableName} WHERE Path = @Path and Name = @name";
-                var param = cmd.CreateParameter();
-                param.Value = path.ParentPath.ToString();
-                param.ParameterName = "path";
-                cmd.Parameters.Add(param);
+                qm.bg_query()
+                    .m_from()
+                    .ld_table(TableName)
+                    .m_where()
+                    .ld_column("Path")
+                    .ld_param("Path")
+                    .eq()
+                    .ld_column("Name")
+                    .ld_param("Name")
+                    .eq()
+                    .and()
+                    .m_select()
+                    .ld_const("1")
+                    .st_query();
+            }
 
-                param = cmd.CreateParameter();
-                param.Value = path.EntityName;
-                param.ParameterName = "name";
-                cmd.Parameters.Add(param);
+
+            using (var cmd = Context.CreateCommand(Gen))
+            {
+                cmd.AddParameterWithValue("Path", path.ParentPath.ToString());
+                cmd.AddParameterWithValue("Name", path.EntityName);
 
                 return cmd.ExecuteScalar() != null;
             }
@@ -79,35 +108,44 @@ namespace SharpFileSystem.Database
 
         public Stream CreateFile(FileSystemPath path)
         {
-            var result = new DBFileStream(path, _conn.CreateCommand(),_tableName, false);
+            var result = new DBFileStream(path, this, FileAccess.Write);
             result.Flush();
             return result;
         }
 
         public Stream OpenFile(FileSystemPath path, FileAccess access)
         {
-            return new DBFileStream(path, _conn.CreateCommand(), _tableName,true);
+            return new DBFileStream(path, this, access);
         }
 
         public void CreateDirectory(FileSystemPath path)
         {
-            new DBFileStream(path, _conn.CreateCommand(), _tableName, false).Flush();
+            using var fs = new DBFileStream(path, this, FileAccess.Write);
+            fs.Flush();
         }
 
         public void Delete(FileSystemPath path)
         {
-            using (var cmd = _conn.CreateCommand())
+            void Gen(QueryMachine qm)
             {
-                cmd.CommandText = $"DELETE FROM {_tableName} WHERE Path = @Path and Name = @name";
-                var param = cmd.CreateParameter();
-                param.Value = path.Path;
-                param.ParameterName = "path";
-                cmd.Parameters.Add(param);
+                qm.bg_query()
+                    .m_delete()
+                    .ld_table(TableName)
+                    .m_where()
+                    .ld_column("Path")
+                    .ld_param("Path")
+                    .eq()
+                    .ld_column("Name")
+                    .ld_param("Name")
+                    .eq()
+                    .st_query();
+            }
 
-                param = cmd.CreateParameter();
-                param.Value = path.EntityName;
-                param.ParameterName = "name";
-                cmd.Parameters.Add(param);
+
+            using (var cmd = Context.CreateCommand(Gen))
+            {
+                cmd.AddParameterWithValue("Path", path.ParentPath.ToString());
+                cmd.AddParameterWithValue("Name", path.EntityName);
 
                 cmd.ExecuteNonQuery();
             }
@@ -115,11 +153,17 @@ namespace SharpFileSystem.Database
 
         public void ClearTable()
         {
-            using (var cmd = _conn.CreateCommand())
+            void Gen(QueryMachine qm)
             {
-                cmd.CommandText = $"DELETE FROM {_tableName}";
-                cmd.ExecuteNonQuery();
+                qm.bg_query()
+                    .m_from()
+                    .ld_table(TableName)
+                    .m_delete()
+                    .st_query();
             }
+
+            using var cmd = Context.CreateCommand(Gen);
+            cmd.ExecuteNonQuery();
         }
     }
 }

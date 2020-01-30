@@ -3,87 +3,140 @@ using System.Data.Common;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using ZenPlatform.Core.Helpers;
+using ZenPlatform.QueryBuilder;
 
 namespace SharpFileSystem.Database
 {
     public class DBFileStream : Stream
     {
         private readonly FileSystemPath _path;
-        private readonly DbCommand _cmd;
-        private readonly string _tableName;
         private MemoryStream _ms;
         private bool isExists;
+        private DatabaseFileSystem _fs;
+        private FileAccess _access;
 
-        public DBFileStream(FileSystemPath path, DbCommand cmd, string tableName, bool load)
+        public DBFileStream(FileSystemPath path, DatabaseFileSystem fs, FileAccess access)
         {
             _path = path;
-            _ms = new MemoryStream();
+            _fs = fs;
+            _access = access;
 
-            _cmd = cmd;
-            _tableName = tableName;
-
-            _cmd.CommandText = $"SELECT 1 FROM {_tableName} WHERE path = @path AND name = @name";
-            var param = _cmd.CreateParameter();
-            param.Value = _path.ParentPath.ToString();
-            param.ParameterName = "path";
-            _cmd.Parameters.Add(param);
-
-            param = _cmd.CreateParameter();
-            param.Value = _path.EntityName;
-            param.ParameterName = "name";
-            _cmd.Parameters.Add(param);
-
-            isExists = (_cmd.ExecuteScalar() != null);
-
-            if (load && isExists)
+            if (fs.Exists(path) && (access & FileAccess.Read) != 0)
             {
-                _cmd.CommandText = $"SELECT Data FROM {_tableName} WHERE path = @path AND name = @name";
-                _ms = new MemoryStream((byte[]) _cmd.ExecuteScalar());
+                Reload();
+            }
+            else
+                _ms = new MemoryStream();
+        }
+
+        private void Reload()
+        {
+            void Gen(QueryMachine qm)
+            {
+                qm.bg_query()
+                    .m_from()
+                    .ld_table(_fs.TableName)
+                    .m_where()
+                    .ld_column("Path")
+                    .ld_param("Path")
+                    .eq()
+                    .ld_column("Name")
+                    .ld_param("Name")
+                    .eq()
+                    .and()
+                    .m_select()
+                    .ld_column("Data")
+                    .st_query();
+            }
+
+            using (var cmd = _fs.Context.CreateCommand(Gen))
+            {
+                cmd.AddParameterWithValue("Path", _path.ParentPath.ToString());
+                cmd.AddParameterWithValue("Name", _path.EntityName);
+
+                _ms = new MemoryStream((byte[]) cmd.ExecuteScalar());
+            }
+        }
+
+        private void Insert()
+        {
+            void Gen(QueryMachine qm)
+            {
+                qm
+                    .bg_query()
+                    .m_values()
+                    .ld_param("Path")
+                    .ld_param("Name")
+                    .ld_param("IsDirectory")
+                    .ld_param("Data")
+                    .m_insert()
+                    .ld_table(_fs.TableName)
+                    .ld_column("Path")
+                    .ld_column("Name")
+                    .ld_column("IsDirectory")
+                    .ld_column("Data")
+                    .st_query();
+            }
+
+            using (var cmd = _fs.Context.CreateCommand(Gen))
+            {
+                cmd.AddParameterWithValue("Path", _path.ParentPath.ToString());
+                cmd.AddParameterWithValue("Name", _path.EntityName);
+                cmd.AddParameterWithValue("IsDirectory", _path.IsDirectory);
+                cmd.AddParameterWithValue("Data", _ms.ToArray());
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void Update()
+        {
+            void Gen(QueryMachine qm)
+            {
+                qm
+                    .bg_query()
+                    .m_where()
+                    .ld_column("Path")
+                    .ld_param("Path")
+                    .eq()
+                    .ld_column("Name")
+                    .ld_param("Name")
+                    .eq()
+                    .and()
+                    .m_set()
+                    .ld_column("Data")
+                    .ld_param("Data")
+                    .assign()
+                    .m_update()
+                    .ld_table(_fs.TableName)
+                    .st_query();
+            }
+
+            using (var cmd = _fs.Context.CreateCommand(Gen))
+            {
+                cmd.AddParameterWithValue("Path", _path.ParentPath.ToString());
+                cmd.AddParameterWithValue("Name", _path.EntityName);
+                cmd.AddParameterWithValue("Data", _ms.ToArray());
+
+                cmd.ExecuteNonQuery();
             }
         }
 
         public override void Flush()
         {
-            var tran = _cmd.Connection.BeginTransaction();
-            _cmd.Transaction = tran;
-            DbParameter param;
+            _fs.Context.BeginTransaction();
 
-            _cmd.Parameters.Clear();
-
-            if (!isExists)
+            if (_fs.Exists(_path))
             {
-                _cmd.CommandText =
-                    $"INSERT INTO {_tableName}(Path, Name, IsDirectory, Data) VALUES( @Path, @Name, @IsDirectory, @Data)";
-
-                param = _cmd.CreateParameter();
-                param.Value = _path.IsDirectory;
-                param.ParameterName = "IsDirectory";
-                _cmd.Parameters.Add(param);
+                Update();
             }
             else
             {
-                _cmd.CommandText = $"UPDATE {_tableName} SET Data = @Data WHERE Path = @Path AND Name = @Name";
+                Insert();
             }
 
-            param = _cmd.CreateParameter();
-            param.Value = _path.ParentPath.ToString();
-            param.ParameterName = "path";
-            _cmd.Parameters.Add(param);
-
-            param = _cmd.CreateParameter();
-            param.Value = _path.EntityName;
-            param.ParameterName = "name";
-            _cmd.Parameters.Add(param);
-
-            param = _cmd.CreateParameter();
-            param.Value = _ms.ToArray();
-            param.ParameterName = "Data";
-            _cmd.Parameters.Add(param);
-
-            _cmd.ExecuteNonQuery();
-
-            tran.Commit();
-            isExists = true;
+            _fs.Context.CommitTransaction();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -103,6 +156,8 @@ namespace SharpFileSystem.Database
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            if ((_access & FileAccess.Write) == 0) throw new Exception("This file opened in read only mode");
+
             _ms.Write(buffer, offset, count);
         }
 
@@ -120,8 +175,8 @@ namespace SharpFileSystem.Database
         protected override void Dispose(bool disposing)
         {
             Flush();
+            _ms.Dispose();
             base.Dispose(disposing);
-            _cmd.Dispose();
         }
     }
 }

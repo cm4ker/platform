@@ -21,7 +21,7 @@ namespace SharpFileSystem.Tests.FileSystems
         {
             FileName = "x";
             FileNamePath = FileSystemPath.Root.AppendFile(FileName);
-            
+
             Root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
             System.IO.Directory.CreateDirectory(Root);
             AbsoluteFileName = Path.Combine(Root, FileName);
@@ -39,7 +39,6 @@ namespace SharpFileSystem.Tests.FileSystems
     {
         public PhysicalFileSystemTest()
         {
-       
         }
 
         [Fact]
