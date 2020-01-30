@@ -1,46 +1,73 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Completion;
+using SharpFileSystem;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class ComponentLoader : IComponentManager
+    public static class FileSystemExtensions
     {
-        private Assembly _asm;
-
-        private Dictionary<string, object> _loadedObjects;
-
-        public ComponentLoader()
+        public static T Deserialize<T>(this IFileSystem fs, string path)
         {
-            _asm = typeof(ComponentLoader).Assembly;
+            try
+            {
+                using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                {
+                    return XCHelper.DeserializeFromStream<T>(stream);
+                }
+            }
+            catch
+            {
+                return default;
+            }
         }
 
-        /// <summary>
-        /// Загрузить объект компонента
-        /// </summary>
-        /// <param name="component"></param>
-        /// <param name="loader"></param>
-        /// <param name="reference"></param>
-        /// <returns></returns>
-        /// <exception cref="NullReferenceException"></exception>
-        public virtual void LoadObject(IComponent component, ILoader loader, MDEntity typeMd)
+        public static byte[] GetBytes(this IFileSystem fs, string path)
         {
-            var tm = loader.TypeManager;
-
-            BuildObject(component, loader.Counter, tm, typeMd);
-            BuildDto(component, loader.Counter, tm, typeMd);
+            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+            {
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
+        public static void Serialize(this IFileSystem fs, string path, object obj)
+        {
+            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                obj.SerializeToStream().CopyTo(stream);
+        }
+
+        public static void SaveBytes(IFileSystem fs, string path, byte[] data)
+        {
+            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                stream.Write(data, 0, data.Length);
+        }
+    }
+
+    public class ComponentBuilder
+    {
+        
+        
+        public FileSystemPath Entry { get; set; }
+        
+        public void 
+    }
+
+    public class ObjectBuilder
+    {
         private void BuildObject(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)
         {
             var oType = tm.Type();
@@ -142,6 +169,30 @@ namespace ZenPlatform.EntityComponent.Configuration
                 t.SystemId = counter.GetId(t.Id);
             }
         }
+    }
+
+    public class ComponentLoader : IComponentManager
+    {
+        private Assembly _asm;
+
+        private Dictionary<string, object> _loadedObjects;
+
+        public ComponentLoader()
+        {
+            _asm = typeof(ComponentLoader).Assembly;
+        }
+
+        /// <summary>
+        /// Загрузить объект компонента
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="loader"></param>
+        /// <param name="reference"></param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public virtual void LoadObject(IComponent component, IInfrastructure infrastructure, MDEntity typeMd)
+        {
+        }
 
 
         public IXCComponentInformation GetComponentInfo()
@@ -156,27 +207,27 @@ namespace ZenPlatform.EntityComponent.Configuration
             return impl;
         }
 
-        public void Load(IComponentRef comRef, ILoader loader)
+        public void Load(IInfrastructure inf, IComponentRef comRef)
         {
-            var com = loader.LoadObject<MDComponent>(comRef.Entry);
+            var com = inf.FileSystem.Deserialize<MDComponent>(comRef.Entry);
 
-            var c = loader.TypeManager.Component();
+            var c = inf.TypeManager.Component();
 
             c.ComponentImpl = GetComponentImpl(c);
             c.Info = GetComponentInfo();
             c.Metadata = com;
 
-            loader.TypeManager.Register(c);
+            inf.TypeManager.Register(c);
 
-            foreach (var typeRef in com.EntityReferences)
+            foreach (var mdFile in inf.FileSystem.GetEntities(FileSystemPath.Parse("/Entity/")))
             {
-                var type = loader.LoadObject<MDEntity>(typeRef);
+                var type = inf.FileSystem.Deserialize<MDEntity>(mdFile.Path);
 
-                LoadObject(c, loader, type);
+                LoadObject(c, inf, type);
             }
         }
 
-        public void Save(IComponentRef comRef, IXCSaver saver)
+        public void Save(IInfrastructure saver, IComponentRef comRef)
         {
             var info = GetComponentInfo();
             var com = saver.TypeManager.FindComponent(info.ComponentId);
@@ -187,10 +238,10 @@ namespace ZenPlatform.EntityComponent.Configuration
                 var typeMd = type.Metadata as MDEntity ??
                              throw new Exception("This type not support by this component");
 
-                saver.SaveObject("some path", typeMd);
+                saver.FileSystem.Serialize("some path", typeMd);
             }
 
-            saver.SaveObject(comRef.Entry, md);
+            saver.FileSystem.Serialize(comRef.Entry, md);
         }
     }
 }
