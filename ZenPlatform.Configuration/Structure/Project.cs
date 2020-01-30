@@ -14,6 +14,47 @@ using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Structure
 {
+    public static class FileSystemExtensions
+    {
+        public static T Deserialize<T>(this IFileSystem fs, string path)
+        {
+            try
+            {
+                using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                {
+                    return XCHelper.DeserializeFromStream<T>(stream);
+                }
+            }
+            catch
+            {
+                return default;
+            }
+        }
+
+        public static byte[] GetBytes(this IFileSystem fs, string path)
+        {
+            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+            {
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
+        public static void Serialize(this IFileSystem fs, string path, object obj)
+        {
+            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                obj.SerializeToStream().CopyTo(stream);
+        }
+
+        public static void SaveBytes(IFileSystem fs, string path, byte[] data)
+        {
+            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                stream.Write(data, 0, data.Length);
+        }
+    }
+
+
     public class MDRoot : IMDItem
     {
         public MDRoot()
@@ -71,7 +112,7 @@ namespace ZenPlatform.Configuration.Structure
         {
             MDManager loader = new MDManager(storage, new TypeManager());
 
-            var root = loader.LoadObject<Project>("root");
+            var root = loader.FileSystem.Deserialize<Project>("root");
 
             return root;
         }
@@ -84,10 +125,10 @@ namespace ZenPlatform.Configuration.Structure
         public void Save(IFileSystem storage)
         {
             MDManager loader = new MDManager(storage, _manager);
-            loader.SaveObject("root", this);
+            loader.FileSystem.Serialize("/Root", this);
         }
 
-        public void OnLoad(ILoader loader, MDRoot settings)
+        public void OnLoad(IInfrastructure loader, MDRoot settings)
         {
             ProjectId = settings.ProjectId;
             ProjectName = settings.ProjectName;
@@ -102,7 +143,7 @@ namespace ZenPlatform.Configuration.Structure
             {
                 var asmPath = Path.Combine(pkgFolder, $"{reference.Name}.dll");
 
-                var asm = Assembly.Load(loader.LoadBytes(asmPath) ??
+                var asm = Assembly.Load(loader.FileSystem.GetBytes(asmPath) ??
                                         throw new Exception($"Unknown reference {reference.Name}"));
 
                 var loaderType = asm.GetTypes()
@@ -113,7 +154,7 @@ namespace ZenPlatform.Configuration.Structure
 
                 var manager = (IComponentManager) Activator.CreateInstance(loaderType);
 
-                manager.Load(reference, loader);
+                manager.Load(loader, reference);
             }
         }
     }

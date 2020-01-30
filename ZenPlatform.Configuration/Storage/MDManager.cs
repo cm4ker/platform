@@ -9,7 +9,7 @@ using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Storage
 {
-    public class MDManager : ILoader, IXCSaver
+    public class MDManager : IInfrastructure
     {
         private IFileSystem _storage;
         private ITypeManager _typeManager;
@@ -21,14 +21,12 @@ namespace ZenPlatform.Configuration.Storage
         }
 
 
-        public IFileSystem Storage => _storage;
+        public IFileSystem FileSystem => _storage;
 
         public IUniqueCounter Counter => null;
 
         public ISettingsManager Settings => null;
 
         public ITypeManager TypeManager => _typeManager;
-
- 
     }
 }

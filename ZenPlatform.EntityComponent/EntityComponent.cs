@@ -28,7 +28,7 @@ namespace ZenPlatform.EntityComponent
 
             //Migrator = new SingleEntityMigrator();
 
-            Loader = new ComponentLoader();
+            Loader = new ComponentManager();
         
             RegisterSupportedTypes();
             RegisterCodeRules();
