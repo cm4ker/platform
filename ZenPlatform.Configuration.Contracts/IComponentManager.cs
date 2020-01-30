@@ -11,8 +11,8 @@ namespace ZenPlatform.Configuration.Contracts
     /// </summary>
     public interface IComponentManager
     {
-        void Load(IComponentRef comRef, ILoader loader);
+        void Load(IInfrastructure inf, IComponentRef comRef);
 
-        void Save(IComponentRef comRef, IXCSaver saver);
+        void Save(IInfrastructure inf, IComponentRef comRef);
     }
 }
