@@ -3,7 +3,6 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.DataComponent;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
-using ZenPlatform.EntityComponent.Migrations;
 using ZenPlatform.EntityComponent.QueryBuilders;
 using ZenPlatform.EntityComponent.UIGenerations;
 
@@ -18,7 +17,7 @@ namespace ZenPlatform.EntityComponent
         public override void OnInitializing()
         {
             //Generator = new StagedGenerator(Component);
-            Manager = new SingleEntityManager();
+            //Manager = new SingleEntityManager();
             
             //TODO: Вынести интерфейс генерации UI в DataComponentBase. Если мы взаимодействуем с данными, то мы должны их как-то показывать
             InterfaceGenerator = new InterfaceGenerator();
@@ -27,7 +26,7 @@ namespace ZenPlatform.EntityComponent
 
             Generator = new EntityPlatformGenerator(Component); // new StagedGeneratorAst(Component);
 
-            Migrator = new SingleEntityMigrator();
+            //Migrator = new SingleEntityMigrator();
 
             Loader = new ComponentLoader();
         
