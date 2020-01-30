@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Configuration.Contracts;
+﻿using SharpFileSystem.Database;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Data;
 using ZenPlatform.Initializer;
@@ -28,11 +29,8 @@ namespace ZenPlatform.Core.Configuration
 
             var dataContext = new DataContext(databaseType, connectionString);
 
-            var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext,
-                SqlCompillerBase.FormEnum(databaseType));
-
-            var configSaveStorage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext,
-                SqlCompillerBase.FormEnum(databaseType));
+            var configStorage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext);
+            var configSaveStorage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext);
 
             //Сохраняем новоиспечённый проект в сохранённую и конфигураци базы данных
             newProject.Save(configStorage);
@@ -45,11 +43,8 @@ namespace ZenPlatform.Core.Configuration
 
             var dataContext = new DataContext(databaseType, connectionString);
 
-            var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext,
-                SqlCompillerBase.FormEnum(databaseType));
-
-            var configSaveStorage = new XCDatabaseStorage(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext,
-                SqlCompillerBase.FormEnum(databaseType));
+            var configStorage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext);
+            var configSaveStorage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext);
 
 
             xcProject.Save(configStorage);

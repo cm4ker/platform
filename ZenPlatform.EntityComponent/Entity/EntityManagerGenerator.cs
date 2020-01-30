@@ -3,24 +3,16 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
-using dnlib.DotNet;
-using McMaster.Extensions.CommandLineUtils;
-using NLog.LayoutRenderers;
-using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Data;
-using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.Shared.Tree;
-using IField = ZenPlatform.Compiler.Contracts.IField;
+using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -56,7 +48,7 @@ namespace ZenPlatform.EntityComponent.Entity
             _qm = new QueryMachine();
         }
 
-        public void GenerateAstTree(IXCObjectType type, Root root)
+        public void GenerateAstTree(IType type, Root root)
         {
             var className = type.Name + "Manager";
 
@@ -109,9 +101,9 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void EmitStructure(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            var type = (XCSingleEntity) cm.Type;
-            var xcLinkType = _component.Types.FirstOrDefault(x => x is IXCLinkType lt && lt.ParentType == type);
-            var set = cm.Type as XCSingleEntity ?? throw new Exception("This component can generate only SingleEntity");
+            var type = cm.Type;
+            var xcLinkType = type.GetLinkType();
+
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
 
@@ -142,9 +134,8 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void EmitBody(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            var type = (XCSingleEntity) cm.Type;
-            var xcLinkType = _component.Types.FirstOrDefault(x => x is IXCLinkType lt && lt.ParentType == type);
-            var set = cm.Type as XCSingleEntity ?? throw new Exception("This component can generate only SingleEntity");
+            var type = cm.Type;
+            var xcLinkType = type.GetLinkType();
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
 
@@ -179,7 +170,7 @@ namespace ZenPlatform.EntityComponent.Entity
             //init default values
 
             var byteArr = sb.Byte.MakeArrayType();
-            
+
             foreach (var property in dtoType.Properties)
             {
                 if (property.FindCustomAttribute<NeedInitAttribute>() != null)
@@ -225,7 +216,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             dto = gg.DefineLocal(dtoType);
 
-            var q = GetSelectQuery(set);
+            var q = GetSelectQuery(type);
 
             var compiler = SqlCompillerBase.FormEnum(dbType);
 
@@ -290,15 +281,14 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void EmitSavingSupport(ComponentModule cm, ITypeBuilder tb, SqlDatabaseType dbType)
         {
-            var set = cm.Type as XCSingleEntity ??
-                      throw new Exception($"This component can't serve this type {cm.Type}");
+            var set = cm.Type;
 
             var ts = tb.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
 
             var compiler = SqlCompillerBase.FormEnum(dbType);
 
-            var dtoType = ts.FindType($"{set.GetNamespace()}.{set.GetDtoName()}");
+            var dtoType = ts.FindType($"{set.GetNamespace()}.{set.GetDtoType().Name}");
 
             var saveMethod = (IMethodBuilder) tb.FindMethod("Save", dtoType);
 
@@ -378,7 +368,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 .Ret();
         }
 
-        private SSyntaxNode GetInsertQuery(XCSingleEntity se)
+        private SSyntaxNode GetInsertQuery(IType se)
         {
             QueryMachine qm = new QueryMachine();
             qm.bg_query()
@@ -387,7 +377,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var pIndex = 0;
 
             var columns = se.Properties.Where(x => !x.IsSelfLink)
-                .SelectMany(x => x.GetPropertySchemas());
+                .SelectMany(x => x.GetDbSchema());
 
             foreach (var column in columns)
             {
@@ -396,7 +386,7 @@ namespace ZenPlatform.EntityComponent.Entity
             }
 
             qm.m_insert()
-                .ld_table(se.RelTableName);
+                .ld_table(se.Metadata.RelTableName);
 
             foreach (var col in columns)
             {
@@ -408,17 +398,17 @@ namespace ZenPlatform.EntityComponent.Entity
             return (SSyntaxNode) qm.pop();
         }
 
-        private SSyntaxNode GetUpdateQuery(XCSingleEntity se)
+        private SSyntaxNode GetUpdateQuery(IType se)
         {
             QueryMachine qm = new QueryMachine();
 
             var pIndex = 0;
 
-            var columns = se.Properties.Where(x => !x.Unique && !x.IsReadOnly).SelectMany(x => x.GetPropertySchemas());
+            var columns = se.Properties.Where(x => !x.IsUnique && !x.IsReadOnly).SelectMany(x => x.GetDbSchema());
 
             qm.bg_query()
                 .m_where()
-                .ld_column(se.GetPropertyByName("Id").DatabaseColumnName, "T0")
+                .ld_column(se.FindPropertyByName("Id").Metadata.DatabaseColumnName, "T0")
                 .ld_param($"P_{pIndex++}")
                 .eq();
 
@@ -433,27 +423,27 @@ namespace ZenPlatform.EntityComponent.Entity
             }
 
             qm.m_update()
-                .ld_table(se.RelTableName)
+                .ld_table(se.Metadata.RelTableName)
                 .@as("T0")
                 .st_query();
 
             return (SSyntaxNode) qm.pop();
         }
 
-        private SSyntaxNode GetSelectQuery(XCSingleEntity se)
+        private SSyntaxNode GetSelectQuery(IType se)
         {
             QueryMachine qm = new QueryMachine();
 
             var pIndex = 0;
 
-            var columns = se.Properties.Where(x => !x.Unique).SelectMany(x => x.GetPropertySchemas());
+            var columns = se.Properties.Where(x => !x.IsUnique).SelectMany(x => x.GetDbSchema());
 
             qm.bg_query()
                 .m_from()
-                .ld_table(se.RelTableName)
+                .ld_table(se.Metadata.RelTableName)
                 .@as("T0")
                 .m_where()
-                .ld_column(se.GetPropertyByName("Id").DatabaseColumnName, "T0")
+                .ld_column(se.FindPropertyByName("Id").Metadata.DatabaseColumnName, "T0")
                 .ld_param($"P_{pIndex}")
                 .eq();
 

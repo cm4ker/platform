@@ -75,9 +75,6 @@ namespace ZenPlatform.Configuration.Structure.Data
         
         <ComRef Name="AccumulateRegister" Version="1.0.0.0" />
      </Project>
-     
-     
-     
      */
 
 

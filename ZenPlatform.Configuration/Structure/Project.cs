@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using SharpFileSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -66,7 +67,7 @@ namespace ZenPlatform.Configuration.Structure
         /// </summary>
         /// <param name="storage"></param>
         /// <returns></returns>
-        public static IProject Load(IXCConfigurationStorage storage)
+        public static IProject Load(IFileSystem storage)
         {
             MDManager loader = new MDManager(storage, new TypeManager());
 
@@ -80,10 +81,9 @@ namespace ZenPlatform.Configuration.Structure
         /// Созранить объект в контексте другого хранилища
         /// </summary>
         /// <param name="storage"></param>
-        public void Save(IXCConfigurationStorage storage)
+        public void Save(IFileSystem storage)
         {
             MDManager loader = new MDManager(storage, _manager);
-
             loader.SaveObject("root", this);
         }
 

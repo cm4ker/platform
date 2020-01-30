@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SharpFileSystem;
+using SharpFileSystem.FileSystems;
 using ZenPlatform.Core.Settings;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Data;
@@ -57,7 +59,7 @@ namespace ZenPlatform.Core.Test
             services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
             services.AddScoped<IAssemblyManager, AssemblyManager>();
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
-            services.AddSingleton<IXCConfigurationStorage, XCMemoryStorage>();
+            services.AddSingleton<IFileSystem, MemoryFileSystem>();
             services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
 
             services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
@@ -114,7 +116,7 @@ namespace ZenPlatform.Core.Test
 
             services.AddScoped<IAssemblyManager, AssemblyManager>();
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
-            services.AddSingleton<IXCConfigurationStorage, XCMemoryStorage>();
+            services.AddSingleton<IFileSystem, MemoryFileSystem>();
             //services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
             services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
 

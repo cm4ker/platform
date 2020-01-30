@@ -10,6 +10,8 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         string Name { get; set; }
         bool IsSelfLink { get; set; }
         bool IsSystem { get; set; }
+        bool IsUnique { get; set; }
+
         bool IsReadOnly { get; set; }
         IMDProperty Metadata { get; set; }
         IEnumerable<IType> Types { get; }

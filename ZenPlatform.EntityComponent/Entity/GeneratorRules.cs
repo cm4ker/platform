@@ -25,28 +25,21 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public virtual string DtoPrivateFieldName { get; } = "_dto";
 
-        public virtual string GetDtoClassName(IXCObjectType obj)
+        public virtual string GetDtoClassName(IType obj)
         {
             return $"{obj.Name}{DtoPrefix}";
         }
 
-        public virtual string GetEntityClassName(IXCObjectType obj)
+        public virtual string GetEntityClassName(IType obj)
         {
-            var preffix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
-            var postfix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
-
-            return $"{preffix}{obj.Name}{postfix}";
+            return "";
+            
+            // var preffix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
+            // var postfix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
+            //
+            // return $"{preffix}{obj.Name}{postfix}";
         }
-
-        public virtual string GetMultiDataStorageClassName(IXCProperty property)
-        {
-            return $"MultiDataStorage_{property.DatabaseColumnName}";
-        }
-
-        public virtual string GetMultiDataStoragePrivateFieldName(IXCProperty property)
-        {
-            return $"_mds{property.DatabaseColumnName}";
-        }
+      
         //TODO: Необходимо реализовать все типы правил в базовом классе и выдавать Exception
         //в случае, если свойство не реализовано, а оно где-то вызвалось. 
         //Это явно укажет на то, что объект не может быть использован для такого сценария
@@ -69,17 +62,7 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             return new CodeGenRule(CodeGenRuleType.EntityClassPrefixRule, "");
         }
-
-        public string GetDtoClassName(object obj)
-        {
-            return GetDtoClassName(obj as XCObjectTypeBase);
-        }
-
-        public string GetEntityClassName(object obj)
-        {
-            return GetEntityClassName(obj as XCObjectTypeBase);
-        }
-
+     
         public virtual CodeGenRule GetInForeignPropertySetActionRule()
         {
             return new CodeGenRule(CodeGenRuleType.InForeignPropertySetActionRule, null);
