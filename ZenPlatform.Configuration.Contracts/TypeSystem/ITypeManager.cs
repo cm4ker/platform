@@ -11,7 +11,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         IType Boolean { get; }
         IType Guid { get; }
         IType Numeric { get; }
-        
+
         IReadOnlyList<IType> Types { get; }
         IReadOnlyList<IProperty> Properties { get; }
         IReadOnlyList<ITable> Tables { get; }
@@ -21,13 +21,16 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         void Register(IType type);
         void Register(IProperty p);
         void Register(IPropertyType type);
+        void Register(IComponent component);
+
         IType Type();
         ITypeSpec Type(IType type);
         IProperty Property();
         IPropertyType PropertyType();
         ITable Table();
+        
         void Verify();
-        void Register(IComponent component);
+
         IComponent Component();
         void LoadSettings(IEnumerable<IObjectSetting> settings);
     }

@@ -4,7 +4,7 @@ using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex
 {
-    public class MDType : Metadata, IMDType
+    public class MDType : MetadataRow, IMDType
     {
         public virtual string Name { get; set; }
 
