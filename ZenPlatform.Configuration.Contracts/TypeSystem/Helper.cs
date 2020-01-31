@@ -106,5 +106,33 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         {
             return GetPropertySchemas(prop.TypeManager, prop.Name, prop.Types.ToList());
         }
+        
+        
+        public static string ConvertToDbType(this IType type)
+        {
+            if (type != null)
+            {
+                if (type.IsPrimitive)
+                {
+                    return type.PrimitiveKind switch
+                    {
+                        PrimitiveKind.Binary => $"varbinary({((ITypeSpec) type).Size})",
+                        PrimitiveKind.Guid => $"guid",
+                        PrimitiveKind.Int => $"int",
+                        PrimitiveKind.Numeric => $"numeric({((ITypeSpec) type).Scale}, {((ITypeSpec) type).Precision})",
+                        PrimitiveKind.DateTime => $"datetime",
+                        PrimitiveKind.Boolean => $"bool",
+                        PrimitiveKind.String => $"varchar({((ITypeSpec) type).Size})",
+                    };
+                }
+
+                if (type.IsObject) return "guid";
+            }
+
+
+            throw new Exception("Unknown type");
+        }
     }
+    
+    
 }

@@ -8,7 +8,7 @@ using ZenPlatform.Configuration.Structure.Data;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class EntityBuilder
+    public class ComponentEditor
     {
         private readonly Project _proj;
         private readonly IInfrastructure _inf;
@@ -18,16 +18,15 @@ namespace ZenPlatform.EntityComponent.Configuration
         private Assembly _asm;
         private ComponentManager _com;
 
-        private List<ObjectBuilder> _objs;
+        private List<ObjectEditor> _objs;
 
-        public EntityBuilder(Project proj)
+        public ComponentEditor(Project proj)
         {
             _proj = proj;
             _inf = proj.Infrastructure;
             _md = new MDComponent();
             _com = new ComponentManager();
-
-            _objs = new List<ObjectBuilder>();
+            _objs = new List<ObjectEditor>();
         }
 
         private void CreateFolder()
@@ -47,11 +46,16 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             _proj.ComponentReferences.Add(new ComponentRef {Entry = Entry.ToString(), Name = "Entity"});
             com = _com.CreateAndRegisterComponent(_inf, _md);
+
+            foreach (var objectBuilder in _objs)
+            {
+                objectBuilder.Apply();
+            }
         }
 
-        public ObjectBuilder CreateObject()
+        public ObjectEditor CreateObject()
         {
-            var r = new ObjectBuilder();
+            var r = new ObjectEditor();
             _objs.Add(r);
             return r;
         }

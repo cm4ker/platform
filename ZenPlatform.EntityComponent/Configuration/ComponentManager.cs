@@ -58,6 +58,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             c.Metadata = com;
 
             inf.TypeManager.Register(c);
+
+            return c;
         }
 
         public void Load(IInfrastructure inf, IComponentRef comRef)

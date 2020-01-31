@@ -65,7 +65,7 @@ namespace ZenPlatform.Cli.Commands.Db
 
             //Создаём пустой проект с именем Project Name
 
-            var newProject = new Project(new TypeManager()) {ProjectName = projectName};
+            var newProject = new Project(null, null) {ProjectName = projectName};
 
             // Необходимо создать контекст данных
 
