@@ -11,6 +11,7 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.TypeSystem;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -69,11 +70,7 @@ namespace ZenPlatform.Configuration.Structure
         /// <returns></returns>
         public static IProject Load(IFileSystem storage)
         {
-            MDManager loader = new MDManager(storage, new TypeManager());
-
-            var root = loader.LoadObject<Project>("root");
-
-            return root;
+            return null;
         }
 
 
@@ -83,8 +80,6 @@ namespace ZenPlatform.Configuration.Structure
         /// <param name="storage"></param>
         public void Save(IFileSystem storage)
         {
-            MDManager loader = new MDManager(storage, _manager);
-            loader.SaveObject("root", this);
         }
 
         public void OnLoad(IInfrastructure loader, MDRoot settings)
@@ -102,7 +97,7 @@ namespace ZenPlatform.Configuration.Structure
             {
                 var asmPath = Path.Combine(pkgFolder, $"{reference.Name}.dll");
 
-                var asm = Assembly.Load(loader.LoadBytes(asmPath) ??
+                var asm = Assembly.Load(loader.FileSystem.GetBytes(asmPath) ??
                                         throw new Exception($"Unknown reference {reference.Name}"));
 
                 var loaderType = asm.GetTypes()
@@ -113,7 +108,7 @@ namespace ZenPlatform.Configuration.Structure
 
                 var manager = (IComponentManager) Activator.CreateInstance(loaderType);
 
-                manager.Load(reference, loader);
+                manager.Load(loader, reference);
             }
         }
     }
