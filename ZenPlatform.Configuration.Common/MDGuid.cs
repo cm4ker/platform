@@ -1,9 +1,10 @@
 using System;
 using System.Data;
+using ZenPlatform.Configuration.Common;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCGuid : MDType, IEquatable<XCGuid>
+    public class MDGuid : MDPrimitive, IEquatable<MDGuid>
     {
         public override uint Id => 4;
 
@@ -13,7 +14,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         {
             get { return "Guid"; }
         }
-        public bool Equals(XCGuid other)
+        public bool Equals(MDGuid other)
         {
             if (other == null) return false;
 
@@ -23,7 +24,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return Equals(obj as XCGuid);
+            return Equals(obj as MDGuid);
         }
 
         public override int GetHashCode()

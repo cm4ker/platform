@@ -1,9 +1,8 @@
 using System;
-using System.Data;
 
-namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
+namespace ZenPlatform.Configuration.Common
 {
-    public class XCNumeric : MDType, IEquatable<XCNumeric>
+    public class MDNumeric : MDPrimitive, IEquatable<MDNumeric>
     {
         public override uint Id => 5;
 
@@ -19,7 +18,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         public int Scale { get; set; }
 
 
-        public bool Equals(XCNumeric other)
+        public bool Equals(MDNumeric other)
         {
             if (other == null) return false;
 
@@ -30,7 +29,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return Equals(obj as XCBinary);
+            return Equals(obj as MDBinary);
         }
 
         public override int GetHashCode()

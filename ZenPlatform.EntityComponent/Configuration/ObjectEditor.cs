@@ -1,10 +1,47 @@
+using System;
+using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class ObjectBuilder
+    public class ObjectEditor
     {
+        private MDEntity _md;
+
+        public List<PropertyEditor> _props;
+
+        public ObjectEditor()
+        {
+            _md = new MDEntity();
+            _props = new List<PropertyEditor>();
+        }
+
+        public string Name
+        {
+            get => _md.Name;
+            set => _md.Name = value;
+        }
+
+        public PropertyEditor CreateProperty()
+        {
+            var a = new PropertyEditor();
+            _props.Add(a);
+            return a;
+        }
+
+        public void Apply()
+        {
+            foreach (var prop in _props)
+            {
+                prop.Apply();
+            }
+        }
+
         private void BuildObject(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)
         {
             var oType = tm.Type();

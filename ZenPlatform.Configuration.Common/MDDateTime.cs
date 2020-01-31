@@ -1,9 +1,10 @@
 using System;
 using System.Xml.Serialization;
+using ZenPlatform.Configuration.Common;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 {
-    public class XCDateTime : MDType, IEquatable<XCDateTime>
+    public class MDDateTime : MDPrimitive, IEquatable<MDDateTime>
     {
         public override uint Id => 3;
 
@@ -14,7 +15,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
             get { return "DateTime"; }
         }
 
-        public bool Equals(XCDateTime other)
+        public bool Equals(MDDateTime other)
         {
             if (other == null) return false;
 
@@ -24,7 +25,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return Equals(obj as XCDateTime);
+            return Equals(obj as MDDateTime);
         }
 
         public override int GetHashCode()

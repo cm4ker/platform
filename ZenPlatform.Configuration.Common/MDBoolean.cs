@@ -1,8 +1,8 @@
 using System;
 
-namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
+namespace ZenPlatform.Configuration.Common
 {
-    public class XCBoolean : MDType, IEquatable<XCBoolean>
+    public class MDBoolean : MDPrimitive, IEquatable<MDBoolean>
     {
         public override uint Id => 2;
 
@@ -13,7 +13,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
             get { return "Boolean"; }
         }
 
-        public bool Equals(XCBoolean other)
+        public bool Equals(MDBoolean other)
         {
             if (other == null) return false;
 
@@ -23,7 +23,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         public override bool Equals(object obj)
         {
             if (obj == null) return false; 
-            return Equals(obj as XCBoolean);
+            return Equals(obj as MDBoolean);
         }
 
         public override int GetHashCode()

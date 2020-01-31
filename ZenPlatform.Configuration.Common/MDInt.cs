@@ -1,9 +1,8 @@
 using System;
 
-
-namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
+namespace ZenPlatform.Configuration.Common
 {
-    public class XCInt : MDType, IEquatable<XCInt>
+    public class MDInt : MDPrimitive, IEquatable<MDInt>
     {
         public override uint Id => 7;
 
@@ -14,7 +13,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
             get { return "Int"; }
         }
 
-        public bool Equals(XCInt other)
+        public bool Equals(MDInt other)
         {
             if (other == null) return false;
 
@@ -24,7 +23,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return Equals(obj as XCInt);
+            return Equals(obj as MDInt);
         }
 
         public override int GetHashCode()
