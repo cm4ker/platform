@@ -14,8 +14,10 @@ namespace ZenPlatform.Configuration.TypeSystem
         private List<ITable> _tables;
         private List<IComponent> _components;
         private List<IObjectSetting> _objectSettings;
-        private List<Metadata> _metadatas;
+        private List<MetadataRow> _metadatas;
 
+        
+        
         private IntType _intType;
         private DateTimeType _dateTimeType;
         private BinaryType _binaryType;
@@ -55,7 +57,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public IReadOnlyList<IObjectSetting> Settings => _objectSettings;
 
-        public IReadOnlyList<Metadata> Metadatas => _metadatas;
+        public IReadOnlyList<MetadataRow> Metadatas => _metadatas;
 
         public void Register(IType type)
         {
@@ -83,7 +85,7 @@ namespace ZenPlatform.Configuration.TypeSystem
             _components.Add(component);
         }
 
-        public void Register(Metadata md)
+        public void Register(MetadataRow md)
         {
             _metadatas.Add(md);
         }

@@ -15,9 +15,9 @@ using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class MDRoot : IMDItem
+    public class ProjectMD
     {
-        public MDRoot()
+        public ProjectMD()
         {
             ComponentReferences = new List<ComponentRef>();
         }
@@ -33,34 +33,52 @@ namespace ZenPlatform.Configuration.Structure
 
     public class Project : IProject
     {
+        private readonly ProjectMD _md;
+        private readonly IInfrastructure _inf;
         private ITypeManager _manager;
 
-        public Project()
+        public Project(ProjectMD md, IInfrastructure inf)
         {
-        }
-
-        public Project(ITypeManager manager)
-        {
+            _md = md;
+            _inf = inf;
             ProjectId = Guid.NewGuid();
-            _manager = manager;
+            _manager = inf.TypeManager;
         }
 
         /// <summary>
         /// Идентификатор конфигурации
         /// </summary>
-        public Guid ProjectId { get; set; }
+        public Guid ProjectId
+        {
+            get => _md.ProjectId;
+            set => _md.ProjectId = value;
+        }
 
         /// <summary>
         /// Имя конфигурации
         /// </summary>
-        public string ProjectName { get; set; }
+        public string ProjectName
+        {
+            get => _md.ProjectName;
+            set => _md.ProjectName = value;
+        }
 
         /// <summary>
         /// Версия конфигурации
         /// </summary>
-        public string ProjectVersion { get; set; }
+        public string ProjectVersion
+        {
+            get => _md.ProjectVersion;
+            set => _md.ProjectVersion = value;
+        }
+
+        public List<ComponentRef> ComponentReferences
+        {
+            get => _md.ComponentReferences;
+        }
 
 
+        public IInfrastructure Infrastructure => _inf;
         public ITypeManager TypeManager => _manager;
 
         /// <summary>
@@ -82,7 +100,7 @@ namespace ZenPlatform.Configuration.Structure
         {
         }
 
-        public void OnLoad(IInfrastructure loader, MDRoot settings)
+        public void OnLoad(IInfrastructure loader, ProjectMD settings)
         {
             ProjectId = settings.ProjectId;
             ProjectName = settings.ProjectName;
