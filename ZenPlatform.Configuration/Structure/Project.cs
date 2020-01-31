@@ -87,7 +87,7 @@ namespace ZenPlatform.Configuration.Structure
             loader.SaveObject("root", this);
         }
 
-        public void OnLoad(ILoader loader, MDRoot settings)
+        public void OnLoad(IInfrastructure loader, MDRoot settings)
         {
             ProjectId = settings.ProjectId;
             ProjectName = settings.ProjectName;

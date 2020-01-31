@@ -59,11 +59,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
     public class ComponentBuilder
     {
-        
-        
         public FileSystemPath Entry { get; set; }
-        
-        public void 
     }
 
     public class ObjectBuilder
