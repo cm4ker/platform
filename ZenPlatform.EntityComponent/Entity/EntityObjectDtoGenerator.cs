@@ -116,7 +116,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 if (prop.IsSelfLink) continue;
 
 
-                if (string.IsNullOrEmpty(prop.Metadata.DatabaseColumnName))
+                if (string.IsNullOrEmpty(prop.GetSettings().DatabaseName))
                 {
                     throw new Exception(
                         $"Prop: {prop.Name} ObjectType: {"Empty"} Name: {set.Name}. Database column is empty!");

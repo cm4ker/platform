@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -40,6 +41,11 @@ namespace ZenPlatform.EntityComponent.Configuration
             {
                 prop.Apply();
             }
+        }
+
+        public MDType GetLinkRef()
+        {
+            return MDTypes.Ref(_md.LinkId);
         }
 
         private void BuildObject(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)

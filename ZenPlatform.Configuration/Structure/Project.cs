@@ -122,7 +122,7 @@ namespace ZenPlatform.Configuration.Structure
 
                 var manager = (IComponentManager) Activator.CreateInstance(loaderType);
 
-                manager.Load(inf, reference);
+                manager.Load(inf, reference, fileSystem);
             }
         }
     }

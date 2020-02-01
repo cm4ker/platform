@@ -2,10 +2,22 @@ using System;
 
 namespace ZenPlatform.Configuration.Common
 {
-    public class MDNumeric : MDPrimitive, IEquatable<MDNumeric>
+    public sealed class MDNumeric : MDPrimitive, IEquatable<MDNumeric>
     {
+        public MDNumeric()
+        {
+            
+        }
+
+        public MDNumeric(int scale, int precision)
+        {
+            Scale = scale;
+            Precision = precision;
+        }
+        
         public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 5);
 
+        
 
         public override string Name
         {
