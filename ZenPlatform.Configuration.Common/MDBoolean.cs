@@ -4,8 +4,6 @@ namespace ZenPlatform.Configuration.Common
 {
     public class MDBoolean : MDPrimitive, IEquatable<MDBoolean>
     {
-        public override uint Id => 2;
-
         public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 2);
 
         public override string Name

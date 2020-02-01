@@ -4,8 +4,6 @@ namespace ZenPlatform.Configuration.Common
 {
     public class MDNumeric : MDPrimitive, IEquatable<MDNumeric>
     {
-        public override uint Id => 5;
-
         public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 5);
 
 
