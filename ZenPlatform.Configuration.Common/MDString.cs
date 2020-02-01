@@ -5,9 +5,19 @@ namespace ZenPlatform.Configuration.Common
     /// <summary>
     ///  Тип строки
     /// </summary>
-    public class MDString : MDPrimitive, IEquatable<MDString>
+    public sealed class MDString : MDPrimitive, IEquatable<MDString>
     {
         public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 6);
+
+        public MDString()
+        {
+        }
+
+
+        public MDString(int size)
+        {
+            Size = size;
+        }
 
 
         public override string Name

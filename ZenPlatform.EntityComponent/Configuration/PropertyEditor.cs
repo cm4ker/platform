@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ZenPlatform.Configuration.Common;
 
 namespace ZenPlatform.EntityComponent.Configuration
@@ -21,14 +22,10 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public bool IsComplextType { get; set; }
 
-        public void SetType(MDType type)
+        public PropertyEditor SetType(MDType type)
         {
             _mp.Types.Add(type);
-        }
-
-        public void SetType(Guid typeId)
-        {
-            _mp.Types.Add(new TypeRef(typeId));
+            return this;
         }
 
         public void UnsetType(MDType type)

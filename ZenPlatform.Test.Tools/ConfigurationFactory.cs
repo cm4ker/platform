@@ -3,6 +3,7 @@ using System.Xml.Serialization;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using SharpFileSystem.Database;
 using SharpFileSystem.FileSystems;
+using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -27,8 +28,16 @@ namespace ZenPlatform.Test.Tools
 
             var ce = new ComponentEditor(project);
             var store = ce.CreateObject();
-            store.
+            var prop1 = store.CreateProperty();
+            prop1.Name = "Property1";
 
+            prop1.SetType(MDTypes.DateTime)
+                .SetType(MDTypes.Int)
+                .SetType(store.GetLinkRef());
+
+            ce.Apply();
+
+            return project;
 //             var root = new Project(new TypeManager());
 //
 //             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
