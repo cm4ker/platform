@@ -100,22 +100,18 @@ namespace ZenPlatform.Configuration.Structure
         {
         }
 
-        public void OnLoad(IInfrastructure loader, ProjectMD settings)
+        public void OnLoad(IInfrastructure inf, IFileSystem fileSystem)
         {
-            ProjectId = settings.ProjectId;
-            ProjectName = settings.ProjectName;
-            ProjectVersion = settings.ProjectVersion;
-
-            _manager = loader.TypeManager;
-            _manager.LoadSettings(loader.Settings.GetSettings());
+            _manager = inf.TypeManager;
+            _manager.LoadSettings(inf.Settings.GetSettings());
 
             var pkgFolder = "packages";
 
-            foreach (var reference in settings.ComponentReferences)
+            foreach (var reference in _md.ComponentReferences)
             {
                 var asmPath = Path.Combine(pkgFolder, $"{reference.Name}.dll");
 
-                var asm = Assembly.Load(loader.FileSystem.GetBytes(asmPath) ??
+                var asm = Assembly.Load(fileSystem.GetBytes(asmPath) ??
                                         throw new Exception($"Unknown reference {reference.Name}"));
 
                 var loaderType = asm.GetTypes()
@@ -126,7 +122,7 @@ namespace ZenPlatform.Configuration.Structure
 
                 var manager = (IComponentManager) Activator.CreateInstance(loaderType);
 
-                manager.Load(loader, reference);
+                manager.Load(inf, reference);
             }
         }
     }

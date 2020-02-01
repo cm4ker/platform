@@ -64,7 +64,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
             return typeA.TypeManager.FindType(typeA.BaseId.Value)?.IsAssignableFrom(typeB) ?? false;
         }
 
-        public static IEnumerable<XCColumnSchemaDefinition> GetPropertySchemas(this ITypeManager manager,
+        public static IEnumerable<ColumnSchemaDefinition> GetPropertySchemas(this ITypeManager manager,
             string propName, IEnumerable<IType> types)
         {
             if (string.IsNullOrEmpty(propName)) throw new ArgumentNullException(nameof(propName));
@@ -74,21 +74,21 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
             var done = false;
 
             if (internalTypes.Count() == 1)
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.NoSpecial, internalTypes[0], propName);
+                yield return new ColumnSchemaDefinition(ColumnSchemaType.NoSpecial, internalTypes[0], propName);
             if (internalTypes.Count() > 1)
             {
-                yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Type, manager.Int, propName,
+                yield return new ColumnSchemaDefinition(ColumnSchemaType.Type, manager.Int, propName,
                     "", "_Type");
 
                 foreach (var type in internalTypes)
                 {
                     if (type.IsPrimitive)
-                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Value, type,
+                        yield return new ColumnSchemaDefinition(ColumnSchemaType.Value, type,
                             propName, "", $"_{type.Name}");
 
                     if (!type.IsPrimitive && !done)
                     {
-                        yield return new XCColumnSchemaDefinition(XCColumnSchemaType.Ref, manager.Guid,
+                        yield return new ColumnSchemaDefinition(ColumnSchemaType.Ref, manager.Guid,
                             propName, "", "_Ref");
 
                         done = true;
@@ -97,17 +97,28 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
             }
         }
 
-        public static IEnumerable<XCColumnSchemaDefinition> GetDbSchema(this IProperty prop)
+        public static IObjectSetting GetSettings(this IProperty prop)
         {
-            return GetPropertySchemas(prop.TypeManager, prop.Metadata.DatabaseColumnName, prop.Types.ToList());
+            return prop.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == prop.Id);
         }
 
-        public static IEnumerable<XCColumnSchemaDefinition> GetObjSchema(this IProperty prop)
+
+        public static IObjectSetting GetSettings(this IType type)
+        {
+            return type.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == type.Id);
+        }
+
+        public static IEnumerable<ColumnSchemaDefinition> GetDbSchema(this IProperty prop)
+        {
+            return GetPropertySchemas(prop.TypeManager, prop.GetSettings().DatabaseName, prop.Types.ToList());
+        }
+
+        public static IEnumerable<ColumnSchemaDefinition> GetObjSchema(this IProperty prop)
         {
             return GetPropertySchemas(prop.TypeManager, prop.Name, prop.Types.ToList());
         }
-        
-        
+
+
         public static string ConvertToDbType(this IType type)
         {
             if (type != null)
@@ -133,6 +144,4 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
             throw new Exception("Unknown type");
         }
     }
-    
-    
 }

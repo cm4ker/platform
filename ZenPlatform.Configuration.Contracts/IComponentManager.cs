@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Configuration.Contracts.Data;
+﻿using SharpFileSystem;
+using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
@@ -11,8 +12,8 @@ namespace ZenPlatform.Configuration.Contracts
     /// </summary>
     public interface IComponentManager
     {
-        void Load(IInfrastructure inf, IComponentRef comRef);
+        void Load(IInfrastructure inf, IComponentRef comRef, IFileSystem fs);
 
-        void Save(IInfrastructure inf, IComponentRef comRef);
+        void Save(IInfrastructure inf, IComponentRef comRef, IFileSystem fs);
     }
 }

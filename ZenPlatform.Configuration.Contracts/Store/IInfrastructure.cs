@@ -10,7 +10,5 @@ namespace ZenPlatform.Configuration.Contracts.Store
         ITypeManager TypeManager { get; }
 
         ISettingsManager Settings { get; }
-
-        IFileSystem FileSystem { get; }
     }
 }

@@ -56,8 +56,6 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         internal bool IsRegistrated { get; set; }
 
-        public IMDType Metadata { get; set; }
-
         public object Bag { get; set; }
 
         public IEnumerable<IProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);

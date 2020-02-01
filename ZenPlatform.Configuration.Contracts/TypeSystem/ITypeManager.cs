@@ -16,7 +16,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         IReadOnlyList<IProperty> Properties { get; }
         IReadOnlyList<ITable> Tables { get; }
         IReadOnlyList<IComponent> Components { get; }
-
+        IReadOnlyList<IObjectSetting> Settings { get; }
 
         void Register(IType type);
         void Register(IProperty p);
@@ -28,7 +28,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         IProperty Property();
         IPropertyType PropertyType();
         ITable Table();
-        
+
         void Verify();
 
         IComponent Component();
