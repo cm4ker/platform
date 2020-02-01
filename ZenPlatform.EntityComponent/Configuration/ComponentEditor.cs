@@ -15,7 +15,6 @@ namespace ZenPlatform.EntityComponent.Configuration
         private readonly MDComponent _md;
         private IComponent com;
         private FileSystemPath _entry;
-        private Assembly _asm;
         private ComponentManager _com;
 
         private List<ObjectEditor> _objs;
@@ -35,11 +34,6 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             if (!_inf.FileSystem.Exists(path))
                 _inf.FileSystem.CreateDirectory(path);
-        }
-
-        public void AttachAssembly(Assembly asm)
-        {
-            _asm = asm;
         }
 
         public void Apply()
