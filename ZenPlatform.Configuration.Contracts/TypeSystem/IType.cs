@@ -38,9 +38,6 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         bool IsQueryAvaliable { get; set; }
 
         bool IsTypeSpec { get; }
-
-        IMDType Metadata { get; set; }
-
         object Bag { get; set; }
 
         IEnumerable<IProperty> Properties { get; }

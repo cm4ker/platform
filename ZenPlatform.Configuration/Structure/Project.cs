@@ -11,53 +11,13 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.TypeSystem;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public static class FileSystemExtensions
+    public class ProjectMD
     {
-        public static T Deserialize<T>(this IFileSystem fs, string path)
-        {
-            try
-            {
-                using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
-                {
-                    return XCHelper.DeserializeFromStream<T>(stream);
-                }
-            }
-            catch
-            {
-                return default;
-            }
-        }
-
-        public static byte[] GetBytes(this IFileSystem fs, string path)
-        {
-            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
-            {
-                var memoryStream = new MemoryStream();
-                stream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
-        }
-
-        public static void Serialize(this IFileSystem fs, string path, object obj)
-        {
-            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
-                obj.SerializeToStream().CopyTo(stream);
-        }
-
-        public static void SaveBytes(IFileSystem fs, string path, byte[] data)
-        {
-            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
-                stream.Write(data, 0, data.Length);
-        }
-    }
-
-
-    public class MDRoot : IMDItem
-    {
-        public MDRoot()
+        public ProjectMD()
         {
             ComponentReferences = new List<ComponentRef>();
         }
@@ -73,34 +33,52 @@ namespace ZenPlatform.Configuration.Structure
 
     public class Project : IProject
     {
+        private readonly ProjectMD _md;
+        private readonly IInfrastructure _inf;
         private ITypeManager _manager;
 
-        public Project()
+        public Project(ProjectMD md, IInfrastructure inf)
         {
-        }
-
-        public Project(ITypeManager manager)
-        {
+            _md = md;
+            _inf = inf;
             ProjectId = Guid.NewGuid();
-            _manager = manager;
+            _manager = inf.TypeManager;
         }
 
         /// <summary>
         /// Идентификатор конфигурации
         /// </summary>
-        public Guid ProjectId { get; set; }
+        public Guid ProjectId
+        {
+            get => _md.ProjectId;
+            set => _md.ProjectId = value;
+        }
 
         /// <summary>
         /// Имя конфигурации
         /// </summary>
-        public string ProjectName { get; set; }
+        public string ProjectName
+        {
+            get => _md.ProjectName;
+            set => _md.ProjectName = value;
+        }
 
         /// <summary>
         /// Версия конфигурации
         /// </summary>
-        public string ProjectVersion { get; set; }
+        public string ProjectVersion
+        {
+            get => _md.ProjectVersion;
+            set => _md.ProjectVersion = value;
+        }
+
+        public List<ComponentRef> ComponentReferences
+        {
+            get => _md.ComponentReferences;
+        }
 
 
+        public IInfrastructure Infrastructure => _inf;
         public ITypeManager TypeManager => _manager;
 
         /// <summary>
@@ -110,11 +88,7 @@ namespace ZenPlatform.Configuration.Structure
         /// <returns></returns>
         public static IProject Load(IFileSystem storage)
         {
-            MDManager loader = new MDManager(storage, new TypeManager());
-
-            var root = loader.FileSystem.Deserialize<Project>("root");
-
-            return root;
+            return null;
         }
 
 
@@ -124,11 +98,9 @@ namespace ZenPlatform.Configuration.Structure
         /// <param name="storage"></param>
         public void Save(IFileSystem storage)
         {
-            MDManager loader = new MDManager(storage, _manager);
-            loader.FileSystem.Serialize("/Root", this);
         }
 
-        public void OnLoad(IInfrastructure loader, MDRoot settings)
+        public void OnLoad(IInfrastructure loader, ProjectMD settings)
         {
             ProjectId = settings.ProjectId;
             ProjectName = settings.ProjectName;

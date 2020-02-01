@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Xml.Serialization;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using SharpFileSystem.Database;
+using SharpFileSystem.FileSystems;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
@@ -19,8 +21,14 @@ namespace ZenPlatform.Test.Tools
 
         public static Project Create()
         {
-            return null;
-            
+            var projectMd = new ProjectMD();
+            var manager = new MDManager(new MemoryFileSystem(), new TypeManager());
+            var project = new Project(projectMd, manager);
+
+            var ce = new ComponentEditor(project);
+            var store = ce.CreateObject();
+            store.
+
 //             var root = new Project(new TypeManager());
 //
 //             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
@@ -171,7 +179,7 @@ namespace ZenPlatform.Test.Tools
         public static Project CreateChangedExampleConfiguration()
         {
             return null;
-            
+
 //             var root = new Project();
 //
 //             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");

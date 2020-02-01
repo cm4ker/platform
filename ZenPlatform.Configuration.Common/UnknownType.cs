@@ -1,13 +1,14 @@
 using System;
 
-namespace ZenPlatform.Configuration.Structure.Data.Types
+namespace ZenPlatform.Configuration.Common
 {
+    public class MDPrimitive : MDType
+    {
+    }
+
     public class MDType
     {
-        public virtual uint Id { get; }
-
-        public virtual Guid Guid { get; }
-
+        public virtual Guid Guid { get; set; }
 
         public virtual string Name { get; }
 
@@ -51,8 +52,17 @@ namespace ZenPlatform.Configuration.Structure.Data.Types
     /// <summary>
     /// Неопределённый тип, при загрузке конфигурации сначала всё приводится к нему
     /// </summary>
-    public class RefType : MDType
+    public sealed class TypeRef : MDType
     {
+        public TypeRef()
+        {
+        }
+
+        public TypeRef(Guid guid)
+        {
+            Guid = guid;
+        }
+
         protected override bool ShouldSerializeDescription()
         {
             return false;
