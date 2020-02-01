@@ -394,7 +394,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
-            List<XCColumnSchemaDefinition> schema = null; //node.Property.GetPropertySchemas();
+            List<ColumnSchemaDefinition> schema = null; //node.Property.GetPropertySchemas();
 
             LoadNamedSource(node.ObjectTable.GetDbName());
 
@@ -403,7 +403,7 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
-        private void GenColumn(IEnumerable<XCColumnSchemaDefinition> schema)
+        private void GenColumn(IEnumerable<ColumnSchemaDefinition> schema)
         {
             string tabName = null;
             string alias = null;

@@ -12,22 +12,17 @@ namespace ZenPlatform.Configuration.Storage
     public class MDManager : IInfrastructure
     {
         private IFileSystem _storage;
-        private ITypeManager _typeManager;
 
         public MDManager(IFileSystem storage, ITypeManager typeManager)
         {
             _storage = storage;
-            _typeManager = typeManager;
+            TypeManager = typeManager;
         }
-
-
-        public IFileSystem FileSystem => _storage;
 
         public IUniqueCounter Counter => null;
 
         public ISettingsManager Settings => null;
-        public IFileSystem FileSystem { get; }
 
-        public ITypeManager TypeManager => _typeManager;
+        public ITypeManager TypeManager { get; }
     }
 }

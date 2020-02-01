@@ -23,7 +23,7 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
             IQueryModelContext logicalTreeNode)
         {
             var set = t ?? throw new Exception($"This component can't host next type: {t.GetType()}");
-            qm.ld_table(set.Metadata.RelTableName);
+            qm.ld_table(set.GetSettings().DatabaseName);
         }
     }
 }

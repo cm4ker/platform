@@ -61,8 +61,6 @@ namespace ZenPlatform.Initializer
         private static void UpdateDatabase(IServiceProvider serviceProvider)
         {
             var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
-
-
             runner.MigrateUp();
         }
     }

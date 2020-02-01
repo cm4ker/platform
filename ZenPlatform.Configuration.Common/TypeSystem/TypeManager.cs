@@ -16,8 +16,6 @@ namespace ZenPlatform.Configuration.TypeSystem
         private List<IObjectSetting> _objectSettings;
         private List<MetadataRow> _metadatas;
 
-        
-        
         private IntType _intType;
         private DateTimeType _dateTimeType;
         private BinaryType _binaryType;

@@ -53,7 +53,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             oType.IsQueryAvaliable = true;
 
             oType.ComponentId = component.Info.ComponentId;
-            oType.Metadata = md;
 
             oType.SystemId = counter.GetId(oType.Id);
 
@@ -64,7 +63,6 @@ namespace ZenPlatform.EntityComponent.Configuration
                 var p = tm.Property();
 
                 p.Name = prop.Name;
-                p.Metadata = prop;
             }
 
             foreach (var table in md.Tables)
@@ -86,7 +84,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             oType.Name = "_" + md.Name;
 
             oType.ComponentId = component.Info.ComponentId;
-            oType.Metadata = md;
 
             oType.SystemId = counter.GetId(oType.Id);
 
@@ -97,7 +94,6 @@ namespace ZenPlatform.EntityComponent.Configuration
                 var p = tm.Property();
 
                 p.Name = prop.Name;
-                p.Metadata = prop;
             }
 
             foreach (var table in md.Tables)
@@ -120,7 +116,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             oType.Name = md.Name + "Link";
 
             oType.ComponentId = component.Info.ComponentId;
-            oType.Metadata = md;
 
             oType.SystemId = counter.GetId(oType.Id);
 
@@ -131,7 +126,6 @@ namespace ZenPlatform.EntityComponent.Configuration
                 var p = tm.Property();
 
                 p.Name = prop.Name;
-                p.Metadata = prop;
             }
 
             foreach (var table in md.Tables)

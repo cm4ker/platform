@@ -28,13 +28,13 @@ namespace ZenPlatform.EntityComponent.Configuration
             _objs = new List<ObjectEditor>();
         }
 
-        private void CreateFolder()
-        {
-            var path = FileSystemPath.Root.AppendDirectory("Entity");
-
-            if (!_inf.FileSystem.Exists(path))
-                _inf.FileSystem.CreateDirectory(path);
-        }
+        // private void CreateFolder()
+        // {
+        //     var path = FileSystemPath.Root.AppendDirectory("Entity");
+        //
+        //     if (!_inf.FileSystem.Exists(path))
+        //         _inf.FileSystem.CreateDirectory(path);
+        // }
 
         public void Apply()
         {
