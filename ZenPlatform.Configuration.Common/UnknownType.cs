@@ -8,8 +8,6 @@ namespace ZenPlatform.Configuration.Common
 
     public class MDType
     {
-        public virtual uint Id { get; }
-
         public virtual Guid Guid { get; set; }
 
         public virtual string Name { get; }
@@ -54,8 +52,17 @@ namespace ZenPlatform.Configuration.Common
     /// <summary>
     /// Неопределённый тип, при загрузке конфигурации сначала всё приводится к нему
     /// </summary>
-    public class RefType : MDType
+    public sealed class TypeRef : MDType
     {
+        public TypeRef()
+        {
+        }
+
+        public TypeRef(Guid guid)
+        {
+            Guid = guid;
+        }
+
         protected override bool ShouldSerializeDescription()
         {
             return false;
