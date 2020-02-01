@@ -26,6 +26,7 @@ namespace ZenPlatform.Configuration.Storage
         public IUniqueCounter Counter => null;
 
         public ISettingsManager Settings => null;
+        public IFileSystem FileSystem { get; }
 
         public ITypeManager TypeManager => _typeManager;
     }

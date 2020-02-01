@@ -19,6 +19,7 @@
     <PackageReference Include="Portable.Xaml" Version="0.24.0" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Structure\Data\Types\Complex" />
     <Folder Include="TypeSystem" />
   </ItemGroup>
 </Project>
