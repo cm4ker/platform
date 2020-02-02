@@ -76,13 +76,6 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             var info = GetComponentInfo();
             var com = inf.TypeManager.FindComponent(info.ComponentId);
-            var md = (MDComponent) com.Metadata;
-
-            foreach (var type in com.GetTypes().Where(x => x.IsObject))
-            {
-            }
-
-            fs.Serialize(comRef.Entry, md);
         }
     }
 }
