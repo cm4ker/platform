@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -100,7 +101,7 @@ namespace ZenPlatform.Configuration.Structure
         {
         }
 
-        public void OnLoad(IInfrastructure inf, IFileSystem fileSystem)
+        public void Load(IInfrastructure inf, IFileSystem fileSystem)
         {
             _manager = inf.TypeManager;
             _manager.LoadSettings(inf.Settings.GetSettings());

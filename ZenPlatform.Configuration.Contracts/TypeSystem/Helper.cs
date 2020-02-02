@@ -108,6 +108,11 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
             return type.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == type.Id);
         }
 
+        public static IObjectSetting GetSettings(this ITable table)
+        {
+            return table.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == table.Id);
+        }
+        
         public static IEnumerable<ColumnSchemaDefinition> GetDbSchema(this IProperty prop)
         {
             return GetPropertySchemas(prop.TypeManager, prop.GetSettings().DatabaseName, prop.Types.ToList());

@@ -1,12 +1,8 @@
-using System;
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -15,8 +11,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         private readonly IInfrastructure _inf;
         private IComponent _com;
         private MDEntity _md;
-
-        private List<PropertyEditor> _props;
+        private readonly List<PropertyEditor> _props;
 
         public ObjectEditor(IInfrastructure inf)
         {
@@ -24,6 +19,11 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             _md = new MDEntity();
             _props = new List<PropertyEditor>();
+        }
+
+        public ObjectEditor(IInfrastructure inf, MDEntity md) : this(inf)
+        {
+            _md = md;
         }
 
         public string Name

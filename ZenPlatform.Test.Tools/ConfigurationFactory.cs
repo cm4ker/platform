@@ -35,6 +35,8 @@ namespace ZenPlatform.Test.Tools
 
             prop1.SetType(MDTypes.DateTime)
                 .SetType(MDTypes.Int)
+                .SetType(MDTypes.Boolean)
+                .SetType(MDTypes.Numeric(10, 2))
                 .SetType(store.GetRef());
 
             ce.Apply();
