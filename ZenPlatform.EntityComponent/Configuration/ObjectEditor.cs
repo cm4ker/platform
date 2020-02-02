@@ -13,15 +13,14 @@ namespace ZenPlatform.EntityComponent.Configuration
     public class ObjectEditor
     {
         private readonly IInfrastructure _inf;
-        private readonly IComponent _com;
+        private IComponent _com;
         private MDEntity _md;
 
         private List<PropertyEditor> _props;
 
-        public ObjectEditor(IInfrastructure inf, IComponent com)
+        public ObjectEditor(IInfrastructure inf)
         {
             _inf = inf;
-            _com = com;
 
             _md = new MDEntity();
             _props = new List<PropertyEditor>();
@@ -35,13 +34,16 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public PropertyEditor CreateProperty()
         {
-            var a = new PropertyEditor();
+            var mp = new MDProperty();
+            var a = new PropertyEditor(mp);
+            _md.Properties.Add(mp);
             _props.Add(a);
             return a;
         }
 
-        public void Apply()
+        internal void Apply(IComponent com)
         {
+            _com = com;
             RegisterObject();
             RegisterDto(_com, _inf.Counter, _inf.TypeManager, _md);
             RegisterLink(_com, _inf.Counter, _inf.TypeManager, _md);
@@ -81,6 +83,7 @@ namespace ZenPlatform.EntityComponent.Configuration
                     tPropType.PropertyParentId = _md.ObjectId;
                     tPropType.PropertyId = tProp.Id;
                     tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
+                    _inf.TypeManager.Register(tPropType);
                 }
 
                 _inf.TypeManager.Register(tProp);
@@ -92,7 +95,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             var oType = tm.Type();
             oType.IsDto = true;
 
-            oType.Id = md.ObjectId;
+            oType.Id = md.DtoId;
             oType.Name = "_" + md.Name;
 
             oType.ComponentId = component.Info.ComponentId;

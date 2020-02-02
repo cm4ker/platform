@@ -13,13 +13,13 @@ namespace ZenPlatform.Configuration.Storage
     {
         private IFileSystem _storage;
 
-        public MDManager(IFileSystem storage, ITypeManager typeManager)
+        public MDManager(ITypeManager typeManager, IUniqueCounter counter)
         {
-            _storage = storage;
             TypeManager = typeManager;
+            Counter = counter;
         }
 
-        public IUniqueCounter Counter => null;
+        public IUniqueCounter Counter { get; }
 
         public ISettingsManager Settings => null;
 

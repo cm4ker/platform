@@ -14,6 +14,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public MDProperty()
         {
             Guid = Guid.NewGuid();
+            Types = new List<MDType>();
         }
 
         /// <summary>

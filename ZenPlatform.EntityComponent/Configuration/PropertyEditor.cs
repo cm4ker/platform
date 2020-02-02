@@ -11,9 +11,9 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         private MDProperty _mp;
 
-        public PropertyEditor()
+        public PropertyEditor(MDProperty mp)
         {
-            _mp = new MDProperty();
+            _mp = mp;
         }
 
         public string Name
