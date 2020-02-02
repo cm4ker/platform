@@ -43,13 +43,13 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             foreach (var objectBuilder in _objs)
             {
-                objectBuilder.Apply();
+                objectBuilder.Apply(_com);
             }
         }
 
         public ObjectEditor CreateObject()
         {
-            var r = new ObjectEditor();
+            var r = new ObjectEditor(_inf);
             _objs.Add(r);
             return r;
         }

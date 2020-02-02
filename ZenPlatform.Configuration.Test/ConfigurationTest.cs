@@ -15,6 +15,12 @@ namespace ZenPlatform.Configuration.Test
     public class ConfigurationTest
     {
         [Fact]
+        public void ExampleConfNotNull()
+        {
+            Assert.NotNull(ConfigurationFactory.Create());
+        }
+
+        [Fact]
         public void EqualsExampleCofiguration()
         {
             EqualsConfiguration(ConfigurationFactory.Create(), ConfigurationFactory.Create());
@@ -24,18 +30,15 @@ namespace ZenPlatform.Configuration.Test
         public void SaveAndLoadCofigurationRepeatedly()
         {
             IProject config = ConfigurationFactory.Create();
-            
 
 
-            for (int i =0; i<2; i++)
+            for (int i = 0; i < 2; i++)
             {
-
                 var storage = new MemoryFileSystem();
                 config.Save(storage);
 
                 config = Structure.Project.Load(storage);
             }
-           
 
 
             var configOriginal = ConfigurationFactory.Create();
@@ -62,7 +65,6 @@ namespace ZenPlatform.Configuration.Test
         [Fact]
         public void DatabaseStorage()
         {
-
             return;
             // var configuration = ConfigurationFactory.Create();
             //
@@ -80,7 +82,6 @@ namespace ZenPlatform.Configuration.Test
             //
             //     EqualsConfiguration(configuration, loadedConfiguration);
             // }
-
         }
 
 
@@ -104,7 +105,6 @@ namespace ZenPlatform.Configuration.Test
             //
             // Directory.Delete(path, true);
         }
-
 
 
         private void EqualsConfiguration(IProject l, IProject r)

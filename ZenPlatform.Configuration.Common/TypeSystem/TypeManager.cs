@@ -33,6 +33,14 @@ namespace ZenPlatform.Configuration.TypeSystem
             _tables = new List<ITable>();
             _components = new List<IComponent>();
             _objectSettings = new List<IObjectSetting>();
+            
+            _types.Add(Int);
+            _types.Add(DateTime);
+            _types.Add(Binary);
+            _types.Add(String);
+            _types.Add(Boolean);
+            _types.Add(Guid);
+            _types.Add(Numeric);
         }
 
         public IType Int => _intType ??= new IntType(this);
@@ -62,7 +70,7 @@ namespace ZenPlatform.Configuration.TypeSystem
             if (_types.Exists(x => x.Id == type.Id))
                 throw new Exception($"Type id {type.Name}:{type.Id} already registered");
 
-            _types.Add(type);
+           _types.Add(type);
         }
 
         public void Register(IProperty p)
