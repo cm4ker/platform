@@ -13,9 +13,9 @@ namespace ZenPlatform.EntityComponent.Configuration
         private readonly Project _proj;
         private readonly IInfrastructure _inf;
         private readonly MDComponent _md;
-        private IComponent com;
+        private IComponent _com;
         private FileSystemPath _entry;
-        private ComponentManager _com;
+        private ComponentManager _mrg;
 
         private List<ObjectEditor> _objs;
 
@@ -24,7 +24,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             _proj = proj;
             _inf = proj.Infrastructure;
             _md = new MDComponent();
-            _com = new ComponentManager();
+            _mrg = new ComponentManager();
             _objs = new List<ObjectEditor>();
         }
 
@@ -39,7 +39,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public void Apply()
         {
             _proj.ComponentReferences.Add(new ComponentRef {Entry = Entry.ToString(), Name = "Entity"});
-            com = _com.CreateAndRegisterComponent(_inf, _md);
+            _com = _mrg.CreateAndRegisterComponent(_inf, _md);
 
             foreach (var objectBuilder in _objs)
             {

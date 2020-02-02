@@ -12,12 +12,17 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class ObjectEditor
     {
+        private readonly IInfrastructure _inf;
+        private readonly IComponent _com;
         private MDEntity _md;
 
-        public List<PropertyEditor> _props;
+        private List<PropertyEditor> _props;
 
-        public ObjectEditor()
+        public ObjectEditor(IInfrastructure inf, IComponent com)
         {
+            _inf = inf;
+            _com = com;
+
             _md = new MDEntity();
             _props = new List<PropertyEditor>();
         }
@@ -37,51 +42,52 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public void Apply()
         {
-            foreach (var prop in _props)
-            {
-                prop.Apply();
-            }
+            RegisterObject();
+            RegisterDto(_com, _inf.Counter, _inf.TypeManager, _md);
+            RegisterLink(_com, _inf.Counter, _inf.TypeManager, _md);
         }
 
-        public MDType GetLinkRef()
+        public MDType GetRef()
         {
             return MDTypes.Ref(_md.LinkId);
         }
 
-        private void BuildObject(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)
+        private void RegisterObject()
         {
-            var oType = tm.Type();
+            var oType = _inf.TypeManager.Type();
             oType.IsObject = true;
 
-            oType.Id = md.ObjectId;
-            oType.Name = md.Name;
+            oType.Id = _md.ObjectId;
+            oType.Name = _md.Name;
             oType.IsCodeAvaliable = true;
             oType.IsQueryAvaliable = true;
 
-            oType.ComponentId = component.Info.ComponentId;
+            oType.ComponentId = _com.Info.ComponentId;
 
-            oType.SystemId = counter.GetId(oType.Id);
+            oType.SystemId = _inf.Counter.GetId(oType.Id);
 
-            tm.Register(oType);
+            _inf.TypeManager.Register(oType);
 
-            foreach (var prop in md.Properties)
+            foreach (var prop in _md.Properties)
             {
-                var p = tm.Property();
+                var tProp = _inf.TypeManager.Property();
+                tProp.Name = prop.Name;
+                tProp.Id = prop.Guid;
+                tProp.ParentId = _md.ObjectId;
 
-                p.Name = prop.Name;
-            }
+                foreach (var pType in prop.Types)
+                {
+                    var tPropType = _inf.TypeManager.PropertyType();
+                    tPropType.PropertyParentId = _md.ObjectId;
+                    tPropType.PropertyId = tProp.Id;
+                    tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
+                }
 
-            foreach (var table in md.Tables)
-            {
-                var t = tm.Table();
-                t.Name = table.Name;
-                t.Id = table.Guid;
-
-                t.SystemId = counter.GetId(t.Id);
+                _inf.TypeManager.Register(tProp);
             }
         }
 
-        private void BuildDto(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)
+        private void RegisterDto(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)
         {
             var oType = tm.Type();
             oType.IsDto = true;
@@ -94,25 +100,9 @@ namespace ZenPlatform.EntityComponent.Configuration
             oType.SystemId = counter.GetId(oType.Id);
 
             tm.Register(oType);
-
-            foreach (var prop in md.Properties)
-            {
-                var p = tm.Property();
-
-                p.Name = prop.Name;
-            }
-
-            foreach (var table in md.Tables)
-            {
-                var t = tm.Table();
-                t.Name = table.Name;
-                t.Id = table.Guid;
-
-                t.SystemId = counter.GetId(t.Id);
-            }
         }
 
-        private void BuildLink(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)
+        private void RegisterLink(IComponent component, IUniqueCounter counter, ITypeManager tm, MDEntity md)
         {
             var oType = tm.Type();
             oType.IsLink = true;
@@ -126,22 +116,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             oType.SystemId = counter.GetId(oType.Id);
 
             tm.Register(oType);
-
-            foreach (var prop in md.Properties)
-            {
-                var p = tm.Property();
-
-                p.Name = prop.Name;
-            }
-
-            foreach (var table in md.Tables)
-            {
-                var t = tm.Table();
-                t.Name = table.Name;
-                t.Id = table.Guid;
-
-                t.SystemId = counter.GetId(t.Id);
-            }
         }
     }
 }

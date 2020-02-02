@@ -33,7 +33,7 @@ namespace ZenPlatform.Test.Tools
 
             prop1.SetType(MDTypes.DateTime)
                 .SetType(MDTypes.Int)
-                .SetType(store.GetLinkRef());
+                .SetType(store.GetRef());
 
             ce.Apply();
 
