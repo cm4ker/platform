@@ -18,12 +18,10 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         /// Информация о компоненте
         /// </summary>
         IXCComponentInformation Info { get; set; }
-        
-        string Name { get; }
-        
-        IDataComponent ComponentImpl { get; set; }
 
-        IMDComponent Metadata { get; set; }
+        string Name { get; }
+
+        IDataComponent ComponentImpl { get; set; }
 
         /// <summary>
         /// Зарегистрировать правило для генерации кода

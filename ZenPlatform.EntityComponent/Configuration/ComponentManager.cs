@@ -10,6 +10,7 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 
 namespace ZenPlatform.EntityComponent.Configuration
@@ -56,25 +57,19 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             c.ComponentImpl = GetComponentImpl(c);
             c.Info = GetComponentInfo();
-            c.Metadata = com;
 
             inf.TypeManager.Register(c);
 
             return c;
         }
 
-        public void Load(IInfrastructure inf, IComponentRef comRef, IFileSystem fs)
+        public object Load(IProject proj, IComponentRef comRef, IFileSystem fs)
         {
             var com = fs.Deserialize<MDComponent>(comRef.Entry);
+            var editor = new ComponentEditor(proj, com, fs);
+            editor.Apply();
 
-            var c = CreateAndRegisterComponent(inf, com);
-
-            foreach (var mdFile in fs.GetEntities(FileSystemPath.Parse("/Entity/")))
-            {
-                var type = fs.Deserialize<MDEntity>(mdFile.Path);
-
-                LoadObject(c, inf, type);
-            }
+            return editor;
         }
 
         public void Save(IInfrastructure inf, IComponentRef comRef, IFileSystem fs)

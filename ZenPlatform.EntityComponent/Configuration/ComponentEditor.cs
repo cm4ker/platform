@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using SharpFileSystem;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
@@ -11,7 +12,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 {
     public class ComponentEditor
     {
-        private readonly Project _proj;
+        private readonly IProject _proj;
         private readonly IInfrastructure _inf;
         private readonly MDComponent _md;
         private IComponent _com;
@@ -20,7 +21,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         private List<ObjectEditor> _objs;
 
-        public ComponentEditor(Project proj)
+        public ComponentEditor(IProject proj)
         {
             _proj = proj;
             _inf = proj.Infrastructure;
@@ -29,7 +30,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             _objs = new List<ObjectEditor>();
         }
 
-        public ComponentEditor(Project proj, MDComponent com, IFileSystem fs) : this(proj)
+        public ComponentEditor(IProject proj, MDComponent com, IFileSystem fs) : this(proj)
         {
             _md = com;
             LoadExists(fs);
