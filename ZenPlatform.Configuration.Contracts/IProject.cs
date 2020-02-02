@@ -42,6 +42,8 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Менеджер типов платформы
         /// </summary>
+        ITypeManager TypeManager { get; }
+
         IInfrastructure Infrastructure { get; }
 
         List<IComponentRef> ComponentReferences { get; }
