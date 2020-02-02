@@ -77,15 +77,7 @@ namespace ZenPlatform.Configuration.Structure.Data
      </Project>
      */
 
-
-    public class ComponentRef : IComponentRef
+    public class MDComponent
     {
-        public string Name { get; set; }
-        public string Entry { get; set; }
-    }
-
-    public class MDComponent : IMDComponent
-    {
-        public List<string> EntityReferences { get; set; }
     }
 }

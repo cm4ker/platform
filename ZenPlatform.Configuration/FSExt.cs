@@ -21,6 +21,11 @@ namespace ZenPlatform.Configuration
             }
         }
 
+        public static T Deserialize<T>(this IFileSystem fs, FileSystemPath path)
+        {
+            Deserialize<T>(fs, path.ToString());
+        }
+
         public static byte[] GetBytes(this IFileSystem fs, string path)
         {
             using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
@@ -43,5 +48,4 @@ namespace ZenPlatform.Configuration
                 stream.Write(data, 0, data.Length);
         }
     }
-
 }

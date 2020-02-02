@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using SharpFileSystem;
+using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
@@ -26,6 +27,21 @@ namespace ZenPlatform.EntityComponent.Configuration
             _md = new MDComponent();
             _mrg = new ComponentManager();
             _objs = new List<ObjectEditor>();
+        }
+
+        public ComponentEditor(Project proj, MDComponent com, IFileSystem fs) : this(proj)
+        {
+            _md = com;
+            LoadExists(fs);
+        }
+
+        private void LoadExists(IFileSystem fs)
+        {
+            foreach (var file in fs.GetEntities(FileSystemPath.Parse("/Entity/")))
+            {
+                var md = fs.Deserialize<MDEntity>(file);
+                _objs.Add(new ObjectEditor(_inf, md));
+            }
         }
 
         // private void CreateFolder()
