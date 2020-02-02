@@ -12,7 +12,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// </summary>
     public interface IComponentManager
     {
-        void Load(IInfrastructure inf, IComponentRef comRef, IFileSystem fs);
+        object Load(IProject proj, IComponentRef comRef, IFileSystem fs);
 
         void Save(IInfrastructure inf, IComponentRef comRef, IFileSystem fs);
     }

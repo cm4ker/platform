@@ -20,7 +20,7 @@ namespace ZenPlatform.Configuration.Structure
     {
         public ProjectMD()
         {
-            ComponentReferences = new List<ComponentRef>();
+            ComponentReferences = new List<IComponentRef>();
         }
 
         public Guid ProjectId { get; set; }
@@ -29,7 +29,7 @@ namespace ZenPlatform.Configuration.Structure
 
         public string ProjectVersion { get; set; }
 
-        public List<ComponentRef> ComponentReferences { get; set; }
+        public List<IComponentRef> ComponentReferences { get; set; }
     }
 
     public class Project : IProject
@@ -73,7 +73,7 @@ namespace ZenPlatform.Configuration.Structure
             set => _md.ProjectVersion = value;
         }
 
-        public List<ComponentRef> ComponentReferences
+        public List<IComponentRef> ComponentReferences
         {
             get => _md.ComponentReferences;
         }
@@ -123,7 +123,7 @@ namespace ZenPlatform.Configuration.Structure
 
                 var manager = (IComponentManager) Activator.CreateInstance(loaderType);
 
-                manager.Load(inf, reference, fileSystem);
+                manager.Load(this, reference, fileSystem);
             }
         }
     }
