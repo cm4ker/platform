@@ -63,7 +63,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             return c;
         }
 
-        public object Load(IProject proj, IComponentRef comRef, IFileSystem fs)
+        public IComponentEditor Load(IProject proj, IComponentRef comRef, IFileSystem fs)
         {
             var com = fs.Deserialize<MDComponent>(comRef.Entry);
             var editor = new ComponentEditor(proj, com, fs);
@@ -76,6 +76,19 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             var info = GetComponentInfo();
             var com = inf.TypeManager.FindComponent(info.ComponentId);
+
+            var tm = inf.TypeManager;
+
+            fs.Serialize(comRef.Entry, tm.Metadatas.First(x => x.Id == info.ComponentId));
+
+            var mds = tm.Metadatas.Where(x => x.ParentId == info.ComponentId);
+
+            foreach (var mr in mds)
+            {
+                var md = (MDEntity) mr.Metadata;
+
+                fs.Serialize(FileSystemPath.Root.AppendDirectory("Entity").AppendFile(md.Name).ToString(), md);
+            }
         }
     }
 }

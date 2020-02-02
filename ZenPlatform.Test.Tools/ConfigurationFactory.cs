@@ -1,14 +1,8 @@
-﻿using System;
-using System.Xml.Serialization;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using SharpFileSystem.Database;
-using SharpFileSystem.FileSystems;
-using ZenPlatform.Configuration;
+﻿using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Common;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 

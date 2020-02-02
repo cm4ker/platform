@@ -18,6 +18,8 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         IReadOnlyList<IComponent> Components { get; }
         IReadOnlyList<IObjectSetting> Settings { get; }
 
+        IReadOnlyList<IMetadataRow> Metadatas { get; }
+
         void Register(IType type);
         void Register(IProperty p);
         void Register(IPropertyType type);

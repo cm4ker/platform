@@ -2,6 +2,7 @@
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Configuration.Structure;
 
 
 namespace ZenPlatform.Configuration.Contracts
@@ -12,7 +13,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// </summary>
     public interface IComponentManager
     {
-        object Load(IProject proj, IComponentRef comRef, IFileSystem fs);
+        IComponentEditor Load(IProject proj, IComponentRef comRef, IFileSystem fs);
 
         void Save(IInfrastructure inf, IComponentRef comRef, IFileSystem fs);
     }
