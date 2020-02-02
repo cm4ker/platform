@@ -92,7 +92,7 @@ namespace ZenPlatform.Core.Environment
                     dataContext);
 
 
-                currentConfiguration = ZenPlatform.Configuration.Structure.Project.Load(configStorage);
+                currentConfiguration = null;//Project.Load(configStorage);
 
                 if (currentConfiguration == null)
                 {

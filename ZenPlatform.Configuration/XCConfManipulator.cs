@@ -13,7 +13,7 @@ namespace ZenPlatform.Configuration
     {
         public IProject Load(IFileSystem storage)
         {
-            return Project.Load(storage);
+            return null;
         }
 
         public IProject Create(string projectName)
@@ -43,7 +43,7 @@ namespace ZenPlatform.Configuration
         private Dictionary<Guid, uint> _dic;
         private uint _maxId = 100;
 
-       
+
         public InMemoryUniqueCounter()
         {
             _dic = new Dictionary<Guid, uint>();
@@ -61,6 +61,4 @@ namespace ZenPlatform.Configuration
             }
         }
     }
-    
-    
 }

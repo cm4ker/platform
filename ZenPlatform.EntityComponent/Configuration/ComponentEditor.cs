@@ -10,7 +10,7 @@ using ZenPlatform.Configuration.Structure.Data;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class ComponentEditor
+    public class ComponentEditor : IComponentEditor
     {
         private readonly IProject _proj;
         private readonly IInfrastructure _inf;

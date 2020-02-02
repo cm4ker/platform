@@ -5,9 +5,11 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
 using System.Linq;
 using SharpFileSystem.FileSystems;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Data;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Configuration.Test
@@ -36,8 +38,7 @@ namespace ZenPlatform.Configuration.Test
             {
                 var storage = new MemoryFileSystem();
                 config.Save(storage);
-
-                config = Structure.Project.Load(storage);
+                config = Project.Load(new MDManager(new TypeManager(), new InMemoryUniqueCounter()), storage);
             }
 
 

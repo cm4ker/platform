@@ -38,6 +38,17 @@ namespace ZenPlatform.Configuration.Structure
         private readonly IInfrastructure _inf;
         private ITypeManager _manager;
 
+        private List<IComponentEditor> _editors;
+        private List<IComponentManager> _managers;
+
+        private static FileSystemPath DefaultPath = FileSystemPath.Root.AppendFile("Project");
+
+        public static Project Load(IInfrastructure inf, IFileSystem fs)
+        {
+            var projectMD = fs.Deserialize<ProjectMD>(DefaultPath);
+            return new Project(projectMD, inf);
+        }
+
         public Project(ProjectMD md, IInfrastructure inf)
         {
             _md = md;
@@ -78,33 +89,45 @@ namespace ZenPlatform.Configuration.Structure
             get => _md.ComponentReferences;
         }
 
+        public IEnumerable<IComponentEditor> Editors => _editors;
+
 
         public IInfrastructure Infrastructure => _inf;
         public ITypeManager TypeManager => _manager;
 
         /// <summary>
-        /// Загрузить концигурацию
-        /// </summary>
-        /// <param name="storage"></param>
-        /// <returns></returns>
-        public static IProject Load(IFileSystem storage)
-        {
-            return null;
-        }
-
-
-        /// <summary>
         /// Созранить объект в контексте другого хранилища
         /// </summary>
-        /// <param name="storage"></param>
-        public void Save(IFileSystem storage)
+        /// <param name="fileSystem"></param>
+        public void Save(IFileSystem fileSystem)
         {
+            var pkgFolder = "packages";
+
+            foreach (var reference in _md.ComponentReferences)
+            {
+                var asmPath = Path.Combine(FileSystemPath.Root.ToString(), pkgFolder, $"{reference.Name}.dll");
+
+                var asm = Assembly.Load(fileSystem.GetBytes(asmPath) ??
+                                        throw new Exception($"Unknown reference {reference.Name}"));
+
+                var loaderType = asm.GetTypes()
+                                     .FirstOrDefault(x =>
+                                         x.IsPublic && !x.IsAbstract &&
+                                         x.GetInterfaces().Contains(typeof(IComponentManager))) ??
+                                 throw new Exception("Invalid component");
+
+                var manager = (IComponentManager) Activator.CreateInstance(loaderType);
+
+                manager.Save(_inf, reference, fileSystem);
+            }
+
+            fileSystem.Serialize(DefaultPath.ToString(), _md);
         }
 
-        public void Load(IInfrastructure inf, IFileSystem fileSystem)
+        public void Load(IFileSystem fileSystem)
         {
-            _manager = inf.TypeManager;
-            _manager.LoadSettings(inf.Settings.GetSettings());
+            _manager = _inf.TypeManager;
+            _manager.LoadSettings(_inf.Settings.GetSettings());
 
             var pkgFolder = "packages";
 
@@ -123,7 +146,10 @@ namespace ZenPlatform.Configuration.Structure
 
                 var manager = (IComponentManager) Activator.CreateInstance(loaderType);
 
-                manager.Load(this, reference, fileSystem);
+                var editor = manager.Load(this, reference, fileSystem);
+
+
+                _editors.Add(editor);
             }
         }
     }

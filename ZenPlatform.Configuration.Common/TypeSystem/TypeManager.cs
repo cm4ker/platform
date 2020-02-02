@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Configuration.TypeSystem;
+using Type = ZenPlatform.Configuration.TypeSystem.Type;
 
-namespace ZenPlatform.Configuration.TypeSystem
+namespace ZenPlatform.Configuration.Common.TypeSystem
 {
     public class TypeManager : ITypeManager
     {
@@ -33,7 +34,7 @@ namespace ZenPlatform.Configuration.TypeSystem
             _tables = new List<ITable>();
             _components = new List<IComponent>();
             _objectSettings = new List<IObjectSetting>();
-            
+
             _types.Add(Int);
             _types.Add(DateTime);
             _types.Add(Binary);
@@ -63,14 +64,14 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public IReadOnlyList<IObjectSetting> Settings => _objectSettings;
 
-        public IReadOnlyList<MetadataRow> Metadatas => _metadatas;
+        public IReadOnlyList<IMetadataRow> Metadatas => _metadatas;
 
         public void Register(IType type)
         {
             if (_types.Exists(x => x.Id == type.Id))
                 throw new Exception($"Type id {type.Name}:{type.Id} already registered");
 
-           _types.Add(type);
+            _types.Add(type);
         }
 
         public void Register(IProperty p)
