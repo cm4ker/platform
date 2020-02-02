@@ -1,5 +1,7 @@
 using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using Type = ZenPlatform.Configuration.TypeSystem.Type;
 
 namespace ZenPlatform.Configuration.Common
 {
@@ -14,5 +16,30 @@ namespace ZenPlatform.Configuration.Common
         public static MDType String(int size) => new MDString(size);
         public static MDType Numeric(int scale, int precision) => new MDNumeric(scale, precision);
         public static MDType Ref(Guid id) => new TypeRef(id);
+
+        public static Guid GetTypeId(this MDType mdType, ITypeManager tm)
+        {
+            switch (mdType)
+            {
+                case MDString p:
+                    var st = tm.FindType(mdType.Guid).GetSpec();
+                    st.Size = p.Size;
+                    tm.Register(st);
+                    return st.Id;
+                case MDNumeric n:
+                    var nt = tm.FindType(mdType.Guid).GetSpec();
+                    nt.Scale = n.Scale;
+                    nt.Precision = n.Precision;
+                    tm.Register(nt);
+                    return nt.Id;
+                case MDBinary b:
+                    var bt = tm.FindType(mdType.Guid).GetSpec();
+                    bt.Size = b.Size;
+                    tm.Register(bt);
+                    return bt.Id;
+
+                default: return mdType.Guid;
+            }
+        }
     }
 }

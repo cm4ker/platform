@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ZenPlatform.Configuration.Common;
+using ZenPlatform.Configuration.Contracts.Store;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -36,11 +38,6 @@ namespace ZenPlatform.EntityComponent.Configuration
         public void UnsetType(Guid typeId)
         {
             _mp.Types.RemoveAll(x => x.Guid == typeId);
-        }
-
-        public void Apply()
-        {
-            //TODO: Register propertys
         }
     }
 }

@@ -28,7 +28,8 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public bool IsReadOnly { get; set; }
 
-        public IEnumerable<IType> Types => _ts.PropertyTypes.Where(x => x.TypeId == Id).Select(x => x.TypeId)
+        public IEnumerable<IType> Types => _ts.PropertyTypes
+            .Where(x => x.TypeId == Id && x.PropertyParentId == ParentId).Select(x => x.TypeId)
             .Join(_ts.Types, a => a, b => b.Id, (a, b) => b);
 
         public ITypeManager TypeManager => _ts;
