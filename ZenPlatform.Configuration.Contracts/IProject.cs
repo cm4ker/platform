@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using SharpFileSystem;
+using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Shared.ParenChildCollection;
 
@@ -42,10 +44,17 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         ITypeManager TypeManager { get; }
 
+        IInfrastructure Infrastructure { get; }
+
+        List<IComponentRef> ComponentReferences { get; }
+
         /// <summary>
         /// Созранить объект в контексте другого хранилища
         /// </summary>
         /// <param name="storage"></param>
         void Save(IFileSystem fileSystem);
+
+
+        void Attach(IComponentRef comRef, IComponentManager mrg);
     }
 }

@@ -145,7 +145,7 @@ namespace ZenPlatform.Core.Querying
             }
         }
 
-        private void GenerateFieldSchema(XCColumnSchemaDefinition def, string alias = null)
+        private void GenerateFieldSchema(ColumnSchemaDefinition def, string alias = null)
         {
             _qm.ld_str(def.FullName);
             _qm.ld_column();
@@ -156,7 +156,7 @@ namespace ZenPlatform.Core.Querying
 
         private void GenerateSourceField(QSourceFieldExpression sf, string alias = null)
         {
-            List<XCColumnSchemaDefinition> schema = null; //sf.Property.GetPropertySchemas();
+            List<ColumnSchemaDefinition> schema = null; //sf.Property.GetPropertySchemas();
 
             foreach (var def in schema)
             {

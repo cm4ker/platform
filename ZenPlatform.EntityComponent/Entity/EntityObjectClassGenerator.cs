@@ -175,17 +175,17 @@ namespace ZenPlatform.EntityComponent.Entity
                 if (prop.Types.Count() > 1)
                 {
                     var typeField = prop.GetObjSchema()
-                        .First(x => x.SchemaType == XCColumnSchemaType.Type);
+                        .First(x => x.SchemaType == ColumnSchemaType.Type);
                     var dtoTypeProp = dtoType.FindProperty(typeField.FullName);
 
                     foreach (var ctype in prop.Types)
                     {
-                        XCColumnSchemaDefinition dtoPropSchema;
+                        ColumnSchemaDefinition dtoPropSchema;
 
                         if (ctype.IsLink)
                         {
                             dtoPropSchema = prop.GetObjSchema()
-                                .First(x => x.SchemaType == XCColumnSchemaType.Ref);
+                                .First(x => x.SchemaType == ColumnSchemaType.Ref);
                         }
                         else
                         {
@@ -263,7 +263,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     if (!prop.IsSelfLink)
                     {
                         var dtoPropSchema = prop.GetObjSchema()
-                            .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
+                            .First(x => x.SchemaType == ColumnSchemaType.NoSpecial);
 
                         var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
 

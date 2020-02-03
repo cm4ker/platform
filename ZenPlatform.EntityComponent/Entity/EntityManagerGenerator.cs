@@ -386,7 +386,7 @@ namespace ZenPlatform.EntityComponent.Entity
             }
 
             qm.m_insert()
-                .ld_table(se.Metadata.RelTableName);
+                .ld_table(se.GetSettings().DatabaseName);
 
             foreach (var col in columns)
             {
@@ -408,7 +408,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             qm.bg_query()
                 .m_where()
-                .ld_column(se.FindPropertyByName("Id").Metadata.DatabaseColumnName, "T0")
+                .ld_column(se.FindPropertyByName("Id").GetSettings().DatabaseName, "T0")
                 .ld_param($"P_{pIndex++}")
                 .eq();
 
@@ -423,7 +423,7 @@ namespace ZenPlatform.EntityComponent.Entity
             }
 
             qm.m_update()
-                .ld_table(se.Metadata.RelTableName)
+                .ld_table(se.GetSettings().DatabaseName)
                 .@as("T0")
                 .st_query();
 
@@ -440,10 +440,10 @@ namespace ZenPlatform.EntityComponent.Entity
 
             qm.bg_query()
                 .m_from()
-                .ld_table(se.Metadata.RelTableName)
+                .ld_table(se.GetSettings().DatabaseName)
                 .@as("T0")
                 .m_where()
-                .ld_column(se.FindPropertyByName("Id").Metadata.DatabaseColumnName, "T0")
+                .ld_column(se.FindPropertyByName("Id").GetSettings().DatabaseName, "T0")
                 .ld_param($"P_{pIndex}")
                 .eq();
 

@@ -54,7 +54,7 @@ namespace ZenPlatform.Core.Environment
             Globals = new Dictionary<string, object>();
 
             Managers = new Dictionary<Type, IEntityManager>();
-          
+
 
             AuthenticationManager = authenticationManager;
             MigrationManager = migrationManager;
@@ -92,11 +92,11 @@ namespace ZenPlatform.Core.Environment
                     dataContext);
 
 
-                currentConfiguration = ZenPlatform.Configuration.Structure.Project.Load(configStorage);
+                currentConfiguration = null;//Project.Load(configStorage);
 
                 if (currentConfiguration == null)
                 {
-                    currentConfiguration = new ZenPlatform.Configuration.Structure.Project();
+                    currentConfiguration = new Project(null, null);
                 }
             }
 

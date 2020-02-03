@@ -49,14 +49,15 @@ namespace ZenPlatform.Cli.Commands.Db
             }
 
             var storage = new PhysicalFileSystem(pathTo);
-            var configuration = Project.Load(storage);
+            
 
             var env = _environmentManager.GetEnvironment(Name);
             if (env is IPlatformEnvironment platform)
             {
                 var databaseStorage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
                     platform.DataContextManager.GetContext());
-                configuration.Save(databaseStorage);
+            
+                //TODO: Save the configuration
             }
         }
     }

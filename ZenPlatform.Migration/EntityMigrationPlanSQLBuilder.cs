@@ -39,7 +39,7 @@ namespace ZenPlatform.Migration
 
         public void UpdateTypeItemVisit(DDLQuery query, UpdateTypeItem item)
         {
-            var type = item.Property.GetDbSchema().First(s => s.SchemaType == XCColumnSchemaType.Type);
+            var type = item.Property.GetDbSchema().First(s => s.SchemaType == ColumnSchemaType.Type);
             query.Add(m =>
             {
                 m
@@ -173,13 +173,13 @@ namespace ZenPlatform.Migration
 
         #endregion
 
-        private ColumnDefinition GetColumnDefenitionBySchema(XCColumnSchemaDefinition schema)
+        private ColumnDefinition GetColumnDefenitionBySchema(ColumnSchemaDefinition schema)
         {
             ColumnDefinitionBuilder builder = new ColumnDefinitionBuilder();
             builder.WithColumnName(schema.FullName);
 
-            if (schema.SchemaType == XCColumnSchemaType.Value
-                || schema.SchemaType == XCColumnSchemaType.NoSpecial)
+            if (schema.SchemaType == ColumnSchemaType.Value
+                || schema.SchemaType == ColumnSchemaType.NoSpecial)
             {
                 var type = schema.PlatformType;
 
@@ -211,11 +211,11 @@ namespace ZenPlatform.Migration
                         break;
                 }
             }
-            else if (schema.SchemaType == XCColumnSchemaType.Type)
+            else if (schema.SchemaType == ColumnSchemaType.Type)
             {
                 builder.AsInt().Nullable();
             }
-            else if (schema.SchemaType == XCColumnSchemaType.Ref)
+            else if (schema.SchemaType == ColumnSchemaType.Ref)
             {
                 builder.AsGuid();
             }

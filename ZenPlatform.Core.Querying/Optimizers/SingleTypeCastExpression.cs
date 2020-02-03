@@ -1,7 +1,5 @@
 using System.Linq;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Configuration.Structure.Helper;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.QueryBuilder;
 
