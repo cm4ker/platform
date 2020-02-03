@@ -25,7 +25,8 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         void Register(IPProperty p);
         void Register(IPropertyType type);
         void Register(IComponent component);
-
+        void Register(ITable table);
+        
         IPType Type();
         IPTypeSpec Type(IPType ipType);
         IPProperty Property();

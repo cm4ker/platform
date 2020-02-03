@@ -92,6 +92,11 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
         {
             _components.Add(component);
         }
+        
+        public void Register(ITable table)
+        {
+            _tables.Add(table);
+        }
 
         public void AddMD(Guid id, Guid parentId, object metadata)
         {

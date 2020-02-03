@@ -22,27 +22,101 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
+        public void GenerateAstTree(IPType ipType, Root root)
         {
             var dtoClassName = ipType.GetDtoType().Name;
 
             var cls = new ComponentClass(CompilationMode.Shared, _component, ipType, null, dtoClassName,
                 TypeBody.Empty) {Namespace = ipType.GetNamespace()};
 
-            cls.Bag = ObjectType.Dto;
-
             var cu = CompilationUnit.Empty;
 
             cu.AddEntity(cls);
 
+
             /*
              Табличные части именуются следующим принципом:
              TB_{ObjectName}_{TableName}
+             
+             public class Dto
+             {
+                public List<TableRow> Table1 { get; }      
+             }
+             
+             public class ObjectTable1 : IEnumerable<TableRow>
+             {
+                List<TableRowObject> _list;
+                
+                public ObjectTable(List<TableRow> list)
+                {
+                    _list = list.Select(x=>new TableRowObject(x));
+                }
+                                
+                public IEnumerable<TableRowObject> Table1 => _list;
+                
+                
+                public Create()
+                {
+                    var o = new TableRow();
+                    var wrap = new TableObjectRow(o);
+                    
+                    _dto.Add(o);
+                    _table1.Add(wrap);
+                    
+                    retrun wrap;
+                }         
+             }
+       
+             
+             
+             public class Object
+             {
+                private ObjectTable1 _table1;
+                private Dto _dto;
+                
+                public Object(Dto dto)
+                {
+                    _dto = dto;
+                    _table1 = new ObjectTable(dto.Table1);        
+                }
+                
+               public ObjectTable1 Table1 => _table1;                
+                
+                public TableRowObject CreateRowTable1()
+                {
+                   
+                }
+                
+                public RemoveTable1()
+                {
+                    ...
+                }
+             }
+             
+             public class TableRowObject
+             {
+                Create()
+                Remove()
+                ...
+             }
+             
+             public class TableRowLink
+             {
+                
+             }
+             
+             public class TableRow
+             {
+                
+             }
+             
              */
             foreach (var table in ipType.Tables)
             {
+                var tableName = $"TB_{ipType.Name}_{table.Name}";
+
                 var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, ipType, null,
-                    null, TypeBody.Empty)
+                    tableName, TypeBody.Empty)
                 {
                     Namespace = ipType.GetNamespace(),
                     Bag = table
@@ -75,17 +149,17 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void EmitTable(ComponentClass cc, ITypeBuilder builder, ITable table)
         {
-            // var ts = builder.Assembly.TypeSystem;
-            // //var set = table.;
-            //
-            // var dtoClassName = set.GetDtoName();
-            // var @namespace = set.GetNamespace();
-            //
-            // var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
-            //
-            // foreach (var prop in table.GetProperties())
-            // {
-            // }
+            var ts = builder.Assembly.TypeSystem;
+            var tm = table.TypeManager;
+
+            var ownerType = tm.FindType(table.ParentId);
+            var @namespace = ownerType.GetNamespace();
+
+            var dtoType = ts.FindType($"{@namespace}.{table}");
+
+            foreach (var prop in table.Properties)
+            {
+            }
         }
 
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)

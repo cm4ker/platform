@@ -35,6 +35,13 @@ namespace ZenPlatform.Test.Tools
                 .SetType(MDTypes.Numeric(10, 2))
                 .SetType(store.GetRef());
 
+            var table1 = store.CreateTable();
+            table1.Name = "ExampleTable";
+
+            var tableProp1 = table1.CreateProperty();
+            tableProp1.Name = "TProp1";
+            tableProp1.SetType(MDTypes.Int);
+
             var module = store.CreateModule();
             module.ModuleRelationType = ProgramModuleRelationType.Object;
             module.ModuleText = "public int In(int i) { int _i = i; _i++; return _i; }";
