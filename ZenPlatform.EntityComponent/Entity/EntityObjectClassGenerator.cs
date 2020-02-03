@@ -1,11 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using Mono.Cecil.Cil;
-using MoreLinq.Extensions;
-using NLog.LayoutRenderers;
-using Npgsql.NameTranslation;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -13,18 +7,12 @@ using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Core.Authentication;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
-using ZenPlatform.Language.Ast.Definitions.Statements;
-using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
-using IType = ZenPlatform.Compiler.Contracts.IType;
 using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 namespace ZenPlatform.EntityComponent.Entity

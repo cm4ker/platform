@@ -14,6 +14,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         private MDEntity _md;
         private readonly List<PropertyEditor> _props;
         private readonly List<ModuelEditor> _modules;
+        private readonly List<CommandEditor> _commands;
 
         public ObjectEditor(IInfrastructure inf)
         {
@@ -22,6 +23,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             _md = new MDEntity();
             _props = new List<PropertyEditor>();
             _modules = new List<ModuelEditor>();
+            _commands = new List<CommandEditor>();
         }
 
         public ObjectEditor(IInfrastructure inf, MDEntity md) : this(inf)
@@ -41,10 +43,22 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         {
             var module = new MDProgramModule();
             var me = new ModuelEditor(module);
-            
+
             _md.Modules.Add(module);
             _modules.Add(me);
-            
+
+            return me;
+        }
+
+
+        public CommandEditor CreateCommand()
+        {
+            var command = new MDCommand();
+            var me = new CommandEditor(command);
+
+            _md.Commands.Add(command);
+            _commands.Add(me);
+
             return me;
         }
 
@@ -75,7 +89,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             var oType = tm.Type();
             oType.IsManager = true;
             oType.IsAsmAvaliable = true;
-            
+
             oType.Id = Guid.NewGuid();
             oType.Name = $"{_md.Name}Manager";
             oType.GroupId = _md.ObjectId;
