@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Configuration.TypeSystem;
+using Type = ZenPlatform.Configuration.TypeSystem.Type;
 
-namespace ZenPlatform.Configuration.TypeSystem
+namespace ZenPlatform.Configuration.Common.TypeSystem
 {
     public class TypeManager : ITypeManager
     {
@@ -14,7 +15,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         private List<ITable> _tables;
         private List<IComponent> _components;
         private List<IObjectSetting> _objectSettings;
-        private List<Metadata> _metadatas;
+        private List<MetadataRow> _metadatas;
 
         private IntType _intType;
         private DateTimeType _dateTimeType;
@@ -33,6 +34,16 @@ namespace ZenPlatform.Configuration.TypeSystem
             _tables = new List<ITable>();
             _components = new List<IComponent>();
             _objectSettings = new List<IObjectSetting>();
+            _metadatas = new List<MetadataRow>();
+
+
+            _types.Add(Int);
+            _types.Add(DateTime);
+            _types.Add(Binary);
+            _types.Add(String);
+            _types.Add(Boolean);
+            _types.Add(Guid);
+            _types.Add(Numeric);
         }
 
         public IType Int => _intType ??= new IntType(this);
@@ -55,7 +66,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public IReadOnlyList<IObjectSetting> Settings => _objectSettings;
 
-        public IReadOnlyList<Metadata> Metadatas => _metadatas;
+        public IReadOnlyList<IMetadataRow> Metadatas => _metadatas;
 
         public void Register(IType type)
         {
@@ -83,9 +94,9 @@ namespace ZenPlatform.Configuration.TypeSystem
             _components.Add(component);
         }
 
-        public void Register(Metadata md)
+        public void AddMD(Guid id, Guid parentId, object metadata)
         {
-            _metadatas.Add(md);
+            _metadatas.Add(new MetadataRow {Id = id, ParentId = parentId, Metadata = metadata});
         }
 
         public IComponent Component()

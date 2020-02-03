@@ -33,7 +33,7 @@ namespace ZenPlatform.Configuration.Contracts
         List<IXCDataExpression> Arguments { get; }
     }
 
-    public interface IComponentRef
+    public interface IComponentRef : IEquatable<IComponentRef>
     {
         string Name { get; set; }
         string Entry { get; set; }

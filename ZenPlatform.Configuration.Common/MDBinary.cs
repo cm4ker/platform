@@ -1,12 +1,9 @@
 using System;
-using System.Data;
 
-namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
+namespace ZenPlatform.Configuration.Common
 {
-    public class XCBinary : MDType, IEquatable<XCBinary>
+    public class MDBinary : MDPrimitive, IEquatable<MDBinary>
     {
-        public override uint Id => 1;
-
         public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 1);
 
 
@@ -17,7 +14,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
 
         public int Size { get; set; }
 
-        public bool Equals(XCBinary other)
+        public bool Equals(MDBinary other)
         {
             if (other == null) return false;
 
@@ -28,7 +25,7 @@ namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
         {
             if (obj == null) return false;
 
-            return Equals(obj as XCBinary);
+            return Equals(obj as MDBinary);
         }
 
         public override int GetHashCode()
