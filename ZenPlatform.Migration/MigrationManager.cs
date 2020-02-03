@@ -1,17 +1,11 @@
 ﻿using MoreLinq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Contracts.Data;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Data;
-using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.Core.Logging;
-using ZenPlatform.Configuration.Contracts.Migration;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Migration

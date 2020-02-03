@@ -1,4 +1,0 @@
-namespace ZenPlatform.Configuration.Structure
-{
-
-}

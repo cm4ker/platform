@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.Cecil;
+using MoreLinq.Extensions;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -10,6 +12,7 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
 using IProperty = ZenPlatform.Compiler.Contracts.IProperty;
@@ -38,6 +41,11 @@ namespace ZenPlatform.EntityComponent.Entity
         public static IPType GetObjectType(this IPType ipType)
         {
             return ipType.TypeManager.Types.FirstOrDefault(x => x.IsObject && x.GroupId == ipType.GroupId);
+        }
+
+        public static T GetMD<T>(this IPType type)
+        {
+            return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.Id)?.Metadata;
         }
     }
 

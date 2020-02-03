@@ -25,7 +25,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         string DisplayName { get; set; }
 
-        IXCProgramModule Module { get; set; }
+        IMDProgramModule Module { get; set; }
 
         /// <summary>
         /// Аргументы команды

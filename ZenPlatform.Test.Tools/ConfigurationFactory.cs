@@ -2,6 +2,7 @@
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Common.TypeSystem;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.TypeSystem;
@@ -33,6 +34,10 @@ namespace ZenPlatform.Test.Tools
                 .SetType(MDTypes.Boolean)
                 .SetType(MDTypes.Numeric(10, 2))
                 .SetType(store.GetRef());
+
+            var module = store.CreateModule();
+            module.ModuleRelationType = ProgramModuleRelationType.Object;
+            module.ModuleText = "public int InModuleMethod(int i) { int _i = i; _i++; return _i; }";
 
             ce.Apply();
 

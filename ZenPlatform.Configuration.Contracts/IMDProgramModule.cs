@@ -1,6 +1,6 @@
 namespace ZenPlatform.Configuration.Contracts
 {
-    public interface IXCProgramModule
+    public interface IMDProgramModule
     {
         /// <summary>
         /// Имя модуля
@@ -15,8 +15,8 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Тип программного модуля
         /// </summary>
-        XCProgramModuleDirectionType ModuleDirectionType { get; set; }
+        ProgramModuleDirectionType ModuleDirectionType { get; set; }
 
-        XCProgramModuleRelationType ModuleRelationType { get; set; }
+        ProgramModuleRelationType ModuleRelationType { get; set; }
     }
 }

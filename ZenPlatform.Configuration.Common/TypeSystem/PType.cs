@@ -45,7 +45,7 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
         public virtual bool IsScalePrecision { get; set; }
 
         //TODO: Use scope in main project
-        public bool IsCodeAvaliable { get; set; }
+        public bool IsAsmAvaliable { get; set; }
 
         public bool IsQueryAvaliable { get; set; }
 

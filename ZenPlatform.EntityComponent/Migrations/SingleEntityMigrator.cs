@@ -5,8 +5,6 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Contracts.Migration;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.EntityComponent.Configuration;
 
 namespace ZenPlatform.EntityComponent.Migrations
 {
