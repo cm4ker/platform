@@ -31,18 +31,14 @@ namespace ZenPlatform.Configuration.Test
         [Fact]
         public void SaveAndLoadCofigurationRepeatedly()
         {
-            IProject config = ConfigurationFactory.Create();
+            IProject expect = ConfigurationFactory.Create();
+            IProject actual;
+            var storage = new MemoryFileSystem();
 
+            expect.Save(storage);
+            actual = Project.Load(new MDManager(new TypeManager(), new InMemoryUniqueCounter()), storage);
 
-            for (int i = 0; i < 2; i++)
-            {
-                var storage = new MemoryFileSystem();
-                config.Save(storage);
-                config = Project.Load(new MDManager(new TypeManager(), new InMemoryUniqueCounter()), storage);
-            }
-
-            var configOriginal = ConfigurationFactory.Create();
-            EqualsConfiguration(config, configOriginal);
+            Assert.Equal(expect, actual);
         }
 
         [Fact]
