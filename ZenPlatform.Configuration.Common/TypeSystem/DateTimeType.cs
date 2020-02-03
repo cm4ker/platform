@@ -1,4 +1,5 @@
 using System;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
@@ -13,6 +14,9 @@ namespace ZenPlatform.Configuration.TypeSystem
             get { return "DateTime"; }
         }
 
+        public override bool IsPrimitive => true;
+        public override PrimitiveKind PrimitiveKind => PrimitiveKind.DateTime;
+        
         internal DateTimeType(TypeManager ts) : base(ts)
         {
         }

@@ -2482,15 +2482,21 @@ namespace ZenPlatform.QueryBuilder.Model
             set;
         }
 
+        public bool CheckExists
+        {
+            get;
+            set;
+        }
+
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( CreateTable ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) && SequenceEqual ( this . Constraints ,  node . Constraints ) ) ; 
+                return false; var  node  =  ( CreateTable ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) && SequenceEqual ( this . Constraints ,  node . Constraints ) && ( this . CheckExists == node . CheckExists ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return Xor(Columns, i => i.GetHashCode()) ^ Xor(Constraints, i => i.GetHashCode());
+            return Xor(Columns, i => i.GetHashCode()) ^ Xor(Constraints, i => i.GetHashCode()) ^ (CheckExists.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)

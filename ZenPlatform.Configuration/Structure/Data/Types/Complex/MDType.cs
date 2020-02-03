@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Configuration.Contracts.TypeSystem;
+﻿using ZenPlatform.Configuration.Common.TypeSystem;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Structure.Data.Types.Complex

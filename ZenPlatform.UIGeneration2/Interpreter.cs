@@ -5,6 +5,7 @@ using System.Text;
 using Antlr4.Runtime;
 using MoreLinq.Extensions;
 using SharpGen.Runtime.Win32;
+using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Querying;
 using ZenPlatform.Core.Querying.Model;
@@ -41,7 +42,7 @@ namespace ZenPlatform.UIBuilder
                 {
                     _output.Write($"(DS : {visitable.GetDbName()})");
                 }
-                
+
                 _output.WriteLine();
 
                 return base.Visit(visitable);
@@ -78,7 +79,7 @@ namespace ZenPlatform.UIBuilder
                     var walker = new CustomWalker(output);
                     walker.Visit(_m.top() as QItem);
 
-                    var realWalker = new RealWalker();
+                    var realWalker = new RealWalker(_m.TypeManager);
                     realWalker.Visit(_m.top() as QItem);
 
 
@@ -133,7 +134,7 @@ namespace ZenPlatform.UIBuilder
                     var walker = new CustomWalker(output);
                     walker.Visit(_m.top() as QItem);
 
-                    var realWalker = new RealWalker();
+                    var realWalker = new RealWalker(_m.TypeManager);
                     realWalker.Visit(_m.top() as QItem);
 
 

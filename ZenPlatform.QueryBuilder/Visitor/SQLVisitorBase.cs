@@ -48,11 +48,10 @@ namespace ZenPlatform.QueryBuilder.Visitor
             return node.Value switch
             {
                 string str => string.Format("'{0}'", str),
-                bool b =>  Convert.ToByte(b).ToString(),
+                bool b => Convert.ToByte(b).ToString(),
                 Guid g => string.Format("'{0}'", g.ToString()),
                 _ => node.Value.ToString()
             };
-
         }
 
         public override string VisitSCount(SCount node)
@@ -380,7 +379,7 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitColumnTypeVarBinary(ColumnTypeVarBinary node)
         {
-            return string.Format("VARBINARY{0}", node.Size > 0 ? $"({node.Size})" : "");
+            return string.Format("VARBINARY{0}", node.Size > 0 ? $"({node.Size})" : "(MAX)");
         }
 
         public override string VisitConstraint(Constraint node)
@@ -395,12 +394,17 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitCreateTable(CreateTable node)
         {
-            return string.Format("CREATE TABLE {0} \n(\n{1}{2}{3}\n)",
+            var ct = string.Format("CREATE TABLE {0} \n(\n{1}{2}{3}\n)",
                 node.Table.Accept(this),
                 string.Join(",\n", node.Columns.Select(c => c.Accept(this))),
                 node.Constraints.Count > 0 ? ",\n" : "",
                 string.Join(",\n", node.Constraints.Select(c => c.Accept(this)))
             );
+
+            if (node.CheckExists)
+                ct = $"IF (OBJECT_ID('{node.Table.Accept(this)}', N'U') IS NULL) \n" + ct;
+            
+            return ct;
         }
 
         public override string VisitConstraintDefinitionForeignKey(ConstraintDefinitionForeignKey node)
@@ -452,8 +456,8 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitDropTable(DropTable node)
         {
-            return string.Format("{0}DROP TABLE {1}", 
-                node.IfExists ? string.Format("IF OBJECT_ID('{0}', 'U') IS NOT NULL\n", node.Table.Accept(this)): "",
+            return string.Format("{0}DROP TABLE {1}",
+                node.IfExists ? string.Format("IF OBJECT_ID('{0}', 'U') IS NOT NULL\n", node.Table.Accept(this)) : "",
                 node.Table.Accept(this));
         }
 
@@ -464,7 +468,8 @@ namespace ZenPlatform.QueryBuilder.Visitor
 
         public override string VisitRenameColumnNode(RenameColumnNode node)
         {
-            return string.Format("EXEC sp_rename '{0}.{1}', '{2}', 'COLUMN'", node.Table.Accept(this), node.From.Accept(this), node.To.Accept(this));
+            return string.Format("EXEC sp_rename '{0}.{1}', '{2}', 'COLUMN'", node.Table.Accept(this),
+                node.From.Accept(this), node.To.Accept(this));
         }
 
         #endregion

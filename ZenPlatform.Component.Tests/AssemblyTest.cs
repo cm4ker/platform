@@ -14,6 +14,7 @@ using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Visitor;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core;
@@ -26,6 +27,7 @@ using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Test.Tools;
+using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 
 namespace ZenPlatform.Component.Tests
@@ -55,10 +57,10 @@ namespace ZenPlatform.Component.Tests
             var rootServer = new Root(null, new List<CompilationUnit>());
             var rootClient = new Root(null, new List<CompilationUnit>());
 
-            foreach (var component in conf.TypeManager.Types.Where(x => x.IsObject))
+            foreach (var type in conf.TypeManager.Types.Where(x => x.IsObject))
             {
-                new EntityPlatformGenerator(component).StageServer(type, rootServer, SqlDatabaseType.SqlServer);
-                new EntityPlatformGenerator(component).StageClient(type, rootClient, SqlDatabaseType.SqlServer);
+                new EntityPlatformGenerator(type.GetComponent()).StageServer(type, rootServer, SqlDatabaseType.SqlServer);
+                new EntityPlatformGenerator(type.GetComponent()).StageClient(type, rootClient, SqlDatabaseType.SqlServer);
             }
 
             AstScopeRegister.Apply(rootServer);

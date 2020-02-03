@@ -9,7 +9,7 @@ using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
-    public class MDEntity : IMDType, IMDItem, IMetaData<MDEntity>
+    public class MDEntity : IMDType
     {
         public MDEntity()
         {
@@ -44,14 +44,6 @@ namespace ZenPlatform.EntityComponent.Configuration
         public Guid ObjectId { get; set; }
 
         public Guid DtoId { get; set; }
-
-        public void Initialize(ILoader loader, MDEntity settings)
-        {
-        }
-
-        public IMDItem Store(IXCSaver saver)
-        {
-            return this;
-        }
+     
     }
 }

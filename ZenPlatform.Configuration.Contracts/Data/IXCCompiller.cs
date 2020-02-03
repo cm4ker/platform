@@ -6,6 +6,6 @@ namespace ZenPlatform.Configuration.Contracts.Data
 {
     public interface IXCCompiller
     {
-        IAssembly Build(IXCRoot configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType);
+        IAssembly Build(IProject configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType);
     }
 }
