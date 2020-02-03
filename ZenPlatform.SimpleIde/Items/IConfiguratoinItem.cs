@@ -8,7 +8,7 @@ namespace ZenPlatform.SimpleIde
 {
     public interface IConfiguratoinItem
     {
-        string Content { get; }
+        string Caption { get; }
         IBitmap Bitmap { get; }
         bool IsEnable { get; }
         bool IsExpanded { get; }
