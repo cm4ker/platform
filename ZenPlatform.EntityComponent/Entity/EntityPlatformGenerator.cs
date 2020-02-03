@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
@@ -100,30 +103,30 @@ namespace ZenPlatform.EntityComponent.Entity
         }
 
 
-        private void GenerateCommands(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
+        private void GenerateCommands(IPType ipType, Root root)
         {
-            // var set = type as XCSingleEntity ?? throw new ArgumentException(nameof(type));
-            //
-            // foreach (var command in type.GetCommands())
-            // {
-            //     var typeBody = ParserHelper.ParseTypeBody(command.Module.ModuleText);
-            //     var serverModule = new ComponentModule(CompilationMode.Server, _component, set, null,
-            //         $"__cmd_{command.Name}", typeBody) {Namespace = type.GetNamespace()};
-            //
-            //     var clientModule = new ComponentModule(CompilationMode.Client, _component, set, null,
-            //         $"__cmd_{command.Name}", typeBody) {Namespace = type.GetNamespace()};
-            //
-            //
-            //     foreach (var func in typeBody.Functions)
-            //     {
-            //         func.SymbolScope = SymbolScopeBySecurity.User;
-            //     }
-            //
-            //     var cu = new CompilationUnit(null, new List<NamespaceBase>(),
-            //         new List<TypeEntity>() {serverModule, clientModule});
-            //
-            //     root.Add(cu);
-            // }
+            var md = ipType.GetMD<MDEntity>();
+
+            foreach (var command in md.Commands)
+            {
+                var typeBody = ParserHelper.ParseTypeBody(command.Module.ModuleText);
+
+                var serverModule = new ComponentModule(CompilationMode.Server, _component, ipType, null,
+                    $"__cmd_{command.Name}", typeBody) {Namespace = ipType.GetNamespace()};
+
+                var clientModule = new ComponentModule(CompilationMode.Client, _component, ipType, null,
+                    $"__cmd_{command.Name}", typeBody) {Namespace = ipType.GetNamespace()};
+
+                foreach (var func in typeBody.Functions)
+                {
+                    func.SymbolScope = SymbolScopeBySecurity.User;
+                }
+
+                var cu = new CompilationUnit(null, new List<NamespaceBase>(),
+                    new List<TypeEntity>() {serverModule, clientModule});
+
+                root.Add(cu);
+            }
         }
 
         /// <summary>
@@ -139,13 +142,14 @@ namespace ZenPlatform.EntityComponent.Entity
             if (ipType.IsDto)
                 _egDto.GenerateAstTree(ipType, r);
             else if (ipType.IsObject)
+            {
                 _egClass.GenerateAstTree(ipType, r);
+                GenerateCommands(ipType, r);
+            }
             else if (ipType.IsLink)
                 _egLink.GenerateAstTree(ipType, r);
             else if (ipType.IsManager)
                 _egManager.GenerateAstTree(ipType, r);
-
-            // GenerateCommands(type, r);
         }
 
         /// <summary>

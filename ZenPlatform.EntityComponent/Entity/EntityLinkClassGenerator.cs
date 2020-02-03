@@ -45,7 +45,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public static T GetMD<T>(this IPType type)
         {
-            return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.Id)?.Metadata;
+            return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.GroupId)?.Metadata;
         }
     }
 

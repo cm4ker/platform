@@ -41,13 +41,9 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// </summary>
         public string DisplayName { get; set; }
 
-        /*
-         * using Default()
-         *
-         * [ServerCommand]
-         * Module.MyInterestedCommand()
-         */
-
+        /// <summary>
+        /// Программный модуль комманды
+        /// </summary>
         public MDProgramModule Module { get; set; }
 
         /// <summary>
