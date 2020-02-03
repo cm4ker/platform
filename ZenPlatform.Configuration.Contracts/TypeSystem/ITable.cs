@@ -13,6 +13,6 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         
         Guid ParentId { get; set; }
         
-        IEnumerable<IProperty> Properties { get; }
+        IEnumerable<IPProperty> Properties { get; }
     }
 }

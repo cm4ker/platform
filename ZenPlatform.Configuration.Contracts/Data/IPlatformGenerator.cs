@@ -1,7 +1,7 @@
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
-using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 
 namespace ZenPlatform.Configuration.Contracts.Data
 {
@@ -13,23 +13,23 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// <summary>
         ///  Генерация серверного кода
         /// </summary>
-        /// <param name="type">Тип</param>
+        /// <param name="ipType">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageServer(IType type, Node root, SqlDatabaseType dbType);
+        void StageServer(IPType ipType, Node root, SqlDatabaseType dbType);
 
         /// <summary>
         /// Генерация клиентского кода
         /// </summary>
-        /// <param name="type">Тип</param>
+        /// <param name="ipType">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageClient(IType type, Node root, SqlDatabaseType dbType);
+        void StageClient(IPType ipType, Node root, SqlDatabaseType dbType);
 
         /// <summary>
         /// Стадия генерации UI интерфейса для пользователя на клиенте
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="ipType"></param>
         /// <param name="uiNode"></param>
-        void StageUI(IType type, Node uiNode);
+        void StageUI(IPType ipType, Node uiNode);
 
         /// <summary>
         /// Стадия генерации глобального пространства

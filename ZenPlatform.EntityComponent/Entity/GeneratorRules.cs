@@ -25,12 +25,12 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public virtual string DtoPrivateFieldName { get; } = "_dto";
 
-        public virtual string GetDtoClassName(IType obj)
+        public virtual string GetDtoClassName(IPType obj)
         {
             return $"{obj.Name}{DtoPrefix}";
         }
 
-        public virtual string GetEntityClassName(IType obj)
+        public virtual string GetEntityClassName(IPType obj)
         {
             return "";
             

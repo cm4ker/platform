@@ -12,7 +12,6 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.Shared.Tree;
-using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -48,13 +47,13 @@ namespace ZenPlatform.EntityComponent.Entity
             _qm = new QueryMachine();
         }
 
-        public void GenerateAstTree(IType type, Root root)
+        public void GenerateAstTree(IPType ipType, Root root)
         {
-            var className = type.Name + "Manager";
+            var className = ipType.Name;
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
-            var cls = new ComponentModule(CompilationMode.Server, _component, type, null, className,
+            var cls = new ComponentModule(CompilationMode.Server, _component, ipType, null, className,
                 new TypeBody(new List<Member>()));
             cls.Bag = ObjectType.Manager;
 
@@ -69,15 +68,12 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             if (astTree is ComponentModule cm)
             {
-                if (cm.Bag != null && ((ObjectType) cm.Bag) == ObjectType.Manager)
+                if (cm.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
                 {
-                    if (cm.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
-                    {
-                        EmitStructure(cm, builder, dbType);
-                    }
-                    else if (cm.CompilationMode.HasFlag(CompilationMode.Client))
-                    {
-                    }
+                    EmitStructure(cm, builder, dbType);
+                }
+                else if (cm.CompilationMode.HasFlag(CompilationMode.Client))
+                {
                 }
             }
         }
@@ -101,24 +97,23 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void EmitStructure(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            var type = cm.Type;
-            var xcLinkType = type.GetLinkType();
+            var managerType = cm.Type;
+            var pLinkType = managerType.GetLinkType();
+            var pObjectType = managerType.GetObjectType();
 
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
 
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
-            var objectClassName = $"{type.Name}";
-
-            var linkClassName = xcLinkType.Name;
+            var dtoClassName = managerType.GetDtoType().Name;
+            var objectClassName = managerType.GetObjectType().Name;
+            var linkClassName = managerType.GetLinkType().Name;
 
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
-            var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
-            var objectType = ts.FindType($"{@namespace}.{objectClassName}");
-            var linkType = ts.FindType($"{@namespace}.{linkClassName}");
+            var dtoType = ts.FindType($"{@namespace}.{dtoClassName}") ?? throw new Exception("Type not found");
+            var objectType = ts.FindType($"{@namespace}.{objectClassName}") ?? throw new Exception("Type not found");
+            var linkType = ts.FindType($"{@namespace}.{linkClassName}") ?? throw new Exception("Type not found");
 
             builder.DefineMethod("Create", true, true, false)
                 .WithReturnType(objectType);
@@ -134,14 +129,15 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void EmitBody(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            var type = cm.Type;
-            var xcLinkType = type.GetLinkType();
+            var pManagerType = cm.Type;
+            var pObjectType = pManagerType.GetObjectType();
+            var xcLinkType = pManagerType.GetLinkType();
+
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
 
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
-            var objectClassName = $"{type.Name}";
+            var dtoClassName = pManagerType.GetDtoType().Name;
+            var objectClassName = pManagerType.GetObjectType().Name;
 
             var linkClassName = xcLinkType.Name;
 
@@ -216,7 +212,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             dto = gg.DefineLocal(dtoType);
 
-            var q = GetSelectQuery(type);
+            var q = GetSelectQuery(pObjectType);
 
             var compiler = SqlCompillerBase.FormEnum(dbType);
 
@@ -283,6 +279,8 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             var set = cm.Type;
 
+            var pObjectType = set.GetObjectType();
+
             var ts = tb.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
 
@@ -324,14 +322,14 @@ namespace ZenPlatform.EntityComponent.Entity
 
                 rg
                     .LdLoc(cmdLoc)
-                    .LdStr(compiler.Compile(GetUpdateQuery(set)))
+                    .LdStr(compiler.Compile(GetUpdateQuery(pObjectType)))
                     .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
                     .Br(end);
 
                 rg
                     .MarkLabel(narg)
                     .LdLoc(cmdLoc)
-                    .LdStr(compiler.Compile(GetInsertQuery(set)))
+                    .LdStr(compiler.Compile(GetInsertQuery(pObjectType)))
                     .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
                     .MarkLabel(end);
             }
@@ -368,7 +366,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 .Ret();
         }
 
-        private SSyntaxNode GetInsertQuery(IType se)
+        private SSyntaxNode GetInsertQuery(IPType se)
         {
             QueryMachine qm = new QueryMachine();
             qm.bg_query()
@@ -398,7 +396,7 @@ namespace ZenPlatform.EntityComponent.Entity
             return (SSyntaxNode) qm.pop();
         }
 
-        private SSyntaxNode GetUpdateQuery(IType se)
+        private SSyntaxNode GetUpdateQuery(IPType se)
         {
             QueryMachine qm = new QueryMachine();
 
@@ -430,7 +428,7 @@ namespace ZenPlatform.EntityComponent.Entity
             return (SSyntaxNode) qm.pop();
         }
 
-        private SSyntaxNode GetSelectQuery(IType se)
+        private SSyntaxNode GetSelectQuery(IPType se)
         {
             QueryMachine qm = new QueryMachine();
 

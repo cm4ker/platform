@@ -41,7 +41,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
     public class EntityPlatformGenerator : IPlatformGenerator
     {
-        private Dictionary<ZenPlatform.Configuration.Contracts.TypeSystem.IType, IType> _dtoCollections;
+        private Dictionary<ZenPlatform.Configuration.Contracts.TypeSystem.IPType, IType> _dtoCollections;
         private readonly IComponent _component;
         private GeneratorRules _rules;
         private EntityObjectDtoGenerator _egDto;
@@ -53,7 +53,7 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             _component = component;
             _rules = new GeneratorRules(component);
-            _dtoCollections = new Dictionary<ZenPlatform.Configuration.Contracts.TypeSystem.IType, IType>();
+            _dtoCollections = new Dictionary<ZenPlatform.Configuration.Contracts.TypeSystem.IPType, IType>();
 
             _egDto = new EntityObjectDtoGenerator(component);
             _egClass = new EntityObjectClassGenerator(component);
@@ -61,7 +61,7 @@ namespace ZenPlatform.EntityComponent.Entity
             _egManager = new EntityManagerGenerator(component);
         }
 
-        private TypeSyntax GetAstFromPlatformType(ZenPlatform.Configuration.Contracts.TypeSystem.IType pt)
+        private TypeSyntax GetAstFromPlatformType(ZenPlatform.Configuration.Contracts.TypeSystem.IPType pt)
         {
             throw new NotImplementedException();
 
@@ -84,7 +84,7 @@ namespace ZenPlatform.EntityComponent.Entity
             // };
         }
 
-        private void GenerateObjectClassUserModules(ZenPlatform.Configuration.Contracts.TypeSystem.IType type,
+        private void GenerateObjectClassUserModules(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType,
             ComponentClass cls)
         {
             // foreach (var module in type.GetProgramModules())
@@ -103,7 +103,7 @@ namespace ZenPlatform.EntityComponent.Entity
             // }
         }
 
-        private void GenerateLink(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Root root)
+        private void GenerateLink(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
         {
             // var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name,
             //     new TypeBody(new List<Member>())) {Base = "Entity.EntityLink", Namespace = "Entity"};
@@ -115,7 +115,7 @@ namespace ZenPlatform.EntityComponent.Entity
         }
 
 
-        private void GenerateCommands(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Root root)
+        private void GenerateCommands(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
         {
             // var set = type as XCSingleEntity ?? throw new ArgumentException(nameof(type));
             //
@@ -144,30 +144,32 @@ namespace ZenPlatform.EntityComponent.Entity
         /// <summary>
         ///  Генерация серверного кода
         /// </summary>
-        /// <param name="type">Тип</param>
+        /// <param name="ipType">Тип</param>
         /// <param name="root">Корень проекта</param>
         /// <param name="dbType"></param>
-        public void StageServer(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Node root,
-            SqlDatabaseType dbType)
+        public void StageServer(IPType ipType, Node root, SqlDatabaseType dbType)
         {
-            // var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
-            //
-            // _egDto.GenerateAstTree(type, r);
-            // _egLink.GenerateAstTree(type.GetLink(), r);
-            // _egClass.GenerateAstTree(type, r);
-            // _egManager.GenerateAstTree(type, r);
-            //
+            var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
+
+            if (ipType.IsDto)
+                _egDto.GenerateAstTree(ipType, r);
+            else if (ipType.IsObject)
+                _egClass.GenerateAstTree(ipType, r);
+            else if (ipType.IsLink)
+                _egLink.GenerateAstTree(ipType, r);
+            else if (ipType.IsManager)
+                _egManager.GenerateAstTree(ipType, r);
+
             // GenerateCommands(type, r);
         }
 
         /// <summary>
         /// Генерация клиентского кода
         /// </summary>
-        /// <param name="type">Тип</param>
+        /// <param name="ipType">Тип</param>
         /// <param name="node"></param>
         /// <param name="dbType"></param>
-        public void StageClient(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Node node,
-            SqlDatabaseType dbType)
+        public void StageClient(IPType ipType, Node node, SqlDatabaseType dbType)
         {
             // if (node is Root root)
             // {
@@ -178,7 +180,7 @@ namespace ZenPlatform.EntityComponent.Entity
             // }
         }
 
-        private void GenerateClientObjectClass(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Root root)
+        private void GenerateClientObjectClass(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
         {
             // var singleEntityType = type as XCSingleEntity ?? throw new InvalidOperationException(
             //                            $"This component only can serve {nameof(XCSingleEntity)} objects");
@@ -355,46 +357,47 @@ namespace ZenPlatform.EntityComponent.Entity
             // root.Add(cu);
         }
 
-        public void StageUI(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Node node)
+        public void StageUI(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Node node)
         {
             throw new NotImplementedException();
         }
 
         public void StageGlobalVar(IGlobalVarManager manager)
         {
-            // var ts = manager.TypeSystem;
-            //
-            // var root = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "Entity", (n, e) => { });
-            //
-            // foreach (var type in _component.GetTypes())
-            // {
-            //     var mrgName = $"{type.GetNamespace()}.{type.GetManagerName()}";
-            //
-            //     var mrg = ts.FindType(mrgName);
-            //
-            //     var mrgLeaf = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, type.GetObjectName(),
-            //         (n, e) => { });
-            //
-            //     mrgLeaf.Attach(root);
-            //
-            //     var createMethod = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Shared,
-            //         "Create", (n, e) =>
-            //         {
-            //             var call = n as Call ?? throw new Exception("Can't emit function if it is not a call");
-            //             e.EmitCall(mrg.FindMethod("Create"), call.IsStatement);
-            //         });
-            //
-            //     createMethod.Attach(mrgLeaf);
-            // }
-            //
-            // manager.Register(root);
-            //
-            // /*
-            //  * $.Document.Invoice.Create();
-            //  * $.SomeFunction()
-            //  *
-            //  * MyGM.StaticFunction()
-            //  */
+            var ts = manager.TypeSystem;
+
+            var root = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "Entity", (n, e) => { });
+
+            foreach (var type in _component.GetTypes().Where(x => x.IsManager))
+            {
+                var mrgName = $"{type.GetNamespace()}.{type.Name}";
+
+                var mrg = ts.FindType(mrgName);
+
+                var mrgLeaf = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared,
+                    type.GetObjectType().Name,
+                    (n, e) => { });
+
+                mrgLeaf.Attach(root);
+
+                var createMethod = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Shared,
+                    "Create", (n, e) =>
+                    {
+                        var call = n as Call ?? throw new Exception("Can't emit function if it is not a call");
+                        e.EmitCall(mrg.FindMethod("Create"), call.IsStatement);
+                    });
+
+                createMethod.Attach(mrgLeaf);
+            }
+
+            manager.Register(root);
+
+            /*
+             * $.Document.Invoice.Create();
+             * $.SomeFunction()
+             *
+             * MyGM.StaticFunction()
+             */
         }
 
         public void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
@@ -405,19 +408,19 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             if (astTree is ComponentAstBase cc)
             {
-                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Dto)
+                if (cc.Type.IsDto)
                 {
                     _egDto.Stage1(cc, builder, dbType, mode);
                 }
-                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
+                else if (cc.Type.IsObject)
                 {
                     _egClass.Stage1(cc, builder, dbType, mode);
                 }
-                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
+                else if (cc.Type.IsLink)
                 {
                     _egLink.Stage1(cc, builder, dbType, mode);
                 }
-                else if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Manager)
+                else if (cc.Type.IsManager)
                 {
                     _egManager.Stage1(cc, builder, dbType, mode);
                 }
@@ -426,21 +429,21 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
-            if (astTree is ComponentAstBase cc && cc.Bag != null)
+            if (astTree is ComponentAstBase cc)
             {
-                if ((ObjectType) cc.Bag == ObjectType.Dto)
+                if (cc.Type.IsDto)
                 {
                     _egDto.Stage2(cc, builder, dbType, mode);
                 }
-                else if ((ObjectType) cc.Bag == ObjectType.Object)
+                else if (cc.Type.IsObject)
                 {
                     _egClass.Stage2(cc, builder, dbType, mode);
                 }
-                else if ((ObjectType) cc.Bag == ObjectType.Link)
+                else if (cc.Type.IsLink)
                 {
                     _egLink.Stage2(cc, builder, dbType, mode);
                 }
-                else if ((ObjectType) cc.Bag == ObjectType.Manager)
+                else if (cc.Type.IsManager)
                 {
                     _egManager.Stage2(cc, builder, dbType, mode);
                 }

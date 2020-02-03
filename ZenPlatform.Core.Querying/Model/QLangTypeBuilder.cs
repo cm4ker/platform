@@ -17,14 +17,14 @@ namespace ZenPlatform.Core.Querying.Model
             _conf = conf;
         }
 
-        public IType String(int size)
+        public IPType String(int size)
         {
             var spec = _conf.TypeManager.String.GetSpec();
             spec.Size = size;
             return spec;
         }
 
-        public IType Numeric(int scale, int precision)
+        public IPType Numeric(int scale, int precision)
         {
             var spec = _conf.TypeManager.Numeric.GetSpec();
             spec.Scale = scale;
@@ -32,12 +32,12 @@ namespace ZenPlatform.Core.Querying.Model
             return spec;
         }
 
-        public IType Date()
+        public IPType Date()
         {
             return _conf.TypeManager.DateTime;
         }
 
-        public IType Parse(string typeName)
+        public IPType Parse(string typeName)
         {
             if (typeName.Contains("."))
             {

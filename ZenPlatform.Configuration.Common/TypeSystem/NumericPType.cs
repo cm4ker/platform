@@ -1,9 +1,10 @@
 using System;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class NumericType : Type
+    public class NumericPType : PType
     {
         public override uint SystemId => 5;
 
@@ -18,7 +19,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         public override bool IsPrimitive => true;
         public override PrimitiveKind PrimitiveKind => PrimitiveKind.Numeric;
         
-        internal NumericType(ITypeManager ts) : base(ts)
+        internal NumericPType(ITypeManager ts) : base(ts)
         {
         }
     }
