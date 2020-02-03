@@ -15,6 +15,9 @@ namespace ZenPlatform.Configuration.TypeSystem
             get { return "Numeric"; }
         }
 
+        public override bool IsPrimitive => true;
+        public override PrimitiveKind PrimitiveKind => PrimitiveKind.Numeric;
+        
         internal NumericType(ITypeManager ts) : base(ts)
         {
         }

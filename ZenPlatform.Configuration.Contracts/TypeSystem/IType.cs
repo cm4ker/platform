@@ -9,6 +9,8 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         Guid? BaseId { get; set; }
 
+        Guid? GroupId { get; set; }
+
         uint SystemId { get; set; }
 
         string Name { get; set; }
@@ -21,7 +23,9 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         bool IsDto { get; set; }
 
-        bool IsPrimitive { get; set; }
+        bool IsPrimitive { get; }
+
+        PrimitiveKind PrimitiveKind { get; }
 
         bool IsValue { get; set; }
 
@@ -45,5 +49,17 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         Guid ComponentId { get; set; }
 
         ITypeSpec GetSpec();
+    }
+
+    public enum PrimitiveKind
+    {
+        None,
+        String,
+        Int,
+        Binary,
+        Boolean,
+        DateTime,
+        Guid,
+        Numeric,
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using SharpFileSystem.Database;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Logging;
@@ -53,7 +54,7 @@ namespace ZenPlatform.Core.Environment
             Globals = new Dictionary<string, object>();
 
             Managers = new Dictionary<Type, IEntityManager>();
-            Entityes = new Dictionary<Guid, EntityMetadata>();
+          
 
             AuthenticationManager = authenticationManager;
             MigrationManager = migrationManager;
@@ -83,19 +84,19 @@ namespace ZenPlatform.Core.Environment
 
 
             var savedConfiguration = ConfigurationFactory.Create();
-            IXCRoot currentConfiguration = null;
+            IProject currentConfiguration = null;
             ;
             using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
             {
-                var configStorage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
+                var configStorage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME,
                     dataContext);
 
 
-                currentConfiguration = XCRoot.Load(configStorage);
+                currentConfiguration = ZenPlatform.Configuration.Structure.Project.Load(configStorage);
 
                 if (currentConfiguration == null)
                 {
-                    currentConfiguration = new XCRoot();
+                    currentConfiguration = new ZenPlatform.Configuration.Structure.Project();
                 }
             }
 
@@ -106,7 +107,7 @@ namespace ZenPlatform.Core.Environment
                 MigrationManager.Migrate(currentConfiguration, savedConfiguration);
 
 
-                var storage = new XCDatabaseStorage(DatabaseConstantNames.CONFIG_TABLE_NAME,
+                var storage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME,
                     this.DataContextManager.GetContext());
 
                 savedConfiguration.Save(storage);
@@ -165,10 +166,6 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         public Dictionary<string, object> Globals { get; set; }
 
-        /// <summary>
-        /// Сущности
-        /// </summary>
-        public IDictionary<Guid, EntityMetadata> Entityes { get; }
 
         /// <summary>
         /// Менеджеры
@@ -254,43 +251,6 @@ namespace ZenPlatform.Core.Environment
             }
 
             throw new Exception($"Manager for type {type.Name} not found");
-        }
-
-        /// <summary>
-        /// Зарегистрировать метаданные сущности
-        /// </summary>
-        /// <param name="metadata"></param>
-        public void RegisterEntity(EntityMetadata metadata)
-        {
-            Entityes.Add(metadata.Key, metadata);
-        }
-
-
-        /// <summary>
-        /// Получить метаданные сущности по её ключу
-        /// </summary>
-        /// <param name="key">Ключ типа сущности</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public EntityMetadata GetMetadata(Guid key)
-        {
-            if (Entityes.TryGetValue(key, out var entityDefinition))
-            {
-                return entityDefinition;
-            }
-
-            throw new Exception($"Entity definition {key} not found");
-        }
-
-        /// <summary>
-        /// Получить описание по типу
-        /// </summary>
-        /// <param name="type">Типом может быть объект DTO или объект Entity</param>
-        /// <returns></returns>
-        public EntityMetadata GetMetadata(Type type)
-        {
-            var entityDefinition = Entityes.First(x => x.Value.EntityType == type || x.Value.DtoType == type).Value;
-            return entityDefinition;
         }
     }
 }

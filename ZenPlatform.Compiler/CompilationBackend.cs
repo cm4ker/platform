@@ -37,11 +37,11 @@ namespace ZenPlatform.Compiler
 
     public class CompilationBackend : ICompilationBackend
     {
-        private readonly IXCRoot _root;
+        private readonly IProject _project;
 
-        public CompilationBackend(IXCRoot root)
+        public CompilationBackend(IProject project)
         {
-            _root = root;
+            _project = project;
         }
         
         /// <summary>
@@ -78,7 +78,7 @@ namespace ZenPlatform.Compiler
             AstScopeRegister.Apply(module);
 
             var prm = new GeneratorParameters(new List<CompilationUnit> {module}, ab, CompilationMode.Client,
-                SqlDatabaseType.SqlServer, _root);
+                SqlDatabaseType.SqlServer, _project);
 
             Generator g = new Generator(prm);
 

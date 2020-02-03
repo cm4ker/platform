@@ -14,6 +14,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         private List<ITable> _tables;
         private List<IComponent> _components;
         private List<IObjectSetting> _objectSettings;
+        private List<Metadata> _metadatas;
 
         private IntType _intType;
         private DateTimeType _dateTimeType;
@@ -22,6 +23,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         private BooleanType _booleanType;
         private GuidType _guidType;
         private NumericType _numericType;
+
 
         public TypeManager()
         {
@@ -53,6 +55,8 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public IReadOnlyList<IObjectSetting> Settings => _objectSettings;
 
+        public IReadOnlyList<Metadata> Metadatas => _metadatas;
+
         public void Register(IType type)
         {
             if (_types.Exists(x => x.Id == type.Id))
@@ -77,6 +81,11 @@ namespace ZenPlatform.Configuration.TypeSystem
         public void Register(IComponent component)
         {
             _components.Add(component);
+        }
+
+        public void Register(Metadata md)
+        {
+            _metadatas.Add(md);
         }
 
         public IComponent Component()

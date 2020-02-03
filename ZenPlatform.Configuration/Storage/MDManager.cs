@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SharpFileSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -10,50 +11,31 @@ namespace ZenPlatform.Configuration.Storage
 {
     public class MDManager : ILoader, IXCSaver
     {
-        private IXCConfigurationStorage _storage;
+        private IFileSystem _storage;
         private ITypeManager _typeManager;
 
-        public MDManager(IXCConfigurationStorage storage, ITypeManager typeManager)
+        public MDManager(IFileSystem storage, ITypeManager typeManager)
         {
             _storage = storage;
             _typeManager = typeManager;
         }
 
 
-        public IXCConfigurationStorage Storage => _storage;
+        public IFileSystem Storage => _storage;
 
-        public IUniqueCounter Counter => _storage;
+        public IUniqueCounter Counter => null;
 
-        public ISettingsManager Settings => _storage;
+        public ISettingsManager Settings => null;
 
         public ITypeManager TypeManager => _typeManager;
 
-        public T LoadObject<T, C>(string path, bool loadTree = true)
-            where
-            T : class, IMetaDataItem<C>, new()
-            where
-            C : IMDItem
+        public T LoadObject<T>(string path)
         {
             try
             {
-                using (var stream = _storage.GetBlob("", path))
+                using (var stream = _storage.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
                 {
-                    var config = XCHelper.DeserializeFromStream<C>(stream);
-
-                    T result;
-
-                    if (config.GetType() == typeof(T))
-                        result = config as T;
-                    else
-                        result = new T();
-
-                    if (result == null)
-                        throw new Exception("The result is null");
-
-                    if (loadTree)
-                        result.Initialize(this, config);
-
-                    return result;
+                    return XCHelper.DeserializeFromStream<T>(stream);
                 }
             }
             catch
@@ -64,7 +46,7 @@ namespace ZenPlatform.Configuration.Storage
 
         public byte[] LoadBytes(string path)
         {
-            using (var stream = _storage.GetBlob("", path))
+            using (var stream = _storage.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
             {
                 var memoryStream = new MemoryStream();
                 stream.CopyTo(memoryStream);
@@ -73,18 +55,16 @@ namespace ZenPlatform.Configuration.Storage
             }
         }
 
-        public void SaveObject<T>(string path, IMetaDataItem<T> item)
-            where
-            T : IMDItem
+        public void SaveObject(string path, object obj)
         {
-            var config = item.Store(this);
-
-            _storage.SaveBlob("", path, config.SerializeToStream());
+            using (var stream = _storage.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                obj.SerializeToStream().CopyTo(stream);
         }
 
         public void SaveBytes(string path, byte[] data)
         {
-            _storage.SaveBlob("", path, new MemoryStream(data));
+            using (var stream = _storage.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+                stream.Write(data, 0, data.Length);
         }
     }
 }

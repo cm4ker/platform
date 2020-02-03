@@ -11,9 +11,9 @@ namespace ZenPlatform.IdeIntegration.Server.Infrastructure
 {
     public class ConfigurationMessageHandler : IMessageHandler
     {
-        private readonly XCRoot _conf;
+        private readonly Project _conf;
 
-        public ConfigurationMessageHandler(XCRoot conf)
+        public ConfigurationMessageHandler(Project conf)
         {
             _conf = conf;
         }

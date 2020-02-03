@@ -18,7 +18,7 @@ namespace ZenPlatform.Compiler.Generation
         private readonly ITypeSystem _ts;
         private readonly CompilationMode _mode;
 
-        private readonly IXCRoot _conf;
+        private readonly IProject _conf;
 
 
         private List<CompilationUnit> _cus;

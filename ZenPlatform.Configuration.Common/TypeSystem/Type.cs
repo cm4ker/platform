@@ -21,6 +21,8 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public virtual Guid? BaseId { get; set; }
 
+        public virtual Guid? GroupId { get; set; }
+
         public virtual Guid ComponentId { get; set; }
 
         public virtual uint SystemId { get; set; }
@@ -35,7 +37,9 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public virtual bool IsDto { get; set; }
 
-        public virtual bool IsPrimitive { get; set; }
+        public virtual bool IsPrimitive => false;
+
+        public virtual PrimitiveKind PrimitiveKind => PrimitiveKind.None;
 
         public virtual bool IsValue { get; set; }
 

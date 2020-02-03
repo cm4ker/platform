@@ -16,6 +16,7 @@
     <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FS\SharpFileSystem.Database\SharpFileSystem.Database.csproj" />
     <ProjectReference Include="..\ZenPlatform.Core.Querying\ZenPlatform.Core.Querying.csproj" />
     <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
     <ProjectReference Include="..\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj" />

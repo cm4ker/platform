@@ -13,9 +13,32 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
 using IProperty = ZenPlatform.Compiler.Contracts.IProperty;
+using IType = ZenPlatform.Compiler.Contracts.IType;
+using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
+    public static class EntityComponentHelper
+    {
+        public static ZenPlatform.Configuration.Contracts.TypeSystem.IType GetDtoType(
+            this ZenPlatform.Configuration.Contracts.TypeSystem.IType type)
+        {
+            return type.TypeManager.Types.FirstOrDefault(x => x.IsDto && x.GroupId == type.GroupId);
+        }
+
+        public static ZenPlatform.Configuration.Contracts.TypeSystem.IType GetManagerType(
+            this ZenPlatform.Configuration.Contracts.TypeSystem.IType type)
+        {
+            return type.TypeManager.Types.FirstOrDefault(x => x.IsManager && x.GroupId == type.GroupId);
+        }
+
+        public static ZenPlatform.Configuration.Contracts.TypeSystem.IType GetLinkType(
+            this ZenPlatform.Configuration.Contracts.TypeSystem.IType type)
+        {
+            return type.TypeManager.Types.FirstOrDefault(x => x.IsLink && x.GroupId == type.GroupId);
+        }
+    }
+
     public class EntityLinkClassGenerator
     {
         private readonly IComponent _component;
@@ -25,14 +48,15 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(IXCLinkType type, Root root)
+        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Root root)
         {
             var className = type.Name;
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, className,
-                new TypeBody(new List<Member>())) {Base = "Entity.EntityLink", Namespace = type.ParentType.GetNamespace()};
+                    new TypeBody(new List<Member>()))
+                {Base = "Entity.EntityLink", Namespace = type.GetNamespace()};
 
             cls.Namespace = @namespace;
             cls.Bag = ObjectType.Link;
@@ -79,12 +103,11 @@ namespace ZenPlatform.EntityComponent.Entity
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = cc.Type;
-            var set = cc.Type as XCSingleEntityLink ??
-                      throw new Exception("This component can generate only SingleEntity");
+            var set = cc.Type ?? throw new Exception("This component can generate only SingleEntity");
+            var mrgType = type.GetManagerType();
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{set.ParentType.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+            var dtoClassName = type.GetDtoType().Name;
 
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
@@ -93,24 +116,24 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var dtoPrivate = builder.FindField("_dto") ?? throw new Exception("You must declare private field _dto");
 
-            foreach (var prop in set.GetProperties())
+            foreach (var prop in type.Properties)
             {
                 bool propertyGenerated = false;
 
                 var propName = prop.Name;
 
-                var propType = (prop.Types.Count > 1)
+                var propType = (prop.Types.Count() > 1)
                     ? sb.Object
-                    : prop.Types[0].ConvertType(sb);
+                    : prop.Types.First().ConvertType(sb);
 
                 var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
                 var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
 
                 // var valueParam = propBuilder.setMethod.Parameters[0];
 
-                if (prop.Types.Count > 1)
+                if (prop.Types.Count() > 1)
                 {
-                    var typeField = prop.GetPropertySchemas(prop.Name)
+                    var typeField = prop.GetObjSchema()
                         .First(x => x.SchemaType == XCColumnSchemaType.Type);
                     var dtoTypeProp = dtoType.FindProperty(typeField.FullName);
 
@@ -118,14 +141,14 @@ namespace ZenPlatform.EntityComponent.Entity
                     {
                         XCColumnSchemaDefinition dtoPropSchema;
 
-                        if (ctype is IXCLinkType)
+                        if (ctype.IsLink)
                         {
-                            dtoPropSchema = prop.GetPropertySchemas(prop.Name)
+                            dtoPropSchema = prop.GetObjSchema()
                                 .First(x => x.SchemaType == XCColumnSchemaType.Ref);
                         }
                         else
                         {
-                            dtoPropSchema = prop.GetPropertySchemas(prop.Name).First(x => x.PlatformType == ctype);
+                            dtoPropSchema = prop.GetObjSchema().First(x => x.PlatformType == ctype);
                         }
 
                         var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
@@ -139,7 +162,7 @@ namespace ZenPlatform.EntityComponent.Entity
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .EmitCall(dtoTypeProp.Getter)
-                            .LdcI4((int) ctype.Id)
+                            .LdcI4((int) ctype.SystemId)
                             .BneUn(label)
                             .LdArg_0()
                             .LdFld(dtoPrivate)
@@ -163,7 +186,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 {
                     if (!prop.IsSelfLink)
                     {
-                        var schema = prop.GetPropertySchemas(prop.Name)
+                        var schema = prop.GetObjSchema()
                             .First(x => x.SchemaType == XCColumnSchemaType.NoSpecial);
 
                         var dtofield = dtoType.FindProperty(schema.FullName);
@@ -176,7 +199,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                     else
                     {
-                        var mrg = ts.FindType($"{@namespace}.{set.ParentType.Name}Manager");
+                        var mrg = ts.FindType($"{@namespace}.{mrgType.Name}");
                         var mrgGet = mrg.FindMethod("Get", sb.Guid);
 
                         getBuilder
@@ -192,12 +215,9 @@ namespace ZenPlatform.EntityComponent.Entity
         public void EmitStructure(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = cc.Type;
-            var set = cc.Type as XCSingleEntityLink ??
-                      throw new Exception("This component can generate only SingleEntity");
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{set.ParentType.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+            var dtoClassName = type.GetDtoType().Name;
 
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
@@ -217,15 +237,15 @@ namespace ZenPlatform.EntityComponent.Entity
                 .StFld(dtoPrivate)
                 .Ret();
 
-            foreach (var prop in set.GetProperties())
+            foreach (var prop in type.Properties)
             {
                 bool propertyGenerated = false;
 
                 var propName = prop.Name;
 
-                var propType = (prop.Types.Count > 1)
+                var propType = (prop.Types.Count() > 1)
                     ? sb.Object
-                    : prop.Types[0].ConvertType(sb);
+                    : prop.Types.First().ConvertType(sb);
 
                 IProperty baseProp = null;
 

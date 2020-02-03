@@ -16,20 +16,14 @@ namespace ZenPlatform.QueryBuilder.Builders
         {
             _createTable = new CreateTable()
             {
-                Table = new Table() { Value = tableName }
+                Table = new Table() {Value = tableName}
             };
-
-
-            
         }
 
         public CreateTableBuilder(CreateTable createTable)
         {
             _createTable = createTable;
-
         }
-
-
 
         public CreateTableBuilder WithColumnDefinition(ColumnDefinition column)
         {
@@ -51,13 +45,20 @@ namespace ZenPlatform.QueryBuilder.Builders
         {
             _currentColumn = new ColumnDefinition()
             {
-                Column = new Column() { Value = columnName }
+                Column = new Column() {Value = columnName}
             };
 
             _createTable.Columns.Add(_currentColumn);
 
             return this;
         }
+
+        public CreateTableBuilder CheckExists()
+        {
+            _createTable.CheckExists = true;
+            return this;
+        }
+
 
         public override void SetType(ColumnType columnType)
         {

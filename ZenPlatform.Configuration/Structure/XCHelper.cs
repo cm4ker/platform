@@ -102,9 +102,9 @@ namespace ZenPlatform.Configuration.Structure
 
         }
 
-        public static string GetHash(this IXCRoot root)
+        public static string GetHash(this Contracts.IProject project)
         {
-            return HashHelper.HashMD5(root.SerializeToStream());
+            return HashHelper.HashMD5(project.SerializeToStream());
         }
     }
 }

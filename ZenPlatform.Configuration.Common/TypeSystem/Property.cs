@@ -23,6 +23,8 @@ namespace ZenPlatform.Configuration.TypeSystem
         public bool IsSelfLink { get; set; }
 
         public bool IsSystem { get; set; }
+        
+        public bool IsUnique { get; set; }
 
         public bool IsReadOnly { get; set; }
 
