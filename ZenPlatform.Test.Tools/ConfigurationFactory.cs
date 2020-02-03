@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Xml.Serialization;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Common;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
 using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 
@@ -19,8 +18,25 @@ namespace ZenPlatform.Test.Tools
 
         public static Project Create()
         {
-            return null;
-            
+            var projectMd = new ProjectMD();
+            var manager = new MDManager(new TypeManager(), new InMemoryUniqueCounter());
+            var project = new Project(projectMd, manager);
+
+            var ce = new ComponentEditor(project);
+            var store = ce.CreateObject();
+            store.Name = "Store";
+            var prop1 = store.CreateProperty();
+            prop1.Name = "Property1";
+
+            prop1.SetType(MDTypes.DateTime)
+                .SetType(MDTypes.Int)
+                .SetType(MDTypes.Boolean)
+                .SetType(MDTypes.Numeric(10, 2))
+                .SetType(store.GetRef());
+
+            ce.Apply();
+
+            return project;
 //             var root = new Project(new TypeManager());
 //
 //             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
@@ -171,7 +187,7 @@ namespace ZenPlatform.Test.Tools
         public static Project CreateChangedExampleConfiguration()
         {
             return null;
-            
+
 //             var root = new Project();
 //
 //             root.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");

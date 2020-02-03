@@ -3,6 +3,7 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.DataComponent;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
+using ZenPlatform.EntityComponent.Migrations;
 using ZenPlatform.EntityComponent.QueryBuilders;
 using ZenPlatform.EntityComponent.UIGenerations;
 
@@ -26,9 +27,9 @@ namespace ZenPlatform.EntityComponent
 
             Generator = new EntityPlatformGenerator(Component); // new StagedGeneratorAst(Component);
 
-            //Migrator = new SingleEntityMigrator();
+            Migrator = new SingleEntityMigrator();
 
-            Loader = new ComponentLoader();
+            Loader = new ComponentManager();
         
             RegisterSupportedTypes();
             RegisterCodeRules();

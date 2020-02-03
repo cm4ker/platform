@@ -8,7 +8,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// Реквизит может быть нескольких типов одновременно
     /// Это перечисление представляет все типы колонок которые могут быть 
     /// </summary>
-    public enum XCColumnSchemaType
+    public enum ColumnSchemaType
     {
         /// <summary>
         /// Не специализированная колонка. Говорит о том, что значение одно
@@ -34,9 +34,9 @@ namespace ZenPlatform.Configuration.Contracts
     /// <summary>
     /// Описывает тип и название колонки
     /// </summary>
-    public class XCColumnSchemaDefinition
+    public class ColumnSchemaDefinition
     {
-        public XCColumnSchemaDefinition(XCColumnSchemaType schemaType, IType platformType, string name,
+        public ColumnSchemaDefinition(ColumnSchemaType schemaType, IType platformType, string name,
             string prefix = "", string postfix = "")
         {
             SchemaType = schemaType;
@@ -49,7 +49,7 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Тип колонки
         /// </summary>
-        public XCColumnSchemaType SchemaType { get; set; }
+        public ColumnSchemaType SchemaType { get; set; }
 
         /// <summary>
         /// Полное название

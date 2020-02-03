@@ -1,15 +1,14 @@
-﻿using ZenPlatform.Configuration.Contracts.TypeSystem;
+﻿using SharpFileSystem;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.Contracts.Store
 {
-    public interface ILoader
+    public interface IInfrastructure
     {
-        T LoadObject<T>(string path);
-
-        byte[] LoadBytes(string path);
-
         IUniqueCounter Counter { get; }
+
         ITypeManager TypeManager { get; }
+
         ISettingsManager Settings { get; }
     }
 }

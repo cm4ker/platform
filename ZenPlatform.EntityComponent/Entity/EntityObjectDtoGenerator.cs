@@ -116,7 +116,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 if (prop.IsSelfLink) continue;
 
 
-                if (string.IsNullOrEmpty(prop.Metadata.DatabaseColumnName))
+                if (string.IsNullOrEmpty(prop.GetSettings().DatabaseName))
                 {
                     throw new Exception(
                         $"Prop: {prop.Name} ObjectType: {"Empty"} Name: {set.Name}. Database column is empty!");
@@ -125,10 +125,10 @@ namespace ZenPlatform.EntityComponent.Entity
                 if (prop.Types.Count() > 1)
                 {
                     var clsSchema = prop.GetObjSchema()
-                        .First(x => x.SchemaType == XCColumnSchemaType.Type);
+                        .First(x => x.SchemaType == ColumnSchemaType.Type);
 
                     var dbSchema = prop.GetDbSchema()
-                        .First(x => x.SchemaType == XCColumnSchemaType.Type);
+                        .First(x => x.SchemaType == ColumnSchemaType.Type);
 
 
                     var propBuilder = builder.DefinePropertyWithBackingField(clsSchema.PlatformType.ConvertType(sb),
@@ -147,14 +147,14 @@ namespace ZenPlatform.EntityComponent.Entity
                         var dbColName = prop
                             .GetDbSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                            ? XCColumnSchemaType.Value
-                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == ctype).FullName;
+                                            ? ColumnSchemaType.Value
+                                            : ColumnSchemaType.NoSpecial) && x.PlatformType == ctype).FullName;
 
                         var propName = prop
                             .GetObjSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                            ? XCColumnSchemaType.Value
-                                            : XCColumnSchemaType.NoSpecial) && x.PlatformType == ctype).FullName;
+                                            ? ColumnSchemaType.Value
+                                            : ColumnSchemaType.NoSpecial) && x.PlatformType == ctype).FullName;
 
                         IType propType = ctype.ConvertType(sb);
 
@@ -179,14 +179,14 @@ namespace ZenPlatform.EntityComponent.Entity
                             var dbColName = prop
                                 .GetDbSchema()
                                 .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                                ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial)).FullName;
+                                                ? ColumnSchemaType.Ref
+                                                : ColumnSchemaType.NoSpecial)).FullName;
 
                             var propName = prop
                                 .GetObjSchema()
                                 .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                                ? XCColumnSchemaType.Ref
-                                                : XCColumnSchemaType.NoSpecial)).FullName;
+                                                ? ColumnSchemaType.Ref
+                                                : ColumnSchemaType.NoSpecial)).FullName;
 
                             var propBuilder = builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
 
