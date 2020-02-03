@@ -1,3 +1,4 @@
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Core.Querying.Model;
 
 namespace ZenPlatform.Core.Querying
@@ -33,7 +34,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
-            node.SetDbNameIfEmpty($"{node.Property.Metadata.DatabaseColumnName}");
+            node.SetDbNameIfEmpty($"{node.Property.GetSettings().DatabaseName}");
             return base.VisitQSourceFieldExpression(node);
         }
 

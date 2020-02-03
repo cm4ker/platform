@@ -19,7 +19,7 @@ using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using IComponent = ZenPlatform.Configuration.Contracts.TypeSystem.IComponent;
-using MDType = ZenPlatform.Configuration.Structure.Data.Types.MDType;
+using MDType = ZenPlatform.Configuration.Common.MDType;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {
@@ -77,15 +77,7 @@ namespace ZenPlatform.Configuration.Structure.Data
      </Project>
      */
 
-
-    public class ComponentRef : IComponentRef
+    public class MDComponent
     {
-        public string Name { get; set; }
-        public string Entry { get; set; }
-    }
-
-    public class MDComponent : IMDComponent
-    {
-        public List<string> EntityReferences { get; set; }
     }
 }

@@ -9,17 +9,17 @@ namespace ZenPlatform.Migration
 {
     public class EntityMigrationScope : List<IEntityMigrationItem>, IEntityMigrationScope
     {
-        public void AddColumn(XCColumnSchemaDefinition schema, string tableName)
+        public void AddColumn(ColumnSchemaDefinition schema, string tableName)
         {
             Add(new AddColumnItem(schema, tableName));
         }
 
-        public void AlterColumn(XCColumnSchemaDefinition schema, string tableName)
+        public void AlterColumn(ColumnSchemaDefinition schema, string tableName)
         {
             Add(new AlterColumnItem(schema, tableName));
         }
 
-        public void DeleteColumn(XCColumnSchemaDefinition schema, string tableName)
+        public void DeleteColumn(ColumnSchemaDefinition schema, string tableName)
         {
             Add(new DeleteColumnItem(schema, tableName));
         }
@@ -29,7 +29,7 @@ namespace ZenPlatform.Migration
             Add(new UpdateTypeItem(property, tableName, type));
         }
 
-        public void RenameColumn(XCColumnSchemaDefinition src, XCColumnSchemaDefinition dst, string tableName)
+        public void RenameColumn(ColumnSchemaDefinition src, ColumnSchemaDefinition dst, string tableName)
         {
             Add(new RenameColumnItem(src, dst, tableName));
         }
@@ -45,7 +45,7 @@ namespace ZenPlatform.Migration
             Add(new RenameTableItem(src, dst));
         }
 
-        public void CreateTable(string tableName, IEnumerable<XCColumnSchemaDefinition> schemaDefinitions)
+        public void CreateTable(string tableName, IEnumerable<ColumnSchemaDefinition> schemaDefinitions)
         {
             Add(new CreateTableItem(tableName, schemaDefinitions));
         }

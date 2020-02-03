@@ -38,7 +38,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
             _field = field;
         }
 
-        private void EmitColumn(Func<XCColumnSchemaDefinition, bool> criteria)
+        private void EmitColumn(Func<ColumnSchemaDefinition, bool> criteria)
         {
             var res = HandleIntermediate(_field);
 
@@ -61,17 +61,17 @@ namespace ZenPlatform.Core.Querying.Optimizers
 
         public override void EmitTypeColumn()
         {
-            EmitColumn(x => x.SchemaType == XCColumnSchemaType.Type);
+            EmitColumn(x => x.SchemaType == ColumnSchemaType.Type);
         }
 
         public override void EmitValueColumn(IType type)
         {
-            EmitColumn(x => x.SchemaType == XCColumnSchemaType.Value && x.PlatformType.IsAssignableFrom(type));
+            EmitColumn(x => x.SchemaType == ColumnSchemaType.Value && x.PlatformType.IsAssignableFrom(type));
         }
 
         public override void EmitRefColumn()
         {
-            EmitColumn(x => x.SchemaType == XCColumnSchemaType.Ref);
+            EmitColumn(x => x.SchemaType == ColumnSchemaType.Ref);
         }
     }
 }

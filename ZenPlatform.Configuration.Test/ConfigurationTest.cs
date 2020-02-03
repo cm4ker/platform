@@ -5,15 +5,23 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
 using System.Linq;
 using SharpFileSystem.FileSystems;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Data;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Configuration.Test
 {
     public class ConfigurationTest
     {
+        [Fact]
+        public void ExampleConfNotNull()
+        {
+            Assert.NotNull(ConfigurationFactory.Create());
+        }
+
         [Fact]
         public void EqualsExampleCofiguration()
         {
@@ -23,23 +31,14 @@ namespace ZenPlatform.Configuration.Test
         [Fact]
         public void SaveAndLoadCofigurationRepeatedly()
         {
-            IProject config = ConfigurationFactory.Create();
-            
+            IProject expect = ConfigurationFactory.Create();
+            IProject actual;
+            var storage = new MemoryFileSystem();
 
+            expect.Save(storage);
+            actual = Project.Load(new MDManager(new TypeManager(), new InMemoryUniqueCounter()), storage);
 
-            for (int i =0; i<2; i++)
-            {
-
-                var storage = new MemoryFileSystem();
-                config.Save(storage);
-
-                config = Structure.Project.Load(storage);
-            }
-           
-
-
-            var configOriginal = ConfigurationFactory.Create();
-            EqualsConfiguration(config, configOriginal);
+            Assert.Equal(expect, actual);
         }
 
         [Fact]
@@ -62,7 +61,6 @@ namespace ZenPlatform.Configuration.Test
         [Fact]
         public void DatabaseStorage()
         {
-
             return;
             // var configuration = ConfigurationFactory.Create();
             //
@@ -80,7 +78,6 @@ namespace ZenPlatform.Configuration.Test
             //
             //     EqualsConfiguration(configuration, loadedConfiguration);
             // }
-
         }
 
 
@@ -104,7 +101,6 @@ namespace ZenPlatform.Configuration.Test
             //
             // Directory.Delete(path, true);
         }
-
 
 
         private void EqualsConfiguration(IProject l, IProject r)

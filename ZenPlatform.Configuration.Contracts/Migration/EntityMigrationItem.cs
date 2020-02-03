@@ -14,10 +14,10 @@ namespace ZenPlatform.Configuration.Contracts.Migration
 
     public class AddColumnItem : IEntityMigrationItem
     {
-        public XCColumnSchemaDefinition Schema { get; }
+        public ColumnSchemaDefinition Schema { get; }
         public string TableName { get; }
 
-        public AddColumnItem(XCColumnSchemaDefinition schema, string tableName)
+        public AddColumnItem(ColumnSchemaDefinition schema, string tableName)
         {
             Schema = schema;
             TableName = tableName;
@@ -31,10 +31,10 @@ namespace ZenPlatform.Configuration.Contracts.Migration
 
     public class AlterColumnItem : IEntityMigrationItem
     {
-        public XCColumnSchemaDefinition Schema { get; }
+        public ColumnSchemaDefinition Schema { get; }
         public string TableName { get; }
 
-        public AlterColumnItem(XCColumnSchemaDefinition schema, string tableName)
+        public AlterColumnItem(ColumnSchemaDefinition schema, string tableName)
         {
             Schema = schema;
             TableName = tableName;
@@ -48,10 +48,10 @@ namespace ZenPlatform.Configuration.Contracts.Migration
 
     public class DeleteColumnItem : IEntityMigrationItem
     {
-        public XCColumnSchemaDefinition Schema { get; }
+        public ColumnSchemaDefinition Schema { get; }
         public string TableName { get; }
 
-        public DeleteColumnItem(XCColumnSchemaDefinition schema, string tableName)
+        public DeleteColumnItem(ColumnSchemaDefinition schema, string tableName)
         {
             Schema = schema;
             TableName = tableName;
@@ -85,12 +85,12 @@ namespace ZenPlatform.Configuration.Contracts.Migration
 
     public class RenameColumnItem : IEntityMigrationItem
     {
-        public XCColumnSchemaDefinition SrcSchema { get; }
-        public XCColumnSchemaDefinition DstSchema { get; }
+        public ColumnSchemaDefinition SrcSchema { get; }
+        public ColumnSchemaDefinition DstSchema { get; }
 
         public string TableName { get; }
 
-        public RenameColumnItem(XCColumnSchemaDefinition src, XCColumnSchemaDefinition dst, string tableName)
+        public RenameColumnItem(ColumnSchemaDefinition src, ColumnSchemaDefinition dst, string tableName)
         {
             SrcSchema = src;
             DstSchema = dst;
@@ -156,13 +156,13 @@ namespace ZenPlatform.Configuration.Contracts.Migration
     public class CreateTableItem : IEntityMigrationItem
     {
         public string TableName { get; }
-        public IEnumerable<XCColumnSchemaDefinition> SchemaDefinitions;
+        public IEnumerable<ColumnSchemaDefinition> SchemaDefinitions;
 
         public CreateTableItem()
         {
         }
 
-        public CreateTableItem(string tableName, IEnumerable<XCColumnSchemaDefinition> schemaDefinitions)
+        public CreateTableItem(string tableName, IEnumerable<ColumnSchemaDefinition> schemaDefinitions)
         {
             TableName = tableName;
             SchemaDefinitions = schemaDefinitions;
