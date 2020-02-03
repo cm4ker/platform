@@ -28,6 +28,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             _md = new MDComponent();
             _mrg = new ComponentManager();
             _objs = new List<ObjectEditor>();
+            
+            _entry = FileSystemPath.Root.AppendFile("Entity");
         }
 
         public ComponentEditor(IProject proj, MDComponent com, IFileSystem fs) : this(proj)
@@ -55,7 +57,10 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public void Apply()
         {
-            _proj.ComponentReferences.Add(new ComponentRef {Entry = Entry.ToString(), Name = "Entity"});
+            var comRef = new ComponentRef {Entry = Entry.ToString(), Name = "Entity"};
+            _proj.ComponentReferences.Add(comRef);
+            _proj.Attach(comRef, _mrg);
+            
             _com = _mrg.CreateAndRegisterComponent(_inf, _md);
 
             foreach (var objectBuilder in _objs)

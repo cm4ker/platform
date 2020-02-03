@@ -39,7 +39,7 @@ namespace ZenPlatform.Configuration.Structure
         private ITypeManager _manager;
 
         private List<IComponentEditor> _editors;
-        private List<IComponentManager> _managers;
+        private Dictionary<IComponentRef, IComponentManager> _managers;
 
         private static FileSystemPath DefaultPath = FileSystemPath.Root.AppendFile("Project");
 
@@ -55,6 +55,7 @@ namespace ZenPlatform.Configuration.Structure
             _inf = inf;
             ProjectId = Guid.NewGuid();
             _manager = inf.TypeManager;
+            _managers = new Dictionary<IComponentRef, IComponentManager>();
         }
 
         /// <summary>
@@ -103,25 +104,17 @@ namespace ZenPlatform.Configuration.Structure
         {
             var pkgFolder = "packages";
 
-            foreach (var reference in _md.ComponentReferences)
+            foreach (var mrg in _managers)
             {
-                var asmPath = Path.Combine(FileSystemPath.Root.ToString(), pkgFolder, $"{reference.Name}.dll");
-
-                var asm = Assembly.Load(fileSystem.GetBytes(asmPath) ??
-                                        throw new Exception($"Unknown reference {reference.Name}"));
-
-                var loaderType = asm.GetTypes()
-                                     .FirstOrDefault(x =>
-                                         x.IsPublic && !x.IsAbstract &&
-                                         x.GetInterfaces().Contains(typeof(IComponentManager))) ??
-                                 throw new Exception("Invalid component");
-
-                var manager = (IComponentManager) Activator.CreateInstance(loaderType);
-
-                manager.Save(_inf, reference, fileSystem);
+                mrg.Value.Save(_inf, mrg.Key, fileSystem);
             }
 
             fileSystem.Serialize(DefaultPath.ToString(), _md);
+        }
+
+        public void Attach(IComponentRef comRef, IComponentManager mrg)
+        {
+            _managers.Add(comRef, mrg);
         }
 
         public void Load(IFileSystem fileSystem)
@@ -145,6 +138,8 @@ namespace ZenPlatform.Configuration.Structure
                                  throw new Exception("Invalid component");
 
                 var manager = (IComponentManager) Activator.CreateInstance(loaderType);
+
+                Attach(reference, manager);
 
                 var editor = manager.Load(this, reference, fileSystem);
 

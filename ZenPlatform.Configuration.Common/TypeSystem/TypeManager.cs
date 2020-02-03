@@ -34,6 +34,8 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
             _tables = new List<ITable>();
             _components = new List<IComponent>();
             _objectSettings = new List<IObjectSetting>();
+            _metadatas = new List<MetadataRow>();
+
 
             _types.Add(Int);
             _types.Add(DateTime);
@@ -92,9 +94,9 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
             _components.Add(component);
         }
 
-        public void Register(MetadataRow md)
+        public void AddMD(Guid id, Guid parentId, object metadata)
         {
-            _metadatas.Add(md);
+            _metadatas.Add(new MetadataRow {Id = id, ParentId = parentId, Metadata = metadata});
         }
 
         public IComponent Component()
