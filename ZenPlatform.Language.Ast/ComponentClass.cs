@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Compiler.Contracts;
+﻿using System;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -19,6 +20,8 @@ namespace ZenPlatform.Language.Ast
         public IPType Type { get; }
 
         public object Bag { get; set; }
+
+        public Func<ITypeSystem, IType> BaseTypeSelector { get; set; }
 
         public ComponentAstBase(CompilationMode compilationMode, IComponent component, IPType type,
             ILineInfo lineInfo, string name,

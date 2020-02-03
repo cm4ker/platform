@@ -26,24 +26,44 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
+        public void GenerateAstTree(IPType type, Root root)
         {
-            var className = ipType.Name;
+            var className = type.Name;
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
-            var cls = new ComponentClass(CompilationMode.Server, _component, ipType, null, className,
+            var cls = new ComponentClass(CompilationMode.Server, _component, type, null, className,
                 new TypeBody(new List<Member>()));
             cls.Bag = ObjectType.Object;
 
             cls.Namespace = @namespace;
 
-            GenerateObjectClassUserModules(ipType, cls);
+            GenerateObjectClassUserModules(type, cls);
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
 
             root.Add(cu);
+
+            foreach (var table in type.Tables)
+            {
+                var tableName = $"TColl_{type.Name}_{table.Name}";
+                var tableRowName = $"TR{type.GetDtoType().Name}_{table.Name}";
+                var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, type, null,
+                    tableName, TypeBody.Empty)
+                {
+                    Namespace = type.GetNamespace(),
+                    Bag = table,
+                    Base = "This type depends from another type",
+                    BaseTypeSelector = (ts) =>
+                    {
+                        return ts.GetSystemBindings().IEnumerable
+                            .MakeGenericType(ts.FindType($"{type.GetNamespace()}.{tableRowName}"));
+                    }
+                };
+
+                cu.AddEntity(dtoTableCls);
+            }
         }
 
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)

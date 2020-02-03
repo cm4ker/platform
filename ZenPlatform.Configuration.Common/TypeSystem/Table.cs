@@ -15,6 +15,7 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
         }
 
         public Guid Id { get; set; }
+        public Guid GroupId { get; set; }
 
         public virtual uint SystemId { get; set; }
         
