@@ -15,6 +15,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         private readonly List<PropertyEditor> _props;
         private readonly List<ModuelEditor> _modules;
         private readonly List<CommandEditor> _commands;
+        private readonly List<TableEditor> _tables;
 
         public ObjectEditor(IInfrastructure inf)
         {
@@ -24,6 +25,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             _props = new List<PropertyEditor>();
             _modules = new List<ModuelEditor>();
             _commands = new List<CommandEditor>();
+            _tables = new List<TableEditor>();
         }
 
         public ObjectEditor(IInfrastructure inf, MDEntity md) : this(inf)
@@ -68,6 +70,15 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             var a = new PropertyEditor(mp);
             _md.Properties.Add(mp);
             _props.Add(a);
+            return a;
+        }
+
+        public TableEditor CreateTable()
+        {
+            var mp = new MDTable();
+            var a = new TableEditor(mp);
+            _md.Tables.Add(mp);
+            _tables.Add(a);
             return a;
         }
 
@@ -186,6 +197,21 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
                     {ObjectId = tProp.Id, SystemId = sysId, DatabaseName = $"Fld_{sysId}"});
 
                 _inf.TypeManager.Register(tProp);
+            }
+
+            foreach (var table in _md.Tables)
+            {
+                var tTable = _inf.TypeManager.Table();
+                tTable.Name = table.Name;
+                tTable.ParentId = _md.DtoId;
+                tTable.Id = table.Guid;
+
+                _inf.TypeManager.Register(tTable);
+
+                var sysId = _inf.Counter.GetId(tTable.Id);
+
+                _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                    {ObjectId = tTable.Id, SystemId = sysId, DatabaseName = $"Tbl_{sysId}"});
             }
         }
 
