@@ -16,10 +16,6 @@ namespace ZenPlatform.Language.Ast
 
         public IComponent Component { get; }
 
-        
-        /*
-         Type(Id) + Metadata(Stuff)
-         */
         public IPType Type { get; }
 
         public object Bag { get; set; }

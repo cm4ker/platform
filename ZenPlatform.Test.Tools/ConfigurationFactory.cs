@@ -40,7 +40,7 @@ namespace ZenPlatform.Test.Tools
 
             var tableProp1 = table1.CreateProperty();
             tableProp1.Name = "TProp1";
-            tableProp1.SetType(MDTypes.Int);
+            tableProp1.SetType(MDTypes.String(100));
 
             var module = store.CreateModule();
             module.ModuleRelationType = ProgramModuleRelationType.Object;

@@ -212,6 +212,30 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
                 _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
                     {ObjectId = tTable.Id, SystemId = sysId, DatabaseName = $"Tbl_{sysId}"});
+
+                foreach (var prop in table.Properties)
+                {
+                    var tProp = _inf.TypeManager.Property();
+                    tProp.Name = prop.Name;
+                    tProp.Id = prop.Guid;
+                    tProp.ParentId = tTable.Id;
+
+                    foreach (var pType in prop.Types)
+                    {
+                        var tPropType = _inf.TypeManager.PropertyType();
+                        tPropType.PropertyParentId = tTable.Id;
+                        tPropType.PropertyId = tProp.Id;
+                        tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
+                        _inf.TypeManager.Register(tPropType);
+                    }
+
+                    sysId = _inf.Counter.GetId(tProp.Id);
+
+                    _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                        {ObjectId = tProp.Id, SystemId = sysId, DatabaseName = $"Fld_{sysId}"});
+
+                    _inf.TypeManager.Register(tProp);
+                }
             }
         }
 
