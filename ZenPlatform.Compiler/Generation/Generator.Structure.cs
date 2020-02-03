@@ -113,7 +113,7 @@ namespace ZenPlatform.Compiler.Generation
                 _stage0.Add(sym, tb);
             }
 
-            foreach (var typeEntity in cu.Entityes.OrderBy(x=>x.Base)))
+            foreach (var typeEntity in cu.Entityes.OrderBy(x=>x.Base))
             {
                 switch (typeEntity)
                 {
