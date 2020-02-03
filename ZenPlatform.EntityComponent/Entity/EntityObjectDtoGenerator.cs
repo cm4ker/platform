@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
@@ -22,12 +23,12 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(IPType ipType, Root root)
+        public void GenerateAstTree(IPType type, Root root)
         {
-            var dtoClassName = ipType.GetDtoType().Name;
+            var dtoClassName = type.GetDtoType().Name;
 
-            var cls = new ComponentClass(CompilationMode.Shared, _component, ipType, null, dtoClassName,
-                TypeBody.Empty) {Namespace = ipType.GetNamespace()};
+            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, dtoClassName,
+                TypeBody.Empty) {Namespace = type.GetNamespace()};
 
             var cu = CompilationUnit.Empty;
 
@@ -109,14 +110,14 @@ namespace ZenPlatform.EntityComponent.Entity
              }
              
              */
-            foreach (var table in ipType.Tables)
+            foreach (var table in type.Tables)
             {
-                var tableName = $"TR{ipType.Name}_{table.Name}";
+                var tableName = $"TR{type.Name}_{table.Name}";
 
-                var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, ipType, null,
+                var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, type, null,
                     tableName, TypeBody.Empty)
                 {
-                    Namespace = ipType.GetNamespace(),
+                    Namespace = type.GetNamespace(),
                     Bag = table
                 };
 
@@ -172,23 +173,24 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            var set = cc.Type;
+            var type = cc.Type;
 
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
 
             //Create dto class
-            foreach (var prop in set.Properties)
+            foreach (var prop in type.Properties)
             {
                 EmitProperty(builder, prop, sb);
             }
 
-            // foreach (var table in set.Tables)
-            // {
-            //     var tableDto = ts.GetType(table.GetTableDtoName());
-            //
-            //     var result = builder.DefineProperty(tableDto, table.Name, true, true, false);
-            // }
+            foreach (var table in type.Tables)
+            {
+                var tableRow = ts.GetType(table.GetTableRowClassName());
+                var listType = sb.List.MakeGenericType(tableRow);
+                
+                var result = builder.DefineProperty(listType, table.Name, true, true, false);
+            }
         }
 
 

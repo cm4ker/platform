@@ -47,6 +47,12 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.GroupId)?.Metadata;
         }
+
+        public static string GetTableRowClassName(this ITable table)
+        {
+            var type = table.TypeManager.FindType(table.ParentId);
+            return $"{type.GetNamespace()}.TR{type.Name}_{table.Name}";
+        }
     }
 
     public class EntityLinkClassGenerator

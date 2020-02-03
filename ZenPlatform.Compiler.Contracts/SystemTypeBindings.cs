@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Core.Contracts;
@@ -57,6 +58,8 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType DateTime => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.DateTime)}", MSCORLIB);
 
+        public IType List => _ts.FindType(typeof(List<>).FullName, MSCORLIB);
+        
         public IType Exception => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Exception)}", MSCORLIB);
 
 
