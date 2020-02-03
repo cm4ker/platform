@@ -15,7 +15,7 @@
                                               VerticalScrollBarVisibility="Auto"
                                               TextBlock.FontSize="20"
                     SyntaxHighlighting="XML"
-                                              Document="{Binding TextDocument}">
+                                              Document="{Binding Document}">
 
     </ae:TextEditor>
 

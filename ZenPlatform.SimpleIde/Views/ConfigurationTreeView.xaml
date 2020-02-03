@@ -5,6 +5,11 @@
              xmlns:models="clr-namespace:ZenPlatform.SimpleIde.Models"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZenPlatform.SimpleIde.Views.ConfigurationTreeView">
+  <DockPanel>
+    <WrapPanel DockPanel.Dock="Top">
+      <Button>asdasd</Button>
+    </WrapPanel>
+    <TextBox DockPanel.Dock="Top" Name="SearchBox" Text="{Binding SearchQuery, Mode=TwoWay}"/>
   <TreeView Grid.Column="0" Items="{Binding Configuration}" Name="TreeView">
     <TreeView.Styles>
       <Style Selector="TreeViewItem">
@@ -23,4 +28,5 @@
 
     </TreeView.DataTemplates>
   </TreeView>
+  </DockPanel>
 </UserControl>

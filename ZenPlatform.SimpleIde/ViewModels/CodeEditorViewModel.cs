@@ -22,7 +22,7 @@ namespace ZenPlatform.SimpleIde.ViewModels
         {
             _doc = doc;
 
-            _doc.WhenAnyValue(d => d.IsChanged).Subscribe(x => { Title = string.Format("{0}{1}",_doc.Title, x ?"*":""); });
+            _doc.WhenAnyValue(d => d.IsChanged).Subscribe(x => { Title = string.Format("{0}{1}", _doc.Title, x ? "*" : ""); });
 
             SaveCommand = ReactiveCommand.Create<Unit>(x => { _doc.Save(); });
         }
@@ -30,8 +30,13 @@ namespace ZenPlatform.SimpleIde.ViewModels
         public ReactiveCommand<Unit, Unit> SaveCommand;
 
         public bool IsChanged => _doc.IsChanged;
-        
-        public TextDocument TextDocument => _doc.Content;
+
+        public TextDocument TextDocument
+        { get 
+            { 
+                return _doc.Content; 
+            } 
+        }
 
     }
 }
