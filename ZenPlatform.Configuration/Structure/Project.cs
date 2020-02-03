@@ -16,11 +16,12 @@ using ZenPlatform.Language.Ast.Definitions.Statements;
 
 namespace ZenPlatform.Configuration.Structure
 {
-    public class ProjectMD
+    public class ProjectMD : IEquatable<ProjectMD>
     {
         public ProjectMD()
         {
             ComponentReferences = new List<IComponentRef>();
+            ProjectId = Guid.NewGuid();
         }
 
         public Guid ProjectId { get; set; }
@@ -30,9 +31,31 @@ namespace ZenPlatform.Configuration.Structure
         public string ProjectVersion { get; set; }
 
         public List<IComponentRef> ComponentReferences { get; set; }
+
+        public bool Equals(ProjectMD other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return ProjectId.Equals(other.ProjectId) && ProjectName == other.ProjectName &&
+                   ProjectVersion == other.ProjectVersion &&
+                   ComponentReferences.SequenceEqual(other.ComponentReferences);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ProjectMD) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ProjectId, ProjectName, ProjectVersion, ComponentReferences);
+        }
     }
 
-    public class Project : IProject
+    public class Project : IProject, IEquatable<IProject>
     {
         private readonly ProjectMD _md;
         private readonly IInfrastructure _inf;
@@ -53,7 +76,6 @@ namespace ZenPlatform.Configuration.Structure
         {
             _md = md;
             _inf = inf;
-            ProjectId = Guid.NewGuid();
             _manager = inf.TypeManager;
             _managers = new Dictionary<IComponentRef, IComponentManager>();
         }
@@ -146,6 +168,27 @@ namespace ZenPlatform.Configuration.Structure
 
                 _editors.Add(editor);
             }
+        }
+
+        public bool Equals(IProject other)
+        {
+            if (other is Project p)
+                return Equals(_md, p._md);
+
+            return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((IProject) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_md, _inf, _manager, _editors, _managers);
         }
     }
 }

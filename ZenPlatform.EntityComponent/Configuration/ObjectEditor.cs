@@ -32,6 +32,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             set => _md.Name = value;
         }
 
+        public IEnumerable<PropertyEditor> Editors => _props;
+
         public PropertyEditor CreateProperty()
         {
             var mp = new MDProperty();

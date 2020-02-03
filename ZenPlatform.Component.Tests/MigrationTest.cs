@@ -1,325 +1,79 @@
 using System;
 using System.Linq;
+using Microsoft.VisualStudio.TestPlatform.Common.DataCollection;
+using SharpFileSystem.FileSystems;
 using Xunit;
 using Xunit.Abstractions;
+using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Common;
+using ZenPlatform.Configuration.Common.TypeSystem;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Migration;
+using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Migration;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Visitor;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Component.Tests
 {
     public class MigrationTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
+        private readonly MemoryFileSystem _mfs;
+        private readonly IProject _example;
 
         public MigrationTest(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
-        }
+            _mfs = new MemoryFileSystem();
 
-        private Project CreateConfiguration()
-        {
-            Project project = new Project();
-
-            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            project.ProjectName = "Library";
-            project.ProjectVersion = "0.0.0.1";
-
-            var component = new XCComponent()
-            {
-                ComponentAssembly = typeof(XCSingleEntity).Assembly,
-            };
-
-            project.Data.Components.Add(component);
-
-            var componentManager = (SingleEntityConfigurationManager) component.ComponentImpl.ComponentManager;
-
-
-            var customType1 =
-                componentManager.Create()
-                    .SetName("customType")
-                    .SetId(Guid.Parse("8f24498f-822f-4c0e-9b48-40f43aef3d62"))
-                    .SetLinkId(Guid.Parse("205cf1b0-967b-4f65-acd3-86fdc0e06ecf"))
-                    .SetDescription("customType")
-                    .SetRealTableName("Obj_0000");
-
-            var entity1 =
-                componentManager.Create()
-                    .SetName("store")
-                    .SetId(Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5"))
-                    .SetLinkId(Guid.Parse("0777428f-963a-4e6b-9b99-b60db19cad8a"))
-                    .SetDescription("This is a store entity")
-                    .SetRealTableName("Obj_0001");
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("252e804b-8c16-407a-8d3c-3c0e5bf461df"))
-                .SetName("Property1")
-                .AddType(new XCBinary())
-                .SetDatabaseColumnName("Fld_0001");
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("247b9ff2-636a-456b-bc4d-3150eb8ab4ea"))
-                .SetName("Property2")
-                .AddType(customType1.Link)
-                .SetDatabaseColumnName("Fld_0002");
-
-
-            return project;
+            var example = ConfigurationFactory.Create();
+            example.Save(_mfs);
         }
 
         private Project CreateConfigurationChangeDataType()
         {
-            Project project = new Project();
+            var proj = Project.Load(new MDManager(new TypeManager(), new InMemoryUniqueCounter()), _mfs);
 
-            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            project.ProjectName = "Library";
-            project.ProjectVersion = "0.0.0.1";
+            var comEdit = (ComponentEditor) proj.Editors.First(x => x is ComponentEditor);
 
-            var component = new XCComponent()
-            {
-                ComponentAssembly = typeof(XCSingleEntity).Assembly,
-            };
+            var typeEdit = comEdit.Editors.First();
+            var propEdit = typeEdit.Editors.First();
+            propEdit.SetType(MDTypes.String(10));
 
-            project.Data.Components.Add(component);
-
-            var componentManager = (SingleEntityConfigurationManager) component.ComponentImpl.ComponentManager;
-
-
-            var customType1 =
-                componentManager.Create()
-                    .SetName("customType")
-                    .SetId(Guid.Parse("8f24498f-822f-4c0e-9b48-40f43aef3d62"))
-                    .SetLinkId(Guid.Parse("205cf1b0-967b-4f65-acd3-86fdc0e06ecf"))
-                    .SetDescription("customType")
-                    .SetRealTableName("Obj_0000");
-
-            var entity1 =
-                componentManager.Create()
-                    .SetName("store")
-                    .SetId(Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5"))
-                    .SetLinkId(Guid.Parse("0777428f-963a-4e6b-9b99-b60db19cad8a"))
-                    .SetDescription("This is a store entity")
-                    .SetRealTableName("Obj_0001");
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("252e804b-8c16-407a-8d3c-3c0e5bf461df"))
-                .SetName("Property1")
-                .AddType(new XCInt())
-                .SetDatabaseColumnName("Fld_0001");
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("247b9ff2-636a-456b-bc4d-3150eb8ab4ea"))
-                .SetName("Property2")
-                .AddType(customType1.Link)
-                .SetDatabaseColumnName("Fld_0002");
-
-            return project;
+            return proj;
         }
 
         private Project CreateConfigurationAddDataType()
         {
-            Project project = new Project();
-
-            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            project.ProjectName = "Library";
-            project.ProjectVersion = "0.0.0.1";
-
-            var component = new XCComponent()
-            {
-                ComponentAssembly = typeof(XCSingleEntity).Assembly,
-            };
-
-            project.Data.Components.Add(component);
-
-            var componentManager = (SingleEntityConfigurationManager) component.ComponentImpl.ComponentManager;
-
-
-            var customType1 =
-                componentManager.Create()
-                    .SetName("customType")
-                    .SetId(Guid.Parse("8f24498f-822f-4c0e-9b48-40f43aef3d62"))
-                    .SetLinkId(Guid.Parse("205cf1b0-967b-4f65-acd3-86fdc0e06ecf"))
-                    .SetDescription("customType")
-                    .SetRealTableName("Obj_0000");
-
-            var entity1 =
-                componentManager.Create()
-                    .SetName("store")
-                    .SetId(Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5"))
-                    .SetLinkId(Guid.Parse("0777428f-963a-4e6b-9b99-b60db19cad8a"))
-                    .SetDescription("This is a store entity")
-                    .SetRealTableName("Obj_0001");
-
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("252e804b-8c16-407a-8d3c-3c0e5bf461df"))
-                .SetName("Property1")
-                .AddType(new XCBinary())
-                .AddType(new XCInt())
-                .SetDatabaseColumnName("Fld_0001");
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("247b9ff2-636a-456b-bc4d-3150eb8ab4ea"))
-                .SetName("Property2")
-                .AddType(customType1.Link)
-                .SetDatabaseColumnName("Fld_0002");
-
-
-            return project;
+            return null;
         }
 
         private Project CreateConfigurationAddDeleteNewProperty()
         {
-            Project project = new Project();
-
-            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            project.ProjectName = "Library";
-            project.ProjectVersion = "0.0.0.1";
-
-            var component = new XCComponent()
-            {
-                ComponentAssembly = typeof(XCSingleEntity).Assembly,
-            };
-
-            project.Data.Components.Add(component);
-
-            var componentManager = (SingleEntityConfigurationManager) component.ComponentImpl.ComponentManager;
-
-
-            var customType1 =
-                componentManager.Create()
-                    .SetName("customType")
-                    .SetId(Guid.Parse("8f24498f-822f-4c0e-9b48-40f43aef3d62"))
-                    .SetLinkId(Guid.Parse("205cf1b0-967b-4f65-acd3-86fdc0e06ecf"))
-                    .SetDescription("customType")
-                    .SetRealTableName("Obj_0000");
-
-            var entity1 =
-                componentManager.Create()
-                    .SetName("store")
-                    .SetId(Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5"))
-                    .SetLinkId(Guid.Parse("0777428f-963a-4e6b-9b99-b60db19cad8a"))
-                    .SetDescription("This is a store entity")
-                    .SetRealTableName("Obj_0001");
-
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("252e804b-8c16-407a-8d3c-3c0e5bf461df"))
-                .SetName("Property1")
-                .AddType(new XCBinary())
-                .SetDatabaseColumnName("Fld_0001");
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("247b9ff2-636a-456b-bc4d-3150eb8ab4ea"))
-                .SetName("Property2")
-                .AddType(customType1.Link)
-                .SetDatabaseColumnName("Fld_0002");
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("600bfe3a-2af8-4679-b068-8b270a07f5f3"))
-                .SetName("Property3")
-                .AddType(new XCInt())
-                .SetDatabaseColumnName("Fld_0003");
-
-
-            return project;
+            return null;
         }
 
         private Project CreateConfigurationAddDeleteEntityType()
         {
-            Project project = new Project();
-
-            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            project.ProjectName = "Library";
-            project.ProjectVersion = "0.0.0.1";
-
-            var component = new XCComponent()
-            {
-                ComponentAssembly = typeof(XCSingleEntity).Assembly,
-            };
-
-            project.Data.Components.Add(component);
-
-            var componentManager = (SingleEntityConfigurationManager) component.ComponentImpl.ComponentManager;
-
-
-            var customType1 =
-                componentManager.Create()
-                    .SetName("customType")
-                    .SetId(Guid.Parse("8f24498f-822f-4c0e-9b48-40f43aef3d62"))
-                    .SetLinkId(Guid.Parse("205cf1b0-967b-4f65-acd3-86fdc0e06ecf"))
-                    .SetDescription("customType")
-                    .SetRealTableName("Obj_0000");
-
-            var entity1 =
-                componentManager.Create()
-                    .SetName("store")
-                    .SetId(Guid.Parse("42b828fe-1a33-4ad5-86d1-aaf6131a77d5"))
-                    .SetLinkId(Guid.Parse("0777428f-963a-4e6b-9b99-b60db19cad8a"))
-                    .SetDescription("This is a store entity")
-                    .SetRealTableName("Obj_0001");
-
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("252e804b-8c16-407a-8d3c-3c0e5bf461df"))
-                .SetName("Property1")
-                .AddType(new XCBinary())
-                .SetDatabaseColumnName("Fld_0001");
-
-            entity1.CreateProperty()
-                .SetGuid(Guid.Parse("247b9ff2-636a-456b-bc4d-3150eb8ab4ea"))
-                .SetName("Property2")
-                .AddType(customType1.Link)
-                .SetDatabaseColumnName("Fld_0002");
-
-
-            var entity2 =
-                componentManager.Create()
-                    .SetName("invoice")
-                    .SetId(Guid.Parse("134657f5-6d17-487d-a97d-7d5f71797f8f"))
-                    .SetLinkId(Guid.Parse("969ba36c-6e91-4c1d-a39b-fa6a5f587201"))
-                    .SetDescription("This is a invoice entity")
-                    .SetRealTableName("Obj_0002");
-
-            entity2.CreateProperty()
-                .SetGuid(Guid.Parse("e70e6f1b-40f6-4bd1-b2f3-a8cde865d8ca"))
-                .SetName("Property1")
-                .AddType(entity1.Link)
-                .SetDatabaseColumnName("Fld_0001");
-
-
-            return project;
+            return null;
         }
 
         private Project CreateEmptyConfiguration()
         {
-            Project project = new Project();
-
-            project.ProjectId = Guid.Parse("8d33de57-1971-405d-a7f3-a6c30d6b086a");
-            project.ProjectName = "Library";
-            project.ProjectVersion = "0.0.0.1";
-
-            var component = new XCComponent()
-            {
-                ComponentAssembly = typeof(XCSingleEntity).Assembly,
-            };
-
-            project.Data.Components.Add(component);
-
-            return project;
+            return null;
         }
 
         [Fact]
         public void CreateTest()
         {
             var empty = CreateEmptyConfiguration();
-            var comfig = CreateConfiguration();
 
-
-            var components = empty.Data.Components.Join(comfig.Data.Components, c => c.Info.ComponentId,
+            var components = empty.TypeManager.Components.Join(_example.TypeManager.Components, c => c.Info.ComponentId,
                 c => c.Info.ComponentId,
                 (x, y) => new {old = x, actual = y});
 
@@ -338,10 +92,9 @@ namespace ZenPlatform.Component.Tests
         public void DeleteTest()
         {
             var empty = CreateEmptyConfiguration();
-            var comfig = CreateConfiguration();
 
 
-            var components = comfig.Data.Components.Join(empty.Data.Components, c => c.Info.ComponentId,
+            var components = _example.TypeManager.Components.Join(empty.TypeManager.Components, c => c.Info.ComponentId,
                 c => c.Info.ComponentId,
                 (x, y) => new {old = x, actual = y});
 
@@ -360,10 +113,11 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void ChangeDataTypeTest()
         {
-            var comfig1 = CreateConfiguration();
+            var comfig1 = _example;
             var comfig2 = CreateConfigurationChangeDataType();
 
-            var components = comfig1.Data.Components.Join(comfig2.Data.Components, c => c.Info.ComponentId,
+            var components = comfig1.TypeManager.Components.Join(comfig2.TypeManager.Components,
+                c => c.Info.ComponentId,
                 c => c.Info.ComponentId,
                 (x, y) => new {old = x, actual = y});
 
@@ -395,7 +149,7 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void AddDeleteNewPropertyTest()
         {
-            var comfig1 = CreateConfiguration();
+            var comfig1 = _example;
             var comfig2 = CreateConfigurationAddDeleteNewProperty();
 
 
@@ -446,11 +200,12 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void AddDeleteNewEntityTest()
         {
-            var comfig1 = CreateConfiguration();
+            var comfig1 = _example;
             var comfig2 = CreateConfigurationAddDeleteEntityType();
 
 
-            var components = comfig1.Data.Components.Join(comfig2.Data.Components, c => c.Info.ComponentId,
+            var components = comfig1.TypeManager.Components.Join(comfig2.TypeManager.Components,
+                c => c.Info.ComponentId,
                 c => c.Info.ComponentId,
                 (x, y) => new {old = x, actual = y});
             //ADD test
@@ -496,11 +251,12 @@ namespace ZenPlatform.Component.Tests
         [Fact]
         public void SingleToMultiDataTypeTest()
         {
-            var comfig1 = CreateConfiguration();
+            var comfig1 = _example;
             var comfig2 = CreateConfigurationAddDataType();
 
 
-            var components = comfig1.Data.Components.Join(comfig2.Data.Components, c => c.Info.ComponentId,
+            var components = comfig1.TypeManager.Components.Join(comfig2.TypeManager.Components,
+                c => c.Info.ComponentId,
                 c => c.Info.ComponentId,
                 (x, y) => new {old = x, actual = y});
             //ADD test
