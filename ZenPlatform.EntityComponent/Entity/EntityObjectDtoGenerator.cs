@@ -32,11 +32,9 @@ namespace ZenPlatform.EntityComponent.Entity
             var cu = CompilationUnit.Empty;
 
             cu.AddEntity(cls);
-
-
             /*
              Табличные части именуются следующим принципом:
-             TB_{ObjectName}_{TableName}
+             TR_{ObjectName}_{TableName}
              
              public class Dto
              {
@@ -113,7 +111,7 @@ namespace ZenPlatform.EntityComponent.Entity
              */
             foreach (var table in ipType.Tables)
             {
-                var tableName = $"TB_{ipType.Name}_{table.Name}";
+                var tableName = $"TR{ipType.Name}_{table.Name}";
 
                 var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, ipType, null,
                     tableName, TypeBody.Empty)
@@ -133,9 +131,17 @@ namespace ZenPlatform.EntityComponent.Entity
             if (astTree is ComponentClass cc)
                 if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Server))
                 {
-                    EmitBody(cc, builder, dbType);
-                    EmitVersionField(builder);
-                    EmitMappingSupport(cc, builder);
+                    if (cc.Bag is ITable tab)
+                    {
+                        //if this is table row class
+                        EmitTable(cc, builder, tab);
+                    }
+                    else
+                    {
+                        EmitBody(cc, builder, dbType);
+                        EmitVersionField(builder);
+                        EmitMappingSupport(cc, builder);
+                    }
                 }
                 else if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Client))
                 {
@@ -150,6 +156,7 @@ namespace ZenPlatform.EntityComponent.Entity
         private void EmitTable(ComponentClass cc, ITypeBuilder builder, ITable table)
         {
             var ts = builder.Assembly.TypeSystem;
+            var sb = ts.GetSystemBindings();
             var tm = table.TypeManager;
 
             var ownerType = tm.FindType(table.ParentId);
@@ -159,6 +166,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             foreach (var prop in table.Properties)
             {
+                EmitProperty(builder, prop, sb);
             }
         }
 
@@ -172,53 +180,97 @@ namespace ZenPlatform.EntityComponent.Entity
             //Create dto class
             foreach (var prop in set.Properties)
             {
-                bool propertyGenerated = false;
-                if (prop.IsSelfLink) continue;
+                EmitProperty(builder, prop, sb);
+            }
+
+            // foreach (var table in set.Tables)
+            // {
+            //     var tableDto = ts.GetType(table.GetTableDtoName());
+            //
+            //     var result = builder.DefineProperty(tableDto, table.Name, true, true, false);
+            // }
+        }
 
 
-                if (string.IsNullOrEmpty(prop.GetSettings().DatabaseName))
+        private void EmitProperty(ITypeBuilder builder, IPProperty prop, SystemTypeBindings sb)
+        {
+            bool propertyGenerated = false;
+            if (prop.IsSelfLink) return;
+
+
+            if (string.IsNullOrEmpty(prop.GetSettings().DatabaseName))
+            {
+                throw new Exception(
+                    $"Prop: {prop.Name} ObjectType: {"Empty"}. Database column is empty!");
+            }
+
+            if (prop.Types.Count() > 1)
+            {
+                var clsSchema = prop.GetObjSchema()
+                    .First(x => x.SchemaType == ColumnSchemaType.Type);
+
+                var dbSchema = prop.GetDbSchema()
+                    .First(x => x.SchemaType == ColumnSchemaType.Type);
+
+
+                var propBuilder = builder.DefinePropertyWithBackingField(clsSchema.PlatformIpType.ConvertType(sb),
+                    clsSchema.FullName, false);
+
+                var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
+                propBuilder.SetAttribute(attr);
+                attr.SetParameters(dbSchema.FullName);
+            }
+
+
+            foreach (var ctype in prop.Types)
+            {
+                if (ctype.IsPrimitive)
                 {
-                    throw new Exception(
-                        $"Prop: {prop.Name} ObjectType: {"Empty"} Name: {set.Name}. Database column is empty!");
-                }
+                    var dbColName = prop
+                        .GetDbSchema()
+                        .First(x => x.SchemaType == ((prop.Types.Count() > 1)
+                                        ? ColumnSchemaType.Value
+                                        : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
-                if (prop.Types.Count() > 1)
-                {
-                    var clsSchema = prop.GetObjSchema()
-                        .First(x => x.SchemaType == ColumnSchemaType.Type);
+                    var propName = prop
+                        .GetObjSchema()
+                        .First(x => x.SchemaType == ((prop.Types.Count() > 1)
+                                        ? ColumnSchemaType.Value
+                                        : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
-                    var dbSchema = prop.GetDbSchema()
-                        .First(x => x.SchemaType == ColumnSchemaType.Type);
+                    IType propType = ctype.ConvertType(sb);
 
-
-                    var propBuilder = builder.DefinePropertyWithBackingField(clsSchema.PlatformIpType.ConvertType(sb),
-                        clsSchema.FullName, false);
+                    var propBuilder = builder.DefinePropertyWithBackingField(propType, propName, false);
 
                     var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
                     propBuilder.SetAttribute(attr);
-                    attr.SetParameters(dbSchema.FullName);
-                }
+                    attr.SetParameters(dbColName);
 
-
-                foreach (var ctype in prop.Types)
-                {
-                    if (ctype.IsPrimitive)
+                    if (!prop.IsUnique)
                     {
+                        var initAttr = builder.CreateAttribute<NeedInitAttribute>();
+                        propBuilder.SetAttribute(initAttr);
+                    }
+                }
+                else if (ctype.IsLink)
+                {
+                    if (!propertyGenerated)
+                    {
+                        propertyGenerated = true;
+
                         var dbColName = prop
                             .GetDbSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                            ? ColumnSchemaType.Value
-                                            : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
+                                            ? ColumnSchemaType.Ref
+                                            : ColumnSchemaType.NoSpecial)).FullName;
 
                         var propName = prop
                             .GetObjSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                            ? ColumnSchemaType.Value
-                                            : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
+                                            ? ColumnSchemaType.Ref
+                                            : ColumnSchemaType.NoSpecial)).FullName;
 
-                        IType propType = ctype.ConvertType(sb);
-
-                        var propBuilder = builder.DefinePropertyWithBackingField(propType, propName, false);
+                        var propBuilder = builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
 
                         var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
                         propBuilder.SetAttribute(attr);
@@ -230,46 +282,8 @@ namespace ZenPlatform.EntityComponent.Entity
                             propBuilder.SetAttribute(initAttr);
                         }
                     }
-                    else if (ctype.IsLink)
-                    {
-                        if (!propertyGenerated)
-                        {
-                            propertyGenerated = true;
-
-                            var dbColName = prop
-                                .GetDbSchema()
-                                .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                                ? ColumnSchemaType.Ref
-                                                : ColumnSchemaType.NoSpecial)).FullName;
-
-                            var propName = prop
-                                .GetObjSchema()
-                                .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                                ? ColumnSchemaType.Ref
-                                                : ColumnSchemaType.NoSpecial)).FullName;
-
-                            var propBuilder = builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
-
-                            var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
-                            propBuilder.SetAttribute(attr);
-                            attr.SetParameters(dbColName);
-
-                            if (!prop.IsUnique)
-                            {
-                                var initAttr = builder.CreateAttribute<NeedInitAttribute>();
-                                propBuilder.SetAttribute(initAttr);
-                            }
-                        }
-                    }
                 }
             }
-
-            // foreach (var table in set.Tables)
-            // {
-            //     var tableDto = ts.GetType(table.GetTableDtoName());
-            //
-            //     var result = builder.DefineProperty(tableDto, table.Name, true, true, false);
-            // }
         }
 
         private void EmitMappingSupport(ComponentClass cls, ITypeBuilder tb)
