@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
+using ZenPlatform.Configuration.Structure;
 
-namespace ZenPlatform.Configuration.Structure
+namespace ZenPlatform.EntityComponent.Configuration
 {
     /// <summary>
     /// Комманда
     /// </summary>
-    public class MDCommand : IXCCommand
+    public class MDCommand
     {
         public MDCommand()
         {
@@ -18,7 +17,7 @@ namespace ZenPlatform.Configuration.Structure
         public MDCommand(bool predefined)
         {
             IsPredefined = predefined;
-            Module = new XCProgramModule();
+            Module = new MDProgramModule();
             Guid = Guid.NewGuid();
         }
 
@@ -49,7 +48,7 @@ namespace ZenPlatform.Configuration.Structure
          * Module.MyInterestedCommand()
          */
 
-        public IXCProgramModule Module { get; set; }
+        public MDProgramModule Module { get; set; }
 
         /// <summary>
         /// Аргументы команды

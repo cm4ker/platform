@@ -8,6 +8,7 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.TypeSystem;
+using ZenPlatform.EntityComponent.Configuration.Editors;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {

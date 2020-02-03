@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Mono.Cecil.Cil;
 using MoreLinq.Extensions;
+using NLog.LayoutRenderers;
 using Npgsql.NameTranslation;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
@@ -324,23 +325,21 @@ namespace ZenPlatform.EntityComponent.Entity
 
         private void GenerateObjectClassUserModules(IPType type, ComponentClass cls)
         {
-            //TODO: Нужно добавить поддержку программных модулей в метаданные
-            //throw new NotImplementedException();
+            var md = type.GetMD<MDEntity>();
 
-            // foreach (var module in type.GetProgramModules())
-            // {
-            //     if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
-            //     {
-            //         var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
-            //
-            //
-            //         foreach (var func in typeBody.Functions)
-            //         {
-            //             func.SymbolScope = SymbolScopeBySecurity.User;
-            //             cls.AddFunction(func);
-            //         }
-            //     }
-            // }
+            foreach (var module in md.Modules)
+            {
+                if (module.ModuleRelationType == ProgramModuleRelationType.Object)
+                {
+                    var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
+
+                    foreach (var func in typeBody.Functions)
+                    {
+                        func.SymbolScope = SymbolScopeBySecurity.User;
+                        cls.AddFunction(func);
+                    }
+                }
+            }
         }
     }
 }

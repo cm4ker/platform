@@ -1,14 +1,12 @@
 using ZenPlatform.Configuration.Contracts;
 
-namespace ZenPlatform.Configuration.Structure
+namespace ZenPlatform.EntityComponent.Configuration
 {
-
-
     /// <summary>
     /// Программный модуль. Если необходимо организовать поддержку программных модулей на языке платформы
     /// В таком случае необходимо наследоваться от этого класса
     /// </summary>
-    public abstract class MDProgramModuleBase : IXCProgramModule
+    public class MDProgramModule
     {
         /// <summary>
         /// Имя модуля
@@ -23,8 +21,8 @@ namespace ZenPlatform.Configuration.Structure
         /// <summary>
         /// Тип программного модуля
         /// </summary>
-        public XCProgramModuleDirectionType ModuleDirectionType { get; set; }
+        public ProgramModuleDirectionType ModuleDirectionType { get; set; }
 
-        public XCProgramModuleRelationType ModuleRelationType { get; set; }
+        public ProgramModuleRelationType ModuleRelationType { get; set; }
     }
 }

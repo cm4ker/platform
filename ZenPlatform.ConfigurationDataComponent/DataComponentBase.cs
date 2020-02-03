@@ -1,12 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Caching;
-using ZenPlatform.Configuration.Contracts;
+﻿using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.DataComponent.Entity;
 
 namespace ZenPlatform.DataComponent
 {

@@ -33,7 +33,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         bool IsScalePrecision { get; set; }
 
-        bool IsCodeAvaliable { get; set; }
+        bool IsAsmAvaliable { get; set; }
 
         bool IsQueryAvaliable { get; set; }
 

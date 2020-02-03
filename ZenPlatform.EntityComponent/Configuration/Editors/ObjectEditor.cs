@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using ZenPlatform.Configuration.Common;
-using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.TypeSystem;
 
-namespace ZenPlatform.EntityComponent.Configuration
+namespace ZenPlatform.EntityComponent.Configuration.Editors
 {
     public class ObjectEditor
     {
@@ -14,6 +13,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         private IComponent _com;
         private MDEntity _md;
         private readonly List<PropertyEditor> _props;
+        private readonly List<ModuelEditor> _modules;
 
         public ObjectEditor(IInfrastructure inf)
         {
@@ -21,6 +21,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             _md = new MDEntity();
             _props = new List<PropertyEditor>();
+            _modules = new List<ModuelEditor>();
         }
 
         public ObjectEditor(IInfrastructure inf, MDEntity md) : this(inf)
@@ -35,6 +36,17 @@ namespace ZenPlatform.EntityComponent.Configuration
         }
 
         public IEnumerable<PropertyEditor> Editors => _props;
+
+        public ModuelEditor CreateModule()
+        {
+            var module = new MDProgramModule();
+            var me = new ModuelEditor(module);
+            
+            _md.Modules.Add(module);
+            _modules.Add(me);
+            
+            return me;
+        }
 
         public PropertyEditor CreateProperty()
         {
@@ -52,6 +64,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             RegisterDto();
             RegisterManager();
             RegisterLink();
+
+            _inf.TypeManager.AddMD(_md.ObjectId, _com.Id, _md);
         }
 
         private void RegisterManager()
@@ -60,7 +74,8 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             var oType = tm.Type();
             oType.IsManager = true;
-
+            oType.IsAsmAvaliable = true;
+            
             oType.Id = Guid.NewGuid();
             oType.Name = $"{_md.Name}Manager";
             oType.GroupId = _md.ObjectId;
@@ -84,7 +99,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             oType.Id = _md.ObjectId;
             oType.Name = _md.Name;
-            oType.IsCodeAvaliable = true;
+            oType.IsAsmAvaliable = true;
             oType.IsQueryAvaliable = true;
             oType.GroupId = _md.ObjectId;
 
@@ -126,7 +141,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             oType.Id = _md.DtoId;
             oType.Name = "_" + _md.Name;
             oType.GroupId = _md.ObjectId;
-
+            oType.IsAsmAvaliable = true;
             oType.ComponentId = _com.Info.ComponentId;
 
             oType.SystemId = _inf.Counter.GetId(oType.Id);
@@ -165,6 +180,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             var oType = _inf.TypeManager.Type();
             oType.IsLink = true;
             oType.IsQueryAvaliable = true;
+            oType.IsAsmAvaliable = true;
 
             oType.GroupId = _md.ObjectId;
 
@@ -178,13 +194,13 @@ namespace ZenPlatform.EntityComponent.Configuration
             _inf.TypeManager.Register(oType);
         }
 
-
         void RegisterId(Guid parentId)
         {
             var tProp = _inf.TypeManager.Property();
             tProp.Name = "Id";
             tProp.Id = Guid.Parse("7DB25AF5-1609-4B0E-A99C-60576336167D");
             tProp.ParentId = parentId;
+            tProp.IsUnique = true;
 
             var tPropType = _inf.TypeManager.PropertyType();
             tPropType.PropertyParentId = parentId;
