@@ -29,12 +29,12 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Root root)
+        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
         {
-            var dtoClassName = type.GetDtoType().Name;
+            var dtoClassName = ipType.GetDtoType().Name;
 
-            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, dtoClassName,
-                TypeBody.Empty) {Namespace = type.GetNamespace()};
+            var cls = new ComponentClass(CompilationMode.Shared, _component, ipType, null, dtoClassName,
+                TypeBody.Empty) {Namespace = ipType.GetNamespace()};
 
             cls.Bag = ObjectType.Dto;
 
@@ -46,12 +46,12 @@ namespace ZenPlatform.EntityComponent.Entity
              Табличные части именуются следующим принципом:
              TB_{ObjectName}_{TableName}
              */
-            foreach (var table in type.Tables)
+            foreach (var table in ipType.Tables)
             {
-                var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, type, null,
+                var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, ipType, null,
                     null, TypeBody.Empty)
                 {
-                    Namespace = type.GetNamespace(),
+                    Namespace = ipType.GetNamespace(),
                     Bag = table
                 };
 
@@ -64,22 +64,15 @@ namespace ZenPlatform.EntityComponent.Entity
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (astTree is ComponentClass cc)
-                if ((ObjectType) cc.Bag == ObjectType.Dto)
+                if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Server))
                 {
-                    if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Server))
-                    {
-                        EmitBody(cc, builder, dbType);
-                        EmitVersionField(builder);
-                        EmitMappingSupport(cc, builder);
-                    }
-                    else if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Client))
-                    {
-                        EmitBody(cc, builder, dbType);
-                    }
+                    EmitBody(cc, builder, dbType);
+                    EmitVersionField(builder);
+                    EmitMappingSupport(cc, builder);
                 }
-                else if (cc.Bag is ITable tbl)
+                else if ((cc.CompilationMode & mode).HasFlag(CompilationMode.Client))
                 {
-                    EmitTable(cc, builder, tbl);
+                    EmitBody(cc, builder, dbType);
                 }
         }
 
@@ -131,7 +124,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         .First(x => x.SchemaType == ColumnSchemaType.Type);
 
 
-                    var propBuilder = builder.DefinePropertyWithBackingField(clsSchema.PlatformType.ConvertType(sb),
+                    var propBuilder = builder.DefinePropertyWithBackingField(clsSchema.PlatformIpType.ConvertType(sb),
                         clsSchema.FullName, false);
 
                     var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
@@ -148,13 +141,13 @@ namespace ZenPlatform.EntityComponent.Entity
                             .GetDbSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
                                             ? ColumnSchemaType.Value
-                                            : ColumnSchemaType.NoSpecial) && x.PlatformType == ctype).FullName;
+                                            : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
                         var propName = prop
                             .GetObjSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
                                             ? ColumnSchemaType.Value
-                                            : ColumnSchemaType.NoSpecial) && x.PlatformType == ctype).FullName;
+                                            : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
                         IType propType = ctype.ConvertType(sb);
 

@@ -37,19 +37,19 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Root root)
+        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
         {
-            var className = type.Name;
+            var className = ipType.Name;
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
-            var cls = new ComponentClass(CompilationMode.Server, _component, type, null, className,
+            var cls = new ComponentClass(CompilationMode.Server, _component, ipType, null, className,
                 new TypeBody(new List<Member>()));
             cls.Bag = ObjectType.Object;
 
             cls.Namespace = @namespace;
 
-            GenerateObjectClassUserModules(type, cls);
+            GenerateObjectClassUserModules(ipType, cls);
 
             var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
             //end create dto class
@@ -78,15 +78,12 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             if (astTree is ComponentClass cc)
             {
-                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
+                if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
                 {
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
-                    {
-                        EmitBody(cc, builder, dbType);
-                    }
-                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
-                    {
-                    }
+                    EmitBody(cc, builder, dbType);
+                }
+                else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
+                {
                 }
             }
         }
@@ -145,17 +142,16 @@ namespace ZenPlatform.EntityComponent.Entity
             var set = cc.Type;
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+            var dtoClassName = set.GetDtoType().Name;
 
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+            var @namespace = set.GetNamespace();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
 
 
             var dtoPrivate = builder.FindField("_dto");
 
-            var mrg = ts.FindType($"{@namespace}.{set.Name}Manager");
+            var mrg = ts.FindType($"{@namespace}.{set.GetManagerType().Name}");
             var mrgGet = mrg.FindMethod("Get", sb.Guid);
 
             foreach (var prop in set.Properties)
@@ -189,7 +185,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         }
                         else
                         {
-                            dtoPropSchema = prop.GetObjSchema().First(x => x.PlatformType == ctype);
+                            dtoPropSchema = prop.GetObjSchema().First(x => Equals(x.PlatformIpType, ctype));
                         }
 
                         var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
@@ -326,11 +322,10 @@ namespace ZenPlatform.EntityComponent.Entity
                 .Ret();
         }
 
-        private void GenerateObjectClassUserModules(ZenPlatform.Configuration.Contracts.TypeSystem.IType type,
-            ComponentClass cls)
+        private void GenerateObjectClassUserModules(IPType type, ComponentClass cls)
         {
             //TODO: Нужно добавить поддержку программных модулей в метаданные
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
 
             // foreach (var module in type.GetProgramModules())
             // {

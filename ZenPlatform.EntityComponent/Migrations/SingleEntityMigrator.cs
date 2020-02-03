@@ -30,7 +30,7 @@ namespace ZenPlatform.EntityComponent.Migrations
         {
         }
 
-        private bool CheckDBChangesMainObject(IType x, IType y)
+        private bool CheckDBChangesMainObject(IPType x, IPType y)
         {
             return !x.Properties.SequenceEqual(y.Properties);
         }
@@ -40,7 +40,7 @@ namespace ZenPlatform.EntityComponent.Migrations
             return !y.Properties.SequenceEqual(y.Properties);
         }
 
-        private void ChangeDatabaseTable(IEntityMigrationScope scope, IType old, IType actual)
+        private void ChangeDatabaseTable(IEntityMigrationScope scope, IPType old, IPType actual)
         {
             string tableName = $"{actual.GetSettings().DatabaseName}_tmp";
 
@@ -59,14 +59,14 @@ namespace ZenPlatform.EntityComponent.Migrations
             AnalyzeProperties(scope, old.Properties, actual.Properties, tableName);
         }
 
-        private void AnalyzeProperties(IEntityMigrationScope scope, IEnumerable<IProperty> old,
-            IEnumerable<IProperty> actual, string tableName)
+        private void AnalyzeProperties(IEntityMigrationScope scope, IEnumerable<IPProperty> old,
+            IEnumerable<IPProperty> actual, string tableName)
         {
             var props = old.Where(p => !p.IsSelfLink)
                 .FullJoin(
                     actual.Where(p => !p.IsSelfLink), x => x.Id,
-                    x => new {old = x, actual = default(IProperty)},
-                    x => new {old = default(IProperty), actual = x},
+                    x => new {old = x, actual = default(IPProperty)},
+                    x => new {old = default(IPProperty), actual = x},
                     (x, y) => new {old = x, actual = y});
 
             foreach (var property in props)
@@ -121,8 +121,8 @@ namespace ZenPlatform.EntityComponent.Migrations
                 var actualTypes = actualState.GetTypes();
 
                 var types = oldTypes.FullJoin(actualTypes, x => x.Id,
-                    x => new {old = x, actual = default(IType)},
-                    x => new {old = default(IType), actual = x},
+                    x => new {old = x, actual = default(IPType)},
+                    x => new {old = default(IPType), actual = x},
                     (x, y) => new {old = x, actual = y});
 
                 foreach (var entitys in types)
@@ -236,12 +236,12 @@ namespace ZenPlatform.EntityComponent.Migrations
             }, 40);
         }
 
-        public void CreateProperty(IEntityMigrationScope plan, IProperty property, string tableName)
+        public void CreateProperty(IEntityMigrationScope plan, IPProperty property, string tableName)
         {
             property.GetDbSchema().ForEach(s => plan.AddColumn(s, tableName));
         }
 
-        public void DeleteProperty(IEntityMigrationScope plan, IProperty property, string tableName)
+        public void DeleteProperty(IEntityMigrationScope plan, IPProperty property, string tableName)
         {
             property.GetDbSchema().ForEach(s => plan.DeleteColumn(s, tableName));
         }
@@ -251,15 +251,15 @@ namespace ZenPlatform.EntityComponent.Migrations
             AnalyzeProperties(plan, old.Properties, old.Properties, tableName);
         }
 
-        public void ChangeProperty(IEntityMigrationScope plan, IProperty old, IProperty actual, string tableName)
+        public void ChangeProperty(IEntityMigrationScope plan, IPProperty old, IPProperty actual, string tableName)
         {
             //случай если в свойстве был один тип а стало много 
             if (old.Types.Count() == 1 && actual.Types.Count() > 1)
             {
                 //ищем колонку для переименования
                 var rename = old.GetDbSchema().Join(actual.GetDbSchema(),
-                    o => o.PlatformType,
-                    a => a.PlatformType,
+                    o => o.PlatformIpType,
+                    a => a.PlatformIpType,
                     (x, y) => new {old = x, actual = y}
                 ).FirstOrDefault();
 
@@ -273,15 +273,15 @@ namespace ZenPlatform.EntityComponent.Migrations
                 plan.RenameColumn(rename.old, rename.actual, tableName);
 
                 //Обновляем колонку с типом
-                plan.UpdateType(actual, tableName, rename.old.PlatformType);
+                plan.UpdateType(actual, tableName, rename.old.PlatformIpType);
             }
             else // было много стал один
             if (old.Types.Count() > 1 && actual.Types.Count() == 1)
             {
                 //ищем колонку для переименования
                 var rename = old.GetDbSchema().Join(actual.GetDbSchema(),
-                    o => o.PlatformType,
-                    a => a.PlatformType,
+                    o => o.PlatformIpType,
+                    a => a.PlatformIpType,
                     (x, y) => new {old = x, actual = y}
                 ).FirstOrDefault();
 
@@ -315,13 +315,13 @@ namespace ZenPlatform.EntityComponent.Migrations
                     }
                     else
                     {
-                        if (schema.old.PlatformType.IsObject ||
-                            schema.actual.PlatformType.IsObject)
+                        if (schema.old.PlatformIpType.IsObject ||
+                            schema.actual.PlatformIpType.IsObject)
                         {
-                            if (schema.old.PlatformType.Id != schema.actual.PlatformType.Id)
+                            if (schema.old.PlatformIpType.Id != schema.actual.PlatformIpType.Id)
                                 plan.AlterColumn(schema.actual, tableName);
                         }
-                        else if (!schema.old.PlatformType.Equals(schema.actual.PlatformType))
+                        else if (!schema.old.PlatformIpType.Equals(schema.actual.PlatformIpType))
                             plan.AlterColumn(schema.actual, tableName);
                     }
                 }

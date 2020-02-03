@@ -154,7 +154,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQObjectTable(QObjectTable node)
         {
-            var ot = node.ObjectType;
+            var ot = node.ObjectIpType;
 
             ot.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
 
@@ -193,9 +193,9 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
-        private List<IType> CommonTypes(List<IType> types1, List<IType> types2)
+        private List<IPType> CommonTypes(List<IPType> types1, List<IPType> types2)
         {
-            var result = new List<IType>();
+            var result = new List<IPType>();
             foreach (var t1 in types1)
             {
                 foreach (var t2 in types2)
@@ -277,7 +277,7 @@ namespace ZenPlatform.Core.Querying
         }
 
         void IfLeftOrRightOneType(QExpression left, QExpression right, Action compareAction, Action concatAction,
-            List<IType> leftTypes,
+            List<IPType> leftTypes,
             bool flip = false)
         {
             var mt = TypedExprFactory.CreateMultiTypedExpr(right, _qm, this);

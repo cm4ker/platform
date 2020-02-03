@@ -8,16 +8,16 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public class QSum : QExpression
     {
-        private readonly IType _baseType;
+        private readonly IPType _baseIpType;
 
-        public QSum(IType baseType)
+        public QSum(IPType baseIpType)
         {
-            _baseType = baseType;
+            _baseIpType = baseIpType;
         }
 
-        public override IEnumerable<IType> GetExpressionType()
+        public override IEnumerable<IPType> GetExpressionType()
         {
-            yield return _baseType;
+            yield return _baseIpType;
         }
     }
 }

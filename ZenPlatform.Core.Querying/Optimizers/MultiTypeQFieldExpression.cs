@@ -64,9 +64,9 @@ namespace ZenPlatform.Core.Querying.Optimizers
             EmitColumn(x => x.SchemaType == ColumnSchemaType.Type);
         }
 
-        public override void EmitValueColumn(IType type)
+        public override void EmitValueColumn(IPType ipType)
         {
-            EmitColumn(x => x.SchemaType == ColumnSchemaType.Value && x.PlatformType.IsAssignableFrom(type));
+            EmitColumn(x => x.SchemaType == ColumnSchemaType.Value && x.PlatformIpType.IsAssignableFrom(ipType));
         }
 
         public override void EmitRefColumn()

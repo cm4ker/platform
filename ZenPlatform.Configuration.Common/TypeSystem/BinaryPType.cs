@@ -4,9 +4,9 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class BinaryType : Type
+    public class BinaryPType : PType
     {
-        internal BinaryType(TypeManager ts) : base(ts)
+        internal BinaryPType(TypeManager ts) : base(ts)
         {
         }
 

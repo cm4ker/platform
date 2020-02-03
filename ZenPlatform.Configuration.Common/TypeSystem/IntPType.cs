@@ -1,11 +1,12 @@
 using System;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class IntType : Type
+    public class IntPType : PType
     {
-        internal IntType(ITypeManager ts) : base(ts)
+        internal IntPType(ITypeManager ts) : base(ts)
         {
             BaseId = null;
         }

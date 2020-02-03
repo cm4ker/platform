@@ -165,7 +165,6 @@ namespace ZenPlatform.Configuration.Structure
 
                 var editor = manager.Load(this, reference, fileSystem);
 
-
                 _editors.Add(editor);
             }
         }

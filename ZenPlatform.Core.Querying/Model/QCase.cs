@@ -11,7 +11,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QCase : QExpression
     {
-        public override IEnumerable<IType> GetExpressionType()
+        public override IEnumerable<IPType> GetExpressionType()
         {
             foreach (var when in Whens)
             {

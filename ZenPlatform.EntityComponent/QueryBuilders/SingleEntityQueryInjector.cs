@@ -19,7 +19,7 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         }
 
         /// <inheritdoc />
-        public void InjectDataSource(QueryMachine qm, IType t,
+        public void InjectDataSource(QueryMachine qm, IPType t,
             IQueryModelContext logicalTreeNode)
         {
             var set = t ?? throw new Exception($"This component can't host next type: {t.GetType()}");
