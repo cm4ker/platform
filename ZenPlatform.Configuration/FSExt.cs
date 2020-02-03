@@ -38,13 +38,13 @@ namespace ZenPlatform.Configuration
 
         public static void Serialize(this IFileSystem fs, string path, object obj)
         {
-            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+            using (var stream = fs.CreateFile(FileSystemPath.Parse(path)))
                 obj.SerializeToStream().CopyTo(stream);
         }
 
         public static void SaveBytes(IFileSystem fs, string path, byte[] data)
         {
-            using (var stream = fs.OpenFile(FileSystemPath.Parse(path), FileAccess.Read))
+            using (var stream = fs.CreateFile(FileSystemPath.Parse(path)))
                 stream.Write(data, 0, data.Length);
         }
     }

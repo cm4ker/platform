@@ -60,6 +60,8 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             inf.TypeManager.Register(c);
 
+            inf.TypeManager.AddMD(c.Id, Guid.Empty, com);
+
             return c;
         }
 

@@ -41,7 +41,6 @@ namespace ZenPlatform.Configuration.Test
                 config = Project.Load(new MDManager(new TypeManager(), new InMemoryUniqueCounter()), storage);
             }
 
-
             var configOriginal = ConfigurationFactory.Create();
             EqualsConfiguration(config, configOriginal);
         }

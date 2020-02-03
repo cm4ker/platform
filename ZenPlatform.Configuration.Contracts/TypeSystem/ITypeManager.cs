@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace ZenPlatform.Configuration.Contracts.TypeSystem
@@ -30,6 +31,8 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         IProperty Property();
         IPropertyType PropertyType();
         ITable Table();
+
+        void AddMD(Guid id, Guid parentId, object metadata);
 
         void Verify();
 

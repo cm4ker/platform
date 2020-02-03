@@ -53,5 +53,8 @@ namespace ZenPlatform.Configuration.Contracts
         /// </summary>
         /// <param name="storage"></param>
         void Save(IFileSystem fileSystem);
+
+
+        void Attach(IComponentRef comRef, IComponentManager mrg);
     }
 }
