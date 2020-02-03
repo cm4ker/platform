@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.SimpleIde.Models;
@@ -19,13 +20,18 @@ namespace ZenPlatform.SimpleIde.ViewModels
         private IDocumentDock documentDock;
         public IList<IDockable> LeftTools { get; }
         public IList<IDockable> Documents { get; }
+
+        public ReactiveCommand<IConfiguratoinItem, IDockable> OpenItemCommand;
         public DockMainWindowViewModel()
         {
             LayoutFactory = new LayoutFactory();
             Documents = new ObservableCollection<IDockable>();
             LeftTools = new ObservableCollection<IDockable>();
             Configuration = new ConfigurationTreeViewModel();
-            Configuration.OnOpenItem += OpenItem;
+
+            Reactive();
+
+
             LeftTools.Add(Configuration);
 
             documentDock = LayoutFactory.CreateDocumentDock();
@@ -40,13 +46,24 @@ namespace ZenPlatform.SimpleIde.ViewModels
             InitializeDocks();
         }
 
-        private void OpenItem(object sender, Models.IConfiguratoinItem e)
+        public void Reactive()
         {
-           
-           if (e.HasContext)
-           {
-                Documents.Add(new CodeEditorViewModel(new ObjectConfigurationDocument(e)));
-           }
+            OpenItemCommand = ReactiveCommand.CreateFromObservable<IConfiguratoinItem, IDockable>(
+                (item) =>
+                {
+                    return Observable.Start(() => new CodeEditorViewModel(new ObjectConfigurationDocument(item)));
+                },
+                Configuration.WhenAnyValue(c => c.OpenItem).Select(s=>s != null)
+            );
+            
+            OpenItemCommand.Subscribe(d =>
+            {
+                //Documents.Add(new CodeEditorViewModel(new ObjectConfigurationDocument(new SimpleConfigurationItem("dasdasd", new MDRoot()))));
+                Documents.Add(d);
+            });
+            Configuration.WhenAnyValue(c => c.OpenItem).InvokeCommand(OpenItemCommand);
+
+
         }
 
         

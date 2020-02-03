@@ -23,8 +23,8 @@ namespace ZenPlatform.SimpleIde.Views
 
             
 
+            
             /*
-
             using (Stream s = new FileStream("CSharp-Mode-Dark.xshd", FileMode.Open))
             {
                 using (XmlTextReader reader = new XmlTextReader(s))
@@ -33,6 +33,7 @@ namespace ZenPlatform.SimpleIde.Views
                 }
             }
             */
+            
         }
 
         private void InitializeComponent()

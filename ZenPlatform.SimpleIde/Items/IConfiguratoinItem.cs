@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace ZenPlatform.SimpleIde.Models
+namespace ZenPlatform.SimpleIde
 {
     public interface IConfiguratoinItem
     {

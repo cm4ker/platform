@@ -3,6 +3,9 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Xml;
 using ZenPlatform.Configuration.Structure;
@@ -13,31 +16,48 @@ namespace ZenPlatform.SimpleIde.Models
     {
         private IConfiguratoinItem _item;
         private bool _isChanged;
+        public IObservable<bool> DocumentChanged { get; }
+
+        public IObservable<IConfiguratoinItem> SaveDocument => SaveCommand;
+
+        private Subject<IConfiguratoinItem> _save = new Subject<IConfiguratoinItem>();
+
+        private ReactiveCommand<Unit, IConfiguratoinItem> SaveCommand;
+
         public ObjectConfigurationDocument(IConfiguratoinItem item)
         {
             Content = new TextDocument();
             
             _item = item;
-           
+
+            SaveCommand = ReactiveCommand.Create<Unit, IConfiguratoinItem>(d =>
+            {
+                _item.Context = XCHelper.DeserializeFromString(Content.Text);
+                return _item;
+            });
+
+
             Content.Text = FormatXML(_item.Context.SerializeToString());
-            IsChanged = false;
-            Content.Changed += Text_Changed;
+
+            DocumentChanged = Observable.Merge(Content.WhenAnyValue(c => c.Text).Select(c => true), SaveCommand.Select(_ => false));
+          
+            
         }
 
-        private void Text_Changed(object sender, DocumentChangeEventArgs e)
-        {
-            IsChanged = true;
-        }
+    
         public void Save()
         {
             try
             {
                 _item.Context = XCHelper.DeserializeFromString(Content.Text);
                 IsChanged = false;
+                _save.OnNext(_item);
+
+
             }
             catch (Exception ex)
             {
-
+                _save.OnError(ex);
             }
         }
 

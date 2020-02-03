@@ -29,6 +29,11 @@ namespace ZenPlatform.SimpleIde
 
             if (type != null)
             {
+                /*
+                if (type.GetConstructor(new Type[]{ data.GetType() }) != null)
+                {
+
+                }*/
                 var view = (Control)Activator.CreateInstance(type);
               
                 return view;
