@@ -113,7 +113,7 @@ namespace ZenPlatform.Compiler.Generation
                 _stage0.Add(sym, tb);
             }
 
-            foreach (var typeEntity in cu.Entityes)
+            foreach (var typeEntity in cu.Entityes.OrderBy(x=>x.Base)))
             {
                 switch (typeEntity)
                 {
@@ -526,7 +526,9 @@ namespace ZenPlatform.Compiler.Generation
         {
             IType baseType = null;
 
-            if (string.IsNullOrEmpty(componentClass.Base))
+            if (componentClass.BaseTypeSelector != null)
+                baseType = componentClass.BaseTypeSelector(_ts);
+            else if (string.IsNullOrEmpty(componentClass.Base))
             {
                 baseType = _bindings.Object;
             }

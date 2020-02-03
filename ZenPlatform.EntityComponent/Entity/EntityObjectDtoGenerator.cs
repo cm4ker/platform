@@ -164,7 +164,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = ownerType.GetNamespace();
 
             var dtoType = ts.FindType($"{@namespace}.{table}");
-
+            
             foreach (var prop in table.Properties)
             {
                 EmitProperty(builder, prop, sb);
