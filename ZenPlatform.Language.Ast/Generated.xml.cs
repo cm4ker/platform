@@ -232,13 +232,16 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public abstract partial class TypeEntity : SyntaxNode
     {
-        public TypeEntity(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo)
+        public TypeEntity(ILineInfo lineInfo, TypeBody typeBody, String name, TypeSyntax @base): base(lineInfo)
         {
             var slot = 0;
             TypeBody = typeBody;
             if (TypeBody != null)
                 Childs.Add(TypeBody);
             Name = name;
+            Base =  @base;
+            if (Base != null)
+                Childs.Add(Base);
         }
 
         public TypeBody TypeBody
@@ -247,6 +250,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public String Name
+        {
+            get;
+        }
+
+        public TypeSyntax Base
         {
             get;
         }
@@ -611,6 +619,34 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitUnionTypeSyntax(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class GenericTypeSyntax : TypeSyntax
+    {
+        public GenericTypeSyntax(ILineInfo lineInfo, List<TypeSyntax> args): base(lineInfo)
+        {
+            var slot = 0;
+            Args = args;
+            if (Args != null)
+                foreach (var item in Args)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
+        }
+
+        public List<TypeSyntax> Args
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitGenericTypeSyntax(this);
         }
     }
 }

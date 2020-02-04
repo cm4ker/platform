@@ -8,9 +8,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public abstract partial class TypeEntity
     {
-            public string Namespace { get; set; }
-
-        public string Base { get; set; }
+        public string Namespace { get; set; }
 
         public SymbolType SymbolType => SymbolType.Type;
     }

@@ -116,7 +116,17 @@ namespace ZenPlatform.Compiler.Helpers
             {
                 return context.FindType(stn.TypeName) ?? context.FindType("System." + stn.TypeName);
             }
+            else if (typeSyntax is GenericTypeSyntax gts)
+            {
+                IType[] args = new IType[gts.Args.Count];
 
+                for (int i = 0; i < gts.Args.Count; i++)
+                {
+                    args[i] = gts.Args[i].ToClrType(context);
+                }
+
+                return context.FindType($@"{gts.TypeName}`{gts.Args.Count}");
+            }
             else if (typeSyntax is PrimitiveTypeSyntax ptn)
             {
                 return ptn.Kind switch
