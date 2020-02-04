@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZenPlatform.SimpleIde.ViewModels
+namespace ZenPlatform.Ide.Contracts
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class ViewAttribute: Attribute

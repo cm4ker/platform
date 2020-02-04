@@ -22,6 +22,7 @@ namespace ZenPlatform.SimpleIde.ViewModels
         {
             _doc = doc;
 
+
             _doc.WhenAnyValue(d => d.IsChanged).Subscribe(x => { Title = string.Format("{0}{1}", _doc.Title, x ? "*" : ""); });
 
             SaveCommand = ReactiveCommand.Create<Unit>(x => { _doc.Save(); });

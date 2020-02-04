@@ -6,6 +6,7 @@ using Dock.Model;
 using ReactiveUI;
 using ZenPlatform.SimpleIde.ViewModels;
 using System.Linq;
+using ZenPlatform.Ide.Contracts;
 
 namespace ZenPlatform.SimpleIde
 {
@@ -47,6 +48,22 @@ namespace ZenPlatform.SimpleIde
         public bool Match(object data)
         {
             return data is ReactiveObject || data is IDockable;
+        }
+    }
+
+
+    public class ConfigurationItemViewLocator : IDataTemplate
+    {
+        public bool SupportsRecycling => false;
+
+        public IControl Build(object param)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Match(object data)
+        {
+            return data is IConfigurationItem;
         }
     }
 }

@@ -6,6 +6,7 @@ using ReactiveUI;
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using ZenPlatform.Ide.Common;
 using ZenPlatform.SimpleIde.Models;
 using ZenPlatform.SimpleIde.ViewModels;
 
@@ -28,11 +29,6 @@ namespace ZenPlatform.SimpleIde.Views
 
         private void Tree_DoubleTapped(object sender, RoutedEventArgs e)
         {
-            if (Tree.SelectedItem is IConfiguratoinItem item && item.CanOpen)
-            {
-
-                ((ConfigurationTreeViewModel)Tree.DataContext).OpenItem = item;
-            }
 
 
         }
