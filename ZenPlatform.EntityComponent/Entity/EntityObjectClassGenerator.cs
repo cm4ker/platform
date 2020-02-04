@@ -50,11 +50,10 @@ namespace ZenPlatform.EntityComponent.Entity
                 var tableName = $"TColl_{type.Name}_{table.Name}";
                 var tableRowName = $"TR{type.GetDtoType().Name}_{table.Name}";
                 var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, type, null,
-                    tableName, TypeBody.Empty)
+                    tableName, TypeBody.Empty, null)
                 {
                     Namespace = type.GetNamespace(),
                     Bag = table,
-                    Base = "This type depends from another type",
                     BaseTypeSelector = (ts) =>
                     {
                         return ts.GetSystemBindings().IEnumerable

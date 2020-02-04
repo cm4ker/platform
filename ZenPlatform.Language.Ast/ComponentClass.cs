@@ -24,9 +24,7 @@ namespace ZenPlatform.Language.Ast
         public Func<ITypeSystem, IType> BaseTypeSelector { get; set; }
 
         public ComponentAstBase(CompilationMode compilationMode, IComponent component, IPType type,
-            ILineInfo lineInfo, string name,
-            TypeBody tb) : base(lineInfo
-            , tb, name)
+            ILineInfo lineInfo, string name, TypeBody tb, TypeSyntax @base = null) : base(lineInfo, tb, name, @base)
         {
             CompilationMode = compilationMode;
             Component = component;
@@ -51,7 +49,7 @@ namespace ZenPlatform.Language.Ast
     {
         public ComponentClass(CompilationMode compilationMode, IComponent component, IPType type,
             ILineInfo lineInfo, string name,
-            TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
+            TypeBody tb, TypeSyntax @base = null) : base(compilationMode, component, type, lineInfo, name, tb, @base)
         {
         }
     }
