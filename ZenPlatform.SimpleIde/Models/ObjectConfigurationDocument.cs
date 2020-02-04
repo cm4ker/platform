@@ -9,28 +9,30 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Xml;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Ide.Common;
 
+/*
 namespace ZenPlatform.SimpleIde.Models
 {
     public class ObjectConfigurationDocument : ReactiveObject, IConfigurationDocument
     {
-        private IConfiguratoinItem _item;
+        private IConfigurationItem _item;
         private bool _isChanged;
         public IObservable<bool> DocumentChanged { get; }
 
-        public IObservable<IConfiguratoinItem> SaveDocument => SaveCommand;
+        public IObservable<IConfigurationItem> SaveDocument => SaveCommand;
 
-        private Subject<IConfiguratoinItem> _save = new Subject<IConfiguratoinItem>();
+        private Subject<IConfigurationItem> _save = new Subject<IConfigurationItem>();
 
-        private ReactiveCommand<Unit, IConfiguratoinItem> SaveCommand;
+        private ReactiveCommand<Unit, IConfigurationItem> SaveCommand;
 
-        public ObjectConfigurationDocument(IConfiguratoinItem item)
+        public ObjectConfigurationDocument(IConfigurationItem item)
         {
             Content = new TextDocument();
             
             _item = item;
 
-            SaveCommand = ReactiveCommand.Create<Unit, IConfiguratoinItem>(d =>
+            SaveCommand = ReactiveCommand.Create<Unit, IConfigurationItem>(d =>
             {
                 _item.Context = XCHelper.DeserializeFromString(Content.Text);
                 return _item;
@@ -113,6 +115,7 @@ namespace ZenPlatform.SimpleIde.Models
         }
         public TextDocument Content { get; }
 
-        public string Title => _item.Content;
+        public string Title => _item.Caption;
     }
 }
+*/

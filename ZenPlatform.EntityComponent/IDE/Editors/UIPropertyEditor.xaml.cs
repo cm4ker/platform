@@ -2,17 +2,13 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace ZenPlatform.SimpleIde.Views
+namespace ZenPlatform.EntityComponent.IDE.Editors
 {
-    public class MainWindow : Window
+    public class UiPropertyEditor : UserControl
     {
-        public MainWindow()
+        public UiPropertyEditor()
         {
             this.InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-            
         }
 
         private void InitializeComponent()

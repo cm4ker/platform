@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -78,6 +78,12 @@ namespace ZenPlatform.Configuration.Structure
             _inf = inf;
             _manager = inf.TypeManager;
             _managers = new Dictionary<IComponentRef, IComponentManager>();
+            _editors = new List<IComponentEditor>();
+        }
+
+        public void RegisterComponentEditor(IComponentEditor editor)
+        {
+            _editors.Add(editor);
         }
 
         /// <summary>
@@ -166,7 +172,7 @@ namespace ZenPlatform.Configuration.Structure
                 var editor = manager.Load(this, reference, fileSystem);
 
 
-                _editors.Add(editor);
+                RegisterComponentEditor(editor);
             }
         }
 

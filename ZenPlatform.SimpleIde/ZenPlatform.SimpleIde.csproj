@@ -73,6 +73,8 @@
     <ProjectReference Include="..\ZenPlatform.Configuration.Common\ZenPlatform.Configuration.Common.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration.Contracts\ZenPlatform.Configuration.Contracts.csproj" />
     <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Ide.Common\ZenPlatform.Ide.Common.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Test.Tools\ZenPlatform.Test.Tools.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Views\CodeEditorView.xaml.cs">

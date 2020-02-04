@@ -4,11 +4,17 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Ide.Common;
+using ZenPlatform.Ide.Common.Editors;
+using ZenPlatform.Ide.Contracts;
 using ZenPlatform.SimpleIde.Models;
+using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.SimpleIde.ViewModels
 {
@@ -21,13 +27,20 @@ namespace ZenPlatform.SimpleIde.ViewModels
         public IList<IDockable> LeftTools { get; }
         public IList<IDockable> Documents { get; }
 
-        public ReactiveCommand<IConfiguratoinItem, IDockable> OpenItemCommand;
+        public ReactiveCommand<IConfigurationItem, IDockable> OpenItemCommand;
+
+        public ReactiveCommand<Unit, IType> AddCommand { get; }
+
+        private Project _project;
         public DockMainWindowViewModel()
         {
+            _project = ConfigurationFactory.Create();
             LayoutFactory = new LayoutFactory();
             Documents = new ObservableCollection<IDockable>();
             LeftTools = new ObservableCollection<IDockable>();
-            Configuration = new ConfigurationTreeViewModel();
+            Configuration = new ConfigurationTreeViewModel(_project);
+
+            AddCommand = ReactiveCommand.CreateFromObservable( () => UITypeSelector.SelectType(_project.TypeManager).Handle(Unit.Default));
 
             Reactive();
 
@@ -48,20 +61,6 @@ namespace ZenPlatform.SimpleIde.ViewModels
 
         public void Reactive()
         {
-            OpenItemCommand = ReactiveCommand.CreateFromObservable<IConfiguratoinItem, IDockable>(
-                (item) =>
-                {
-                    return Observable.Start(() => new CodeEditorViewModel(new ObjectConfigurationDocument(item)));
-                },
-                Configuration.WhenAnyValue(c => c.OpenItem).Select(s=>s != null)
-            );
-            
-            OpenItemCommand.Subscribe(d =>
-            {
-                //Documents.Add(new CodeEditorViewModel(new ObjectConfigurationDocument(new SimpleConfigurationItem("dasdasd", new MDRoot()))));
-                Documents.Add(d);
-            });
-            Configuration.WhenAnyValue(c => c.OpenItem).InvokeCommand(OpenItemCommand);
 
 
         }
@@ -124,8 +123,6 @@ namespace ZenPlatform.SimpleIde.ViewModels
             LayoutFactory.InitLayout(root);
             Layout = root;
         }
-
-        public ReactiveCommand<Unit, Unit> AddCommand { get; }
 
 
         private IDockable? _layout;

@@ -2,10 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:models="clr-namespace:ZenPlatform.SimpleIde.Models"
+             xmlns:c="clr-namespace:ZenPlatform.Ide.Common"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZenPlatform.SimpleIde.Views.ConfigurationTreeView">
   <DockPanel>
+   
     <WrapPanel DockPanel.Dock="Top">
       <Button>asdasd</Button>
     </WrapPanel>
@@ -18,11 +19,11 @@
       </Style>
     </TreeView.Styles>
     <TreeView.DataTemplates>
-      <TreeDataTemplate DataType="models:IConfiguratoinItem" ItemsSource="{Binding Childs}"  >
+      <TreeDataTemplate ItemsSource="{Binding Childs}"  >
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="18" IsEnabled="{Binding IsEnable}" >
 
           <Image Source="{Binding Image}"/>
-          <TextBlock Text="{Binding Content}" />
+          <TextBlock Text="{Binding Caption}" />
         </StackPanel>
       </TreeDataTemplate>
 

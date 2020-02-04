@@ -18,6 +18,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
+using ZenPlatform.Ide.Common;
 
 namespace ZenPlatform.SimpleIde.ViewModels
 {
@@ -26,30 +27,24 @@ namespace ZenPlatform.SimpleIde.ViewModels
     public class ConfigurationTreeViewModel: Tool
     {
 
-        private ICollection<IConfiguratoinItem> _openedConfiguration;
+        private ICollection<IConfigurationItem> _openedConfiguration;
 
-        private ObservableAsPropertyHelper<IEnumerable<IConfiguratoinItem>> _configuration;
+        private ObservableAsPropertyHelper<IEnumerable<IConfigurationItem>> _configuration;
         private string _searchQuery;
-        private IConfiguratoinItem _openItem;
+        private IConfigurationItem _openItem;
 
-        public ConfigurationTreeViewModel()
+        public ConfigurationTreeViewModel(Project project)
         {
+            
 
-            Observable.Empty<IConfiguratoinItem>();
-            _openedConfiguration = new ObservableCollection<IConfiguratoinItem>()
-            {
-                new SimpleConfigurationItem("test", new MDRoot()),
-                 new SimpleConfigurationItem("uuu", new MDRoot()),
-                 new SimpleConfigurationItem("ee", new MDRoot()),
-                 new SimpleConfigurationItem("tewwst", new MDRoot()),
-                 new SimpleConfigurationItem("rgg", new MDRoot()),
-                 new SimpleConfigurationItem("uu", new MDRoot()),
-            };
+            Observable.Empty<IConfigurationItem>();
+            _openedConfiguration = new ObservableCollection<IConfigurationItem>(project.Editors.Select(e => e.GetConfigurationTree()));
 
-             Search = ReactiveCommand.CreateFromObservable<string, IEnumerable<IConfiguratoinItem>>(
+
+             Search = ReactiveCommand.CreateFromObservable<string, IEnumerable<IConfigurationItem>>(
                 (query) =>
                 {
-                    return Observable.Start(() => _openedConfiguration.Where(i => i.Content.Contains(query)));
+                    return Observable.Start(() => _openedConfiguration.Where(i => i.Caption.Contains(query)));
                 },
                 this.WhenAnyValue(vm=>vm.SearchQuery).Select(q=>!string.IsNullOrEmpty(q))
             );
@@ -65,7 +60,7 @@ namespace ZenPlatform.SimpleIde.ViewModels
         }
 
 
-        public IConfiguratoinItem OpenItem
+        public IConfigurationItem OpenItem
         {
             get => _openItem;
             set
@@ -75,8 +70,8 @@ namespace ZenPlatform.SimpleIde.ViewModels
         }
         
 
-        public event EventHandler<IConfiguratoinItem> OnOpenItem;
-        public IEnumerable<IConfiguratoinItem> Configuration => _configuration.Value;
+        public event EventHandler<IConfigurationItem> OnOpenItem;
+        public IEnumerable<IConfigurationItem> Configuration => _configuration.Value;
         public string SearchQuery
         {
             get => _searchQuery;
@@ -85,15 +80,15 @@ namespace ZenPlatform.SimpleIde.ViewModels
                 this.RaiseAndSetIfChanged(ref _searchQuery, value);
             }
         }
-        public ReactiveCommand<string, IEnumerable<IConfiguratoinItem>> Search { get; }
+        public ReactiveCommand<string, IEnumerable<IConfigurationItem>> Search { get; }
 
-        public ReactiveCommand<Unit, IConfiguratoinItem> Open { get; }
+        public ReactiveCommand<Unit, IConfigurationItem> Open { get; }
 
 
-        private async Task<IEnumerable<IConfiguratoinItem>> SearchAsync(string query, CancellationToken token)
+        private async Task<IEnumerable<IConfigurationItem>> SearchAsync(string query, CancellationToken token)
         {
 
-            return await Task.Run(()=> _openedConfiguration.Where(i=>i.Content.Contains(query)));
+            return await Task.Run(()=> _openedConfiguration.Where(i=>i.Caption.Contains(query)));
         }
 
     }

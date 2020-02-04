@@ -7,6 +7,8 @@ using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
+using ZenPlatform.EntityComponent.IDE;
+using ZenPlatform.Ide.Common;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -28,8 +30,9 @@ namespace ZenPlatform.EntityComponent.Configuration
             _md = new MDComponent();
             _mrg = new ComponentManager();
             _objs = new List<ObjectEditor>();
-
+            
             _entry = FileSystemPath.Root.AppendFile("Entity");
+           
         }
 
         public ComponentEditor(IProject proj, MDComponent com, IFileSystem fs) : this(proj)
@@ -55,11 +58,17 @@ namespace ZenPlatform.EntityComponent.Configuration
         //         _inf.FileSystem.CreateDirectory(path);
         // }
 
+        public IConfigurationItem GetConfigurationTree()
+        {
+            return new ComponentConfigurationItem(this);
+        }
+
         public void Apply()
         {
             var comRef = new ComponentRef {Entry = Entry.ToString(), Name = "Entity"};
             _proj.ComponentReferences.Add(comRef);
             _proj.Attach(comRef, _mrg);
+            _proj.RegisterComponentEditor(this);
 
             _com = _mrg.CreateAndRegisterComponent(_inf, _md);
 

@@ -1,27 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
+using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using ZenPlatform.Ide.Contracts;
 
 namespace ZenPlatform.SimpleIde.Models
 {
-    public class SimpleConfigurationItem : IConfiguratoinItem
+    public class SimpleConfigurationItem : IConfigurationItem
     {
-        private List<IConfiguratoinItem> _childs;
-        public SimpleConfigurationItem(string content, object context)
+        private List<IConfigurationItem> _childs;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public SimpleConfigurationItem(string caption)
         {
-            Content = content;
-            Context = context;
-            _childs = new List<IConfiguratoinItem>();
+            Caption = caption;
+            _childs = new List<IConfigurationItem>();
         }
 
-        public void AddChild(IConfiguratoinItem item)
+        public void AddChild(IConfigurationItem item)
         {
             _childs.Add(item);
         }
-        public string Content { get; }
 
-        public IBitmap Bitmap => null;
+        public void Create(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IControl GetEditor()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Caption { get; }
 
         public bool IsEnable => true;
 
@@ -29,10 +43,12 @@ namespace ZenPlatform.SimpleIde.Models
 
         public bool CanOpen => true;
 
-        public bool HasContext => true;
+        public IEnumerable<IConfigurationItem> Childs => _childs;
 
-        public object Context { get; set; }
+        public bool CanCreate => throw new NotImplementedException();
 
-        public IEnumerable<IConfiguratoinItem> Childs => _childs;
+        public bool CanDelete => throw new NotImplementedException();
+
+        public bool CanEdit => throw new NotImplementedException();
     }
 }
