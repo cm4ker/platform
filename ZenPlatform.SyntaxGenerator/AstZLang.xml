@@ -45,6 +45,7 @@
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Base" Type="TypeSyntax"/>
         </Arguments>
     </Syntax>
 
@@ -117,6 +118,11 @@
     <Syntax Name="SingleTypeSyntax" Base="TypeSyntax"/>
     <Syntax Name="ArrayTypeSyntax" Base="TypeSyntax"/>
     <Syntax Name="UnionTypeSyntax" Base="TypeSyntax"/>
+    <Syntax Name="GenericTypeSyntax" Base="TypeSyntax">
+        <Arguments>
+            <List Name="Args" Type="List&lt;TypeSyntax&gt;"/>
+        </Arguments>
+    </Syntax>
 
 
     <Syntax Name="Block" IsScoped="true">
