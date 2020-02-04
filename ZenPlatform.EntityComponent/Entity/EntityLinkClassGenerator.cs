@@ -71,8 +71,8 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var cls = new ComponentClass(CompilationMode.Shared, _component, ipType, null, className,
-                    new TypeBody(new List<Member>()))
-                {Base = "Entity.EntityLink", Namespace = ipType.GetNamespace()};
+                    TypeBody.Empty, new SingleTypeSyntax(null, "Entity.EntityLink", TypeNodeKind.Object))
+                {Namespace = ipType.GetNamespace()};
 
             cls.Namespace = @namespace;
             cls.Bag = ObjectType.Link;

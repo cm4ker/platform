@@ -270,10 +270,9 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Class : TypeEntity, IAstSymbol
     {
-        public Class(ILineInfo lineInfo, TypeBody typeBody, String name, Boolean isMappable = false): base(lineInfo, typeBody, name)
+        public Class(ILineInfo lineInfo, TypeBody typeBody, String name, TypeSyntax @base = null): base(lineInfo, typeBody, name, @base)
         {
             var slot = 0;
-            IsMappable = isMappable;
         }
 
         public Boolean IsMappable
@@ -292,7 +291,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Module : TypeEntity, IAstSymbol
     {
-        public Module(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, typeBody, name)
+        public Module(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, typeBody, name, null)
         {
             var slot = 0;
         }
