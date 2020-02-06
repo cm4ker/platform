@@ -226,7 +226,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class TypeBody : SyntaxNode, IScoped
     {
-        public TypeBody(ILineInfo lineInfo, List<Function> functions, List<Field> fields, List<Property> properties, List<Constructor> constructors): base(lineInfo)
+        public TypeBody(ILineInfo lineInfo, List<Function> functions, List<Field> fields, List<Property> properties, List<Constructor> constructors, List<UsingBase> usings): base(lineInfo)
         {
             var slot = 0;
             Functions = functions;
@@ -260,6 +260,14 @@ namespace ZenPlatform.Language.Ast.Definitions
                     if (item != null)
                         Childs.Add(item);
                 }
+
+            Usings = usings;
+            if (Usings != null)
+                foreach (var item in Usings)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
         }
 
         public List<Function> Functions
@@ -278,6 +286,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public List<Constructor> Constructors
+        {
+            get;
+        }
+
+        public List<UsingBase> Usings
         {
             get;
         }
@@ -337,15 +350,9 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Class : TypeEntity, IAstSymbol
     {
-        public Class(ILineInfo lineInfo, TypeBody typeBody, String name, Boolean isMappable = false): base(lineInfo, typeBody, name)
+        public Class(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, typeBody, name)
         {
             var slot = 0;
-            IsMappable = isMappable;
-        }
-
-        public Boolean IsMappable
-        {
-            get;
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)

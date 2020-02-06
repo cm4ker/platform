@@ -47,6 +47,7 @@
             <List Name="Fields" Type="List&lt;Field&gt;"/>
             <List Name="Properties" Type="List&lt;Property&gt;"/>
             <List Name="Constructors" Type="List&lt;Constructor&gt;"/>
+            <List Name="Usings" Type="List&lt;UsingBase&gt;" />
         </Arguments>
     </Syntax>
 
@@ -62,7 +63,6 @@
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true" PassBase="true" OnlyArgument="true"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true" OnlyArgument="true"/>
-            <Single Name="IsMappable" Type="Boolean" DenyChildrenFill="true" Default="false"/>
         </Arguments>
     </Syntax>
 

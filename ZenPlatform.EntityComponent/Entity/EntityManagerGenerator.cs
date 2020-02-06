@@ -54,7 +54,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var cls = new ComponentModule(CompilationMode.Server, _component, ipType, null, className,
-                new TypeBody(new List<Member>()));
+                TypeBody.Empty);
             cls.Bag = ObjectType.Manager;
 
             cls.Namespace = @namespace;

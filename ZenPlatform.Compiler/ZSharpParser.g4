@@ -7,9 +7,10 @@ options { tokenVocab = ZSharpLexer; }
 entryPoint: 
     (moduleDefinition
     | typeDefinition
-    | usingDefinition
     | namespaceDefinition
-    | aliasingTypeDefinition)*;
+    | usingSection)*;
+
+usingSection: (usingDefinition | aliasingTypeDefinition)+;
 
 usingDefinition : 
         USING namespace ';';
@@ -43,7 +44,7 @@ moduleBody: (functionDeclaration)* ;
 */
 typeDefinition: attributes? TYPE typeName '{' typeBody '}';
 
-typeBody: (functionDeclaration | fieldDeclaration | propertyDeclaration)*;
+typeBody: (usingSection)* (functionDeclaration | fieldDeclaration | propertyDeclaration)*;
 /*
 ================END TYPE==================
 */
