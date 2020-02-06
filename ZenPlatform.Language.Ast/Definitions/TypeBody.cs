@@ -39,17 +39,4 @@ namespace ZenPlatform.Language.Ast.Definitions
             Childs.Add(constructor);
         }
     }
-
-
-    public partial class CompilationUnit
-    {
-        public static CompilationUnit Empty =>
-            new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>());
-
-        public void AddEntity(TypeEntity type)
-        {
-            this.Entityes.Add(type);
-            Childs.Add(type);
-        }
-    }
 }

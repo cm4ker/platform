@@ -66,4 +66,15 @@ namespace ZenPlatform.Language.Ast
         {
         }
     }
+
+    public class BindingClass : TypeEntity, IAstSymbol
+    {
+        public BindingClass(string name) : base(null, TypeBody.Empty, name, null)
+        {
+        }
+
+        public IType BindingType { get; set; }
+
+        public SymbolScopeBySecurity SymbolScope { get; set; }
+    }
 }

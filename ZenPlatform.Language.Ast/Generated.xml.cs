@@ -44,14 +44,14 @@ namespace ZenPlatform.Language.Ast.Definitions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class CompilationUnit : SyntaxNode
+    public partial class NamespaceDeclaration : SyntaxNode
     {
-        public CompilationUnit(ILineInfo lineInfo, List<NamespaceBase> namespaces, List<TypeEntity> entityes): base(lineInfo)
+        public NamespaceDeclaration(ILineInfo lineInfo, List<UsingBase> usings, List<TypeEntity> entityes, List<NamespaceDeclaration> namespaceDeclarations): base(lineInfo)
         {
             var slot = 0;
-            Namespaces = namespaces;
-            if (Namespaces != null)
-                foreach (var item in Namespaces)
+            Usings = usings;
+            if (Usings != null)
+                foreach (var item in Usings)
                 {
                     if (item != null)
                         Childs.Add(item);
@@ -64,14 +64,81 @@ namespace ZenPlatform.Language.Ast.Definitions
                     if (item != null)
                         Childs.Add(item);
                 }
+
+            NamespaceDeclarations = namespaceDeclarations;
+            if (NamespaceDeclarations != null)
+                foreach (var item in NamespaceDeclarations)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
         }
 
-        public List<NamespaceBase> Namespaces
+        public List<UsingBase> Usings
         {
             get;
         }
 
         public List<TypeEntity> Entityes
+        {
+            get;
+        }
+
+        public List<NamespaceDeclaration> NamespaceDeclarations
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitNamespaceDeclaration(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public partial class CompilationUnit : SyntaxNode
+    {
+        public CompilationUnit(ILineInfo lineInfo, List<UsingBase> usings, List<TypeEntity> entityes, List<NamespaceDeclaration> namespaceDeclarations): base(lineInfo)
+        {
+            var slot = 0;
+            Usings = usings;
+            if (Usings != null)
+                foreach (var item in Usings)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
+
+            Entityes = entityes;
+            if (Entityes != null)
+                foreach (var item in Entityes)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
+
+            NamespaceDeclarations = namespaceDeclarations;
+            if (NamespaceDeclarations != null)
+                foreach (var item in NamespaceDeclarations)
+                {
+                    if (item != null)
+                        Childs.Add(item);
+                }
+        }
+
+        public List<UsingBase> Usings
+        {
+            get;
+        }
+
+        public List<TypeEntity> Entityes
+        {
+            get;
+        }
+
+        public List<NamespaceDeclaration> NamespaceDeclarations
         {
             get;
         }
@@ -85,9 +152,9 @@ namespace ZenPlatform.Language.Ast.Definitions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public abstract partial class NamespaceBase : SyntaxNode
+    public abstract partial class UsingBase : SyntaxNode
     {
-        public NamespaceBase(ILineInfo lineInfo, String name): base(lineInfo)
+        public UsingBase(ILineInfo lineInfo, String name): base(lineInfo)
         {
             var slot = 0;
             Name = name;
@@ -107,9 +174,9 @@ namespace ZenPlatform.Language.Ast.Definitions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class Namespace : NamespaceBase
+    public partial class UsingDeclaration : UsingBase
     {
-        public Namespace(ILineInfo lineInfo, String name): base(lineInfo, name)
+        public UsingDeclaration(ILineInfo lineInfo, String name): base(lineInfo, name)
         {
             var slot = 0;
             Name = name;
@@ -122,16 +189,16 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitNamespace(this);
+            return visitor.VisitUsingDeclaration(this);
         }
     }
 }
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class ClassNamespace : NamespaceBase
+    public partial class UsingAliasDeclaration : UsingBase
     {
-        public ClassNamespace(ILineInfo lineInfo, String className, String alias): base(lineInfo, className)
+        public UsingAliasDeclaration(ILineInfo lineInfo, String className, String alias): base(lineInfo, className)
         {
             var slot = 0;
             ClassName = className;
@@ -150,7 +217,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitClassNamespace(this);
+            return visitor.VisitUsingAliasDeclaration(this);
         }
     }
 }
@@ -232,14 +299,14 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public abstract partial class TypeEntity : SyntaxNode
     {
-        public TypeEntity(ILineInfo lineInfo, TypeBody typeBody, String name, TypeSyntax @base): base(lineInfo)
+        public TypeEntity(ILineInfo lineInfo, TypeBody typeBody, String name, TypeSyntax @base = null): base(lineInfo)
         {
             var slot = 0;
             TypeBody = typeBody;
             if (TypeBody != null)
                 Childs.Add(TypeBody);
             Name = name;
-            Base =  @base;
+            Base = @base;
             if (Base != null)
                 Childs.Add(Base);
         }
@@ -270,9 +337,10 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Class : TypeEntity, IAstSymbol
     {
-        public Class(ILineInfo lineInfo, TypeBody typeBody, String name, TypeSyntax @base = null): base(lineInfo, typeBody, name, @base)
+        public Class(ILineInfo lineInfo, TypeBody typeBody, String name, Boolean isMappable = false): base(lineInfo, typeBody, name)
         {
             var slot = 0;
+            IsMappable = isMappable;
         }
 
         public Boolean IsMappable
@@ -291,7 +359,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Module : TypeEntity, IAstSymbol
     {
-        public Module(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, typeBody, name, null)
+        public Module(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, typeBody, name)
         {
             var slot = 0;
         }
