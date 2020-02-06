@@ -278,17 +278,17 @@ namespace ZenPlatform.Language.Ast
             return DefaultVisit(obj);
         }
 
-        public virtual T VisitNamespaceBase(NamespaceBase obj)
+        public virtual T VisitUsingDeclaration(UsingDeclaration obj)
         {
             return DefaultVisit(obj);
         }
 
-        public virtual T VisitNamespace(Namespace obj)
+        public virtual T VisitUsingAliasDeclaration(UsingAliasDeclaration obj)
         {
             return DefaultVisit(obj);
         }
 
-        public virtual T VisitClassNamespace(ClassNamespace obj)
+        public virtual T VisitNamespaceDeclaration(NamespaceDeclaration obj)
         {
             return DefaultVisit(obj);
         }
