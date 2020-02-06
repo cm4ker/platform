@@ -33,14 +33,15 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var cls = new ComponentClass(CompilationMode.Server, _component, type, null, className,
-                new TypeBody(new List<Member>()));
+                TypeBody.Empty);
             cls.Bag = ObjectType.Object;
 
             cls.Namespace = @namespace;
 
             GenerateObjectClassUserModules(type, cls);
 
-            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls}, new List<NamespaceDeclaration>());
+            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
+                new List<NamespaceDeclaration>());
             //end create dto class
 
             root.Add(cu);

@@ -38,14 +38,11 @@ namespace ZenPlatform.Compiler
 
             var usings = new List<UsingBase>();
 
-            foreach (var atd in context.aliasingTypeDefinition())
+            
+            
+            foreach (var atd in context.usingSection())
             {
                 usings.Add((UsingBase) Visit(atd));
-            }
-
-            foreach (var u in context.usingDefinition())
-            {
-                usings.Add((UsingBase) Visit(u));
             }
 
             base.VisitEntryPoint(context);
@@ -102,9 +99,9 @@ namespace ZenPlatform.Compiler
             TypeBody result;
 
             if (context.ChildCount == 0)
-                result = new TypeBody(null);
+                result = new TypeBody(null, null);
             else
-                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList());
+                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), null);
 
             _syntaxStack.Push(result);
             return result;
@@ -165,9 +162,9 @@ namespace ZenPlatform.Compiler
             TypeBody result;
 
             if (context.ChildCount == 0)
-                result = new TypeBody(null);
+                result = new TypeBody(null, null);
             else
-                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList());
+                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), null);
 
             _syntaxStack.Push(result);
             return result;

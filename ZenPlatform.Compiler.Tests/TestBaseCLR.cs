@@ -102,8 +102,7 @@ namespace ZenPlatform.Compiler.Tests
             CompilationUnit cu = new CompilationUnit(null, null, new List<TypeEntity>
             {
                 new Module(null,
-                    new TypeBody(null, new List<Function> {node}, new List<Field>(), new List<Property>(),
-                        new List<Constructor>()), "Test")
+                    new TypeBody(new List<Member> {node}, null), "Test")
             }, new List<NamespaceDeclaration>());
 
 
