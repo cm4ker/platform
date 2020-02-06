@@ -40,7 +40,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             GenerateObjectClassUserModules(type, cls);
 
-            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls}, new List<NamespaceDeclaration>());
             //end create dto class
 
             root.Add(cu);

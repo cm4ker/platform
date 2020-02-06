@@ -78,7 +78,8 @@ namespace ZenPlatform.EntityComponent.Entity
             cls.Bag = ObjectType.Link;
 
 
-            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
+                new List<NamespaceDeclaration>());
             root.Add(cu);
         }
 

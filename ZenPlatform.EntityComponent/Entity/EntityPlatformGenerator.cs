@@ -122,8 +122,8 @@ namespace ZenPlatform.EntityComponent.Entity
                     func.SymbolScope = SymbolScopeBySecurity.User;
                 }
 
-                var cu = new CompilationUnit(null, new List<NamespaceBase>(),
-                    new List<TypeEntity>() {serverModule, clientModule});
+                var cu = new CompilationUnit(null, new List<UsingBase>(),
+                    new List<TypeEntity>() {serverModule, clientModule}, new List<NamespaceDeclaration>());
 
                 root.Add(cu);
             }

@@ -36,35 +36,35 @@ namespace ZenPlatform.Compiler
 
             _syntaxStack.Push(typeList);
 
-            var usings = new List<NamespaceBase>();
+            var usings = new List<UsingBase>();
 
             foreach (var atd in context.aliasingTypeDefinition())
             {
-                usings.Add((NamespaceBase) Visit(atd));
+                usings.Add((UsingBase) Visit(atd));
             }
 
             foreach (var u in context.usingDefinition())
             {
-                usings.Add((NamespaceBase) Visit(u));
+                usings.Add((UsingBase) Visit(u));
             }
 
             base.VisitEntryPoint(context);
 
-            var cu = new CompilationUnit(context.start.ToLineInfo(), usings, typeList);
+            var cu = new CompilationUnit(context.start.ToLineInfo(), usings, typeList, null);
 
             return cu;
         }
 
         public override SyntaxNode VisitAliasingTypeDefinition(ZSharpParser.AliasingTypeDefinitionContext context)
         {
-            return new ClassNamespace(context.start.ToLineInfo(),
-                context.typeName().GetText(), context.alias.GetText());
+            return new UsingAliasDeclaration(context.start.ToLineInfo(), context.typeName().GetText(),
+                context.alias.GetText());
         }
 
         public override SyntaxNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
         {
             base.VisitUsingDefinition(context);
-            return new Namespace(context.start.ToLineInfo(), _syntaxStack.PopString());
+            return new UsingDeclaration(context.start.ToLineInfo(), _syntaxStack.PopString());
         }
 
         public override SyntaxNode VisitModuleDefinition(ZSharpParser.ModuleDefinitionContext context)
@@ -455,7 +455,7 @@ namespace ZenPlatform.Compiler
                 args = _syntaxStack.PopList<Argument>().ToImmutableList();
             }
 
-            var result = new Call(context.start.ToLineInfo(), args,_syntaxStack.PopName(), null);
+            var result = new Call(context.start.ToLineInfo(), args, _syntaxStack.PopName(), null);
 
             _syntaxStack.Push(result);
 

@@ -104,7 +104,7 @@ namespace ZenPlatform.Compiler.Tests
                 new Module(null,
                     new TypeBody(null, new List<Function> {node}, new List<Field>(), new List<Property>(),
                         new List<Constructor>()), "Test")
-            });
+            }, new List<NamespaceDeclaration>());
 
 
             Root r = new Root(null, new List<CompilationUnit>() {cu});
