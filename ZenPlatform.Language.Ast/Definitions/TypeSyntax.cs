@@ -67,7 +67,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             Kind = kind;
         }
     }
-
+    
     public partial class SingleTypeSyntax
     {
         public SingleTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind) : this(lineInfo)

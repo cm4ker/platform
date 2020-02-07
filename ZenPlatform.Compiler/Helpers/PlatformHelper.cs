@@ -108,6 +108,16 @@ namespace ZenPlatform.Compiler.Helpers
             return ToClrType(typeSyntax, context.TypeSystem);
         }
 
+        public static IType ToClrType(this TypeSyntax typeSyntax, IAssembly context, List<UsingBase> usings)
+        {
+            if (typeSyntax is SingleTypeSyntax sts)
+            {
+                return ToClrType(typeSyntax, context.TypeSystem) ?? context.FindType(sts.TypeName);
+            }
+
+            return ToClrType(typeSyntax, context.TypeSystem);
+        }
+
         public static IType ToClrType(this TypeSyntax typeSyntax, ITypeSystem context)
         {
             var _stb = context.GetSystemBindings();
