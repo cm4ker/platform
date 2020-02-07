@@ -1,4 +1,6 @@
-﻿using Dock.Model;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Dock.Model;
 using Dock.Model.Controls;
 using ReactiveUI;
 using System;
@@ -15,6 +17,8 @@ using ZenPlatform.Ide.Common.Editors;
 using ZenPlatform.Ide.Contracts;
 using ZenPlatform.SimpleIde.Models;
 using ZenPlatform.Test.Tools;
+using SharpFileSystem;
+using SharpFileSystem.FileSystems;
 
 namespace ZenPlatform.SimpleIde.ViewModels
 {
@@ -23,13 +27,16 @@ namespace ZenPlatform.SimpleIde.ViewModels
         private LayoutFactory LayoutFactory { get; }
         public ConfigurationTreeViewModel Configuration { get; set; }
 
-        private IDocumentDock documentDock;
         public IList<IDockable> LeftTools { get; }
         public IList<IDockable> Documents { get; }
 
+        private IDocumentDock _documentDock;
+
         public ReactiveCommand<IConfigurationItem, IDockable> OpenItemCommand;
 
-        public ReactiveCommand<Unit, IType> AddCommand { get; }
+        public ReactiveCommand<Unit, Unit> AddCommand { get; }
+
+        public ReactiveCommand<Unit, string> SaveProjectCommand { get; private set; }
 
         private Project _project;
         public DockMainWindowViewModel()
@@ -40,19 +47,14 @@ namespace ZenPlatform.SimpleIde.ViewModels
             LeftTools = new ObservableCollection<IDockable>();
             Configuration = new ConfigurationTreeViewModel(_project);
 
-            AddCommand = ReactiveCommand.CreateFromObservable( () => UITypeSelector.SelectType(_project.TypeManager).Handle(Unit.Default));
+
+
+            
 
             Reactive();
 
 
             LeftTools.Add(Configuration);
-
-            documentDock = LayoutFactory.CreateDocumentDock();
-            documentDock.Id = "DocumentsPane";
-            documentDock.Title = "DocumentsPane";
-            //    documents.IsCollapsable = false;
-            documentDock.Proportion = double.NaN;
-            documentDock.VisibleDockables = Documents;
 
             // ReactiveCommand.Create<Unit, Unit>((u)=> { })
 
@@ -61,6 +63,24 @@ namespace ZenPlatform.SimpleIde.ViewModels
 
         public void Reactive()
         {
+            Configuration.EditItem.Subscribe(item =>
+            {
+                DocumentEditor editor = new DocumentEditor();
+                editor.Context = Configuration.SelectedItem;
+                Documents.Add(editor);
+                _documentDock.ActiveDockable = editor;
+            });
+
+
+            SaveProjectCommand = ReactiveCommand.CreateFromObservable(
+                () => Dialogs.OpenDirectory()
+                );
+            SaveProjectCommand.Subscribe(dir =>
+            {
+                PhysicalFileSystem fileSystem = new PhysicalFileSystem(dir);
+                _project.Save(fileSystem);
+            });
+
 
 
         }
@@ -78,12 +98,12 @@ namespace ZenPlatform.SimpleIde.ViewModels
             //    treeTool.IsCollapsable = false;
             treeTool.VisibleDockables = LeftTools;
 
-            var documents = LayoutFactory.CreateDocumentDock();
-            documents.Id = "DocumentsPane";
-            documents.Title = "DocumentsPane";
-        //    documents.IsCollapsable = false;
-            documents.Proportion = double.NaN;
-            documents.VisibleDockables = Documents;
+            _documentDock = LayoutFactory.CreateDocumentDock();
+            _documentDock.Id = "DocumentsPane";
+            _documentDock.Title = "DocumentsPane";
+            //    documents.IsCollapsable = false;
+            _documentDock.Proportion = double.NaN;
+            _documentDock.VisibleDockables = Documents;
             
 
            var mainLayout = new ProportionalDock();//LayoutFactory.CreateProportionalDock();
@@ -92,12 +112,14 @@ namespace ZenPlatform.SimpleIde.ViewModels
             mainLayout.Id = "MainLayout";
             mainLayout.Title = "MainLayout";
             mainLayout.Orientation = Orientation.Horizontal;
-            
-           // mainLayout.ActiveDockable = null;
+
+            var split = LayoutFactory.CreateSplitterDock();
+            split.Proportion = 0.3;
+            // mainLayout.ActiveDockable = null;
             mainLayout.VisibleDockables = LayoutFactory.CreateList<IDockable>(
                 treeTool,
-                LayoutFactory.CreateSplitterDock(),
-                documentDock
+                split,
+                _documentDock
             );
 
 

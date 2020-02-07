@@ -39,6 +39,8 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public virtual bool IsPrimitive => false;
 
+        public virtual bool IsAbstract => false;
+
         public virtual PrimitiveKind PrimitiveKind => PrimitiveKind.None;
 
         public virtual bool IsValue { get; set; }

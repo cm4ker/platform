@@ -11,6 +11,7 @@ using ZenPlatform.SimpleIde.Models;
 using ZenPlatform.SimpleIde.Views;
 using ReactiveUI;
 using System.Reactive;
+using ZenPlatform.Ide.Contracts;
 
 namespace ZenPlatform.SimpleIde.ViewModels
 {

@@ -4,19 +4,24 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZenPlatform.EntityComponent.IDE.Editors.UiPropertyEditor">
-   <DockPanel >
+   <DockPanel DataContext="{Binding Context}">
     <StackPanel  DockPanel.Dock="Top" >
       <TextBlock Margin="5" HorizontalAlignment="Left">Name:</TextBlock>
-      <TextBox Name="Name" Text="{Binding asdsada}" HorizontalAlignment="Stretch"    />
+      <TextBox Name="Name" Text="{Binding Caption}" HorizontalAlignment="Stretch"    />
     </StackPanel>
       <TextBlock Margin="5" HorizontalAlignment="Left" DockPanel.Dock="Top">Types:</TextBlock >
       <DockPanel>
         <StackPanel DockPanel.Dock="Right" Margin="5">
-          <Button >Add</Button>
-          <Button >Delete</Button>
+          <Button Command="{Binding AddCommand}" >Add</Button>
+          <Button Command="{Binding DeleteCommand}">Delete</Button>
         </StackPanel>
-      <ListBox Name="TypeList" >
-      </ListBox>
+        <ListBox Name="TypeList" Items="{Binding Types}" SelectedItem="{Binding SelectedType}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock FontSize="16" Text="{Binding Name}"/>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
       </DockPanel>
     
     </DockPanel>

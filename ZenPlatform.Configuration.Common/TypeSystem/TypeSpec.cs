@@ -15,6 +15,8 @@ namespace ZenPlatform.Configuration.TypeSystem
             _type = type;
         }
 
+        public IType BaseType => _type;
+
         public override string Name => _name ??= CalcName();
 
         public override Guid? BaseId => _type.Id;
@@ -26,6 +28,9 @@ namespace ZenPlatform.Configuration.TypeSystem
         public int Size { get; set; }
 
         public override bool IsTypeSpec => true;
+
+        public override bool IsSizable => _type.IsSizable;
+        public override bool IsScalePrecision => _type.IsScalePrecision;
 
         private string CalcName()
         {

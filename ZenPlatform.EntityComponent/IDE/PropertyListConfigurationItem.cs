@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
+using ReactiveUI;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Ide.Contracts;
 
 namespace ZenPlatform.EntityComponent.IDE
 {
-    public class PopertyListConfigurationItem : IConfigurationItem
+    public class PropertyListConfigurationItem : ReactiveObject, IConfigurationItem
     {
         private ObjectEditor _editor;
-        public PopertyListConfigurationItem(ObjectEditor editor)
+        private readonly ObservableCollection<IConfigurationItem> _items;
+        public PropertyListConfigurationItem(ObjectEditor editor)
         {
+            
             _editor = editor;
+            _items = new ObservableCollection<IConfigurationItem>(_editor.Editors.Select(p => new PropertyConfigurationItem(p, _editor)));
+          
         }
         public string Caption => "Propertys";
 
@@ -29,19 +35,24 @@ namespace ZenPlatform.EntityComponent.IDE
         public bool CanDelete => false;
 
 
-        public IEnumerable<IConfigurationItem> Childs => _editor.Editors.Select(p => new PropertyConfigurationItem(p));
+        public ObservableCollection<IConfigurationItem> Childs => _items;
 
         public bool CanEdit => false;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public bool CanSearch => false;
 
-        public void Create(string name)
+        public IConfigurationItem Create(string name)
         {
             var prop = _editor.CreateProperty();
 
             prop.Name = name;
 
-            NotifyPropertyChanged("Childs");
+            var item = new PropertyConfigurationItem(prop, _editor);
+            _items.Add(item);
+
+            //this.RaisePropertyChanged("Childs");
+
+            return item;
         }
 
         public object GetEditor()
@@ -49,9 +60,9 @@ namespace ZenPlatform.EntityComponent.IDE
             throw new NotImplementedException();
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        public bool Search(string text)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            throw new NotImplementedException();
         }
     }
 }

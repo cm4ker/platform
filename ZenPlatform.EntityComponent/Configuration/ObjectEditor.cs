@@ -16,7 +16,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public ObjectEditor(IInfrastructure inf)
         {
             _inf = inf;
-
+            
             _md = new MDEntity();
             _props = new List<PropertyEditor>();
         }
@@ -55,6 +55,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             return MDTypes.Ref(_md.LinkId);
         }
+
+        public IInfrastructure Infrastructure => _inf;
 
         private void RegisterObject()
         {
