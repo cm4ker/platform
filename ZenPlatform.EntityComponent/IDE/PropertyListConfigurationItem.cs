@@ -7,11 +7,12 @@ using System.Runtime.CompilerServices;
 using Avalonia.Controls;
 using ReactiveUI;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.EntityComponent.Configuration.Editors;
 using ZenPlatform.Ide.Contracts;
 
 namespace ZenPlatform.EntityComponent.IDE
 {
-    public class PropertyListConfigurationItem : ReactiveObject, IConfigurationItem
+    public class PropertyListConfigurationItem : ConfigurationItemBase
     {
         private ObjectEditor _editor;
         private readonly ObservableCollection<IConfigurationItem> _items;
@@ -22,26 +23,13 @@ namespace ZenPlatform.EntityComponent.IDE
             _items = new ObservableCollection<IConfigurationItem>(_editor.Editors.Select(p => new PropertyConfigurationItem(p, _editor)));
           
         }
-        public string Caption => "Propertys";
+        public override string Caption { get => "Propertys"; set { } }
 
-        public bool IsEnable => true;
+        public override bool CanCreate => true;
 
-        public bool IsExpanded { get; set; }
+        public override ObservableCollection<IConfigurationItem> Childs => _items;
 
-        public bool CanOpen => false;
-
-        public bool CanCreate => true;
-
-        public bool CanDelete => false;
-
-
-        public ObservableCollection<IConfigurationItem> Childs => _items;
-
-        public bool CanEdit => false;
-
-        public bool CanSearch => false;
-
-        public IConfigurationItem Create(string name)
+        public override IConfigurationItem Create(string name)
         {
             var prop = _editor.CreateProperty();
 
@@ -53,16 +41,6 @@ namespace ZenPlatform.EntityComponent.IDE
             //this.RaisePropertyChanged("Childs");
 
             return item;
-        }
-
-        public object GetEditor()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Search(string text)
-        {
-            throw new NotImplementedException();
         }
     }
 }

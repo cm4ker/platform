@@ -24,7 +24,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public override bool IsScalePrecision => true;
 
-        internal NumericType(ITypeManager ts) : base(ts)
+        internal NumericPType(ITypeManager ts) : base(ts)
         {
         }
     }

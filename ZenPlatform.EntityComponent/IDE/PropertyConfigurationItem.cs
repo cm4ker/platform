@@ -10,6 +10,7 @@ using System.Reactive.Linq;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.EntityComponent.Configuration.Editors;
 using ZenPlatform.EntityComponent.IDE.Editors;
 using ZenPlatform.Ide.Common;
 using ZenPlatform.Ide.Contracts;
@@ -18,11 +19,11 @@ using ZenPlatform.Ide.Contracts;
 namespace ZenPlatform.EntityComponent.IDE
 {
     [View(typeof(UiPropertyEditor))]
-    class PropertyConfigurationItem : ReactiveObject, IConfigurationItem
+    class PropertyConfigurationItem : ConfigurationItemBase
     {
         private PropertyEditor _property;
         private ObjectEditor _objectEditor;
-        private IType _selectedType;
+        private IPType _selectedType;
         public PropertyConfigurationItem(PropertyEditor property, ObjectEditor objectEditor)
         {
             _property = property;
@@ -40,7 +41,7 @@ namespace ZenPlatform.EntityComponent.IDE
             DeleteCommand.Subscribe(t => { _property.UnsetType(t.Guid); this.RaisePropertyChanged("Types"); });
 
         }
-        public string Caption
+        public override string Caption
         {
             get => _property.Name;
             set
@@ -50,26 +51,19 @@ namespace ZenPlatform.EntityComponent.IDE
             }
         }
 
-        public bool IsEnable => true;
 
-        public bool IsExpanded { get; set; }
+        public override bool CanDelete => true;
 
-        public bool CanCreate => false;
 
-        public bool CanDelete => true;
+        public override bool CanEdit => true;
 
-        public ObservableCollection<IConfigurationItem> Childs => null;
 
-        public bool CanEdit => true;
-
-        public IConfigurationItem Create(string name) => throw new NotImplementedException();
-
-        public bool Search(string text)
+        public override bool Search(string text)
         {
             return Caption.Contains(text);
         }
 
-        public IEnumerable<IType> Types
+        public IEnumerable<IPType> Types
         {
             get
 
@@ -88,8 +82,9 @@ namespace ZenPlatform.EntityComponent.IDE
         public ReactiveCommand<Unit, MDType> AddCommand { get; }
         public ReactiveCommand<Unit, MDType> DeleteCommand { get; }
 
-        public IType SelectedType { get => _selectedType; set => this.RaiseAndSetIfChanged(ref _selectedType, value); }
+        public IPType SelectedType { get => _selectedType; set => this.RaiseAndSetIfChanged(ref _selectedType, value); }
 
-        public bool CanSearch => true;
+        public override bool CanSearch => true;
+
     }
 }

@@ -13,11 +13,13 @@ namespace ZenPlatform.Ide.Contracts
         string Caption { get; }
         bool IsEnable { get; }
         bool IsExpanded { get; }
+        bool IsChanged { get; }
         bool CanEdit { get; }
         bool CanCreate { get; }
         bool CanDelete { get; }
-
         bool CanSearch { get; }
+        bool CanSave { get; }
+
 
         ObservableCollection<IConfigurationItem> Childs { get; }
 
@@ -25,5 +27,7 @@ namespace ZenPlatform.Ide.Contracts
         IConfigurationItem Create(string name);
 
         bool Search(string text);
+
+        void Save();
     }
 }

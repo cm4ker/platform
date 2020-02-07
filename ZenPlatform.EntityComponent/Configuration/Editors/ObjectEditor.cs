@@ -17,6 +17,8 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         private readonly List<CommandEditor> _commands;
         private readonly List<TableEditor> _tables;
 
+        public IInfrastructure Infrastructure => _inf;
+
         public ObjectEditor(IInfrastructure inf)
         {
             _inf = inf;
