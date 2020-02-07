@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.Cecil;
+using MoreLinq.Extensions;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -10,6 +12,7 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
 using IProperty = ZenPlatform.Compiler.Contracts.IProperty;
@@ -20,22 +23,35 @@ namespace ZenPlatform.EntityComponent.Entity
 {
     public static class EntityComponentHelper
     {
-        public static ZenPlatform.Configuration.Contracts.TypeSystem.IType GetDtoType(
-            this ZenPlatform.Configuration.Contracts.TypeSystem.IType type)
+        public static IPType GetDtoType(this IPType ipType)
         {
-            return type.TypeManager.Types.FirstOrDefault(x => x.IsDto && x.GroupId == type.GroupId);
+            return ipType.TypeManager.Types.FirstOrDefault(x => x.IsDto && x.GroupId == ipType.GroupId);
         }
 
-        public static ZenPlatform.Configuration.Contracts.TypeSystem.IType GetManagerType(
-            this ZenPlatform.Configuration.Contracts.TypeSystem.IType type)
+        public static IPType GetManagerType(this IPType ipType)
         {
-            return type.TypeManager.Types.FirstOrDefault(x => x.IsManager && x.GroupId == type.GroupId);
+            return ipType.TypeManager.Types.FirstOrDefault(x => x.IsManager && x.GroupId == ipType.GroupId);
         }
 
-        public static ZenPlatform.Configuration.Contracts.TypeSystem.IType GetLinkType(
-            this ZenPlatform.Configuration.Contracts.TypeSystem.IType type)
+        public static IPType GetLinkType(this IPType ipType)
         {
-            return type.TypeManager.Types.FirstOrDefault(x => x.IsLink && x.GroupId == type.GroupId);
+            return ipType.TypeManager.Types.FirstOrDefault(x => x.IsLink && x.GroupId == ipType.GroupId);
+        }
+
+        public static IPType GetObjectType(this IPType ipType)
+        {
+            return ipType.TypeManager.Types.FirstOrDefault(x => x.IsObject && x.GroupId == ipType.GroupId);
+        }
+
+        public static T GetMD<T>(this IPType type)
+        {
+            return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.GroupId)?.Metadata;
+        }
+
+        public static string GetTableRowClassName(this ITable table)
+        {
+            var type = table.TypeManager.FindType(table.ParentId);
+            return $"{type.GetNamespace()}.TR{type.Name}_{table.Name}";
         }
     }
 
@@ -48,21 +64,22 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Root root)
+        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
         {
-            var className = type.Name;
+            var className = ipType.Name;
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
-            var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, className,
-                    new TypeBody(new List<Member>()))
-                {Base = "Entity.EntityLink", Namespace = type.GetNamespace()};
+            var cls = new ComponentClass(CompilationMode.Shared, _component, ipType, null, className,
+                    TypeBody.Empty, new SingleTypeSyntax(null, "Entity.EntityLink", TypeNodeKind.Object))
+                {Namespace = ipType.GetNamespace()};
 
             cls.Namespace = @namespace;
             cls.Bag = ObjectType.Link;
 
 
-            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
+                new List<NamespaceDeclaration>());
             root.Add(cu);
         }
 
@@ -148,7 +165,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         }
                         else
                         {
-                            dtoPropSchema = prop.GetObjSchema().First(x => x.PlatformType == ctype);
+                            dtoPropSchema = prop.GetObjSchema().First(x => x.PlatformIpType == ctype);
                         }
 
                         var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);

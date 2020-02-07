@@ -11,7 +11,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QSelectExpression : QField
     {
-        public override IEnumerable<IType> GetExpressionType()
+        public override IEnumerable<IPType> GetExpressionType()
         {
             return ((QExpression) Childs.First()).GetExpressionType();
         }
@@ -40,7 +40,7 @@ namespace ZenPlatform.Core.Querying.Model
             return Property.Name;
         }
 
-        public override IEnumerable<IType> GetExpressionType()
+        public override IEnumerable<IPType> GetExpressionType()
         {
             return Property.Types;
         }
@@ -53,14 +53,14 @@ namespace ZenPlatform.Core.Querying.Model
 
     public partial class QLookupField : QField
     {
-        public IEnumerable<IProperty> GetProperties()
+        public IEnumerable<IPProperty> GetProperties()
         {
             return BaseExpression.GetExpressionType().Where(x =>
                     x.IsObject && x.Properties.Any(p => p.Name == PropName))
                 .Select(x => x.FindPropertyByName(PropName));
         }
 
-        public override IEnumerable<IType> GetExpressionType()
+        public override IEnumerable<IPType> GetExpressionType()
         {
             return GetProperties().SelectMany(x => x.Types);
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ZenPlatform.Configuration.Contracts.TypeSystem
 {
-    public interface IProperty : ITypeManagerProvider
+    public interface IPProperty : ITypeManagerProvider
     {
         Guid Id { get; set; }
         Guid ParentId { get; set; }
@@ -13,6 +13,6 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         bool IsUnique { get; set; }
 
         bool IsReadOnly { get; set; }
-        IEnumerable<IType> Types { get; }
+        IEnumerable<IPType> Types { get; }
     }
 }

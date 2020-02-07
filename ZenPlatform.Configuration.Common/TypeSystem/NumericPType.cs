@@ -1,9 +1,10 @@
 using System;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class NumericType : Type
+    public class NumericPType : PType
     {
         public override uint SystemId => 5;
 

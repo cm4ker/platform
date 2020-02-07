@@ -36,12 +36,12 @@ namespace ZenPlatform.Configuration.Contracts
     /// </summary>
     public class ColumnSchemaDefinition
     {
-        public ColumnSchemaDefinition(ColumnSchemaType schemaType, IType platformType, string name,
+        public ColumnSchemaDefinition(ColumnSchemaType schemaType, IPType platformIpType, string name,
             string prefix = "", string postfix = "")
         {
             SchemaType = schemaType;
             Name = name;
-            PlatformType = platformType;
+            PlatformIpType = platformIpType;
             Prefix = prefix ?? throw new ArgumentNullException();
             Postfix = postfix ?? throw new ArgumentNullException();
         }
@@ -71,6 +71,6 @@ namespace ZenPlatform.Configuration.Contracts
         /// <summary>
         /// Тип платформы, закреплённый за схемой
         /// </summary>
-        public IType PlatformType { get; set; }
+        public IPType PlatformIpType { get; set; }
     }
 }

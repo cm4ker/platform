@@ -44,4 +44,31 @@ namespace ZenPlatform.EntityComponent.Configuration
 
 
     }
+    
+    public class TableEditor
+    {
+        private MDTable _mt;
+        private List<PropertyEditor> _props;
+        
+        public TableEditor(MDTable mt)
+        {
+            _mt = mt;
+            _props = new List<PropertyEditor>();
+        }
+
+        public string Name
+        {
+            get => _mt.Name;
+            set => _mt.Name = value;
+        }
+        
+        public PropertyEditor CreateProperty()
+        {
+            var mp = new MDProperty();
+            var a = new PropertyEditor(mp);
+            _mt.Properties.Add(mp);
+            _props.Add(a);
+            return a;
+        }
+    }
 }

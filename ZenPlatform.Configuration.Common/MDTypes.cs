@@ -1,7 +1,6 @@
 using System;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using Type = ZenPlatform.Configuration.TypeSystem.Type;
 
 namespace ZenPlatform.Configuration.Common
 {

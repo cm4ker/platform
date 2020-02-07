@@ -5,30 +5,31 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 {
     public interface ITypeManager
     {
-        IType Int { get; }
-        IType DateTime { get; }
-        IType Binary { get; }
-        IType String { get; }
-        IType Boolean { get; }
-        IType Guid { get; }
-        IType Numeric { get; }
+        IPType Int { get; }
+        IPType DateTime { get; }
+        IPType Binary { get; }
+        IPType String { get; }
+        IPType Boolean { get; }
+        IPType Guid { get; }
+        IPType Numeric { get; }
 
-        IReadOnlyList<IType> Types { get; }
-        IReadOnlyList<IProperty> Properties { get; }
+        IReadOnlyList<IPType> Types { get; }
+        IReadOnlyList<IPProperty> Properties { get; }
         IReadOnlyList<ITable> Tables { get; }
         IReadOnlyList<IComponent> Components { get; }
         IReadOnlyList<IObjectSetting> Settings { get; }
 
         IReadOnlyList<IMetadataRow> Metadatas { get; }
 
-        void Register(IType type);
-        void Register(IProperty p);
+        void Register(IPType ipType);
+        void Register(IPProperty p);
         void Register(IPropertyType type);
         void Register(IComponent component);
-
-        IType Type();
-        ITypeSpec Type(IType type);
-        IProperty Property();
+        void Register(ITable table);
+        
+        IPType Type();
+        IPTypeSpec Type(IPType ipType);
+        IPProperty Property();
         IPropertyType PropertyType();
         ITable Table();
 
@@ -38,5 +39,6 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         IComponent Component();
         void LoadSettings(IEnumerable<IObjectSetting> settings);
+        void AddOrUpdateSetting(IObjectSetting setting);
     }
 }

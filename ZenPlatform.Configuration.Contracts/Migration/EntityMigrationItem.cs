@@ -65,16 +65,16 @@ namespace ZenPlatform.Configuration.Contracts.Migration
 
     public class UpdateTypeItem : IEntityMigrationItem
     {
-        public IProperty Property { get; }
+        public IPProperty Property { get; }
         public string TableName { get; }
 
-        public IType XCType { get; }
+        public IPType XCIpType { get; }
 
-        public UpdateTypeItem(IProperty property, string tableName, IType type)
+        public UpdateTypeItem(IPProperty property, string tableName, IPType ipType)
         {
             Property = property;
             TableName = tableName;
-            XCType = type;
+            XCIpType = ipType;
         }
 
         public void Visit(IEntityMigrationPlanBuilder visitor, DDLQuery query)

@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 
-namespace ZenPlatform.Configuration.TypeSystem
+namespace ZenPlatform.Configuration.Common.TypeSystem
 {
-    public class Type : IType
+    public class PType : IPType
     {
         private readonly ITypeManager _ts;
 
-        internal Type(ITypeManager ts)
+        internal PType(ITypeManager ts)
         {
             _ts = ts;
         }
@@ -50,7 +47,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         public virtual bool IsScalePrecision { get; set; }
 
         //TODO: Use scope in main project
-        public bool IsCodeAvaliable { get; set; }
+        public bool IsAsmAvaliable { get; set; }
 
         public bool IsQueryAvaliable { get; set; }
 
@@ -60,11 +57,11 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public object Bag { get; set; }
 
-        public IEnumerable<IProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
+        public IEnumerable<IPProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
         public IEnumerable<ITable> Tables => _ts.Tables.Where(x => x.ParentId == Id);
 
 
-        public ITypeSpec GetSpec()
+        public IPTypeSpec GetSpec()
         {
             return _ts.Type(this);
         }

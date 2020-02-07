@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Migration;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -46,7 +47,7 @@ namespace ZenPlatform.Migration
                     .bg_query()
                     .m_set()
                     .ld_column(type.FullName)
-                    .ld_const(item.XCType.Id)
+                    .ld_const(item.XCIpType.Id)
                     .assign()
                     .m_update()
                     .ld_table(item.TableName)
@@ -181,14 +182,14 @@ namespace ZenPlatform.Migration
             if (schema.SchemaType == ColumnSchemaType.Value
                 || schema.SchemaType == ColumnSchemaType.NoSpecial)
             {
-                var type = schema.PlatformType;
+                var type = schema.PlatformIpType;
 
                 switch (true)
                 {
                     case true when type == type.TypeManager.Boolean:
                         builder.AsBoolean().NotNullable();
                         break;
-                    case true when type is TypeSpec ts && type.BaseId == type.TypeManager.String.Id:
+                    case true when type is PTypeSpec ts && type.BaseId == type.TypeManager.String.Id:
                         builder.AsString(ts.Size).NotNullable();
                         break;
                     case true when type == type.TypeManager.DateTime:
@@ -197,10 +198,10 @@ namespace ZenPlatform.Migration
                     case true when type == type.TypeManager.Guid:
                         builder.AsGuid().NotNullable();
                         break;
-                    case true when type is TypeSpec ts && type.BaseId == type.TypeManager.Numeric.Id:
+                    case true when type is PTypeSpec ts && type.BaseId == type.TypeManager.Numeric.Id:
                         builder.AsFloat(ts.Scale, ts.Precision).NotNullable();
                         break;
-                    case true when type is TypeSpec ts && type.BaseId == type.TypeManager.Binary.Id:
+                    case true when type is PTypeSpec ts && type.BaseId == type.TypeManager.Binary.Id:
                         builder.AsVarBinary(ts.Size).NotNullable();
                         break;
                     case true when type == type.TypeManager.Int:

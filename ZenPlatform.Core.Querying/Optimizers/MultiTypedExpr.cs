@@ -21,7 +21,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
             throw new NotImplementedException();
         }
 
-        public virtual void EmitValueColumn(IType type)
+        public virtual void EmitValueColumn(IPType ipType)
         {
             throw new NotImplementedException();
         }

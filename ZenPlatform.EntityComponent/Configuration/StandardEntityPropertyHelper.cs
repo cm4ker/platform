@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure.Data.Types;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-
 namespace ZenPlatform.EntityComponent.Configuration
 {
     // internal static class StandardEntityPropertyHelper

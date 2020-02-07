@@ -1,10 +1,10 @@
-﻿using ZenPlatform.Compiler.Contracts;
+﻿using System;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
-using IType = ZenPlatform.Configuration.Contracts.TypeSystem.IType;
 
 namespace ZenPlatform.Language.Ast
 {
@@ -17,18 +17,14 @@ namespace ZenPlatform.Language.Ast
 
         public IComponent Component { get; }
 
-        
-        /*
-         Type(Id) + Metadata(Stuff)
-         */
-        public IType Type { get; }
+        public IPType Type { get; }
 
         public object Bag { get; set; }
 
-        public ComponentAstBase(CompilationMode compilationMode, IComponent component, IType type,
-            ILineInfo lineInfo, string name,
-            TypeBody tb) : base(lineInfo
-            , tb, name)
+        public Func<ITypeSystem, IType> BaseTypeSelector { get; set; }
+
+        public ComponentAstBase(CompilationMode compilationMode, IComponent component, IPType type,
+            ILineInfo lineInfo, string name, TypeBody tb, TypeSyntax @base = null) : base(lineInfo, tb, name, @base)
         {
             CompilationMode = compilationMode;
             Component = component;
@@ -51,9 +47,9 @@ namespace ZenPlatform.Language.Ast
     /// </summary>
     public class ComponentClass : ComponentAstBase
     {
-        public ComponentClass(CompilationMode compilationMode, IComponent component, IType type,
+        public ComponentClass(CompilationMode compilationMode, IComponent component, IPType type,
             ILineInfo lineInfo, string name,
-            TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
+            TypeBody tb, TypeSyntax @base = null) : base(compilationMode, component, type, lineInfo, name, tb, @base)
         {
         }
     }
@@ -64,10 +60,21 @@ namespace ZenPlatform.Language.Ast
     /// </summary>
     public class ComponentModule : ComponentAstBase
     {
-        public ComponentModule(CompilationMode compilationMode, IComponent component, IType type,
+        public ComponentModule(CompilationMode compilationMode, IComponent component, IPType type,
             ILineInfo lineInfo, string name,
             TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
         {
         }
+    }
+
+    public class BindingClass : TypeEntity, IAstSymbol
+    {
+        public BindingClass(string name) : base(null, TypeBody.Empty, name, null)
+        {
+        }
+
+        public IType BindingType { get; set; }
+
+        public SymbolScopeBySecurity SymbolScope { get; set; }
     }
 }

@@ -1,11 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Contracts.Store;
-using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -20,6 +14,8 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             Properties = new List<MDProperty>();
             Tables = new List<MDTable>();
+            Modules = new List<MDProgramModule>();
+            Commands= new List<MDCommand>();
         }
 
         public string Name { get; set; }
@@ -36,6 +32,8 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public List<MDTable> Tables { get; set; }
 
-        public List<MDCommand> Command { get; set; }
+        public List<MDCommand> Commands { get; set; }
+
+        public List<MDProgramModule> Modules { get; set; }
     }
 }

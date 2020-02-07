@@ -6,7 +6,7 @@ namespace ZenPlatform.SyntaxGenerator
         {
             var result = char.ToLower(str[0]) + str[1..];
 
-            if (result == "else" || result == "when")
+            if (result == "else" || result == "when" || result == "base")
                 result = '@' + result;
 
             return result;
