@@ -13,6 +13,7 @@ using Module = ZenPlatform.Language.Ast.Definitions.Module;
 
 namespace ZenPlatform.Compiler.Generation
 {
+  
     public partial class Generator
     {
         private Dictionary<TypeEntity, ITypeBuilder> _stage0 = new Dictionary<TypeEntity, ITypeBuilder>();
@@ -107,44 +108,52 @@ namespace ZenPlatform.Compiler.Generation
         /// <exception cref="Exception"></exception>
         private void BuildStage0(CompilationUnit cu)
         {
+            foreach (var typeEntity in cu.Entityes)
+            {
+                BuildTypeEntity(typeEntity);
+            }
+        }
+
+        private void BuildTypeEntity(TypeEntity typeEntity)
+        {
+            if (_stage0.ContainsKey(typeEntity))
+                return;
+
             void AfterPreBuild<T>(T sym, ITypeBuilder tb) where T : TypeEntity, IAstSymbol
             {
                 sym.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(sym, tb);
                 _stage0.Add(sym, tb);
             }
 
-            foreach (var typeEntity in cu.Entityes)
+            switch (typeEntity)
             {
-                switch (typeEntity)
+                case Module m:
+                    var tm = PreBuildModule(m);
+                    AfterPreBuild(m, tm);
+                    break;
+                case Class c:
+                    var tc = PreBuildClass(c);
+                    AfterPreBuild(c, tc);
+                    break;
+                case ComponentClass co:
                 {
-                    case Module m:
-                        var tm = PreBuildModule(m);
-                        AfterPreBuild(m, tm);
-                        break;
-                    case Class c:
-                        var tc = PreBuildClass(c);
-                        AfterPreBuild(c, tc);
-                        break;
-                    case ComponentClass co:
-                    {
-                        var tco = PreBuildComponentClass(co);
-                        AfterPreBuild(co, tco);
-                        co.Component.ComponentImpl.Generator.Stage0(co, tco, _parameters.TargetDatabaseType, _mode);
-                        break;
-                    }
-                    case ComponentModule cm:
-                    {
-                        if (cm.CompilationMode != _mode) break;
-
-                        var tcm = PreBuildComponentModule(cm);
-                        AfterPreBuild(cm, tcm);
-                        cm.Component.ComponentImpl.Generator.Stage0(cm, tcm, _parameters.TargetDatabaseType, _mode);
-                        break;
-                    }
-
-                    default:
-                        throw new Exception("The type entity not supported");
+                    var tco = PreBuildComponentClass(co);
+                    AfterPreBuild(co, tco);
+                    co.Component.ComponentImpl.Generator.Stage0(co, tco, _parameters.TargetDatabaseType, _mode);
+                    break;
                 }
+                case ComponentModule cm:
+                {
+                    if (cm.CompilationMode != _mode) break;
+
+                    var tcm = PreBuildComponentModule(cm);
+                    AfterPreBuild(cm, tcm);
+                    cm.Component.ComponentImpl.Generator.Stage0(cm, tcm, _parameters.TargetDatabaseType, _mode);
+                    break;
+                }
+
+                default:
+                    throw new Exception("The type entity not supported");
             }
         }
 
@@ -507,7 +516,6 @@ namespace ZenPlatform.Compiler.Generation
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
                 _bindings.Object);
 
-
             if (@class.ImplementsReference)
                 tb.AddInterfaceImplementation(_bindings.Reference);
 
@@ -522,17 +530,40 @@ namespace ZenPlatform.Compiler.Generation
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
         }
 
+        private TypeEntity FindEntityByName(string name)
+        {
+            foreach (var entity in _cus.SelectMany(x => x.Entityes))
+            {
+                if (entity.Name == name)
+                    return entity;
+            }
+
+            return null;
+        }
+
         private ITypeBuilder PreBuildComponentClass(ComponentClass componentClass)
         {
             IType baseType = null;
 
-            if (string.IsNullOrEmpty(componentClass.Base))
+            if (componentClass.Base == null)
             {
                 baseType = _bindings.Object;
             }
             else
             {
-                baseType = _ts.FindType(componentClass.Base);
+                if (componentClass.Base is SingleTypeSyntax sts)
+                {
+                    //build this type in priority
+                    
+                    var entity = FindEntityByName(sts.TypeName);
+                    BuildTypeEntity(entity);
+                }
+                if (componentClass.BaseTypeSelector != null)
+                {
+                    baseType = componentClass.BaseTypeSelector(_ts);
+                }
+                else
+                    baseType = componentClass.Base.ToClrType(_ts);
             }
 
             var tb = _asm.DefineType(

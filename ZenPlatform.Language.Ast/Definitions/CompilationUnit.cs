@@ -10,5 +10,13 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class CompilationUnit : SyntaxNode
     {
+        public static CompilationUnit Empty =>
+            new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>(), new List<NamespaceDeclaration>());
+
+        public void AddEntity(TypeEntity type)
+        {
+            this.Entityes.Add(type);
+            Childs.Add(type);
+        }
     }
 }

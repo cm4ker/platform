@@ -3,7 +3,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// <summary>
     /// Тип модуля по отношению к объекту
     /// </summary>
-    public enum XCProgramModuleRelationType
+    public enum ProgramModuleRelationType
     {
         /// <summary>
         /// Модуль относится непосредственно к объекту

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using IPType = ZenPlatform.Configuration.Contracts.TypeSystem.IPType;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class Property : IProperty
+    public class PProperty : IPProperty
     {
         private readonly TypeManager _ts;
 
-        internal Property(TypeManager ts)
+        internal PProperty(TypeManager ts)
         {
             _ts = ts;
         }
@@ -29,7 +30,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public bool IsReadOnly { get; set; }
 
-        public IEnumerable<IType> Types => _ts.PropertyTypes
+        public IEnumerable<IPType> Types => _ts.PropertyTypes
             .Where(x => x.PropertyId == Id && x.PropertyParentId == ParentId).Select(x => x.TypeId)
             .Join(_ts.Types, a => a, b => b.Id, (a, b) => b);
 

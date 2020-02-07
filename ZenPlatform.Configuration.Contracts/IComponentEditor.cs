@@ -1,4 +1,4 @@
-namespace ZenPlatform.Configuration.Structure
+namespace ZenPlatform.Configuration.Contracts
 {
     public interface IComponentEditor
     {

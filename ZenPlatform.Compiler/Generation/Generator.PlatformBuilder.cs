@@ -14,7 +14,8 @@ namespace ZenPlatform.Compiler.Generation
 
             foreach (var component in _conf.TypeManager.Components)
             {
-                foreach (var type in _conf.TypeManager.Types.Where(x => x.ComponentId == component.Id))
+                foreach (var type in _conf.TypeManager.Types.Where(x =>
+                    x.ComponentId == component.Id && x.IsAsmAvaliable))
                 {
                     if (_mode == CompilationMode.Client)
                         component.ComponentImpl.Generator.StageClient(type, root, _parameters.TargetDatabaseType);

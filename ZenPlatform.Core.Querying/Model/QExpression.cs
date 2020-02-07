@@ -9,7 +9,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QExpression : QItem
     {
-        public virtual IEnumerable<IType> GetExpressionType()
+        public virtual IEnumerable<IPType> GetExpressionType()
         {
             yield break;
         }

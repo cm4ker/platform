@@ -1,9 +1,10 @@
 using System;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class GuidType : Type
+    public class GuidPType : PType
     {
         public override uint SystemId => 4;
 
@@ -17,7 +18,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         public override bool IsPrimitive => true;
         public override PrimitiveKind PrimitiveKind => PrimitiveKind.Guid;
         
-        internal GuidType(ITypeManager ts) : base(ts)
+        internal GuidPType(ITypeManager ts) : base(ts)
         {
         }
     }

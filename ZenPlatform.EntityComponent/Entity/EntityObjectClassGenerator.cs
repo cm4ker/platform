@@ -1,10 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using Mono.Cecil.Cil;
-using MoreLinq.Extensions;
-using Npgsql.NameTranslation;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -12,18 +7,12 @@ using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Core.Authentication;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
-using ZenPlatform.Language.Ast.Definitions.Statements;
-using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
-using IType = ZenPlatform.Compiler.Contracts.IType;
 using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
 namespace ZenPlatform.EntityComponent.Entity
@@ -37,24 +26,44 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IType type, Root root)
+        public void GenerateAstTree(IPType type, Root root)
         {
             var className = type.Name;
 
             var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var cls = new ComponentClass(CompilationMode.Server, _component, type, null, className,
-                new TypeBody(new List<Member>()));
+                TypeBody.Empty);
             cls.Bag = ObjectType.Object;
 
             cls.Namespace = @namespace;
 
             GenerateObjectClassUserModules(type, cls);
 
-            var cu = new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>() {cls});
+            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
+                new List<NamespaceDeclaration>());
             //end create dto class
 
             root.Add(cu);
+
+            foreach (var table in type.Tables)
+            {
+                var tableName = $"TColl_{type.Name}_{table.Name}";
+                var tableRowName = $"TR{type.GetDtoType().Name}_{table.Name}";
+                var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, type, null,
+                    tableName, TypeBody.Empty, null)
+                {
+                    Namespace = type.GetNamespace(),
+                    Bag = table,
+                    BaseTypeSelector = (ts) =>
+                    {
+                        return ts.GetSystemBindings().IEnumerable
+                            .MakeGenericType(ts.FindType($"{type.GetNamespace()}.{tableRowName}"));
+                    }
+                };
+
+                cu.AddEntity(dtoTableCls);
+            }
         }
 
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
@@ -78,15 +87,12 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             if (astTree is ComponentClass cc)
             {
-                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
+                if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
                 {
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
-                    {
-                        EmitBody(cc, builder, dbType);
-                    }
-                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
-                    {
-                    }
+                    EmitBody(cc, builder, dbType);
+                }
+                else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
+                {
                 }
             }
         }
@@ -145,17 +151,16 @@ namespace ZenPlatform.EntityComponent.Entity
             var set = cc.Type;
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
-            var dtoClassName =
-                $"{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPreffixRule)}{type.Name}{_component.GetCodeRuleExpression(CodeGenRuleType.DtoPostfixRule)}";
+            var dtoClassName = set.GetDtoType().Name;
 
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+            var @namespace = set.GetNamespace();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
 
 
             var dtoPrivate = builder.FindField("_dto");
 
-            var mrg = ts.FindType($"{@namespace}.{set.Name}Manager");
+            var mrg = ts.FindType($"{@namespace}.{set.GetManagerType().Name}");
             var mrgGet = mrg.FindMethod("Get", sb.Guid);
 
             foreach (var prop in set.Properties)
@@ -189,7 +194,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         }
                         else
                         {
-                            dtoPropSchema = prop.GetObjSchema().First(x => x.PlatformType == ctype);
+                            dtoPropSchema = prop.GetObjSchema().First(x => Equals(x.PlatformIpType, ctype));
                         }
 
                         var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
@@ -326,26 +331,23 @@ namespace ZenPlatform.EntityComponent.Entity
                 .Ret();
         }
 
-        private void GenerateObjectClassUserModules(ZenPlatform.Configuration.Contracts.TypeSystem.IType type,
-            ComponentClass cls)
+        private void GenerateObjectClassUserModules(IPType type, ComponentClass cls)
         {
-            //TODO: Нужно добавить поддержку программных модулей в метаданные
-            throw new NotImplementedException();
+            var md = type.GetMD<MDEntity>();
 
-            // foreach (var module in type.GetProgramModules())
-            // {
-            //     if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
-            //     {
-            //         var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
-            //
-            //
-            //         foreach (var func in typeBody.Functions)
-            //         {
-            //             func.SymbolScope = SymbolScopeBySecurity.User;
-            //             cls.AddFunction(func);
-            //         }
-            //     }
-            // }
+            foreach (var module in md.Modules)
+            {
+                if (module.ModuleRelationType == ProgramModuleRelationType.Object)
+                {
+                    var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
+
+                    foreach (var func in typeBody.Functions)
+                    {
+                        func.SymbolScope = SymbolScopeBySecurity.User;
+                        cls.AddFunction(func);
+                    }
+                }
+            }
         }
     }
 }

@@ -1,12 +1,12 @@
 using System;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using Type = ZenPlatform.Configuration.TypeSystem.Type;
+using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Common.TypeSystem
 {
-    public class BooleanType : Type
+    public class BooleanPType : PType
     {
-        internal BooleanType(ITypeManager ts) : base(ts)
+        internal BooleanPType(ITypeManager ts) : base(ts)
         {
         }
 

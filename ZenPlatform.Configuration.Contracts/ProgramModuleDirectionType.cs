@@ -3,7 +3,7 @@ namespace ZenPlatform.Configuration.Contracts
     /// <summary>
     /// Тип программного модуля
     /// </summary>
-    public enum XCProgramModuleDirectionType
+    public enum ProgramModuleDirectionType
     {
         /// <summary>
         /// Серверный
