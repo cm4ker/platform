@@ -67,7 +67,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             Kind = kind;
         }
     }
-
+    
     public partial class SingleTypeSyntax
     {
         public SingleTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind) : this(lineInfo)
@@ -139,5 +139,19 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public TypeSyntax ElementType { get; }
+    }
+
+    public partial class GenericTypeSyntax
+    {
+        public GenericTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind, List<TypeSyntax> args) : this(lineInfo, args)
+        {
+            TypeName = typeName;
+
+            if (kind == TypeNodeKind.UnionType) throw new Exception("Single type can't be a union type");
+
+            Kind = kind;
+        }
+        
+        public string TypeName { get; }
     }
 }

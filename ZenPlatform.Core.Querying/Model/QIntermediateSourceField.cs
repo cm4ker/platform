@@ -15,7 +15,7 @@ namespace ZenPlatform.Core.Querying.Model
             return Field.GetName();
         }
 
-        public override IEnumerable<IType> GetExpressionType()
+        public override IEnumerable<IPType> GetExpressionType()
         {
             return Field.GetExpressionType();
         }
@@ -36,7 +36,7 @@ namespace ZenPlatform.Core.Querying.Model
             return Field.GetName();
         }
 
-        public override IEnumerable<IType> GetExpressionType()
+        public override IEnumerable<IPType> GetExpressionType()
         {
             return Field.GetExpressionType();
         }

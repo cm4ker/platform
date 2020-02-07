@@ -9,7 +9,7 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QOperationExpression : QExpression
     {
-        public override IEnumerable<IType> GetExpressionType()
+        public override IEnumerable<IPType> GetExpressionType()
         {
             throw new Exception("Return bool type");
            // yield return new XCBoolean();

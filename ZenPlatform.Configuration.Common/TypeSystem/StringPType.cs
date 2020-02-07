@@ -1,4 +1,5 @@
 using System;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
@@ -6,9 +7,9 @@ namespace ZenPlatform.Configuration.TypeSystem
     /// <summary>
     ///  Тип строки
     /// </summary>
-    public class StringType : Type
+    public class StringPType : PType
     {
-        internal StringType(ITypeManager ts) : base(ts)
+        internal StringPType(ITypeManager ts) : base(ts)
         {
         }
 

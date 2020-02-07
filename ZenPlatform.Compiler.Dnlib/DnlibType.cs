@@ -124,7 +124,9 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             if (TypeRef is TypeDef || TypeRef is TypeRef)
             {
-                var sig = new GenericInstSig(TypeRef.TryGetValueTypeSig(), typeArguments
+                var typeSig = TypeRef.ToTypeSig();
+
+                var sig = new GenericInstSig(typeSig.ToClassOrValueTypeSig(), typeArguments
                     .Select(x => ((DnlibType) x).TypeRef.ToTypeSig())
                     .ToArray());
 

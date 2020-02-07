@@ -109,9 +109,9 @@ namespace ZenPlatform.Core.Querying.Model
             return default;
         }
 
-        public IType PopType()
+        public IPType PopType()
         {
-            return (IType) this.Pop();
+            return (IPType) this.Pop();
         }
     }
 }

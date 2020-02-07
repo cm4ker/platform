@@ -10,6 +10,8 @@ using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.EntityComponent.IDE;
 using ZenPlatform.Ide.Common;
 using ZenPlatform.Ide.Contracts;
+using ZenPlatform.Configuration.TypeSystem;
+using ZenPlatform.EntityComponent.Configuration.Editors;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -83,8 +85,15 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public ObjectEditor CreateObject()
         {
-            var r = new ObjectEditor(_inf);
+            var md = new MDEntity();
+            var r = new ObjectEditor(_inf, md);
             _objs.Add(r);
+
+            var sysId = _inf.Counter.GetId(md.ObjectId);
+
+            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                {ObjectId = md.ObjectId, SystemId = sysId, DatabaseName = $"Obj_{sysId}"});
+
             return r;
         }
 

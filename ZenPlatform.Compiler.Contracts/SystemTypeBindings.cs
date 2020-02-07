@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Core.Contracts;
@@ -57,11 +58,15 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType DateTime => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.DateTime)}", MSCORLIB);
 
+        public IType List => _ts.FindType(typeof(List<>).FullName, MSCORLIB);
+
+        public IType IEnumerable => _ts.FindType(typeof(IEnumerable<>).FullName, MSCORLIB);
+
         public IType Exception => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(System.Exception)}", MSCORLIB);
 
 
         public IType DbCommand => _ts.FindType<System.Data.Common.DbCommand>();
-        
+
         public IType Client => _ts.FindType<IProtocolClient>(); // _ts.FindType<Client>()
 
         public IType ServerInitializer => _ts.FindType<IServerInitializer>();

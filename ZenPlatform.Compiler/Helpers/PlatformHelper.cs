@@ -108,6 +108,16 @@ namespace ZenPlatform.Compiler.Helpers
             return ToClrType(typeSyntax, context.TypeSystem);
         }
 
+        public static IType ToClrType(this TypeSyntax typeSyntax, IAssembly context, List<UsingBase> usings)
+        {
+            if (typeSyntax is SingleTypeSyntax sts)
+            {
+                return ToClrType(typeSyntax, context.TypeSystem) ?? context.FindType(sts.TypeName);
+            }
+
+            return ToClrType(typeSyntax, context.TypeSystem);
+        }
+
         public static IType ToClrType(this TypeSyntax typeSyntax, ITypeSystem context)
         {
             var _stb = context.GetSystemBindings();
@@ -116,7 +126,17 @@ namespace ZenPlatform.Compiler.Helpers
             {
                 return context.FindType(stn.TypeName) ?? context.FindType("System." + stn.TypeName);
             }
+            else if (typeSyntax is GenericTypeSyntax gts)
+            {
+                IType[] args = new IType[gts.Args.Count];
 
+                for (int i = 0; i < gts.Args.Count; i++)
+                {
+                    args[i] = gts.Args[i].ToClrType(context);
+                }
+
+                return context.FindType($@"{gts.TypeName}`{gts.Args.Count}");
+            }
             else if (typeSyntax is PrimitiveTypeSyntax ptn)
             {
                 return ptn.Kind switch

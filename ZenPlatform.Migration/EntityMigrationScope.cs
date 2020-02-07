@@ -24,9 +24,9 @@ namespace ZenPlatform.Migration
             Add(new DeleteColumnItem(schema, tableName));
         }
 
-        public void UpdateType(IProperty property, string tableName, IType type)
+        public void UpdateType(IPProperty property, string tableName, IPType ipType)
         {
-            Add(new UpdateTypeItem(property, tableName, type));
+            Add(new UpdateTypeItem(property, tableName, ipType));
         }
 
         public void RenameColumn(ColumnSchemaDefinition src, ColumnSchemaDefinition dst, string tableName)

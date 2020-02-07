@@ -9,7 +9,7 @@ namespace ZenPlatform.EntityComponent.Entity
 {
     public static class PlatformGenerationHelper
     {
-        public static IType ConvertType(this ZenPlatform.Configuration.Contracts.TypeSystem.IType pt,
+        public static IType ConvertType(this ZenPlatform.Configuration.Contracts.TypeSystem.IPType pt,
             SystemTypeBindings sb)
         {
             if (pt.IsTypeSpec)

@@ -38,7 +38,7 @@ namespace ZenPlatform.Core.Querying
         {
             _qm.m_from();
 
-            var ot = sfe.Object.ObjectType;
+            var ot = sfe.Object.ObjectIpType;
             ot.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
 
 

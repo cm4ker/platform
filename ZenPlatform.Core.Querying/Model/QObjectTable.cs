@@ -14,25 +14,25 @@ namespace ZenPlatform.Core.Querying.Model
         private List<QField> _fields;
 
 
-        public QObjectTable(IType type)
+        public QObjectTable(IPType ipType)
         {
-            ObjectType = type;
+            ObjectIpType = ipType;
         }
 
         /// <summary>
         /// Ссылка на тип объекта
         /// </summary>
-        public IType ObjectType { get; }
+        public IPType ObjectIpType { get; }
 
         public override IEnumerable<QField> GetFields()
         {
-            return _fields ??= ObjectType.Properties.Select(x => (QField) new QSourceFieldExpression(this, x))
+            return _fields ??= ObjectIpType.Properties.Select(x => (QField) new QSourceFieldExpression(this, x))
                 .ToList();
         }
 
         public override string ToString()
         {
-            return "Object: " + ObjectType.Name;
+            return "Object: " + ObjectIpType.Name;
         }
     }
 }

@@ -4,7 +4,7 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Configuration.TypeSystem
 {
-    public class DateTimeType : Type
+    public class DateTimePType : PType
     {
         public override uint SystemId => 3;
 
@@ -18,7 +18,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         public override bool IsPrimitive => true;
         public override PrimitiveKind PrimitiveKind => PrimitiveKind.DateTime;
         
-        internal DateTimeType(TypeManager ts) : base(ts)
+        internal DateTimePType(TypeManager ts) : base(ts)
         {
         }
     }

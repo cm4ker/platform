@@ -7,12 +7,13 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         public MDTable()
         {
-            
+            Properties = new List<MDProperty>();
+            Guid = Guid.NewGuid();
         }
-        
-        public virtual Guid Guid { get; set; }
 
-        public virtual string Name { get; set; }
+        public Guid Guid { get; set; }
+
+        public string Name { get; set; }
 
         public List<MDProperty> Properties { get; set; }
     }

@@ -545,7 +545,7 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QSourceFieldExpression : QField
     {
-        public QSourceFieldExpression(QObjectTable objectTable, IProperty property) : base(objectTable)
+        public QSourceFieldExpression(QObjectTable objectTable, IPProperty property) : base(objectTable)
         {
             ObjectTable = objectTable;
             Property = property;
@@ -553,7 +553,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public QObjectTable ObjectTable { get; set; }
 
-        public IProperty Property { get; set; }
+        public IPProperty Property { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1027,14 +1027,14 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCast : QExpression
     {
-        public QCast(IType type, QExpression baseExpression) : base()
+        public QCast(IPType ipType, QExpression baseExpression) : base()
         {
-            Type = type;
+            IpType = ipType;
             Childs.Add(baseExpression);
             BaseExpression = baseExpression;
         }
 
-        public IType Type { get; set; }
+        public IPType IpType { get; set; }
 
         public QExpression BaseExpression { get; set; }
 
@@ -1043,12 +1043,12 @@ namespace ZenPlatform.Core.Querying.Model
             if (!this.GetType().Equals(obj.GetType()))
                 return false;
             var node = (QCast) obj;
-            return (Compare(this.Type, node.Type) && Compare(this.BaseExpression, node.BaseExpression));
+            return (Compare(this.IpType, node.IpType) && Compare(this.BaseExpression, node.BaseExpression));
         }
 
         public override int GetHashCode()
         {
-            return (Type == null ? 0 : Type.GetHashCode()) ^
+            return (IpType == null ? 0 : IpType.GetHashCode()) ^
                    (BaseExpression == null ? 0 : BaseExpression.GetHashCode());
         }
 
