@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Editors\UITypeSelector.xaml" />
+    <None Remove="Editors\UITypeSelectorDialog.xaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Editors\UITypeSelector.xaml">
+    <EmbeddedResource Include="Editors\UITypeSelectorDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
@@ -22,10 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ZenPlatform.Configuration.Contracts\ZenPlatform.Configuration.Contracts.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Items\" />
   </ItemGroup>
 
 </Project>

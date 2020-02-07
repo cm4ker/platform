@@ -25,6 +25,8 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         bool IsPrimitive { get; }
 
+        bool IsAbstract { get; }
+
         PrimitiveKind PrimitiveKind { get; }
 
         bool IsValue { get; set; }
@@ -46,6 +48,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         Guid ComponentId { get; set; }
 
         ITypeSpec GetSpec();
+
     }
 
     public enum PrimitiveKind

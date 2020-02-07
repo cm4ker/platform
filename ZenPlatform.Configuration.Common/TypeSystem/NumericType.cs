@@ -16,8 +16,13 @@ namespace ZenPlatform.Configuration.TypeSystem
         }
 
         public override bool IsPrimitive => true;
+
+        public override bool IsAbstract => true;
+
         public override PrimitiveKind PrimitiveKind => PrimitiveKind.Numeric;
-        
+
+        public override bool IsScalePrecision => true;
+
         internal NumericType(ITypeManager ts) : base(ts)
         {
         }

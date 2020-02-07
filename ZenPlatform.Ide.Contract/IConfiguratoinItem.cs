@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 
@@ -16,14 +17,13 @@ namespace ZenPlatform.Ide.Contracts
         bool CanCreate { get; }
         bool CanDelete { get; }
 
-         
+        bool CanSearch { get; }
 
-        IEnumerable<IConfigurationItem> Childs { get; }
+        ObservableCollection<IConfigurationItem> Childs { get; }
 
 
-        void Create(string name);
+        IConfigurationItem Create(string name);
 
-        object GetEditor();
-
+        bool Search(string text);
     }
 }

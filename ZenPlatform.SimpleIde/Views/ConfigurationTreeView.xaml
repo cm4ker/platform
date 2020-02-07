@@ -11,15 +11,22 @@
       <Button>asdasd</Button>
     </WrapPanel>
     <TextBox DockPanel.Dock="Top" Name="SearchBox" Text="{Binding SearchQuery, Mode=TwoWay}"/>
-  <TreeView Grid.Column="0" Items="{Binding Configuration}" Name="TreeView">
+  <TreeView Grid.Column="0" Items="{Binding Configuration, Mode=TwoWay}" Name="TreeView" SelectedItem="{Binding SelectedItem}">
+    <TreeView.ContextMenu>
+      <ContextMenu>
+        <MenuItem Header="Edit" IsEnabled="{Binding SelectedItem.CanEdit}" Command="{Binding EditItem}"/>
+        <MenuItem Header="Delete" IsEnabled="{Binding SelectedItem.CanDelete}" />
+        <MenuItem Header="Create new" IsEnabled="{Binding SelectedItem.CanCreate}" Command="{Binding CreateItem}"/>
+      </ContextMenu>
+    </TreeView.ContextMenu>
     <TreeView.Styles>
       <Style Selector="TreeViewItem">
         <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
-       
+     
       </Style>
     </TreeView.Styles>
     <TreeView.DataTemplates>
-      <TreeDataTemplate ItemsSource="{Binding Childs}"  >
+      <TreeDataTemplate ItemsSource="{Binding Childs, Mode=TwoWay}" >
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="18" IsEnabled="{Binding IsEnable}" >
 
           <Image Source="{Binding Image}"/>

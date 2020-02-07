@@ -9,6 +9,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.EntityComponent.IDE;
 using ZenPlatform.Ide.Common;
+using ZenPlatform.Ide.Contracts;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -49,6 +50,8 @@ namespace ZenPlatform.EntityComponent.Configuration
                 _objs.Add(new ObjectEditor(_inf, md));
             }
         }
+
+        public IComponent Component => _com;
 
         // private void CreateFolder()
         // {

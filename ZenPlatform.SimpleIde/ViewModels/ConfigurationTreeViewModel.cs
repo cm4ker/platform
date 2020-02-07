@@ -9,8 +9,6 @@ using ZenPlatform.SimpleIde.Models;
 using ReactiveUI;
 using ZenPlatform.SimpleIde.Views;
 using System.Collections.ObjectModel;
-using DynamicData.Binding;
-using DynamicData;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
@@ -19,6 +17,7 @@ using System.Reactive.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using ZenPlatform.Ide.Common;
+using ZenPlatform.Ide.Contracts;
 
 namespace ZenPlatform.SimpleIde.ViewModels
 {
@@ -31,20 +30,20 @@ namespace ZenPlatform.SimpleIde.ViewModels
 
         private ObservableAsPropertyHelper<IEnumerable<IConfigurationItem>> _configuration;
         private string _searchQuery;
-        private IConfigurationItem _openItem;
+
+        private IConfigurationItem _selectedItem;
 
         public ConfigurationTreeViewModel(Project project)
         {
             
 
-            Observable.Empty<IConfigurationItem>();
             _openedConfiguration = new ObservableCollection<IConfigurationItem>(project.Editors.Select(e => e.GetConfigurationTree()));
 
 
-             Search = ReactiveCommand.CreateFromObservable<string, IEnumerable<IConfigurationItem>>(
+             Search = ReactiveCommand.Create<string, IEnumerable<IConfigurationItem>>(
                 (query) =>
                 {
-                    return Observable.Start(() => _openedConfiguration.Where(i => i.Caption.Contains(query)));
+                    return  _openedConfiguration.Where(i => i.CanSearch && i.Search(query));
                 },
                 this.WhenAnyValue(vm=>vm.SearchQuery).Select(q=>!string.IsNullOrEmpty(q))
             );
@@ -57,20 +56,25 @@ namespace ZenPlatform.SimpleIde.ViewModels
             //_configuration = Search.ToProperty(this, vm => vm.Configuration);
 
             this.WhenAnyValue(vm => vm.SearchQuery).Throttle(TimeSpan.FromSeconds(0.5)).InvokeCommand(Search);
+
+
+            EditItem = ReactiveCommand.Create(() => SelectedItem);
+
+            CreateItem = ReactiveCommand.CreateFromObservable(() =>
+              Dialogs.SelectText("Create new:").Where(s => !string.IsNullOrEmpty(s)).Select(name => SelectedItem.Create(name))
+            );
+
         }
 
-
-        public IConfigurationItem OpenItem
+        public IConfigurationItem SelectedItem
         {
-            get => _openItem;
+            get => _selectedItem;
             set
             {
-                this.RaiseAndSetIfChanged(ref _openItem, value);
+                this.RaiseAndSetIfChanged(ref _selectedItem, value);
             }
         }
-        
 
-        public event EventHandler<IConfigurationItem> OnOpenItem;
         public IEnumerable<IConfigurationItem> Configuration => _configuration.Value;
         public string SearchQuery
         {
@@ -82,14 +86,9 @@ namespace ZenPlatform.SimpleIde.ViewModels
         }
         public ReactiveCommand<string, IEnumerable<IConfigurationItem>> Search { get; }
 
-        public ReactiveCommand<Unit, IConfigurationItem> Open { get; }
+        public ReactiveCommand<Unit, IConfigurationItem> EditItem { get; }
 
-
-        private async Task<IEnumerable<IConfigurationItem>> SearchAsync(string query, CancellationToken token)
-        {
-
-            return await Task.Run(()=> _openedConfiguration.Where(i=>i.Caption.Contains(query)));
-        }
+        public ReactiveCommand<Unit, IConfigurationItem> CreateItem { get; }
 
     }
 }

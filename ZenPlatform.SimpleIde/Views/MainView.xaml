@@ -11,7 +11,7 @@
     <WrapPanel DockPanel.Dock="Top">
       <Button Command="{Binding AddCommand}" Margin="2">New</Button>
       <Button Command="{Binding AddCommand}" Margin="2">Open</Button>
-      <Button Command="{Binding AddCommand}" Margin="2">Save</Button>
+      <Button Command="{Binding SaveProjectCommand}" Margin="2">Save</Button>
     </WrapPanel>
 
     <idc:DockControl x:Name="dockControl" Layout="{Binding Layout}" Margin="4"/>

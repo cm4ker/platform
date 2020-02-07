@@ -16,6 +16,11 @@ namespace ZenPlatform.SimpleIde
 
         public IControl Build(object data)
         {
+            if (data is DocumentEditor editor)
+            {
+                data = editor.Context;
+            }
+
             Type  type = null;
             var attrs = data.GetType().GetCustomAttributes(typeof(ViewAttribute), true);
             if (attrs.Length > 0)
