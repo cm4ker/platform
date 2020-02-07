@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ZenPlatform.Configuration.Contracts.TypeSystem
 {
-    public interface IType : ITypeManagerProvider
+    public interface IPType : ITypeManagerProvider
     {
         Guid Id { get; set; }
 
@@ -33,19 +33,19 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         bool IsScalePrecision { get; set; }
 
-        bool IsCodeAvaliable { get; set; }
+        bool IsAsmAvaliable { get; set; }
 
         bool IsQueryAvaliable { get; set; }
 
         bool IsTypeSpec { get; }
         object Bag { get; set; }
 
-        IEnumerable<IProperty> Properties { get; }
+        IEnumerable<IPProperty> Properties { get; }
 
         IEnumerable<ITable> Tables { get; }
         Guid ComponentId { get; set; }
 
-        ITypeSpec GetSpec();
+        IPTypeSpec GetSpec();
     }
 
     public enum PrimitiveKind

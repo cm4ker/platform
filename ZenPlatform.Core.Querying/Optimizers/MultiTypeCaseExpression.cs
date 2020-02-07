@@ -29,14 +29,14 @@ namespace ZenPlatform.Core.Querying.Optimizers
             }
         }
 
-        private void EmitValueExpr(QExpression exp, IType type)
+        private void EmitValueExpr(QExpression exp, IPType ipType)
         {
             var texpr = exp.GetExpressionType().ToList();
 
-            if (texpr.Any(x => x.IsAssignableFrom(type)))
+            if (texpr.Any(x => x.IsAssignableFrom(ipType)))
                 if (texpr.Count > 1)
                 {
-                    TypedExprFactory.CreateMultiTypedExpr(exp, Qm, Rw).EmitValueColumn(type);
+                    TypedExprFactory.CreateMultiTypedExpr(exp, Qm, Rw).EmitValueColumn(ipType);
                 }
                 else
                 {
@@ -82,19 +82,19 @@ namespace ZenPlatform.Core.Querying.Optimizers
             Qm.@case();
         }
 
-        public override void EmitValueColumn(IType type)
+        public override void EmitValueColumn(IPType ipType)
         {
             foreach (var w in _c.Whens)
             {
                 Rw.Visit(w.When);
 
-                EmitValueExpr(w.Then, type);
+                EmitValueExpr(w.Then, ipType);
 
                 Qm.when();
             }
 
             if (_c.Else != null)
-                EmitValueExpr(_c.Else, type);
+                EmitValueExpr(_c.Else, ipType);
 
             Qm.@case();
         }

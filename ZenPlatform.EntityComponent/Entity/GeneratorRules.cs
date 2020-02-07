@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
 
 namespace ZenPlatform.EntityComponent.Entity
 {
@@ -25,12 +22,12 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public virtual string DtoPrivateFieldName { get; } = "_dto";
 
-        public virtual string GetDtoClassName(IType obj)
+        public virtual string GetDtoClassName(IPType obj)
         {
             return $"{obj.Name}{DtoPrefix}";
         }
 
-        public virtual string GetEntityClassName(IType obj)
+        public virtual string GetEntityClassName(IPType obj)
         {
             return "";
             

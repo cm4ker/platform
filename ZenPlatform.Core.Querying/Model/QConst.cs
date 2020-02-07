@@ -10,20 +10,20 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QConst : QExpression
     {
-        private readonly IType _baseType;
+        private readonly IPType _baseIpType;
 
 
-        public QConst(IType baseType, object value)
+        public QConst(IPType baseIpType, object value)
         {
             Value = value;
-            _baseType = baseType;
+            _baseIpType = baseIpType;
         }
 
         public object Value { get; }
 
-        public override IEnumerable<IType> GetExpressionType()
+        public override IEnumerable<IPType> GetExpressionType()
         {
-            yield return _baseType;
+            yield return _baseIpType;
         }
     }
 }

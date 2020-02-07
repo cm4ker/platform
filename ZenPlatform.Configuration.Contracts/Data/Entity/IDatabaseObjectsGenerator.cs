@@ -27,7 +27,7 @@ namespace ZenPlatform.Configuration.Contracts.Data.Entity
         /// Key - Имя столбца
         /// Value - Тип столбца
         /// </summary>
-        Dictionary<string, IType> GetColumnOptions();
+        Dictionary<string, IPType> GetColumnOptions();
 
         /// <summary>
         /// Колонка относится к основному объекту, как принимающая сторона.

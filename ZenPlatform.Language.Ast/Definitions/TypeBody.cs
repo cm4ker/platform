@@ -12,13 +12,13 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class TypeBody
     {
-        public static TypeBody Empty => new TypeBody(new List<Member>());
+        public static TypeBody Empty => new TypeBody(new List<Member>(), new List<UsingBase>());
 
-        public TypeBody(IList<Member> members) : this(null,
+        public TypeBody(IList<Member> members, List<UsingBase> usings) : this(null,
             members.Where(x => x is Function).Cast<Function>().ToList(),
             members.Where(x => x is Field).Cast<Field>().ToList(),
             members.Where(x => x is Property).Cast<Property>().ToList(),
-            members.Where(x => x is Constructor).Cast<Constructor>().ToList())
+            members.Where(x => x is Constructor).Cast<Constructor>().ToList(), usings)
         {
         }
 
@@ -37,19 +37,6 @@ namespace ZenPlatform.Language.Ast.Definitions
 
             Constructors.Add(constructor);
             Childs.Add(constructor);
-        }
-    }
-
-
-    public partial class CompilationUnit
-    {
-        public static CompilationUnit Empty =>
-            new CompilationUnit(null, new List<NamespaceBase>(), new List<TypeEntity>());
-
-        public void AddEntity(TypeEntity type)
-        {
-            this.Entityes.Add(type);
-            Childs.Add(type);
         }
     }
 }

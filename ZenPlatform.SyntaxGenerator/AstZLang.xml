@@ -6,26 +6,35 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="CompilationUnit">
+    <Syntax Name="NamespaceDeclaration">
         <Arguments>
-            <List Name="Namespaces" Type="List&lt;NamespaceBase&gt;"/>
+            <List Name="Usings" Type="List&lt;UsingBase&gt;"/>
             <List Name="Entityes" Type="List&lt;TypeEntity&gt;"/>
+            <List Name="NamespaceDeclarations" Type="List&lt;NamespaceDeclaration&gt;"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="NamespaceBase" IsAbstract="true">
+    <Syntax Name="CompilationUnit">
+        <Arguments>
+            <List Name="Usings" Type="List&lt;UsingBase&gt;"/>
+            <List Name="Entityes" Type="List&lt;TypeEntity&gt;"/>
+            <List Name="NamespaceDeclarations" Type="List&lt;NamespaceDeclaration&gt;"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="UsingBase" IsAbstract="true">
         <Arguments>
             <Single Name="Name" DenyChildrenFill="true" Type="String"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="Namespace" Base="NamespaceBase">
+    <Syntax Name="UsingDeclaration" Base="UsingBase">
         <Arguments>
             <Single Name="Name" PassBase="true" DenyChildrenFill="true" Type="String"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="ClassNamespace" Base="NamespaceBase">
+    <Syntax Name="UsingAliasDeclaration" Base="UsingBase">
         <Arguments>
             <Single Name="ClassName" PassBase="true" DenyChildrenFill="true" Type="String"/>
             <Single Name="Alias" DenyChildrenFill="true" Type="String"/>
@@ -38,6 +47,7 @@
             <List Name="Fields" Type="List&lt;Field&gt;"/>
             <List Name="Properties" Type="List&lt;Property&gt;"/>
             <List Name="Constructors" Type="List&lt;Constructor&gt;"/>
+            <List Name="Usings" Type="List&lt;UsingBase&gt;" />
         </Arguments>
     </Syntax>
 
@@ -45,6 +55,7 @@
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Base" Type="TypeSyntax" Default="null"/>
         </Arguments>
     </Syntax>
 
@@ -52,7 +63,6 @@
         <Arguments>
             <Single Name="TypeBody" Type="TypeBody" DenyChildrenFill="true" PassBase="true" OnlyArgument="true"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true" PassBase="true" OnlyArgument="true"/>
-            <Single Name="IsMappable" Type="Boolean" DenyChildrenFill="true" Default="false"/>
         </Arguments>
     </Syntax>
 
@@ -117,6 +127,11 @@
     <Syntax Name="SingleTypeSyntax" Base="TypeSyntax"/>
     <Syntax Name="ArrayTypeSyntax" Base="TypeSyntax"/>
     <Syntax Name="UnionTypeSyntax" Base="TypeSyntax"/>
+    <Syntax Name="GenericTypeSyntax" Base="TypeSyntax">
+        <Arguments>
+            <List Name="Args" Type="List&lt;TypeSyntax&gt;"/>
+        </Arguments>
+    </Syntax>
 
 
     <Syntax Name="Block" IsScoped="true">

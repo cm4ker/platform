@@ -3,33 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.TypeSystem;
-using Type = ZenPlatform.Configuration.TypeSystem.Type;
 
 namespace ZenPlatform.Configuration.Common.TypeSystem
 {
     public class TypeManager : ITypeManager
     {
-        private List<IType> _types;
-        private List<IProperty> _properties;
+        private List<Contracts.TypeSystem.IPType> _types;
+        private List<IPProperty> _properties;
         private List<IPropertyType> _propertyTypes;
         private List<ITable> _tables;
         private List<IComponent> _components;
         private List<IObjectSetting> _objectSettings;
         private List<MetadataRow> _metadatas;
 
-        private IntType _intType;
-        private DateTimeType _dateTimeType;
-        private BinaryType _binaryType;
-        private StringType _stringType;
-        private BooleanType _booleanType;
-        private GuidType _guidType;
-        private NumericType _numericType;
+        private IntPType _intPType;
+        private DateTimePType _dateTimePType;
+        private BinaryPType _binaryPType;
+        private StringPType _stringPType;
+        private BooleanPType _booleanPType;
+        private GuidPType _guidPType;
+        private NumericPType _numericPType;
 
 
         public TypeManager()
         {
-            _types = new List<IType>();
-            _properties = new List<IProperty>();
+            _types = new List<Contracts.TypeSystem.IPType>();
+            _properties = new List<IPProperty>();
             _propertyTypes = new List<IPropertyType>();
             _tables = new List<ITable>();
             _components = new List<IComponent>();
@@ -46,17 +45,17 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
             _types.Add(Numeric);
         }
 
-        public IType Int => _intType ??= new IntType(this);
-        public IType DateTime => _dateTimeType ??= new DateTimeType(this);
-        public IType Binary => _binaryType ??= new BinaryType(this);
-        public IType String => _stringType ??= new StringType(this);
-        public IType Boolean => _booleanType ??= new BooleanType(this);
-        public IType Guid => _guidType ??= new GuidType(this);
-        public IType Numeric => _numericType ??= new NumericType(this);
+        public Contracts.TypeSystem.IPType Int => _intPType ??= new IntPType(this);
+        public Contracts.TypeSystem.IPType DateTime => _dateTimePType ??= new DateTimePType(this);
+        public Contracts.TypeSystem.IPType Binary => _binaryPType ??= new BinaryPType(this);
+        public Contracts.TypeSystem.IPType String => _stringPType ??= new StringPType(this);
+        public Contracts.TypeSystem.IPType Boolean => _booleanPType ??= new BooleanPType(this);
+        public Contracts.TypeSystem.IPType Guid => _guidPType ??= new GuidPType(this);
+        public Contracts.TypeSystem.IPType Numeric => _numericPType ??= new NumericPType(this);
 
-        public IReadOnlyList<IType> Types => _types;
+        public IReadOnlyList<Contracts.TypeSystem.IPType> Types => _types;
 
-        public IReadOnlyList<IProperty> Properties => _properties;
+        public IReadOnlyList<IPProperty> Properties => _properties;
 
         public IReadOnlyList<IPropertyType> PropertyTypes => _propertyTypes;
 
@@ -68,17 +67,17 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
 
         public IReadOnlyList<IMetadataRow> Metadatas => _metadatas;
 
-        public void Register(IType type)
+        public void Register(Contracts.TypeSystem.IPType ipType)
         {
-            if (_types.Exists(x => x.Id == type.Id))
-                throw new Exception($"Type id {type.Name}:{type.Id} already registered");
+            if (_types.Exists(x => x.Id == ipType.Id))
+                throw new Exception($"Type id {ipType.Name}:{ipType.Id} already registered");
 
-            _types.Add(type);
+            _types.Add(ipType);
         }
 
-        public void Register(IProperty p)
+        public void Register(IPProperty p)
         {
-            if (_properties.Exists(x => x.Id == p.Id))
+            if (_properties.Exists(x => x.Id == p.Id && x.ParentId == p.ParentId))
                 throw new Exception($"Property id {p.Name}:{p.Id} already registered");
 
             _properties.Add(p);
@@ -93,6 +92,11 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
         {
             _components.Add(component);
         }
+        
+        public void Register(ITable table)
+        {
+            _tables.Add(table);
+        }
 
         public void AddMD(Guid id, Guid parentId, object metadata)
         {
@@ -104,19 +108,19 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
             return new Component(this);
         }
 
-        public IType Type()
+        public Contracts.TypeSystem.IPType Type()
         {
-            return new Type(this);
+            return new PType(this);
         }
 
-        public ITypeSpec Type(IType type)
+        public IPTypeSpec Type(Contracts.TypeSystem.IPType ipType)
         {
-            return new TypeSpec(type, this);
+            return new PTypeSpec(ipType, this);
         }
 
-        public IProperty Property()
+        public IPProperty Property()
         {
-            return new Property(this);
+            return new PProperty(this);
         }
 
         public IPropertyType PropertyType()
@@ -127,6 +131,12 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
         public ITable Table()
         {
             return new Table(this);
+        }
+
+        public void AddOrUpdateSetting(IObjectSetting setting)
+        {
+            _objectSettings.RemoveAll(x => x.ObjectId == setting.ObjectId);
+            _objectSettings.Add(setting);
         }
 
         public void LoadSettings(IEnumerable<IObjectSetting> settings)

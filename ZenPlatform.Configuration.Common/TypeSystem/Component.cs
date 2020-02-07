@@ -27,8 +27,6 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
 
         private ITypeManager _tm;
 
-        public Guid Id => _info?.ComponentId ?? Guid.Empty;
-        public string Name => _info?.ComponentName;
 
         public Component(ITypeManager tm)
         {
@@ -36,6 +34,12 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
             _mdTypes = new List<MDType>();
             _tm = tm;
         }
+
+        public Guid Id => _info?.ComponentId ?? Guid.Empty;
+
+        public string Name => _info?.ComponentName;
+
+        public ITypeManager TypeManager => _tm;
 
         /// <summary>
         /// Информация о компоненте
@@ -99,8 +103,5 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
         {
             return GetCodeRule(type).GetExpression();
         }
-
-        public IMDComponent Metadata { get; set; }
-        public ITypeManager TypeManager { get; }
     }
 }

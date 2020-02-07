@@ -1,25 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata;
-using System.Threading;
-using System.Xml.Serialization;
-using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Exceptions;
-using ZenPlatform.Configuration.Structure.Data.Types;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.Shared.ParenChildCollection;
-using dnlib.DotNet;
-using dnlib.DotNet.Emit;
-using ZenPlatform.Configuration.Contracts.Data;
-using ZenPlatform.Configuration.Contracts.Store;
-using ZenPlatform.Configuration.Contracts.TypeSystem;
-using IComponent = ZenPlatform.Configuration.Contracts.TypeSystem.IComponent;
-using MDType = ZenPlatform.Configuration.Common.MDType;
+﻿using System.Collections.Generic;
 
 namespace ZenPlatform.Configuration.Structure.Data
 {

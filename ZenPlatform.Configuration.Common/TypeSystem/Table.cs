@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
-namespace ZenPlatform.Configuration.TypeSystem
+namespace ZenPlatform.Configuration.Common.TypeSystem
 {
     public class Table : ITable
     {
@@ -16,6 +15,7 @@ namespace ZenPlatform.Configuration.TypeSystem
         }
 
         public Guid Id { get; set; }
+        public Guid GroupId { get; set; }
 
         public virtual uint SystemId { get; set; }
         
@@ -23,7 +23,7 @@ namespace ZenPlatform.Configuration.TypeSystem
 
         public Guid ParentId { get; set; }
 
-        public IEnumerable<IProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
-        public ITypeManager TypeManager { get; }
+        public IEnumerable<IPProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
+        public ITypeManager TypeManager => _ts;
     }
 }

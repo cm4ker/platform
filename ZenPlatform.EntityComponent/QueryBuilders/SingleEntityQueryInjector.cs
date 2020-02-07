@@ -1,10 +1,6 @@
 ﻿using System;
-using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.Structure.Data.Types.Complex;
-using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.EntityComponent.QueryBuilders
@@ -19,7 +15,7 @@ namespace ZenPlatform.EntityComponent.QueryBuilders
         }
 
         /// <inheritdoc />
-        public void InjectDataSource(QueryMachine qm, IType t,
+        public void InjectDataSource(QueryMachine qm, IPType t,
             IQueryModelContext logicalTreeNode)
         {
             var set = t ?? throw new Exception($"This component can't host next type: {t.GetType()}");

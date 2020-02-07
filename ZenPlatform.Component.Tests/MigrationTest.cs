@@ -40,7 +40,6 @@ namespace ZenPlatform.Component.Tests
             var proj = Project.Load(new MDManager(new TypeManager(), new InMemoryUniqueCounter()), _mfs);
 
             var comEdit = (ComponentEditor) proj.Editors.First(x => x is ComponentEditor);
-
             var typeEdit = comEdit.Editors.First();
             var propEdit = typeEdit.Editors.First();
             propEdit.SetType(MDTypes.String(10));
