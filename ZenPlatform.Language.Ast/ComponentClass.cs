@@ -69,8 +69,9 @@ namespace ZenPlatform.Language.Ast
 
     public class BindingClass : TypeEntity, IAstSymbol
     {
-        public BindingClass(string name) : base(null, TypeBody.Empty, name, null)
+        public BindingClass(string forwardedName, IType bindingType) : base(null, TypeBody.Empty, forwardedName, null)
         {
+            BindingType = bindingType;
         }
 
         public IType BindingType { get; set; }
