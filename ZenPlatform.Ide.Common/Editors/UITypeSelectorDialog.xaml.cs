@@ -16,9 +16,9 @@ namespace ZenPlatform.Ide.Common.Editors
     {
         private ITypeManager _typeManager;
         private bool _result;
-        private IType _selectType;
-        private Func<IType, bool> _filter;
-        public TypeSelectorViewModel(ITypeManager typeManager, Func<IType, bool> filter)
+        private IPType _selectType;
+        private Func<IPType, bool> _filter;
+        public TypeSelectorViewModel(ITypeManager typeManager, Func<IPType, bool> filter)
         {
             _typeManager = typeManager;
             _filter = filter;
@@ -39,13 +39,13 @@ namespace ZenPlatform.Ide.Common.Editors
             set => this.RaiseAndSetIfChanged(ref _result, value);
         }
 
-        public IType SelectType
+        public IPType SelectType
         {
             get => _selectType;
             set => this.RaiseAndSetIfChanged(ref _selectType, value);
         }
 
-        public IEnumerable<IType> Types => _typeManager.Types.Where(_filter);
+        public IEnumerable<IPType> Types => _typeManager.Types.Where(_filter);
 
         public ReactiveCommand<Unit, bool> OkDialogCommand { get; set; }
         public ReactiveCommand<Unit, bool> CancelDialogCommand { get; set; }

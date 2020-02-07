@@ -12,7 +12,7 @@ using ComponentEditor = ZenPlatform.EntityComponent.Configuration.ComponentEdito
 
 namespace ZenPlatform.EntityComponent.IDE
 {
-    public class ComponentConfigurationItem : ReactiveObject, IConfigurationItem
+    public class ComponentConfigurationItem : ConfigurationItemBase
     {
         public ComponentEditor _editor;
 
@@ -24,24 +24,13 @@ namespace ZenPlatform.EntityComponent.IDE
             _items = new ObservableCollection<IConfigurationItem>(_editor.Editors.Select(e => new EntityConfigurationItem(e)));
 
         }
-        public string Caption => "Entity";
+        public override string Caption { get => "Entity"; set { } }
 
-        public bool IsEnable => true;
+        public override bool CanCreate => true;
 
-        public bool IsExpanded { get; set; }
+        public override ObservableCollection<IConfigurationItem> Childs => _items;
 
-        public bool CanCreate => true;
-
-        public bool CanDelete => false;
-
-
-        public ObservableCollection<IConfigurationItem> Childs => _items;
-
-        public bool CanEdit => false;
-
-        public bool CanSearch => false;
-
-        public IConfigurationItem Create(string name)
+        public override IConfigurationItem Create(string name)
         {
             var obj = _editor.CreateObject();
             obj.Name = name;
@@ -54,14 +43,5 @@ namespace ZenPlatform.EntityComponent.IDE
 
         }
 
-        public object GetEditor()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Search(string text)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

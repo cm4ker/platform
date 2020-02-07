@@ -34,20 +34,20 @@ namespace ZenPlatform.Configuration.Common
 
     public static class TypeExtension
     {
-        public static MDType GetMDType(this IType type)
+        public static MDType GetMDType(this IPType type)
         {
             return type switch
             {
 
-                GuidType gt => new MDGuid(),
-                IntType it => new MDInt(),
-                DateTimeType dt => new MDDateTime(),
-                BooleanType bt => new MDBoolean(),
-                TypeSpec ts => ts.BaseType switch
+                GuidPType gt => new MDGuid(),
+                IntPType it => new MDInt(),
+                DateTimePType dt => new MDDateTime(),
+                BooleanPType bt => new MDBoolean(),
+                PTypeSpec ts => ts.BaseType switch
                 {
-                    NumericType nt => new MDNumeric(ts.Scale, ts.Precision),
-                    BinaryType bt => new MDBinary(ts.Size),
-                    StringType st => new MDString(ts.Size),
+                    NumericPType nt => new MDNumeric(ts.Scale, ts.Precision),
+                    BinaryPType bt => new MDBinary(ts.Size),
+                    StringPType st => new MDString(ts.Size),
                     _ => throw new NotSupportedException()
                 },
                 _ => new TypeRef(type.Id)

@@ -15,13 +15,13 @@ namespace ZenPlatform.Ide.Common
     public static class Dialogs
     {
 
-        public static IObservable<IType> SelectType(ITypeManager typeManager)
+        public static IObservable<IPType> SelectType(ITypeManager typeManager)
         {
             return SelectType(typeManager, t => true);
         }
-        public static IObservable<IType> SelectType(ITypeManager typeManager, Func<IType, bool> filter )
+        public static IObservable<IPType> SelectType(ITypeManager typeManager, Func<IPType, bool> filter )
         {
-            var interop = new Interaction<Unit, IType>();
+            var interop = new Interaction<Unit, IPType>();
 
             interop.RegisterHandler(async interaction =>
             {
@@ -32,7 +32,7 @@ namespace ZenPlatform.Ide.Common
                 dialog.Model = view;
 
                 if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                    interaction.SetOutput(await dialog.ShowDialog<IType>(desktop.MainWindow));
+                    interaction.SetOutput(await dialog.ShowDialog<IPType>(desktop.MainWindow));
 
 
 
