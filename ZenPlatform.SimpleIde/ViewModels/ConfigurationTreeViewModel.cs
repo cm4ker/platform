@@ -5,7 +5,6 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Dock.Model.Controls;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.SimpleIde.Models;
 using ReactiveUI;
 using ZenPlatform.SimpleIde.Views;
 using System.Collections.ObjectModel;
@@ -33,14 +32,18 @@ namespace ZenPlatform.SimpleIde.ViewModels
 
         private IConfigurationItem _selectedItem;
 
+        public void Open(Project project)
+        {
+            _openedConfiguration = new ObservableCollection<IConfigurationItem>(project.Editors.Select(e => e.GetConfigurationTree()));
+        }
+
         public ConfigurationTreeViewModel(Project project)
         {
-            
 
             _openedConfiguration = new ObservableCollection<IConfigurationItem>(project.Editors.Select(e => e.GetConfigurationTree()));
 
 
-             Search = ReactiveCommand.Create<string, IEnumerable<IConfigurationItem>>(
+            Search = ReactiveCommand.Create<string, IEnumerable<IConfigurationItem>>(
                 (query) =>
                 {
                     return  _openedConfiguration.Where(i => i.CanSearch && i.Search(query));

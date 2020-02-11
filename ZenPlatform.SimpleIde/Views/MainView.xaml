@@ -10,7 +10,7 @@
   <DockPanel>
     <WrapPanel DockPanel.Dock="Top">
       <Button Command="{Binding AddCommand}" Margin="2">New</Button>
-      <Button Command="{Binding AddCommand}" Margin="2">Open</Button>
+      <Button Command="{Binding OpenProjectCommand}" Margin="2">Open</Button>
       <Button Command="{Binding SaveProjectCommand}" Margin="2">Save</Button>
     </WrapPanel>
 

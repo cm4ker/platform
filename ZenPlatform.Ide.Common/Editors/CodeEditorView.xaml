@@ -5,7 +5,7 @@
              xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZenPlatform.Ide.Common.CodeEditorView">
-  <Panel>
+  <Panel DataContext="{Binding Context}">
     <ae:TextEditor  Name="Editor"
                                               Background="Transparent"
                                               Margin="10"

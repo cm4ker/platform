@@ -45,11 +45,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\CodeEditorView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Views\DockMainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
@@ -77,9 +72,6 @@
     <ProjectReference Include="..\ZenPlatform.Test.Tools\ZenPlatform.Test.Tools.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Views\CodeEditorView.xaml.cs">
-      <DependentUpon>CodeEditorView.xaml</DependentUpon>
-    </Compile>
     <Compile Update="PropertyGrid.xaml.cs">
       <DependentUpon>PropertyGrid.xaml</DependentUpon>
     </Compile>

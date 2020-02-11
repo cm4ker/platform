@@ -1,29 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using Avalonia.Controls;
-using ReactiveUI;
-using ZenPlatform.EntityComponent.Configuration;
+using System.Text;
 using ZenPlatform.EntityComponent.Configuration.Editors;
 using ZenPlatform.Ide.Contracts;
 
 namespace ZenPlatform.EntityComponent.IDE
 {
-    public class PropertyListConfigurationItem : ConfigurationItemBase
+    public class CommandListConfigurationItem : ConfigurationItemBase
     {
         private ObjectEditor _editor;
         private readonly ObservableCollection<IConfigurationItem> _items;
-        public PropertyListConfigurationItem(ObjectEditor editor)
+        public CommandListConfigurationItem(ObjectEditor editor)
         {
-            
+
             _editor = editor;
-            _items = new ObservableCollection<IConfigurationItem>(_editor.PropertyEditors.Select(p => new PropertyConfigurationItem(p, _editor)));
-          
+            _items = new ObservableCollection<IConfigurationItem>(_editor.CommandEditors.Select(p => new CommandConfigurationItem(p)));
+
         }
-        public override string Caption { get => "Propertys"; set { } }
+
+        public override string Caption { get => "Commands"; set { } }
 
         public override bool CanCreate => true;
 
@@ -38,7 +35,6 @@ namespace ZenPlatform.EntityComponent.IDE
             var item = new PropertyConfigurationItem(prop, _editor);
             _items.Add(item);
 
-            //this.RaisePropertyChanged("Childs");
 
             return item;
         }

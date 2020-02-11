@@ -20,6 +20,7 @@ namespace ZenPlatform.EntityComponent.IDE
             _childs = new ObservableCollection<IConfigurationItem>();
             _childs.Add(new PropertyListConfigurationItem(_editor));
             _childs.Add(new ModuleListConfigurationItem(_editor));
+            _childs.Add(new CommandListConfigurationItem(_editor));
         }
         public override string Caption { get => _editor.Name; set { } }
 

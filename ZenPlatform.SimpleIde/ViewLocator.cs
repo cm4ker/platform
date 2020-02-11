@@ -7,6 +7,7 @@ using ReactiveUI;
 using ZenPlatform.SimpleIde.ViewModels;
 using System.Linq;
 using ZenPlatform.Ide.Contracts;
+using ZenPlatform.Ide.Common.Editors;
 
 namespace ZenPlatform.SimpleIde
 {
@@ -16,11 +17,16 @@ namespace ZenPlatform.SimpleIde
 
         public IControl Build(object data)
         {
-            if (data is DocumentEditor editor)
+            if (data is ItemEditorViewModule editor)
             {
                 data = editor.Context;
             }
 
+            if (data is DocumentView dd)
+            {
+                data = dd.Context;
+            }
+            
             Type  type = null;
             var attrs = data.GetType().GetCustomAttributes(typeof(ViewAttribute), true);
             if (attrs.Length > 0)

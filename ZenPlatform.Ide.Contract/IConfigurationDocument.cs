@@ -1,13 +1,12 @@
-﻿using AvaloniaEdit.Document;
+﻿//using AvaloniaEdit.Document;
 
-namespace ZenPlatform.SimpleIde.Models
+namespace ZenPlatform.Ide.Contracts
 {
     public interface IConfigurationDocument
     {
         bool IsChanged { get; }
 
         string Title { get; }
-        TextDocument Content { get; }
 
         void Save();
     }

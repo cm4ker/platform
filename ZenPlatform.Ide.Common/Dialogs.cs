@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Text;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Ide.Common.Editors;
+using MessageBox.Avalonia;
 
 namespace ZenPlatform.Ide.Common
 {
@@ -59,9 +60,22 @@ namespace ZenPlatform.Ide.Common
             var dialog = new OpenFolderDialog();
 
             if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                return Observable.FromAsync(() => dialog.ShowAsync(desktop.MainWindow));
+                return Observable.FromAsync(() => dialog.ShowAsync(desktop.MainWindow), RxApp.MainThreadScheduler);
 
             return null;
+        }
+
+
+        public static IObservable<bool> GetOkCancel(string title, string text)
+        {
+            
+            var dialog = MessageBoxManager.GetMessageBoxStandardWindow(title, text, MessageBox.Avalonia.Enums.ButtonEnum.OkCancel);
+
+            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                return Observable.FromAsync(async () => await dialog.ShowDialog(desktop.MainWindow) == 0, RxApp.MainThreadScheduler);
+
+            return null;
+
         }
     }
 }

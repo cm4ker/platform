@@ -34,7 +34,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             _mrg = new ComponentManager();
             _objs = new List<ObjectEditor>();
             
-            _entry = FileSystemPath.Root.AppendFile("Entity");
+            _entry = FileSystemPath.Root.AppendFile("Entity.xml");
            
         }
 

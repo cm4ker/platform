@@ -135,9 +135,16 @@ namespace ZenPlatform.Configuration.Structure
             foreach (var mrg in _managers)
             {
                 mrg.Value.Save(_inf, mrg.Key, fileSystem);
+
+                
+                    var asmPath = Path.Combine(pkgFolder, $"{mrg.Key.Name}.dll");
+          
             }
 
             fileSystem.Serialize(DefaultPath.ToString(), _md);
+
+
+            
         }
 
         public void Attach(IComponentRef comRef, IComponentManager mrg)
@@ -155,6 +162,7 @@ namespace ZenPlatform.Configuration.Structure
             foreach (var reference in _md.ComponentReferences)
             {
                 var asmPath = Path.Combine(pkgFolder, $"{reference.Name}.dll");
+
 
                 var asm = Assembly.Load(fileSystem.GetBytes(asmPath) ??
                                         throw new Exception($"Unknown reference {reference.Name}"));
