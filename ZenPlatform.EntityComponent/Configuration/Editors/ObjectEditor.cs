@@ -41,7 +41,10 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             set => _md.Name = value;
         }
 
-        public IEnumerable<PropertyEditor> Editors => _props;
+        public IEnumerable<PropertyEditor> PropertyEditors => _props;
+        public IEnumerable<ModuelEditor> ModuleEditors => _modules;
+        public IEnumerable<CommandEditor> CommandEditors => _commands;
+        public IEnumerable<TableEditor> TableEditors => _tables;
 
         public ModuelEditor CreateModule()
         {

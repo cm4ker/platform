@@ -85,12 +85,18 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             var mds = tm.Metadatas.Where(x => x.ParentId == info.ComponentId);
 
+            if (!fs.Exists(FileSystemPath.Root.AppendDirectory("Entity")))
+                fs.CreateDirectory(FileSystemPath.Root.AppendDirectory("Entity"));
+
             foreach (var mr in mds)
             {
                 var md = (MDEntity) mr.Metadata;
 
                 fs.Serialize(FileSystemPath.Root.AppendDirectory("Entity").AppendFile(md.Name).ToString(), md);
             }
+
+
+
         }
     }
 }

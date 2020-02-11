@@ -7,7 +7,6 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using ZenPlatform.Ide.Common;
-using ZenPlatform.SimpleIde.Models;
 using ZenPlatform.SimpleIde.ViewModels;
 
 namespace ZenPlatform.SimpleIde.Views
