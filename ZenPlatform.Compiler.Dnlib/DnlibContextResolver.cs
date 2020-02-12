@@ -48,9 +48,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType GetType(ITypeDefOrRef tr) => _ts.Resolve(tr.ToTypeRef());
 
-        public MethodSig ResolveMethodSig(MethodSig msig)
+        public MethodSig ResolveMethodSig(MethodSig msig, IType[] genericArguments)
         {
-            if (!(msig.RetType is GenericMVar || msig.RetType is GenericInstSig))
+            if (!(msig.RetType is GenericMVar || msig.RetType is GenericInstSig || msig.RetType is GenericVar))
             {
                 DnlibType dt = (DnlibType) GetType(msig.RetType);
 

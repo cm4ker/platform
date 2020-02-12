@@ -13,7 +13,6 @@ using Module = ZenPlatform.Language.Ast.Definitions.Module;
 
 namespace ZenPlatform.Compiler.Generation
 {
-  
     public partial class Generator
     {
         private Dictionary<TypeEntity, ITypeBuilder> _stage0 = new Dictionary<TypeEntity, ITypeBuilder>();
@@ -554,10 +553,13 @@ namespace ZenPlatform.Compiler.Generation
                 if (componentClass.Base is SingleTypeSyntax sts)
                 {
                     //build this type in priority
-                    
+
                     var entity = FindEntityByName(sts.TypeName);
-                    BuildTypeEntity(entity);
+
+                    if (entity != null)
+                        BuildTypeEntity(entity);
                 }
+
                 if (componentClass.BaseTypeSelector != null)
                 {
                     baseType = componentClass.BaseTypeSelector(_ts);

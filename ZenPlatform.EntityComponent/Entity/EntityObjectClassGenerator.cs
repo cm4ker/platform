@@ -70,15 +70,12 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             if (astTree is ComponentClass cc)
             {
-                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Object)
+                if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
                 {
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
-                    {
-                        EmitStructure(cc, builder, dbType);
-                    }
-                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
-                    {
-                    }
+                    EmitStructure(cc, builder, dbType);
+                }
+                else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
+                {
                 }
             }
         }

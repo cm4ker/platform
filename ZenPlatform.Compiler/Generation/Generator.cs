@@ -19,8 +19,7 @@ namespace ZenPlatform.Compiler.Generation
         private readonly CompilationMode _mode;
 
         private readonly IProject _conf;
-
-
+        
         private List<CompilationUnit> _cus;
 
         private ServerAssemblyServiceScope _serviceScope;
