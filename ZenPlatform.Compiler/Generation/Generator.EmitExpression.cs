@@ -51,7 +51,6 @@ namespace ZenPlatform.Compiler.Generation
                     {
                         case BinaryOperatorType.Add:
                             e.EmitCall(_bindings.Methods.Concat);
-                            //e.EmitCall(_bindings.String.FindMethod(x => x.Name == "Concat" && x.Parameters.Count == 2));
                             break;
                         default: throw new NotSupportedException();
                     }
