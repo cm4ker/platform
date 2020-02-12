@@ -177,6 +177,27 @@ namespace ZenPlatform.Compiler.Contracts
         public static IType MakeGenericType(this IType type, params IType[] typeArguments)
             => type.MakeGenericType(typeArguments);
 
+        public static bool IsAssignableFrom(this IType to, IType type)
+        {
+            if (type.IsValueType
+                && to.GenericTypeDefinition?.FullName == "System.Nullable`1"
+                && to.GenericArguments[0].Equals(type))
+                return true;
+            if (to.FullName == "System.Object" && type.IsInterface)
+                return true;
+            var baseType = type;
+            while (baseType != null)
+            {
+                if (baseType.Equals(to))
+                    return true;
+                baseType = baseType.BaseType;
+            }
+
+            if (to.IsInterface && type.GetAllInterfaces().Any(to.IsAssignableFrom))
+                return true;
+            return false;
+        }
+        
         public static IEnumerable<IType> GetAllInterfaces(this IType type)
         {
             foreach (var i in type.Interfaces)

@@ -188,7 +188,7 @@ namespace ZenPlatform.EntityComponent.Entity
             {
                 var tableRow = ts.GetType(table.GetTableRowClassName());
                 var listType = sb.List.MakeGenericType(tableRow);
-                
+                var m = listType.Methods;
                 var result = builder.DefineProperty(listType, table.Name, true, true, false);
             }
         }

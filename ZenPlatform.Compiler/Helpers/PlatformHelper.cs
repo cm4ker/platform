@@ -118,7 +118,7 @@ namespace ZenPlatform.Compiler.Helpers
                     foreach (var @using in usings)
                     {
                         if (@using is UsingDeclaration)
-                            type = context.FindType(sts.TypeName);
+                            type = context.FindType(@using + sts.TypeName);
                         if (@using is UsingAliasDeclaration ad && ad.Alias == sts.TypeName)
                             return context.FindType(ad.ClassName);
                     }

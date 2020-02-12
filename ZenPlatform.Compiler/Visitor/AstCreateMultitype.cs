@@ -42,33 +42,6 @@ namespace ZenPlatform.Compiler.Visitor
             return $"MT_{_mtIndex++}";
         }
 
-        public override object VisitMultiType(UnionTypeSyntax obj)
-        {
-            var name = GetFieldName();
-            obj.DeclName = name;
-            var field = _defMT.DefineField(_tsb.MultiType, name, true, true);
-
-            var e = _ctor.Generator;
-
-            e.LdcI4(obj.TypeList.Count);
-            e.NewArr(_tsb.Type);
-
-            var typeIndex = 0;
-
-            foreach (var sType in obj.TypeList)
-            {
-                e.Dup();
-                e.LdcI4(typeIndex++);
-                //e.LdType(sType.Type);
-                e.StElemRef();
-            }
-
-            e.NewObj(_tsb.MultiType.FindConstructor(_tsb.Type.MakeArrayType()));
-            e.StSFld(field);
-
-            return null;
-        }
-
         private Expression GetValue(Name name)
         {
             return new GetFieldExpression(name, "Value");

@@ -73,30 +73,5 @@ namespace ZenPlatform.Compiler.Generation
 
             symTable.ConnectCodeObject(variable, local);
         }
-
-        private void WrapMultitypeStackValue(IEmitter e, UnionTypeSyntax mtn, ILocal local, ILocal exp)
-        {
-            var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
-            e.LdLocA(local);
-            e.Dup();
-            e.LdsFld(mt.FindField(mtn.DeclName));
-            e.EmitCall(_bindings.UnionTypeStorage.FindConstructor(_bindings.MultiType));
-            e.LdLoc(local);
-            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
-            e.LdLoc(local);
-        }
-
-        private void WrapMultitypeNode(IEmitter e, UnionTypeSyntax mtn, ref ILocal local)
-        {
-            var localWrap = e.DefineLocal(_bindings.UnionTypeStorage);
-            var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
-            e.LdLocA(localWrap);
-            e.Dup();
-            e.LdsFld(mt.FindField(mtn.DeclName));
-            e.EmitCall(_bindings.UnionTypeStorage.FindConstructor(_bindings.MultiType));
-            e.LdLoc(local);
-            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
-            local = localWrap;
-        }
     }
 }

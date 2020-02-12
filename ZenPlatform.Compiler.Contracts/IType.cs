@@ -68,37 +68,34 @@ namespace ZenPlatform.Compiler.Contracts
         /// </summary>
         IReadOnlyList<IType> GenericArguments { get; }
 
-        /// <summary>
-        /// Returns true if type is assignable from passed type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        bool IsAssignableFrom(IType type);
-
         IType MakeGenericType(IReadOnlyList<IType> typeArguments);
+
         IType GenericTypeDefinition { get; }
+
         bool IsArray { get; }
+
         IType ArrayElementType { get; }
 
         IType MakeArrayType();
+
         IType MakeArrayType(int dimensions);
 
         IType BaseType { get; }
-        
+
         bool IsValueType { get; }
-        
+
         bool IsEnum { get; }
-        
+
         IReadOnlyList<IType> Interfaces { get; }
-        
+
         bool IsInterface { get; }
-        
+
         bool IsSystem { get; }
 
         bool IsPrimitive { get; }
 
         IType GetEnumUnderlyingType();
-        IReadOnlyList<IType> GenericParameters { get; }
-        int GetHashCode(); 
+
+        int GetHashCode();
     }
 }

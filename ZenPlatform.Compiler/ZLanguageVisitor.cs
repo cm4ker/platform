@@ -115,18 +115,6 @@ namespace ZenPlatform.Compiler
             return f;
         }
 
-        public override SyntaxNode VisitMultitype(ZSharpParser.MultitypeContext context)
-        {
-            var marker = new object();
-            _syntaxStack.Push(marker);
-            base.VisitMultitype(context);
-            var tc = new TypeCollection();
-            _syntaxStack.PopUntil(marker, tc);
-            var result = new UnionTypeSyntax(context.start.ToLineInfo(), tc);
-            _syntaxStack.Push(result);
-            return result;
-        }
-
         public override SyntaxNode VisitPropertyDeclaration(ZSharpParser.PropertyDeclarationContext context)
         {
             base.VisitPropertyDeclaration(context);

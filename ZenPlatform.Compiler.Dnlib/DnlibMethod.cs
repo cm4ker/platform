@@ -57,6 +57,8 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new Exception("Can't create generic method");
         }
 
+        public IReadOnlyList<IType> GenericArguments => null;
+
         protected ITypeDefOrRef DeclaringTypeReference => _declaringTR;
 
         public bool IsPublic => MethodDef.IsPublic;
