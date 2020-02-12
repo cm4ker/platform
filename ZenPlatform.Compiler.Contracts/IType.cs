@@ -99,7 +99,6 @@ namespace ZenPlatform.Compiler.Contracts
 
         IType GetEnumUnderlyingType();
         IReadOnlyList<IType> GenericParameters { get; }
-
-        int GetHashCode();
+        int GetHashCode(); 
     }
 }

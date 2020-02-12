@@ -15,7 +15,7 @@ namespace ZenPlatform.EntityComponent.Configuration
             Properties = new List<MDProperty>();
             Tables = new List<MDTable>();
             Modules = new List<MDProgramModule>();
-            Commands= new List<MDCommand>();
+            Commands = new List<MDCommand>();
         }
 
         public string Name { get; set; }

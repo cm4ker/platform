@@ -103,7 +103,6 @@ namespace ZenPlatform.Compiler.Contracts
                 _stb = stb;
             }
 
-
             public IMethod Concat => _stb.String.FindMethod(x =>
                 x.Name == nameof(string.Concat) && x.Parameters.Count == 2
                                                 && x.Parameters[0].Type == _stb.String &&
