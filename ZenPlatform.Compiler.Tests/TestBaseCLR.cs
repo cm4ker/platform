@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.Tests
     {
         private ZLanguageVisitor _zlv;
 
-        IAssemblyPlatform ap = new DnlibAssemblyPlatform();
+       protected IAssemblyPlatform Ap = new DnlibAssemblyPlatform();
         //IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
         public TestBaseCLR()
@@ -58,7 +58,7 @@ namespace ZenPlatform.Compiler.Tests
 
         public void ImportRef()
         {
-            var asm = ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
+            var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
             asm.ImportWithCopy(asm.TypeSystem.GetSystemBindings().Client);
             var asmName = $"test.bll";
 
@@ -70,7 +70,7 @@ namespace ZenPlatform.Compiler.Tests
 
         public void Compile(string unit)
         {
-            var asm = ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
+            var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
 
             var cunit = (CompilationUnit) unit.Parse(x => _zlv.VisitEntryPoint(x.entryPoint()));
 
@@ -94,7 +94,7 @@ namespace ZenPlatform.Compiler.Tests
 
         public object CompileAndRun(string funcScript)
         {
-            var asm = ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
+            var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
 
             Function node = (Function) funcScript.Parse(x => _zlv.VisitFunctionDeclaration(x.functionDeclaration()));
 
