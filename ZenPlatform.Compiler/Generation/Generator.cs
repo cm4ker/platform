@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using MoreLinq.Extensions;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.UI.Ast;
 using SreTA = System.Reflection.TypeAttributes;
@@ -19,7 +21,7 @@ namespace ZenPlatform.Compiler.Generation
         private readonly CompilationMode _mode;
 
         private readonly IProject _conf;
-        
+
         private List<CompilationUnit> _cus;
 
         private ServerAssemblyServiceScope _serviceScope;
@@ -51,6 +53,12 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitUI(UINode node)
         {
+        }
+
+        private void CreateBindings()
+        {
+            var b = new ClassTable();
+            b.FillStandard(_bindings);
         }
     }
 }
