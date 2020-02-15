@@ -227,9 +227,9 @@ namespace ZenPlatform.Language.Ast
         }
 
 
-        public virtual T VisitCompilationUnit(CompilationUnit cu)
+        public virtual T VisitCompilationUnit(CompilationUnit obj)
         {
-            return DefaultVisit(cu);
+            return DefaultVisit(obj);
             ;
         }
 

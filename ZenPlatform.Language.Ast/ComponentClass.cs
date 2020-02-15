@@ -67,6 +67,33 @@ namespace ZenPlatform.Language.Ast
         }
     }
 
+    /*
+     
+    -------- "+" ---------   | ---------- "-" ----------
+     1) у нас появляется     |   1) Мы отказываемся от
+     возможность лекго доб-  | понятия примитивный класс(только платформенный)
+     лять новые классы в     | и используем ТОЛЬКО внутренние объявленные классы
+     платформу. Просто новый | и бидинги
+     биндинг                 |
+     
+     
+     
+     
+     System.Int32        int
+     System.Int64        long
+
+     System.Guid         System.Guid
+     
+     using System;
+     import method Int32 SomeMethod();     
+     
+     Int32 a = 0;
+     int b = 0;
+     
+     
+     if(a == b)
+     
+     */
     public class BindingClass : TypeEntity, IAstSymbol
     {
         public BindingClass(string forwardedName, IType bindingType) : base(null, TypeBody.Empty, forwardedName, null)
