@@ -38,8 +38,7 @@ namespace ZenPlatform.Compiler
 
             var usings = new List<UsingBase>();
 
-            
-            
+
             foreach (var atd in context.usingSection())
             {
                 usings.Add((UsingBase) Visit(atd));
@@ -199,6 +198,7 @@ namespace ZenPlatform.Compiler
         public override SyntaxNode VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
         {
             TypeNodeKind t = TypeNodeKind.Unknown;
+
             if (context.STRING() != null) t = TypeNodeKind.String;
             else if (context.INT() != null) t = TypeNodeKind.Int;
             else if (context.OBJECT() != null) t = TypeNodeKind.Object;
