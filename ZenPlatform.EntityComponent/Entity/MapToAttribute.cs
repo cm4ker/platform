@@ -17,7 +17,5 @@ namespace ZenPlatform.EntityComponent.Entity
 
     public class NeedInitAttribute : Attribute
     {
-        
     }
-    
 }

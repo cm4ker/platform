@@ -23,16 +23,13 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(IPType type, Root root)
+        public void GenerateAstTree(IPType type, NamespaceDeclaration nsDec)
         {
             var dtoClassName = type.GetDtoType().Name;
 
             var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, dtoClassName,
                 TypeBody.Empty);
 
-            var cu = CompilationUnit.Empty;
-
-            cu.AddEntity(cls);
 
             foreach (var table in type.Tables)
             {
@@ -44,10 +41,10 @@ namespace ZenPlatform.EntityComponent.Entity
                     Bag = table
                 };
 
-                cu.AddEntity(dtoTableCls);
+                nsDec.AddEntity(dtoTableCls);
             }
 
-            root.Add(cu);
+            nsDec.AddEntity(cls);
         }
 
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)

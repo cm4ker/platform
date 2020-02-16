@@ -64,7 +64,7 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(IPType ipType, Root root)
+        public void GenerateAstTree(IPType ipType, NamespaceDeclaration nsDec)
         {
             var className = ipType.Name;
 
@@ -73,10 +73,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
             cls.Bag = ObjectType.Link;
 
-
-            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
-                new List<NamespaceDeclaration>());
-            root.Add(cu);
+            nsDec.AddEntity(cls);
         }
 
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)

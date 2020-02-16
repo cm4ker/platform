@@ -26,7 +26,7 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(IPType type, Root root)
+        public void GenerateAstTree(IPType type, NamespaceDeclaration nsDec)
         {
             var className = type.Name;
 
@@ -38,11 +38,9 @@ namespace ZenPlatform.EntityComponent.Entity
 
             GenerateObjectClassUserModules(type, cls);
 
-            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
-                new List<NamespaceDeclaration>());
             //end create dto class
 
-            root.Add(cu);
+            nsDec.AddEntity(cls);
 
             foreach (var table in type.Tables)
             {
@@ -59,7 +57,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     }
                 };
 
-                cu.AddEntity(dtoTableCls);
+                nsDec.AddEntity(dtoTableCls);
             }
         }
 

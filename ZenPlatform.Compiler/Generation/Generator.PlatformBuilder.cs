@@ -26,7 +26,7 @@ namespace ZenPlatform.Compiler.Generation
 
             _cus = root.Units;
             AstScopeRegister.Apply(root);
-
+            LoweringOptimizer.Apply(_ts, root);
 
             Build();
         }

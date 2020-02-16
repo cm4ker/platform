@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 
@@ -11,5 +12,18 @@ namespace ZenPlatform.Language.Ast.Definitions
     public partial class Call : Expression
     {
         public bool IsStatement { get; set; }
+    }
+
+    public class ClrInternalCall : Expression
+    {
+        public ClrInternalCall(IMethod method, IList<Argument> arguments) : base(null)
+        {
+            Arguments = arguments;
+            Method = method;
+        }
+
+        public IMethod Method { get; }
+
+        public IList<Argument> Arguments { get; }
     }
 }
