@@ -137,6 +137,16 @@ namespace ZenPlatform.EntityComponent.Entity
         /// <param name="dbType"></param>
         public void StageServer(IPType ipType, Node root, SqlDatabaseType dbType)
         {
+            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>(),
+                new List<NamespaceDeclaration>());
+
+            var ns = new NamespaceDeclaration(null, "Entity",
+                new List<UsingBase>(), new List<TypeEntity>(), new List<NamespaceDeclaration>());
+
+            cu.AddNsDecl(ns);
+
+            //TODO: pass ns decl instead root
+
             var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
 
             if (ipType.IsDto)
@@ -150,6 +160,8 @@ namespace ZenPlatform.EntityComponent.Entity
                 _egLink.GenerateAstTree(ipType, r);
             else if (ipType.IsManager)
                 _egManager.GenerateAstTree(ipType, r);
+
+            r.Add(cu);
         }
 
         /// <summary>

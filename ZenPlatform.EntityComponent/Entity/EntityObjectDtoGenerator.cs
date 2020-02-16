@@ -28,88 +28,12 @@ namespace ZenPlatform.EntityComponent.Entity
             var dtoClassName = type.GetDtoType().Name;
 
             var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, dtoClassName,
-                TypeBody.Empty) {Namespace = type.GetNamespace()};
+                TypeBody.Empty);
 
             var cu = CompilationUnit.Empty;
 
             cu.AddEntity(cls);
-            /*
-             Табличные части именуются следующим принципом:
-             TR_{ObjectName}_{TableName}
-             
-             public class Dto
-             {
-                public List<TableRow> Table1 { get; }      
-             }
-             
-             public class ObjectTable1 : IEnumerable<TableRow>
-             {
-                List<TableRowObject> _list;
-                
-                public ObjectTable(List<TableRow> list)
-                {
-                    _list = list.Select(x=>new TableRowObject(x));
-                }
-                                
-                public IEnumerable<TableRowObject> Table1 => _list;
-                
-                
-                public Create()
-                {
-                    var o = new TableRow();
-                    var wrap = new TableObjectRow(o);
-                    
-                    _dto.Add(o);
-                    _table1.Add(wrap);
-                    
-                    retrun wrap;
-                }         
-             }
-       
-             
-             
-             public class Object
-             {
-                private ObjectTable1 _table1;
-                private Dto _dto;
-                
-                public Object(Dto dto)
-                {
-                    _dto = dto;
-                    _table1 = new ObjectTable(dto.Table1);        
-                }
-                
-               public ObjectTable1 Table1 => _table1;                
-                
-                public TableRowObject CreateRowTable1()
-                {
-                   
-                }
-                
-                public RemoveTable1()
-                {
-                    ...
-                }
-             }
-             
-             public class TableRowObject
-             {
-                Create()
-                Remove()
-                ...
-             }
-             
-             public class TableRowLink
-             {
-                
-             }
-             
-             public class TableRow
-             {
-                
-             }
-             
-             */
+
             foreach (var table in type.Tables)
             {
                 var tableName = $"TR{type.Name}_{table.Name}";
@@ -117,7 +41,6 @@ namespace ZenPlatform.EntityComponent.Entity
                 var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, type, null,
                     tableName, TypeBody.Empty)
                 {
-                    Namespace = type.GetNamespace(),
                     Bag = table
                 };
 
@@ -164,7 +87,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var @namespace = ownerType.GetNamespace();
 
             var dtoType = ts.FindType($"{@namespace}.{table}");
-            
+
             foreach (var prop in table.Properties)
             {
                 EmitProperty(builder, prop, sb);
@@ -231,14 +154,14 @@ namespace ZenPlatform.EntityComponent.Entity
                     var dbColName = prop
                         .GetDbSchema()
                         .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                        ? ColumnSchemaType.Value
-                                        : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
+                            ? ColumnSchemaType.Value
+                            : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
                     var propName = prop
                         .GetObjSchema()
                         .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                        ? ColumnSchemaType.Value
-                                        : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
+                            ? ColumnSchemaType.Value
+                            : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
                     IType propType = ctype.ConvertType(sb);
 
@@ -263,14 +186,14 @@ namespace ZenPlatform.EntityComponent.Entity
                         var dbColName = prop
                             .GetDbSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                            ? ColumnSchemaType.Ref
-                                            : ColumnSchemaType.NoSpecial)).FullName;
+                                ? ColumnSchemaType.Ref
+                                : ColumnSchemaType.NoSpecial)).FullName;
 
                         var propName = prop
                             .GetObjSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                            ? ColumnSchemaType.Ref
-                                            : ColumnSchemaType.NoSpecial)).FullName;
+                                ? ColumnSchemaType.Ref
+                                : ColumnSchemaType.NoSpecial)).FullName;
 
                         var propBuilder = builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
 

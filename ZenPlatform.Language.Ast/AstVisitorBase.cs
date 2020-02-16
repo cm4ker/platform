@@ -28,9 +28,9 @@ namespace ZenPlatform.Language.Ast
             return visitable.Accept(this);
         }
 
-        public virtual T VisitTypeEntity(TypeEntity typeEntity)
+        public virtual T VisitTypeEntity(TypeEntity obj)
         {
-            return DefaultVisit(typeEntity);
+            return DefaultVisit(obj);
         }
 
         public T VisitArrayTypeNode(ArrayTypeSyntax arg)

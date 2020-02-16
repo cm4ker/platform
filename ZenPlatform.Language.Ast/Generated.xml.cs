@@ -46,9 +46,10 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class NamespaceDeclaration : SyntaxNode
     {
-        public NamespaceDeclaration(ILineInfo lineInfo, List<UsingBase> usings, List<TypeEntity> entityes, List<NamespaceDeclaration> namespaceDeclarations): base(lineInfo)
+        public NamespaceDeclaration(ILineInfo lineInfo, String name, List<UsingBase> usings, List<TypeEntity> entityes, List<NamespaceDeclaration> namespaceDeclarations): base(lineInfo)
         {
             var slot = 0;
+            Name = name;
             Usings = usings;
             if (Usings != null)
                 foreach (var item in Usings)
@@ -72,6 +73,11 @@ namespace ZenPlatform.Language.Ast.Definitions
                     if (item != null)
                         Childs.Add(item);
                 }
+        }
+
+        public String Name
+        {
+            get;
         }
 
         public List<UsingBase> Usings

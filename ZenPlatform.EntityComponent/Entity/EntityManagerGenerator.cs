@@ -57,8 +57,6 @@ namespace ZenPlatform.EntityComponent.Entity
                 TypeBody.Empty);
             cls.Bag = ObjectType.Manager;
 
-            cls.Namespace = @namespace;
-
             var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
                 new List<NamespaceDeclaration>());
 

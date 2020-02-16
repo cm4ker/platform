@@ -64,17 +64,13 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
         }
 
-        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
+        public void GenerateAstTree(IPType ipType, Root root)
         {
             var className = ipType.Name;
 
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
-
             var cls = new ComponentClass(CompilationMode.Shared, _component, ipType, null, className,
-                    TypeBody.Empty, new SingleTypeSyntax(null, "Entity.EntityLink", TypeNodeKind.Object))
-                {Namespace = ipType.GetNamespace()};
+                TypeBody.Empty, new SingleTypeSyntax(null, "Entity.EntityLink", TypeNodeKind.Object));
 
-            cls.Namespace = @namespace;
             cls.Bag = ObjectType.Link;
 
 
