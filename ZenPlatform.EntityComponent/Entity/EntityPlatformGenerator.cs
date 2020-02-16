@@ -112,10 +112,10 @@ namespace ZenPlatform.EntityComponent.Entity
                 var typeBody = ParserHelper.ParseTypeBody(command.Module.ModuleText);
 
                 var serverModule = new ComponentModule(CompilationMode.Server, _component, ipType, null,
-                    $"__cmd_{command.Name}", typeBody) {Namespace = ipType.GetNamespace()};
+                    $"__cmd_{command.Name}", typeBody);
 
                 var clientModule = new ComponentModule(CompilationMode.Client, _component, ipType, null,
-                    $"__cmd_{command.Name}", typeBody) {Namespace = ipType.GetNamespace()};
+                    $"__cmd_{command.Name}", typeBody);
 
                 foreach (var func in typeBody.Functions)
                 {
@@ -150,16 +150,16 @@ namespace ZenPlatform.EntityComponent.Entity
             var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
 
             if (ipType.IsDto)
-                _egDto.GenerateAstTree(ipType, r);
+                _egDto.GenerateAstTree(ipType, ns);
             else if (ipType.IsObject)
             {
-                _egClass.GenerateAstTree(ipType, r);
+                _egClass.GenerateAstTree(ipType, ns);
                 GenerateCommands(ipType, r);
             }
             else if (ipType.IsLink)
-                _egLink.GenerateAstTree(ipType, r);
+                _egLink.GenerateAstTree(ipType, ns);
             else if (ipType.IsManager)
-                _egManager.GenerateAstTree(ipType, r);
+                _egManager.GenerateAstTree(ipType, ns);
 
             r.Add(cu);
         }

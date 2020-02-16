@@ -38,9 +38,9 @@ namespace ZenPlatform.Compiler
         public IMethod GetMethod(TypeSyntax type, string name, TypeSyntax[] args)
         {
             var typeName = GetTypeName(type);
+            var argsTypeName = args.Select(GetTypeName).ToArray();
 
-
-            IMethod m = GetCachedMethod(typeName, name);
+            IMethod m = GetCachedMethod(typeName, name, argsTypeName);
 
             if (m == null)
             {
@@ -147,7 +147,7 @@ namespace ZenPlatform.Compiler
         private TypeEntity GetType(string name)
         {
             return _types.FirstOrDefault(x =>
-                (!string.IsNullOrEmpty(x.Namespace) ? x.Namespace + "." : "") + x.Name == name);
+                (!string.IsNullOrEmpty(x.GetNamespace()) ? x.GetNamespace() + "." : "") + x.Name == name);
         }
 
 

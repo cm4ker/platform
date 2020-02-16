@@ -7,9 +7,48 @@ using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Expressions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Compiler.Visitor
 {
+    public class LoweringOptimizer : AstWalker<object>
+    {
+        private readonly ITypeSystem _ts;
+
+        public LoweringOptimizer(ITypeSystem ts)
+        {
+            _ts = ts;
+        }
+
+        public static void Apply(ITypeSystem ts, SyntaxNode node)
+        {
+            var p = new LoweringOptimizer(ts);
+            p.Visit(node);
+        }
+
+        public override object VisitBinaryExpression(BinaryExpression obj)
+        {
+            if (obj.BinaryOperatorType == BinaryOperatorType.Add && obj.Left.Type.Kind == TypeNodeKind.String)
+            {
+                var left = new Argument(null, obj.Left);
+                var right = new Argument(null, obj.Right);
+
+                var call = new ClrInternalCall(_ts.GetSystemBindings().Methods.Concat,
+                    new List<Argument> {left, right});
+
+                obj.Parent.Replace(obj, call);
+                //we need attach some arguments to node through slot
+                //if it list we need sync all indexes
+            }
+
+
+            return base.VisitBinaryExpression(obj);
+        }
+    }
+
+
     /// <summary>
     /// Визитор для заполнения классов
     /// </summary>

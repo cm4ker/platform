@@ -1,3 +1,4 @@
+using System;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST;
 
@@ -9,5 +10,36 @@ namespace ZenPlatform.Language.Ast.Definitions
     public abstract partial class TypeEntity
     {
         public SymbolType SymbolType => SymbolType.Type;
+
+
+        public string GetNamespace()
+        {
+            var parent = FirstParent<NamespaceDeclaration>();
+
+            if (parent == null)
+                return "";
+
+            var ns = parent.GetNamespace();
+
+            if (!string.IsNullOrEmpty(ns))
+                return string.Join(".", ns, Name);
+
+            return Name;
+        }
+    }
+
+    public partial class NamespaceDeclaration
+    {
+        public void AddEntity(TypeEntity type)
+        {
+            this.Entityes.Add(type);
+            Childs.Add(type);
+        }
+
+
+        public string GetNamespace()
+        {
+            return this.FirstParent<NamespaceDeclaration>()?.Name ?? "";
+        }
     }
 }

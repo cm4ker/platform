@@ -82,8 +82,6 @@ namespace ZenPlatform.Compiler
             var result = new Class(context.start.ToLineInfo(), _syntaxStack.PopTypeBody(),
                 context.typeName().IDENTIFIER().GetText());
 
-            result.Namespace = context.typeName().@namespace()?.GetText();
-
             _syntaxStack.PeekCollection().Add(result);
 
             return result;

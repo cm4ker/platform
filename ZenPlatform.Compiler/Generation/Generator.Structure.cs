@@ -510,7 +510,8 @@ namespace ZenPlatform.Compiler.Generation
         private ITypeBuilder PreBuildClass(Class @class)
         {
             var tb = _asm.DefineType(
-                (string.IsNullOrEmpty(@class.Namespace) ? DEFAULT_ASM_NAMESPACE : @class.Namespace), @class.Name,
+                (string.IsNullOrEmpty(@class.GetNamespace()) ? DEFAULT_ASM_NAMESPACE : @class.GetNamespace()),
+                @class.Name,
                 TypeAttributes.Class | TypeAttributes.NotPublic |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
                 _bindings.Object);
@@ -524,7 +525,8 @@ namespace ZenPlatform.Compiler.Generation
         private ITypeBuilder PreBuildModule(Module module)
         {
             return _asm.DefineType(
-                (string.IsNullOrEmpty(@module.Namespace) ? DEFAULT_ASM_NAMESPACE : @module.Namespace), module.Name,
+                (string.IsNullOrEmpty(@module.GetNamespace()) ? DEFAULT_ASM_NAMESPACE : @module.GetNamespace()),
+                module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
         }
@@ -569,7 +571,9 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             var tb = _asm.DefineType(
-                (string.IsNullOrEmpty(@componentClass.Namespace) ? DEFAULT_ASM_NAMESPACE : @componentClass.Namespace),
+                (string.IsNullOrEmpty(@componentClass.GetNamespace())
+                    ? DEFAULT_ASM_NAMESPACE
+                    : @componentClass.GetNamespace()),
                 @componentClass.Name,
                 TypeAttributes.Class | TypeAttributes.NotPublic |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
@@ -582,7 +586,9 @@ namespace ZenPlatform.Compiler.Generation
         private ITypeBuilder PreBuildComponentModule(ComponentModule componentModule)
         {
             return _asm.DefineType(
-                (string.IsNullOrEmpty(@componentModule.Namespace) ? DEFAULT_ASM_NAMESPACE : @componentModule.Namespace),
+                (string.IsNullOrEmpty(@componentModule.GetNamespace())
+                    ? DEFAULT_ASM_NAMESPACE
+                    : @componentModule.GetNamespace()),
                 componentModule.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
