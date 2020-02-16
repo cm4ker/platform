@@ -18,5 +18,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             this.Entityes.Add(type);
             Childs.Add(type);
         }
+
+        public void AddNsDecl(NamespaceDeclaration ns)
+        {
+            this.NamespaceDeclarations.Add(ns);
+            Childs.Add(ns);
+        }
     }
 }

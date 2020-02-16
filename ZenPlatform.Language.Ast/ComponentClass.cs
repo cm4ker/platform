@@ -104,5 +104,10 @@ namespace ZenPlatform.Language.Ast
         public IType BindingType { get; set; }
 
         public SymbolScopeBySecurity SymbolScope { get; set; }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitTypeEntity(this);
+        }
     }
 }

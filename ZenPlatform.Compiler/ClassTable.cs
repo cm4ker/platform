@@ -38,10 +38,16 @@ namespace ZenPlatform.Compiler
         /// <param name="class"></param>
         public void AddClass(TypeEntity @class, IType type)
         {
+            AddClass("", @class, type);
+        }
+
+
+        public void AddClass(string ns, TypeEntity @class, IType type)
+        {
             _rows.Add(new TableClassRow
             {
-                FullName = @class.Name, Type = type,
-                Class = @class, Name = @class.Name.Split(".").Last()
+                FullName = $"{ns}.{@class.Name}", Type = type,
+                Class = @class, Name = @class.Name
             });
         }
 

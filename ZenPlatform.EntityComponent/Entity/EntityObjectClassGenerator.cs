@@ -36,8 +36,6 @@ namespace ZenPlatform.EntityComponent.Entity
                 TypeBody.Empty);
             cls.Bag = ObjectType.Object;
 
-            cls.Namespace = @namespace;
-
             GenerateObjectClassUserModules(type, cls);
 
             var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
@@ -53,7 +51,6 @@ namespace ZenPlatform.EntityComponent.Entity
                 var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, type, null,
                     tableName, TypeBody.Empty, null)
                 {
-                    Namespace = type.GetNamespace(),
                     Bag = table,
                     BaseTypeSelector = (ts) =>
                     {
