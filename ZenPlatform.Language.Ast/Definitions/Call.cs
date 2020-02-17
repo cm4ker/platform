@@ -16,7 +16,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
     public class ClrInternalCall : Expression
     {
-        public ClrInternalCall(IMethod method, IList<Argument> arguments) : base(null)
+        public ClrInternalCall(IMethod method, ArgumentList arguments) : base(null)
         {
             Arguments = arguments;
             Method = method;
@@ -24,6 +24,6 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public IMethod Method { get; }
 
-        public IList<Argument> Arguments { get; }
+        public ArgumentList Arguments { get; }
     }
 }

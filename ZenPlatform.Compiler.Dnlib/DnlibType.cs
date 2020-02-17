@@ -69,7 +69,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             return TypeDef.Methods.Where(x => !x.IsConstructor)
                 .Select(x => (IMethod) new DnlibMethod(_ts,
-                    new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig, GenericArguments.ToArray()),
+                    new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig, GenericArguments?.ToArray()),
                         TypeRef), x, TypeRef))
                 .ToList();
         }

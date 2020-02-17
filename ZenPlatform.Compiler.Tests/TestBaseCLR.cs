@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.Tests
     {
         private ZLanguageVisitor _zlv;
 
-       protected IAssemblyPlatform Ap = new DnlibAssemblyPlatform();
+        protected IAssemblyPlatform Ap = new DnlibAssemblyPlatform();
         //IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
         public TestBaseCLR()
@@ -74,7 +74,7 @@ namespace ZenPlatform.Compiler.Tests
 
             var cunit = (CompilationUnit) unit.Parse(x => _zlv.VisitEntryPoint(x.entryPoint()));
 
-            Root r = new Root(null, new List<CompilationUnit> {cunit});
+            Root r = new Root(null, new CompilationUnitList {cunit});
 
             AstScopeRegister.Apply(r);
 
@@ -98,17 +98,17 @@ namespace ZenPlatform.Compiler.Tests
 
             Function node = (Function) funcScript.Parse(x => _zlv.VisitFunctionDeclaration(x.functionDeclaration()));
 
-
-            CompilationUnit cu = new CompilationUnit(null, null, new List<TypeEntity>
+            CompilationUnit cu = new CompilationUnit(null, null, new EntityList
             {
                 new Module(null,
                     new TypeBody(new List<Member> {node}, null), "Test")
-            }, new List<NamespaceDeclaration>());
+            }, new NamespaceDeclarationList());
 
 
-            Root r = new Root(null, new List<CompilationUnit>() {cu});
+            Root r = new Root(null, new CompilationUnitList {cu});
 
             AstScopeRegister.Apply(r);
+            LoweringOptimizer.Apply(asm.TypeSystem, r);
 
             var gp = new GeneratorParameters(r.Units, asm, CompilationMode.Server,
                 SqlDatabaseType.SqlServer, null);

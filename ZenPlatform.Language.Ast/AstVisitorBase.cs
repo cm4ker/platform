@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
@@ -44,7 +45,9 @@ namespace ZenPlatform.Language.Ast
         {
             Console.WriteLine($"We are visit: {node}");
 
-            foreach (var child in node.Childs)
+            var childs = node.Childs.ToList();
+            
+            foreach (var child in childs)
             {
                 Visit(child as SyntaxNode);
             }

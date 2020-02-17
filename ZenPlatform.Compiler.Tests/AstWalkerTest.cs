@@ -15,10 +15,10 @@ namespace ZenPlatform.Compiler.Tests
         [Fact]
         public void ClassTableTest()
         {
-            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>(),
-                new List<NamespaceDeclaration>
+            var cu = new CompilationUnit(null, new UsingList(), new EntityList(),
+                new NamespaceDeclarationList
                 {
-                    new NamespaceDeclaration(null, "System", new List<UsingBase>(), new List<TypeEntity>
+                    new NamespaceDeclaration(null, "System", new UsingList(), new EntityList
                     {
                         new BindingClass("Test", new UnknownType("Test"))
                     }, null)

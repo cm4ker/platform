@@ -65,7 +65,7 @@ namespace ZenPlatform.Shared.Tree
             if (index >= 0)
             {
                 Detach(Childs[index]);
-                newNode.Attach(index, this);
+                Attach(index, newNode);
             }
         }
 
@@ -141,7 +141,7 @@ namespace ZenPlatform.Shared.Tree
         /// <param name="node">Прикрепляемая нода</param>
         public void Attach(Node node)
         {
-            node.Parent?.Detach(node);
+            node?.Parent?.Detach(node);
             _childs.Add(node);
         }
 
@@ -153,7 +153,7 @@ namespace ZenPlatform.Shared.Tree
         /// <param name="node"></param>
         public void Attach(int index, Node node)
         {
-            node.Parent?.Detach(node);
+            node?.Parent?.Detach(node);
             _childs.Insert(index, node);
         }
 

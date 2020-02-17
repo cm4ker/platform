@@ -122,8 +122,8 @@ namespace ZenPlatform.EntityComponent.Entity
                     func.SymbolScope = SymbolScopeBySecurity.User;
                 }
 
-                var cu = new CompilationUnit(null, new List<UsingBase>(),
-                    new List<TypeEntity>() {serverModule, clientModule}, new List<NamespaceDeclaration>());
+                var cu = new CompilationUnit(null, new UsingList(),
+                    new EntityList() {serverModule, clientModule}, new NamespaceDeclarationList());
 
                 root.Add(cu);
             }
@@ -137,13 +137,13 @@ namespace ZenPlatform.EntityComponent.Entity
         /// <param name="dbType"></param>
         public void StageServer(IPType ipType, Node root, SqlDatabaseType dbType)
         {
-            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>(),
-                new List<NamespaceDeclaration>());
+            var cu = new CompilationUnit(null, new UsingList(), new EntityList(),
+                new NamespaceDeclarationList());
 
             var ns = new NamespaceDeclaration(null, "Entity",
-                new List<UsingBase>(), new List<TypeEntity>(), new List<NamespaceDeclaration>());
+                new UsingList(), new EntityList(), new NamespaceDeclarationList());
 
-            cu.AddNsDecl(ns);
+            cu.NamespaceDeclarations.Add(ns);
 
             //TODO: pass ns decl instead root
 
