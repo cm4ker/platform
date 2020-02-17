@@ -28,7 +28,7 @@ namespace ZenPlatform.Compiler.Tests
             var parser = Parse(text);
             var result = (CompilationUnit) _zlv.Visit(parser.entryPoint());
 
-            var glob = new Root(null, new List<CompilationUnit> {result});
+            var glob = new Root(null, new CompilationUnitList {result});
 
 //            AstSymbolVisitor sv = new AstSymbolVisitor();
 //            sv.Visit(glob);

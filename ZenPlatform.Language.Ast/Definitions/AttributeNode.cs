@@ -9,7 +9,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class AttributeSyntax : SyntaxNode
     {
-        public AttributeSyntax(ILineInfo lineInfo, ArgumentCollection collection, SingleTypeSyntax type) : base(lineInfo)
+        public AttributeSyntax(ILineInfo lineInfo, ArgumentList collection, SingleTypeSyntax type) : base(lineInfo)
         {
             Type = type;
         }

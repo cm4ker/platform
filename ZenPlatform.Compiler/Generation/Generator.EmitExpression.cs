@@ -49,9 +49,6 @@ namespace ZenPlatform.Compiler.Generation
                 if (be.Type.IsString())
                     switch (be.BinaryOperatorType)
                     {
-                        case BinaryOperatorType.Add:
-                            e.EmitCall(_bindings.Methods.Concat);
-                            break;
                         default: throw new NotSupportedException();
                     }
 
@@ -193,6 +190,11 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is Call call)
             {
                 EmitCall(e, call, symbolTable);
+            }
+            else if (expression is ClrInternalCall internalCall)
+            {
+                EmitArguments(e, internalCall.Arguments, symbolTable);
+                e.EmitCall(internalCall.Method);
             }
             else if (expression is PropertyLookupExpression le)
             {
@@ -338,7 +340,7 @@ namespace ZenPlatform.Compiler.Generation
             else if (pis.Expression is PropertyLookupExpression ple)
             {
                 var loc = e.DefineLocal(opType);
-                
+
                 //Load context
                 EmitExpression(e, ple.Current, symbolTable);
 

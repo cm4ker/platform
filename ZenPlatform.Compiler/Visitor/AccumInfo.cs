@@ -30,19 +30,20 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitBinaryExpression(BinaryExpression obj)
         {
+            base.VisitBinaryExpression(obj);
+
             if (obj.BinaryOperatorType == BinaryOperatorType.Add && obj.Left.Type.Kind == TypeNodeKind.String)
             {
                 var left = new Argument(null, obj.Left);
                 var right = new Argument(null, obj.Right);
 
                 var call = new ClrInternalCall(_ts.GetSystemBindings().Methods.Concat,
-                    new List<Argument> {left, right});
+                    new ArgumentList {left, right});
 
                 obj.Parent.Replace(obj, call);
             }
 
-
-            return base.VisitBinaryExpression(obj);
+            return null;
         }
     }
 

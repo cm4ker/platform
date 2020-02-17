@@ -81,7 +81,7 @@ namespace ZenPlatform.Compiler
             var result = new Class(context.start.ToLineInfo(), _syntaxStack.PopTypeBody(),
                 context.typeName().IDENTIFIER().GetText());
 
-            _syntaxStack.PeekCollection().Add(result);
+            _syntaxStack.PeekType<EntityList>().Add(result);
 
             return result;
         }
@@ -156,7 +156,7 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitAttributes(ZSharpParser.AttributesContext context)
         {
-            _syntaxStack.Push(new AttributeCollection());
+            _syntaxStack.Push(new AttributeList());
             base.VisitAttributes(context);
 
             return null;
@@ -166,10 +166,10 @@ namespace ZenPlatform.Compiler
         {
             base.VisitAttribute(context);
 
-            ArgumentCollection ac = null;
+            ArgumentList ac = null;
 
             if (context.arguments() != null)
-                ac = (ArgumentCollection) _syntaxStack.Pop();
+                ac = (ArgumentList) _syntaxStack.Pop();
 
             var result =
                 new AttributeSyntax(context.start.ToLineInfo(), ac, _syntaxStack.PopType() as SingleTypeSyntax);
@@ -386,14 +386,14 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitParameters(ZSharpParser.ParametersContext context)
         {
-            _syntaxStack.Push(new ParameterCollection());
+            _syntaxStack.Push(new ParameterList());
             return base.VisitParameters(context);
         }
 
 
         public override SyntaxNode VisitParameter(ZSharpParser.ParameterContext context)
         {
-            var paramList = _syntaxStack.PeekCollection();
+            var paramList = _syntaxStack.PeekType<ParameterList>();
 
             base.VisitParameter(context);
 
@@ -447,7 +447,8 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitStatements(ZSharpParser.StatementsContext context)
         {
-            _syntaxStack.Push(new StatementCollection());
+            _syntaxStack.Push(new StatementList());
+            ;
             base.VisitStatements(context);
             return null;
         }
@@ -668,7 +669,7 @@ namespace ZenPlatform.Compiler
                 else
                     result = new Return(context.start.ToLineInfo(), _syntaxStack.PopExpression());
 
-                _syntaxStack.PeekType<IList>().Add(result);
+                _syntaxStack.PeekType<StatementList>().Add(result);
             }
             else
             {
