@@ -13,6 +13,14 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
 {
     public static class ComilerSyntaxGenerator
     {
+        private static SyntaxToken publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
+        private static SyntaxToken partialToken = SyntaxFactory.Token(SyntaxKind.PartialKeyword);
+
+        private static ClassDeclarationSyntax astTreeBaseCls = SyntaxFactory.ClassDeclaration("AstVisitorBase<T>")
+            .AddModifiers(publicToken)
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
+            .AddModifiers(partialToken);
+
         public static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -35,6 +43,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Compiler.Contracts.Symbols")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions")),
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Expressions")),
                         SyntaxFactory.UsingDirective(
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Statements")),
                         SyntaxFactory.UsingDirective(
@@ -43,12 +52,13 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                     );
 
 
-                var rootNs = "ZenPlatform.Language.Ast.Definitions";
+                var ns_root = "ZenPlatform.Language.Ast";
+                var ns_definitions = $"{ns_root}.Definitions";
 
                 foreach (var syntax in root.Syntaxes)
                 {
                     var ns = SyntaxFactory.NamespaceDeclaration(
-                        SyntaxFactory.ParseName(rootNs + (syntax.NS != null ? "." : "") + syntax.NS));
+                        SyntaxFactory.ParseName(ns_definitions + (syntax.NS != null ? "." : "") + syntax.NS));
 
                     MemberDeclarationSyntax cls;
 
@@ -59,8 +69,15 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
 
                     ns = ns.AddMembers(cls);
                     unit = unit.AddMembers(ns);
+
                     //Console.WriteLine(ns.NormalizeWhitespace());
                 }
+
+                var nsAst = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(ns_root));
+
+                nsAst = nsAst.AddMembers(astTreeBaseCls);
+
+                unit = unit.AddMembers(nsAst);
 
                 if (args.Length == 2)
                 {
@@ -76,20 +93,59 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
             }
         }
 
+        private static MemberDeclarationSyntax GetVisitorMethod(CompilerSyntax syntax)
+        {
+            var visitor =
+                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    "public override T Accept<T>(AstVisitorBase<T> visitor){}");
+
+            if (!syntax.IsAbstract)
+            {
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"return visitor.Visit{syntax.Name}(this);"));
+
+                var visitorBaseMethod = (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public virtual T Visit{syntax.Name}({syntax.Name} arg) {{ return DefaultVisit(arg); }}");
+
+                astTreeBaseCls = astTreeBaseCls.AddMembers(visitorBaseMethod);
+            }
+            else
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"throw new NotImplementedException();"));
+
+
+            return visitor;
+        }
+
+
         private static MemberDeclarationSyntax GenerateListClass(CompilerSyntax syntax)
         {
-            return SyntaxFactory.ClassDeclaration(syntax.Name).WithBaseList(SyntaxFactory.BaseList()
-                .AddTypes(SyntaxFactory.SimpleBaseType(
-                    SyntaxFactory.ParseTypeName($"SyntaxCollectionNode<{syntax.Base}>"))));
+            List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
+
+            var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,
+                SyntaxFactory.ArgumentList()
+                    .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseExpression("null"))));
+
+            var constructor = SyntaxFactory.ConstructorDeclaration(syntax.Name)
+                .WithBody(SyntaxFactory.Block())
+                .WithModifiers(SyntaxTokenList.Create(publicToken))
+                .WithInitializer(initializer);
+
+            members.Add(constructor);
+            members.Add(GetVisitorMethod(syntax));
+
+            return SyntaxFactory.ClassDeclaration(syntax.Name)
+                .WithModifiers(SyntaxTokenList.Create(publicToken))
+                .AddMembers(members.ToArray())
+                .WithBaseList(SyntaxFactory.BaseList()
+                    .AddTypes(SyntaxFactory.SimpleBaseType(
+                        SyntaxFactory.ParseTypeName($"SyntaxCollectionNode<{syntax.Base}>"))));
         }
 
         private static MemberDeclarationSyntax GenerateClass(CompilerSyntax syntax)
         {
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
-            var slot = SyntaxFactory.ParseStatement("var slot = 0;");
-
-            var publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
 
             var constructor = SyntaxFactory.ConstructorDeclaration(syntax.Name)
                 .WithParameterList(SyntaxFactory.ParameterList()
@@ -103,10 +159,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                     .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseName("lineInfo"))));
 
 
-            if (syntax.Arguments.Count > 0)
-            {
-                constructor = constructor.AddBodyStatements(slot);
-            }
+            var slot = 0;
 
             foreach (var argument in syntax.Arguments)
             {
@@ -129,55 +182,44 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
 
                 if (!argument.OnlyArgument)
                 {
-                    var ae = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                        SyntaxFactory.ParseName(argument.Name),
-                        SyntaxFactory.ParseName(argument.Name.ToCamelCase()));
+                    var getter = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration);
 
-                    constructor = constructor.AddBodyStatements(SyntaxFactory.ExpressionStatement(ae));
+                    if (argument.DenyChildrenFill)
+                        getter = getter.WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                    else
+                        getter = getter.AddBodyStatements(
+                            SyntaxFactory.ParseStatement($"return ({argument.Type})this.Childs[{slot}];"));
 
                     members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
                             argument.Name).AddModifiers(publicToken)
                         .WithAccessorList(SyntaxFactory.AccessorList()
-                            .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
-                }
+                            .AddAccessors(getter)));
 
-                if (!argument.DenyChildrenFill)
-                {
-                    StatementSyntax fillStmt;
-                    // fill childrens
-                    if (argument is SyntaxArgumentList)
-                        fillStmt =
-                            SyntaxFactory.ParseStatement(
-                                $"if({argument.Name} != null) foreach(var item in {argument.Name}) {{if(item != null) Childs.Add(item);}}");
-                    else if (argument is SyntaxArgumentSingle)
+
+                    if (!argument.DenyChildrenFill)
                     {
-                        fillStmt =
-                            SyntaxFactory.ParseStatement(
-                                $"if({argument.Name} != null) Childs.Add({argument.Name});");
+                        StatementSyntax fillStmt =
+                            SyntaxFactory.ParseStatement($"this.Attach({slot}, (SyntaxNode){argument.Name.ToCamelCase()});");
+
+                        constructor = constructor.AddBodyStatements(fillStmt);
+
+                        slot++;
                     }
                     else
                     {
-                        throw new Exception();
-                    }
+                        var ae = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                            SyntaxFactory.ParseName(argument.Name),
+                            SyntaxFactory.ParseName(argument.Name.ToCamelCase()));
 
-                    constructor = constructor.AddBodyStatements(fillStmt);
+                        constructor = constructor.AddBodyStatements(SyntaxFactory.ExpressionStatement(ae));
+                    }
                 }
             }
 
             constructor = constructor.WithInitializer(initializer);
 
-            var visitor =
-                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                    "public override T Accept<T>(AstVisitorBase<T> visitor){}");
 
-            if (!syntax.IsAbstract)
-                visitor = visitor.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"return visitor.Visit{syntax.Name}(this);"));
-            else
-                visitor = visitor.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"throw new NotImplementedException();"));
-            members.Add(visitor);
+            members.Add(GetVisitorMethod(syntax));
 
             var cls = SyntaxFactory.ClassDeclaration(syntax.Name)
                 .WithModifiers(SyntaxTokenList.Create(publicToken))

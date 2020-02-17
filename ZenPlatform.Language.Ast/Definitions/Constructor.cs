@@ -17,7 +17,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public SymbolScopeBySecurity SymbolScope { get; set; }
 
-        public static Constructor Default => new Constructor(null, new Block(new List<Statement>()),
-            new List<Parameter>(), new List<Attribute>(), null);
+        public static Constructor Default => new Constructor(null, new Block(new StatementList()),
+            new ParameterList(), new AttributeList(), null);
     }
 }

@@ -22,7 +22,7 @@ namespace ZenPlatform.Compiler.Generation
         /// <summary>
         /// Юниты компиляции
         /// </summary>
-        public List<CompilationUnit> Units { get; }
+        public CompilationUnitList Units { get; }
 
         /// <summary>
         /// Построитель сборки
@@ -35,7 +35,7 @@ namespace ZenPlatform.Compiler.Generation
         public CompilationMode Mode { get; }
 
 
-        public GeneratorParameters(List<CompilationUnit> units, IAssemblyBuilder builder, CompilationMode mode,
+        public GeneratorParameters(CompilationUnitList units, IAssemblyBuilder builder, CompilationMode mode,
             SqlDatabaseType targetDatabaseType, IProject configuration)
         {
             TargetDatabaseType = targetDatabaseType;

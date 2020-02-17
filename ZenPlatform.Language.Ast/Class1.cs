@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Language.Ast.AST;
@@ -33,7 +34,21 @@ namespace ZenPlatform.Language.Ast
 
         public static Block ToBlock(this Statement statement)
         {
-            return new Block(new List<Statement>() {statement});
+            return new Block(new StatementList {statement});
+        }
+
+        public static T ToAstList<T, TC>(this IEnumerable<TC> items)
+            where TC : SyntaxNode
+            where T : SyntaxCollectionNode<TC>, new()
+        {
+            var result = new T();
+
+            foreach (var item in items)
+            {
+                result.Add(item);
+            }
+
+            return result;
         }
 
         public static Statement ToStatement(this Expression exp)

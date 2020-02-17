@@ -26,6 +26,11 @@
         <Content Include=".\ZSharpLexer.g4" />
         <Content Include=".\ZSharpPreprocessorParser.g4" />
     </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="obj\**\*.cs" />
+     </ItemGroup>
+    
     <ItemGroup>
         <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />

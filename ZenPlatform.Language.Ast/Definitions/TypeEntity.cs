@@ -33,7 +33,6 @@ namespace ZenPlatform.Language.Ast.Definitions
         public void AddEntity(TypeEntity type)
         {
             this.Entityes.Add(type);
-            Childs.Add(type);
         }
 
 

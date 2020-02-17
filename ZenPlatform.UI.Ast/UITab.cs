@@ -13,7 +13,7 @@ namespace ZenPlatform.UI.Ast
 
         public UITab With(UINode node)
         {
-            Childs.Add(node);
+            Attach(node);
             return this;
         }
 

@@ -22,7 +22,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private readonly IProject _conf;
 
-        private List<CompilationUnit> _cus;
+        private CompilationUnitList _cus;
 
         private ServerAssemblyServiceScope _serviceScope;
 

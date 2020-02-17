@@ -1,25 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config>
+    
+
+    <Syntax IsList="true" Base="Function" Name="FunctionList"/>
+    <Syntax IsList="true" Base="Field" Name="FieldList"/>
+    <Syntax IsList="true" Base="Property" Name="PropertyList"/>
+    <Syntax IsList="true" Base="Constructor" Name="ConstructorList"/>
+    <Syntax IsList="true" Base="TypeSyntax" Name="TypeList"/>
+    <Syntax IsList="true" Base="Statement" Name="StatementList"/>
+    <Syntax IsList="true" Base="Parameter" Name="ParameterList"/>
+    <Syntax IsList="true" Base="AttributeSyntax" Name="AttributeList"/>
+    <Syntax IsList="true" Base="Argument" Name="ArgumentList"/>
+    <Syntax IsList="true" Base="MatchAtom" Name="MatchAtomList"/>
+    
+    <Syntax IsList="true" Base="UsingBase" Name="UsingList"/>
+    <Syntax IsList="true" Base="TypeEntity" Name="EntityList"/>
+    <Syntax IsList="true" Base="NamespaceDeclaration" Name="NamespaceDeclarationList"/>
+    <Syntax IsList="true" Base="CompilationUnit" Name="CompilationUnitList"/>
+
     <Syntax Name="Root" IsScoped="true">
         <Arguments>
-            <List Name="Units" Type="List&lt;CompilationUnit&gt;"/>
+            <List Name="Units" Type="CompilationUnitList"/>
         </Arguments>
     </Syntax>
-
+    
     <Syntax Name="NamespaceDeclaration">
         <Arguments>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
-            <List Name="Usings" Type="List&lt;UsingBase&gt;"/>
-            <List Name="Entityes" Type="List&lt;TypeEntity&gt;"/>
-            <List Name="NamespaceDeclarations" Type="List&lt;NamespaceDeclaration&gt;"/>
+            <List Name="Usings" Type="UsingList"/>
+            <List Name="Entityes" Type="EntityList"/>
+            <List Name="NamespaceDeclarations" Type="NamespaceDeclarationList"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="CompilationUnit">
         <Arguments>
-            <List Name="Usings" Type="List&lt;UsingBase&gt;"/>
-            <List Name="Entityes" Type="List&lt;TypeEntity&gt;"/>
-            <List Name="NamespaceDeclarations" Type="List&lt;NamespaceDeclaration&gt;"/>
+            <List Name="Usings" Type="UsingList"/>
+            <List Name="Entityes" Type="EntityList"/>
+            <List Name="NamespaceDeclarations" Type="NamespaceDeclarationList"/>
         </Arguments>
     </Syntax>
 
@@ -44,11 +62,11 @@
 
     <Syntax Name="TypeBody" IsScoped="true">
         <Arguments>
-            <List Name="Functions" Type="List&lt;Function&gt;"/>
-            <List Name="Fields" Type="List&lt;Field&gt;"/>
-            <List Name="Properties" Type="List&lt;Property&gt;"/>
-            <List Name="Constructors" Type="List&lt;Constructor&gt;"/>
-            <List Name="Usings" Type="List&lt;UsingBase&gt;"/>
+            <List Name="Functions" Type="FunctionList"/>
+            <List Name="Fields" Type="FieldList"/>
+            <List Name="Properties" Type="PropertyList"/>
+            <List Name="Constructors" Type="ConstructorList"/>
+            <List Name="Usings" Type="UsingList"/>
         </Arguments>
     </Syntax>
 
@@ -130,14 +148,14 @@
     <Syntax Name="UnionTypeSyntax" Base="TypeSyntax"/>
     <Syntax Name="GenericTypeSyntax" Base="TypeSyntax">
         <Arguments>
-            <List Name="Args" Type="List&lt;TypeSyntax&gt;"/>
+            <List Name="Args" Type="TypeList"/>
         </Arguments>
     </Syntax>
 
 
     <Syntax Name="Block" IsScoped="true">
         <Arguments>
-            <List Name="Statements" Type="List&lt;Statement&gt;"/>
+            <List Name="Statements" Type="StatementList"/>
         </Arguments>
     </Syntax>
 
@@ -149,15 +167,15 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="Attribute"/>
+    <Syntax Name="AttributeSyntax"/>
 
     <Syntax Name="Member" IsAbstract="true"/>
 
     <Syntax Name="Function" Base="Member" IsScoped="true" IsSymbol="true" NS="Functions">
         <Arguments>
             <Single Name="Block" Type="Block"/>
-            <List Name="Parameters" Type="List&lt;Parameter&gt;"/>
-            <List Name="Attributes" Type="List&lt;Attribute&gt;"/>
+            <List Name="Parameters" Type="ParameterList"/>
+            <List Name="Attributes" Type="AttributeList"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
             <Single Name="Type" Type="TypeSyntax" DenyChildrenFill="true"/>
         </Arguments>
@@ -166,8 +184,8 @@
     <Syntax Name="Constructor" Base="Member" IsScoped="true" IsSymbol="true">
         <Arguments>
             <Single Name="Block" Type="Block"/>
-            <List Name="Parameters" Type="List&lt;Parameter&gt;"/>
-            <List Name="Attributes" Type="List&lt;Attribute&gt;"/>
+            <List Name="Parameters" Type="ParameterList"/>
+            <List Name="Attributes" Type="AttributeList"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
@@ -195,7 +213,7 @@
 
     <Syntax Name="Call" Base="Expression">
         <Arguments>
-            <List Name="Arguments" Type="IList&lt;Argument&gt;"/>
+            <List Name="Arguments" Type="ArgumentList"/>
             <Single Name="Name" Type="Name" DenyChildrenFill="true"/>
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
@@ -342,7 +360,7 @@
 
     <Syntax Name="Match" Base="Statement" NS="Statements">
         <Arguments>
-            <List Name="Matches" Type="List&lt;MatchAtom&gt;"/>
+            <List Name="Matches" Type="MatchAtomList"/>
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>

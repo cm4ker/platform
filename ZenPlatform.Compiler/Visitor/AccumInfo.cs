@@ -39,8 +39,6 @@ namespace ZenPlatform.Compiler.Visitor
                     new List<Argument> {left, right});
 
                 obj.Parent.Replace(obj, call);
-                //we need attach some arguments to node through slot
-                //if it list we need sync all indexes
             }
 
 
