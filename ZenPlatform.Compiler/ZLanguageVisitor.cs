@@ -14,7 +14,6 @@ using ZenPlatform.Language.Ast.Definitions.Extension;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
-using Attribute = ZenPlatform.Language.Ast.Definitions.Attribute;
 using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
 namespace ZenPlatform.Compiler
@@ -32,11 +31,11 @@ namespace ZenPlatform.Compiler
         {
             _syntaxStack.Clear();
 
-            var typeList = new List<TypeEntity>();
+            var typeList = new EntityList();
 
             _syntaxStack.Push(typeList);
 
-            var usings = new List<UsingBase>();
+            var usings = new UsingList();
 
 
             foreach (var atd in context.usingSection())
@@ -172,7 +171,8 @@ namespace ZenPlatform.Compiler
             if (context.arguments() != null)
                 ac = (ArgumentCollection) _syntaxStack.Pop();
 
-            var result = new Attribute(context.start.ToLineInfo(), ac, _syntaxStack.PopType() as SingleTypeSyntax);
+            var result =
+                new AttributeSyntax(context.start.ToLineInfo(), ac, _syntaxStack.PopType() as SingleTypeSyntax);
             _syntaxStack.PeekCollection().Add(result);
 
             return result;
@@ -333,13 +333,13 @@ namespace ZenPlatform.Compiler
         {
             base.VisitFunctionDeclaration(context);
             Function result = null;
-            ParameterCollection pc = new ParameterCollection();
-            AttributeCollection ac = new AttributeCollection();
+            ParameterList pc = new ParameterList();
+            AttributeList ac = new AttributeList();
             var body = _syntaxStack.PopInstructionsBody();
 
             if (context.parameters() != null)
             {
-                pc = (ParameterCollection) _syntaxStack.Pop();
+                pc = (ParameterList) _syntaxStack.Pop();
             }
 
 
@@ -349,7 +349,7 @@ namespace ZenPlatform.Compiler
 
             if (context.attributes() != null)
             {
-                ac = (AttributeCollection) _syntaxStack.Pop();
+                ac = (AttributeList) _syntaxStack.Pop();
             }
 
             result = new Function(context.start.ToLineInfo(), body, pc, ac, funcName, type);
@@ -379,7 +379,7 @@ namespace ZenPlatform.Compiler
         public override SyntaxNode VisitInstructionsBody(ZSharpParser.InstructionsBodyContext context)
         {
             base.VisitInstructionsBody(context);
-            var sc = (StatementCollection) _syntaxStack.Pop();
+            var sc = (StatementList) _syntaxStack.Pop();
             _syntaxStack.Push(new Block(sc));
             return null;
         }
@@ -431,11 +431,11 @@ namespace ZenPlatform.Compiler
         {
             base.VisitFunctionCall(context);
 
-            IList<Argument> args = new ArgumentCollection();
+            ArgumentList args = new ArgumentList();
 
             if (context.arguments() != null)
             {
-                args = _syntaxStack.PopList<Argument>().ToImmutableList();
+                args = _syntaxStack.Pop<ArgumentList>();
             }
 
             var result = new Call(context.start.ToLineInfo(), args, _syntaxStack.PopName(), null);
@@ -706,7 +706,7 @@ namespace ZenPlatform.Compiler
         public override SyntaxNode VisitInstructionsOrSingleStatement(
             ZSharpParser.InstructionsOrSingleStatementContext context)
         {
-            var sc = new StatementCollection();
+            var sc = new StatementList();
 
             if (context.statement() != null)
                 _syntaxStack.Push(sc);

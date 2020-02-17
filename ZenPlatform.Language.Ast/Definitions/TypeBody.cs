@@ -12,31 +12,14 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class TypeBody
     {
-        public static TypeBody Empty => new TypeBody(new List<Member>(), new List<UsingBase>());
+        public static TypeBody Empty => new TypeBody(new List<Member>(), new UsingList());
 
-        public TypeBody(IList<Member> members, List<UsingBase> usings) : this(null,
-            members.Where(x => x is Function).Cast<Function>().ToList(),
-            members.Where(x => x is Field).Cast<Field>().ToList(),
-            members.Where(x => x is Property).Cast<Property>().ToList(),
-            members.Where(x => x is Constructor).Cast<Constructor>().ToList(), usings)
+        public TypeBody(IList<Member> members, UsingList usings) : this(null,
+            members.Where(x => x is Function).Cast<Function>().ToAstList<FunctionList, Function>(),
+            members.Where(x => x is Field).Cast<Field>().ToAstList<FieldList, Field>(),
+            members.Where(x => x is Property).Cast<Property>().ToAstList<PropertyList, Property>(),
+            members.Where(x => x is Constructor).Cast<Constructor>().ToAstList<ConstructorList, Constructor>(), usings)
         {
-        }
-
-
-        public void AddFunction(Function function)
-        {
-            if (function == null) throw new ArgumentNullException(nameof(function));
-
-            Functions.Add(function);
-            Childs.Add(function);
-        }
-
-        public void AddConstructor(Constructor constructor)
-        {
-            if (constructor == null) throw new ArgumentNullException(nameof(constructor));
-
-            Constructors.Add(constructor);
-            Childs.Add(constructor);
         }
     }
 }

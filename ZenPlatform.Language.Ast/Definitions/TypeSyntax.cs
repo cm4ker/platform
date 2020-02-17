@@ -108,7 +108,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
     public partial class GenericTypeSyntax
     {
-        public GenericTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind, List<TypeSyntax> args) : this(lineInfo, args)
+        public GenericTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind, TypeList args) : this(lineInfo, args)
         {
             TypeName = typeName;
 

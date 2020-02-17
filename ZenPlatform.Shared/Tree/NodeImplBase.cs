@@ -64,7 +64,7 @@ namespace ZenPlatform.Shared.Tree
 
             if (index >= 0)
             {
-                Childs[index].Detach();
+                Detach(Childs[index]);
                 newNode.Attach(index, this);
             }
         }
@@ -80,7 +80,7 @@ namespace ZenPlatform.Shared.Tree
 
             if (index >= 0)
             {
-                Childs[index].Detach();
+                Detach(Childs[index]);
                 newNode.Attach(index, this);
             }
             else
@@ -130,30 +130,37 @@ namespace ZenPlatform.Shared.Tree
         /// <summary>
         /// Отсоединить ноду. Внимание свойство Parent автоматически будет присвоено в null
         /// </summary>
-        public virtual void Detach()
+        public void Detach(Node node)
         {
-            _parent?._childs.Remove(this);
+            _childs.Remove(node);
         }
 
         /// <summary>
         /// Прикрепить элемент. Внимание сначала будет выполнена процедура <see cref="Detach"/> а затем уже элемент будет добавлен в качесте дочернего
         /// </summary>
         /// <param name="node">Прикрепляемая нода</param>
-        public virtual void Attach(Node node)
+        public void Attach(Node node)
         {
-            node.Detach();
+            node.Parent?.Detach(node);
             _childs.Add(node);
         }
+
 
         /// <summary>
         /// Прикрепить элемент в определённое место. Внимание сначала будет выполнена процедура <see cref="Detach"/> а затем уже элемент будет добавлен в качесте дочернего
         /// </summary>
         /// <param name="index"></param>
         /// <param name="node"></param>
-        public virtual void Attach(int index, Node node)
+        public void Attach(int index, Node node)
         {
-            node.Detach();
+            node.Parent?.Detach(node);
             _childs.Insert(index, node);
+        }
+
+
+        public int IndexOf(Node node)
+        {
+            return _childs.IndexOf(node);
         }
     }
 }

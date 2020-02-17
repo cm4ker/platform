@@ -216,7 +216,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         if (!c.TypeBody.Constructors.Any())
                         {
-                            c.TypeBody.AddConstructor(Constructor.Default);
+                            c.TypeBody.Constructors.Add(Constructor.Default);
                         }
 
                         foreach (var constructor in c.TypeBody.Constructors)
@@ -265,7 +265,7 @@ namespace ZenPlatform.Compiler.Generation
 
                             if (!cab.TypeBody.Constructors.Any())
                             {
-                                cab.TypeBody.AddConstructor(Constructor.Default);
+                                cab.TypeBody.Constructors.Add(Constructor.Default);
                             }
 
                             foreach (var constructor in cab.TypeBody.Constructors)

@@ -16,14 +16,14 @@ namespace ZenPlatform.Compiler
 {
     public class SyntaxTreeMemberAccessProvider
     {
-        private readonly List<CompilationUnit> _cu;
+        private readonly CompilationUnitList _cu;
         private readonly SystemTypeBindings _stb;
         private List<TypeEntity> _types;
 
         private Dictionary<string, List<IProperty>> _props;
         private Dictionary<string, List<IMethod>> _methods;
 
-        public SyntaxTreeMemberAccessProvider(List<CompilationUnit> cu, SystemTypeBindings stb)
+        public SyntaxTreeMemberAccessProvider(CompilationUnitList cu, SystemTypeBindings stb)
         {
             _cu = cu;
             _stb = stb;

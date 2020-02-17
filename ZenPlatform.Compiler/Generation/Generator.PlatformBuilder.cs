@@ -10,7 +10,7 @@ namespace ZenPlatform.Compiler.Generation
     {
         public void BuildConf()
         {
-            var root = new Root(null, new List<CompilationUnit>());
+            var root = new Root(null, new CompilationUnitList());
 
             foreach (var component in _conf.TypeManager.Components)
             {

@@ -77,7 +77,7 @@ namespace ZenPlatform.Compiler
 
             AstScopeRegister.Apply(module);
 
-            var prm = new GeneratorParameters(new List<CompilationUnit> {module}, ab, CompilationMode.Client,
+            var prm = new GeneratorParameters(new CompilationUnitList {module}, ab, CompilationMode.Client,
                 SqlDatabaseType.SqlServer, _project);
 
             Generator g = new Generator(prm);

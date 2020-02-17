@@ -35,7 +35,7 @@ namespace ZenPlatform.Language.Ast
 
         public void AddFunction(Function function)
         {
-            TypeBody.AddFunction(function);
+            TypeBody.Functions.Add(function);
         }
 
 

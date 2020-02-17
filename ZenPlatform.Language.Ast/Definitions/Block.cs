@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions.Functions;
@@ -18,22 +20,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         /// <summary>
         /// Создать блок из коллекции инструкций
         /// </summary>
-        public Block(List<Statement> statements) : this(null, statements)
+        public Block(StatementList statements) : this(null, statements)
         {
-            if (statements == null)
-                return;
-
-            Statements = statements;
         }
     }
 
-    public static partial class Factory
-    {
-        public static SyntaxCollectionNode<Statement> StatementsCollection(List<Statement> statements)
-        {
-
-        }
-    }
 
     public class SyntaxCollectionNode<T> : SyntaxNode, IEnumerable<T> where T : SyntaxNode
     {
@@ -43,13 +34,13 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public override void Add(Node node)
         {
-            if (!(node is Statement s))
+            if (!(node is T s))
                 throw new Exception("This is not allowed");
 
             Add(s);
         }
 
-        public void Add(Statement statement)
+        public void Add(T statement)
         {
             base.Add(statement);
         }
@@ -58,6 +49,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             throw new System.NotImplementedException();
         }
+
+        public T this[int index] => (T) Childs[index];
+
+        public int Count => Childs.Count;
+
 
         public IEnumerator<T> GetEnumerator()
         {
