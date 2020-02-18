@@ -48,10 +48,10 @@ namespace ZenPlatform.EntityComponent.Entity
             return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.GroupId)?.Metadata;
         }
 
-        public static string GetTableRowClassName(this ITable table)
+        public static string GetTableDtoRowClassName(this ITable table)
         {
             var type = table.TypeManager.FindType(table.ParentId);
-            return $"{type.GetNamespace()}.TR{type.Name}_{table.Name}";
+            return $"{type.GetNamespace()}.DtoRow_{type.Name}_{table.Name}";
         }
     }
 

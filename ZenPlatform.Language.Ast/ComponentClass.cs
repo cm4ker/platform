@@ -8,7 +8,10 @@ using ZenPlatform.Language.Ast.Definitions.Functions;
 
 namespace ZenPlatform.Language.Ast
 {
-    public class ComponentAstBase : TypeEntity, IAstSymbol
+    /// <summary>
+    /// Перенаправляет генерацию кода в компонент
+    /// </summary>
+    public class ComponentAstTask : TypeEntity, IAstSymbol
     {
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -17,19 +20,17 @@ namespace ZenPlatform.Language.Ast
 
         public IComponent Component { get; }
 
-        public IPType Type { get; }
-
-        public object Bag { get; set; }
-
         public Func<ITypeSystem, IType> BaseTypeSelector { get; set; }
 
-        public ComponentAstBase(CompilationMode compilationMode, IComponent component, IPType type,
-            ILineInfo lineInfo, string name, TypeBody tb, TypeSyntax @base = null) : base(lineInfo, tb, name, @base)
+        public ComponentAstTask(CompilationMode compilationMode, IComponent component, bool isModule,
+            string name, TypeBody tb) : base(null, tb, name)
         {
             CompilationMode = compilationMode;
             Component = component;
-            Type = type;
+            IsModule = isModule;
         }
+
+        public bool IsModule { get; }
 
         public CompilationMode CompilationMode { get; set; }
 
@@ -38,33 +39,7 @@ namespace ZenPlatform.Language.Ast
             TypeBody.Functions.Add(function);
         }
 
-
         public SymbolScopeBySecurity SymbolScope { get; set; }
-    }
-
-    /// <summary>
-    /// Перенаправляет генерацию кода в компонент
-    /// </summary>
-    public class ComponentClass : ComponentAstBase
-    {
-        public ComponentClass(CompilationMode compilationMode, IComponent component, IPType type,
-            ILineInfo lineInfo, string name,
-            TypeBody tb, TypeSyntax @base = null) : base(compilationMode, component, type, lineInfo, name, tb, @base)
-        {
-        }
-    }
-
-
-    /// <summary>
-    /// Перенаправляет генерацию кода в компонент
-    /// </summary>
-    public class ComponentModule : ComponentAstBase
-    {
-        public ComponentModule(CompilationMode compilationMode, IComponent component, IPType type,
-            ILineInfo lineInfo, string name,
-            TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
-        {
-        }
     }
 
     /*

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
@@ -134,20 +135,11 @@ namespace ZenPlatform.Compiler.Generation
                     var tc = PreBuildClass(c);
                     AfterPreBuild(c, tc);
                     break;
-                case ComponentClass co:
+                case ComponentAstTask co:
                 {
-                    var tco = PreBuildComponentClass(co);
+                    var tco = PreBuildComponentAst(co);
                     AfterPreBuild(co, tco);
                     co.Component.ComponentImpl.Generator.Stage0(co, tco, _parameters.TargetDatabaseType, _mode);
-                    break;
-                }
-                case ComponentModule cm:
-                {
-                    if (cm.CompilationMode != _mode) break;
-
-                    var tcm = PreBuildComponentModule(cm);
-                    AfterPreBuild(cm, tcm);
-                    cm.Component.ComponentImpl.Generator.Stage0(cm, tcm, _parameters.TargetDatabaseType, _mode);
                     break;
                 }
 
@@ -227,7 +219,7 @@ namespace ZenPlatform.Compiler.Generation
                         }
 
                         break;
-                    case ComponentAstBase cab:
+                    case ComponentAstTask cab:
 
                         if ((cab.CompilationMode & _mode) == 0) break;
 
@@ -235,7 +227,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         foreach (var function in cab.TypeBody.Functions.FilterFunc(_mode))
                         {
-                            var mf = PrebuildFunction(function, tcab, cab is ComponentClass);
+                            var mf = PrebuildFunction(function, tcab, cab.IsModule);
                             _stage1Methods.Add(function, mf);
                             cab.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
 
@@ -246,7 +238,7 @@ namespace ZenPlatform.Compiler.Generation
                             }
                         }
 
-                        if (cab is ComponentClass)
+                        if (!cab.IsModule)
                         {
                             foreach (var property in cab.TypeBody.Properties)
                             {
@@ -322,7 +314,7 @@ namespace ZenPlatform.Compiler.Generation
                         }
 
                         break;
-                    case ComponentAstBase cab:
+                    case ComponentAstTask cab:
 
                         if ((cab.CompilationMode & _mode) == 0) break;
 
@@ -542,51 +534,18 @@ namespace ZenPlatform.Compiler.Generation
             return null;
         }
 
-        private ITypeBuilder PreBuildComponentClass(ComponentClass componentClass)
+        private ITypeBuilder PreBuildComponentAst(ComponentAstTask astTask)
         {
-            IType baseType = null;
-
-            if (componentClass.Base == null)
-            {
-                baseType = _bindings.Object;
-            }
-            else
-            {
-                if (componentClass.Base is SingleTypeSyntax sts)
-                {
-                    //build this type in priority
-
-                    var entity = FindEntityByName(sts.TypeName);
-
-                    if (entity != null)
-                        BuildTypeEntity(entity);
-                }
-
-                if (componentClass.BaseTypeSelector != null)
-                {
-                    baseType = componentClass.BaseTypeSelector(_ts);
-                }
-                else
-                    baseType = componentClass.Base.ToClrType(_ts);
-            }
-
-            var tb = _asm.DefineType(
-                @componentClass.GetNamespace(),
-                @componentClass.Name,
-                TypeAttributes.Class | TypeAttributes.NotPublic |
-                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
-                baseType);
-
-            return tb;
+            return astTask.Component.ComponentImpl.Generator.Stage0(_asm, astTask);
         }
 
-
-        private ITypeBuilder PreBuildComponentModule(ComponentModule componentModule)
-        {
-            return _asm.DefineType(@componentModule.GetNamespace(),
-                componentModule.Name,
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
-                TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
-        }
+        //
+        // private ITypeBuilder PreBuildComponentModule(ComponentModule componentModule)
+        // {
+        //     return _asm.DefineType(@componentModule.GetNamespace(),
+        //         componentModule.Name,
+        //         TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
+        //         TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
+        // }
     }
 }

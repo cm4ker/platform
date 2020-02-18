@@ -49,12 +49,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 var dtoTableCls = new ComponentClass(CompilationMode.Shared, _component, type, null,
                     tableName, TypeBody.Empty, null)
                 {
-                    Bag = table,
-                    BaseTypeSelector = (ts) =>
-                    {
-                        return ts.GetSystemBindings().IEnumerable
-                            .MakeGenericType(ts.FindType($"{type.GetNamespace()}.{tableRowName}"));
-                    }
+                    Bag = table
                 };
 
                 nsDec.AddEntity(dtoTableCls);
@@ -105,6 +100,15 @@ namespace ZenPlatform.EntityComponent.Entity
 
             var dtoPrivate = builder.DefineField(dtoType, "_dto", false, false);
 
+            if (cc.Bag is ITable tbl)
+            {
+                var tableRowName = $"TR{type.GetDtoType().Name}_{tbl.Name}";
+                
+               var baseTypeTable =  ts.GetSystemBindings().IEnumerable
+                    .MakeGenericType(ts.FindType($"{type.GetNamespace()}.{tableRowName}"));
+               
+               builder.AddInterfaceImplementation(baseTypeTable);
+            }
 
             g.LdArg_0()
                 .EmitCall(builder.BaseType.FindConstructor())
