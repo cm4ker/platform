@@ -85,8 +85,8 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         public void Apply(IComponent com)
         {
             _com = com;
-            RegisterObject();
             RegisterDto();
+            RegisterObject();
             RegisterManager();
             RegisterLink();
 

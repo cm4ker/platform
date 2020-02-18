@@ -10,6 +10,7 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
+using ZenPlatform.EntityComponent.Entity.Generation;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
@@ -49,49 +50,48 @@ namespace ZenPlatform.EntityComponent.Entity
             _egManager = new EntityManagerGenerator(component);
         }
 
-        private TypeSyntax GetAstFromPlatformType(ZenPlatform.Configuration.Contracts.TypeSystem.IPType pt)
-        {
-            throw new NotImplementedException();
+        // private TypeSyntax GetAstFromPlatformType(IPType pt)
+        // {
+        //     throw new NotImplementedException();
+        //
+        //     // return pt switch
+        //     // {
+        //     //     XCBinary b => (TypeSyntax) new ArrayTypeSyntax(null,
+        //     //         new PrimitiveTypeSyntax(null, TypeNodeKind.Byte)),
+        //     //     XCInt b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Int),
+        //     //     XCString b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.String),
+        //     //     XCNumeric b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Double),
+        //     //     XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
+        //     //     XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type),
+        //     //     XCLinkTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
+        //     //         b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name,
+        //     //         TypeNodeKind.Type),
+        //     //     XCObjectTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
+        //     //         b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name + "Link",
+        //     //         TypeNodeKind.Type),
+        //     //     XCGuid b => (TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
+        //     // };
+        // }
 
-            // return pt switch
-            // {
-            //     XCBinary b => (TypeSyntax) new ArrayTypeSyntax(null,
-            //         new PrimitiveTypeSyntax(null, TypeNodeKind.Byte)),
-            //     XCInt b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Int),
-            //     XCString b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.String),
-            //     XCNumeric b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Double),
-            //     XCBoolean b => (TypeSyntax) new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean),
-            //     XCDateTime b => (TypeSyntax) new SingleTypeSyntax(null, nameof(DateTime), TypeNodeKind.Type),
-            //     XCLinkTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
-            //         b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name,
-            //         TypeNodeKind.Type),
-            //     XCObjectTypeBase b => (TypeSyntax) new SingleTypeSyntax(null,
-            //         b.Parent.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule) + "." + b.Name + "Link",
-            //         TypeNodeKind.Type),
-            //     XCGuid b => (TypeSyntax) new SingleTypeSyntax(null, nameof(Guid), TypeNodeKind.Type),
-            // };
-        }
+        // private void GenerateObjectClassUserModules(IPType ipType, ComponentClass cls)
+        // {
+        //     // foreach (var module in type.GetProgramModules())
+        //     // {
+        //     //     if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
+        //     //     {
+        //     //         var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
+        //     //
+        //     //
+        //     //         foreach (var func in typeBody.Functions)
+        //     //         {
+        //     //             func.SymbolScope = SymbolScopeBySecurity.User;
+        //     //             cls.AddFunction(func);
+        //     //         }
+        //     //     }
+        //     // }
+        // }
 
-        private void GenerateObjectClassUserModules(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType,
-            ComponentClass cls)
-        {
-            // foreach (var module in type.GetProgramModules())
-            // {
-            //     if (module.ModuleRelationType == XCProgramModuleRelationType.Object)
-            //     {
-            //         var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
-            //
-            //
-            //         foreach (var func in typeBody.Functions)
-            //         {
-            //             func.SymbolScope = SymbolScopeBySecurity.User;
-            //             cls.AddFunction(func);
-            //         }
-            //     }
-            // }
-        }
-
-        private void GenerateLink(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
+        private void GenerateLink(IPType ipType, Root root)
         {
             // var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name,
             //     new TypeBody(new List<Member>())) {Base = "Entity.EntityLink", Namespace = "Entity"};
@@ -112,7 +112,6 @@ namespace ZenPlatform.EntityComponent.Entity
                 var typeBodyServer = ParserHelper.ParseTypeBody(command.Module.ModuleText);
                 var typeBodyClient = ParserHelper.ParseTypeBody(command.Module.ModuleText);
 
-
                 var serverModule = new ComponentModule(CompilationMode.Server, _component, ipType, null,
                     $"__cmd_{command.Name}", typeBodyServer);
 
@@ -131,6 +130,14 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
 
+        public ITypeBuilder Stage0(IAssemblyBuilder asm, Node task)
+        {
+            if (task is IEntityGenerationTask egt)
+                return egt.Stage0(asm);
+            else
+                throw new Exception("Component doesn't support this task type");
+        }
+
         /// <summary>
         ///  Генерация серверного кода
         /// </summary>
@@ -147,21 +154,24 @@ namespace ZenPlatform.EntityComponent.Entity
 
             cu.NamespaceDeclarations.Add(ns);
 
-            //TODO: pass ns decl instead root
-
             var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
 
             if (ipType.IsDto)
-                _egDto.GenerateAstTree(ipType, ns);
-            else if (ipType.IsObject)
-            {
-                _egClass.GenerateAstTree(ipType, ns);
-                GenerateCommands(ipType, r);
-            }
-            else if (ipType.IsLink)
-                _egLink.GenerateAstTree(ipType, ns);
-            else if (ipType.IsManager)
-                _egManager.GenerateAstTree(ipType, ns);
+                ns.AddEntity(new DtoGenerationTask(ipType, CompilationMode.Server, _component, ipType.Name,
+                    TypeBody.Empty));
+
+            // if (ipType.IsDto)
+            //     _egDto.GenerateAstTree(ipType, ns);
+            //
+            // else if (ipType.IsObject)
+            // {
+            //     _egClass.GenerateAstTree(ipType, ns);
+            //     GenerateCommands(ipType, r);
+            // }
+            // else if (ipType.IsLink)
+            //     _egLink.GenerateAstTree(ipType, ns);
+            // else if (ipType.IsManager)
+            //     _egManager.GenerateAstTree(ipType, ns);
 
             r.Units.Add(cu);
         }
@@ -409,7 +419,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
-            if (astTree is ComponentAstBase cc)
+            if (astTree is ComponentAstTask cc)
             {
                 if (cc.Type.IsDto)
                 {
@@ -432,7 +442,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
         public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
-            if (astTree is ComponentAstBase cc)
+            if (astTree is ComponentAstTask cc)
             {
                 if (cc.Type.IsDto)
                 {
