@@ -50,12 +50,23 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public MethodSig ResolveMethodSig(MethodSig msig, IType[] genericArguments)
         {
-            if (!(msig.RetType is GenericMVar || msig.RetType is GenericInstSig || msig.RetType is GenericVar))
+            if (!msig.RetType.ContainsGenericParameter)
             {
                 DnlibType dt = (DnlibType) GetType(msig.RetType);
 
                 if (dt != null)
                     msig.RetType = dt.TypeRef.ToTypeSig();
+            }
+
+            for (int i = 0; i < msig.Params.Count; i++)
+            {
+                if (!msig.Params[i].ContainsGenericParameter)
+                {
+                    DnlibType dt = (DnlibType) GetType(msig.Params[i]);
+
+                    if (dt != null)
+                        msig.Params[i] = dt.TypeRef.ToTypeSig();
+                }
             }
 
             return msig;

@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.Generation
         private SystemTypeBindings _bindings;
         private SyntaxTreeMemberAccessProvider _map;
 
-        private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
+        //private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
 
         public Generator(GeneratorParameters parameters)
         {

@@ -107,7 +107,7 @@ namespace ZenPlatform.Compiler.Generation
         /// <exception cref="Exception"></exception>
         private void BuildStage0(CompilationUnit cu)
         {
-            foreach (var typeEntity in cu.Entityes)
+            foreach (var typeEntity in cu.GetTypes())
             {
                 BuildTypeEntity(typeEntity);
             }
@@ -161,7 +161,7 @@ namespace ZenPlatform.Compiler.Generation
         /// </summary>
         private void BuildStage1(CompilationUnit cu)
         {
-            foreach (var typeEntity in cu.Entityes)
+            foreach (var typeEntity in cu.GetTypes())
             {
                 switch (typeEntity)
                 {
@@ -291,7 +291,7 @@ namespace ZenPlatform.Compiler.Generation
         /// <exception cref="Exception"></exception>
         private void BuildStage2(CompilationUnit cu)
         {
-            foreach (var typeEntity in cu.Entityes)
+            foreach (var typeEntity in cu.GetTypes())
             {
                 switch (typeEntity)
                 {
@@ -510,7 +510,7 @@ namespace ZenPlatform.Compiler.Generation
         private ITypeBuilder PreBuildClass(Class @class)
         {
             var tb = _asm.DefineType(
-                (string.IsNullOrEmpty(@class.GetNamespace()) ? DEFAULT_ASM_NAMESPACE : @class.GetNamespace()),
+                (@class.GetNamespace()),
                 @class.Name,
                 TypeAttributes.Class | TypeAttributes.NotPublic |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
@@ -525,7 +525,7 @@ namespace ZenPlatform.Compiler.Generation
         private ITypeBuilder PreBuildModule(Module module)
         {
             return _asm.DefineType(
-                (string.IsNullOrEmpty(@module.GetNamespace()) ? DEFAULT_ASM_NAMESPACE : @module.GetNamespace()),
+                module.GetNamespace(),
                 module.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
@@ -571,9 +571,7 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             var tb = _asm.DefineType(
-                (string.IsNullOrEmpty(@componentClass.GetNamespace())
-                    ? DEFAULT_ASM_NAMESPACE
-                    : @componentClass.GetNamespace()),
+                @componentClass.GetNamespace(),
                 @componentClass.Name,
                 TypeAttributes.Class | TypeAttributes.NotPublic |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass,
@@ -585,10 +583,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private ITypeBuilder PreBuildComponentModule(ComponentModule componentModule)
         {
-            return _asm.DefineType(
-                (string.IsNullOrEmpty(@componentModule.GetNamespace())
-                    ? DEFAULT_ASM_NAMESPACE
-                    : @componentModule.GetNamespace()),
+            return _asm.DefineType(@componentModule.GetNamespace(),
                 componentModule.Name,
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
                 TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);

@@ -36,10 +36,9 @@ namespace ZenPlatform.Compiler.Tests
 
             Assembly a = alc.LoadFromAssemblyPath(assemblyPath);
 
-            var ns = "CompileNamespace";
             var cName = "Test";
 
-            Type execClass = a.GetType($"{ns}.{cName}");
+            Type execClass = a.GetType($"{cName}");
 
             MethodInfo method = execClass.GetMethod(methodName,
                 BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);

@@ -50,6 +50,8 @@ USING : 'using';
 GET : 'get';
 SET : 'set';
 
+NAMESPACE : 'namespace';
+
 SEMICOLON:                ';';
 PLUS:                     '+';
 MINUS:                    '-';

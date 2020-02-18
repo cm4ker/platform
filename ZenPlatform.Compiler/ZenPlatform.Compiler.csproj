@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="obj\**\*.cs" />
+        <Compile Include="obj\Debug\*.cs" />
      </ItemGroup>
     
     <ItemGroup>

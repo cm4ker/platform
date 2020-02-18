@@ -41,23 +41,24 @@ namespace ZenPlatform.Compiler.Tests
         {
             var script =
                 @"
-
-type B
-{
-    int PropB {get;set;}
-
-    A PropA {get;set;}
-}
-
-type A
-{
-    int Prop {get;set;}
-
-    int Test(B arg)
+namespace NS {
+    type B
     {
-       return arg.PropA.Prop;
+        int PropB {get;set;}
+
+        A PropA {get;set;}
     }
 }
+    type A
+    {
+        int Prop {get;set;}
+
+        int Test(NS.B arg)
+        {
+           return arg.PropA.Prop;
+        }
+    }
+
 ";
 
             Compile(script);

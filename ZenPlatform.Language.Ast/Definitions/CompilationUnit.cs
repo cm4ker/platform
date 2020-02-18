@@ -12,5 +12,21 @@ namespace ZenPlatform.Language.Ast.Definitions
     {
         public static CompilationUnit Empty =>
             new CompilationUnit(null, new UsingList(), new EntityList(), new NamespaceDeclarationList());
+
+        public IEnumerable<TypeEntity> GetTypes()
+        {
+            foreach (var entity in Entityes)
+            {
+                yield return entity;
+            }
+
+            foreach (var ns in NamespaceDeclarations)
+            {
+                foreach (var nsEntitye in ns.Entityes)
+                {
+                    yield return nsEntitye;
+                }
+            }
+        }
     }
 }
