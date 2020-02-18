@@ -54,8 +54,8 @@ namespace ZenPlatform.Component.Tests
             var server = pl.CreateAssembly("Server");
             var client = pl.CreateAssembly("Client");
 
-            var rootServer = new Root(null, new List<CompilationUnit>());
-            var rootClient = new Root(null, new List<CompilationUnit>());
+            var rootServer = new Root(null, new CompilationUnitList());
+            var rootClient = new Root(null, new CompilationUnitList());
 
             foreach (var type in conf.TypeManager.Types.Where(x => x.IsObject))
             {

@@ -109,15 +109,17 @@ namespace ZenPlatform.EntityComponent.Entity
 
             foreach (var command in md.Commands)
             {
-                var typeBody = ParserHelper.ParseTypeBody(command.Module.ModuleText);
+                var typeBodyServer = ParserHelper.ParseTypeBody(command.Module.ModuleText);
+                var typeBodyClient = ParserHelper.ParseTypeBody(command.Module.ModuleText);
+
 
                 var serverModule = new ComponentModule(CompilationMode.Server, _component, ipType, null,
-                    $"__cmd_{command.Name}", typeBody);
+                    $"__cmd_{command.Name}", typeBodyServer);
 
                 var clientModule = new ComponentModule(CompilationMode.Client, _component, ipType, null,
-                    $"__cmd_{command.Name}", typeBody);
+                    $"__cmd_{command.Name}", typeBodyClient);
 
-                foreach (var func in typeBody.Functions)
+                foreach (var func in typeBodyServer.Functions)
                 {
                     func.SymbolScope = SymbolScopeBySecurity.User;
                 }
@@ -125,7 +127,7 @@ namespace ZenPlatform.EntityComponent.Entity
                 var cu = new CompilationUnit(null, new UsingList(),
                     new EntityList() {serverModule, clientModule}, new NamespaceDeclarationList());
 
-                root.Add(cu);
+                root.Units.Add(cu);
             }
         }
 
@@ -161,7 +163,7 @@ namespace ZenPlatform.EntityComponent.Entity
             else if (ipType.IsManager)
                 _egManager.GenerateAstTree(ipType, ns);
 
-            r.Add(cu);
+            r.Units.Add(cu);
         }
 
         /// <summary>

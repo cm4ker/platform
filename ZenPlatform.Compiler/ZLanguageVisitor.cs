@@ -37,10 +37,16 @@ namespace ZenPlatform.Compiler
 
             var usings = new UsingList();
 
+            var namespaces = new NamespaceDeclarationList();
 
             foreach (var atd in context.usingSection())
             {
                 usings.Add((UsingBase) Visit(atd));
+            }
+
+            foreach (var ns in context.namespaceDefinition())
+            {
+                namespaces.Add((NamespaceDeclaration) Visit(ns));
             }
 
             base.VisitEntryPoint(context);
@@ -54,6 +60,16 @@ namespace ZenPlatform.Compiler
         {
             return new UsingAliasDeclaration(context.start.ToLineInfo(), context.typeName().GetText(),
                 context.alias.GetText());
+        }
+
+        public override SyntaxNode VisitNamespaceDefinition(ZSharpParser.NamespaceDefinitionContext context)
+        {
+            var typeList = new EntityList();
+
+            _syntaxStack.Push(typeList);
+
+            return new NamespaceDeclaration(context.start.ToLineInfo(), context.@namespace().GetText(), null,
+                typeList, null);
         }
 
         public override SyntaxNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
@@ -173,7 +189,7 @@ namespace ZenPlatform.Compiler
 
             var result =
                 new AttributeSyntax(context.start.ToLineInfo(), ac, _syntaxStack.PopType() as SingleTypeSyntax);
-            _syntaxStack.PeekCollection().Add(result);
+            _syntaxStack.PeekType<AttributeList>().Add(result);
 
             return result;
         }
@@ -410,7 +426,7 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitArguments(ZSharpParser.ArgumentsContext context)
         {
-            _syntaxStack.Push(new ArgumentCollection());
+            _syntaxStack.Push(new ArgumentList());
 
             base.VisitArguments(context);
 
@@ -423,7 +439,7 @@ namespace ZenPlatform.Compiler
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
             var result = new Argument(context.start.ToLineInfo(), _syntaxStack.PopExpression(), passMethod);
 
-            _syntaxStack.PeekCollection().Add(result);
+            _syntaxStack.PeekType<ArgumentList>().Add(result);
             return result;
         }
 
@@ -673,7 +689,7 @@ namespace ZenPlatform.Compiler
             }
             else
             {
-                var node = _syntaxStack.Pop();
+                SyntaxNode node = (SyntaxNode) _syntaxStack.Pop();
 
                 // По умолчанию все операции могут являться выражениями.
                 //перед тем как мы будем добавлять их в инструкции нужно обернуть их в инструкцию
@@ -698,7 +714,7 @@ namespace ZenPlatform.Compiler
                     node = new ExpressionStatement(exp);
                 }
 
-                _syntaxStack.PeekType<IList>().Add(node);
+                _syntaxStack.PeekType<StatementList>().Add(node);
             }
 
             return result;

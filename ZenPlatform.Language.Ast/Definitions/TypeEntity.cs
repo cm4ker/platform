@@ -22,9 +22,9 @@ namespace ZenPlatform.Language.Ast.Definitions
             var ns = parent.GetNamespace();
 
             if (!string.IsNullOrEmpty(ns))
-                return string.Join(".", ns, Name);
+                return string.Join(".", ns, parent.Name);
 
-            return Name;
+            return parent.Name;
         }
     }
 
