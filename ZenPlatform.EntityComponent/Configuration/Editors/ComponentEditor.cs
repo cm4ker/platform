@@ -12,6 +12,7 @@ using ZenPlatform.Ide.Common;
 using ZenPlatform.Ide.Contracts;
 using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration.Editors;
+using System.IO;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -46,10 +47,16 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         private void LoadExists(IFileSystem fs)
         {
-            foreach (var file in fs.GetEntities(FileSystemPath.Parse("/Entity/")))
+            foreach (var file in fs.GetEntities(FileSystemPath.Root.AppendDirectory("Entity")))
             {
-                var md = fs.Deserialize<MDEntity>(file);
-                _objs.Add(new ObjectEditor(_inf, md));
+               //var md = fs.Deserialize<MDEntity>(file);
+                using (var stream = fs.OpenFile(file, FileAccess.Read))
+                {
+                    var md =  XCHelper.DeserializeFromStream<MDEntity>(stream);
+
+                    _objs.Add(new ObjectEditor(_inf, md));
+                }
+
             }
         }
 

@@ -72,7 +72,7 @@ namespace ZenPlatform.Ide.Common
             var dialog = MessageBoxManager.GetMessageBoxStandardWindow(title, text, MessageBox.Avalonia.Enums.ButtonEnum.OkCancel);
 
             if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                return Observable.FromAsync(async () => await dialog.ShowDialog(desktop.MainWindow) == 0, RxApp.MainThreadScheduler);
+                return Observable.FromAsync(async () => await dialog.ShowDialog(desktop.MainWindow) == 0);
 
             return null;
 

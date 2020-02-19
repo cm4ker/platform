@@ -17,11 +17,6 @@ namespace ZenPlatform.SimpleIde
 
         public IControl Build(object data)
         {
-            if (data is ItemEditorViewModule editor)
-            {
-                data = editor.Context;
-            }
-
             if (data is DocumentView dd)
             {
                 data = dd.Context;

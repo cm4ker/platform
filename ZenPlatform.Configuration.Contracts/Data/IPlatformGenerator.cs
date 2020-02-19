@@ -15,14 +15,14 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// </summary>
         /// <param name="ipType">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageServer(IPType ipType, Node root, SqlDatabaseType dbType);
+        void StageServer(IPType ipType, Node root);
 
         /// <summary>
         /// Генерация клиентского кода
         /// </summary>
         /// <param name="ipType">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageClient(IPType ipType, Node root, SqlDatabaseType dbType);
+        void StageClient(IPType ipType, Node root);
 
         /// <summary>
         /// Стадия генерации UI интерфейса для пользователя на клиенте

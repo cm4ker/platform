@@ -134,8 +134,8 @@ namespace ZenPlatform.EntityComponent.Entity
         /// </summary>
         /// <param name="ipType">Тип</param>
         /// <param name="root">Корень проекта</param>
-        /// <param name="dbType"></param>
-        public void StageServer(IPType ipType, Node root, SqlDatabaseType dbType)
+
+        public void StageServer(IPType ipType, Node root)
         {
             var r = root as Root ?? throw new Exception("You must pass Root node to the generator");
 
@@ -158,7 +158,7 @@ namespace ZenPlatform.EntityComponent.Entity
         /// <param name="ipType">Тип</param>
         /// <param name="node"></param>
         /// <param name="dbType"></param>
-        public void StageClient(IPType ipType, Node node, SqlDatabaseType dbType)
+        public void StageClient(IPType ipType, Node node)
         {
             // if (node is Root root)
             // {
