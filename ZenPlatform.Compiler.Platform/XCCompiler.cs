@@ -35,5 +35,23 @@ namespace ZenPlatform.Compiler.Platform
 
             return assemblyBuilder;
         }
+
+        public Root BuildClientAst(IProject configuration)
+        {
+
+            var assemblyBuilder = _platform.CreateAssembly("Client_ast_assemble");
+            var generator = new Generator(new GeneratorParameters(null, assemblyBuilder, CompilationMode.Client, SqlDatabaseType.Unknown,
+                configuration));
+            return generator.BuildAst();
+        }
+
+        public Root BuildServerAst(IProject configuration)
+        {
+
+            var assemblyBuilder = _platform.CreateAssembly("Server_ast_assemble");
+            var generator = new Generator(new GeneratorParameters(null, assemblyBuilder, CompilationMode.Server, SqlDatabaseType.Unknown,
+                configuration));
+            return generator.BuildAst();
+        }
     }
 }

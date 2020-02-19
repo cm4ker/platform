@@ -41,7 +41,7 @@ namespace ZenPlatform.Component.Tests
 
             var comEdit = (ComponentEditor) proj.Editors.First(x => x is ComponentEditor);
             var typeEdit = comEdit.Editors.First();
-            var propEdit = typeEdit.Editors.First();
+            var propEdit = typeEdit.PropertyEditors.First();
             propEdit.SetType(MDTypes.String(10));
 
             return proj;

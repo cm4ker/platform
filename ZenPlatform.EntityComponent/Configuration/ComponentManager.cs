@@ -67,6 +67,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public IComponentEditor Load(IProject proj, IComponentRef comRef, IFileSystem fs)
         {
+
             var com = fs.Deserialize<MDComponent>(comRef.Entry);
             var editor = new ComponentEditor(proj, com, fs);
             editor.Apply();
@@ -85,12 +86,18 @@ namespace ZenPlatform.EntityComponent.Configuration
 
             var mds = tm.Metadatas.Where(x => x.ParentId == info.ComponentId);
 
+            if (!fs.Exists(FileSystemPath.Root.AppendDirectory("Entity")))
+                fs.CreateDirectory(FileSystemPath.Root.AppendDirectory("Entity"));
+
             foreach (var mr in mds)
             {
                 var md = (MDEntity) mr.Metadata;
 
                 fs.Serialize(FileSystemPath.Root.AppendDirectory("Entity").AppendFile(md.Name).ToString(), md);
             }
+
+
+
         }
     }
 }

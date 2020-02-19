@@ -44,6 +44,7 @@ namespace ZenPlatform.Test.Tools
             tableProp1.SetType(store.GetRef());
 
             var module = store.CreateModule();
+            module.ModuleName = "Module1";
             module.ModuleRelationType = ProgramModuleRelationType.Object;
             module.ModuleText = "public int In(int i) { int _i = i; _i++; return _i; }";
 

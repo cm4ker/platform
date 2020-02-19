@@ -30,6 +30,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             return this;
         }
 
+        public IEnumerable<MDType> Types => _mp.Types;
+
         public void UnsetType(MDType type)
         {
             _mp.Types.Remove(type);
@@ -39,6 +41,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         {
             _mp.Types.RemoveAll(x => x.Guid == typeId);
         }
+
+
     }
     
     public class TableEditor

@@ -1,0 +1,21 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             
+        xmlns:id="clr-namespace:Dock.Avalonia;assembly=Dock.Avalonia"
+        xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZenPlatform.SimpleIde.Views.MainView">
+  <DockPanel>
+    <WrapPanel DockPanel.Dock="Top">
+      <Button Command="{Binding AddCommand}" Margin="2">New</Button>
+      <Button Command="{Binding OpenProjectCommand}" Margin="2">Open</Button>
+      <Button Command="{Binding SaveProjectCommand}" Margin="2">Save</Button>
+    </WrapPanel>
+
+    <idc:DockControl x:Name="dockControl" Layout="{Binding Layout}" Margin="4"/>
+  </DockPanel>
+</UserControl>
+
+
