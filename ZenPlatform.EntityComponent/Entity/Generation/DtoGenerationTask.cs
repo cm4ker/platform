@@ -49,14 +49,14 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                     var dbColName = prop
                         .GetDbSchema()
                         .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                        ? ColumnSchemaType.Value
-                                        : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
+                            ? ColumnSchemaType.Value
+                            : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
                     var propName = prop
                         .GetObjSchema()
                         .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                        ? ColumnSchemaType.Value
-                                        : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
+                            ? ColumnSchemaType.Value
+                            : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
                     IType propType = ctype.ConvertType(sb);
 
@@ -81,14 +81,14 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                         var dbColName = prop
                             .GetDbSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                            ? ColumnSchemaType.Ref
-                                            : ColumnSchemaType.NoSpecial)).FullName;
+                                ? ColumnSchemaType.Ref
+                                : ColumnSchemaType.NoSpecial)).FullName;
 
                         var propName = prop
                             .GetObjSchema()
                             .First(x => x.SchemaType == ((prop.Types.Count() > 1)
-                                            ? ColumnSchemaType.Ref
-                                            : ColumnSchemaType.NoSpecial)).FullName;
+                                ? ColumnSchemaType.Ref
+                                : ColumnSchemaType.NoSpecial)).FullName;
 
                         var propBuilder = builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
 
@@ -121,7 +121,11 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
         public ITypeBuilder Stage0(IAssemblyBuilder asm)
         {
-            return asm.DefineInstanceType(this.GetNamespace(), DtoType.Name);
+            var type = asm.DefineInstanceType(this.GetNamespace(), DtoType.Name);
+
+            type.DefineDefaultConstructor(false);
+
+            return type;
         }
 
         public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
@@ -133,7 +137,6 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
         public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-
         }
 
         private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)

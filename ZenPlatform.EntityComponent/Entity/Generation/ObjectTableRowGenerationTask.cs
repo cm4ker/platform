@@ -302,14 +302,47 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
             var sb = ts.GetSystemBindings();
 
             var dtoListType = sb.List.MakeGenericType(_dtoRowType);
-            
+
             var ctor = builder.DefineConstructor(false, dtoListType);
-            
+
             var g = ctor.Generator;
 
             g.LdArg_0()
                 .LdArg(1)
                 .EmitCall(builder.BaseType.FindConstructor(dtoListType))
+                .Ret();
+
+
+            var baseMethod = builder.BaseType.FindMethod("Add");
+            var baseDtoProp = builder.BaseType.FindProperty("DtoRef");
+            var baseObjProp = builder.BaseType.FindProperty("ObjRef");
+
+            var addDtoMethod = sb.List.MakeGenericType(_dtoRowType).FindMethod(x => x.Name == "Add");
+            var addObjMethod = sb.List.MakeGenericType(_objectRow).FindMethod(x => x.Name == "Add");
+
+
+            var add = builder.DefineMethod("Add", true, false, false, baseMethod);
+            add.WithReturnType(_objectRow);
+
+            var g2 = add.Generator;
+
+            var dtoRowLocal = g2.DefineLocal(_dtoRowType);
+            var objRowLocal = g2.DefineLocal(_objectRow);
+            g2
+                .NewObj(_dtoRowType.FindConstructor())
+                .StLoc(dtoRowLocal)
+                .LdLoc(dtoRowLocal)
+                .NewObj(_objectRow.FindConstructor(_dtoRowType))
+                .StLoc(objRowLocal)
+                .LdArg_0()
+                .EmitCall(baseDtoProp.Getter)
+                .LdLoc(dtoRowLocal)
+                .EmitCall(addDtoMethod)
+                .LdArg_0()
+                .EmitCall(baseObjProp.Getter)
+                .LdLoc(objRowLocal)
+                .EmitCall(addObjMethod)
+                .LdLoc(objRowLocal)
                 .Ret();
         }
 
@@ -322,16 +355,12 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
     {
         protected List<TDtoRowClass> DtoRef { get; }
 
-        protected List<TObjectClass> PrivateCollection { get; }
+        protected List<TObjectClass> ObjRef { get; }
 
         public EntityTable(List<TDtoRowClass> dtoRef)
         {
             DtoRef = dtoRef;
-            
-            OnCreate();
         }
-
-        protected abstract void OnCreate();
 
         public abstract TObjectClass Add();
 
@@ -339,7 +368,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
         public IEnumerator<TObjectClass> GetEnumerator()
         {
-            return PrivateCollection.GetEnumerator();
+            return ObjRef.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -227,7 +227,7 @@ namespace ZenPlatform.Compiler.Generation
 
                         var isClass = !cab.IsModule;
                         var isModule = !isClass;
-                        
+
                         foreach (var function in cab.TypeBody.Functions.FilterFunc(_mode))
                         {
                             var mf = PrebuildFunction(function, tcab, isClass);
@@ -238,36 +238,6 @@ namespace ZenPlatform.Compiler.Generation
                                 _mode == CompilationMode.Server)
                             {
                                 EmitRegisterServerFunction(function);
-                            }
-                        }
-
-                        if (isClass)
-                        {
-                            foreach (var property in cab.TypeBody.Properties)
-                            {
-                                var pp = PrebuildProperty(property, tcab);
-                                cab.TypeBody.SymbolTable.ConnectCodeObject(property, pp);
-                                _stage1Properties.Add(property, pp);
-                            }
-
-                            foreach (var field in cab.TypeBody.Fields)
-                            {
-                                var pf = PrebuildField(field, tcab);
-                                cab.TypeBody.SymbolTable.ConnectCodeObject(field, pf);
-                                _stage1Fields.Add(field, pf);
-                                ;
-                            }
-
-                            if (!cab.TypeBody.Constructors.Any())
-                            {
-                                cab.TypeBody.Constructors.Add(Constructor.Default);
-                            }
-
-                            foreach (var constructor in cab.TypeBody.Constructors)
-                            {
-                                var pf = PrebuildConstructor(constructor, tcab);
-                                _stage1constructors.Add(constructor, pf);
-                                ;
                             }
                         }
 
