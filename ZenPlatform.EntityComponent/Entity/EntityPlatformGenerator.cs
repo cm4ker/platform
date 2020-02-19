@@ -39,6 +39,7 @@ namespace ZenPlatform.EntityComponent.Entity
             _component = component;
             _rules = new GeneratorRules(component);
         }
+
         private void GenerateLink(IPType ipType, Root root)
         {
             // var cls = new ComponentClass(CompilationMode.Shared, _component, type, null, type.Name,
@@ -120,8 +121,12 @@ namespace ZenPlatform.EntityComponent.Entity
                 {
                     ns.AddEntity(new ObjectTableRowGenerationTask(ipType, table, CompilationMode.Server, _component,
                         table.Name, TypeBody.Empty));
+
+                    ns.AddEntity(new ObjectTableCollectionGenerationTask(ipType, table, CompilationMode.Server,
+                        _component,
+                        table.Name, TypeBody.Empty));
                 }
-                
+
                 ns.AddEntity(new ObjectGenerationTask(ipType, CompilationMode.Server, _component, ipType.Name,
                     TypeBody.Empty));
 

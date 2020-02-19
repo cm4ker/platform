@@ -41,7 +41,7 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public ITypeSystem TypeSystem => _ts;
-        
+
         public object Id => TypeDef.FullName;
         public string Name => TypeDef.Name;
         public string Namespace => TypeDef.Namespace;
@@ -72,7 +72,8 @@ namespace ZenPlatform.Compiler.Dnlib
             return TypeDef.Methods.Where(x => !x.IsConstructor)
                 .Select(x => (IMethod) new DnlibMethod(_ts,
                     new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig, GenericArguments?.ToArray()),
-                        TypeRef), x, TypeRef))
+                        TypeRef),
+                    x, TypeRef))
                 .ToList();
         }
 
