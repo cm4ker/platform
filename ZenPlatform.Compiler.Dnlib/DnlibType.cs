@@ -40,6 +40,8 @@ namespace ZenPlatform.Compiler.Dnlib
             return new SigComparer().Equals(TypeRef, ((DnlibType) other)?.TypeRef);
         }
 
+        public ITypeSystem TypeSystem => _ts;
+        
         public object Id => TypeDef.FullName;
         public string Name => TypeDef.Name;
         public string Namespace => TypeDef.Namespace;

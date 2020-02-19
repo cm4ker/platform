@@ -138,8 +138,8 @@ namespace ZenPlatform.Compiler.Generation
                 case ComponentAstTask co:
                 {
                     var tco = PreBuildComponentAst(co);
+                    if (tco is null) throw new Exception("Compilation error: component return null class builder");
                     AfterPreBuild(co, tco);
-                    co.Component.ComponentImpl.Generator.Stage0(co, tco, _parameters.TargetDatabaseType, _mode);
                     break;
                 }
 
@@ -225,9 +225,12 @@ namespace ZenPlatform.Compiler.Generation
 
                         var tcab = _stage0[cab];
 
+                        var isClass = !cab.IsModule;
+                        var isModule = !isClass;
+                        
                         foreach (var function in cab.TypeBody.Functions.FilterFunc(_mode))
                         {
-                            var mf = PrebuildFunction(function, tcab, cab.IsModule);
+                            var mf = PrebuildFunction(function, tcab, isClass);
                             _stage1Methods.Add(function, mf);
                             cab.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
 
@@ -238,7 +241,7 @@ namespace ZenPlatform.Compiler.Generation
                             }
                         }
 
-                        if (!cab.IsModule)
+                        if (isClass)
                         {
                             foreach (var property in cab.TypeBody.Properties)
                             {
@@ -538,14 +541,5 @@ namespace ZenPlatform.Compiler.Generation
         {
             return astTask.Component.ComponentImpl.Generator.Stage0(_asm, astTask);
         }
-
-        //
-        // private ITypeBuilder PreBuildComponentModule(ComponentModule componentModule)
-        // {
-        //     return _asm.DefineType(@componentModule.GetNamespace(),
-        //         componentModule.Name,
-        //         TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Abstract |
-        //         TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass, _bindings.Object);
-        // }
     }
 }

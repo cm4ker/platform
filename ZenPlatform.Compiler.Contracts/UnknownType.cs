@@ -16,6 +16,7 @@ namespace ZenPlatform.Compiler.Contracts
 
         public bool Equals(IType other) => other == this;
 
+        public ITypeSystem TypeSystem { get; }
         public object Id { get; } = Guid.NewGuid();
         public string Name { get; protected set; }
         public string Namespace { get; } = "";

@@ -25,6 +25,7 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new NotImplementedException();
         }
 
+        public ITypeSystem TypeSystem { get; }
         public object Id { get; }
         public string Name { get; }
         public string Namespace { get; }

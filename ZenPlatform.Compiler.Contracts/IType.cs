@@ -5,6 +5,8 @@ namespace ZenPlatform.Compiler.Contracts
 {
     public interface IType : IEquatable<IType>
     {
+        ITypeSystem TypeSystem { get; }
+
         /// <summary>
         /// Identifier of the type 
         /// </summary>
