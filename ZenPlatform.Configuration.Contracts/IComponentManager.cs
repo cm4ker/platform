@@ -2,7 +2,7 @@
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-
+using ZenPlatform.Configuration.Structure;
 
 namespace ZenPlatform.Configuration.Contracts
 {

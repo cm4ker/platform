@@ -4,6 +4,7 @@ using System.IO;
 using SharpFileSystem;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Shared.ParenChildCollection;
 
 namespace ZenPlatform.Configuration.Contracts
@@ -56,5 +57,11 @@ namespace ZenPlatform.Configuration.Contracts
 
 
         void Attach(IComponentRef comRef, IComponentManager mrg);
+
+        /// <summary>
+        /// Регистрирует редактор компанента
+        /// </summary>
+        /// <param name="editor"></param>
+        void RegisterComponentEditor(IComponentEditor editor);
     }
 }

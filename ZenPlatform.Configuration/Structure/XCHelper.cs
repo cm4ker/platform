@@ -39,6 +39,23 @@ namespace ZenPlatform.Configuration.Structure
             return (T) writer.Result;
         }
 
+        public static object DeserializeFromString(string text)
+        {
+            XamlSchemaContext context = new XCXamlSchemaContext();
+
+            XamlObjectWriter writer = new XamlObjectWriter(context);
+            var stream = new MemoryStream();
+            var strwriter = new StreamWriter(stream);
+            strwriter.Write(text);
+            strwriter.Flush();
+            stream.Position = 0;
+
+            XamlXmlReader reader = new XamlXmlReader(stream, context);
+            XamlServices.Transform(reader, writer);
+
+            return writer.Result;
+        }
+
         public static string BaseDirectory { get; private set; }
 
         public static string Serialize(this object obj)
@@ -67,6 +84,22 @@ namespace ZenPlatform.Configuration.Structure
             ms.Seek(0, SeekOrigin.Begin);
 
             return ms;
+        }
+
+        public static string SerializeToString(this object obj)
+        {
+            MemoryStream ms = new MemoryStream();
+            XamlSchemaContext context = new XCXamlSchemaContext();
+            XamlObjectReader reader = new XamlObjectReader(obj, context);
+            XamlXmlWriter writer = new XamlXmlWriter(ms, context);
+            XamlServices.Transform(reader, writer);
+
+            ms.Seek(0, SeekOrigin.Begin);
+            using (var textReader = new StreamReader(ms))
+            {
+                return textReader.ReadToEnd();
+            }
+
         }
 
         public static string GetHash(this Contracts.IProject project)
