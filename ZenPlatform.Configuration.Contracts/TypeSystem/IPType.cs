@@ -25,6 +25,8 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         bool IsPrimitive { get; }
 
+        bool IsAbstract { get; }
+
         PrimitiveKind PrimitiveKind { get; }
 
         bool IsValue { get; set; }

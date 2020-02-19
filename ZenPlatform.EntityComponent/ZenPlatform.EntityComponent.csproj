@@ -3,8 +3,22 @@
         <TargetFramework>netcoreapp3.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
+      <None Remove="IDE\Editors\UIPropertyEditor.xaml" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="IDE\Editors\UiPropertyEditor.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Avalonia" Version="0.9.2" />
+      <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.8.0" />
+    </ItemGroup>
+    <ItemGroup>
         <ProjectReference Include="..\ZenPlatform.Compiler\ZenPlatform.Compiler.csproj" />
         <ProjectReference Include="..\ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Ide.Common\ZenPlatform.Ide.Common.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Ide.Contract\ZenPlatform.Ide.Contracts.csproj" />
         <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
         <ProjectReference Include="..\ZenPlatform.Migration\ZenPlatform.Migration.csproj" />
     </ItemGroup>

@@ -18,9 +18,9 @@ namespace ZenPlatform.Compiler.Generation
                     x.ComponentId == component.Id && x.IsAsmAvaliable))
                 {
                     if (_mode == CompilationMode.Client)
-                        component.ComponentImpl.Generator.StageClient(type, root, _parameters.TargetDatabaseType);
+                        component.ComponentImpl.Generator.StageClient(type, root);
                     else
-                        component.ComponentImpl.Generator.StageServer(type, root, _parameters.TargetDatabaseType);
+                        component.ComponentImpl.Generator.StageServer(type, root);
                 }
             }
 
@@ -29,6 +29,28 @@ namespace ZenPlatform.Compiler.Generation
 
 
             Build();
+        }
+
+        public Root BuildAst()
+        {
+            var root = new Root(null, new List<CompilationUnit>());
+
+            foreach (var component in _conf.TypeManager.Components)
+            {
+                foreach (var type in _conf.TypeManager.Types.Where(x =>
+                    x.ComponentId == component.Id && x.IsAsmAvaliable))
+                {
+                    if (_mode == CompilationMode.Client)
+                        component.ComponentImpl.Generator.StageClient(type, root);
+                    else
+                        component.ComponentImpl.Generator.StageServer(type, root);
+                }
+            }
+
+            _cus = root.Units;
+            AstScopeRegister.Apply(root);
+
+            return root;
         }
     }
 }
