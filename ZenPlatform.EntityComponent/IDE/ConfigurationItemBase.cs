@@ -26,5 +26,8 @@ namespace ZenPlatform.EntityComponent.IDE
         public virtual void Save() => throw new NotImplementedException();
 
         public virtual bool Search(string text) => throw new NotImplementedException();
+
+        public virtual void DiscardChange() => throw new NotImplementedException();
+
     }
 }

@@ -67,6 +67,7 @@ namespace ZenPlatform.EntityComponent.Configuration
 
         public IComponentEditor Load(IProject proj, IComponentRef comRef, IFileSystem fs)
         {
+
             var com = fs.Deserialize<MDComponent>(comRef.Entry);
             var editor = new ComponentEditor(proj, com, fs);
             editor.Apply();

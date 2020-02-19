@@ -28,11 +28,11 @@ namespace ZenPlatform.EntityComponent.IDE
 
         public override IConfigurationItem Create(string name)
         {
-            var prop = _editor.CreateProperty();
+            var prop = _editor.CreateCommand();
 
             prop.Name = name;
 
-            var item = new PropertyConfigurationItem(prop, _editor);
+            var item = new CommandConfigurationItem(prop);
             _items.Add(item);
 
 

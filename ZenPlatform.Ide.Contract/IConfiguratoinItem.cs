@@ -29,5 +29,7 @@ namespace ZenPlatform.Ide.Contracts
         bool Search(string text);
 
         void Save();
+
+        void DiscardChange();
     }
 }

@@ -23,6 +23,9 @@ using ZenPlatform.SimpleIde.Dock;
 using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration;
+using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Compiler.Platform;
+using ZenPlatform.Compiler.Dnlib;
 
 namespace ZenPlatform.SimpleIde.ViewModels
 {
@@ -40,9 +43,12 @@ namespace ZenPlatform.SimpleIde.ViewModels
         public ReactiveCommand<Unit, string> OpenProjectCommand { get; private set; }
 
         private Project _project;
+
         public DockMainWindowViewModel()
         {
             _project = ConfigurationFactory.Create();
+
+
             Configuration = new ConfigurationTreeViewModel(_project);
 
             _container = new MainDockContainer();

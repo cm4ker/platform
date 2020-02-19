@@ -3,7 +3,9 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Ide.Common;
@@ -16,14 +18,18 @@ namespace ZenPlatform.EntityComponent.IDE
     {
         private readonly ModuelEditor _editor;
         private ObservableAsPropertyHelper<bool> _isChanged;
+        private Subject<bool> _changeSubject;
         
         public ModuleConfigurationItem(ModuelEditor editor)
         {
             _editor = editor;
+            _changeSubject = new Subject<bool>();
             Document = new TextDocument(_editor.ModuleText);
-            
-           _isChanged = Document.WhenAnyValue(doc => doc.Text).Select(t => true).ToProperty(this, vm => vm.IsChanged);
 
+           _isChanged = Observable.Merge(
+                Document.WhenAnyValue(doc => doc.Text).Select(t=>true).Skip(1), _changeSubject).ToProperty(this, vm => vm.IsChanged);
+
+            
         }
 
   
@@ -38,14 +44,18 @@ namespace ZenPlatform.EntityComponent.IDE
         public override void Save()
         {
             _editor.ModuleText = Document.Text;
-            
+            _changeSubject.OnNext(false);
+        }
+
+        public override void DiscardChange()
+        {
+            Document.Text = _editor.ModuleText;
+            _changeSubject.OnNext(false);
         }
 
         public TextDocument Document { get; set; }
-
         public override bool CanSave => true;
-        public override bool IsChanged => _isChanged.Value;// _isChanged.Value;
-
+        public override bool IsChanged => _isChanged.Value;
         public string Title => Caption;
 
     }
