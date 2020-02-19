@@ -115,11 +115,21 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                 EmitProperty(builder, prop, sb, dtoType, dtoPrivate, ts, mrgGet);
             }
 
-            foreach (var prop in set.Tables)
+            foreach (var table in set.Tables)
             {
-               
+                var full = $"{GetNamespace()}.{table.GetObjectRowCollectionClassName()}";
+                var t = ts.FindType(full);
+                var dtoTableProp = dtoType.FindProperty(table.Name);
+
+                var prop = builder.DefineProperty(t, table.Name, true, false, false);
+                prop.getMethod.Generator
+                    .LdArg_0()
+                    .LdFld(dtoPrivate)
+                    .EmitCall(dtoTableProp.Getter)
+                    .NewObj(t.FindConstructor(dtoTableProp.PropertyType))
+                    .Ret();
             }
-            
+
             var saveBuilder = (IMethodBuilder) builder.FindMethod("Save");
 
             var sg = saveBuilder.Generator;
