@@ -14,7 +14,6 @@ using ZenPlatform.Language.Ast.Definitions.Extension;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
-using Attribute = ZenPlatform.Language.Ast.Definitions.Attribute;
 using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
 namespace ZenPlatform.Compiler
@@ -32,17 +31,22 @@ namespace ZenPlatform.Compiler
         {
             _syntaxStack.Clear();
 
-            var typeList = new List<TypeEntity>();
+            var typeList = new EntityList();
 
             _syntaxStack.Push(typeList);
 
-            var usings = new List<UsingBase>();
+            var usings = new UsingList();
 
-            
-            
+            var namespaces = new NamespaceDeclarationList();
+
             foreach (var atd in context.usingSection())
             {
                 usings.Add((UsingBase) Visit(atd));
+            }
+
+            foreach (var ns in context.namespaceDefinition())
+            {
+                namespaces.Add((NamespaceDeclaration) Visit(ns));
             }
 
             base.VisitEntryPoint(context);
@@ -56,6 +60,16 @@ namespace ZenPlatform.Compiler
         {
             return new UsingAliasDeclaration(context.start.ToLineInfo(), context.typeName().GetText(),
                 context.alias.GetText());
+        }
+
+        public override SyntaxNode VisitNamespaceDefinition(ZSharpParser.NamespaceDefinitionContext context)
+        {
+            var typeList = new EntityList();
+
+            _syntaxStack.Push(typeList);
+
+            return new NamespaceDeclaration(context.start.ToLineInfo(), context.@namespace().GetText(), null,
+                typeList, null);
         }
 
         public override SyntaxNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
@@ -83,9 +97,7 @@ namespace ZenPlatform.Compiler
             var result = new Class(context.start.ToLineInfo(), _syntaxStack.PopTypeBody(),
                 context.typeName().IDENTIFIER().GetText());
 
-            result.Namespace = context.typeName().@namespace()?.GetText();
-
-            _syntaxStack.PeekCollection().Add(result);
+            _syntaxStack.PeekType<EntityList>().Add(result);
 
             return result;
         }
@@ -113,18 +125,6 @@ namespace ZenPlatform.Compiler
             Field f = new Field(context.start.ToLineInfo(), _syntaxStack.PopString(), _syntaxStack.PopType());
             _syntaxStack.PeekCollection().Add(f);
             return f;
-        }
-
-        public override SyntaxNode VisitMultitype(ZSharpParser.MultitypeContext context)
-        {
-            var marker = new object();
-            _syntaxStack.Push(marker);
-            base.VisitMultitype(context);
-            var tc = new TypeCollection();
-            _syntaxStack.PopUntil(marker, tc);
-            var result = new UnionTypeSyntax(context.start.ToLineInfo(), tc);
-            _syntaxStack.Push(result);
-            return result;
         }
 
         public override SyntaxNode VisitPropertyDeclaration(ZSharpParser.PropertyDeclarationContext context)
@@ -172,7 +172,7 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitAttributes(ZSharpParser.AttributesContext context)
         {
-            _syntaxStack.Push(new AttributeCollection());
+            _syntaxStack.Push(new AttributeList());
             base.VisitAttributes(context);
 
             return null;
@@ -182,13 +182,14 @@ namespace ZenPlatform.Compiler
         {
             base.VisitAttribute(context);
 
-            ArgumentCollection ac = null;
+            ArgumentList ac = null;
 
             if (context.arguments() != null)
-                ac = (ArgumentCollection) _syntaxStack.Pop();
+                ac = (ArgumentList) _syntaxStack.Pop();
 
-            var result = new Attribute(context.start.ToLineInfo(), ac, _syntaxStack.PopType() as SingleTypeSyntax);
-            _syntaxStack.PeekCollection().Add(result);
+            var result =
+                new AttributeSyntax(context.start.ToLineInfo(), ac, _syntaxStack.PopType() as SingleTypeSyntax);
+            _syntaxStack.PeekType<AttributeList>().Add(result);
 
             return result;
         }
@@ -211,6 +212,7 @@ namespace ZenPlatform.Compiler
         public override SyntaxNode VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
         {
             TypeNodeKind t = TypeNodeKind.Unknown;
+
             if (context.STRING() != null) t = TypeNodeKind.String;
             else if (context.INT() != null) t = TypeNodeKind.Int;
             else if (context.OBJECT() != null) t = TypeNodeKind.Object;
@@ -347,13 +349,13 @@ namespace ZenPlatform.Compiler
         {
             base.VisitFunctionDeclaration(context);
             Function result = null;
-            ParameterCollection pc = new ParameterCollection();
-            AttributeCollection ac = new AttributeCollection();
+            ParameterList pc = new ParameterList();
+            AttributeList ac = new AttributeList();
             var body = _syntaxStack.PopInstructionsBody();
 
             if (context.parameters() != null)
             {
-                pc = (ParameterCollection) _syntaxStack.Pop();
+                pc = (ParameterList) _syntaxStack.Pop();
             }
 
 
@@ -363,7 +365,7 @@ namespace ZenPlatform.Compiler
 
             if (context.attributes() != null)
             {
-                ac = (AttributeCollection) _syntaxStack.Pop();
+                ac = (AttributeList) _syntaxStack.Pop();
             }
 
             result = new Function(context.start.ToLineInfo(), body, pc, ac, funcName, type);
@@ -393,21 +395,21 @@ namespace ZenPlatform.Compiler
         public override SyntaxNode VisitInstructionsBody(ZSharpParser.InstructionsBodyContext context)
         {
             base.VisitInstructionsBody(context);
-            var sc = (StatementCollection) _syntaxStack.Pop();
+            var sc = (StatementList) _syntaxStack.Pop();
             _syntaxStack.Push(new Block(sc));
             return null;
         }
 
         public override SyntaxNode VisitParameters(ZSharpParser.ParametersContext context)
         {
-            _syntaxStack.Push(new ParameterCollection());
+            _syntaxStack.Push(new ParameterList());
             return base.VisitParameters(context);
         }
 
 
         public override SyntaxNode VisitParameter(ZSharpParser.ParameterContext context)
         {
-            var paramList = _syntaxStack.PeekCollection();
+            var paramList = _syntaxStack.PeekType<ParameterList>();
 
             base.VisitParameter(context);
 
@@ -424,7 +426,7 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitArguments(ZSharpParser.ArgumentsContext context)
         {
-            _syntaxStack.Push(new ArgumentCollection());
+            _syntaxStack.Push(new ArgumentList());
 
             base.VisitArguments(context);
 
@@ -437,7 +439,7 @@ namespace ZenPlatform.Compiler
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
             var result = new Argument(context.start.ToLineInfo(), _syntaxStack.PopExpression(), passMethod);
 
-            _syntaxStack.PeekCollection().Add(result);
+            _syntaxStack.PeekType<ArgumentList>().Add(result);
             return result;
         }
 
@@ -445,11 +447,11 @@ namespace ZenPlatform.Compiler
         {
             base.VisitFunctionCall(context);
 
-            IList<Argument> args = new ArgumentCollection();
+            ArgumentList args = new ArgumentList();
 
             if (context.arguments() != null)
             {
-                args = _syntaxStack.PopList<Argument>().ToImmutableList();
+                args = _syntaxStack.Pop<ArgumentList>();
             }
 
             var result = new Call(context.start.ToLineInfo(), args, _syntaxStack.PopName(), null);
@@ -461,7 +463,8 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitStatements(ZSharpParser.StatementsContext context)
         {
-            _syntaxStack.Push(new StatementCollection());
+            _syntaxStack.Push(new StatementList());
+            ;
             base.VisitStatements(context);
             return null;
         }
@@ -682,11 +685,11 @@ namespace ZenPlatform.Compiler
                 else
                     result = new Return(context.start.ToLineInfo(), _syntaxStack.PopExpression());
 
-                _syntaxStack.PeekType<IList>().Add(result);
+                _syntaxStack.PeekType<StatementList>().Add(result);
             }
             else
             {
-                var node = _syntaxStack.Pop();
+                SyntaxNode node = (SyntaxNode) _syntaxStack.Pop();
 
                 // По умолчанию все операции могут являться выражениями.
                 //перед тем как мы будем добавлять их в инструкции нужно обернуть их в инструкцию
@@ -711,7 +714,7 @@ namespace ZenPlatform.Compiler
                     node = new ExpressionStatement(exp);
                 }
 
-                _syntaxStack.PeekType<IList>().Add(node);
+                _syntaxStack.PeekType<StatementList>().Add(node);
             }
 
             return result;
@@ -720,7 +723,7 @@ namespace ZenPlatform.Compiler
         public override SyntaxNode VisitInstructionsOrSingleStatement(
             ZSharpParser.InstructionsOrSingleStatementContext context)
         {
-            var sc = new StatementCollection();
+            var sc = new StatementList();
 
             if (context.statement() != null)
                 _syntaxStack.Push(sc);

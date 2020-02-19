@@ -12,7 +12,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         
         public void AddFunction(Function function)
         {
-            TypeBody.AddFunction(function);
+            TypeBody.Functions.Add(function);
         }
     }
 }

@@ -313,6 +313,43 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.NotNull(res1);
         }
+
+        [Fact]
+        public void TestGenericClass()
+        {
+            var asm = _ap.CreateAssembly("test");
+            var sb = asm.TypeSystem.GetSystemBindings();
+
+            var a = asm.DefineType("Default", "A",
+                TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass |
+                TypeAttributes.BeforeFieldInit, sb.Object);
+
+            a.DefineDefaultConstructor(false);
+
+            var m1 = a.DefineMethod("Test", true, false, false, null, true);
+            m1.WithReturnType(sb.Object);
+              
+            
+            var gt = asm.TypeSystem.FindType(typeof(GenClass<>)).MakeGenericType(sb.Int);
+            var method = gt.FindMethod(x => x.Name == "Method");
+            var generic = method.MakeGenericMethod(sb.String);
+
+            m1.Generator.LdcI4(0)
+                .EmitCall(generic)
+                .Ret();
+            
+            asm.Write("test.bll");
+            
+            Assert.NotNull(generic);
+        }
+    }
+
+    public static class GenClass<T>
+    {
+        public static S Method<S>(T argument)
+        {
+            return default;
+        }
     }
 
 

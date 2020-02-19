@@ -62,7 +62,7 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        private void EmitArguments(IEmitter e, IList<Argument> args, SymbolTable symbolTable)
+        private void EmitArguments(IEmitter e, ArgumentList args, SymbolTable symbolTable)
         {
             foreach (Argument argument in args)
             {

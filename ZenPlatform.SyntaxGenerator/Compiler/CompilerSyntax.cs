@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using Microsoft.CodeAnalysis;
 
@@ -11,6 +12,12 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
             Arguments = new List<SyntaxArgument>();
             Base = "SyntaxNode";
         }
+
+        /// <summary>
+        /// Is syntax is list?
+        /// </summary>
+        [XmlAttribute]
+        public bool IsList { get; set; }
 
         /// <summary>
         /// The name of syntax node

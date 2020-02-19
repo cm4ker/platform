@@ -14,10 +14,11 @@ namespace ZenPlatform.Shared.Tree
     public class Node : IChildItem<Node>, IParentItem<Node, Node>
     {
         private Node _parent;
+        private ChildItemCollection<Node, Node> _childs;
 
         public Node()
         {
-            Childs = new ChildItemCollection<Node, Node>(this);
+            _childs = new ChildItemCollection<Node, Node>(this);
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace ZenPlatform.Shared.Tree
         /// <summary>
         /// Дочерние элекменты
         /// </summary>
-        public ChildItemCollection<Node, Node> Childs { get; }
+        public IReadOnlyChildItemCollection<Node, Node> Childs => _childs;
 
         /// <summary>
         /// Добавить подчинённую ноду
@@ -49,7 +50,7 @@ namespace ZenPlatform.Shared.Tree
         public virtual void Add(Node node)
         {
             if (node == this) throw new Exception("Recursial dependency not allowed");
-            Childs.Add(node);
+            _childs.Add(node);
         }
 
         /// <summary>
@@ -59,12 +60,12 @@ namespace ZenPlatform.Shared.Tree
         /// <param name="newNode"></param>
         public virtual void Replace(Node node, Node newNode)
         {
-            var index = Childs.IndexOf(node);
+            var index = _childs.IndexOf(node);
 
             if (index >= 0)
             {
-                Childs[index].Detach();
-                newNode.Attach(index, this);
+                Detach(Childs[index]);
+                Attach(index, newNode);
             }
         }
 
@@ -75,11 +76,11 @@ namespace ZenPlatform.Shared.Tree
         /// <param name="newNode"></param>
         public virtual void ReplaceOrAttach(Node node, Node newNode)
         {
-            var index = Childs.IndexOf(node);
+            var index = _childs.IndexOf(node);
 
             if (index >= 0)
             {
-                Childs[index].Detach();
+                Detach(Childs[index]);
                 newNode.Attach(index, this);
             }
             else
@@ -129,30 +130,37 @@ namespace ZenPlatform.Shared.Tree
         /// <summary>
         /// Отсоединить ноду. Внимание свойство Parent автоматически будет присвоено в null
         /// </summary>
-        public virtual void Detach()
+        public void Detach(Node node)
         {
-            _parent?.Childs.Remove(this);
+            _childs.Remove(node);
         }
 
         /// <summary>
         /// Прикрепить элемент. Внимание сначала будет выполнена процедура <see cref="Detach"/> а затем уже элемент будет добавлен в качесте дочернего
         /// </summary>
-        /// <param name="parentNode">Родительская нода</param>
-        public virtual void Attach(Node parentNode)
+        /// <param name="node">Прикрепляемая нода</param>
+        public void Attach(Node node)
         {
-            Detach();
-            parentNode.Childs.Add(this);
+            node?.Parent?.Detach(node);
+            _childs.Add(node);
         }
+
 
         /// <summary>
         /// Прикрепить элемент в определённое место. Внимание сначала будет выполнена процедура <see cref="Detach"/> а затем уже элемент будет добавлен в качесте дочернего
         /// </summary>
         /// <param name="index"></param>
-        /// <param name="parentNode"></param>
-        public virtual void Attach(int index, Node parentNode)
+        /// <param name="node"></param>
+        public void Attach(int index, Node node)
         {
-            Detach();
-            parentNode.Childs.Insert(index, this);
+            node?.Parent?.Detach(node);
+            _childs.Insert(index, node);
+        }
+
+
+        public int IndexOf(Node node)
+        {
+            return _childs.IndexOf(node);
         }
     }
 }

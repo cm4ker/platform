@@ -91,8 +91,8 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         {
             _com = com ?? throw new ArgumentNullException(nameof(com));
 
-            RegisterObject();
             RegisterDto();
+            RegisterObject();
             RegisterManager();
             RegisterLink();
 
@@ -125,7 +125,6 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
         private void RegisterObject()
         {
-            
             var oType = _inf.TypeManager.Type();
             oType.IsObject = true;
 
@@ -142,6 +141,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             _inf.TypeManager.Register(oType);
 
             RegisterId(_md.ObjectId);
+
             foreach (var prop in _md.Properties)
             {
                 var tProp = _inf.TypeManager.Property();
@@ -160,7 +160,6 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
                 _inf.TypeManager.Register(tProp);
             }
-
 
             foreach (var table in _md.Tables)
             {

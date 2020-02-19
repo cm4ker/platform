@@ -1,133 +1,51 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using Mono.Cecil;
-using MoreLinq.Extensions;
-using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.QueryBuilder;
-using ZenPlatform.Shared.Tree;
-using IProperty = ZenPlatform.Compiler.Contracts.IProperty;
-using IType = ZenPlatform.Compiler.Contracts.IType;
-using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
-namespace ZenPlatform.EntityComponent.Entity
+namespace ZenPlatform.EntityComponent.Entity.Generation
 {
-    public static class EntityComponentHelper
+    public class LinkGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
-        public static IPType GetDtoType(this IPType ipType)
+        public IPType LinkType { get; }
+
+        public LinkGenerationTask(IPType linkType, CompilationMode compilationMode, IComponent component,
+            string name, TypeBody tb) : base(compilationMode, component, false, name, tb)
         {
-            return ipType.TypeManager.Types.FirstOrDefault(x => x.IsDto && x.GroupId == ipType.GroupId);
+            LinkType = linkType;
         }
 
-        public static IPType GetManagerType(this IPType ipType)
+        public ITypeBuilder Stage0(IAssemblyBuilder asm)
         {
-            return ipType.TypeManager.Types.FirstOrDefault(x => x.IsManager && x.GroupId == ipType.GroupId);
+            return asm.DefineInstanceType(GetNamespace(), Name, asm.FindType("Entity.EntityLink"));
         }
 
-        public static IPType GetLinkType(this IPType ipType)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            return ipType.TypeManager.Types.FirstOrDefault(x => x.IsLink && x.GroupId == ipType.GroupId);
+            EmitStructure(builder, dbType);
         }
 
-        public static IPType GetObjectType(this IPType ipType)
+        public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            return ipType.TypeManager.Types.FirstOrDefault(x => x.IsObject && x.GroupId == ipType.GroupId);
+            EmitBody(builder, dbType);
         }
 
-        public static T GetMD<T>(this IPType type)
+        private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.GroupId)?.Metadata;
-        }
-
-        public static string GetTableRowClassName(this ITable table)
-        {
-            var type = table.TypeManager.FindType(table.ParentId);
-            return $"{type.GetNamespace()}.TR{type.Name}_{table.Name}";
-        }
-    }
-
-    public class EntityLinkClassGenerator
-    {
-        private readonly IComponent _component;
-
-        public EntityLinkClassGenerator(IComponent component)
-        {
-            _component = component;
-        }
-
-        public void GenerateAstTree(ZenPlatform.Configuration.Contracts.TypeSystem.IPType ipType, Root root)
-        {
-            var className = ipType.Name;
-
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
-
-            var cls = new ComponentClass(CompilationMode.Shared, _component, ipType, null, className,
-                    TypeBody.Empty, new SingleTypeSyntax(null, "Entity.EntityLink", TypeNodeKind.Object))
-                {Namespace = ipType.GetNamespace()};
-
-            cls.Namespace = @namespace;
-            cls.Bag = ObjectType.Link;
-
-
-            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
-                new List<NamespaceDeclaration>());
-            root.Add(cu);
-        }
-
-        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
-        {
-            if (astTree is ComponentClass cc)
-            {
-                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
-                {
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
-                    {
-                        EmitStructure(cc, builder, dbType);
-                    }
-                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
-                    {
-                    }
-                }
-            }
-        }
-
-        public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
-        {
-            if (astTree is ComponentClass cc)
-            {
-                if (cc.Bag != null && ((ObjectType) cc.Bag) == ObjectType.Link)
-                {
-                    if (cc.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
-                    {
-                        EmitBody(cc, builder, dbType);
-                    }
-                    else if (cc.CompilationMode.HasFlag(CompilationMode.Client))
-                    {
-                    }
-                }
-            }
-        }
-
-        private void EmitBody(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
-        {
-            var type = cc.Type;
-            var set = cc.Type ?? throw new Exception("This component can generate only SingleEntity");
+            var type = LinkType;
+            var set = LinkType ?? throw new Exception("This component can generate only SingleEntity");
             var mrgType = type.GetManagerType();
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
             var dtoClassName = type.GetDtoType().Name;
 
 
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+            var @namespace = Component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
 
@@ -229,15 +147,15 @@ namespace ZenPlatform.EntityComponent.Entity
             }
         }
 
-        public void EmitStructure(ComponentClass cc, ITypeBuilder builder, SqlDatabaseType dbType)
+        public void EmitStructure(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            var type = cc.Type;
+            var type = LinkType;
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
             var dtoClassName = type.GetDtoType().Name;
 
 
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+            var @namespace = Component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
 

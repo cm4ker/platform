@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
@@ -11,94 +10,42 @@ using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.QueryBuilder.Model;
-using ZenPlatform.Shared.Tree;
-using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
-namespace ZenPlatform.EntityComponent.Entity
+namespace ZenPlatform.EntityComponent.Entity.Generation
 {
-    /*
-     
-     Manager
-     {
-        Entity Create()
-        {
-            var dto  = new dto();
-            dto.Id = Guid.NewId();
-            return new Entity(dto);
-        }
-        
-        EntityLink Get(Guid g)
-        {
-             var cmd = "SELECT Id, .... FROM Obj_0001 WHERE Id = @id"
-             var context = Context.Session.GetDbManager()       
-        }  
-     }
-     
-     
-     */
-    public class EntityManagerGenerator
+    public class ManagerGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
-        private readonly IComponent _component;
-        private readonly QueryMachine _qm;
+        private QueryMachine _qm;
+        public IPType ManagerType { get; }
 
-        public EntityManagerGenerator(IComponent component)
+        public ManagerGenerationTask(
+            IPType managerType,
+            CompilationMode compilationMode, IComponent component, string name,
+            TypeBody tb)
+            : base(compilationMode, component, true, name, tb)
         {
-            _component = component;
+            ManagerType = managerType;
             _qm = new QueryMachine();
         }
 
-        public void GenerateAstTree(IPType ipType, Root root)
+        public ITypeBuilder Stage0(IAssemblyBuilder asm)
         {
-            var className = ipType.Name;
-
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
-
-            var cls = new ComponentModule(CompilationMode.Server, _component, ipType, null, className,
-                TypeBody.Empty);
-            cls.Bag = ObjectType.Manager;
-
-            cls.Namespace = @namespace;
-
-            var cu = new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>() {cls},
-                new List<NamespaceDeclaration>());
-
-            root.Add(cu);
+            return asm.DefineInstanceType(GetNamespace(), Name);
         }
 
-        public void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            if (astTree is ComponentModule cm)
-            {
-                if (cm.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
-                {
-                    EmitStructure(cm, builder, dbType);
-                }
-                else if (cm.CompilationMode.HasFlag(CompilationMode.Client))
-                {
-                }
-            }
+            EmitStructure(builder, dbType);
         }
 
-        public void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            if (astTree is ComponentModule cm)
-            {
-                if (cm.Bag != null && ((ObjectType) cm.Bag) == ObjectType.Manager)
-                {
-                    if (cm.CompilationMode.HasFlag(CompilationMode.Server) && mode.HasFlag(CompilationMode.Server))
-                    {
-                        EmitBody(cm, builder, dbType);
-                    }
-                    else if (cm.CompilationMode.HasFlag(CompilationMode.Client))
-                    {
-                    }
-                }
-            }
+            EmitBody(builder, dbType);
         }
 
-        public void EmitStructure(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
+        public void EmitStructure(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            var managerType = cm.Type;
+            var managerType = ManagerType;
             var pLinkType = managerType.GetLinkType();
             var pObjectType = managerType.GetObjectType();
 
@@ -110,7 +57,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var linkClassName = managerType.GetLinkType().Name;
 
 
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+            var @namespace = Component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}") ?? throw new Exception("Type not found");
             var objectType = ts.FindType($"{@namespace}.{objectClassName}") ?? throw new Exception("Type not found");
@@ -128,9 +75,9 @@ namespace ZenPlatform.EntityComponent.Entity
                 .DefineParameter("dto", dtoType, false, false);
         }
 
-        private void EmitBody(ComponentModule cm, ITypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            var pManagerType = cm.Type;
+            var pManagerType = ManagerType;
             var pObjectType = pManagerType.GetObjectType();
             var xcLinkType = pManagerType.GetLinkType();
 
@@ -143,7 +90,7 @@ namespace ZenPlatform.EntityComponent.Entity
             var linkClassName = xcLinkType.Name;
 
 
-            var @namespace = _component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
+            var @namespace = Component.GetCodeRule(CodeGenRuleType.NamespaceRule).GetExpression();
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
             var objectType = ts.FindType($"{@namespace}.{objectClassName}");
@@ -273,12 +220,12 @@ namespace ZenPlatform.EntityComponent.Entity
                 .NewObj(linkType.FindConstructor(dtoType))
                 .Ret();
 
-            EmitSavingSupport(cm, builder, dbType);
+            EmitSavingSupport(builder, dbType);
         }
 
-        private void EmitSavingSupport(ComponentModule cm, ITypeBuilder tb, SqlDatabaseType dbType)
+        private void EmitSavingSupport(ITypeBuilder tb, SqlDatabaseType dbType)
         {
-            var set = cm.Type;
+            var set = ManagerType;
 
             var pObjectType = set.GetObjectType();
 

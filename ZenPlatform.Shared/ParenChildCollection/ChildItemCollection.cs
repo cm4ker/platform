@@ -7,14 +7,28 @@ using System.Linq;
 
 namespace ZenPlatform.Shared.ParenChildCollection
 {
+    public interface IChildItemCollection<TParent, TChildren> : IList<TChildren>, IList, INotifyCollectionChanged, IReadOnlyChildItemCollection<TParent, TChildren>,
+        INotifyPropertyChanged where TParent : class
+        where TChildren : class, IChildItem<TParent>
+    {
+        void InsertRange(int startIndex, IEnumerable<TChildren> items);
+        void AddRange(IEnumerable<TChildren> items);
+        void AddRange(params TChildren[] items);
+    }
+    
+    public interface IReadOnlyChildItemCollection<TParent, TChildren> : IReadOnlyList<TChildren> where TParent : class
+        where TChildren : class, IChildItem<TParent>
+    {
+      
+    }
+
     /// <summary>
     /// Collection of child items. This collection automatically set the
     /// Parent property of the child items when they are added or removed
     /// </summary>
     /// <typeparam name="TParent">Type of the parent object</typeparam>
     /// <typeparam name="TChildren">Type of the child items</typeparam>
-    public class ChildItemCollection<TParent, TChildren> : IList<TChildren>, IList, INotifyCollectionChanged,
-        INotifyPropertyChanged
+    public class ChildItemCollection<TParent, TChildren> : IChildItemCollection<TParent, TChildren>
         where TParent : class
         where TChildren : class, IChildItem<TParent>
     {
