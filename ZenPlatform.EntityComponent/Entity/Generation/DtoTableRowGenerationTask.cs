@@ -1,3 +1,4 @@
+using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Language.Ast;
@@ -23,7 +24,11 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
         public ITypeBuilder Stage0(IAssemblyBuilder asm)
         {
-            return asm.DefineInstanceType(this.GetNamespace(), Table.GetDtoRowClassName());
+            var type = asm.DefineInstanceType(this.GetNamespace(), Table.GetDtoRowClassName());
+
+            type.DefineDefaultConstructor(false);
+
+            return type;
         }
 
         public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)

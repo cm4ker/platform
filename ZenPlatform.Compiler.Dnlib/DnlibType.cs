@@ -57,7 +57,7 @@ namespace ZenPlatform.Compiler.Dnlib
         private IReadOnlyList<ICustomAttribute> _customAttributes;
 
         public IReadOnlyList<IProperty> Properties =>
-            _properties ??= TypeDef.Properties.Select(x => new DnlibProperty(_ts, x)).ToList();
+            _properties ??= TypeDef.Properties.Select(x => new DnlibProperty(_ts, x, TypeRef)).ToList();
 
         public IReadOnlyList<IField> Fields =>
             _fields ??= TypeDef.Fields.Select(x => new DnlibField(x)).ToList();
@@ -67,13 +67,18 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<IMethod> Methods =>
             _methods ??= CalculateMethods();
 
+        public IMethod CalculateMethod(MethodDef x)
+        {
+            return new DnlibMethod(_ts,
+                new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig, GenericArguments?.ToArray()),
+                    TypeRef),
+                x, TypeRef);
+        }
+
         private List<IMethod> CalculateMethods()
         {
             return TypeDef.Methods.Where(x => !x.IsConstructor)
-                .Select(x => (IMethod) new DnlibMethod(_ts,
-                    new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig, GenericArguments?.ToArray()),
-                        TypeRef),
-                    x, TypeRef))
+                .Select(CalculateMethod)
                 .ToList();
         }
 
