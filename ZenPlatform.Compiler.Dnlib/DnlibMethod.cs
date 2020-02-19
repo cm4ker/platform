@@ -67,7 +67,7 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<IParameter> Parameters =>
             _parameters ??= MethodDef.Parameters
                 .Where(x => !x.IsHiddenThisParameter)
-                .Select(p => new DnlibParameter(TypeSystem, MethodDef, _declaringTR.Module, p))
+                .Select(p => new DnlibParameter(TypeSystem, MethodDef, _declaringTR.Module, p ))//new Parameter(p.Index, p.MethodSigIndex, MethodRef.GetParam(p.Index -1))))
                 .ToList();
 
         private List<DnlibParameter> _parameters;

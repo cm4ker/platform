@@ -24,8 +24,6 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
         }
     }
-
-
     public class SyntaxCollectionNode<T> : SyntaxNode, IEnumerable<T> where T : SyntaxNode
     {
         public SyntaxCollectionNode(ILineInfo lineInfo) : base(lineInfo)

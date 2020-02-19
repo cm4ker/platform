@@ -42,10 +42,22 @@ namespace ZenPlatform.EntityComponent.Entity
             return $"RowDto{type.Name}_{table.Name}";
         }
 
+        public static string GetObjectRowFullClassName(this ITable table)
+        {
+            var type = table.TypeManager.FindType(table.ParentId);
+            return $"{type.GetNamespace()}.RWRowDtoWrapper{type.Name}_{table.Name}";
+        }
+        
         public static string GetObjectRowClassName(this ITable table)
         {
             var type = table.TypeManager.FindType(table.ParentId);
             return $"RWRowDtoWrapper{type.Name}_{table.Name}";
+        }
+        
+        public static string GetObjectRowCollectionClassName(this ITable table)
+        {
+            var type = table.TypeManager.FindType(table.ParentId);
+            return $"RWRowCollection{type.Name}_{table.Name}";
         }
     }
 }
