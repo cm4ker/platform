@@ -38,12 +38,12 @@ namespace ZenPlatform.Configuration.Contracts.Data
         void StageGlobalVar(IGlobalVarManager manager);
 
         /// <summary>
-        /// Стадия 0 Формирование класса без структуры
+        /// Стадия формирования класса
         /// </summary>
-        /// <param name="astTree"></param>
-        /// <param name="builder"></param>
-        /// <param name="dbType"></param>
-        void Stage0(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
+        /// <param name="asm"></param>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        ITypeBuilder Stage0(IAssemblyBuilder asm, Node task);
 
         /// <summary>
         /// Стадия 1 формирование внутреннего каркаса класса (Методы + Свойства + Поля + События)
@@ -62,7 +62,7 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// <param name="dbType"></param>
         /// <param name="mode"></param>
         void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
-    
+
         /// <summary>
         /// Инфраструктурная стадия
         /// </summary>

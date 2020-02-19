@@ -30,13 +30,13 @@ namespace ZenPlatform.EntityComponent.Entity
         public virtual string GetEntityClassName(IPType obj)
         {
             return "";
-            
+
             // var preffix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPrefixRule).GetExpression();
             // var postfix = obj.Parent.GetCodeRule(CodeGenRuleType.EntityClassPostfixRule).GetExpression();
             //
             // return $"{preffix}{obj.Name}{postfix}";
         }
-      
+
         //TODO: Необходимо реализовать все типы правил в базовом классе и выдавать Exception
         //в случае, если свойство не реализовано, а оно где-то вызвалось. 
         //Это явно укажет на то, что объект не может быть использован для такого сценария
@@ -59,7 +59,7 @@ namespace ZenPlatform.EntityComponent.Entity
         {
             return new CodeGenRule(CodeGenRuleType.EntityClassPrefixRule, "");
         }
-     
+
         public virtual CodeGenRule GetInForeignPropertySetActionRule()
         {
             return new CodeGenRule(CodeGenRuleType.InForeignPropertySetActionRule, null);

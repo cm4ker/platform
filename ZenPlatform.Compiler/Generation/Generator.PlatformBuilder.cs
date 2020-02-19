@@ -10,7 +10,7 @@ namespace ZenPlatform.Compiler.Generation
     {
         public void BuildConf()
         {
-            var root = new Root(null, new List<CompilationUnit>());
+            var root = new Root(null, new CompilationUnitList());
 
             foreach (var component in _conf.TypeManager.Components)
             {
@@ -26,14 +26,14 @@ namespace ZenPlatform.Compiler.Generation
 
             _cus = root.Units;
             AstScopeRegister.Apply(root);
-
+            LoweringOptimizer.Apply(_ts, root);
 
             Build();
         }
 
         public Root BuildAst()
         {
-            var root = new Root(null, new List<CompilationUnit>());
+            var root = new Root(null, new CompilationUnitList());
 
             foreach (var component in _conf.TypeManager.Components)
             {

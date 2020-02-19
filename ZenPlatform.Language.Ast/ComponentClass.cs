@@ -8,7 +8,10 @@ using ZenPlatform.Language.Ast.Definitions.Functions;
 
 namespace ZenPlatform.Language.Ast
 {
-    public class ComponentAstBase : TypeEntity, IAstSymbol
+    /// <summary>
+    /// Перенаправляет генерацию кода в компонент
+    /// </summary>
+    public class ComponentAstTask : TypeEntity, IAstSymbol
     {
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -17,64 +20,69 @@ namespace ZenPlatform.Language.Ast
 
         public IComponent Component { get; }
 
-        public IPType Type { get; }
-
-        public object Bag { get; set; }
-
         public Func<ITypeSystem, IType> BaseTypeSelector { get; set; }
 
-        public ComponentAstBase(CompilationMode compilationMode, IComponent component, IPType type,
-            ILineInfo lineInfo, string name, TypeBody tb, TypeSyntax @base = null) : base(lineInfo, tb, name, @base)
+        public ComponentAstTask(CompilationMode compilationMode, IComponent component, bool isModule,
+            string name, TypeBody tb) : base(null, tb, name)
         {
             CompilationMode = compilationMode;
             Component = component;
-            Type = type;
+            IsModule = isModule;
         }
+
+        public bool IsModule { get; }
 
         public CompilationMode CompilationMode { get; set; }
 
         public void AddFunction(Function function)
         {
-            TypeBody.AddFunction(function);
+            TypeBody.Functions.Add(function);
         }
-
 
         public SymbolScopeBySecurity SymbolScope { get; set; }
     }
 
-    /// <summary>
-    /// Перенаправляет генерацию кода в компонент
-    /// </summary>
-    public class ComponentClass : ComponentAstBase
-    {
-        public ComponentClass(CompilationMode compilationMode, IComponent component, IPType type,
-            ILineInfo lineInfo, string name,
-            TypeBody tb, TypeSyntax @base = null) : base(compilationMode, component, type, lineInfo, name, tb, @base)
-        {
-        }
-    }
+    /*
+     
+    -------- "+" ---------   | ---------- "-" ----------
+     1) у нас появляется     |   1) Мы отказываемся от
+     возможность лекго доб-  | понятия примитивный класс(только платформенный)
+     лять новые классы в     | и используем ТОЛЬКО внутренние объявленные классы
+     платформу. Просто новый | и бидинги
+     биндинг                 |
+     
+     
+     
+     
+     System.Int32        int
+     System.Int64        long
 
-
-    /// <summary>
-    /// Перенаправляет генерацию кода в компонент
-    /// </summary>
-    public class ComponentModule : ComponentAstBase
-    {
-        public ComponentModule(CompilationMode compilationMode, IComponent component, IPType type,
-            ILineInfo lineInfo, string name,
-            TypeBody tb) : base(compilationMode, component, type, lineInfo, name, tb)
-        {
-        }
-    }
-
+     System.Guid         System.Guid
+     
+     using System;
+     import method Int32 SomeMethod();     
+     
+     Int32 a = 0;
+     int b = 0;
+     
+     
+     if(a == b)
+     
+     */
     public class BindingClass : TypeEntity, IAstSymbol
     {
-        public BindingClass(string name) : base(null, TypeBody.Empty, name, null)
+        public BindingClass(string forwardedName, IType bindingType) : base(null, TypeBody.Empty, forwardedName, null)
         {
+            BindingType = bindingType;
         }
 
         public IType BindingType { get; set; }
 
         public SymbolScopeBySecurity SymbolScope { get; set; }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitTypeEntity(this);
+        }
     }
 }

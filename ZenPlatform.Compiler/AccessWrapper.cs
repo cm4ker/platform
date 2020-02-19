@@ -16,14 +16,14 @@ namespace ZenPlatform.Compiler
 {
     public class SyntaxTreeMemberAccessProvider
     {
-        private readonly List<CompilationUnit> _cu;
+        private readonly CompilationUnitList _cu;
         private readonly SystemTypeBindings _stb;
         private List<TypeEntity> _types;
 
         private Dictionary<string, List<IProperty>> _props;
         private Dictionary<string, List<IMethod>> _methods;
 
-        public SyntaxTreeMemberAccessProvider(List<CompilationUnit> cu, SystemTypeBindings stb)
+        public SyntaxTreeMemberAccessProvider(CompilationUnitList cu, SystemTypeBindings stb)
         {
             _cu = cu;
             _stb = stb;
@@ -38,9 +38,9 @@ namespace ZenPlatform.Compiler
         public IMethod GetMethod(TypeSyntax type, string name, TypeSyntax[] args)
         {
             var typeName = GetTypeName(type);
+            var argsTypeName = args.Select(GetTypeName).ToArray();
 
-
-            IMethod m = GetCachedMethod(typeName, name);
+            IMethod m = GetCachedMethod(typeName, name, argsTypeName);
 
             if (m == null)
             {
@@ -147,7 +147,7 @@ namespace ZenPlatform.Compiler
         private TypeEntity GetType(string name)
         {
             return _types.FirstOrDefault(x =>
-                (!string.IsNullOrEmpty(x.Namespace) ? x.Namespace + "." : "") + x.Name == name);
+                (!string.IsNullOrEmpty(x.GetNamespace()) ? x.GetNamespace() + "." : "") + x.Name == name);
         }
 
 

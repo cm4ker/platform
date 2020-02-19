@@ -1,4 +1,5 @@
 using Xunit;
+using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Tests
 {
@@ -38,28 +39,54 @@ namespace ZenPlatform.Compiler.Tests
         [Fact]
         public void LookupTest()
         {
-            var script = 
-@"
-
-type NS.B
-{
-    int PropB {get;set;}
-
-    NS.A PropA {get;set;}
-}
-
-type NS.A
-{
-    int Prop {get;set;}
-
-    int Test(NS.B arg)
+            var script =
+                @"
+namespace NS {
+    type B
     {
-       return arg.PropA.Prop;
+        int PropB {get;set;}
+
+        A PropA {get;set;}
     }
 }
+    type A
+    {
+        int Prop {get;set;}
+
+        int Test(NS.B arg)
+        {
+           return arg.PropA.Prop;
+        }
+    }
+
 ";
 
             Compile(script);
+        }
+
+        [Fact]
+        public void BindingTest()
+        {
+            ClassTable ct = new ClassTable();
+            ct.FillStandard(Ap.TypeSystem.GetSystemBindings());
+
+            var res = ct.FindType("int");
+            Assert.Equal("System.Int32", res.FullName);
+
+            res = ct.FindType("Platform", "Int64");
+
+            Assert.Equal("System.Int64", res.FullName);
+
+            res = ct.FindType("Platform.Int64");
+
+            Assert.Equal("System.Int64", res.FullName);
+
+            res = ct.FindType("Platform.SomeNamespace.Int64");
+
+            Assert.Equal("System.Int64", res.FullName);
+
+            res = ct.FindType("Platform.SomeNamespace", "Int64");
+            Assert.Equal("System.Int64", res.FullName);
         }
     }
 }

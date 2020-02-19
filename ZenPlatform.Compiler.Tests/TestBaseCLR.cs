@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.Tests
     {
         private ZLanguageVisitor _zlv;
 
-        IAssemblyPlatform ap = new DnlibAssemblyPlatform();
+        protected IAssemblyPlatform Ap = new DnlibAssemblyPlatform();
         //IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
         public TestBaseCLR()
@@ -36,10 +36,9 @@ namespace ZenPlatform.Compiler.Tests
 
             Assembly a = alc.LoadFromAssemblyPath(assemblyPath);
 
-            var ns = "CompileNamespace";
             var cName = "Test";
 
-            Type execClass = a.GetType($"{ns}.{cName}");
+            Type execClass = a.GetType($"{cName}");
 
             MethodInfo method = execClass.GetMethod(methodName,
                 BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
@@ -58,7 +57,7 @@ namespace ZenPlatform.Compiler.Tests
 
         public void ImportRef()
         {
-            var asm = ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
+            var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
             asm.ImportWithCopy(asm.TypeSystem.GetSystemBindings().Client);
             var asmName = $"test.bll";
 
@@ -70,11 +69,11 @@ namespace ZenPlatform.Compiler.Tests
 
         public void Compile(string unit)
         {
-            var asm = ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
+            var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
 
             var cunit = (CompilationUnit) unit.Parse(x => _zlv.VisitEntryPoint(x.entryPoint()));
 
-            Root r = new Root(null, new List<CompilationUnit> {cunit});
+            Root r = new Root(null, new CompilationUnitList {cunit});
 
             AstScopeRegister.Apply(r);
 
@@ -94,21 +93,21 @@ namespace ZenPlatform.Compiler.Tests
 
         public object CompileAndRun(string funcScript)
         {
-            var asm = ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
+            var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
 
             Function node = (Function) funcScript.Parse(x => _zlv.VisitFunctionDeclaration(x.functionDeclaration()));
 
-
-            CompilationUnit cu = new CompilationUnit(null, null, new List<TypeEntity>
+            CompilationUnit cu = new CompilationUnit(null, null, new EntityList
             {
                 new Module(null,
                     new TypeBody(new List<Member> {node}, null), "Test")
-            }, new List<NamespaceDeclaration>());
+            }, new NamespaceDeclarationList());
 
 
-            Root r = new Root(null, new List<CompilationUnit>() {cu});
+            Root r = new Root(null, new CompilationUnitList {cu});
 
             AstScopeRegister.Apply(r);
+            LoweringOptimizer.Apply(asm.TypeSystem, r);
 
             var gp = new GeneratorParameters(r.Units, asm, CompilationMode.Server,
                 SqlDatabaseType.SqlServer, null);

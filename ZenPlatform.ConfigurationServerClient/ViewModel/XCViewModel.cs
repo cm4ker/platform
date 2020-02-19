@@ -12,7 +12,7 @@ namespace ZenPlatform.IdeIntegration.Client.ViewModel
         {
             Data = new XCDataViewModel();
 
-            Childs.AddRange(Data);
+            Attach(Data);
         }
 
         public XCDataViewModel Data { get; }

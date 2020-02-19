@@ -38,11 +38,11 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitParameter(Parameter obj)
         {
-            if (obj.Parent is Function f)
+            if (obj.Parent.Parent is Function f)
             {
                 f.Block.SymbolTable.Add(obj);
             }
-            else if (obj.Parent is Constructor c)
+            else if (obj.Parent.Parent is Constructor c)
             {
                 c.Block.SymbolTable.Add(obj);
             }
@@ -107,7 +107,9 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitFunction(Function obj)
         {
-            if (obj.Parent is TypeBody te)
+            var te = obj.FirstParent<TypeBody>();
+
+            if (te != null)
             {
                 if (obj.Block.SymbolTable == null)
                     obj.Block.SymbolTable = new SymbolTable(te.SymbolTable);

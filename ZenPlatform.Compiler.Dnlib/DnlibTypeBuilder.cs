@@ -61,7 +61,14 @@ namespace ZenPlatform.Compiler.Dnlib
         public IMethodBuilder DefineMethod(string name, bool isPublic, bool isStatic, bool isInterfaceImpl,
             IMethod overrideMethod = null, bool isVirtual = false)
         {
-            var method = new MethodDefUser(name);
+            MethodSig sig;
+
+            if (isStatic)
+                sig = MethodSig.CreateStatic(_ts.GetSystemBindings().Void.GetRef().ToTypeSig());
+            else
+                sig = MethodSig.CreateInstance(_ts.GetSystemBindings().Void.GetRef().ToTypeSig());
+
+            var method = new MethodDefUser(name, sig);
 
             var dm = new DnlibMethodBuilder(_ts, method, TypeRef);
             ((List<IMethod>) Methods).Add(dm);
@@ -88,16 +95,11 @@ namespace ZenPlatform.Compiler.Dnlib
 
             method.Attributes |= MethodAttributes.HideBySig;
 
-            var c = CallingConvention.Default;
-
-            if (!isStatic)
-                c |= CallingConvention.HasThis;
-
             method.DeclaringType = TypeDef;
             method.Body = new CilBody();
 
             method.Body.InitLocals = true;
-            method.MethodSig = new MethodSig(c);
+            //method.MethodSig = new MethodSig(c);
 
             method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.ToTypeRef()).ToTypeSig();
 
@@ -118,7 +120,7 @@ namespace ZenPlatform.Compiler.Dnlib
                 prop.PropertySig = PropertySig.CreateInstance(_r.GetReference(propertyType.GetRef()).ToTypeSig(),
                     _r.GetReference(propertyType.GetRef()).ToTypeSig());
 
-            var propertyBuilder = new DnlibPropertyBuilder(_ts, prop);
+            var propertyBuilder = new DnlibPropertyBuilder(_ts, prop, TypeRef);
             ((List<DnlibProperty>) Properties).Add(propertyBuilder);
 
             return propertyBuilder;

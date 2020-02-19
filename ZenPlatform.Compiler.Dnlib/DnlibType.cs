@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Transactions;
 using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
 using IAssembly = ZenPlatform.Compiler.Contracts.IAssembly;
@@ -42,6 +40,8 @@ namespace ZenPlatform.Compiler.Dnlib
             return new SigComparer().Equals(TypeRef, ((DnlibType) other)?.TypeRef);
         }
 
+        public ITypeSystem TypeSystem => _ts;
+
         public object Id => TypeDef.FullName;
         public string Name => TypeDef.Name;
         public string Namespace => TypeDef.Namespace;
@@ -53,11 +53,11 @@ namespace ZenPlatform.Compiler.Dnlib
         private IReadOnlyList<IMethod> _methods;
         private IReadOnlyList<IConstructor> _constructors;
         private IReadOnlyList<IType> _interfaces;
-        private IReadOnlyList<IType> _genericParameters;
+        private IReadOnlyList<IType> _genericArguments;
         private IReadOnlyList<ICustomAttribute> _customAttributes;
 
         public IReadOnlyList<IProperty> Properties =>
-            _properties ??= TypeDef.Properties.Select(x => new DnlibProperty(_ts, x)).ToList();
+            _properties ??= TypeDef.Properties.Select(x => new DnlibProperty(_ts, x, TypeRef)).ToList();
 
         public IReadOnlyList<IField> Fields =>
             _fields ??= TypeDef.Fields.Select(x => new DnlibField(x)).ToList();
@@ -65,10 +65,22 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<IEventInfo> Events { get; }
 
         public IReadOnlyList<IMethod> Methods =>
-            _methods ??= TypeDef.Methods.Where(x => !x.IsConstructor)
-                .Select(x => (IMethod) new DnlibMethod(_ts,
-                    new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig), TypeRef), x, TypeRef))
+            _methods ??= CalculateMethods();
+
+        public IMethod CalculateMethod(MethodDef x)
+        {
+            return new DnlibMethod(_ts,
+                new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig, GenericArguments?.ToArray()),
+                    TypeRef),
+                x, TypeRef);
+        }
+
+        private List<IMethod> CalculateMethods()
+        {
+            return TypeDef.Methods.Where(x => !x.IsConstructor)
+                .Select(CalculateMethod)
                 .ToList();
+        }
 
         public IReadOnlyList<IConstructor> Constructors =>
             _constructors ??= TypeDef.FindConstructors().Select(x =>
@@ -81,7 +93,9 @@ namespace ZenPlatform.Compiler.Dnlib
         public IReadOnlyList<ICustomAttribute> CustomAttributes
             => _customAttributes ??= new List<ICustomAttribute>();
 
-        public IReadOnlyList<IType> GenericArguments { get; }
+        public IReadOnlyList<IType> GenericArguments =>
+            _genericArguments ??= (TypeRef as TypeSpec)?.TryGetGenericInstSig()?.GenericArguments?
+                .Select(x => _cr.GetType(x)).ToList();
 
         public IReadOnlyList<IType> Interfaces =>
             _interfaces ??= TypeDef.Interfaces
@@ -92,33 +106,6 @@ namespace ZenPlatform.Compiler.Dnlib
                         (DnlibAssembly) _ts.FindAssembly(x.Interface.ResolveTypeDef().DefinitionAssembly.FullName));
                 })
                 .ToList();
-
-
-        public IReadOnlyList<IType> GenericParameters =>
-            _genericParameters ??= (TypeRef as TypeSpec)?.TryGetGenericInstSig()?.GenericArguments?
-                .Select(x => _cr.GetType(x)).ToList();
-
-
-        public bool IsAssignableFrom(IType type)
-        {
-            if (type.IsValueType
-                && GenericTypeDefinition?.FullName == "System.Nullable`1"
-                && GenericArguments[0].Equals(type))
-                return true;
-            if (FullName == "System.Object" && type.IsInterface)
-                return true;
-            var baseType = type;
-            while (baseType != null)
-            {
-                if (baseType.Equals(this))
-                    return true;
-                baseType = baseType.BaseType;
-            }
-
-            if (IsInterface && type.GetAllInterfaces().Any(IsAssignableFrom))
-                return true;
-            return false;
-        }
 
         public IType MakeGenericType(IReadOnlyList<IType> typeArguments)
         {

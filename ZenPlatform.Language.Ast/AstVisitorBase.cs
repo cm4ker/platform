@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
-using Attribute = ZenPlatform.Language.Ast.Definitions.Attribute;
 
 namespace ZenPlatform.Language.Ast
 {
-    public abstract class AstVisitorBase<T>
+    public abstract partial class AstVisitorBase<T>
     {
         private Stack<SyntaxNode> _visitStack;
         private bool _break;
@@ -28,322 +28,12 @@ namespace ZenPlatform.Language.Ast
             return visitable.Accept(this);
         }
 
-        public virtual T VisitTypeEntity(TypeEntity typeEntity)
-        {
-            return DefaultVisit(typeEntity);
-        }
-
-        public T VisitArrayTypeNode(ArrayTypeSyntax arg)
-        {
-            return DefaultVisit(arg);
-        }
-
-        public virtual T VisitLogicalOrArithmeticExpression(LogicalOrArithmeticExpression arg)
-        {
-            return DefaultVisit(arg);
-            ;
-        }
-
-        public virtual T VisitRoot(Root obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitMultiType(UnionTypeSyntax obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitSingleType(SingleTypeSyntax obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitField(Field obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitProperty(Property obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitClass(Class obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitTry(Try obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitIndexerExpression(IndexerExpression obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitPostDecrementExpression(PostDecrementExpression obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitPostIncrementExpression(PostIncrementExpression obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitArgument(Argument obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitLiteral(Literal obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitIf(If obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitGetFieldExpression(GetFieldExpression obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitCastExpression(CastExpression obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitBinaryExpression(BinaryExpression obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitReturn(Return obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitAssignment(Assignment obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitVariable(Variable obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitInstructionsBody(Block obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitType(TypeSyntax obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitFunction(Function obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitTypeBody(TypeBody obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitModule(Module obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitCall(Call obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitParameter(Parameter obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitWhile(While obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitFor(For obj)
-        {
-            return DefaultVisit(obj);
-            ;
-        }
-
-        public virtual T VisitName(Name obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitExpression(Expression e)
-        {
-            return DefaultVisit(e);
-        }
-
-
-        public virtual T VisitExpressionStatement(ExpressionStatement e)
-        {
-            return DefaultVisit(e);
-        }
-
-
-        public virtual T VisitCompilationUnit(CompilationUnit cu)
-        {
-            return DefaultVisit(cu);
-            ;
-        }
-
         public virtual T DefaultVisit(SyntaxNode node)
         {
             return default;
         }
 
-        public virtual T VisitAttribute(Attribute obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitDoStatement(DoWhile obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitBlock(Block obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitPrimitiveTypeSyntax(PrimitiveTypeSyntax obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitSingleTypeSyntax(SingleTypeSyntax obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitArrayTypeSyntax(ArrayTypeSyntax obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitUnionTypeSyntax(UnionTypeSyntax obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitDoWhile(DoWhile obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitUsingDeclaration(UsingDeclaration obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitUsingAliasDeclaration(UsingAliasDeclaration obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitNamespaceDeclaration(NamespaceDeclaration obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitThrow(Throw obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitMatch(Match obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitMatchAtom(MatchAtom obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitAssignFieldExpression(AssignFieldExpression obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitConstructor(Constructor obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitGlobalVar(GlobalVar obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitContextVariable(ContextVariable obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitLookupExpression(LookupExpression obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitMethodLookupExpression(MethodLookupExpression obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitPropertyLookupExpression(PropertyLookupExpression obj)
-        {
-            return DefaultVisit(obj);
-        }
-
-        public virtual T VisitGenericTypeSyntax(GenericTypeSyntax obj)
+        public virtual T VisitTypeEntity(TypeEntity obj)
         {
             return DefaultVisit(obj);
         }
@@ -355,7 +45,9 @@ namespace ZenPlatform.Language.Ast
         {
             Console.WriteLine($"We are visit: {node}");
 
-            foreach (var child in node.Childs)
+            var childs = node.Childs.ToList();
+            
+            foreach (var child in childs)
             {
                 Visit(child as SyntaxNode);
             }
