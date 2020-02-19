@@ -1,0 +1,28 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZenPlatform.EntityComponent.IDE.Editors.UiPropertyEditor">
+   <DockPanel DataContext="{Binding Context}">
+    <StackPanel  DockPanel.Dock="Top" >
+      <TextBlock Margin="5" HorizontalAlignment="Left">Name:</TextBlock>
+      <TextBox Name="Name" Text="{Binding Caption}" HorizontalAlignment="Stretch"    />
+    </StackPanel>
+      <TextBlock Margin="5" HorizontalAlignment="Left" DockPanel.Dock="Top">Types:</TextBlock >
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Margin="5">
+          <Button Command="{Binding AddCommand}" >Add</Button>
+          <Button Command="{Binding DeleteCommand}">Delete</Button>
+        </StackPanel>
+        <ListBox Name="TypeList" Items="{Binding Types}" SelectedItem="{Binding SelectedType}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock FontSize="16" Text="{Binding Name}"/>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    
+    </DockPanel>
+</UserControl>

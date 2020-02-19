@@ -17,6 +17,8 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         private readonly List<CommandEditor> _commands;
         private readonly List<TableEditor> _tables;
 
+        public IInfrastructure Infrastructure => _inf;
+
         public ObjectEditor(IInfrastructure inf)
         {
             _inf = inf;
@@ -39,7 +41,10 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             set => _md.Name = value;
         }
 
-        public IEnumerable<PropertyEditor> Editors => _props;
+        public IEnumerable<PropertyEditor> PropertyEditors => _props;
+        public IEnumerable<ModuelEditor> ModuleEditors => _modules;
+        public IEnumerable<CommandEditor> CommandEditors => _commands;
+        public IEnumerable<TableEditor> TableEditors => _tables;
 
         public ModuelEditor CreateModule()
         {
@@ -84,7 +89,8 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
         public void Apply(IComponent com)
         {
-            _com = com;
+            _com = com ?? throw new ArgumentNullException(nameof(com));
+
             RegisterObject();
             RegisterDto();
             RegisterManager();
@@ -119,6 +125,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
         private void RegisterObject()
         {
+            
             var oType = _inf.TypeManager.Type();
             oType.IsObject = true;
 
@@ -135,7 +142,6 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             _inf.TypeManager.Register(oType);
 
             RegisterId(_md.ObjectId);
-
             foreach (var prop in _md.Properties)
             {
                 var tProp = _inf.TypeManager.Property();
@@ -154,6 +160,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
                 _inf.TypeManager.Register(tProp);
             }
+
 
             foreach (var table in _md.Tables)
             {

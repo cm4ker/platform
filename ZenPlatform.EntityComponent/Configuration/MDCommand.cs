@@ -50,5 +50,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         /// Аргументы команды
         /// </summary>
         public List<IXCDataExpression> Arguments { get; }
+
+
     }
+
 }
