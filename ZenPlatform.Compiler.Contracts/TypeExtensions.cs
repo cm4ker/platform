@@ -25,7 +25,7 @@ namespace ZenPlatform.Compiler.Contracts
         {
             var f = sys.FindType(fullName);
             if (f == null)
-                throw new Exception("test");
+                throw new Exception($"Type not found: {fullName}");
             //throw new XamlIlTypeSystemException("Unable to resolve type " + type);
             return f;
         }
@@ -197,7 +197,7 @@ namespace ZenPlatform.Compiler.Contracts
                 return true;
             return false;
         }
-        
+
         public static IEnumerable<IType> GetAllInterfaces(this IType type)
         {
             foreach (var i in type.Interfaces)
