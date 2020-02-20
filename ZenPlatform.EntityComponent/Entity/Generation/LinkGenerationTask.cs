@@ -103,7 +103,16 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                             .LdFld(dtoPrivate)
                             .EmitCall(dtoProp.Getter);
 
-                        if (compileType.IsValueType)
+                        if (ctype.IsLink)
+                        {
+                            //Call Manager.Get(Id)
+                            //Мы не можем ссылаться на методы, когда они ещё не готовы.
+                            //нужно либо разбивать все на стадии, либо вводить понятие шаблона
+                            var mrgRemote = ts.FindType($"{GetNamespace()}.{ctype.GetManagerType().Name}");
+                            var mrgRemoteGet = mrgRemote.FindMethod("Get", sb.Guid);
+                            getBuilder.EmitCall(mrgRemoteGet);
+                        }
+                        else if (compileType.IsValueType)
                             getBuilder.Box(compileType);
 
                         getBuilder

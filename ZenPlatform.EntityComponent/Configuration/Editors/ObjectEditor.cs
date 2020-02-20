@@ -115,7 +115,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
             {
-                ObjectId =  oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
+                ObjectId = oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
             });
 
 
@@ -226,7 +226,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
             {
-                ObjectId =  oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
+                ObjectId = oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
             });
 
             tm.Register(oType);
@@ -302,7 +302,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         {
             var oType = _inf.TypeManager.Type();
             oType.IsLink = true;
-            oType.IsQueryAvaliable = true;
+            oType.IsQueryAvaliable = false;
             oType.IsAsmAvaliable = true;
 
             oType.GroupId = _md.ObjectId;
@@ -312,9 +312,30 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             oType.ComponentId = _com.Info.ComponentId;
 
+            RegisterId(oType.Id);
+
+            foreach (var prop in _md.Properties)
+            {
+                var tProp = _inf.TypeManager.Property();
+                tProp.Name = prop.Name;
+                tProp.Id = prop.Guid;
+                tProp.ParentId = oType.Id;
+
+                foreach (var pType in prop.Types)
+                {
+                    var tPropType = _inf.TypeManager.PropertyType();
+                    tPropType.PropertyParentId = oType.Id;
+                    tPropType.PropertyId = tProp.Id;
+                    tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
+                    _inf.TypeManager.Register(tPropType);
+                }
+
+                _inf.TypeManager.Register(tProp);
+            }
+
             _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
             {
-                ObjectId =  oType.Id, SystemId = _inf.Counter.GetId( oType.Id)
+                ObjectId = oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
             });
 
             _inf.TypeManager.Register(oType);
