@@ -113,7 +113,11 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             oType.ComponentId = _com.Info.ComponentId;
 
-            oType.SystemId = _inf.Counter.GetId(oType.Id);
+            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            {
+                ObjectId =  oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
+            });
+
 
             tm.Register(oType);
         }
@@ -137,7 +141,11 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             oType.ComponentId = _com.Info.ComponentId;
 
-            oType.SystemId = _inf.Counter.GetId(oType.Id);
+            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            {
+                ObjectId = oType.Id, SystemId = _inf.Counter.GetId(oType.Id),
+                DatabaseName = $"Obj_{_inf.Counter.GetId(oType.Id)}"
+            });
 
             _inf.TypeManager.Register(oType);
 
@@ -216,7 +224,10 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             oType.IsAsmAvaliable = true;
             oType.ComponentId = _com.Info.ComponentId;
 
-            oType.SystemId = _inf.Counter.GetId(oType.Id);
+            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            {
+                ObjectId =  oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
+            });
 
             tm.Register(oType);
 
@@ -301,7 +312,10 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             oType.ComponentId = _com.Info.ComponentId;
 
-            oType.SystemId = _inf.Counter.GetId(oType.Id);
+            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            {
+                ObjectId =  oType.Id, SystemId = _inf.Counter.GetId( oType.Id)
+            });
 
             _inf.TypeManager.Register(oType);
         }

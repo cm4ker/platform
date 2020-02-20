@@ -74,7 +74,7 @@ namespace ZenPlatform.Core.Querying
                         _qm.eq();
 
                         _qm.ld_column("A1");
-                        _qm.ld_const(type.SystemId);
+                        _qm.ld_const(type.GetSettings().SystemId);
 
                         _qm.left_join();
                     }

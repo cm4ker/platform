@@ -40,7 +40,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
 
                 mte.EmitTypeColumn();
 
-                Qm.ld_const(type.Id);
+                Qm.ld_const(type.GetSettings().SystemId);
                 Qm.eq();
 
                 Qm.when();

@@ -19,7 +19,58 @@ namespace ZenPlatform.Core.Querying.Test
         public QLangTest()
         {
             conf = ConfigurationFactory.Create();
-            _m = new Querying.Model.QLang(conf);
+            _m = new QLang(conf);
+        }
+
+        [Fact]
+        public void QlangSimpleTest()
+        {
+            _m.reset();
+            _m.bg_query();
+            _m.m_from();
+            
+            _m.ld_component("Entity");
+            _m.ld_object_type("Store");
+            _m.@as("A");
+            
+            _m.m_select();
+
+            _m.ld_name("A");
+            _m.ld_field("Id");
+            
+            _m.st_query();
+            
+            var query = (QQuery) _m.top();
+
+            Assert.NotNull(query);
+        }
+        
+        [Fact]
+        public void QlangSimpleAliasedChildrens()
+        {
+            _m.reset();
+            _m.bg_query();
+            _m.m_from();
+            
+            _m.ld_component("Entity");
+            _m.ld_object_type("Store");
+            _m.@as("A");
+
+            var ds = _m.top() as QAliasedDataSource;
+            
+            Assert.Equal(1, ds.Childs.Count);
+            _m.m_select();
+            Assert.Equal(1, ds.Childs.Count);
+            _m.ld_name("A");
+            Assert.Equal(1, ds.Childs.Count);
+            _m.ld_field("Id");
+            Assert.Equal(1, ds.Childs.Count);
+            _m.st_query();
+            
+            var query = (QQuery) _m.top();
+            
+            Assert.Equal(1, ds.Childs.Count);
+            Assert.NotNull(query);
         }
 
         [Fact]

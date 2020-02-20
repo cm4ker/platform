@@ -97,7 +97,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .EmitCall(dtoTypeProp.Getter)
-                            .LdcI4((int) ctype.SystemId)
+                            .LdcI4((int) ctype.GetSettings().SystemId)
                             .BneUn(label)
                             .LdArg_0()
                             .LdFld(dtoPrivate)

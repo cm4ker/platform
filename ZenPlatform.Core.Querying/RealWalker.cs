@@ -302,12 +302,12 @@ namespace ZenPlatform.Core.Querying
             compareAction();
 
             if (flip)
-                _qm.ld_const(leftType.Id);
+                _qm.ld_const(leftType.GetSettings().SystemId);
 
             mt.EmitTypeColumn();
 
             if (!flip)
-                _qm.ld_const(leftType.Id);
+                _qm.ld_const(leftType.GetSettings().SystemId);
             compareAction();
 
             concatAction();
@@ -385,7 +385,7 @@ namespace ZenPlatform.Core.Querying
             }
             else if (node.DataSource is QNestedQuery)
             {
-                var schema =_tm.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
+                var schema = _tm.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
                 GenColumn(schema);
             }
 
@@ -394,7 +394,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
-            List<ColumnSchemaDefinition> schema = null; //node.Property.GetPropertySchemas();
+            var schema = node.Property.GetDbSchema();
 
             LoadNamedSource(node.ObjectTable.GetDbName());
 

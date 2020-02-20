@@ -187,7 +187,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                         .LdArg_0()
                         .LdFld(dtoPrivate)
                         .EmitCall(dtoTypeProp.Getter)
-                        .LdcI4((int) ctype.SystemId)
+                        .LdcI4((int) ctype.GetSettings().SystemId)
                         .BneUn(label)
                         .LdArg_0()
                         .LdFld(dtoPrivate)
@@ -229,7 +229,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                         setBuilder.EmitCall(dtoProp.Setter)
                             .LdArg_0()
                             .LdFld(dtoPrivate)
-                            .LdcI4((int) ctype.SystemId)
+                            .LdcI4((int) ctype.GetSettings().SystemId)
                             .EmitCall(dtoTypeProp.Setter)
                             .Ret()
                             .MarkLabel(label);

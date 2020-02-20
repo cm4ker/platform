@@ -22,7 +22,7 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQObjectTable(QObjectTable node)
         {
-            node.SetDbNameIfEmpty($"T{_tableCount++}");
+            node.SetDbNameIfEmpty($"{node.ObjectIpType.GetSettings().DatabaseName}");
             return base.VisitQObjectTable(node);
         }
 

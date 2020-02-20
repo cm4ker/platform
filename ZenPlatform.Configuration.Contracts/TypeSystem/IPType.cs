@@ -10,9 +10,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         Guid? BaseId { get; set; }
 
         Guid? GroupId { get; set; }
-
-        uint SystemId { get; set; }
-
+        
         string Name { get; set; }
 
         bool IsLink { get; set; }
