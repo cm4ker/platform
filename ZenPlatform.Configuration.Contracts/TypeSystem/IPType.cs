@@ -23,6 +23,8 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         bool IsDto { get; set; }
 
+        bool IsDbAffect { get; set; }
+
         bool IsPrimitive { get; }
 
         bool IsAbstract { get; }

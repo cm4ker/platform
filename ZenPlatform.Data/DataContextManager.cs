@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using ZenPlatform.QueryBuilder;
 
@@ -55,7 +56,7 @@ namespace ZenPlatform.Data
             
             if (!_contexts.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var context))
             {
-                context = new DataContext(_dbType, _connectionString);
+                context = new DataContext(_dbType, _connectionString, IsolationLevel.ReadCommitted);
                 _contexts.Add(Thread.CurrentThread.ManagedThreadId, context);
             }
 

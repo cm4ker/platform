@@ -49,9 +49,9 @@ namespace ZenPlatform.Compiler.Dnlib
                 var sig = new GenericInstMethodSig(typeArguments.Select(x => ((DnlibType) x).TypeRef.ToTypeSig())
                     .ToArray());
 
-                if(sig == null)
+                if (sig == null)
                     throw new Exception("sig is null");
-                
+
                 var generic = new MethodSpecUser(mdr, sig);
 
                 return new DnlibMethod(TypeSystem, generic, generic.ResolveMethodDef(), _declaringTR);

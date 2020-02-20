@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -19,8 +20,11 @@ using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Migration;
 using ZenPlatform.Compiler;
+using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.ConfigurationExample;
@@ -86,17 +90,19 @@ namespace ZenPlatform.Core.Environment
             var savedConfiguration = ConfigurationFactory.Create();
             IProject currentConfiguration = null;
             ;
-            using (var dataContext = new DataContext(config.DatabaseType, config.ConnectionString))
+            using (var dataContext =
+                new DataContext(config.DatabaseType, config.ConnectionString, IsolationLevel.ReadCommitted))
             {
                 var configStorage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME,
                     dataContext);
 
 
-                currentConfiguration = null;//Project.Load(configStorage);
+                currentConfiguration = null; //Project.Load(configStorage);
 
                 if (currentConfiguration == null)
                 {
-                    currentConfiguration = new Project(null, null);
+                    currentConfiguration = new Project(new ProjectMD(),
+                        new MDManager(new TypeManager(), new InMemoryUniqueCounter()));
                 }
             }
 
@@ -107,13 +113,13 @@ namespace ZenPlatform.Core.Environment
                 MigrationManager.Migrate(currentConfiguration, savedConfiguration);
 
 
-                var storage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME,
+                var storage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
                     this.DataContextManager.GetContext());
 
                 savedConfiguration.Save(storage);
             }
 
-
+            return;
             base.Initialize(config);
             _logger.Info("TEST Database '{0}' loaded.", Configuration.ProjectName);
 
