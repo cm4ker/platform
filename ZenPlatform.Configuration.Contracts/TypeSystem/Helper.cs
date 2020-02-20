@@ -86,12 +86,13 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
                     if (type.IsPrimitive)
                     {
                         var typeName = type.Name;
-                        
+
                         if (type is IPTypeSpec)
                             typeName = type.GetBase().Name;
-                        
+
                         yield return new ColumnSchemaDefinition(ColumnSchemaType.Value, type,
-                            propName, "", $"_{typeName}");}
+                            propName, "", $"_{typeName}");
+                    }
 
                     if (!type.IsPrimitive && !done)
                     {
@@ -112,6 +113,9 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         public static IObjectSetting GetSettings(this IPType ipType)
         {
+            if (ipType.IsTypeSpec)
+                return ipType.GetBase().GetSettings();
+            ;
             return ipType.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == ipType.Id);
         }
 
