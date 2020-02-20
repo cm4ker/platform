@@ -41,17 +41,17 @@ namespace ZenPlatform.Core.Querying.Model
         public QQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where,
             QFrom from) : base()
         {
-            Attach(orderBy);
+            Add(orderBy);
             OrderBy = orderBy;
-            Attach(select);
+            Add(select);
             Select = select;
-            Attach(having);
+            Add(having);
             Having = having;
-            Attach(groupBy);
+            Add(groupBy);
             GroupBy = groupBy;
-            Attach(where);
+            Add(where);
             Where = where;
-            Attach(from);
+            Add(from);
             From = from;
         }
 
@@ -98,7 +98,7 @@ namespace ZenPlatform.Core.Querying.Model
         public QSelect(List<QField> fields) : base()
         {
             foreach (var item in fields)
-                Attach(item);
+                Add(item);
             Fields = fields;
         }
 
@@ -131,9 +131,9 @@ namespace ZenPlatform.Core.Querying.Model
         public QFrom(IEnumerable<QFromItem> joins, QDataSource source) : base()
         {
             foreach (var item in joins)
-                Attach(item);
+                Add(item);
             Joins = joins;
-            Attach(source);
+            Add(source);
             Source = source;
         }
 
@@ -168,7 +168,7 @@ namespace ZenPlatform.Core.Querying.Model
         public QGroupBy(List<QExpression> expressions) : base()
         {
             foreach (var item in expressions)
-                Attach(item);
+                Add(item);
             Expressions = expressions;
         }
 
@@ -220,7 +220,7 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QWhere(QExpression expression) : base()
         {
-            Attach(expression);
+            Add(expression);
             Expression = expression;
         }
 
@@ -292,7 +292,7 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QAliasedDataSource(QDataSource parentSource, String alias) : base()
         {
-            Attach(parentSource);
+            Add(parentSource);
             ParentSource = parentSource;
             Alias = alias;
         }
@@ -328,7 +328,7 @@ namespace ZenPlatform.Core.Querying.Model
         public QCombinedDataSource(List<QDataSource> dataSources) : base()
         {
             foreach (var item in dataSources)
-                Attach(item);
+                Add(item);
             DataSources = dataSources;
         }
 
@@ -360,7 +360,7 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QNestedQuery(QQuery nested) : base()
         {
-            Attach(nested);
+            Add(nested);
             Nested = nested;
         }
 
@@ -412,7 +412,7 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QField(QItem element) : base()
         {
-            Attach(element);
+            Add(element);
             Element = element;
         }
 
@@ -648,9 +648,9 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QFromItem(QExpression condition, QDataSource joined, QJoinType joinType) : base()
         {
-            Attach(condition);
+            Add(condition);
             Condition = condition;
-            Attach(joined);
+            Add(joined);
             Joined = joined;
             JoinType = joinType;
         }
@@ -740,10 +740,10 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QCase(QExpression @else, List<QWhen> whens) : base()
         {
-            Attach(@else);
+            Add(@else);
             Else = @else;
             foreach (var item in whens)
-                Attach(item);
+                Add(item);
             Whens = whens;
         }
 
@@ -777,9 +777,9 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QWhen(QExpression then, QOperationExpression @when) : base()
         {
-            Attach(then);
+            Add(then);
             Then = then;
-            Attach(@when);
+            Add(@when);
             When = @when;
         }
 
@@ -813,9 +813,9 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QOperationExpression(QExpression left, QExpression right) : base()
         {
-            Attach(left);
+            Add(left);
             Left = left;
-            Attach(right);
+            Add(right);
             Right = right;
         }
 
@@ -1030,7 +1030,7 @@ namespace ZenPlatform.Core.Querying.Model
         public QCast(IPType ipType, QExpression baseExpression) : base()
         {
             IpType = ipType;
-            Attach(baseExpression);
+            Add(baseExpression);
             BaseExpression = baseExpression;
         }
 
