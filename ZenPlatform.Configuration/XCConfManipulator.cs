@@ -33,7 +33,7 @@ namespace ZenPlatform.Configuration
 
         public bool Equals(IProject a, IProject b)
         {
-            throw new NotImplementedException();
+            return false;
         }
     }
 

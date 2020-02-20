@@ -132,6 +132,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             oType.Name = _md.Name;
             oType.IsAsmAvaliable = true;
             oType.IsQueryAvaliable = true;
+            oType.IsDbAffect = true;
             oType.GroupId = _md.ObjectId;
 
             oType.ComponentId = _com.Info.ComponentId;
