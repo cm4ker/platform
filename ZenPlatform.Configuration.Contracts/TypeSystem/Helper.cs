@@ -54,6 +54,9 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         public static bool IsAssignableFrom(this IPType ipTypeA, IPType ipTypeB)
         {
+            if (ipTypeA.Id == ipTypeB.Id)
+                return true;
+            
             if (ipTypeA.BaseId == null)
                 return false;
 

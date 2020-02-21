@@ -258,7 +258,7 @@ namespace ZenPlatform.Core.Querying
                         right.EmitValueColumn(type);
                     }
 
-                    if (!refEmitted && type.IsObject)
+                    if (!refEmitted && type.IsLink)
                     {
                         left.EmitRefColumn();
                         right.EmitRefColumn();
