@@ -51,99 +51,12 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
             var dtoPrivate = builder.FindField("_dto") ?? throw new Exception("You must declare private field _dto");
 
+            var mrg = ts.FindType($"{@namespace}.{set.GetManagerType().Name}");
+            var mrgGet = mrg.FindMethod("Get", sb.Guid);
+
             foreach (var prop in type.Properties)
             {
-                bool propertyGenerated = false;
-
-                var propName = prop.Name;
-
-                var propType = (prop.Types.Count() > 1)
-                    ? sb.Object
-                    : prop.Types.First().ConvertType(sb);
-
-                var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
-                var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
-
-                // var valueParam = propBuilder.setMethod.Parameters[0];
-
-                if (prop.Types.Count() > 1)
-                {
-                    var typeField = prop.GetObjSchema()
-                        .First(x => x.SchemaType == ColumnSchemaType.Type);
-                    var dtoTypeProp = dtoType.FindProperty(typeField.FullName);
-
-                    foreach (var ctype in prop.Types)
-                    {
-                        ColumnSchemaDefinition dtoPropSchema;
-
-                        if (ctype.IsLink)
-                        {
-                            dtoPropSchema = prop.GetObjSchema()
-                                .First(x => x.SchemaType == ColumnSchemaType.Ref);
-                        }
-                        else
-                        {
-                            dtoPropSchema = prop.GetObjSchema().First(x => x.PlatformIpType == ctype);
-                        }
-
-                        var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
-
-                        var compileType = ctype.ConvertType(sb);
-
-                        var label = getBuilder.DefineLabel();
-
-                        //GETTER
-                        getBuilder
-                            .LdArg_0()
-                            .LdFld(dtoPrivate)
-                            .EmitCall(dtoTypeProp.Getter)
-                            .LdcI4((int) ctype.GetSettings().SystemId)
-                            .BneUn(label)
-                            .LdArg_0()
-                            .LdFld(dtoPrivate)
-                            .EmitCall(dtoProp.Getter);
-
-                        if (compileType.IsValueType)
-                            getBuilder.Box(compileType);
-
-                        getBuilder
-                            .Ret()
-                            .MarkLabel(label);
-                    }
-
-                    getBuilder.Throw(sb.Exception);
-
-
-                    // getBuilder.Ret();
-                    // setBuilder.Ret();
-                }
-                else
-                {
-                    if (!prop.IsSelfLink)
-                    {
-                        var schema = prop.GetObjSchema()
-                            .First(x => x.SchemaType == ColumnSchemaType.NoSpecial);
-
-                        var dtofield = dtoType.FindProperty(schema.FullName);
-
-                        getBuilder
-                            .LdArg_0()
-                            .LdFld(dtoPrivate)
-                            .EmitCall(dtofield.Getter)
-                            .Ret();
-                    }
-                    else
-                    {
-                        var mrg = ts.FindType($"{@namespace}.{mrgType.Name}");
-                        var mrgGet = mrg.FindMethod("Get", sb.Guid);
-
-                        getBuilder
-                            .LdArg_0()
-                            .EmitCall(builder.FindProperty("Id").Getter)
-                            .EmitCall(mrgGet)
-                            .Ret();
-                    }
-                }
+                SharedGenerators.EmitLinkProperty(builder, prop, sb, dtoType, dtoPrivate, ts, mrgGet, GetNamespace());
             }
         }
 

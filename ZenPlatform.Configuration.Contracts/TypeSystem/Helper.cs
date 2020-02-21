@@ -112,6 +112,9 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         public static IObjectSetting GetSettings(this IPType ipType)
         {
+            if (ipType.IsTypeSpec)
+                return ipType.GetBase().GetSettings();
+
             return ipType.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == ipType.Id);
         }
 
