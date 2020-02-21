@@ -86,12 +86,13 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
                     if (type.IsPrimitive)
                     {
                         var typeName = type.Name;
-                        
+
                         if (type is IPTypeSpec)
                             typeName = type.GetBase().Name;
-                        
+
                         yield return new ColumnSchemaDefinition(ColumnSchemaType.Value, type,
-                            propName, "", $"_{typeName}");}
+                            propName, "", $"_{typeName}");
+                    }
 
                     if (!type.IsPrimitive && !done)
                     {
