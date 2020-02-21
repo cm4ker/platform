@@ -27,7 +27,7 @@ namespace ZenPlatform.Compiler
         {
             _cu = cu;
             _stb = stb;
-            _types = _cu.SelectMany(x => x.Entityes).ToList();
+            _types = _cu.GetNodes<TypeEntity>().ToList();
 
             _props = new Dictionary<string, List<IProperty>>();
             _methods = new Dictionary<string, List<IMethod>>();
