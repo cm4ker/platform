@@ -163,4 +163,14 @@ namespace ZenPlatform.Shared.Tree
             return _childs.IndexOf(node);
         }
     }
+
+    public class OneWayNode
+    {
+        public OneWayNode()
+        {
+            Childs = new List<OneWayNode>();
+        }
+
+        public List<OneWayNode> Childs { get; }
+    }
 }

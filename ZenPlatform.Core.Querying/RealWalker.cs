@@ -329,6 +329,12 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
+        public override object VisitQConst(QConst node)
+        {
+            _qm.ld_const(node.Value);
+            return null;
+        }
+
         public override object VisitQFromItem(QFromItem node)
         {
             Visit(node.Joined);

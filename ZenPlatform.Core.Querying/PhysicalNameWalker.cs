@@ -26,6 +26,12 @@ namespace ZenPlatform.Core.Querying
             return base.VisitQObjectTable(node);
         }
 
+        public override object VisitQTable(QTable node)
+        {
+            node.SetDbNameIfEmpty($"{node.Table.GetSettings().DatabaseName}");
+            return base.VisitQTable(node);
+        }
+
         public override object VisitQAliasedDataSource(QAliasedDataSource node)
         {
             node.SetDbNameIfEmpty($"T{_tableCount++}");
