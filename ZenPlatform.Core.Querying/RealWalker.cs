@@ -154,9 +154,9 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQObjectTable(QObjectTable node)
         {
-            var ot = node.ObjectIpType;
+            var ot = node.ObjectType;
 
-            ot.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
+            ot.GetComponent().ComponentImpl.QueryInjector.InjectTypeSource(_qm, ot, null);
 
             if (!_hasAlias)
                 _qm.@as(node.GetDbName());
@@ -164,6 +164,22 @@ namespace ZenPlatform.Core.Querying
             _hasAlias = false;
 
             return base.VisitQObjectTable(node);
+        }
+
+
+        public override object VisitQTable(QTable node)
+        {
+            var ot = node.Table;
+
+            ot.GetParent().GetComponent().ComponentImpl.QueryInjector.InjectTableSource(_qm, ot, null);
+
+            if (!_hasAlias)
+                _qm.@as(node.GetDbName());
+
+            _hasAlias = false;
+
+
+            return null;
         }
 
         private enum TypesComparerOp
@@ -331,7 +347,14 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitQConst(QConst node)
         {
+            string alias = "";
+            if (_hasAlias)
+                alias = (string) _qm.pop();
             _qm.ld_const(node.Value);
+
+            if (_hasAlias)
+                _qm.@as(alias);
+            _hasAlias = false;
             return null;
         }
 
@@ -402,7 +425,7 @@ namespace ZenPlatform.Core.Querying
         {
             var schema = node.Property.GetDbSchema();
 
-            LoadNamedSource(node.ObjectTable.GetDbName());
+            LoadNamedSource(node.PlatformSource.GetDbName());
 
             GenColumn(schema);
 

@@ -102,7 +102,7 @@
     </Syntax>
     <Syntax Name="QSourceFieldExpression" Base="QField">
         <Arguments>
-            <Single Name="ObjectTable" Type="QObjectTable" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="PlatformSource" Type="QPlatformDataSource" PassBase="true" DenyChildrenFill="true"/>
             <Single Name="Property" Type="IPProperty" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>

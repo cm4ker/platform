@@ -124,6 +124,11 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
             return table.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == table.Id);
         }
 
+        public static IPType GetParent(this ITable table)
+        {
+            return table.TypeManager.FindType(table.ParentId);
+        }
+
         public static IEnumerable<ColumnSchemaDefinition> GetDbSchema(this IPProperty prop)
         {
             return GetPropertySchemas(prop.TypeManager, prop.GetSettings().DatabaseName, prop.Types.ToList());

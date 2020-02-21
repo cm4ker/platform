@@ -158,11 +158,15 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void ld_object_table(string tableName)
         {
-            var table = _logicStack.PopDataSource().FindTable(tableName);
+            var ds = _logicStack.PopDataSource();
+            var table = ds.FindTable(tableName);
 
             _logicStack.Push(table);
             if (CurrentScope != null)
+            {
                 CurrentScope.ScopedDataSources.Add(table);
+                CurrentScope.ScopedDataSources.Remove(ds);
+            }
         }
 
         /// <summary>
