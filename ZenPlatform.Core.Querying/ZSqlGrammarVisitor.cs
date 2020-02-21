@@ -113,11 +113,12 @@ namespace ZenPlatform.Core.Querying
         {
             Visit(context.component_name());
             Visit(context.object_name());
-            
+
             _stack.ld_object_table(context.table_name().GetText());
 
-            Visit(context.table_alias());
-            
+            if (context.table_alias() != null)
+                Visit(context.table_alias());
+
             return null;
         }
 
