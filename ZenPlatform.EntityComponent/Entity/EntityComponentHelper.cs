@@ -45,10 +45,22 @@ namespace ZenPlatform.EntityComponent.Entity
         public static string GetObjectRowFullClassName(this ITable table)
         {
             var type = table.TypeManager.FindType(table.ParentId);
-            return $"{type.GetNamespace()}.RWRowDtoWrapper{type.Name}_{table.Name}";
+            return $"{type.GetNamespace()}.{table.GetObjectRowClassName()}";
         }
         
         public static string GetObjectRowClassName(this ITable table)
+        {
+            var type = table.TypeManager.FindType(table.ParentId);
+            return $"RWRowDtoWrapper{type.Name}_{table.Name}";
+        }
+        
+        public static string GetLinkRowFullClassName(this ITable table)
+        {
+            var type = table.TypeManager.FindType(table.ParentId);
+            return $"{type.GetNamespace()}.{table.GetLinkRowClassName()}";
+        }
+        
+        public static string GetLinkRowClassName(this ITable table)
         {
             var type = table.TypeManager.FindType(table.ParentId);
             return $"RWRowDtoWrapper{type.Name}_{table.Name}";

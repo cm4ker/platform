@@ -82,7 +82,6 @@ namespace ZenPlatform.EntityComponent.Entity
         /// </summary>
         /// <param name="ipType">Тип</param>
         /// <param name="root">Корень проекта</param>
-
         public void StageServer(IPType ipType, Node root)
         {
             var cu = new CompilationUnit(null, new UsingList(), new EntityList(),
@@ -112,8 +111,16 @@ namespace ZenPlatform.EntityComponent.Entity
                     TypeBody.Empty));
 
             if (ipType.IsLink)
+            {
+                foreach (var table in ipType.Tables)
+                {
+                    ns.AddEntity(new LinkTableRowGenerationTask(ipType, table, CompilationMode.Server, _component,
+                        table.Name, TypeBody.Empty));
+                }
+
                 ns.AddEntity(new LinkGenerationTask(ipType, CompilationMode.Server, _component, ipType.Name,
                     TypeBody.Empty));
+            }
 
             if (ipType.IsObject)
             {

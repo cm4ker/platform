@@ -53,7 +53,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
             foreach (var prop in Table.Properties)
             {
-                SharedDtoGenerators.EmitProperty(builder, prop, sb);
+                SharedGenerators.EmitDtoProperty(builder, prop, sb);
             }
         }
     }
