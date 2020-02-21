@@ -69,14 +69,14 @@ namespace ZenPlatform.Test.Tools
  [ClientCall] 
  public string GetUserNameServer()
  { 
-     // Entity.Invoice i = $Entity.Invoice.Create();
-     // Entity.Store s = $Entity.Store.Create();
+     //Entity.Invoice i = $Entity.Invoice.Create();
+     Entity.Store s = $Entity.Store.Create();
      //
      // i.Name = ""My custom name"";
      // i.CompositeProperty = ""Привет Костя"";
      //
-     // s.Name = ""Souths park"";
-     // s.Save();    
+     s.Name = ""Souths park"";
+     s.Save();    
      //
      // i.Store = s.Link;
      //

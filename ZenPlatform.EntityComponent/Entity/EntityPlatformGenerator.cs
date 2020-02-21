@@ -365,7 +365,7 @@ namespace ZenPlatform.EntityComponent.Entity
                     type.GetObjectType().Name,
                     (n, e) => { });
 
-                mrgLeaf.Attach(root);
+                root.Attach(mrgLeaf);
 
                 var createMethod = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Shared,
                     "Create", (n, e) =>
@@ -374,7 +374,7 @@ namespace ZenPlatform.EntityComponent.Entity
                         e.EmitCall(mrg.FindMethod("Create"), call.IsStatement);
                     });
 
-                createMethod.Attach(mrgLeaf);
+                mrgLeaf.Attach(createMethod);
             }
 
             manager.Register(root);

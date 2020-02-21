@@ -101,6 +101,20 @@ namespace ZenPlatform.Shared.Tree
             }
         }
 
+        public virtual IEnumerable<T> GetNodes<T>() where T : Node
+        {
+            foreach (var child in Childs)
+            {
+                if (child is T c) yield return c;
+
+                if (child != null)
+                    foreach (var childResult in child.GetNodes<T>())
+                    {
+                        yield return childResult;
+                    }
+            }
+        }
+
         /// <summary>
         /// Получить дочерний элемент по типу
         /// </summary>
