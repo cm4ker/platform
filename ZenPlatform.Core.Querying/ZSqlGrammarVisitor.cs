@@ -111,9 +111,13 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitTable_property(ZSqlGrammarParser.Table_propertyContext context)
         {
-            base.VisitTable_property(context);
+            Visit(context.component_name());
+            Visit(context.object_name());
+            
             _stack.ld_object_table(context.table_name().GetText());
 
+            Visit(context.table_alias());
+            
             return null;
         }
 

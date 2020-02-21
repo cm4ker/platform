@@ -665,13 +665,13 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QSourceFieldExpression : QField
     {
-        public QSourceFieldExpression(QObjectTable objectTable, IPProperty property): base(objectTable)
+        public QSourceFieldExpression(QPlatformDataSource platformSource, IPProperty property): base(platformSource)
         {
-            ObjectTable = objectTable;
+            PlatformSource = platformSource;
             Property = property;
         }
 
-        public QObjectTable ObjectTable
+        public QPlatformDataSource PlatformSource
         {
             get;
             set;
@@ -686,12 +686,12 @@ namespace ZenPlatform.Core.Querying.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QSourceFieldExpression ) obj ;  return  ( Compare ( this . ObjectTable ,  node . ObjectTable ) && Compare ( this . Property ,  node . Property ) ) ; 
+                return false; var  node  =  ( QSourceFieldExpression ) obj ;  return  ( Compare ( this . PlatformSource ,  node . PlatformSource ) && Compare ( this . Property ,  node . Property ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (ObjectTable == null ? 0 : ObjectTable.GetHashCode()) ^ (Property == null ? 0 : Property.GetHashCode());
+            return (PlatformSource == null ? 0 : PlatformSource.GetHashCode()) ^ (Property == null ? 0 : Property.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
