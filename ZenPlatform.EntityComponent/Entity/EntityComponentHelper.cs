@@ -63,7 +63,7 @@ namespace ZenPlatform.EntityComponent.Entity
         public static string GetLinkRowClassName(this ITable table)
         {
             var type = table.TypeManager.FindType(table.ParentId);
-            return $"RWRowDtoWrapper{type.Name}_{table.Name}";
+            return $"RORowDtoWrapper{type.Name}_{table.Name}";
         }
         
         public static string GetObjectRowCollectionClassName(this ITable table)

@@ -1,8 +1,6 @@
-using System;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -10,9 +8,9 @@ using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.EntityComponent.Entity.Generation
 {
-    public class ObjectTableRowGenerationTask : ComponentAstTask, IEntityGenerationTask
+    public class LinkTableRowGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
-        public ObjectTableRowGenerationTask(
+        public LinkTableRowGenerationTask(
             IPType objectType,
             ITable table,
             CompilationMode compilationMode, IComponent component, string name, TypeBody tb)
@@ -27,7 +25,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
         public ITypeBuilder Stage0(IAssemblyBuilder asm)
         {
-            return asm.DefineInstanceType(this.GetNamespace(), Table.GetObjectRowClassName());
+            return asm.DefineInstanceType(this.GetNamespace(), Table.GetLinkRowClassName());
         }
 
         public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)

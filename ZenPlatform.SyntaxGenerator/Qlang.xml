@@ -61,7 +61,16 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QObjectTable" Base="QDataSource"/>
+    <Syntax IsAbstract="true" Name="QPlatformDataSource" Base="QDataSource" />
+    
+    <Syntax Name="QObjectTable" Base="QPlatformDataSource"/>
+
+    <Syntax Name="QTable" Base="QPlatformDataSource">
+        <Arguments>
+            <Single Name="ObjectTable" Type="QObjectTable"/>
+            <Single Name="Table" Type="ITable" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
     <!-- End DataSource -->
 
     <!-- Fields -->
@@ -94,7 +103,7 @@
     <Syntax Name="QSourceFieldExpression" Base="QField">
         <Arguments>
             <Single Name="ObjectTable" Type="QObjectTable" PassBase="true" DenyChildrenFill="true"/>
-            <Single Name="Property" Type="IXCObjectProperty" DenyChildrenFill="true"/>
+            <Single Name="Property" Type="IPProperty" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QSelectExpression" Base="QField">
@@ -210,7 +219,7 @@
 
     <Syntax Name="QCast" Base="QExpression">
         <Arguments>
-            <Single Name="Type" Type="IXCType" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="IPType" DenyChildrenFill="true"/>
             <Single Name="BaseExpression" Type="QExpression"/>
         </Arguments>
     </Syntax>

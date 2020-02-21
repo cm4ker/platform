@@ -99,6 +99,24 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
+        public override object VisitLiteral(ZSqlGrammarParser.LiteralContext context)
+        {
+            if (context.STRING_LITERAL() != null)
+                _stack.ld_const(context.STRING_LITERAL().GetText());
+            if (context.NUMERIC_LITERAL() != null)
+                _stack.ld_const(double.Parse(context.NUMERIC_LITERAL().GetText()));
+
+            return base.VisitLiteral(context);
+        }
+
+        public override object VisitTable_property(ZSqlGrammarParser.Table_propertyContext context)
+        {
+            base.VisitTable_property(context);
+            _stack.ld_object_table(context.table_name().GetText());
+
+            return null;
+        }
+
         public override object VisitObject_name(ZSqlGrammarParser.Object_nameContext context)
         {
             _stack.ld_object_type(context.GetText());

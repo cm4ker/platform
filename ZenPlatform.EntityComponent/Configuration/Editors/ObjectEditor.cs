@@ -320,7 +320,8 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
                 tProp.Name = prop.Name;
                 tProp.Id = prop.Guid;
                 tProp.ParentId = oType.Id;
-
+                tProp.IsReadOnly = true;
+                
                 foreach (var pType in prop.Types)
                 {
                     var tPropType = _inf.TypeManager.PropertyType();
@@ -331,6 +332,43 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
                 }
 
                 _inf.TypeManager.Register(tProp);
+            }
+
+
+            foreach (var table in _md.Tables)
+            {
+                var tTable = _inf.TypeManager.Table();
+                tTable.Name = table.Name;
+                tTable.ParentId = _md.LinkId;
+                tTable.GroupId = table.Guid;
+                tTable.Id = Guid.NewGuid();
+                
+                _inf.TypeManager.Register(tTable);
+
+                var sysId = _inf.Counter.GetId(tTable.Id);
+
+                _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                    {ObjectId = tTable.Id, SystemId = sysId, DatabaseName = $"Tbl_{sysId}"});
+
+                foreach (var prop in table.Properties)
+                {
+                    var tProp = _inf.TypeManager.Property();
+                    tProp.Name = prop.Name;
+                    tProp.Id = prop.Guid;
+                    tProp.ParentId = tTable.Id;
+                    tProp.IsReadOnly = true;
+
+                    foreach (var pType in prop.Types)
+                    {
+                        var tPropType = _inf.TypeManager.PropertyType();
+                        tPropType.PropertyParentId = tTable.Id;
+                        tPropType.PropertyId = tProp.Id;
+                        tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
+                        _inf.TypeManager.Register(tPropType);
+                    }
+
+                    _inf.TypeManager.Register(tProp);
+                }
             }
 
             _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting

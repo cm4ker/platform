@@ -156,6 +156,15 @@ namespace ZenPlatform.Core.Querying.Model
                 CurrentScope.ScopedDataSources.Add(ds);
         }
 
+        public void ld_object_table(string tableName)
+        {
+            var table = _logicStack.PopDataSource().FindTable(tableName);
+
+            _logicStack.Push(table);
+            if (CurrentScope != null)
+                CurrentScope.ScopedDataSources.Add(table);
+        }
+
         /// <summary>
         /// Записать источник данных. Ссылка на него полностью получается из метаданных 
         /// </summary>
