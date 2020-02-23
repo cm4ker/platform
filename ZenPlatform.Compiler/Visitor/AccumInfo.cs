@@ -47,6 +47,33 @@ namespace ZenPlatform.Compiler.Visitor
         }
     }
 
+    public class JoinAst : AstWalker<object>
+    {
+        private Dictionary<string, SyntaxNode> _ns = new Dictionary<string, SyntaxNode>();
+
+
+        public override object VisitNamespaceDeclaration(NamespaceDeclaration arg)
+        {
+            var fullNs = string.Concat(".", arg.GetNamespace(), arg.Name);
+
+            base.VisitNamespaceDeclaration(arg);
+
+            if (_ns.TryGetValue(fullNs, out var sn))
+            {
+                foreach (var child in arg.Childs)
+                {
+                    sn.Attach(child);
+                }
+            }
+            else
+            {
+                _ns.Add(fullNs, arg);
+            }
+
+            return null;
+        }
+    }
+
 
     /// <summary>
     /// Визитор для заполнения классов

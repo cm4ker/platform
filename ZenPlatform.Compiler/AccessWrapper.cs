@@ -17,15 +17,18 @@ namespace ZenPlatform.Compiler
     public class SyntaxTreeMemberAccessProvider
     {
         private readonly CompilationUnitList _cu;
+        private readonly Root _root;
         private readonly SystemTypeBindings _stb;
         private List<TypeEntity> _types;
 
         private Dictionary<string, List<IProperty>> _props;
         private Dictionary<string, List<IMethod>> _methods;
 
-        public SyntaxTreeMemberAccessProvider(CompilationUnitList cu, SystemTypeBindings stb)
+        public SyntaxTreeMemberAccessProvider(Root root, SystemTypeBindings stb)
         {
-            _cu = cu;
+            _cu = root.Units;
+            _root = root;
+
             _stb = stb;
             _types = _cu.GetNodes<TypeEntity>().ToList();
 
@@ -33,6 +36,38 @@ namespace ZenPlatform.Compiler
             _methods = new Dictionary<string, List<IMethod>>();
 
             RegisterStatic();
+        }
+
+        public IType GetType(SingleTypeSyntax type)
+        {
+            var bodyUsings = type.FirstParent<TypeBody>().Usings;
+            var cuUsings = type.FirstParent<CompilationUnit>().Usings;
+            /*
+             SomeClass a = expr.From.Another.Library;
+             
+             
+             Resolve plan: 
+                            1) Try to resolve SomeClass from Ast if yes -> get class
+                            2) Try to resolve SomeClass from Assemblies if yes -> get class
+                            3) 
+             */
+
+            IType result;
+            ISymbol symbol = null;
+
+            foreach (var u in bodyUsings)
+            {
+                if (u is UsingDeclaration ud)
+                    symbol = _root.SymbolTable.Find($"{ud.Name}.{type.TypeName}", SymbolType.Type,
+                        SymbolScopeBySecurity.User);
+
+
+                if (symbol != null)
+                {
+                    result = (IType) symbol.CodeObject;
+                    break;
+                }
+            }
         }
 
         public IMethod GetMethod(TypeSyntax type, string name, TypeSyntax[] args)
@@ -149,7 +184,6 @@ namespace ZenPlatform.Compiler
             return _types.FirstOrDefault(x =>
                 (!string.IsNullOrEmpty(x.GetNamespace()) ? x.GetNamespace() + "." : "") + x.Name == name);
         }
-
 
         private void RegisterStatic()
         {

@@ -79,6 +79,18 @@ namespace ZenPlatform.Compiler.Visitor
             return null;
         }
 
+        public override object VisitNamespaceDeclaration(NamespaceDeclaration arg)
+        {
+            var st = arg.FirstParent<IScoped>()?.SymbolTable;
+ 
+            if (arg.SymbolTable == null)
+                arg.SymbolTable = new SymbolTable(st);
+
+            arg.SymbolTable.Clear();
+
+            return base.VisitNamespaceDeclaration(arg);
+        }
+
         public override object VisitTypeBody(TypeBody obj)
         {
             var st = obj.FirstParent<IScoped>()?.SymbolTable;
@@ -89,7 +101,7 @@ namespace ZenPlatform.Compiler.Visitor
             obj.SymbolTable.Clear();
             return base.VisitTypeBody(obj);
         }
-
+        
         public override object VisitModule(Module obj)
         {
             var st = obj.FirstParent<IScoped>()?.SymbolTable;

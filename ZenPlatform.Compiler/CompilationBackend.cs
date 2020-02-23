@@ -66,23 +66,25 @@ namespace ZenPlatform.Compiler
 
         private IAssemblyBuilder CompileTree(ZSharpParser pTree)
         {
-            IAssemblyPlatform ap = new CecilAssemblyPlatform();
-
-            var ab = ap.AsmFactory.CreateAssembly(ap.TypeSystem, "Debug", new Version(1, 0));
-
-            ZLanguageVisitor v = new ZLanguageVisitor();
-            var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
-
-            module.PrintPretty("", true);
-
-            AstScopeRegister.Apply(module);
-
-            var prm = new GeneratorParameters(new CompilationUnitList {module}, ab, CompilationMode.Client,
-                SqlDatabaseType.SqlServer, _project);
-
-            Generator g = new Generator(prm);
-
-            return ab;
+            // IAssemblyPlatform ap = new CecilAssemblyPlatform();
+            //
+            // var ab = ap.AsmFactory.CreateAssembly(ap.TypeSystem, "Debug", new Version(1, 0));
+            //
+            // ZLanguageVisitor v = new ZLanguageVisitor();
+            // var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
+            //
+            // module.PrintPretty("", true);
+            //
+            // AstScopeRegister.Apply(module);
+            //
+            // var prm = new GeneratorParameters(new CompilationUnitList {module}, ab, CompilationMode.Client,
+            //     SqlDatabaseType.SqlServer, _project);
+            //
+            // Generator g = new Generator(prm);
+            //
+            // return ab;
+            
+            throw new NotImplementedException();
         }
 
         private ITokenStream CreateInputStream(Stream input)

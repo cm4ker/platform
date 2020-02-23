@@ -251,7 +251,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class NamespaceDeclaration : SyntaxNode
+    public partial class NamespaceDeclaration : SyntaxNode, IScoped
     {
         public NamespaceDeclaration(ILineInfo lineInfo, String name, UsingList usings, EntityList entityes, NamespaceDeclarationList namespaceDeclarations): base(lineInfo)
         {
@@ -293,6 +293,12 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitNamespaceDeclaration(this);
+        }
+
+        public SymbolTable SymbolTable
+        {
+            get;
+            set;
         }
     }
 }

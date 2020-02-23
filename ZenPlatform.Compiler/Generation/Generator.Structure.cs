@@ -31,7 +31,7 @@ namespace ZenPlatform.Compiler.Generation
             if (_mode == CompilationMode.Server && _conf != null)
                 _serviceScope = new ServerAssemblyServiceScope(_asm);
 
-            _map = new SyntaxTreeMemberAccessProvider(_cus, _bindings);
+            _map = new SyntaxTreeMemberAccessProvider(_root, _bindings);
 
             BuildInfrastructure();
             BuildStructure();

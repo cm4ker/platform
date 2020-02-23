@@ -146,7 +146,7 @@ namespace ZenPlatform.Compiler.Helpers
                     args[i] = gts.Args[i].ToClrType(context);
                 }
 
-                return context.FindType($@"{gts.TypeName}`{gts.Args.Count}");
+                return context.FindType($@"{gts.TypeName}`{gts.Args.Count}").MakeGenericType(args);
             }
             else if (typeSyntax is PrimitiveTypeSyntax ptn)
             {
