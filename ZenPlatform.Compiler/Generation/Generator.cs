@@ -22,6 +22,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private readonly IProject _conf;
 
+        private Root _root;
         private CompilationUnitList _cus;
 
         private ServerAssemblyServiceScope _serviceScope;
@@ -35,7 +36,8 @@ namespace ZenPlatform.Compiler.Generation
         {
             _parameters = parameters;
 
-            _cus = parameters.Units;
+            _root = parameters.Root;
+            _cus = parameters.Root.Units;
             _asm = parameters.Builder;
             _ts = _asm.TypeSystem;
 

@@ -24,7 +24,7 @@
         </Arguments>
     </Syntax>
     
-    <Syntax Name="NamespaceDeclaration">
+    <Syntax Name="NamespaceDeclaration" IsScoped="true">
         <Arguments>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
             <List Name="Usings" Type="UsingList"/>

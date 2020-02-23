@@ -83,6 +83,23 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                 TypeBody.SymbolTable.Add(new Property(null, propName, propType.ToAstType()), codeObj.prop);
             }
 
+            foreach (var table in set.Tables)
+            {
+                var full = $"{GetNamespace()}.{table.GetObjectRowCollectionClassName()}";
+                var t = ts.FindType(full);
+                var dtoTableProp = dtoType.FindProperty(table.Name);
+
+                var prop = builder.DefineProperty(t, table.Name, true, false, false);
+                prop.getMethod.Generator
+                    .LdArg_0()
+                    .LdFld(dtoPrivate)
+                    .EmitCall(dtoTableProp.Getter)
+                    .NewObj(t.FindConstructor(dtoTableProp.PropertyType))
+                    .Ret();
+
+                TypeBody.SymbolTable.Add(new Property(null, table.Name, t.ToAstType()), prop.prop);
+            }
+
             var saveBuilder = builder.DefineMethod("Save", true, false, false);
 
             TypeBody.SymbolTable.Add(
@@ -113,20 +130,6 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                 SharedGenerators.EmitObjectProperty(builder, prop, sb, dtoType, dtoPrivate, ts, mrgGet, GetNamespace());
             }
 
-            foreach (var table in set.Tables)
-            {
-                var full = $"{GetNamespace()}.{table.GetObjectRowCollectionClassName()}";
-                var t = ts.FindType(full);
-                var dtoTableProp = dtoType.FindProperty(table.Name);
-
-                var prop = builder.DefineProperty(t, table.Name, true, false, false);
-                prop.getMethod.Generator
-                    .LdArg_0()
-                    .LdFld(dtoPrivate)
-                    .EmitCall(dtoTableProp.Getter)
-                    .NewObj(t.FindConstructor(dtoTableProp.PropertyType))
-                    .Ret();
-            }
 
             var saveBuilder = (IMethodBuilder) builder.FindMethod("Save");
 

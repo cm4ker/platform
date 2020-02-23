@@ -76,6 +76,7 @@ namespace ZenPlatform.Test.Tools
      // i.CompositeProperty = ""Привет Костя"";
      //
      s.Name = ""Souths park"";
+     Entity.ObjectExampleTable table = s.ExampleTable;
      s.Save();    
      //
      // i.Store = s.Link;

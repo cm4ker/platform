@@ -131,7 +131,7 @@ namespace ZenPlatform.EntityComponent.Entity
 
                     ns.AddEntity(new ObjectTableCollectionGenerationTask(ipType, table, CompilationMode.Server,
                         _component,
-                        table.Name, TypeBody.Empty));
+                        table.Name+"Object", TypeBody.Empty));
                 }
 
                 ns.AddEntity(new ObjectGenerationTask(ipType, CompilationMode.Server, _component, ipType.Name,

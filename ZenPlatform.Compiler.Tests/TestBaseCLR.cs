@@ -77,7 +77,7 @@ namespace ZenPlatform.Compiler.Tests
 
             AstScopeRegister.Apply(r);
 
-            var gp = new GeneratorParameters(r.Units, asm, CompilationMode.Server,
+            var gp = new GeneratorParameters(r, asm, CompilationMode.Server,
                 SqlDatabaseType.SqlServer, null);
 
             var gen = new Generator(gp);
@@ -109,7 +109,7 @@ namespace ZenPlatform.Compiler.Tests
             AstScopeRegister.Apply(r);
             LoweringOptimizer.Apply(asm.TypeSystem, r);
 
-            var gp = new GeneratorParameters(r.Units, asm, CompilationMode.Server,
+            var gp = new GeneratorParameters(r, asm, CompilationMode.Server,
                 SqlDatabaseType.SqlServer, null);
 
             var gen = new Generator(gp);
