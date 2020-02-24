@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -23,13 +24,15 @@ namespace ZenPlatform.Compiler
 
         private Dictionary<string, List<IProperty>> _props;
         private Dictionary<string, List<IMethod>> _methods;
+        private ITypeSystem _ts;
 
-        public SyntaxTreeMemberAccessProvider(Root root, SystemTypeBindings stb)
+        public SyntaxTreeMemberAccessProvider(Root root, ITypeSystem ts)
         {
             _cu = root.Units;
             _root = root;
 
-            _stb = stb;
+            _ts = ts;
+            _stb = ts.GetSystemBindings();
             _types = _cu.GetNodes<TypeEntity>().ToList();
 
             _props = new Dictionary<string, List<IProperty>>();
@@ -38,36 +41,94 @@ namespace ZenPlatform.Compiler
             RegisterStatic();
         }
 
+        public IType GetType(TypeSyntax typeSyntax)
+        {
+            if (typeSyntax is SingleTypeSyntax stn)
+            {
+                return GetType(stn);
+            }
+            else if (typeSyntax is GenericTypeSyntax gts)
+            {
+                IType[] args = new IType[gts.Args.Count];
+
+                for (int i = 0; i < gts.Args.Count; i++)
+                {
+                    args[i] = GetType(gts.Args[i]);
+                }
+
+                //TODO: return resolved type
+            }
+            else if (typeSyntax is PrimitiveTypeSyntax ptn)
+            {
+                return ptn.Kind switch
+                {
+                    TypeNodeKind.Boolean => _stb.Boolean,
+                    TypeNodeKind.Int => _stb.Int,
+                    TypeNodeKind.Char => _stb.Char,
+                    TypeNodeKind.Double => _stb.Double,
+                    TypeNodeKind.String => _stb.String,
+                    TypeNodeKind.Byte => _stb.Byte,
+                    TypeNodeKind.Object => _stb.Object,
+                    TypeNodeKind.Void => _stb.Void,
+                    TypeNodeKind.Session => _stb.Session,
+                    TypeNodeKind.Context => _ts.FindType<PlatformContext>(),
+                    _ => throw new Exception($"This type is not primitive {ptn.Kind}")
+                };
+            }
+
+            else if (typeSyntax is ArrayTypeSyntax atn)
+            {
+                return GetType(atn.ElementType).MakeArrayType();
+            }
+
+            else if (typeSyntax is UnionTypeSyntax utn)
+            {
+                throw new NotImplementedException();
+            }
+
+            throw new Exception("Type not resolved");
+        }
+
+
         public IType GetType(SingleTypeSyntax type)
         {
             var bodyUsings = type.FirstParent<TypeBody>().Usings;
             var cuUsings = type.FirstParent<CompilationUnit>().Usings;
-            /*
-             SomeClass a = expr.From.Another.Library;
-             
-             
-             Resolve plan: 
-                            1) Try to resolve SomeClass from Ast if yes -> get class
-                            2) Try to resolve SomeClass from Assemblies if yes -> get class
-                            3) 
-             */
 
-            IType result;
-            ISymbol symbol = null;
-
-            foreach (var u in bodyUsings)
+            IType VisitUsingList(UsingList list)
             {
-                if (u is UsingDeclaration ud)
-                    symbol = _root.SymbolTable.Find($"{ud.Name}.{type.TypeName}", SymbolType.Type,
-                        SymbolScopeBySecurity.User);
+                IType result = null;
+                ISymbol symbol = null;
 
-
-                if (symbol != null)
+                foreach (var u in list)
                 {
-                    result = (IType) symbol.CodeObject;
-                    break;
+                    if (u is UsingDeclaration ud)
+                        symbol = _root.SymbolTable.Find($"{ud.Name}.{type.TypeName}", SymbolType.Type,
+                            SymbolScopeBySecurity.User);
+
+                    if (u is UsingAliasDeclaration uad && type.TypeName == uad.Alias)
+                    {
+                        symbol = _root.SymbolTable.Find($"{uad.ClassName}", SymbolType.Type,
+                            SymbolScopeBySecurity.User);
+                    }
+
+                    if (symbol != null)
+                    {
+                        result = (IType) symbol.CodeObject;
+                        break;
+                    }
                 }
+
+                return result;
             }
+
+            var t = VisitUsingList(bodyUsings);
+            if (t == null) t = VisitUsingList(cuUsings);
+
+            if (t == null)
+                throw new Exception("Type not found");
+
+            return t;
         }
 
         public IMethod GetMethod(TypeSyntax type, string name, TypeSyntax[] args)
