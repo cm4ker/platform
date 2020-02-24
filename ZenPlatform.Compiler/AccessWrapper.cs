@@ -91,7 +91,6 @@ namespace ZenPlatform.Compiler
             throw new Exception("Type not resolved");
         }
 
-
         public IType GetType(SingleTypeSyntax type)
         {
             var result = TypeFinder.Apply(type, _root);
@@ -100,6 +99,24 @@ namespace ZenPlatform.Compiler
                 throw new Exception("Type not found");
 
             return (IType) result.CodeObject;
+        }
+
+        private IType GetPrimitiveType(PrimitiveTypeSyntax pts)
+        {
+            return pts.Kind switch
+            {
+                TypeNodeKind.Boolean => _stb.Boolean,
+                TypeNodeKind.Int => _stb.Int,
+                TypeNodeKind.Char => _stb.Char,
+                TypeNodeKind.Double => _stb.Double,
+                TypeNodeKind.String => _stb.String,
+                TypeNodeKind.Byte => _stb.Byte,
+                TypeNodeKind.Object => _stb.Object,
+                TypeNodeKind.Void => _stb.Void,
+                TypeNodeKind.Session => _stb.Session,
+                TypeNodeKind.Context => _ts.FindType<PlatformContext>(),
+                _ => throw new Exception($"This type is not primitive {pts.Kind}")
+            };
         }
 
         public IMethod GetMethod(TypeSyntax type, string name, TypeSyntax[] args)
@@ -117,20 +134,7 @@ namespace ZenPlatform.Compiler
             }
             else if (type is PrimitiveTypeSyntax pts)
             {
-                var pType = pts.Kind switch
-                {
-                    TypeNodeKind.Boolean => _stb.Boolean,
-                    TypeNodeKind.Int => _stb.Int,
-                    TypeNodeKind.Char => _stb.Char,
-                    TypeNodeKind.Double => _stb.Double,
-                    TypeNodeKind.String => _stb.String,
-                    TypeNodeKind.Byte => _stb.Byte,
-                    TypeNodeKind.Object => _stb.Object,
-                    TypeNodeKind.Void => _stb.Void,
-                    TypeNodeKind.Session => _stb.Session,
-                    TypeNodeKind.Context => _ts.FindType<PlatformContext>(),
-                    _ => throw new Exception($"This type is not primitive {pts.Kind}")
-                };
+                var pType = GetPrimitiveType(pts);
 
                 return pType.FindMethod(name) ?? throw new Exception("Property not found");
             }
@@ -154,20 +158,7 @@ namespace ZenPlatform.Compiler
             }
             else if (type is PrimitiveTypeSyntax pts)
             {
-                var pType = pts.Kind switch
-                {
-                    TypeNodeKind.Boolean => _stb.Boolean,
-                    TypeNodeKind.Int => _stb.Int,
-                    TypeNodeKind.Char => _stb.Char,
-                    TypeNodeKind.Double => _stb.Double,
-                    TypeNodeKind.String => _stb.String,
-                    TypeNodeKind.Byte => _stb.Byte,
-                    TypeNodeKind.Object => _stb.Object,
-                    TypeNodeKind.Void => _stb.Void,
-                    TypeNodeKind.Session => _stb.Session,
-                    TypeNodeKind.Context => _ts.FindType<PlatformContext>(),
-                    _ => throw new Exception($"This type is not primitive {pts.Kind}")
-                };
+                var pType = GetPrimitiveType(pts);
 
                 return pType.FindProperty(name) ?? throw new Exception("Property not found");
             }
