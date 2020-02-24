@@ -6,6 +6,7 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.UI.Ast;
 using SreTA = System.Reflection.TypeAttributes;
 
@@ -36,8 +37,12 @@ namespace ZenPlatform.Compiler.Generation
         {
             _parameters = parameters;
 
-            _root = parameters.Root;
-            _cus = parameters.Root.Units;
+            if (_root != null)
+            {
+                _root = parameters.Root;
+                _cus = parameters.Root.Units;
+            }
+
             _asm = parameters.Builder;
             _ts = _asm.TypeSystem;
 

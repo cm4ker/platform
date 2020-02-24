@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Infrastructure;
+using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
@@ -47,33 +50,68 @@ namespace ZenPlatform.Compiler.Visitor
         }
     }
 
-    public class JoinAst : AstWalker<object>
+    public class TypeFinder : AstVisitorBase<ISymbol>
     {
-        private Dictionary<string, SyntaxNode> _ns = new Dictionary<string, SyntaxNode>();
+        private readonly string _typeName;
+        private string _ns;
+        private UsingList _bodyUsings;
+        private UsingList _cuUsings;
+        private string _currentNamespace;
 
 
-        public override object VisitNamespaceDeclaration(NamespaceDeclaration arg)
+        public static ISymbol Apply(SingleTypeSyntax typeNode, SyntaxNode node)
         {
-            var fullNs = string.Concat(".", arg.GetNamespace(), arg.Name);
+            var p = new TypeFinder(typeNode);
+            return p.Visit(node);
+        }
 
-            base.VisitNamespaceDeclaration(arg);
+        public TypeFinder(SingleTypeSyntax typeNode)
+        {
+            _bodyUsings = typeNode.FirstParent<TypeBody>().Usings;
+            _cuUsings = typeNode.FirstParent<CompilationUnit>().Usings;
+            _currentNamespace = typeNode.FirstParent<NamespaceDeclaration>()?.GetNamespace();
 
-            if (_ns.TryGetValue(fullNs, out var sn))
+            var fullTypeName = typeNode.TypeName;
+
+            if (fullTypeName.IndexOf('.') > 0)
             {
-                foreach (var child in arg.Childs)
-                {
-                    sn.Attach(child);
-                }
+                _typeName = fullTypeName.Split('.').Last();
+                _ns = string.Join('.', fullTypeName.Split('.')[..^1]);
             }
             else
             {
-                _ns.Add(fullNs, arg);
+                _typeName = fullTypeName;
+            }
+        }
+
+        public override ISymbol VisitNamespaceDeclaration(NamespaceDeclaration arg)
+        {
+            if (arg.GetNamespace() == _currentNamespace)
+            {
+                var typeSym = arg.SymbolTable.Find(_typeName, SymbolType.Type, SymbolScopeBySecurity.User);
+
+                if (typeSym != null)
+                    return typeSym;
             }
 
-            return null;
+            return base.VisitNamespaceDeclaration(arg);
+        }
+
+        public override ISymbol DefaultVisit(SyntaxNode node)
+        {
+            var childs = node.Childs.ToList();
+
+            foreach (var child in childs)
+            {
+                var result = Visit(child as SyntaxNode);
+
+                if (result != null)
+                    return result;
+            }
+
+            return base.DefaultVisit(node);
         }
     }
-
 
     /// <summary>
     /// Визитор для заполнения классов

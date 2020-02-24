@@ -154,10 +154,10 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (variable.CodeObject is ILocal vd)
                 {
-                    if (name.Type is UnionTypeSyntax)
+                    if (name.Type is PrimitiveTypeSyntax pts && (pts.IsBoolean() || pts.IsNumeric()) && false)
                     {
+                        //TODO: need understand then we must load variable\arg by ref. While force disable this tree
                         e.LdLocA(vd);
-                        e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
                     }
                     else
                         e.LdLoc(vd);
