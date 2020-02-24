@@ -44,7 +44,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public static bool IsNumeric(this TypeSyntax ts) => ts.Kind.IsNumeric();
-        
+
         public static bool IsString(this TypeSyntax ts) => ts.Kind.IsString();
 
         public static bool IsBoolean(this TypeSyntax ts) => ts.Kind.IsBoolean();
@@ -67,7 +67,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             Kind = kind;
         }
     }
-    
+
     public partial class SingleTypeSyntax
     {
         public SingleTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind) : this(lineInfo)
@@ -108,7 +108,8 @@ namespace ZenPlatform.Language.Ast.Definitions
 
     public partial class GenericTypeSyntax
     {
-        public GenericTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind, TypeList args) : this(lineInfo, args)
+        public GenericTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind, TypeList args) : this(lineInfo,
+            args)
         {
             TypeName = typeName;
 
@@ -116,7 +117,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
             Kind = kind;
         }
-        
+
         public string TypeName { get; }
     }
 }
