@@ -36,7 +36,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         private Hashtable _hashtable = new Hashtable();
 
         public SymbolTable()
-        {
+        {    
         }
 
         public SymbolTable(SymbolTable parent)

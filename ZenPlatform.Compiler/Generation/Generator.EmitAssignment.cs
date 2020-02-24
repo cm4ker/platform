@@ -52,7 +52,7 @@ namespace ZenPlatform.Compiler.Generation
                     // Load value
                     EmitExpression(e, assignment.Value, symbolTable);
 
-                    if (name.Type.ToClrType(_asm) == _bindings.Object)
+                    if (_map.GetType(name.Type) == _bindings.Object)
                         HandleBox(e, assignment.Value.Type);
 
                     // Store
@@ -109,7 +109,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private void HandleBox(IEmitter e, TypeSyntax type)
         {
-            HandleBox(e, type.ToClrType(_asm));
+            HandleBox(e, _map.GetType(type));
         }
 
         private void HandleBox(IEmitter e, IType currenType)

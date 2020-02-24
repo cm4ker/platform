@@ -43,7 +43,7 @@ namespace ZenPlatform.Compiler.Generation
 
             ILocal resultVar = null;
             if (function.Type.Kind != TypeNodeKind.Void)
-                resultVar = emitter.DefineLocal(function.Type.ToClrType(_asm));
+                resultVar = emitter.DefineLocal(_map.GetType(function.Type));
 
             var returnLabel = emitter.DefineLabel();
             EmitBody(emitter, function.Block, returnLabel, ref resultVar);

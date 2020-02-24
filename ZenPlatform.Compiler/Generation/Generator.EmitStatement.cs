@@ -28,7 +28,7 @@ namespace ZenPlatform.Compiler.Generation
 
                     if (returnVariable.Type == _bindings.Object)
                     {
-                        var clrType = ret.Expression.Type.ToClrType(_asm);
+                        var clrType = _map.GetType(ret.Expression.Type);
                         if (clrType.IsValueType && !clrType.IsArray)
                             e.Box(clrType);
                     }
@@ -153,7 +153,7 @@ namespace ZenPlatform.Compiler.Generation
                     //Load value
                     EmitExpression(e, mt.Expression, context.SymbolTable);
                     //Check is instance of the value
-                    e.IsInst(matchAtom.Type.ToClrType(_asm));
+                    e.IsInst(_map.GetType(matchAtom.Type));
                     e.BrFalse(label);
 
                     EmitBody(e, matchAtom.Block, returnLabel, ref returnVariable, false);
