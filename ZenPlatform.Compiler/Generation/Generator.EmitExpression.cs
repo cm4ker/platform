@@ -295,7 +295,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitPostOperation(IEmitter e, SymbolTable symbolTable, PostOperationExpression pis)
         {
-            IType opType = pis.Type.ToClrType(_asm);
+            IType opType = _map.GetType(pis.Type);
 
             if (pis.Expression is Name n)
             {

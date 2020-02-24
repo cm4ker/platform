@@ -21,9 +21,9 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitExpression(e, expr, symTable);
 
-                if (variable.Type.ToClrType(_asm).Equals(_bindings.Object))
+                if (_map.GetType(variable.Type).Equals(_bindings.Object))
                 {
-                    e.Box(expr.Type.ToClrType(_asm));
+                    e.Box(_map.GetType(expr.Type));
                 }
             }
             else if (false) // variable.Value is ElementCollection ec)
@@ -32,14 +32,14 @@ namespace ZenPlatform.Compiler.Generation
                 if (variable.Value != null && variable.Value is Expression value)
                 {
                     EmitExpression(e, value, symTable);
-                    e.NewArr(variable.Type.ToClrType(_asm).ArrayElementType);
+                    e.NewArr(_map.GetType(variable.Type).ArrayElementType);
                 }
                 else if (variable.Value != null)
                 {
                     ElementCollection elements = null; //variable.Value as ElementCollection;
 
                     e.LdcI4(elements.Count);
-                    e.NewArr(variable.Type.ToClrType(_asm).ArrayElementType);
+                    e.NewArr(_map.GetType(variable.Type).ArrayElementType);
 
                     for (int x = 0; x < elements.Count; x++)
                     {
@@ -56,7 +56,7 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             //store phase
-            ILocal local = e.DefineLocal(variable.Type.ToClrType(_asm));
+            ILocal local = e.DefineLocal(_map.GetType(variable.Type));
 
 
             if (variable.Value is Expression ex)
