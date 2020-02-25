@@ -32,11 +32,27 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
 
     public class SymbolTable : ISymbolTable
     {
+        /*
+                        Symbol
+              /       /    |     \         \ 
+         Property Method Types Variables  Arguments
+         
+         GetTypeSymbol
+         
+         GetMethodSymbol
+            Arguments
+            Overloads
+         GetPropertySymbol
+         
+         
+         */
+
         private SymbolTable _parent;
+
         private Hashtable _hashtable = new Hashtable();
 
         public SymbolTable()
-        {    
+        {
         }
 
         public SymbolTable(SymbolTable parent)
@@ -132,7 +148,6 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return _hashtable.Cast<DictionaryEntry>().Where(x => ((string) x.Key).StartsWith(prefix))
                 .Select(x => (Symbol) x.Value);
         }
-
 
         public void Clear()
         {
