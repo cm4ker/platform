@@ -1,35 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.SymbolStore;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using ZenPlatform.Compiler.AST.Infrastructure;
+using ZenPlatform.Language.Ast;
+using ZenPlatform.Language.Ast.Definitions;
 
 namespace ZenPlatform.Compiler.Contracts.Symbols
 {
-    public interface ISymbolTable
-    {
-        ISymbol Add(IAstSymbol astSymbol);
-
-        ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject,
-            object codeObject);
-
-        ISymbol ConnectCodeObject(IAstSymbol v, object codeObject);
-
-        bool Contains(string name, SymbolType type, SymbolScopeBySecurity scope);
-
-        ISymbol Find(IAstSymbol symbol);
-
-        T FindCodeObject<T>(IAstSymbol symbol);
-
-        ISymbol Find(string name, SymbolType type, SymbolScopeBySecurity scope);
-
-        IEnumerable<ISymbol> GetAll(SymbolType type);
-
-
-        void Clear();
-    }
-
     public class SymbolTable : ISymbolTable
     {
         /*
@@ -48,38 +28,44 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
          */
 
         private SymbolTable _parent;
-
         private Hashtable _hashtable = new Hashtable();
 
         public SymbolTable()
         {
         }
 
-        public SymbolTable(SymbolTable parent)
+        public SymbolTable(SymbolTable parent) : this()
         {
             _parent = parent;
         }
 
-        public ISymbol Add(IAstSymbol astSymbol)
+        public ISymbol Add(IAstSymbol astSymbol, params ITypeSymbol[] args)
         {
-            return Add(astSymbol, null);
+            return Add(astSymbol, null, args);
         }
 
-        public ISymbol Add(IAstSymbol astSymbol, object codeObject)
+        public ISymbol Add(IAstSymbol astSymbol, object codeObject, params ITypeSymbol[] args)
         {
-            return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol.SymbolScope, astSymbol, codeObject);
+            return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol.SymbolScope, astSymbol, codeObject, args);
         }
 
         public ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject,
-            object codeObject)
+            object codeObject, params ITypeSymbol[] args)
         {
-            string prefix = PrefixFromType(type);
+            string symbolName = PrefixFromType(type) + name;
 
-            if (_hashtable.Contains(prefix + name))
+            if (args != null && args.Length > 0)
+            {
+                symbolName += "(" + string.Join(',', args.Select(x => x.ToString())) + ")";
+            }
+
+            if (_hashtable.Contains(symbolName))
                 throw new SymbolException("Symbol already exists in symbol table.");
 
-            Symbol symbol = new Symbol(name, type, scope, syntaxObject, codeObject);
-            _hashtable.Add(prefix + name, symbol);
+            Symbol symbol = new Symbol(name, type, scope, syntaxObject, codeObject, args);
+
+
+            _hashtable.Add(symbolName, symbol);
 
             return symbol;
         }
@@ -93,7 +79,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             }
             else
             {
-                result.CodeObject = codeObject;
+                result.CompileObject = codeObject;
             }
 
             return result;
@@ -111,7 +97,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
 
         public T FindCodeObject<T>(IAstSymbol symbol)
         {
-            return (T) Find(symbol)?.CodeObject;
+            return (T) Find(symbol)?.CompileObject;
         }
 
         public ISymbol Find(string name, SymbolType type, SymbolScopeBySecurity scope)
@@ -158,7 +144,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         {
             return type switch
             {
-                SymbolType.Method => "f_",
+                SymbolType.Method => "m_",
                 SymbolType.Type => "t_",
                 SymbolType.Property => "p_",
                 SymbolType.Variable => "v_",

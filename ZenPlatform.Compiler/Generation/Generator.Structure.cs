@@ -441,7 +441,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 var valueSym =
                     property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScopeBySecurity.Shared);
-                valueSym.CodeObject = mb.Parameters[0];
+                valueSym.CompileObject = mb.Parameters[0];
 
                 var returnLabel = emitter.DefineLabel();
                 EmitBody(emitter, property.Setter, returnLabel, ref resultVar);

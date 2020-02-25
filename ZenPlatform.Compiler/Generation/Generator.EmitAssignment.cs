@@ -32,21 +32,21 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is UnionTypeSyntax;
 
-                    if (variable.CodeObject is IParameter pd)
+                    if (variable.CompileObject is IParameter pd)
                     {
                         Parameter p = variable.SyntaxObject as Parameter;
                         if (p.PassMethod == PassMethod.ByReference)
                             e.LdArg(pd);
                     }
-                    else if (variable.CodeObject is IField fl)
+                    else if (variable.CompileObject is IField fl)
                     {
                         EmitLoadThis(e);
                     }
-                    else if (variable.CodeObject is IProperty p)
+                    else if (variable.CompileObject is IProperty p)
                     {
                         EmitLoadThis(e);
                     }
-                    else if (variable.CodeObject is ILocal l && mtNode)
+                    else if (variable.CompileObject is ILocal l && mtNode)
                         e.LdLocA(l);
 
                     // Load value
@@ -56,11 +56,11 @@ namespace ZenPlatform.Compiler.Generation
                         HandleBox(e, assignment.Value.Type);
 
                     // Store
-                    if (variable.CodeObject is ILocal vd)
+                    if (variable.CompileObject is ILocal vd)
                         e.StLoc(vd);
-                    else if (variable.CodeObject is IField fd)
+                    else if (variable.CompileObject is IField fd)
                         e.StFld(fd);
-                    else if (variable.CodeObject is IParameter ppd)
+                    else if (variable.CompileObject is IParameter ppd)
                     {
                         Parameter p = variable.SyntaxObject as Parameter;
                         if (p.PassMethod == PassMethod.ByReference)
@@ -72,11 +72,11 @@ namespace ZenPlatform.Compiler.Generation
                 else
                 {
                     // Load array.
-                    if (variable.CodeObject is ILocal vd)
+                    if (variable.CompileObject is ILocal vd)
                         e.LdLoc(vd);
-                    else if (variable.CodeObject is IField fd)
+                    else if (variable.CompileObject is IField fd)
                         e.LdsFld(fd);
-                    else if (variable.CodeObject is IParameter pd)
+                    else if (variable.CompileObject is IParameter pd)
                         e.LdArg(pd.Sequence);
                     // Load index.
                     EmitExpression(e, assignment.Index, symbolTable);

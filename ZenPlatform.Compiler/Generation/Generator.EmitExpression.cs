@@ -152,7 +152,7 @@ namespace ZenPlatform.Compiler.Generation
                     if (variable.SyntaxObject is ITypedNode tn)
                         name.Type = tn.Type;
 
-                if (variable.CodeObject is ILocal vd)
+                if (variable.CompileObject is ILocal vd)
                 {
                     if (name.Type is PrimitiveTypeSyntax pts && (pts.IsBoolean() || pts.IsNumeric()) && false)
                     {
@@ -162,12 +162,12 @@ namespace ZenPlatform.Compiler.Generation
                     else
                         e.LdLoc(vd);
                 }
-                else if (variable.CodeObject is IField fd)
+                else if (variable.CompileObject is IField fd)
                 {
                     e.LdArg_0();
                     e.LdFld(fd);
                 }
-                else if (variable.CodeObject is IParameter pd)
+                else if (variable.CompileObject is IParameter pd)
                 {
                     Parameter p = variable.SyntaxObject as Parameter;
 
@@ -182,7 +182,7 @@ namespace ZenPlatform.Compiler.Generation
                     if (p.PassMethod == PassMethod.ByReference)
                         e.LdIndI4();
                 }
-                else if (variable.CodeObject is IProperty pr)
+                else if (variable.CompileObject is IProperty pr)
                 {
                     throw new NotImplementedException();
                 }
@@ -325,13 +325,13 @@ namespace ZenPlatform.Compiler.Generation
 
                 e.Add();
 
-                if (symbol.CodeObject is IParameter pd)
+                if (symbol.CompileObject is IParameter pd)
                     e.StArg(pd);
 
-                if (symbol.CodeObject is ILocal vd)
+                if (symbol.CompileObject is ILocal vd)
                     e.StLoc(vd);
 
-                if (symbol.CodeObject is IProperty prd)
+                if (symbol.CompileObject is IProperty prd)
                 {
                     e.LdArg_0()
                         .EmitCall(prd.Setter);
@@ -360,14 +360,14 @@ namespace ZenPlatform.Compiler.Generation
 
         private void CheckContextVariable(IEmitter e, ISymbol symbol)
         {
-            if (symbol.CodeObject == null)
+            if (symbol.CompileObject == null)
             {
                 var loc = e.DefineLocal(_ts.FindType<PlatformContext>());
 
                 e.LdContext()
                     .StLoc(loc);
 
-                symbol.CodeObject = loc;
+                symbol.CompileObject = loc;
             }
         }
     }

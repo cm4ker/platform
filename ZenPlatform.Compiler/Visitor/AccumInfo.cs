@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -13,6 +15,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using Module = ZenPlatform.Language.Ast.Definitions.Module;
 
 namespace ZenPlatform.Compiler.Visitor
 {
@@ -59,19 +62,19 @@ namespace ZenPlatform.Compiler.Visitor
         private string _currentNamespace;
 
 
-        public static ISymbol Apply(SingleTypeSyntax typeNode, SyntaxNode node)
+        public static ISymbol Apply(TypeSyntax typeNode, SyntaxNode node)
         {
             var p = new TypeFinder(typeNode);
             return p.Visit(node);
         }
 
-        public TypeFinder(SingleTypeSyntax typeNode)
+        public TypeFinder(TypeSyntax typeNode)
         {
             _bodyUsings = typeNode.FirstParent<TypeBody>().Usings;
             _cuUsings = typeNode.FirstParent<CompilationUnit>().Usings;
             _currentNamespace = typeNode.FirstParent<NamespaceDeclaration>()?.GetNamespace();
 
-            var fullTypeName = typeNode.TypeName;
+            var fullTypeName = GetTypeName(typeNode);
 
             if (fullTypeName.IndexOf('.') > 0)
             {
@@ -82,6 +85,50 @@ namespace ZenPlatform.Compiler.Visitor
             {
                 _typeName = fullTypeName;
             }
+        }
+
+        private string GetTypeName(TypeSyntax type)
+        {
+            if (type is PrimitiveTypeSyntax pts)
+            {
+                return pts.Kind switch
+                {
+                    TypeNodeKind.String => "System.String",
+                    TypeNodeKind.Int => "System.Int32",
+                    TypeNodeKind.Double => "System.Double",
+                    TypeNodeKind.Char => "System.Char",
+                    TypeNodeKind.Boolean => "System.Boolean",
+                    TypeNodeKind.Object => "System.Object",
+                    TypeNodeKind.Byte => "System.Byte",
+                    TypeNodeKind.Context => "System.PlatformContext",
+                    _ => throw new Exception("")
+                };
+            }
+            else if (type is ArrayTypeSyntax)
+            {
+                throw new NotImplementedException();
+            }
+            else if (type is SingleTypeSyntax sts)
+            {
+                return sts.TypeName;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public override ISymbol VisitTypeBody(TypeBody arg)
+        {
+            return null;
+        }
+
+        public override ISymbol VisitClass(Class arg)
+        {
+            return null;
+        }
+
+        public override ISymbol VisitModule(Module arg)
+        {
+            return null;
         }
 
         public override ISymbol VisitNamespaceDeclaration(NamespaceDeclaration arg)
