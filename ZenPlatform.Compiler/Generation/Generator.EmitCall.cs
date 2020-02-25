@@ -54,7 +54,7 @@ namespace ZenPlatform.Compiler.Generation
                 }
 
                 Hack:
-                e.EmitCall((IMethod) symbol.CodeObject, call.IsStatement);
+                e.EmitCall((IMethod) symbol.CompileObject, call.IsStatement);
             }
             else
             {
@@ -72,15 +72,15 @@ namespace ZenPlatform.Compiler.Generation
                     if (argument.Expression is Name arg)
                     {
                         var variable = symbolTable.Find(arg.Value, SymbolType.Variable, arg.GetScope());
-                        if (variable.CodeObject is ILocal vd)
+                        if (variable.CompileObject is ILocal vd)
                         {
                             e.LdLocA(vd);
                         }
-                        else if (variable.CodeObject is IField fd)
+                        else if (variable.CompileObject is IField fd)
                         {
                             e.LdsFldA(fd);
                         }
-                        else if (variable.CodeObject is IParameter pb)
+                        else if (variable.CompileObject is IParameter pb)
                         {
                             e.LdArgA(pb);
                         }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ZenPlatform.Compiler.Contracts.Symbols
 {
     /// <summary>
@@ -47,7 +49,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         /// <summary>
         /// Связанный с символом объект кода
         /// </summary>
-        object CodeObject { get; set; }
+        object CompileObject { get; set; }
 
         /// <summary>
         ///  Область видимости символа
@@ -55,6 +57,9 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         SymbolScopeBySecurity SymbolScope { get; set; }
     }
 
+    public interface ITypeSymbol
+    {
+    }
 
     /// <summary>
     /// Символ. Объект на который можно сослаться в коде
@@ -70,8 +75,9 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         public IAstSymbol SyntaxObject { get; set; }
 
 
-        public object CodeObject { get; set; }
+        public object CompileObject { get; set; }
 
+        public List<ITypeSymbol> Args { get; }
 
         public SymbolScopeBySecurity SymbolScope { get; set; }
 
@@ -81,15 +87,22 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
         /// <param name="name">Symbel name</param>
         /// <param name="type">Symbol kind type</param>
         /// <param name="syntaxObject"><see cref="AstNode"/> object</param>
-        /// <param name="codeObject">The connected object from the codegeneration backend</param>
+        /// <param name="compileObject">The connected object from the codegeneration backend</param>
         public Symbol(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject,
-            object codeObject)
+            object compileObject, params ITypeSymbol[] args)
         {
             Name = name;
             Type = type;
             SyntaxObject = syntaxObject;
-            CodeObject = codeObject;
+            CompileObject = compileObject;
             SymbolScope = scope;
+
+            Args = new List<ITypeSymbol>();
+
+            foreach (var arg in args)
+            {
+                Args.Add(arg);
+            }
         }
     }
 }

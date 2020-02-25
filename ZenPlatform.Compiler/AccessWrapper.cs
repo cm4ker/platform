@@ -85,7 +85,7 @@ namespace ZenPlatform.Compiler
             if (result == null)
                 throw new Exception("Type not found");
 
-            return (IType) result.CodeObject;
+            return (IType) result.CompileObject;
         }
 
         private IType GetPrimitiveType(PrimitiveTypeSyntax pts)
@@ -115,7 +115,7 @@ namespace ZenPlatform.Compiler
 
                 var funcDef = typeDef?.TypeBody.SymbolTable.Find(name, SymbolType.Method, SymbolScopeBySecurity.User);
 
-                IMethod m = (IMethod) funcDef?.CodeObject;
+                IMethod m = (IMethod) funcDef?.CompileObject;
 
                 return m ?? throw new Exception($"Property {name} not found");
             }
@@ -137,7 +137,7 @@ namespace ZenPlatform.Compiler
                 var typeDef = (TypeEntity) symbol.SyntaxObject;
 
                 var propDef = typeDef?.TypeBody.SymbolTable.Find(name, SymbolType.Property, SymbolScopeBySecurity.User);
-                var p = (IProperty) propDef?.CodeObject;
+                var p = (IProperty) propDef?.CompileObject;
 
                 if (p == null)
                     throw new Exception($"Property {type}.{name} not found");
