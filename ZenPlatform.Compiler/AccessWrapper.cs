@@ -60,22 +60,9 @@ namespace ZenPlatform.Compiler
 
                 //TODO: return resolved type
             }
-            else if (typeSyntax is PrimitiveTypeSyntax ptn)
+            else if (typeSyntax is PrimitiveTypeSyntax pts)
             {
-                return ptn.Kind switch
-                {
-                    TypeNodeKind.Boolean => _stb.Boolean,
-                    TypeNodeKind.Int => _stb.Int,
-                    TypeNodeKind.Char => _stb.Char,
-                    TypeNodeKind.Double => _stb.Double,
-                    TypeNodeKind.String => _stb.String,
-                    TypeNodeKind.Byte => _stb.Byte,
-                    TypeNodeKind.Object => _stb.Object,
-                    TypeNodeKind.Void => _stb.Void,
-                    TypeNodeKind.Session => _stb.Session,
-                    TypeNodeKind.Context => _ts.FindType<PlatformContext>(),
-                    _ => throw new Exception($"This type is not primitive {ptn.Kind}")
-                };
+                return GetPrimitiveType(pts);
             }
 
             else if (typeSyntax is ArrayTypeSyntax atn)
