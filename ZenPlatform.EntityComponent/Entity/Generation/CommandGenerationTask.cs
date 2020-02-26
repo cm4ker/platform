@@ -5,6 +5,7 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Symbols;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.EntityComponent.Entity.Generation

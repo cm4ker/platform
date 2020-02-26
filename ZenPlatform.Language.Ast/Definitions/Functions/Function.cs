@@ -4,6 +4,7 @@ using System.Linq;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions.Functions
 {
@@ -24,7 +25,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         private bool IsServer => Attributes.Any(x => x.Type.TypeName == "Server") || !Attributes.Any();
         private bool IsClient => Attributes.Any(x => x.Type.TypeName == "Client");
         private bool IsClientCall => Attributes.Any(x => x.Type.TypeName == "ClientCall");
-        
+
         /// <summary>
         /// Билдер IL кода
         /// </summary>
@@ -33,6 +34,8 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         private readonly Block _block;
 
         public bool IsPublic { get; set; }
+
+        public bool IsGeneric => GenericParameters.Any();
 
         public SymbolType SymbolType => SymbolType.Method;
         public SymbolScopeBySecurity SymbolScope { get; set; }

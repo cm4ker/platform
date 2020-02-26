@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using ZenPlatform.Compiler.Contracts.Symbols;
 
-namespace ZenPlatform.Compiler.Contracts.Symbols
+namespace ZenPlatform.Language.Ast.Symbols
 {
     /// <summary>
     /// Тип пространства, где доступен данный символ

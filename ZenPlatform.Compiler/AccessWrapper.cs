@@ -12,6 +12,7 @@ using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Symbols;
 using ArrayTypeSyntax = ZenPlatform.Language.Ast.Definitions.ArrayTypeSyntax;
 using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 

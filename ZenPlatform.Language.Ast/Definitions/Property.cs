@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
