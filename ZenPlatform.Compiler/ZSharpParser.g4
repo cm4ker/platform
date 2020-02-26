@@ -140,6 +140,9 @@ string_literal
 	: REGULAR_STRING
 	| VERBATIUM_STRING
 	;
+	
+sql_literal:
+    SQL_STRING;	
 
 expression:
     expressionStructural

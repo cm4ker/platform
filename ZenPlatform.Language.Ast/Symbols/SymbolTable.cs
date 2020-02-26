@@ -125,7 +125,6 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return null;
         }
 
-
         public IEnumerable<ISymbol> GetAll(SymbolType type)
         {
             var prefix = PrefixFromType(type);
