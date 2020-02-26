@@ -18,6 +18,8 @@ REAL_LITERAL:        [0-9]* '.' [0-9]+ ExponentPart? [FfDdMm]? | [0-9]+ ([FfDdMm
 CHARACTER_LITERAL:                   '\'' (~['\\\r\n\u0085\u2028\u2029] | CommonCharacter) '\'';
 REGULAR_STRING:                      '"'  (~["\\\r\n\u0085\u2028\u2029] | CommonCharacter)* '"';
 VERBATIUM_STRING:                    '@"' (~'"' | '""')* '"';
+SQL_STRING:                          'Q"' (~'"' | '""')* '"';
+
 
 SHARP:         '#'                                -> mode(DIRECTIVE_MODE);
 VAR : 'var';
