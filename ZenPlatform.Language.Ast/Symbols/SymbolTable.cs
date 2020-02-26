@@ -1,16 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.SymbolStore;
+using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using ZenPlatform.Compiler.AST.Infrastructure;
-using ZenPlatform.Language.Ast;
-using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Compiler.Contracts.Symbols
 {
-    public class SymbolTable : ISymbolTable
+    public class SymbolTable
     {
         /*
                         Symbol

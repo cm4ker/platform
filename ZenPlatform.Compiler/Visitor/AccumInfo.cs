@@ -1,20 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.Serialization;
+using Microsoft.CodeAnalysis.CSharp;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Compiler.Infrastructure;
-using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
-using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 using Module = ZenPlatform.Language.Ast.Definitions.Module;
 
 namespace ZenPlatform.Compiler.Visitor
@@ -60,6 +55,7 @@ namespace ZenPlatform.Compiler.Visitor
         private UsingList _bodyUsings;
         private UsingList _cuUsings;
         private string _currentNamespace;
+        private Queue<SyntaxNode> _queue;
 
 
         public static ISymbol Apply(TypeSyntax typeNode, SyntaxNode node)
@@ -70,6 +66,8 @@ namespace ZenPlatform.Compiler.Visitor
 
         public TypeFinder(TypeSyntax typeNode)
         {
+            _queue = new Queue<SyntaxNode>();
+
             _bodyUsings = typeNode.FirstParent<TypeBody>().Usings;
             _cuUsings = typeNode.FirstParent<CompilationUnit>().Usings;
             _currentNamespace = typeNode.FirstParent<NamespaceDeclaration>()?.GetNamespace();
@@ -146,6 +144,8 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override ISymbol DefaultVisit(SyntaxNode node)
         {
+            _queue.Enqueue(node);
+
             var childs = node.Childs.ToList();
 
             foreach (var child in childs)

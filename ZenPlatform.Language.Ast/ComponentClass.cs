@@ -5,6 +5,7 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Language.Ast
 {

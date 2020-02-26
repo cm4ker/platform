@@ -92,18 +92,8 @@ namespace ZenPlatform.Compiler.Cecil
             _method = method;
             _body = method.Body;
             TypeSystem = typeSystem;
-            SymbolTable = new SymbolTable();
             _exceptionStack = new Stack<CecilTryHandler>();
         }
-
-        public CecilEmitter(ITypeSystem typeSystem, MethodDefinition method, SymbolTable parentSymbols)
-        {
-            _method = method;
-            _body = method.Body;
-            TypeSystem = typeSystem;
-            SymbolTable = new SymbolTable(parentSymbols);
-        }
-
 
         public ITypeSystem TypeSystem { get; }
 
@@ -444,7 +434,5 @@ namespace ZenPlatform.Compiler.Cecil
                     _pendingDebugPoint = _lastDebugPoint = new CecilDebugPoint(this, doc, line, position);
             }
         }
-
-        public ISymbolTable SymbolTable { get; }
     }
 }

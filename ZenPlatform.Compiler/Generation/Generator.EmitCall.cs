@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Definitions;

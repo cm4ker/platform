@@ -10,6 +10,7 @@ using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Symbols;
 using Module = ZenPlatform.Language.Ast.Definitions.Module;
 
 namespace ZenPlatform.Compiler.Generation

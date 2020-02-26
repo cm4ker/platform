@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config>
-    
+
 
     <Syntax IsList="true" Base="Function" Name="FunctionList"/>
     <Syntax IsList="true" Base="Field" Name="FieldList"/>
@@ -9,10 +9,11 @@
     <Syntax IsList="true" Base="TypeSyntax" Name="TypeList"/>
     <Syntax IsList="true" Base="Statement" Name="StatementList"/>
     <Syntax IsList="true" Base="Parameter" Name="ParameterList"/>
+    <Syntax IsList="true" Base="GenericParameter" Name="GenericParameterList"/>
     <Syntax IsList="true" Base="AttributeSyntax" Name="AttributeList"/>
     <Syntax IsList="true" Base="Argument" Name="ArgumentList"/>
     <Syntax IsList="true" Base="MatchAtom" Name="MatchAtomList"/>
-    
+
     <Syntax IsList="true" Base="UsingBase" Name="UsingList"/>
     <Syntax IsList="true" Base="TypeEntity" Name="EntityList"/>
     <Syntax IsList="true" Base="NamespaceDeclaration" Name="NamespaceDeclarationList"/>
@@ -23,7 +24,7 @@
             <List Name="Units" Type="CompilationUnitList"/>
         </Arguments>
     </Syntax>
-    
+
     <Syntax Name="NamespaceDeclaration" IsScoped="true">
         <Arguments>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
@@ -167,6 +168,12 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="GenericParameter" NS="Functions">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="AttributeSyntax"/>
 
     <Syntax Name="Member" IsAbstract="true"/>
@@ -175,6 +182,7 @@
         <Arguments>
             <Single Name="Block" Type="Block"/>
             <List Name="Parameters" Type="ParameterList"/>
+            <List Name="GenericParameters" Type="GenericParameterList"/>
             <List Name="Attributes" Type="AttributeList"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
             <Single Name="Type" Type="TypeSyntax" DenyChildrenFill="true"/>
