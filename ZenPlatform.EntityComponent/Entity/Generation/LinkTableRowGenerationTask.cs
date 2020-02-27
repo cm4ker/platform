@@ -73,7 +73,8 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
 
                 var codeObj = builder.DefineProperty(propType, propName, true, hasSet, false);
-                TypeBody.SymbolTable.Add(new Property(null, propName, propType.ToAstType()), codeObj.prop);
+                TypeBody.SymbolTable.AddProperty(new Property(null, propName, propType.ToAstType()))
+                    .Connect(codeObj.prop);
             }
         }
 

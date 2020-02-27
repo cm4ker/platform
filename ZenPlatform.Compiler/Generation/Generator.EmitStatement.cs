@@ -7,6 +7,7 @@ using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -27,7 +28,7 @@ namespace ZenPlatform.Compiler.Generation
 
                     if (returnVariable.Type == _bindings.Object)
                     {
-                        var clrType = _map.GetType(ret.Expression.Type);
+                        var clrType = _map.GetClrType(ret.Expression.Type);
                         if (clrType.IsValueType && !clrType.IsArray)
                             e.Box(clrType);
                     }
@@ -152,7 +153,7 @@ namespace ZenPlatform.Compiler.Generation
                     //Load value
                     EmitExpression(e, mt.Expression, context.SymbolTable);
                     //Check is instance of the value
-                    e.IsInst(_map.GetType(matchAtom.Type));
+                    e.IsInst(_map.GetClrType(matchAtom.Type));
                     e.BrFalse(label);
 
                     EmitBody(e, matchAtom.Block, returnLabel, ref returnVariable, false);

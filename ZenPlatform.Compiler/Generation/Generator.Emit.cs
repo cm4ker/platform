@@ -9,6 +9,7 @@ using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -43,7 +44,7 @@ namespace ZenPlatform.Compiler.Generation
 
             ILocal resultVar = null;
             if (function.Type.Kind != TypeNodeKind.Void)
-                resultVar = emitter.DefineLocal(_map.GetType(function.Type));
+                resultVar = emitter.DefineLocal(_map.GetClrType(function.Type));
 
             var returnLabel = emitter.DefineLabel();
             EmitBody(emitter, function.Block, returnLabel, ref resultVar);
@@ -59,7 +60,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (expression.Expression is Name name)
             {
-                var variable = symbolTable.Find(name.Value, SymbolType.Variable, name.GetScope());
+                var variable = symbolTable.Find<VariableSymbol>(name.Value, name.GetScope());
                 if (variable == null)
                     Error("Assignment variable " + name.Value + " unknown.");
 

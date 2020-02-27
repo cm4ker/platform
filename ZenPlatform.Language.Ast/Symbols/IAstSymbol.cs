@@ -1,6 +1,6 @@
-using ZenPlatform.Language.Ast.Symbols;
+using ZenPlatform.Compiler.Contracts.Symbols;
 
-namespace ZenPlatform.Compiler.Contracts.Symbols
+namespace ZenPlatform.Language.Ast.Symbols
 {
     public interface IAstSymbol
     {

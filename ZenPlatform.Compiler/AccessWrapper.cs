@@ -44,11 +44,11 @@ namespace ZenPlatform.Compiler
             RegisterStatic();
         }
 
-        public IType GetType(TypeSyntax typeSyntax)
+        public IType GetClrType(TypeSyntax typeSyntax)
         {
             if (typeSyntax is SingleTypeSyntax stn)
             {
-                return GetType(stn);
+                return GetClrType(stn);
             }
             else if (typeSyntax is GenericTypeSyntax gts)
             {
@@ -56,7 +56,7 @@ namespace ZenPlatform.Compiler
 
                 for (int i = 0; i < gts.Args.Count; i++)
                 {
-                    args[i] = GetType(gts.Args[i]);
+                    args[i] = GetClrType(gts.Args[i]);
                 }
 
                 //TODO: return resolved type
@@ -68,7 +68,7 @@ namespace ZenPlatform.Compiler
 
             else if (typeSyntax is ArrayTypeSyntax atn)
             {
-                return GetType(atn.ElementType).MakeArrayType();
+                return GetClrType(atn.ElementType).MakeArrayType();
             }
 
             else if (typeSyntax is UnionTypeSyntax utn)
@@ -79,14 +79,14 @@ namespace ZenPlatform.Compiler
             throw new Exception("Type not resolved");
         }
 
-        public IType GetType(SingleTypeSyntax type)
+        public IType GetClrType(SingleTypeSyntax type)
         {
             var result = TypeFinder.Apply(type, _root);
 
             if (result == null)
                 throw new Exception("Type not found");
 
-            return (IType) result.CompileObject;
+            return result.ClrType;
         }
 
         private IType GetPrimitiveType(PrimitiveTypeSyntax pts)
@@ -107,16 +107,16 @@ namespace ZenPlatform.Compiler
             };
         }
 
-        public IMethod GetMethod(TypeSyntax type, string name, TypeSyntax[] args)
+        public IMethod GetMethod(TypeSyntax type, string name, IType[] args)
         {
             if (type is SingleTypeSyntax sts)
             {
                 var symbol = TypeFinder.Apply(sts, _root);
-                var typeDef = (TypeEntity) symbol.SyntaxObject;
+                var typeDef = symbol.Type;
 
-                var funcDef = typeDef?.TypeBody.SymbolTable.Find(name, SymbolType.Method, SymbolScopeBySecurity.User);
+                var funcDef = typeDef?.TypeBody.SymbolTable.Find<MethodSymbol>(name, SymbolScopeBySecurity.User);
 
-                IMethod m = (IMethod) funcDef?.CompileObject;
+                IMethod m = funcDef?.SelectOverload(args).clrMethod;
 
                 return m ?? throw new Exception($"Property {name} not found");
             }
@@ -135,10 +135,10 @@ namespace ZenPlatform.Compiler
             if (type is SingleTypeSyntax sts)
             {
                 var symbol = TypeFinder.Apply(sts, _root);
-                var typeDef = (TypeEntity) symbol.SyntaxObject;
+                var typeDef = symbol.Type;
 
-                var propDef = typeDef?.TypeBody.SymbolTable.Find(name, SymbolType.Property, SymbolScopeBySecurity.User);
-                var p = (IProperty) propDef?.CompileObject;
+                var propDef = typeDef?.TypeBody.SymbolTable.Find<PropertySymbol>(name, SymbolScopeBySecurity.User);
+                var p = propDef?.ClrProperty;
 
                 if (p == null)
                     throw new Exception($"Property {type}.{name} not found");
@@ -156,8 +156,8 @@ namespace ZenPlatform.Compiler
 
         public List<string> GetMethods(TypeSyntax type)
         {
-            var typeDef = GetType(GetTypeName(type));
-            return typeDef.TypeBody.SymbolTable.GetAll(SymbolType.Method).Select(x => x.Name).ToList();
+            var typeDef = GetClrType(GetTypeName(type));
+            return typeDef.TypeBody.SymbolTable.GetAll<MethodSymbol>(SymbolType.Method).Select(x => x.Name).ToList();
         }
 
         public void RegisterProperty(string fullTypeName, IProperty prop)
@@ -222,7 +222,7 @@ namespace ZenPlatform.Compiler
             return null;
         }
 
-        private TypeEntity GetType(string name)
+        private TypeEntity GetClrType(string name)
         {
             return _types.FirstOrDefault(x =>
                 (!string.IsNullOrEmpty(x.GetNamespace()) ? x.GetNamespace() + "." : "") + x.Name == name);
