@@ -95,7 +95,7 @@ namespace ZenPlatform.Compiler.Tests
         {
             var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
 
-            Function node = (Function) funcScript.Parse(x => _zlv.VisitFunctionDeclaration(x.functionDeclaration()));
+            Function node = (Function) funcScript.Parse(x => _zlv.VisitMethodDeclaration(x.methodDeclaration()));
 
             CompilationUnit cu = new CompilationUnit(null, null, new EntityList
             {

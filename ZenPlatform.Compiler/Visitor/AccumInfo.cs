@@ -48,7 +48,7 @@ namespace ZenPlatform.Compiler.Visitor
         }
     }
 
-    public class TypeFinder : AstVisitorBase<ISymbol>
+    public class TypeFinder : AstVisitorBase<TypeSymbol>
     {
         private readonly string _typeName;
         private string _ns;
@@ -58,7 +58,7 @@ namespace ZenPlatform.Compiler.Visitor
         private Queue<SyntaxNode> _queue;
 
 
-        public static ISymbol Apply(TypeSyntax typeNode, SyntaxNode node)
+        public static TypeSymbol Apply(TypeSyntax typeNode, SyntaxNode node)
         {
             var p = new TypeFinder(typeNode);
             return p.Visit(node);
@@ -114,26 +114,26 @@ namespace ZenPlatform.Compiler.Visitor
             throw new NotImplementedException();
         }
 
-        public override ISymbol VisitTypeBody(TypeBody arg)
+        public override TypeSymbol VisitTypeBody(TypeBody arg)
         {
             return null;
         }
 
-        public override ISymbol VisitClass(Class arg)
+        public override TypeSymbol VisitClass(Class arg)
         {
             return null;
         }
 
-        public override ISymbol VisitModule(Module arg)
+        public override TypeSymbol VisitModule(Module arg)
         {
             return null;
         }
 
-        public override ISymbol VisitNamespaceDeclaration(NamespaceDeclaration arg)
+        public override TypeSymbol VisitNamespaceDeclaration(NamespaceDeclaration arg)
         {
             if (arg.GetNamespace() == _currentNamespace)
             {
-                var typeSym = arg.SymbolTable.Find(_typeName, SymbolType.Type, SymbolScopeBySecurity.User);
+                var typeSym = arg.SymbolTable.Find<TypeSymbol>(_typeName, SymbolScopeBySecurity.User);
 
                 if (typeSym != null)
                     return typeSym;
@@ -142,7 +142,7 @@ namespace ZenPlatform.Compiler.Visitor
             return base.VisitNamespaceDeclaration(arg);
         }
 
-        public override ISymbol DefaultVisit(SyntaxNode node)
+        public override TypeSymbol DefaultVisit(SyntaxNode node)
         {
             _queue.Enqueue(node);
 

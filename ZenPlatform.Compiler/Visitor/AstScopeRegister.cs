@@ -6,6 +6,7 @@ using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Compiler.Visitor
 {
@@ -26,7 +27,7 @@ namespace ZenPlatform.Compiler.Visitor
             var ibn = obj.FirstParent<IScoped>();
             if (ibn != null)
             {
-                ibn.SymbolTable.Add(obj);
+                ibn.SymbolTable.AddVariable(obj);
             }
             else
             {
@@ -40,11 +41,11 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj.Parent.Parent is Function f)
             {
-                f.Block.SymbolTable.Add(obj);
+                f.Block.SymbolTable.AddMethod(f);
             }
             else if (obj.Parent.Parent is Constructor c)
             {
-                c.Block.SymbolTable.Add(obj);
+                c.Block.SymbolTable.AddConstructor(c);
             }
             else
             {
@@ -56,7 +57,7 @@ namespace ZenPlatform.Compiler.Visitor
 
         public override object VisitName(Name obj)
         {
-            var v = obj.FirstParent<IScoped>().SymbolTable.Find(obj.Value, SymbolType.Variable, obj.GetScope());
+            var v = obj.FirstParent<IScoped>().SymbolTable.Find<VariableSymbol>(obj.Value, obj.GetScope());
 
             if (v?.SyntaxObject is Variable vv) obj.Type = vv.Type;
             if (v?.SyntaxObject is ContextVariable cv) obj.Type = cv.Type;
@@ -69,7 +70,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj.Parent is TypeBody f)
             {
-                f.SymbolTable.Add(obj);
+                f.SymbolTable.AddVariable(obj);
             }
             else
             {
@@ -82,7 +83,7 @@ namespace ZenPlatform.Compiler.Visitor
         public override object VisitNamespaceDeclaration(NamespaceDeclaration arg)
         {
             var st = arg.FirstParent<IScoped>()?.SymbolTable;
- 
+
             if (arg.SymbolTable == null)
                 arg.SymbolTable = new SymbolTable(st);
 
@@ -101,11 +102,11 @@ namespace ZenPlatform.Compiler.Visitor
             obj.SymbolTable.Clear();
             return base.VisitTypeBody(obj);
         }
-        
+
         public override object VisitModule(Module obj)
         {
             var st = obj.FirstParent<IScoped>()?.SymbolTable;
-            st?.Add(obj);
+            st?.AddType(obj);
 
             return base.VisitModule(obj);
         }
@@ -113,7 +114,7 @@ namespace ZenPlatform.Compiler.Visitor
         public override object VisitClass(Class obj)
         {
             var st = obj.FirstParent<IScoped>().SymbolTable;
-            st.Add(obj);
+            st.AddType(obj);
             return base.VisitClass(obj);
         }
 
@@ -128,10 +129,10 @@ namespace ZenPlatform.Compiler.Visitor
 
                 obj.Block.SymbolTable.Clear();
 
-                obj.Block.SymbolTable.Add(new ContextVariable(null, "Context",
+                obj.Block.SymbolTable.AddVariable(new ContextVariable(null, "Context",
                     new PrimitiveTypeSyntax(null, TypeNodeKind.Context)));
 
-                te.SymbolTable.Add(obj);
+                te.SymbolTable.AddMethod(obj);
             }
             else
             {
@@ -175,7 +176,7 @@ namespace ZenPlatform.Compiler.Visitor
             obj.Getter?.SymbolTable.Clear();
             obj.Setter?.SymbolTable.Clear();
 
-            obj.Setter?.SymbolTable.Add(new Parameter(null, "value", obj.Type, PassMethod.ByValue));
+            obj.Setter?.SymbolTable.AddVariable(new Parameter(null, "value", obj.Type, PassMethod.ByValue));
 
             return base.VisitProperty(obj);
         }

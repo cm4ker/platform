@@ -11,6 +11,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 
 
@@ -22,7 +23,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (assignment.Assignable is Name name)
             {
-                var variable = symbolTable.Find(name.Value, SymbolType.Variable, name.GetScope());
+                var variable = symbolTable.Find<VariableSymbol>(name.Value, name.GetScope());
                 if (variable == null)
                     Error("Assignment variable " + name + " unknown.");
 
@@ -51,7 +52,7 @@ namespace ZenPlatform.Compiler.Generation
                     // Load value
                     EmitExpression(e, assignment.Value, symbolTable);
 
-                    if (_map.GetType(name.Type) == _bindings.Object)
+                    if (_map.GetClrType(name.Type) == _bindings.Object)
                         HandleBox(e, assignment.Value.Type);
 
                     // Store
@@ -108,7 +109,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private void HandleBox(IEmitter e, TypeSyntax type)
         {
-            HandleBox(e, _map.GetType(type));
+            HandleBox(e, _map.GetClrType(type));
         }
 
         private void HandleBox(IEmitter e, IType currenType)

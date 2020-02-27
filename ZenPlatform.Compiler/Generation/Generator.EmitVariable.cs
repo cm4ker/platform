@@ -4,6 +4,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -21,9 +22,9 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitExpression(e, expr, symTable);
 
-                if (_map.GetType(variable.Type).Equals(_bindings.Object))
+                if (_map.GetClrType(variable.Type).Equals(_bindings.Object))
                 {
-                    e.Box(_map.GetType(expr.Type));
+                    e.Box(_map.GetClrType(expr.Type));
                 }
             }
             else if (false) // variable.Value is ElementCollection ec)
@@ -32,14 +33,14 @@ namespace ZenPlatform.Compiler.Generation
                 if (variable.Value != null && variable.Value is Expression value)
                 {
                     EmitExpression(e, value, symTable);
-                    e.NewArr(_map.GetType(variable.Type).ArrayElementType);
+                    e.NewArr(_map.GetClrType(variable.Type).ArrayElementType);
                 }
                 else if (variable.Value != null)
                 {
                     ElementCollection elements = null; //variable.Value as ElementCollection;
 
                     e.LdcI4(elements.Count);
-                    e.NewArr(_map.GetType(variable.Type).ArrayElementType);
+                    e.NewArr(_map.GetClrType(variable.Type).ArrayElementType);
 
                     for (int x = 0; x < elements.Count; x++)
                     {
@@ -56,7 +57,7 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             //store phase
-            ILocal local = e.DefineLocal(_map.GetType(variable.Type));
+            ILocal local = e.DefineLocal(_map.GetClrType(variable.Type));
 
 
             if (variable.Value is Expression ex)
@@ -71,7 +72,8 @@ namespace ZenPlatform.Compiler.Generation
                 e.StLoc(local);
             }
 
-            symTable.ConnectCodeObject(variable, local);
+            var symbol = symTable.Find<VariableSymbol>(variable);
+            symbol.Connect(local);
         }
     }
 }

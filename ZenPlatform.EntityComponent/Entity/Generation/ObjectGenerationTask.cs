@@ -81,7 +81,8 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
 
                 var codeObj = builder.DefineProperty(propType, propName, true, hasSet, false);
-                TypeBody.SymbolTable.Add(new Property(null, propName, propType.ToAstType()), codeObj.prop);
+                TypeBody.SymbolTable.AddProperty(new Property(null, propName, propType.ToAstType()))
+                    .Connect(codeObj.prop);
             }
 
             foreach (var table in set.Tables)
@@ -98,14 +99,17 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                     .NewObj(t.FindConstructor(dtoTableProp.PropertyType))
                     .Ret();
 
-                TypeBody.SymbolTable.Add(new Property(null, table.Name, t.ToAstType()), prop.prop);
+                TypeBody.SymbolTable.AddProperty(new Property(null, table.Name, t.ToAstType()))
+                    .Connect(prop.prop);
             }
 
             var saveBuilder = builder.DefineMethod("Save", true, false, false);
 
-            TypeBody.SymbolTable.Add(
-                new Function(null, null, null, null, saveBuilder.Name, saveBuilder.ReturnType.ToAstType()),
-                saveBuilder);
+            var astMethod = new Function(null, null, null, null, null, saveBuilder.Name,
+                saveBuilder.ReturnType.ToAstType());
+
+            TypeBody.SymbolTable.AddMethod(astMethod)
+                .ConnectOverload(astMethod, saveBuilder);
         }
 
         private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)

@@ -1,39 +1,33 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
+using Microsoft.VisualBasic.CompilerServices;
+using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
-using ZenPlatform.Language.Ast.Symbols;
+using ZenPlatform.Language.Ast.Infrastructure;
 
-namespace ZenPlatform.Compiler.Contracts.Symbols
+namespace ZenPlatform.Language.Ast.Symbols
 {
-    public class MethodSymbol
+    public static class SymbolTableExtensions
     {
-        public Function AstMethod { get; set; }
+        public static Symbol FindOrDeclareVariable(this SymbolTable st, IAstSymbol syntaxObject, object compileObject)
+        {
+            var symbol = st.Find<VariableSymbol>(syntaxObject);
 
-        public TypeSyntax[] Arguments { get; set; }
+            if (symbol == null)
+                symbol = st.AddVariable(syntaxObject);
 
-        public IMethod ClrMethod { get; set; }
+            symbol.Connect(compileObject);
+
+            return symbol;
+        }
     }
 
     public class SymbolTable
     {
-        /*
-                        Symbol
-              /       /    |     \         \ 
-         Property Method Types Variables  Arguments
-         
-         GetTypeSymbol
-         
-         GetMethodSymbol
-            Arguments
-            Overloads
-         GetPropertySymbol
-                  
-         */
-
         private SymbolTable _parent;
         private Hashtable _hashtable = new Hashtable();
 
@@ -46,50 +40,59 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             _parent = parent;
         }
 
-        public ISymbol Add(IAstSymbol astSymbol, params ITypeSymbol[] args)
+        public TypeSymbol AddType(TypeEntity te)
         {
-            return Add(astSymbol, null, args);
+            var typeSymbol = new TypeSymbol(te);
+
+            RegisterSymbol(typeSymbol);
+
+            return typeSymbol;
         }
 
-        public ISymbol Add(IAstSymbol astSymbol, object codeObject, params ITypeSymbol[] args)
+        public VariableSymbol AddVariable(IAstSymbol p)
         {
-            return Add(astSymbol.Name, astSymbol.SymbolType, astSymbol.SymbolScope, astSymbol, codeObject, args);
+            var variableSymbol = new VariableSymbol(p);
+
+            RegisterSymbol(variableSymbol);
+
+            return variableSymbol;
         }
 
-        public ISymbol Add(string name, SymbolType type, SymbolScopeBySecurity scope, IAstSymbol syntaxObject,
-            object codeObject, params ITypeSymbol[] args)
+        public MethodSymbol AddMethod(Function m)
         {
-            string symbolName = PrefixFromType(type) + name;
+            var methodSymbol = new MethodSymbol(m);
 
-            if (args != null && args.Length > 0)
-            {
-                symbolName += "(" + string.Join(',', args.Select(x => x.ToString())) + ")";
-            }
+            RegisterSymbol(methodSymbol);
 
-            if (_hashtable.Contains(symbolName))
-                throw new SymbolException("Symbol already exists in symbol table.");
+            return methodSymbol;
+        }
 
-            Symbol symbol = new Symbol(name, type, scope, syntaxObject, codeObject, args);
+        public ConstructorSymbol AddConstructor(Constructor m)
+        {
+            var methodSymbol = new ConstructorSymbol(m);
 
+            RegisterSymbol(methodSymbol);
 
-            _hashtable.Add(symbolName, symbol);
+            return methodSymbol;
+        }
+
+        public PropertySymbol AddProperty(Property p)
+        {
+            var symbol = new PropertySymbol(p);
+
+            RegisterSymbol(symbol);
 
             return symbol;
         }
 
-        public ISymbol ConnectCodeObject(IAstSymbol v, object codeObject)
+        private void RegisterSymbol(Symbol symbol)
         {
-            var result = Find(v.Name, v.SymbolType, v.SymbolScope);
-            if (result == null)
-            {
-                return Add(v.Name, v.SymbolType, v.SymbolScope, v, codeObject);
-            }
-            else
-            {
-                result.CompileObject = codeObject;
-            }
+            string symbolName = PrefixFromType(symbol.Type) + symbol.Name;
 
-            return result;
+            if (_hashtable.Contains(symbolName))
+                throw new SymbolException("Symbol already exists in symbol table.");
+
+            _hashtable.Add(symbolName, symbol);
         }
 
         public bool Contains(string name, SymbolType type, SymbolScopeBySecurity scope)
@@ -97,23 +100,35 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return Find(name, type, scope) != null;
         }
 
-        public ISymbol Find(IAstSymbol symbol)
+        public T Find<T>(IAstSymbol symbol) where T : Symbol
         {
-            return Find(symbol.Name, symbol.SymbolType, symbol.SymbolScope);
+            return (T) Find(symbol.Name, symbol.SymbolType, symbol.SymbolScope);
         }
 
-        public T FindCodeObject<T>(IAstSymbol symbol)
+        public T Find<T>(string name, SymbolScopeBySecurity scope)
+            where T : Symbol
         {
-            return (T) Find(symbol)?.CompileObject;
+            if (typeof(T) == typeof(TypeSymbol))
+                return (T) Find(name, SymbolType.Type, scope);
+            if (typeof(T) == typeof(VariableSymbol))
+                return (T) Find(name, SymbolType.Variable, scope);
+            if (typeof(T) == typeof(ConstructorSymbol))
+                return (T) Find(name, SymbolType.Constructor, scope);
+            if (typeof(T) == typeof(MethodSymbol))
+                return (T) Find(name, SymbolType.Method, scope);
+            if (typeof(T) == typeof(PropertySymbol))
+                return (T) Find(name, SymbolType.Property, scope);
+
+            throw new Exception($"Unknown symbol type {typeof(T)}");
         }
 
-        public ISymbol Find(string name, SymbolType type, SymbolScopeBySecurity scope)
+        public Symbol Find(string name, SymbolType type, SymbolScopeBySecurity scope)
         {
             foreach (SymbolType val in Enum.GetValues(typeof(SymbolType)))
             {
                 if (!type.HasFlag(val)) continue;
 
-                ISymbol result = null;
+                Symbol result = null;
 
                 string prefix = PrefixFromType(val);
 
@@ -134,11 +149,11 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             return null;
         }
 
-        public IEnumerable<ISymbol> GetAll(SymbolType type)
+        public IEnumerable<T> GetAll<T>(SymbolType type) where T : Symbol
         {
             var prefix = PrefixFromType(type);
             return _hashtable.Cast<DictionaryEntry>().Where(x => ((string) x.Key).StartsWith(prefix))
-                .Select(x => (Symbol) x.Value);
+                .Select(x => (T) x.Value);
         }
 
         public void Clear()

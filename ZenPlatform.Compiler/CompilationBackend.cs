@@ -1,19 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Antlr4.Runtime;
-using Microsoft.CodeAnalysis;
-using ZenPlatform.Compiler.AST;
-using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Preprocessor;
-using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.QueryBuilder;
 
 
 namespace ZenPlatform.Compiler

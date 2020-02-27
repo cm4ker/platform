@@ -1,6 +1,5 @@
 using System.Reflection.Emit;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Contracts.Symbols;
 
 namespace ZenPlatform.Compiler.Sre
 {
