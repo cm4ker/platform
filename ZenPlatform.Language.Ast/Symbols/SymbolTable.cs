@@ -3,11 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Compiler.Contracts.Symbols
 {
+    public class MethodSymbol
+    {
+        public Function AstMethod { get; set; }
+
+        public TypeSyntax[] Arguments { get; set; }
+
+        public IMethod ClrMethod { get; set; }
+    }
+
     public class SymbolTable
     {
         /*
@@ -21,8 +31,7 @@ namespace ZenPlatform.Compiler.Contracts.Symbols
             Arguments
             Overloads
          GetPropertySymbol
-         
-         
+                  
          */
 
         private SymbolTable _parent;
