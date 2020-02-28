@@ -19,7 +19,11 @@ namespace ZenPlatform.Test.Tools
 
         public static Project Create()
         {
-            var projectMd = new ProjectMD();
+            var projectMd = new ProjectMD
+            {
+                ProjectName = "Library",
+                ProjectVersion = "1.0.0.0"
+            };
             var manager = new MDManager(new TypeManager(), new InMemoryUniqueCounter());
             var project = new Project(projectMd, manager);
 
@@ -79,7 +83,6 @@ public void Overload()
  { 
      Store s = $Entity.Store.Create();
      s.Name = ""Souths park"";
-     ExampleTableObject table = s.ExampleTable;
      s.Save();    
      return Context.UserName; 
  }

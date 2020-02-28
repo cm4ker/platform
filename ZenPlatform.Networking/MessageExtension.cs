@@ -71,12 +71,12 @@ namespace ZenPlatform.Core.Network
         }
 
         public static async Task<INetworkMessage> UseEnvironment(this RequestEnvironmentUseNetworkMessage request,
-            IPlatformEnvironmentManager manager, Action<IEnvironment> UseCallBack)
+            IPlatformEnvironmentManager manager, Action<IEnvironment> useCallBack)
         {
             try
             {
                 var env = manager.GetEnvironment(request.Name);
-                UseCallBack(env);
+                useCallBack(env);
                 return new ResponceEnvironmentUseNetworkMessage(request);
             }
             catch (Exception)

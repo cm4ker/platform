@@ -39,13 +39,18 @@ namespace ZenPlatform.Core.Assemblies
 
         public bool CheckConfiguration(IProject configuration)
         {
+            //TODO need rewrite this part because now we usign VFS for store configuration and get MD5 we need from some object. Zip archive? 
+
+            //Return always create new asssembly
+            return true;
+
             var hash = HashHelper.HashMD5(_m.SaveToStream(configuration));
 
             var assemblies = _assemblyStorage.GetAssemblies(hash);
 
             if (assemblies.FirstOrDefault(a =>
-                    a.Name.Equals($"{configuration.ProjectName}_server")
-                    || a.Name.Equals($"{configuration.ProjectName}_client")) == null)
+                a.Name.Equals($"{configuration.ProjectName}_server")
+                || a.Name.Equals($"{configuration.ProjectName}_client")) == null)
             {
                 return true;
             }

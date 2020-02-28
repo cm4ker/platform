@@ -31,8 +31,12 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
         public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
         {
             EmitBody(builder, dbType);
-            EmitVersionField(builder);
-            EmitMappingSupport(builder);
+
+            if (CompilationMode == CompilationMode.Server)
+            {
+                EmitVersionField(builder);
+                EmitMappingSupport(builder);
+            }
         }
 
         public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
@@ -58,7 +62,8 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
                 var tableRow = ts.GetType(table.GetTableDtoRowClassFullName());
                 var listType = sb.List.MakeGenericType(tableRow);
 
-                builder.DefineProperty(listType, table.Name, true, true, false);
+                builder.DefinePropertyWithBackingField(listType, table.Name, false);
+                
             }
         }
 
