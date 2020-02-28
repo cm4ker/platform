@@ -90,7 +90,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
             foreach (var prop in Table.Properties)
             {
-                SharedGenerators.EmitLinkProperty(builder, prop, sb, _dtoRowType, _dtoPrivate, ts, mrgGet,
+                SharedGenerators.EmitObjectProperty(builder, prop, sb, _dtoRowType, _dtoPrivate, ts, mrgGet,
                     GetNamespace());
             }
         }

@@ -89,7 +89,7 @@ namespace ZenPlatform.Core.Environment
 
             var savedConfiguration = ConfigurationFactory.Create();
             IProject currentConfiguration = null;
-            ;
+
             using (var dataContext =
                 new DataContext(config.DatabaseType, config.ConnectionString, IsolationLevel.ReadCommitted))
             {
@@ -101,8 +101,11 @@ namespace ZenPlatform.Core.Environment
 
                 if (currentConfiguration == null)
                 {
-                    currentConfiguration = new Project(new ProjectMD(),
+                    currentConfiguration = new Project(
+                        new ProjectMD {ProjectName = "Library", ProjectVersion = "1.0.0.0"},
                         new MDManager(new TypeManager(), new InMemoryUniqueCounter()));
+
+                    savedConfiguration.Save(configStorage);
                 }
             }
 
@@ -119,7 +122,6 @@ namespace ZenPlatform.Core.Environment
                 savedConfiguration.Save(storage);
             }
 
-            return;
             base.Initialize(config);
             _logger.Info("TEST Database '{0}' loaded.", Configuration.ProjectName);
 

@@ -9,6 +9,7 @@ namespace ZenPlatform.Core.Test
     public class ClientServerTestBase
     {
         private ITestOutputHelper _testOutput;
+
         public ClientServerTestBase(ITestOutputHelper testOutput)
         {
             _testOutput = testOutput;
@@ -16,7 +17,7 @@ namespace ZenPlatform.Core.Test
 
         public void InvokeInClientServerContext(InvokeInClientServerContextDelegate action)
         {
-            var serverServices = TestEnvSetup.GetServerService(_testOutput);
+            var serverServices = TestEnvSetup.GetServerServiceWithDatabase(_testOutput);
             var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
 
