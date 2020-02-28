@@ -2,12 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualBasic.CompilerServices;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
-using ZenPlatform.Language.Ast.Infrastructure;
 
 namespace ZenPlatform.Language.Ast.Symbols
 {
@@ -21,6 +19,18 @@ namespace ZenPlatform.Language.Ast.Symbols
                 symbol = st.AddVariable(syntaxObject);
 
             symbol.Connect(compileObject);
+
+            return symbol;
+        }
+
+        public static MethodSymbol AddMethod(this SymbolTable st, Function syntaxObject, IMethod compileObject)
+        {
+            var symbol = st.Find<MethodSymbol>(syntaxObject);
+
+            if (symbol == null)
+                symbol = st.AddMethod(syntaxObject);
+
+            symbol.ConnectOverload(syntaxObject, compileObject);
 
             return symbol;
         }
@@ -60,9 +70,12 @@ namespace ZenPlatform.Language.Ast.Symbols
 
         public MethodSymbol AddMethod(Function m)
         {
-            var methodSymbol = new MethodSymbol(m);
-
-            RegisterSymbol(methodSymbol);
+            var methodSymbol = Find<MethodSymbol>(m);
+            if (methodSymbol == null)
+            {
+                methodSymbol = new MethodSymbol(m);
+                RegisterSymbol(methodSymbol);
+            }
 
             return methodSymbol;
         }

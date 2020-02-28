@@ -26,6 +26,8 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
         {
             ObjectType = objectType;
             DtoType = objectType.GetDtoType();
+            
+            GenerateObjectClassUserModules(ObjectType);
         }
 
         public IPType ObjectType { get; }
@@ -105,7 +107,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
             var saveBuilder = builder.DefineMethod("Save", true, false, false);
 
-            var astMethod = new Function(null, null, null, null, null, saveBuilder.Name,
+            var astMethod = new Function(null, null, new ParameterList(), new GenericParameterList(), new AttributeList(), saveBuilder.Name,
                 saveBuilder.ReturnType.ToAstType());
 
             TypeBody.SymbolTable.AddMethod(astMethod)
