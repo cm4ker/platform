@@ -46,7 +46,15 @@ namespace ZenPlatform.Test.Tools
             var module = store.CreateModule();
             module.ModuleName = "Module1";
             module.ModuleRelationType = ProgramModuleRelationType.Object;
-            module.ModuleText = "public int In(int i) { int _i = i; _i++; return _i; }";
+            module.ModuleText = @"
+public void In(int i) {  }
+public void In(string s) {  }
+public void Overload() 
+{
+    In(100);
+    Save();
+}
+";
 
             var command = store.CreateCommand();
             command.Name = "HelloFromServer";

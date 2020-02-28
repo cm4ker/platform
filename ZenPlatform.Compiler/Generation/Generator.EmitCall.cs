@@ -18,7 +18,12 @@ namespace ZenPlatform.Compiler.Generation
 
             if (symbol != null)
             {
-                var func = symbol.SelectOverload(call.Arguments.Select(x=>_map.GetClrType(x.Expression.Type)).ToArray());
+                var func = symbol.SelectOverload(call.Arguments.Select(x => _map.GetClrType(x.Expression.Type))
+                    .ToArray());
+
+                //we need load this arg
+                if (!func.clrMethod.IsStatic)
+                    e.LdArg_0();
 
                 Function function = func.method;
 

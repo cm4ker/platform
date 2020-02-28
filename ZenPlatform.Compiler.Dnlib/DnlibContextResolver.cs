@@ -46,7 +46,13 @@ namespace ZenPlatform.Compiler.Dnlib
             return _moduleDef.Import(method);
         }
 
-        public IType GetType(ITypeDefOrRef tr) => _ts.Resolve(tr.ToTypeRef());
+        public IType GetType(ITypeDefOrRef tr)
+        {
+            if (tr is TypeDefUser)
+                return _ts.Resolve(tr);
+            else
+                return _ts.Resolve(tr.ToTypeRef());
+        }
 
         public MethodSig ResolveMethodSig(MethodSig msig, IType[] genericArguments)
         {
