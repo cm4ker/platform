@@ -81,9 +81,9 @@ public void Overload()
  [ClientCall] 
  public string GetUserNameServer()
  { 
-     Store s = $Entity.Store.Create();
-     s.Name = ""Souths park"";
-     s.Save();    
+     //Store s = $Entity.Store.Create();
+     //s.Name = ""Souths park"";
+    // s.Save();    
      return Context.UserName; 
  }
 

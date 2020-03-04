@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
+using Avalonia;
+using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Core.Assemlies;
@@ -11,11 +13,11 @@ namespace ZenPlatform.ThinClient
     class Program
     {
         public static Assembly ClientMainAssembly { get; set; }
-
+        
         static void Main(string[] args)
         {
             var clientServices = Initializer.GetClientService();
-            var platformClient = clientServices.GetRequiredService<ClientPlatformContext>();
+            var platformClient = clientServices.GetRequiredService<IClientPlatformContext>();
             platformClient.Connect(new DatabaseConnectionSettings()
             {
                 Address = "127.0.0.1:12345",
@@ -26,6 +28,11 @@ namespace ZenPlatform.ThinClient
             platformClient.Login("admin", "admin");
 
             ClientMainAssembly = platformClient.LoadMainAssembly();
+
+            var result = AppBuilder.Configure<App>()
+                .UsePlatformDetect();
+
+            result.StartWithClassicDesktopLifetime(args);
         }
     }
 
