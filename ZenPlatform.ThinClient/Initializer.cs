@@ -49,7 +49,8 @@ namespace ZenPlatform.ThinClient
             services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
             services.AddSingleton<IClientAssemblyManager, PlatformClientAssemblyManager>();
-
+            services.AddSingleton<ITransportClientFactory, SSHTransportClientFactory>();
+            services.AddSingleton<IPlatformClient, Client>();
 
             services.AddSingleton(factory =>
             {
