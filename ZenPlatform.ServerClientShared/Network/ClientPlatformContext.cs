@@ -17,12 +17,21 @@ using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Core.Network
 {
+    public interface IClientPlatformContext
+    {
+        Assembly LoadMainAssembly();
+        Assembly MainAssembly { get; }
+        IPlatformClient Client { get; }
+        void Connect(DatabaseConnectionSettings connectionSettings);
+        void Login(string name, string password);
+    }
+
     /// <summary>
     /// Контекст платформы
     /// <br />
     /// на этом уровне Клиентское соединение платформы оборачивается. Есть позможность работать со сборками (выгрузка загрузка)
     /// </summary>
-    public class ClientPlatformContext
+    public class ClientPlatformContext : IClientPlatformContext
     {
         private readonly IPlatformClient _client;
         private readonly ILogger _logger;

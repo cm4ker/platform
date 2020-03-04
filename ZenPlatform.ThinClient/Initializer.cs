@@ -1,13 +1,35 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Contracts.Network;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Network.Contracts;
+using ZenPlatform.Core.Settings;
+using ZenPlatform.ThinClient.FakeAssembly;
 
 namespace ZenPlatform.ThinClient
 {
+    public class FakeClientPlatformContext : IClientPlatformContext
+    {
+        public Assembly LoadMainAssembly()
+        {
+            return typeof(FakeClass).Assembly;
+        }
+
+        public Assembly MainAssembly { get; }
+        public IPlatformClient Client { get; }
+
+        public void Connect(DatabaseConnectionSettings connectionSettings)
+        {
+        }
+
+        public void Login(string name, string password)
+        {
+        }
+    }
+
     public static class Initializer
     {
         public static ServiceProvider GetServerService()
@@ -22,7 +44,7 @@ namespace ZenPlatform.ThinClient
             IServiceCollection services = new ServiceCollection();
 
 
-            services.AddSingleton<ClientPlatformContext>();
+            services.AddSingleton<IClientPlatformContext, FakeClientPlatformContext>();
             services.AddSingleton<IProtocolClient, Client>();
             services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
