@@ -1,14 +1,8 @@
-﻿using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
 namespace ZenPlatform.ThinClient.FakeAssembly
 {
-    public class FakeClass
-    {
-    }
-
     public class UIBuilder
     {
         public static IControl GetDesktop()
@@ -35,7 +29,7 @@ namespace ZenPlatform.ThinClient.FakeAssembly
 
         public static IControl GetDocumentForm()
         {
-            
+            return null;
         }
     }
 }
