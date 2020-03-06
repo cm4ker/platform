@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 
 namespace BufferedDataReaderDotNet
@@ -19,6 +20,8 @@ namespace BufferedDataReaderDotNet
             var emptyReadFuncs = new Dictionary<Type, Func<BinaryReader, object>>();
             var emptyWriteOptions = new Dictionary<Type, Action<object, BinaryWriter>>();
 
+
+            //TODO: create GZIP stream from here for column compress in memory
             DefaultCompressedStreamFunc = () => new MemoryStream();
             DefaultReadFuncs = new ReadOnlyDictionary<Type, Func<BinaryReader, object>>(emptyReadFuncs);
             DefaultWriteActions = new ReadOnlyDictionary<Type, Action<object, BinaryWriter>>(emptyWriteOptions);

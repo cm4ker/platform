@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,11 +22,33 @@ namespace BufferedDataReaderDotNet
         }
 
         [PublicAPI]
-        public static async Task<BufferedData> GetBufferedDataAsync(
+        public static Task<BufferedData> GetBufferedDataAsync(
             this DbDataReader dataReader, BufferedDataOptions bufferedDataOptions, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            if (bufferedDataOptions == null)
+                bufferedDataOptions = BufferedDataOptions.Default;
+            try
+            {
+                return Task.FromResult(GetBufferedData(dataReader, bufferedDataOptions));
+            }
+            catch (Exception e)
+            {
+                return Task.FromException<BufferedData>(e);
+            }
+        }
+
+        [PublicAPI]
+        public static BufferedData GetBufferedData(this DbDataReader dataReader)
+        {
+            return GetBufferedData(dataReader, null);
+        }
+
+        [PublicAPI]
+        public static BufferedData GetBufferedData(
+            this DbDataReader dataReader, BufferedDataOptions bufferedDataOptions)
+        {
             if (bufferedDataOptions == null)
                 bufferedDataOptions = BufferedDataOptions.Default;
 
@@ -32,11 +56,7 @@ namespace BufferedDataReaderDotNet
 
             try
             {
-                var getBufferedResultsTask = GetBufferedResultsAsync(
-                    dataReader, bufferedDataOptions,bufferedResults, cancellationToken);
-
-                await getBufferedResultsTask.ConfigureAwait(false);
-
+                GetBufferedResults(dataReader, bufferedDataOptions, bufferedResults);
                 return new BufferedData(bufferedResults);
             }
             catch
@@ -48,12 +68,9 @@ namespace BufferedDataReaderDotNet
             }
         }
 
-        private static async Task GetBufferedResultsAsync(
-            DbDataReader dataReader, BufferedDataOptions bufferedDataOptions,
-            Queue<BufferedResult> bufferedResults, CancellationToken cancellationToken)
+        private static void GetBufferedResults(DbDataReader dataReader, BufferedDataOptions bufferedDataOptions,
+            Queue<BufferedResult> bufferedResults)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var fieldCount = dataReader.FieldCount;
             var compressedStreams = new List<Stream>(fieldCount);
 
@@ -62,10 +79,7 @@ namespace BufferedDataReaderDotNet
                 for (var fieldIndex = 0; fieldIndex < fieldCount; ++fieldIndex)
                     compressedStreams.Add(bufferedDataOptions.GetCompressedStream());
 
-                var getBufferedResultsTask = GetBufferedResultsAsync(dataReader,
-                    bufferedDataOptions, bufferedResults, compressedStreams, cancellationToken);
-
-                await getBufferedResultsTask.ConfigureAwait(false);
+                GetBufferedResults(dataReader, bufferedDataOptions, bufferedResults, compressedStreams);
             }
             catch
             {
@@ -76,12 +90,10 @@ namespace BufferedDataReaderDotNet
             }
         }
 
-        private static async Task GetBufferedResultsAsync(DbDataReader dataReader,
+        private static void GetBufferedResults(DbDataReader dataReader,
             BufferedDataOptions bufferedDataOptions, Queue<BufferedResult> bufferedResults,
-            IReadOnlyList<Stream> compressedStreams, CancellationToken cancellationToken)
+            IReadOnlyList<Stream> compressedStreams)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var fieldCount = dataReader.FieldCount;
             var columnWriters = new List<ColumnWriter>(fieldCount);
 
@@ -90,10 +102,8 @@ namespace BufferedDataReaderDotNet
                 for (var fieldIndex = 0; fieldIndex < fieldCount; ++fieldIndex)
                     columnWriters.Add(new ColumnWriter(compressedStreams[fieldIndex]));
 
-                var getBufferedResultsTask = GetBufferedResultsAsync(dataReader,
-                    bufferedDataOptions,bufferedResults, compressedStreams, columnWriters, cancellationToken);
-
-                await getBufferedResultsTask.ConfigureAwait(false);
+                GetBufferedResults(dataReader, bufferedDataOptions, bufferedResults, compressedStreams,
+                    columnWriters);
             }
             finally
             {
@@ -102,13 +112,10 @@ namespace BufferedDataReaderDotNet
             }
         }
 
-        private static async Task GetBufferedResultsAsync(DbDataReader dataReader,
+        private static void GetBufferedResults(DbDataReader dataReader,
             BufferedDataOptions bufferedDataOptions, Queue<BufferedResult> bufferedResults,
-            IReadOnlyList<Stream> compressedStreams, List<ColumnWriter> columnWriters,
-            CancellationToken cancellationToken)
+            IReadOnlyList<Stream> compressedStreams, List<ColumnWriter> columnWriters)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var fieldCount = dataReader.FieldCount;
             var writeActions = new Action<object, BinaryWriter>[fieldCount];
 
@@ -118,7 +125,7 @@ namespace BufferedDataReaderDotNet
             var recordCount = 0;
             var values = new object[columnWriters.Capacity];
 
-            for (; await dataReader.ReadAsync(cancellationToken).ConfigureAwait(false); ++recordCount)
+            for (; dataReader.Read(); ++recordCount)
             {
                 dataReader.GetValues(values);
 
@@ -135,30 +142,23 @@ namespace BufferedDataReaderDotNet
                 }
             }
 
-            var getBufferedResultsTask = GetBufferedResultsAsync(dataReader,
-                bufferedDataOptions, bufferedResults, compressedStreams, recordCount, cancellationToken);
-
-            await getBufferedResultsTask.ConfigureAwait(false);
+            GetBufferedResults(dataReader, bufferedDataOptions, bufferedResults,
+                compressedStreams, recordCount);
         }
 
-        private static async Task GetBufferedResultsAsync(DbDataReader dataReader,
+        private static void GetBufferedResults(DbDataReader dataReader,
             BufferedDataOptions bufferedDataOptions, Queue<BufferedResult> bufferedResults,
-            IReadOnlyList<Stream> compressedStreams, int recordCount, CancellationToken cancellationToken)
+            IReadOnlyList<Stream> compressedStreams, int recordCount)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var bufferedResult = new BufferedResult(dataReader, bufferedDataOptions, compressedStreams, recordCount);
 
             try
             {
                 bufferedResults.Enqueue(bufferedResult);
 
-                if (await dataReader.NextResultAsync(cancellationToken).ConfigureAwait(false))
+                if (dataReader.NextResult())
                 {
-                    var getBufferedResultsTask = GetBufferedResultsAsync(
-                        dataReader, bufferedDataOptions, bufferedResults, cancellationToken);
-
-                    await getBufferedResultsTask.ConfigureAwait(false);
+                    GetBufferedResults(dataReader, bufferedDataOptions, bufferedResults);
                 }
             }
             catch
