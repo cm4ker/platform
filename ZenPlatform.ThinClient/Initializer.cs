@@ -7,7 +7,6 @@ using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Network.Contracts;
 using ZenPlatform.Core.Settings;
-using ZenPlatform.ThinClient.FakeAssembly;
 
 namespace ZenPlatform.ThinClient
 {
@@ -15,7 +14,7 @@ namespace ZenPlatform.ThinClient
     {
         public Assembly LoadMainAssembly()
         {
-            return typeof(FakeClass).Assembly;
+            return null;// typeof(FakeClass).Assembly;
         }
 
         public Assembly MainAssembly { get; }

@@ -21,6 +21,31 @@ namespace ZenPlatform.ThinClient
             {
                 var view = new DockMainWindowViewModel();
 
+                var xaml = @"
+<UserControl xmlns='https://github.com/avaloniaui'
+             xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+             Width='300'>
+    <StackPanel> 
+        <TextBlock Text='Store caption' />
+        <StackPanel Orientation='Horizontal'>
+            <TextBlock Text='Prop1'/>
+            <TextBox Text='test' Width='200'/>
+        </StackPanel>
+        <StackPanel Orientation='Horizontal'>
+            <TextBlock Text='Prop2'/>
+            <TextBox Text='test' Width='200'/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>";
+
+                var a = new RuntimeModel(xaml, null);
+                //var co =  //UIBuilder.GetDesktop();
+                
+                view.ShowDock(a);
+                view.ShowDock(a);
+                view.ShowDock(a);
+                view.ShowDock(a);
+
                 desktopLifetime.MainWindow = new DockMainWindow
                 {
                     DataContext = view,

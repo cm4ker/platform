@@ -2,37 +2,28 @@
 using System.Reactive;
 using Dock.Model;
 using ReactiveUI;
-using SharpFileSystem.FileSystems;
-using ZenPlatform.Configuration;
-using ZenPlatform.Configuration.Common.TypeSystem;
-using ZenPlatform.Configuration.Storage;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Ide.Contracts;
 using ZenPlatform.ThinClient.Dock;
 
 namespace ZenPlatform.ThinClient.ViewModels
 {
-    public class DockMainWindowViewModel: ViewModelBase
+    public class DockMainWindowViewModel: ViewModelBase, IVisualEnvironment
     {
         public ConfigurationTreeViewModel Configuration { get; set; }
 
+        public MainDockContainer _container;
 
-        private MainDockContainer _container;
-
-        public ReactiveCommand<IConfigurationItem, IDockable> OpenItemCommand;
-
+        
         public ReactiveCommand<Unit, string> SaveProjectCommand { get; private set; }
 
         public ReactiveCommand<Unit, string> OpenProjectCommand { get; private set; }
 
-        private Project _project;
-
+      
         public DockMainWindowViewModel()
         {
             // _project = ConfigurationFactory.Create();
 
 
-            Configuration = new ConfigurationTreeViewModel(_project);
+            Configuration = new ConfigurationTreeViewModel();
 
             _container = new MainDockContainer();
             
@@ -76,5 +67,14 @@ namespace ZenPlatform.ThinClient.ViewModels
 
 
         public IDockable Layout => _container.Layout;
+        public void ShowDock(RuntimeModel rm)
+        {
+            _container.Open(rm);
+        }
+
+        public void ShowDialog(string xaml, object dataContext)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

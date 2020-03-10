@@ -33,9 +33,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj" />
+<!--      <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj" />-->
       <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
-      <ProjectReference Include="..\ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj" />
+<!--      <ProjectReference Include="..\ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj" />-->
     </ItemGroup>
 
     <ItemGroup>
