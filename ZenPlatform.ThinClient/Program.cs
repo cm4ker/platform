@@ -13,7 +13,7 @@ namespace ZenPlatform.ThinClient
     class Program
     {
         public static Assembly ClientMainAssembly { get; set; }
-        
+
         static void Main(string[] args)
         {
             var clientServices = Initializer.GetClientService();

@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
+using ZenPlatform.ThinClient.ViewModels;
+using ZenPlatform.ThinClient.Views;
 
 namespace ZenPlatform.ThinClient
 {
@@ -17,18 +19,12 @@ namespace ZenPlatform.ThinClient
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
             {
-                var window = new MainWindow();
-                var panel = window.FindControl<Panel>("Panel");
+                var view = new DockMainWindowViewModel();
 
-                var initializer = Program.ClientMainAssembly.GetType("ZenPlatform.ThinClient.FakeAssembly.UIBuilder");
-                var metohd = initializer.GetMethod("GetDesktop");
-
-                var result = metohd.Invoke(null, null);
-
-                if (result != null && result is IControl c)
-                    panel.Children.Add(c);
-
-                desktopLifetime.MainWindow = window;
+                desktopLifetime.MainWindow = new DockMainWindow
+                {
+                    DataContext = view,
+                };
             }
 
             base.OnFrameworkInitializationCompleted();

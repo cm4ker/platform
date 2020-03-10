@@ -36,7 +36,7 @@ RETURN : 'return';
 
 TRY : 'try';
 CATCH: 'catch';
-FINALY: 'finally';
+FINALLY: 'finally';
 
 IF : 'if';
 ELSE : 'else';

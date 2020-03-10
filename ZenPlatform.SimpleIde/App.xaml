@@ -10,8 +10,8 @@
 
     <Application.Styles>
 
-      <StyleInclude Source="avares://Dock.Avalonia.Themes.Default/DefaultTheme.xaml"/>
-      <StyleInclude Source="avares://Dock.Avalonia.Themes.Metro/DefaultTheme.xaml"/>
+      <StyleInclude Source="avares://Dock.Avalonia.Themes.Default/DefaultTheme.xaml" />
+      <StyleInclude Source="avares://Dock.Avalonia.Themes.Metro/DefaultTheme.xaml" />
       <!--
       
       
