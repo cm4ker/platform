@@ -1,17 +1,16 @@
 ﻿using Dock.Model;
 using ReactiveUI;
-using ZenPlatform.Ide.Contracts;
 using ZenPlatform.ThinClient.ViewModels;
 
 namespace ZenPlatform.ThinClient.Dock
 {
-    public class MainDockContainer: ReactiveObject
+    public class MainDockContainer : ReactiveObject
     {
-
         private ToolsDockContainer _leftTools;
         private DocumentDockContainer _documents;
 
         private IDockable _layout;
+
         public IDockable Layout
         {
             get => _layout;
@@ -20,17 +19,28 @@ namespace ZenPlatform.ThinClient.Dock
 
         private LayoutFactory LayoutFactory { get; }
 
-        public DocumentView ActiveDocument => (DocumentView)_documents.ActiveDockable;
+        public DocumentView ActiveDocument => (DocumentView) _documents.ActiveDockable;
 
         public MainDockContainer()
         {
             LayoutFactory = new LayoutFactory();
+
             Initialize();
         }
 
-        public void OpenConfigutaionItem(IConfigurationItem item)
+        public void Open()
         {
-            var view = new DocumentView(item);
+            var view = new DocumentView();
+            _documents.OpenDocument(view);
+        }
+
+        public void Open(RuntimeModel rm)
+        {
+            var view = new DocumentView
+            {
+                Context = rm
+            };
+            
             _documents.OpenDocument(view);
         }
 
@@ -41,7 +51,6 @@ namespace ZenPlatform.ThinClient.Dock
 
         private void Initialize()
         {
-
             _leftTools = new ToolsDockContainer();
             _leftTools.Factory = LayoutFactory;
             _documents = new DocumentDockContainer();
@@ -49,21 +58,22 @@ namespace ZenPlatform.ThinClient.Dock
 
 
             var mainLayout = LayoutFactory.CreateProportionalDock();
-                                                    // mainLayout.Proportion = 0.2;
+            // mainLayout.Proportion = 0.2;
             mainLayout.IsCollapsable = false;
             mainLayout.Id = "MainLayout";
             mainLayout.Title = "MainLayout";
             mainLayout.Orientation = Orientation.Horizontal;
-            
+
             var split = LayoutFactory.CreateSplitterDock();
-            split.Proportion = 0.3;
+
+            _leftTools.Proportion = 0.3;
+
             // mainLayout.ActiveDockable = null;
             mainLayout.VisibleDockables = LayoutFactory.CreateList<IDockable>(
                 _leftTools,
                 split,
                 _documents
             );
-
 
 
             var root = LayoutFactory.CreateRootDock();
@@ -87,6 +97,5 @@ namespace ZenPlatform.ThinClient.Dock
             LayoutFactory.InitLayout(root);
             Layout = root;
         }
-        
     }
 }

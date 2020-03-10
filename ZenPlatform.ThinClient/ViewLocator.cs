@@ -4,7 +4,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Dock.Model;
 using ReactiveUI;
-using ZenPlatform.Ide.Contracts;
 using ZenPlatform.ThinClient.ViewModels;
 
 namespace ZenPlatform.ThinClient
@@ -20,32 +19,26 @@ namespace ZenPlatform.ThinClient
                 data = dd.Context;
             }
 
+            if (data is RuntimeModel rm)
+                return rm.Run();
+
             Type type = null;
-            var attrs = data.GetType().GetCustomAttributes(typeof(ViewAttribute), true);
-            if (attrs.Length > 0)
+            
             {
-                type = ((ViewAttribute) attrs.First()).ViewType;
-            }
-            else
-            {
-                var name = data.GetType().FullName.Replace("ViewModel", "View");
-                type = Type.GetType(name);
+                var name = data?.GetType().FullName?.Replace("ViewModel", "View");
+
+                if (name != null)
+                    type = Type.GetType(name);
             }
 
             if (type != null)
             {
-                /*
-                if (type.GetConstructor(new Type[]{ data.GetType() }) != null)
-                {
-
-                }*/
                 var view = (Control) Activator.CreateInstance(type);
-
                 return view;
             }
             else
             {
-                return new TextBlock {Text = "View not found for : " + data.GetType().FullName};
+                return new TextBlock {Text = "View not found for : " + data?.GetType().FullName};
             }
         }
 
@@ -54,7 +47,6 @@ namespace ZenPlatform.ThinClient
             return data is ReactiveObject || data is IDockable;
         }
     }
-
 
     public class ConfigurationItemViewLocator : IDataTemplate
     {
@@ -67,7 +59,7 @@ namespace ZenPlatform.ThinClient
 
         public bool Match(object data)
         {
-            return data is IConfigurationItem;
+            return true;
         }
     }
 }

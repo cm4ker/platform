@@ -1,0 +1,11 @@
+
+
+Client can request: 
+    - Open dockable + content
+    - Open message dialog + content
+    - File dialog
+    - Request some?
+
+WindowType:
+    - Dockable window
+    - Dialog window
