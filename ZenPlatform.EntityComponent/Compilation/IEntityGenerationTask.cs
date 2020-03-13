@@ -1,7 +1,7 @@
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.QueryBuilder;
 
-namespace ZenPlatform.EntityComponent.Entity.Generation
+namespace ZenPlatform.EntityComponent.Compilation
 {
     public interface IEntityGenerationTask
     {
