@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ZenPlatform.EntityComponent.Entity.Generation
+namespace ZenPlatform.EntityComponent.Compilation
 {
     abstract class EntityTable<TDtoRowClass, TObjectClass> : IEnumerable<TObjectClass>
     {

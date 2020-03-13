@@ -3,8 +3,9 @@ using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.EntityComponent.Entity;
 
-namespace ZenPlatform.EntityComponent.Entity.Generation
+namespace ZenPlatform.EntityComponent.Compilation
 {
     public static class SharedGenerators
     {

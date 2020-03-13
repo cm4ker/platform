@@ -1,18 +1,17 @@
-using System;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 
-namespace ZenPlatform.EntityComponent.Entity.Generation
+namespace ZenPlatform.EntityComponent.Compilation
 {
-    public class ObjectTableRowGenerationTask : ComponentAstTask, IEntityGenerationTask
+    public class LinkTableRowGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
-        public ObjectTableRowGenerationTask(
+        public LinkTableRowGenerationTask(
             IPType objectType,
             ITable table,
             CompilationMode compilationMode, IComponent component, string name, TypeBody tb)
@@ -27,7 +26,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
         public ITypeBuilder Stage0(IAssemblyBuilder asm)
         {
-            return asm.DefineInstanceType(this.GetNamespace(), Table.GetObjectRowClassName());
+            return asm.DefineInstanceType(this.GetNamespace(), Table.GetLinkRowClassName());
         }
 
         public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
@@ -90,7 +89,7 @@ namespace ZenPlatform.EntityComponent.Entity.Generation
 
             foreach (var prop in Table.Properties)
             {
-                SharedGenerators.EmitObjectProperty(builder, prop, sb, _dtoRowType, _dtoPrivate, ts, mrgGet,
+                SharedGenerators.EmitLinkProperty(builder, prop, sb, _dtoRowType, _dtoPrivate, ts, mrgGet,
                     GetNamespace());
             }
         }

@@ -1,24 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
-using ZenPlatform.EntityComponent.Entity.Generation;
-using ZenPlatform.Language.Ast;
+using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
-using IType = ZenPlatform.Compiler.Contracts.IType;
 using Root = ZenPlatform.Language.Ast.Definitions.Root;
 
-namespace ZenPlatform.EntityComponent.Entity
+namespace ZenPlatform.EntityComponent.Compilation
 {
     public enum ObjectType
     {

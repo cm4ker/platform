@@ -1,20 +1,6 @@
-﻿using System;
-using System.Data;
-using System.Data.Common;
+﻿using System.Data.Common;
 using System.Data.SqlClient;
-using System.Net;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
-using ZenPlatform.Core.Network;
-using System.Reflection;
 using BufferedDataReaderDotNet;
-using ConsoleTables;
-using dnlib.DotNet;
-using dnlib.DotNet.Emit;
-using Microsoft.Extensions.DependencyInjection;
-using ZenPlatform.Core.Authentication;
-using ZenPlatform.Core.Logging;
 
 namespace ZenPlatform.ServerRPC
 {

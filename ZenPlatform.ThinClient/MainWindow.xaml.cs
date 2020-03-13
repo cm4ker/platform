@@ -1,6 +1,8 @@
-﻿using Avalonia;
+﻿using System.Reflection;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Portable.Xaml;
 
 namespace ZenPlatform.ThinClient
 {
@@ -12,6 +14,8 @@ namespace ZenPlatform.ThinClient
 #if DEBUG
             this.AttachDevTools();
 #endif
+
+         
         }
 
         private void InitializeComponent()

@@ -1,10 +1,11 @@
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 
-namespace ZenPlatform.EntityComponent.Entity.Generation
+namespace ZenPlatform.EntityComponent.Compilation
 {
     public class ObjectTableCollectionGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
