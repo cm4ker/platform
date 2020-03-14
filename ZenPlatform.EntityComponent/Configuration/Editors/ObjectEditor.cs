@@ -16,6 +16,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         private readonly List<ModuelEditor> _modules;
         private readonly List<CommandEditor> _commands;
         private readonly List<TableEditor> _tables;
+        private readonly List<InterfaceEditor> _interfaces;
 
         public IInfrastructure Infrastructure => _inf;
 
@@ -28,6 +29,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             _modules = new List<ModuelEditor>();
             _commands = new List<CommandEditor>();
             _tables = new List<TableEditor>();
+            _interfaces = new List<InterfaceEditor>();
         }
 
         public ObjectEditor(IInfrastructure inf, MDEntity md) : this(inf)
@@ -45,6 +47,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         public IEnumerable<ModuelEditor> ModuleEditors => _modules;
         public IEnumerable<CommandEditor> CommandEditors => _commands;
         public IEnumerable<TableEditor> TableEditors => _tables;
+        public IEnumerable<InterfaceEditor> InterfaceEditors => _interfaces;
 
         public ModuelEditor CreateModule()
         {
@@ -75,6 +78,17 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             _md.Properties.Add(mp);
             _props.Add(a);
             return a;
+        }
+
+        public InterfaceEditor CreateInterface()
+        {
+            var im = new MDInterface();
+            var e = new InterfaceEditor(im);
+
+            _md.Interfaces.Add(im);
+            _interfaces.Add(e);
+
+            return e;
         }
 
         public TableEditor CreateTable()
