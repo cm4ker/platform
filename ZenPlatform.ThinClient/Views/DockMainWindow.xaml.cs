@@ -53,16 +53,16 @@ namespace ZenPlatform.ThinClient.Views
             this.AttachDevTools();
 #endif
 
-            TextWriter output = new StringWriter();
-            using (XmlWriter xmlWriter = XmlWriter.Create(output, new XmlWriterSettings()
-            {
-                OmitXmlDeclaration = true,
-                Indent = true
-            }))
-
-                XamlServices.Save(
-                    (XamlWriter) new XamlXmlWriter(xmlWriter, new MyXamlSchemaContext()),
-                    this);
+            // TextWriter output = new StringWriter();
+            // using (XmlWriter xmlWriter = XmlWriter.Create(output, new XmlWriterSettings()
+            // {
+            //     OmitXmlDeclaration = true,
+            //     Indent = true
+            // }))
+            //
+            //     XamlServices.Save(
+            //         (XamlWriter) new XamlXmlWriter(xmlWriter, new MyXamlSchemaContext()),
+            //         this);
         }
 
         private void InitializeComponent()

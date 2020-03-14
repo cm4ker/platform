@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using ZenPlatform.Avalonia.Wrapper;
 using ZenPlatform.Data;
 
 namespace ZenPlatform.ThinClient
@@ -32,7 +33,17 @@ namespace ZenPlatform.ThinClient
                 dc.DataContext = _dataContext;
             }
 
-            return visual;
+            UXForm form = new UXForm();
+            UXGroup gr = new UXGroup();
+            UXTextBox tb = new UXTextBox();
+            UXTextBox tb2 = new UXTextBox();
+
+            gr.Add(tb);
+            gr.Add(tb2);
+
+            form.SetContent(gr);
+
+            return form.GetUnderlyingControl();
         }
     }
 }
