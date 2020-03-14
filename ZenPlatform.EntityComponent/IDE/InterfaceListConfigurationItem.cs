@@ -1,25 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using ZenPlatform.EntityComponent.Configuration.Editors;
 using ZenPlatform.Ide.Contracts;
 
 namespace ZenPlatform.EntityComponent.IDE
 {
-    public class ModuleListConfigurationItem : ConfigurationItemBase
+    public class InterfaceListConfigurationItem : ConfigurationItemBase
     {
         private ObjectEditor _editor;
         private ObservableCollection<IConfigurationItem> _childs;
 
-        public ModuleListConfigurationItem(ObjectEditor editor)
+        public InterfaceListConfigurationItem(ObjectEditor editor)
         {
             _editor = editor;
             _childs = new ObservableCollection<IConfigurationItem>(
-                _editor.ModuleEditors.Select(p => new ModuleConfigurationItem(p)));
+                _editor.InterfaceEditors.Select(p => new InterfaceConfigurationItem(p)));
         }
 
         public override string Caption
         {
-            get => "Modules";
+            get => "Interfaces";
             set { }
         }
 
@@ -31,10 +35,8 @@ namespace ZenPlatform.EntityComponent.IDE
 
         public override IConfigurationItem Create(string name)
         {
-            var module = _editor.CreateModule();
-            module.ModuleName = name;
-            module.ModuleText = "";
-            var item = new ModuleConfigurationItem(module);
+            var module = _editor.CreateInterface();
+            var item = new InterfaceConfigurationItem(module);
             _childs.Add(item);
 
             return item;

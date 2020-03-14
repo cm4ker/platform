@@ -47,6 +47,10 @@ namespace ZenPlatform.Test.Tools
             tableProp1.SetType(MDTypes.String(100));
             tableProp1.SetType(store.GetRef());
 
+            var i = store.CreateInterface();
+            i.Markup = "Some markup";
+            i.Name = "Simple form";
+
             var module = store.CreateModule();
             module.ModuleName = "Module1";
             module.ModuleRelationType = ProgramModuleRelationType.Object;
