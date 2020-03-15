@@ -3,6 +3,8 @@ using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
+using Portable.Xaml;
+using ZenPlatform.Avalonia.Wrapper;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Network;
@@ -12,10 +14,39 @@ namespace ZenPlatform.ThinClient
 {
     class Program
     {
+        public static void Test()
+        {
+            UXForm form = new UXForm();
+            UXGroup gr = new UXGroup();
+            UXTextBox tb = new UXTextBox();
+            UXTextBox tb2 = new UXTextBox();
+
+            gr.Childs.Add(tb);
+            gr.Childs.Add(tb2);
+
+            form.Content = gr;
+
+
+            var result = XamlServices.Save(form);
+
+
+            var xaml =
+                @"<UXForm xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
+  <UXGroup Orientation=""Horizontal"">
+    <UXTextBox />
+    <UXTextBox />
+  </UXGroup>
+</UXForm>";
+
+            var a = (UXForm)XamlServices.Parse(xaml);
+        }
+
         public static Assembly ClientMainAssembly { get; set; }
 
         static void Main(string[] args)
         {
+
+            
             var clientServices = Initializer.GetClientService();
             var platformClient = clientServices.GetRequiredService<IClientPlatformContext>();
             platformClient.Connect(new DatabaseConnectionSettings()

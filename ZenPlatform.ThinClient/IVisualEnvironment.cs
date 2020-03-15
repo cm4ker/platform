@@ -33,17 +33,9 @@ namespace ZenPlatform.ThinClient
                 dc.DataContext = _dataContext;
             }
 
-            UXForm form = new UXForm();
-            UXGroup gr = new UXGroup();
-            UXTextBox tb = new UXTextBox();
-            UXTextBox tb2 = new UXTextBox();
+            
 
-            gr.Add(tb);
-            gr.Add(tb2);
-
-            form.SetContent(gr);
-
-            return form.GetUnderlyingControl();
+            return visual; //form.GetUnderlyingControl();
         }
     }
 }

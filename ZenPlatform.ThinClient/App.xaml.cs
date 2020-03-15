@@ -46,10 +46,15 @@ namespace ZenPlatform.ThinClient
                 view.ShowDock(a);
                 view.ShowDock(a);
 
+                
+                Program.Test();
+                
+                
                 desktopLifetime.MainWindow = new DockMainWindow
                 {
                     DataContext = view,
                 };
+                
             }
 
             base.OnFrameworkInitializationCompleted();
