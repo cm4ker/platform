@@ -14,32 +14,32 @@ namespace ZenPlatform.ThinClient
 {
     class Program
     {
-        public static void Test()
-        {
-            UXForm form = new UXForm();
-            UXGroup gr = new UXGroup();
-            UXTextBox tb = new UXTextBox();
-            UXTextBox tb2 = new UXTextBox();
-
-            gr.Childs.Add(tb);
-            gr.Childs.Add(tb2);
-
-            form.Content = gr;
-
-
-            var result = XamlServices.Save(form);
-
-
-            var xaml =
-                @"<UXForm xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
-  <UXGroup Orientation=""Horizontal"">
-    <UXTextBox />
-    <UXTextBox />
-  </UXGroup>
-</UXForm>";
-
-            var a = (UXForm)XamlServices.Parse(xaml);
-        }
+//         public static void Test()
+//         {
+//             UXForm form = new UXForm();
+//             UXGroup gr = new UXGroup();
+//             UXTextBox tb = new UXTextBox();
+//             UXTextBox tb2 = new UXTextBox();
+//
+//             gr.Childs.Add(tb);
+//             gr.Childs.Add(tb2);
+//
+//             form.Content = gr;
+//
+//
+//             var result = XamlServices.Save(form);
+//
+//
+//             var xaml =
+//                 @"<UXForm xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
+//   <UXGroup Orientation=""Horizontal"">
+//     <UXTextBox />
+//     <UXTextBox />
+//   </UXGroup>
+// </UXForm>";
+//
+//             var a = (UXForm)XamlServices.Parse(xaml);
+//         }
 
         public static Assembly ClientMainAssembly { get; set; }
 

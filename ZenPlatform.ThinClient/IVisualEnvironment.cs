@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Portable.Xaml;
 using ZenPlatform.Avalonia.Wrapper;
 using ZenPlatform.Data;
 
@@ -26,16 +27,16 @@ namespace ZenPlatform.ThinClient
 
         public IControl Run()
         {
-            var visual = AvaloniaXamlLoader.Parse(_xaml) as IControl;
+            var ux = (UXElement) XamlServices.Parse(_xaml);
+
+            var visual = ux.GetUnderlyingControl();
 
             if (visual is IDataContextProvider dc)
             {
                 dc.DataContext = _dataContext;
             }
 
-            
-
-            return visual; //form.GetUnderlyingControl();
+            return visual;
         }
     }
 }

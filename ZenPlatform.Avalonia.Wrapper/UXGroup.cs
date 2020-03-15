@@ -16,10 +16,6 @@ namespace ZenPlatform.Avalonia.Wrapper
 
         public UXGroupOrientation Orientation { get; set; }
 
-        private void UpdateOrientation()
-        {
-        }
-
         public UXGroupCollection Childs { get; }
 
         public override Control GetUnderlyingControl()
