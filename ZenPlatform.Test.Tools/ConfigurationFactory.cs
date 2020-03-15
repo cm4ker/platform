@@ -48,7 +48,12 @@ namespace ZenPlatform.Test.Tools
             tableProp1.SetType(store.GetRef());
 
             var i = store.CreateInterface();
-            i.Markup = "Some markup";
+            i.Markup = @"<UXForm xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
+  <UXGroup Orientation=""Horizontal"">
+    <UXTextBox />
+    <UXTextBox />
+  </UXGroup>
+</UXForm>";
             i.Name = "Simple form";
 
             var module = store.CreateModule();
