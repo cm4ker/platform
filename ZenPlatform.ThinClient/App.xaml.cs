@@ -26,19 +26,18 @@ namespace ZenPlatform.ThinClient
   <UXGroup Orientation=""Horizontal"">
     <UXTextBox />
     <UXTextBox />
+    <UXTextBox />
   </UXGroup>
 </UXForm>";
 
                 var a = new RuntimeModel(xaml, null);
-                
-                view.ShowDock(a);
-                view.ShowDock(a);
-                view.ShowDock(a);
-                view.ShowDock(a);
 
+                view.ShowDock(a);
+                view.ShowDock(a);
+                view.ShowDock(a);
+                view.ShowDock(a);
 
                 // Program.Test();
-
 
                 desktopLifetime.MainWindow = new DockMainWindow
                 {
