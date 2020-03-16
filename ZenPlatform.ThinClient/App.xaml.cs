@@ -23,10 +23,16 @@ namespace ZenPlatform.ThinClient
 
                 var xaml = @"
 <UXForm xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
-  <UXGroup Orientation=""Horizontal"">
+  <UXGroup Orientation=""Vertical"">
     <UXTextBox />
     <UXTextBox />
-    <UXTextBox />
+    <UXGroup Orientation = ""Horizontal""> 
+        <UXTextBox />
+        <UXTextBox />
+        <UXCheckBox />
+        <UXDatePicker />
+        <UXButton />    
+    </UXGroup>
   </UXGroup>
 </UXForm>";
 

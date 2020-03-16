@@ -11,8 +11,6 @@ namespace ZenPlatform.EntityComponent.Compilation
 {
     public class CommandGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
-        
-
         public CommandGenerationTask(MDCommand command, CompilationMode compilationMode, IComponent component,
             string name) : base(compilationMode, component, true, name, TypeBody.Empty)
         {
@@ -22,8 +20,7 @@ namespace ZenPlatform.EntityComponent.Compilation
         }
 
         public MDCommand Command { get; }
-        
-        
+
         private void Init()
         {
             var typeBody = ParserHelper.ParseTypeBody(Command.Module.ModuleText);
