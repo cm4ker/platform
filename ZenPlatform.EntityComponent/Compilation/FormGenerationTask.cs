@@ -17,6 +17,21 @@ namespace ZenPlatform.EntityComponent.Compilation
 
         public IPType ObjectType { get; }
 
+        /*
+         Server
+            Form
+                Model + UXObject
+         
+         .ctor
+         {
+            UXObj = new UXForm()
+            
+            //Some user initialized code
+            
+            Model = model
+         }
+         */
+
         public ITypeBuilder Stage0(IAssemblyBuilder asm)
         {
             return asm.DefineStaticType(GetNamespace(), ObjectType.Name + Name + "Form");
