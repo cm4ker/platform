@@ -126,6 +126,12 @@ namespace ZenPlatform.EntityComponent.Compilation
                     ns.AddEntity(
                         new CommandGenerationTask(cmd, CompilationMode.Server, _component, $"__cmd_{cmd.Name}"));
                 }
+
+                foreach (var inf in md.Interfaces)
+                {
+                    ns.AddEntity(new FormGenerationTask(ipType, CompilationMode.Server, _component, true, inf.Name,
+                        TypeBody.Empty));
+                }
             }
 
 

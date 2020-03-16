@@ -54,7 +54,7 @@ namespace ZenPlatform.Test.Tools
     <UXTextBox />
   </UXGroup>
 </UXForm>";
-            i.Name = "Simple form";
+            i.Name = "Editor";
 
             var module = store.CreateModule();
             module.ModuleName = "Module1";
