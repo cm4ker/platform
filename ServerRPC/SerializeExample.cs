@@ -1,5 +1,8 @@
 using System;
+using System.IO;
+using System.Linq;
 using dnlib.DotNet;
+using MoreLinq;
 
 namespace ZenPlatform.ServerRPC
 {
@@ -10,6 +13,50 @@ namespace ZenPlatform.ServerRPC
             Obj1 s = new Obj1(new Dto());
             //Transfering
             Obj2 o = null;
+        }
+    }
+
+    public interface IPlatformObject
+    {
+    }
+
+    /*
+     
+      class dto
+      {
+        public string Test; 
+        public int Int;
+      }
+       => 
+      Test:
+      count = read 8 (int)
+      string = read count (string) 
+      
+      Int: 
+      int = read 8 (int)
+      
+      
+     */
+
+    public class PlatformSerializer
+    {
+        public void Serialize(Stream stream, object obj)
+        {
+            if (!stream.CanWrite) throw new Exception();
+
+            if (obj is IPlatformObject)
+            {
+            }
+
+            var type = obj.GetType();
+
+            var props = type.GetProperties();
+            var ordered = props.OrderBy(x => x.Name).ToList();
+        }
+
+        public object Deserialize()
+        {
+            return null;
         }
     }
 
