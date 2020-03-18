@@ -38,11 +38,26 @@ namespace ZenPlatform.ServerRPC
       
      */
 
+    public enum ValType
+    {
+        Unknown = 0,
+        String = 1,
+        Int = 2,
+        Char = 3,
+        Boolean = 4,
+        Long = 5,
+        ByteArray = 6,
+        Datetime = 7,
+        PlatformObject = 8
+    }
+
     public class PlatformSerializer
     {
         public void Serialize(Stream stream, object obj)
         {
             if (!stream.CanWrite) throw new Exception();
+
+            BinaryWriter bw = new BinaryWriter(stream);
 
             if (obj is IPlatformObject)
             {
@@ -52,6 +67,28 @@ namespace ZenPlatform.ServerRPC
 
             var props = type.GetProperties();
             var ordered = props.OrderBy(x => x.Name).ToList();
+
+            foreach (var pi in ordered)
+            {
+                var value = pi.GetMethod.Invoke(obj, null);
+
+                if (value is IPlatformObject)
+                {
+                    Serialize(stream, value);
+                }
+
+                if (value is string s)
+                {
+                    bw.Write((int) ValType.String);
+                    bw.Write(s.Length);
+                    bw.Write(s);
+                }
+                else if (value is int i)
+                {
+                    bw.Write((int) ValType.Int);
+                    
+                }
+            }
         }
 
         public object Deserialize()
