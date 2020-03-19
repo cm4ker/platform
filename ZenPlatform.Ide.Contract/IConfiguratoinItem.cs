@@ -1,5 +1,4 @@
-﻿
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +7,7 @@ using System.Text;
 
 namespace ZenPlatform.Ide.Contracts
 {
-    public interface IConfigurationItem: INotifyPropertyChanged
+    public interface IConfigurationItem : INotifyPropertyChanged
     {
         string Caption { get; }
         bool IsEnable { get; }

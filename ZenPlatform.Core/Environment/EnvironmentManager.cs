@@ -46,7 +46,8 @@ namespace ZenPlatform.Core.Environment
             environments.Add(CreatePlatformEnvironment<IWorkEnvironment>(config));
         }
 
-        protected IPlatformEnvironment CreatePlatformEnvironment<T>(IStartupConfig config) where T : IPlatformEnvironment
+        protected IPlatformEnvironment CreatePlatformEnvironment<T>(IStartupConfig config)
+            where T : IPlatformEnvironment
         {
             try
             {

@@ -21,7 +21,7 @@ namespace ZenPlatform.Compiler.Generation
             var route = _ts.FindType($"{typeof(Route).Namespace}.{nameof(Route)}",
                 typeof(Route).Assembly.GetName().FullName);
 
-            var method = _bindings.ClientInvoke(function.Type.ToClrType(_asm));
+            var method = _bindings.ClientInvoke(_map.GetClrType(function.Type));
 
             emitter.LdLoc(client);
 
@@ -38,7 +38,7 @@ namespace ZenPlatform.Compiler.Generation
                 var iArg = function.Parameters.IndexOf(p);
                 emitter.LdcI4(iArg);
                 emitter.LdArg(iArg);
-                emitter.Box(p.Type.ToClrType(_asm));
+                emitter.Box(_map.GetClrType(p.Type));
                 emitter.StElemRef();
             }
 
@@ -46,7 +46,7 @@ namespace ZenPlatform.Compiler.Generation
             //            emitter.LdcI4(0);
             //            emitter.LdElemI4();
 
-            if (!function.Type.ToClrType(_asm).Equals(_bindings.Void))
+            if (!_map.GetClrType(function.Type).Equals(_bindings.Void))
                 emitter.Ret();
         }
     }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Npgsql.NameTranslation;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
@@ -14,6 +15,8 @@ using ZenPlatform.Language.Ast.Definitions.Extension;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ArrayTypeSyntax = ZenPlatform.Language.Ast.Definitions.ArrayTypeSyntax;
+using AttributeSyntax = ZenPlatform.Language.Ast.Definitions.AttributeSyntax;
 using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
 namespace ZenPlatform.Compiler
@@ -345,19 +348,27 @@ namespace ZenPlatform.Compiler
             return result;
         }
 
-        public override SyntaxNode VisitFunctionDeclaration(ZSharpParser.FunctionDeclarationContext context)
+
+        public override SyntaxNode VisitMethodDeclaration(ZSharpParser.MethodDeclarationContext context)
         {
-            base.VisitFunctionDeclaration(context);
+            base.VisitMethodDeclaration(context);
+
             Function result = null;
             ParameterList pc = new ParameterList();
             AttributeList ac = new AttributeList();
+            GenericParameterList gpc = new GenericParameterList();
+
             var body = _syntaxStack.PopInstructionsBody();
+
+            if (context.genericParameters() != null)
+            {
+                gpc = (GenericParameterList) _syntaxStack.Pop();
+            }
 
             if (context.parameters() != null)
             {
                 pc = (ParameterList) _syntaxStack.Pop();
             }
-
 
             var type = _syntaxStack.PopType();
 
@@ -368,7 +379,7 @@ namespace ZenPlatform.Compiler
                 ac = (AttributeList) _syntaxStack.Pop();
             }
 
-            result = new Function(context.start.ToLineInfo(), body, pc, ac, funcName, type);
+            result = new Function(context.start.ToLineInfo(), body, pc, gpc, ac, funcName, type);
 
             if (context.accessModifier()?.PUBLIC() != null)
             {
@@ -406,6 +417,23 @@ namespace ZenPlatform.Compiler
             return base.VisitParameters(context);
         }
 
+        public override SyntaxNode VisitGenericParameters(ZSharpParser.GenericParametersContext context)
+        {
+            _syntaxStack.Push(new GenericParameterList());
+            return base.VisitGenericParameters(context);
+        }
+
+        public override SyntaxNode VisitGenericParameter(ZSharpParser.GenericParameterContext context)
+        {
+            var genericParameterList = _syntaxStack.PeekType<ParameterList>();
+            base.VisitGenericParameter(context);
+
+            var parameter = new GenericParameter(context.start.ToLineInfo(), context.IDENTIFIER().GetText());
+
+            genericParameterList.Add(parameter);
+
+            return null;
+        }
 
         public override SyntaxNode VisitParameter(ZSharpParser.ParameterContext context)
         {

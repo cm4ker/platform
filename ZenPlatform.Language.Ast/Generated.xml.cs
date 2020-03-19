@@ -8,6 +8,7 @@ using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
@@ -110,6 +111,21 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitParameterList(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions
+{
+    public class GenericParameterList : SyntaxCollectionNode<GenericParameter>
+    {
+        public GenericParameterList(): base(null)
+        {
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitGenericParameterList(this);
         }
     }
 }
@@ -251,7 +267,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
-    public partial class NamespaceDeclaration : SyntaxNode
+    public partial class NamespaceDeclaration : SyntaxNode, IScoped
     {
         public NamespaceDeclaration(ILineInfo lineInfo, String name, UsingList usings, EntityList entityes, NamespaceDeclarationList namespaceDeclarations): base(lineInfo)
         {
@@ -293,6 +309,12 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitNamespaceDeclaration(this);
+        }
+
+        public SymbolTable SymbolTable
+        {
+            get;
+            set;
         }
     }
 }
@@ -948,6 +970,27 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
     }
 }
 
+namespace ZenPlatform.Language.Ast.Definitions.Functions
+{
+    public partial class GenericParameter : SyntaxNode
+    {
+        public GenericParameter(ILineInfo lineInfo, String name): base(lineInfo)
+        {
+            Name = name;
+        }
+
+        public String Name
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitGenericParameter(this);
+        }
+    }
+}
+
 namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class AttributeSyntax : SyntaxNode
@@ -982,11 +1025,12 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
 {
     public partial class Function : Member, IScoped, IAstSymbol
     {
-        public Function(ILineInfo lineInfo, Block block, ParameterList parameters, AttributeList attributes, String name, TypeSyntax type): base(lineInfo)
+        public Function(ILineInfo lineInfo, Block block, ParameterList parameters, GenericParameterList genericParameters, AttributeList attributes, String name, TypeSyntax type): base(lineInfo)
         {
             this.Attach(0, (SyntaxNode)block);
             this.Attach(1, (SyntaxNode)parameters);
-            this.Attach(2, (SyntaxNode)attributes);
+            this.Attach(2, (SyntaxNode)genericParameters);
+            this.Attach(3, (SyntaxNode)attributes);
             Name = name;
             Type = type;
         }
@@ -1007,11 +1051,19 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
             }
         }
 
+        public GenericParameterList GenericParameters
+        {
+            get
+            {
+                return (GenericParameterList)this.Childs[2];
+            }
+        }
+
         public AttributeList Attributes
         {
             get
             {
-                return (AttributeList)this.Childs[2];
+                return (AttributeList)this.Childs[3];
             }
         }
 
@@ -1878,6 +1930,11 @@ namespace ZenPlatform.Language.Ast
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitGenericParameterList(GenericParameterList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitAttributeList(AttributeList arg)
         {
             return DefaultVisit(arg);
@@ -2009,6 +2066,11 @@ namespace ZenPlatform.Language.Ast
         }
 
         public virtual T VisitParameter(Parameter arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitGenericParameter(GenericParameter arg)
         {
             return DefaultVisit(arg);
         }

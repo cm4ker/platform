@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Reflection.Emit;
-using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -28,7 +28,7 @@ namespace ZenPlatform.Compiler.Generation
 
                     if (returnVariable.Type == _bindings.Object)
                     {
-                        var clrType = ret.Expression.Type.ToClrType(_asm);
+                        var clrType = _map.GetClrType(ret.Expression.Type);
                         if (clrType.IsValueType && !clrType.IsArray)
                             e.Box(clrType);
                     }
@@ -153,7 +153,7 @@ namespace ZenPlatform.Compiler.Generation
                     //Load value
                     EmitExpression(e, mt.Expression, context.SymbolTable);
                     //Check is instance of the value
-                    e.IsInst(matchAtom.Type.ToClrType(_asm));
+                    e.IsInst(_map.GetClrType(matchAtom.Type));
                     e.BrFalse(label);
 
                     EmitBody(e, matchAtom.Block, returnLabel, ref returnVariable, false);

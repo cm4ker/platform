@@ -10,6 +10,7 @@ using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Symbols;
 using Module = ZenPlatform.Language.Ast.Definitions.Module;
 
 namespace ZenPlatform.Compiler.Generation
@@ -31,7 +32,7 @@ namespace ZenPlatform.Compiler.Generation
             if (_mode == CompilationMode.Server && _conf != null)
                 _serviceScope = new ServerAssemblyServiceScope(_asm);
 
-            _map = new SyntaxTreeMemberAccessProvider(_cus, _bindings);
+            _map = new SyntaxTreeMemberAccessProvider(_root, _ts);
 
             BuildInfrastructure();
             BuildStructure();
@@ -121,7 +122,13 @@ namespace ZenPlatform.Compiler.Generation
 
             void AfterPreBuild<T>(T sym, ITypeBuilder tb) where T : TypeEntity, IAstSymbol
             {
-                sym.FirstParent<IScoped>().SymbolTable.ConnectCodeObject(sym, tb);
+                var st = sym.FirstParent<IScoped>().SymbolTable;
+                var symbol = st.Find<TypeSymbol>(sym);
+
+                if (symbol == null)
+                    symbol = st.AddType(sym);
+
+                symbol.Connect(tb);
                 _stage0.Add(sym, tb);
             }
 
@@ -165,7 +172,9 @@ namespace ZenPlatform.Compiler.Generation
                         {
                             var mf = PrebuildFunction(function, tb, false);
                             _stage1Methods.Add(function, mf);
-                            m.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+
+                            var symbol = m.TypeBody.SymbolTable.Find<MethodSymbol>(function);
+                            symbol.ConnectOverload(function, mf);
 
                             if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
                                 _mode == CompilationMode.Server)
@@ -182,7 +191,9 @@ namespace ZenPlatform.Compiler.Generation
                         {
                             var mf = PrebuildFunction(function, tbc, true);
                             _stage1Methods.Add(function, mf);
-                            c.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+
+                            var symbol = c.TypeBody.SymbolTable.Find<MethodSymbol>(function);
+                            symbol.ConnectOverload(function, mf);
 
                             if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
                                 _mode == CompilationMode.Server)
@@ -194,14 +205,20 @@ namespace ZenPlatform.Compiler.Generation
                         foreach (var property in c.TypeBody.Properties)
                         {
                             var pp = PrebuildProperty(property, tbc);
-                            c.TypeBody.SymbolTable.ConnectCodeObject(property, pp);
+                            var symbol = c.TypeBody.SymbolTable.Find<PropertySymbol>(property);
+                            symbol.Connect(pp);
                             _stage1Properties.Add(property, pp);
                         }
 
                         foreach (var field in c.TypeBody.Fields)
                         {
                             var pf = PrebuildField(field, tbc);
-                            c.TypeBody.SymbolTable.ConnectCodeObject(field, pf);
+
+
+                            var symbol = c.TypeBody.SymbolTable.Find<VariableSymbol>(field);
+                            symbol.Connect(pf);
+
+
                             _stage1Fields.Add(field, pf);
                             ;
                         }
@@ -232,7 +249,10 @@ namespace ZenPlatform.Compiler.Generation
                         {
                             var mf = PrebuildFunction(function, tcab, isClass);
                             _stage1Methods.Add(function, mf);
-                            cab.TypeBody.SymbolTable.ConnectCodeObject(function, mf);
+
+
+                            var symbol = cab.TypeBody.SymbolTable.Find<MethodSymbol>(function);
+                            symbol.ConnectOverload(function, mf);
 
                             if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
                                 _mode == CompilationMode.Server)
@@ -341,14 +361,14 @@ namespace ZenPlatform.Compiler.Generation
             Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
 
             var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
-                .WithReturnType(function.Type.ToClrType(_asm));
+                .WithReturnType(_map.GetClrType(function.Type));
 
             if (function.Parameters != null)
             {
                 foreach (var p in function.Parameters)
                 {
-                    var codeObj = method.DefineParameter(p.Name, p.Type.ToClrType(_asm), false, false);
-                    function.Block.SymbolTable.ConnectCodeObject(p, codeObj);
+                    var codeObj = method.DefineParameter(p.Name, _map.GetClrType(p.Type), false, false);
+                    function.Block.SymbolTable.FindOrDeclareVariable(p, codeObj);
                 }
             }
 
@@ -357,21 +377,21 @@ namespace ZenPlatform.Compiler.Generation
 
         private IPropertyBuilder PrebuildProperty(Property property, ITypeBuilder tb)
         {
-            var propBuilder = tb.DefineProperty(property.Type.ToClrType(_asm), property.Name, false);
+            var propBuilder = tb.DefineProperty(_map.GetClrType(property.Type), property.Name, false);
 
             IField backField = null;
 
 
             if (property.Setter == null && property.Getter == null)
             {
-                backField = tb.DefineField(property.Type.ToClrType(_asm), $"{property.Name}_backingField", false,
+                backField = tb.DefineField(_map.GetClrType(property.Type), $"{property.Name}_backingField", false,
                     false);
             }
 
             if (property.HasGetter || property.Getter != null)
             {
                 var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
-                getMethod.WithReturnType(property.Type.ToClrType(_asm));
+                getMethod.WithReturnType(_map.GetClrType(property.Type));
 
                 if (property.Getter == null)
                 {
@@ -386,7 +406,7 @@ namespace ZenPlatform.Compiler.Generation
             {
                 var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
                 setMethod.WithReturnType(_bindings.Void);
-                setMethod.DefineParameter("value", property.Type.ToClrType(_asm), false, false);
+                setMethod.DefineParameter("value", _map.GetClrType(property.Type), false, false);
 
 
                 if (property.Setter == null)
@@ -415,7 +435,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 ILocal resultVar = null;
 
-                resultVar = emitter.DefineLocal(property.Type.ToClrType(_asm));
+                resultVar = emitter.DefineLocal(_map.GetClrType(property.Type));
 
                 var returnLabel = emitter.DefineLabel();
                 EmitBody(emitter, property.Getter, returnLabel, ref resultVar);
@@ -437,11 +457,11 @@ namespace ZenPlatform.Compiler.Generation
 
                 ILocal resultVar = null;
 
-                resultVar = emitter.DefineLocal(property.Type.ToClrType(_asm));
+                resultVar = emitter.DefineLocal(_map.GetClrType(property.Type));
 
                 var valueSym =
-                    property.Setter.SymbolTable.Find("value", SymbolType.Variable, SymbolScopeBySecurity.Shared);
-                valueSym.CodeObject = mb.Parameters[0];
+                    property.Setter.SymbolTable.Find<VariableSymbol>("value", SymbolScopeBySecurity.Shared);
+                valueSym.Connect(mb.Parameters[0]);
 
                 var returnLabel = emitter.DefineLabel();
                 EmitBody(emitter, property.Setter, returnLabel, ref resultVar);
@@ -453,7 +473,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private IField PrebuildField(Field field, ITypeBuilder tb)
         {
-            return tb.DefineField(field.Type.ToClrType(_asm), field.Name, false, false);
+            return tb.DefineField(_map.GetClrType(field.Type), field.Name, false, false);
         }
 
         private IConstructorBuilder PrebuildConstructor(Constructor constructor, ITypeBuilder tb)
@@ -464,8 +484,8 @@ namespace ZenPlatform.Compiler.Generation
             {
                 foreach (var p in constructor.Parameters)
                 {
-                    var codeObj = c.DefineParameter(p.Type.ToClrType(_asm));
-                    constructor.Block.SymbolTable.ConnectCodeObject(p, codeObj);
+                    var codeObj = c.DefineParameter(_map.GetClrType(p.Type));
+                    constructor.Block.SymbolTable.Find<VariableSymbol>(p).Connect(codeObj);
                 }
             }
 

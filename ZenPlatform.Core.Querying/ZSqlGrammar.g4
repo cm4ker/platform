@@ -125,9 +125,15 @@ result_column
 table:
     component_name '.' object_name ( AS? table_alias )?
 ;
+
+table_property:
+    component_name '.' object_name '.' table_name (AS? table_alias)?
+;
  
 table_or_subquery
- : ( table
+ : ( 
+ table
+ | table_property
  | '(' ( table_or_subquery ( ',' table_or_subquery )*
        | join_clause )
    ')' ( AS? table_alias )?

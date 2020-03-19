@@ -33,8 +33,6 @@ namespace ZenPlatform.Core.Querying.Model
     /// </summary>
     public partial class QSourceFieldExpression : QField
     {
-        public QObjectTable Object => Childs.First() as QObjectTable;
-
         public override string GetName()
         {
             return Property.Name;

@@ -34,7 +34,7 @@ namespaceDefinition :
 
 moduleDefinition: MODULE typeName '{' moduleBody '}';
 
-moduleBody: (functionDeclaration)* ;
+moduleBody: (methodDeclaration)* ;
 /*
 ================END MODULE==================
 */
@@ -44,7 +44,7 @@ moduleBody: (functionDeclaration)* ;
 */
 typeDefinition: attributes? TYPE typeName '{' typeBody '}';
 
-typeBody: (usingSection)* (functionDeclaration | fieldDeclaration | propertyDeclaration)*;
+typeBody: (usingSection)* (methodDeclaration | fieldDeclaration | propertyDeclaration)*;
 /*
 ================END TYPE==================
 */
@@ -57,8 +57,16 @@ instructionsBody : '{' statements '}';
 instructionsOrSingleStatement : 
     instructionsBody | statement;
 
-functionDeclaration:
-    attributes? accessModifier? type IDENTIFIER '(' parameters? ')' instructionsBody;
+methodDeclaration:
+    attributes? accessModifier? type IDENTIFIER ('<' genericParameters '>')? '(' parameters? ')' instructionsBody;
+
+genericParameters:
+    genericParameter (',' genericParameter)*
+    ;    
+
+genericParameter:
+    IDENTIFIER
+;
     
 fieldDeclaration : 
     type name ';';
@@ -132,6 +140,9 @@ string_literal
 	: REGULAR_STRING
 	| VERBATIUM_STRING
 	;
+	
+sql_literal:
+    SQL_STRING;	
 
 expression:
     expressionStructural

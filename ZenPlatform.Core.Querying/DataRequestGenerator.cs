@@ -38,9 +38,11 @@ namespace ZenPlatform.Core.Querying
         {
             _qm.m_from();
 
-            var ot = sfe.Object.ObjectIpType;
-            ot.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, ot, null);
-
+            var source = sfe.PlatformSource;
+            if (source is QObjectTable ot)
+                ot.ObjectType.GetComponent().ComponentImpl.QueryInjector.InjectTypeSource(_qm, ot.ObjectType, null);
+            else if (source is QTable t)
+                t.Table.GetParent().GetComponent().ComponentImpl.QueryInjector.InjectTableSource(_qm, t.Table, null);
 
             foreach (var propType in sfe.GetExpressionType())
             {
@@ -65,7 +67,7 @@ namespace ZenPlatform.Core.Querying
                 {
                     if (type.IsObject)
                     {
-                        type.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, type, null);
+                        type.GetComponent().ComponentImpl.QueryInjector.InjectTypeSource(_qm, type, null);
 
                         //condition
                         _qm.ld_column("A1");
@@ -74,7 +76,7 @@ namespace ZenPlatform.Core.Querying
                         _qm.eq();
 
                         _qm.ld_column("A1");
-                        _qm.ld_const(type.SystemId);
+                        _qm.ld_const(type.GetSettings().SystemId);
 
                         _qm.left_join();
                     }

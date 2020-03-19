@@ -3,6 +3,7 @@ using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Symbols;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Compiler.Generation

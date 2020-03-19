@@ -1,6 +1,5 @@
 using System.Reflection.Emit;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Contracts.Symbols;
 
 namespace ZenPlatform.Compiler.Sre
 {
@@ -15,14 +14,14 @@ namespace ZenPlatform.Compiler.Sre
             _provider = provider;
             TypeSystem = system;
             _ilg = provider.Generator;
-            SymbolTable = new SymbolTable();
+
         }
 
-        public SreEmitter(SreTypeSystem system, ILGenerator ilg, SymbolTable parentTable)
+        public SreEmitter(SreTypeSystem system, ILGenerator ilg)
         {
             TypeSystem = system;
             _ilg = ilg;
-            SymbolTable = new SymbolTable(parentTable);
+
         }
 
         public IEmitter Emit(OpCode code)
@@ -140,8 +139,6 @@ namespace ZenPlatform.Compiler.Sre
         public void InsertSequencePoint(IFileSource file, int line, int position)
         {
         }
-
-        public ISymbolTable SymbolTable { get; }
 
         public IEmitter Emit(OpCode code, IType type)
         {

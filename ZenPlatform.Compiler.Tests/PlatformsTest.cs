@@ -35,6 +35,27 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.True(true);
         }
+        
+        [Fact]
+        void CompilationClientAndServerTest()
+        {
+            var dnlib = new DnlibAssemblyPlatform();
+            XCCompiler cd = new XCCompiler(dnlib);
+            var asm = cd.Build(r, CompilationMode.Server, SqlDatabaseType.SqlServer);
+            var asmClient = cd.Build(r, CompilationMode.Client, SqlDatabaseType.SqlServer);
+            
+            if (File.Exists("server.bll"))
+                File.Delete("server.bll");
+
+            asm.Write("server.bll");
+            
+            if (File.Exists("client.bll"))
+                File.Delete("client.bll");
+
+            asmClient.Write("client.bll");
+
+            Assert.True(true);
+        }
 
         [Fact]
         void TestCompileAndInvoke()
@@ -65,14 +86,14 @@ namespace ZenPlatform.Compiler.Tests
             serverCecil.Write("serverCecil.bll");
 
 
-            var asm = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "clientDnlib.bll"));
-
-            var cmdType = asm.GetType("CompileNamespace.__cmd_HelloFromServer");
-            Assert.Throws<PlatformNotInitializedException>(() =>
-            {
-                var result = cmdType.GetMethod("ClientCallProc")
-                    .Invoke(null, BindingFlags.DoNotWrapExceptions, null, new object[] {10}, null);
-            });
+            // var asm = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "clientDnlib.bll"));
+            //
+            // var cmdType = asm.GetType("CompileNamespace.__cmd_HelloFromServer");
+            // Assert.Throws<PlatformNotInitializedException>(() =>
+            // {
+            //     var result = cmdType.GetMethod("ClientCallProc")
+            //         .Invoke(null, BindingFlags.DoNotWrapExceptions, null, new object[] {10}, null);
+            // });
         }
     }
 }

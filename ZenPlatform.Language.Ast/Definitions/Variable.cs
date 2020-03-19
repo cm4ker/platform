@@ -1,6 +1,7 @@
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.AST;
 using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions
 {

@@ -102,7 +102,7 @@ namespace ZenPlatform.Configuration.Structure
 
         }
 
-        public static string GetHash(this Contracts.IProject project)
+        public static string GetHash(this IProject project)
         {
             return HashHelper.HashMD5(project.SerializeToStream());
         }

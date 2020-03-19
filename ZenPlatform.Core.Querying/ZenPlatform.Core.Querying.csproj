@@ -17,4 +17,11 @@
         <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include=".\ZSqlGrammar.g4" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Compile Include="obj\Debug\netcoreapp3.0\*.cs" />
+    </ItemGroup>
 </Project>

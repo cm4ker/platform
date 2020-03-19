@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ZenPlatform.Compiler.AST.Infrastructure;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
@@ -12,6 +11,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 
 
@@ -23,7 +23,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (assignment.Assignable is Name name)
             {
-                var variable = symbolTable.Find(name.Value, SymbolType.Variable, name.GetScope());
+                var variable = symbolTable.Find<VariableSymbol>(name.Value, name.GetScope());
                 if (variable == null)
                     Error("Assignment variable " + name + " unknown.");
 
@@ -32,35 +32,35 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is UnionTypeSyntax;
 
-                    if (variable.CodeObject is IParameter pd)
+                    if (variable.CompileObject is IParameter pd)
                     {
                         Parameter p = variable.SyntaxObject as Parameter;
                         if (p.PassMethod == PassMethod.ByReference)
                             e.LdArg(pd);
                     }
-                    else if (variable.CodeObject is IField fl)
+                    else if (variable.CompileObject is IField fl)
                     {
                         EmitLoadThis(e);
                     }
-                    else if (variable.CodeObject is IProperty p)
+                    else if (variable.CompileObject is IProperty p)
                     {
                         EmitLoadThis(e);
                     }
-                    else if (variable.CodeObject is ILocal l && mtNode)
+                    else if (variable.CompileObject is ILocal l && mtNode)
                         e.LdLocA(l);
 
                     // Load value
                     EmitExpression(e, assignment.Value, symbolTable);
 
-                    if (name.Type.ToClrType(_asm) == _bindings.Object)
+                    if (_map.GetClrType(name.Type) == _bindings.Object)
                         HandleBox(e, assignment.Value.Type);
 
                     // Store
-                    if (variable.CodeObject is ILocal vd)
+                    if (variable.CompileObject is ILocal vd)
                         e.StLoc(vd);
-                    else if (variable.CodeObject is IField fd)
+                    else if (variable.CompileObject is IField fd)
                         e.StFld(fd);
-                    else if (variable.CodeObject is IParameter ppd)
+                    else if (variable.CompileObject is IParameter ppd)
                     {
                         Parameter p = variable.SyntaxObject as Parameter;
                         if (p.PassMethod == PassMethod.ByReference)
@@ -72,11 +72,11 @@ namespace ZenPlatform.Compiler.Generation
                 else
                 {
                     // Load array.
-                    if (variable.CodeObject is ILocal vd)
+                    if (variable.CompileObject is ILocal vd)
                         e.LdLoc(vd);
-                    else if (variable.CodeObject is IField fd)
+                    else if (variable.CompileObject is IField fd)
                         e.LdsFld(fd);
-                    else if (variable.CodeObject is IParameter pd)
+                    else if (variable.CompileObject is IParameter pd)
                         e.LdArg(pd.Sequence);
                     // Load index.
                     EmitExpression(e, assignment.Index, symbolTable);
@@ -109,7 +109,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private void HandleBox(IEmitter e, TypeSyntax type)
         {
-            HandleBox(e, type.ToClrType(_asm));
+            HandleBox(e, _map.GetClrType(type));
         }
 
         private void HandleBox(IEmitter e, IType currenType)
