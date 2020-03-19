@@ -8,18 +8,20 @@ namespace ZenPlatform.ServerRPC
     {
         static void Main(string[] args)
         {
-            DbConnection con = new SqlConnection();
-
-            con.ConnectionString =
-                "Data source=(LocalDb)\\MSSQLLocalDB; Initial catalog=testdb; Integrated Security= true;"; // MultipleActiveResultSets=True";
-
-            con.Open();
-
-            var cmd = con.CreateCommand();
-            cmd.CommandText = "select name, object_id, uses_ansi_nulls from sys.tables";
-            var reader1 = cmd.ExecuteReader().GetBufferedData().GetDataReader();
-
-            reader1.ToConsole();
+            Test.Run();
+            
+            // DbConnection con = new SqlConnection();
+            //
+            // con.ConnectionString =
+            //     "Data source=(LocalDb)\\MSSQLLocalDB; Initial catalog=testdb; Integrated Security= true;"; // MultipleActiveResultSets=True";
+            //
+            // con.Open();
+            //
+            // var cmd = con.CreateCommand();
+            // cmd.CommandText = "select name, object_id, uses_ansi_nulls from sys.tables";
+            // var reader1 = cmd.ExecuteReader().GetBufferedData().GetDataReader();
+            //
+            // reader1.ToConsole();
 
             /*
              var query = Q"FROM Invoice SELECT Link = Invoice";
