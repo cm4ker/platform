@@ -1,5 +1,4 @@
 using System.Reflection.Emit;
-using ZenPlatform.Compiler.Contracts.Symbols;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -31,6 +30,5 @@ namespace ZenPlatform.Compiler.Contracts
         bool InitLocals { get; set; }
 
         void InsertSequencePoint(IFileSource file, int line, int position);
-        ISymbolTable SymbolTable { get; }
     }
 }

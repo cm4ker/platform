@@ -77,7 +77,7 @@ namespace ZenPlatform.Compiler.Tests
 
             AstScopeRegister.Apply(r);
 
-            var gp = new GeneratorParameters(r.Units, asm, CompilationMode.Server,
+            var gp = new GeneratorParameters(r, asm, CompilationMode.Server,
                 SqlDatabaseType.SqlServer, null);
 
             var gen = new Generator(gp);
@@ -95,7 +95,7 @@ namespace ZenPlatform.Compiler.Tests
         {
             var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
 
-            Function node = (Function) funcScript.Parse(x => _zlv.VisitFunctionDeclaration(x.functionDeclaration()));
+            Function node = (Function) funcScript.Parse(x => _zlv.VisitMethodDeclaration(x.methodDeclaration()));
 
             CompilationUnit cu = new CompilationUnit(null, null, new EntityList
             {
@@ -109,7 +109,7 @@ namespace ZenPlatform.Compiler.Tests
             AstScopeRegister.Apply(r);
             LoweringOptimizer.Apply(asm.TypeSystem, r);
 
-            var gp = new GeneratorParameters(r.Units, asm, CompilationMode.Server,
+            var gp = new GeneratorParameters(r, asm, CompilationMode.Server,
                 SqlDatabaseType.SqlServer, null);
 
             var gen = new Generator(gp);

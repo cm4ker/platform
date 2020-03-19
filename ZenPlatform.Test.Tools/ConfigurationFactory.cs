@@ -19,7 +19,11 @@ namespace ZenPlatform.Test.Tools
 
         public static Project Create()
         {
-            var projectMd = new ProjectMD();
+            var projectMd = new ProjectMD
+            {
+                ProjectName = "Library",
+                ProjectVersion = "1.0.0.0"
+            };
             var manager = new MDManager(new TypeManager(), new InMemoryUniqueCounter());
             var project = new Project(projectMd, manager);
 
@@ -43,10 +47,27 @@ namespace ZenPlatform.Test.Tools
             tableProp1.SetType(MDTypes.String(100));
             tableProp1.SetType(store.GetRef());
 
+            var i = store.CreateInterface();
+            i.Markup = @"<UXForm xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
+  <UXGroup Orientation=""Horizontal"">
+    <UXTextBox />
+    <UXTextBox />
+  </UXGroup>
+</UXForm>";
+            i.Name = "Editor";
+
             var module = store.CreateModule();
             module.ModuleName = "Module1";
             module.ModuleRelationType = ProgramModuleRelationType.Object;
-            module.ModuleText = "public int In(int i) { int _i = i; _i++; return _i; }";
+            module.ModuleText = @"
+public void In(int i) {  }
+public void In(string s) {  }
+public void Overload() 
+{
+    In(100);
+    Save();
+}
+";
 
             var command = store.CreateCommand();
             command.Name = "HelloFromServer";
@@ -69,19 +90,9 @@ namespace ZenPlatform.Test.Tools
  [ClientCall] 
  public string GetUserNameServer()
  { 
-     // Entity.Invoice i = $Entity.Invoice.Create();
-     // Entity.Store s = $Entity.Store.Create();
-     //
-     // i.Name = ""My custom name"";
-     // i.CompositeProperty = ""Привет Костя"";
-     //
-     // s.Name = ""Souths park"";
-     // s.Save();    
-     //
-     // i.Store = s.Link;
-     //
-     // i.Save();
-
+     //Store s = $Entity.Store.Create();
+     //s.Name = ""Souths park"";
+    // s.Save();    
      return Context.UserName; 
  }
 

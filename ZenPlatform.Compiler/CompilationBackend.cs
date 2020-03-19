@@ -1,19 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Antlr4.Runtime;
-using Microsoft.CodeAnalysis;
-using ZenPlatform.Compiler.AST;
-using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Preprocessor;
-using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.QueryBuilder;
 
 
 namespace ZenPlatform.Compiler
@@ -66,23 +57,25 @@ namespace ZenPlatform.Compiler
 
         private IAssemblyBuilder CompileTree(ZSharpParser pTree)
         {
-            IAssemblyPlatform ap = new CecilAssemblyPlatform();
-
-            var ab = ap.AsmFactory.CreateAssembly(ap.TypeSystem, "Debug", new Version(1, 0));
-
-            ZLanguageVisitor v = new ZLanguageVisitor();
-            var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
-
-            module.PrintPretty("", true);
-
-            AstScopeRegister.Apply(module);
-
-            var prm = new GeneratorParameters(new CompilationUnitList {module}, ab, CompilationMode.Client,
-                SqlDatabaseType.SqlServer, _project);
-
-            Generator g = new Generator(prm);
-
-            return ab;
+            // IAssemblyPlatform ap = new CecilAssemblyPlatform();
+            //
+            // var ab = ap.AsmFactory.CreateAssembly(ap.TypeSystem, "Debug", new Version(1, 0));
+            //
+            // ZLanguageVisitor v = new ZLanguageVisitor();
+            // var module = v.VisitEntryPoint(pTree.entryPoint()) as CompilationUnit ?? throw new Exception();
+            //
+            // module.PrintPretty("", true);
+            //
+            // AstScopeRegister.Apply(module);
+            //
+            // var prm = new GeneratorParameters(new CompilationUnitList {module}, ab, CompilationMode.Client,
+            //     SqlDatabaseType.SqlServer, _project);
+            //
+            // Generator g = new Generator(prm);
+            //
+            // return ab;
+            
+            throw new NotImplementedException();
         }
 
         private ITokenStream CreateInputStream(Stream input)

@@ -148,7 +148,7 @@ namespace ZenPlatform.Compiler.Generation
             if (!(node is GlobalVarTreeItem gvar))
                 throw new Exception("Only GlobalVarTreeItem can be in GlobalVarTree");
 
-            node.Attach(Root);
+            Root.Attach(node);
         }
 
         public void Emit(IEmitter e, GlobalVar exp, Action<object> onUnknown)

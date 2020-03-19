@@ -6,7 +6,24 @@
     </PropertyGroup>
 
     <ItemGroup>
-
+      <EmbeddedResource Include="App.xaml">
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Include="MainWindow.xaml">
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Views\ConfigurationTreeView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Views\DockMainWindow.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Views\MainView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Views\MainWindow.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
@@ -16,8 +33,20 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj" />
+<!--      <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj" />-->
+      <ProjectReference Include="..\ZenPlatform.Avalonia.Wrapper\ZenPlatform.Avalonia.Wrapper.csproj" />
       <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
+<!--      <ProjectReference Include="..\ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj" />-->
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Avalonia.Desktop" Version="0.9.3" />
+      <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.3" />
+      <PackageReference Include="Dock.Avalonia" Version="0.9.3" />
+      <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.9.3" />
+      <PackageReference Include="Dock.Avalonia.Themes.Metro" Version="0.9.3" />
+      <PackageReference Include="Dock.Model.ReactiveUI" Version="0.9.3" />
+      <PackageReference Include="Portable.Xaml" Version="0.24.0" />
     </ItemGroup>
 
 

@@ -11,12 +11,14 @@ namespace ZenPlatform.UIBuilder
         {
             AvaloniaXamlLoader.Load(this);
         }
-        
+
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+            {
                 desktopLifetime.MainWindow = new MainWindow();
-            
+            }
+
             base.OnFrameworkInitializationCompleted();
         }
     }

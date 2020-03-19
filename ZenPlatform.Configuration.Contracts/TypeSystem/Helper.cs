@@ -54,6 +54,9 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         public static bool IsAssignableFrom(this IPType ipTypeA, IPType ipTypeB)
         {
+            if (ipTypeA.Id == ipTypeB.Id)
+                return true;
+            
             if (ipTypeA.BaseId == null)
                 return false;
 
@@ -84,8 +87,15 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
                 foreach (var type in internalTypes)
                 {
                     if (type.IsPrimitive)
+                    {
+                        var typeName = type.Name;
+
+                        if (type is IPTypeSpec)
+                            typeName = type.GetBase().Name;
+
                         yield return new ColumnSchemaDefinition(ColumnSchemaType.Value, type,
-                            propName, "", $"_{type.Name}");
+                            propName, "", $"_{typeName}");
+                    }
 
                     if (!type.IsPrimitive && !done)
                     {
@@ -106,12 +116,20 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
 
         public static IObjectSetting GetSettings(this IPType ipType)
         {
+            if (ipType.IsTypeSpec)
+                return ipType.GetBase().GetSettings();
+
             return ipType.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == ipType.Id);
         }
 
         public static IObjectSetting GetSettings(this ITable table)
         {
             return table.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == table.Id);
+        }
+
+        public static IPType GetParent(this ITable table)
+        {
+            return table.TypeManager.FindType(table.ParentId);
         }
 
         public static IEnumerable<ColumnSchemaDefinition> GetDbSchema(this IPProperty prop)

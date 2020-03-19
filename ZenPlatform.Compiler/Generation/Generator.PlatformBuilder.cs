@@ -10,7 +10,7 @@ namespace ZenPlatform.Compiler.Generation
     {
         public void BuildConf()
         {
-            var root = new Root(null, new CompilationUnitList());
+            _root = new Root(null, new CompilationUnitList());
 
             foreach (var component in _conf.TypeManager.Components)
             {
@@ -18,15 +18,17 @@ namespace ZenPlatform.Compiler.Generation
                     x.ComponentId == component.Id && x.IsAsmAvaliable))
                 {
                     if (_mode == CompilationMode.Client)
-                        component.ComponentImpl.Generator.StageClient(type, root);
+                        component.ComponentImpl.Generator.StageClient(type, _root);
                     else
-                        component.ComponentImpl.Generator.StageServer(type, root);
+                        component.ComponentImpl.Generator.StageServer(type, _root);
                 }
             }
 
-            _cus = root.Units;
-            AstScopeRegister.Apply(root);
-            LoweringOptimizer.Apply(_ts, root);
+            _cus = _root.Units;
+            AstPlatformTypes.System(_root, _asm.TypeSystem);
+            AstScopeRegister.Apply(_root);
+            
+            LoweringOptimizer.Apply(_ts, _root);
 
             Build();
         }
@@ -48,6 +50,7 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             _cus = root.Units;
+            AstPlatformTypes.System(_root, _asm.TypeSystem);
             AstScopeRegister.Apply(root);
 
             return root;

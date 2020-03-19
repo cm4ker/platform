@@ -76,7 +76,6 @@ namespace ZenPlatform.Core.Test
 
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
-
             //services.AddTransient<IUserMessageHandler, UserMessageHandler>();
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
             services.AddScoped<IDataContextManager, DataContextManager>();

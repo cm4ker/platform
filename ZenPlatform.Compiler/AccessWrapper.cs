@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Avalonia.Remote.Protocol.Designer;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Symbols;
 using ArrayTypeSyntax = ZenPlatform.Language.Ast.Definitions.ArrayTypeSyntax;
 using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 
@@ -17,17 +21,22 @@ namespace ZenPlatform.Compiler
     public class SyntaxTreeMemberAccessProvider
     {
         private readonly CompilationUnitList _cu;
+        private readonly Root _root;
         private readonly SystemTypeBindings _stb;
         private List<TypeEntity> _types;
 
         private Dictionary<string, List<IProperty>> _props;
         private Dictionary<string, List<IMethod>> _methods;
+        private ITypeSystem _ts;
 
-        public SyntaxTreeMemberAccessProvider(CompilationUnitList cu, SystemTypeBindings stb)
+        public SyntaxTreeMemberAccessProvider(Root root, ITypeSystem ts)
         {
-            _cu = cu;
-            _stb = stb;
-            _types = _cu.SelectMany(x => x.Entityes).ToList();
+            _cu = root.Units;
+            _root = root;
+
+            _ts = ts;
+            _stb = ts.GetSystemBindings();
+            _types = _cu.GetNodes<TypeEntity>().ToList();
 
             _props = new Dictionary<string, List<IProperty>>();
             _methods = new Dictionary<string, List<IMethod>>();
@@ -35,51 +44,120 @@ namespace ZenPlatform.Compiler
             RegisterStatic();
         }
 
-        public IMethod GetMethod(TypeSyntax type, string name, TypeSyntax[] args)
+        public IType GetClrType(TypeSyntax typeSyntax)
         {
-            var typeName = GetTypeName(type);
-            var argsTypeName = args.Select(GetTypeName).ToArray();
-
-            IMethod m = GetCachedMethod(typeName, name, argsTypeName);
-
-            if (m == null)
+            if (typeSyntax is SingleTypeSyntax stn)
             {
-                var typeDef = GetType(typeName);
+                return GetClrType(stn);
+            }
+            else if (typeSyntax is GenericTypeSyntax gts)
+            {
+                IType[] args = new IType[gts.Args.Count];
 
-                var funcDef = typeDef?.TypeBody.SymbolTable.Find(name, SymbolType.Method, SymbolScopeBySecurity.User);
+                for (int i = 0; i < gts.Args.Count; i++)
+                {
+                    args[i] = GetClrType(gts.Args[i]);
+                }
 
-                m = (IMethod) funcDef?.CodeObject;
-
-                RegisterMethod(typeName, m);
+                //TODO: return resolved type
+            }
+            else if (typeSyntax is PrimitiveTypeSyntax pts)
+            {
+                return GetPrimitiveType(pts);
             }
 
-            return m;
+            else if (typeSyntax is ArrayTypeSyntax atn)
+            {
+                return GetClrType(atn.ElementType).MakeArrayType();
+            }
+
+            else if (typeSyntax is UnionTypeSyntax utn)
+            {
+                throw new NotImplementedException();
+            }
+
+            throw new Exception("Type not resolved");
+        }
+
+        public IType GetClrType(SingleTypeSyntax type)
+        {
+            var result = TypeFinder.Apply(type, _root);
+
+            if (result == null)
+                throw new Exception("Type not found");
+
+            return result.ClrType;
+        }
+
+        private IType GetPrimitiveType(PrimitiveTypeSyntax pts)
+        {
+            return pts.Kind switch
+            {
+                TypeNodeKind.Boolean => _stb.Boolean,
+                TypeNodeKind.Int => _stb.Int,
+                TypeNodeKind.Char => _stb.Char,
+                TypeNodeKind.Double => _stb.Double,
+                TypeNodeKind.String => _stb.String,
+                TypeNodeKind.Byte => _stb.Byte,
+                TypeNodeKind.Object => _stb.Object,
+                TypeNodeKind.Void => _stb.Void,
+                TypeNodeKind.Session => _stb.Session,
+                TypeNodeKind.Context => _ts.FindType<PlatformContext>(),
+                _ => throw new Exception($"This type is not primitive {pts.Kind}")
+            };
+        }
+
+        public IMethod GetMethod(TypeSyntax type, string name, IType[] args)
+        {
+            if (type is SingleTypeSyntax sts)
+            {
+                var symbol = TypeFinder.Apply(sts, _root);
+                var typeDef = symbol.Type;
+
+                var funcDef = typeDef?.TypeBody.SymbolTable.Find<MethodSymbol>(name, SymbolScopeBySecurity.User);
+
+                IMethod m = funcDef?.SelectOverload(args).clrMethod;
+
+                return m ?? throw new Exception($"Property {name} not found");
+            }
+            else if (type is PrimitiveTypeSyntax pts)
+            {
+                var pType = GetPrimitiveType(pts);
+
+                return pType.FindMethod(name) ?? throw new Exception("Property not found");
+            }
+
+            throw new Exception("Unknown type");
         }
 
         public IProperty GetProperty(TypeSyntax type, string name)
         {
-            var typeName = GetTypeName(type);
-            IProperty p = GetCachedProperty(typeName, name);
-
-            if (p == null)
+            if (type is SingleTypeSyntax sts)
             {
-                var typeDef = GetType(typeName);
-                var propDef = typeDef?.TypeBody.SymbolTable.Find(name, SymbolType.Property, SymbolScopeBySecurity.User);
-                p = (IProperty) propDef?.CodeObject;
+                var symbol = TypeFinder.Apply(sts, _root);
+                var typeDef = symbol.Type;
 
-                if (p != null)
-                    RegisterProperty(typeName, p);
-                else
-                    throw new Exception($"Property {typeName}.{name} not found");
+                var propDef = typeDef?.TypeBody.SymbolTable.Find<PropertySymbol>(name, SymbolScopeBySecurity.User);
+                var p = propDef?.ClrProperty;
+
+                if (p == null)
+                    throw new Exception($"Property {type}.{name} not found");
+                return p;
+            }
+            else if (type is PrimitiveTypeSyntax pts)
+            {
+                var pType = GetPrimitiveType(pts);
+
+                return pType.FindProperty(name) ?? throw new Exception("Property not found");
             }
 
-            return p;
+            throw new Exception("Unknown type");
         }
 
         public List<string> GetMethods(TypeSyntax type)
         {
-            var typeDef = GetType(GetTypeName(type));
-            return typeDef.TypeBody.SymbolTable.GetAll(SymbolType.Method).Select(x => x.Name).ToList();
+            var typeDef = GetClrType(GetTypeName(type));
+            return typeDef.TypeBody.SymbolTable.GetAll<MethodSymbol>(SymbolType.Method).Select(x => x.Name).ToList();
         }
 
         public void RegisterProperty(string fullTypeName, IProperty prop)
@@ -144,12 +222,11 @@ namespace ZenPlatform.Compiler
             return null;
         }
 
-        private TypeEntity GetType(string name)
+        private TypeEntity GetClrType(string name)
         {
             return _types.FirstOrDefault(x =>
                 (!string.IsNullOrEmpty(x.GetNamespace()) ? x.GetNamespace() + "." : "") + x.Name == name);
         }
-
 
         private void RegisterStatic()
         {

@@ -20,7 +20,7 @@ namespace ZenPlatform.Core.Querying.Optimizers
             if (baseTypes.Count == 1)
             {
                 Rw.Visit(_cast.BaseExpression);
-                Qm.ld_table(_cast.IpType.ConvertToDbType());
+                Qm.ld_table(_cast.Type.ConvertToDbType());
                 Qm.cast();
 
                 return;
@@ -35,12 +35,12 @@ namespace ZenPlatform.Core.Querying.Optimizers
             {
                 mte.EmitValueColumn(type);
 
-                Qm.ld_type(_cast.IpType.ConvertToDbType());
+                Qm.ld_type(_cast.Type.ConvertToDbType());
                 Qm.cast();
 
                 mte.EmitTypeColumn();
 
-                Qm.ld_const(type.Id);
+                Qm.ld_const(type.GetSettings().SystemId);
                 Qm.eq();
 
                 Qm.when();

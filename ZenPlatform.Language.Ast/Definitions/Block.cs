@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using ZenPlatform.Compiler.Contracts.Symbols;
@@ -24,6 +25,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
         }
     }
+
     public class SyntaxCollectionNode<T> : SyntaxNode, IEnumerable<T> where T : SyntaxNode
     {
         public SyntaxCollectionNode(ILineInfo lineInfo) : base(lineInfo)
@@ -52,6 +54,10 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public int Count => Childs.Count;
 
+        // public List<T> ToList()
+        // {
+        //     return Childs.Cast<T>().ToList();
+        // }
 
         public IEnumerator<T> GetEnumerator()
         {

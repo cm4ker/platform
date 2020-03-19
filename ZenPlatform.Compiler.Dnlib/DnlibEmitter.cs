@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection.Metadata;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Contracts.Symbols;
 using IField = ZenPlatform.Compiler.Contracts.IField;
 using IMethod = ZenPlatform.Compiler.Contracts.IMethod;
 using IType = ZenPlatform.Compiler.Contracts.IType;
@@ -92,7 +89,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             if (_method.Module != method.MethodRef.Module)
             {
-               //method.MethodRef.MethodSig = _cr.ResolveMethodSig(method.MethodRef.MethodSig);
+                //method.MethodRef.MethodSig = _cr.ResolveMethodSig(method.MethodRef.MethodSig);
                 return _method.Module.Import(method.MethodRef);
             }
             else
@@ -222,7 +219,6 @@ namespace ZenPlatform.Compiler.Dnlib
         public ILabel DefineLabel() => new DnlibLabel();
 
         private Stack<DnlibTryHandler> _exceptionStack;
-        
 
 
         public ILabel BeginExceptionBlock()
@@ -272,9 +268,6 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             throw new NotImplementedException();
         }
-
-        public ISymbolTable SymbolTable { get; }
-
 
         class DnlibDebugPoint
         {

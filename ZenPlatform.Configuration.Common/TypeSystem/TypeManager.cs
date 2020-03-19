@@ -43,6 +43,15 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
             _types.Add(Boolean);
             _types.Add(Guid);
             _types.Add(Numeric);
+
+            //register settings
+            _objectSettings.Add(new ObjectSetting {ObjectId = _intPType.Id, SystemId = _intPType.SystemId});
+            _objectSettings.Add(new ObjectSetting {ObjectId = _dateTimePType.Id, SystemId = _dateTimePType.SystemId});
+            _objectSettings.Add(new ObjectSetting {ObjectId = _binaryPType.Id, SystemId = _binaryPType.SystemId});
+            _objectSettings.Add(new ObjectSetting {ObjectId = _stringPType.Id, SystemId = _stringPType.SystemId});
+            _objectSettings.Add(new ObjectSetting {ObjectId = _booleanPType.Id, SystemId = _booleanPType.SystemId});
+            _objectSettings.Add(new ObjectSetting {ObjectId = _guidPType.Id, SystemId = _guidPType.SystemId});
+            _objectSettings.Add(new ObjectSetting {ObjectId = _numericPType.Id, SystemId = _numericPType.SystemId});
         }
 
         public Contracts.TypeSystem.IPType Int => _intPType ??= new IntPType(this);
@@ -92,7 +101,7 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
         {
             _components.Add(component);
         }
-        
+
         public void Register(ITable table)
         {
             _tables.Add(table);
