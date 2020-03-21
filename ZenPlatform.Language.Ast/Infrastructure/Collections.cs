@@ -59,7 +59,7 @@ namespace ZenPlatform.Language.Ast.Infrastructure
     {
     }
 
-    public class AttributeCollection : List<Attribute>
+    public class AttributeCollection : List<AttributeSyntax>
     {
     }
 

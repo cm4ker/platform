@@ -3,10 +3,8 @@
              Design.Height="400" Design.Width="500"
              xmlns:vm="clr-namespace:ZenPlatform.IDE.ViewModels;assembly=ZenPlatform.IDE"
              x:Class="ZenPlatform.IDE.Views.ConfigurationView">
-  <Design.DataContext>
-    <vm:ConfigurationViewModel />
-  </Design.DataContext>
-  <TreeView Items="{Binding Tree}">
-
-  </TreeView>
+    <Design.DataContext>
+        <vm:ConfigurationViewModel />
+    </Design.DataContext>
+    <TreeView Items="{Binding Tree}" />
 </UserControl>

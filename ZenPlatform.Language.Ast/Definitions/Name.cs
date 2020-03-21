@@ -1,5 +1,6 @@
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
@@ -18,7 +19,9 @@ namespace ZenPlatform.Language.Ast.Definitions
                 {
                     var v = FirstParent<IScoped>().SymbolTable
                         .Find(this.Value, SymbolType.Variable | SymbolType.Property, this.GetScope());
-                    return ((ITypedNode) v.SyntaxObject).Type;
+
+                    if (v is VariableSymbol vs) return ((ITypedNode) vs.SyntaxObject).Type;
+                    if (v is PropertySymbol ps) return ps.Property.Type;
                 }
 
                 return _type;
@@ -30,7 +33,6 @@ namespace ZenPlatform.Language.Ast.Definitions
 
     public partial class PropertyLookupExpression : ICanBeAssigned
     {
-        
     }
 
 

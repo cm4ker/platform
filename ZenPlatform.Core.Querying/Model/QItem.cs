@@ -9,7 +9,7 @@ namespace ZenPlatform.Core.Querying.Model
     /// <summary>
     /// Элемент логических связей в запросе. LT - Logical tree
     /// </summary>
-    public abstract partial class QItem : Node
+    public abstract partial class QItem : OneWayNode
     {
         protected QItem()
         {

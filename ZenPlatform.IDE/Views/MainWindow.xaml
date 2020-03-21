@@ -6,42 +6,40 @@
         Title="ZenPlatform.IDE"
         Height="500" Width="800"
         Design.Height="200" Design.Width="300"
-        x:Class="ZenPlatform.IDE.Views.MainWindow" >
-<Design.DataContext>
-    <vm:MainWindowViewModel/>
-  </Design.DataContext>
-  <Grid Background="LightBlue" RowDefinitions="20,30,*,*,*" ColumnDefinitions="200,*,*">
-    <Grid Grid.ColumnSpan="3" Background="Orange">
-      <Menu>
-        <MenuItem Header="Меню">
-          <MenuItem Header="Сохранить"></MenuItem>
-          <MenuItem Header="Выход"></MenuItem>
-        </MenuItem>
-      </Menu>
+        x:Class="ZenPlatform.IDE.Views.MainWindow">
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+    <Grid Background="LightBlue" RowDefinitions="20,30,*,*,*" ColumnDefinitions="200,*,*">
+        <Grid Grid.ColumnSpan="3" Background="Orange">
+            <Menu>
+                <MenuItem Header="Меню">
+                    <MenuItem Header="Сохранить" />
+                    <MenuItem Header="Выход" />
+                </MenuItem>
+            </Menu>
+        </Grid>
+        <Grid Grid.Row="1" Grid.ColumnSpan="4" Background="Gray" />
+        <Grid Grid.Row="2" Grid.RowSpan="4" Background="Red">
+            <TreeView Items="{Binding Tree}" />
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Background="LightBlue">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal"
+                            DockPanel.Dock="Top"
+                            Spacing="5"
+                            Margin="3">
+                    <Button Content="Copy" />
+                    <Button Name="addControlBtn" Content="Add Button" />
+                    <Button Name="clearControlBtn" Content="Clear Buttons" />
+                </StackPanel>
+                <AvalonEdit:TextEditor Name="Editor"
+                                       Margin="30"
+                                       SyntaxHighlighting="XML"
+                                       HorizontalScrollBarVisibility="Auto"
+                                       VerticalScrollBarVisibility="Visible"
+                                       TextBlock.FontSize="30" />
+            </DockPanel>
+        </Grid>
     </Grid>
-    <Grid Grid.Row="1" Grid.ColumnSpan="4" Background="Gray"> </Grid>
-    <Grid Grid.Row="2" Grid.RowSpan="4" Background="Red">
-      <TreeView Items="{Binding Tree}">
-
-      </TreeView>
-    </Grid>
-    <Grid Grid.Row="2" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Background="LightBlue">
-      <DockPanel>
-        <StackPanel Orientation="Horizontal"
-                    DockPanel.Dock="Top"
-                    Spacing="5"
-                    Margin="3">
-          <Button Content="Copy" />
-          <Button Name="addControlBtn" Content="Add Button" />
-          <Button Name="clearControlBtn" Content="Clear Buttons" />
-        </StackPanel>
-        <AvalonEdit:TextEditor Name="Editor"
-                               Margin="30"
-                               SyntaxHighlighting="XML"
-                               HorizontalScrollBarVisibility="Auto"
-                               VerticalScrollBarVisibility="Visible"
-                               TextBlock.FontSize="30" />
-      </DockPanel>
-    </Grid>
-  </Grid>
 </Window>

@@ -8,7 +8,7 @@ namespace ZenPlatform.UI.Ast
 
         public UIGroup With(UINode node)
         {
-            Childs.Add(node);
+            Attach(node);
             return this;
         }
 

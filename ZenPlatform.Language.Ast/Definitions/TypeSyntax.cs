@@ -33,7 +33,6 @@ namespace ZenPlatform.Language.Ast.Definitions
             return tnk == TypeNodeKind.Int || tnk == TypeNodeKind.Double;
         }
 
-
         public static bool IsBoolean(this TypeNodeKind tnk)
         {
             return tnk == TypeNodeKind.Boolean;
@@ -45,6 +44,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public static bool IsNumeric(this TypeSyntax ts) => ts.Kind.IsNumeric();
+
         public static bool IsString(this TypeSyntax ts) => ts.Kind.IsString();
 
         public static bool IsBoolean(this TypeSyntax ts) => ts.Kind.IsBoolean();
@@ -67,7 +67,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             Kind = kind;
         }
     }
-    
+
     public partial class SingleTypeSyntax
     {
         public SingleTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind) : this(lineInfo)
@@ -94,41 +94,6 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
     }
 
-    [Obsolete]
-    public partial class UnionTypeSyntax
-    {
-        private readonly TypeCollection _types;
-        private List<SingleTypeSyntax> _sTypes;
-
-        public UnionTypeSyntax(ILineInfo lineInfo, TypeCollection types) : base(lineInfo)
-        {
-            _types = types;
-            Kind = TypeNodeKind.UnionType;
-        }
-
-        private IEnumerable<SingleTypeSyntax> UnwrapSingleTypeNodes()
-        {
-            foreach (var type in _types)
-            {
-                if (type is UnionTypeSyntax mtn)
-                    foreach (var internalNode in mtn.UnwrapSingleTypeNodes())
-                    {
-                        yield return internalNode;
-                    }
-
-                if (type is SingleTypeSyntax stn)
-                    yield return stn;
-            }
-        }
-
-        public IReadOnlyCollection<SingleTypeSyntax> TypeList => _sTypes ??= UnwrapSingleTypeNodes().ToList();
-
-        /// <summary>
-        /// Задекларированное имя свойства, где лежит описание
-        /// </summary>
-        public string DeclName { get; set; }
-    }
-
     public partial class ArrayTypeSyntax
     {
         public ArrayTypeSyntax(ILineInfo lineInfo, TypeSyntax elementType) : base(lineInfo)
@@ -143,7 +108,8 @@ namespace ZenPlatform.Language.Ast.Definitions
 
     public partial class GenericTypeSyntax
     {
-        public GenericTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind, List<TypeSyntax> args) : this(lineInfo, args)
+        public GenericTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind, TypeList args) : this(lineInfo,
+            args)
         {
             TypeName = typeName;
 
@@ -151,7 +117,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
             Kind = kind;
         }
-        
+
         public string TypeName { get; }
     }
 }

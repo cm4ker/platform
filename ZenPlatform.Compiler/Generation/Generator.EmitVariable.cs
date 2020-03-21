@@ -4,6 +4,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -21,9 +22,9 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitExpression(e, expr, symTable);
 
-                if (variable.Type.ToClrType(_asm).Equals(_bindings.Object))
+                if (_map.GetClrType(variable.Type).Equals(_bindings.Object))
                 {
-                    e.Box(expr.Type.ToClrType(_asm));
+                    e.Box(_map.GetClrType(expr.Type));
                 }
             }
             else if (false) // variable.Value is ElementCollection ec)
@@ -32,14 +33,14 @@ namespace ZenPlatform.Compiler.Generation
                 if (variable.Value != null && variable.Value is Expression value)
                 {
                     EmitExpression(e, value, symTable);
-                    e.NewArr(variable.Type.ToClrType(_asm).ArrayElementType);
+                    e.NewArr(_map.GetClrType(variable.Type).ArrayElementType);
                 }
                 else if (variable.Value != null)
                 {
                     ElementCollection elements = null; //variable.Value as ElementCollection;
 
                     e.LdcI4(elements.Count);
-                    e.NewArr(variable.Type.ToClrType(_asm).ArrayElementType);
+                    e.NewArr(_map.GetClrType(variable.Type).ArrayElementType);
 
                     for (int x = 0; x < elements.Count; x++)
                     {
@@ -56,7 +57,7 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             //store phase
-            ILocal local = e.DefineLocal(variable.Type.ToClrType(_asm));
+            ILocal local = e.DefineLocal(_map.GetClrType(variable.Type));
 
 
             if (variable.Value is Expression ex)
@@ -71,32 +72,8 @@ namespace ZenPlatform.Compiler.Generation
                 e.StLoc(local);
             }
 
-            symTable.ConnectCodeObject(variable, local);
-        }
-
-        private void WrapMultitypeStackValue(IEmitter e, UnionTypeSyntax mtn, ILocal local, ILocal exp)
-        {
-            var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
-            e.LdLocA(local);
-            e.Dup();
-            e.LdsFld(mt.FindField(mtn.DeclName));
-            e.EmitCall(_bindings.UnionTypeStorage.FindConstructor(_bindings.MultiType));
-            e.LdLoc(local);
-            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
-            e.LdLoc(local);
-        }
-
-        private void WrapMultitypeNode(IEmitter e, UnionTypeSyntax mtn, ref ILocal local)
-        {
-            var localWrap = e.DefineLocal(_bindings.UnionTypeStorage);
-            var mt = _asm.FindType("PlatformCustom.DefinedMultitypes");
-            e.LdLocA(localWrap);
-            e.Dup();
-            e.LdsFld(mt.FindField(mtn.DeclName));
-            e.EmitCall(_bindings.UnionTypeStorage.FindConstructor(_bindings.MultiType));
-            e.LdLoc(local);
-            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Setter);
-            local = localWrap;
+            var symbol = symTable.Find<VariableSymbol>(variable);
+            symbol.Connect(local);
         }
     }
 }
