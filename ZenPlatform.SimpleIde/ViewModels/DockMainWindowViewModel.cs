@@ -51,7 +51,7 @@ namespace ZenPlatform.SimpleIde.ViewModels
 
             Configuration = new ConfigurationTreeViewModel(_project);
 
-            _container = new MainDockContainer();
+            _container = MainDockContainer.Instance;
             
 
 
@@ -86,7 +86,8 @@ namespace ZenPlatform.SimpleIde.ViewModels
             {
                 PhysicalFileSystem fileSystem = new PhysicalFileSystem(dir);
                 var manager = new MDManager(new TypeManager(), new InMemoryUniqueCounter());
-                Configuration.Open(Project.Load(manager, fileSystem));
+                var prj = Project.Load(manager, fileSystem);
+                Configuration.Open(prj);
             });
 
         }

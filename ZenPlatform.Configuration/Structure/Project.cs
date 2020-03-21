@@ -172,10 +172,10 @@ namespace ZenPlatform.Configuration.Structure
         public void Load(IFileSystem fileSystem)
         {
             _manager = _inf.TypeManager;
-           // _manager.LoadSettings(_inf.Settings.GetSettings());
+            // _manager.LoadSettings(_inf.Settings.GetSettings());
 
-
-            foreach (var reference in _md.ComponentReferences)
+            var refs = _md.ComponentReferences.ToArray();
+            foreach (var reference in refs)
             {
                 // Path.Combine(pkgFolder, );
 
@@ -203,10 +203,18 @@ namespace ZenPlatform.Configuration.Structure
                     using (var memoryStream = new MemoryStream())
                     {
                         stream.CopyTo(memoryStream);
-                        if (pdbBytes != null)
-                            asm = Assembly.Load(memoryStream.ToArray(), pdbBytes);
-                        else
-                            asm = Assembly.Load(memoryStream.ToArray());
+
+                        ModuleContext modCtx = ModuleDef.CreateModuleContext();
+                        ModuleDefMD module = ModuleDefMD.Load(memoryStream.ToArray(), modCtx);
+                        asm = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == module.Assembly.FullName);
+                        if (asm == null)
+                        {
+
+                            if (pdbBytes != null)
+                                asm = Assembly.Load(memoryStream.ToArray(), pdbBytes);
+                            else
+                                asm = Assembly.Load(memoryStream.ToArray());
+                        }
                     }
                 }
 

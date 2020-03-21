@@ -10,6 +10,15 @@ namespace ZenPlatform.SimpleIde.Dock
 {
     public class MainDockContainer: ReactiveObject
     {
+        private static MainDockContainer _instance = null;
+        public static MainDockContainer Instance { 
+            get
+            {
+                if (_instance == null)
+                    _instance = new MainDockContainer();
+                return _instance;
+            }
+        }
 
         private ToolsDockContainer _leftTools;
         private DocumentDockContainer _documents;
@@ -34,6 +43,7 @@ namespace ZenPlatform.SimpleIde.Dock
         public void OpenConfigutaionItem(IConfigurationItem item)
         {
             var view = new DocumentView(item);
+            view.Factory = LayoutFactory;
             _documents.OpenDocument(view);
         }
 
