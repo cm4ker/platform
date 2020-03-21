@@ -22,7 +22,7 @@ namespace ZenPlatform.EntityComponent.IDE
         {
             _editor = editor;
             Document = new TextDocument(_editor.ModuleText);
-
+            _changeSubject = new Subject<bool>();
             _isChanged = Observable.Merge(
                  Document.WhenAnyValue(doc => doc.Text).Select(t => true).Skip(1), _changeSubject).ToProperty(this, vm => vm.IsChanged);
 

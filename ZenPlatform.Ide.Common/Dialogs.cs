@@ -10,6 +10,8 @@ using System.Text;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Ide.Common.Editors;
 using MessageBox.Avalonia;
+using System.Threading.Tasks;
+using MessageBox.Avalonia.Enums;
 
 namespace ZenPlatform.Ide.Common
 {
@@ -22,6 +24,7 @@ namespace ZenPlatform.Ide.Common
         }
         public static IObservable<IPType> SelectType(ITypeManager typeManager, Func<IPType, bool> filter )
         {
+            /*
             var interop = new Interaction<Unit, IPType>();
 
             interop.RegisterHandler(async interaction =>
@@ -39,6 +42,18 @@ namespace ZenPlatform.Ide.Common
 
             });
             return interop.Handle(Unit.Default);
+            */
+
+            var view = new TypeSelectorViewModel(typeManager, filter);
+
+
+            var dialog = new UITypeSelectorDialog();
+            dialog.Model = view;
+
+            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                return Observable.FromAsync(() => dialog.ShowDialog<IPType>(desktop.MainWindow), RxApp.MainThreadScheduler);
+
+            return null;
         }
 
         public static IObservable<string> SelectText(string Caption, double TextBoxWidth = 300)
@@ -66,16 +81,17 @@ namespace ZenPlatform.Ide.Common
         }
 
 
-        public static IObservable<bool> GetOkCancel(string title, string text)
+        public static IObservable<ButtonResult> ShowSimpleDialog(string title, string text, ButtonEnum buttons)
         {
             
-            var dialog = MessageBoxManager.GetMessageBoxStandardWindow(title, text, MessageBox.Avalonia.Enums.ButtonEnum.OkCancel);
-
+            var dialog = MessageBoxManager.GetMessageBoxStandardWindow(title, text, buttons);
+            
             if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                return Observable.FromAsync(async () => await dialog.ShowDialog(desktop.MainWindow) == 0);
+                return Observable.FromAsync(() => dialog.ShowDialog(desktop.MainWindow), RxApp.MainThreadScheduler);
 
             return null;
 
         }
+
     }
 }

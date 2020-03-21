@@ -2,17 +2,13 @@
 using AvaloniaEdit.Document;
 using Dock.Model.Controls;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Xml;
-using ZenPlatform.Configuration.Structure;
-
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
 using ZenPlatform.Ide.Contracts;
 using ZenPlatform.Ide.Common;
+using Dock.Model;
+using MessageBox.Avalonia.Enums;
 
 namespace ZenPlatform.SimpleIde.ViewModels
 {
@@ -39,11 +35,28 @@ namespace ZenPlatform.SimpleIde.ViewModels
 
         public override bool OnClose()
         {
+            if (_doc.IsChanged)
+            {
+                Dialogs.ShowSimpleDialog(_doc.Caption, "Save changed?", ButtonEnum.YesNoCancel).Subscribe(r =>
+                 {
+                     if (r == ButtonResult.Yes)
+                     {
+                         Save();
 
-            var result = Dialogs.GetOkCancel(_doc.Caption, "Save changed?");
-            result.Where(r => r).Subscribe(r=> { Save(); }) ;
+                         Factory.RemoveDockable(this, false);
+                     }
+                     else
+                     if (r == ButtonResult.No)
+                     {
 
-            return true;// base.OnClose();
+                         _doc.DiscardChange();
+                         Factory.RemoveDockable(this, false);
+                     }
+                 });
+
+                return false;
+            }
+            else return true;
         }
 
         public void Save()
