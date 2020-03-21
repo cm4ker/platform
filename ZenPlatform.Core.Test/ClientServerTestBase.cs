@@ -9,6 +9,7 @@ namespace ZenPlatform.Core.Test
     public class ClientServerTestBase
     {
         private ITestOutputHelper _testOutput;
+
         public ClientServerTestBase(ITestOutputHelper testOutput)
         {
             _testOutput = testOutput;

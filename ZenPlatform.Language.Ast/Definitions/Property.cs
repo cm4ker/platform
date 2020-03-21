@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
@@ -31,9 +32,9 @@ namespace ZenPlatform.Language.Ast.Definitions
             get { return _getter; }
             set
             {
-                Childs.Remove(_getter);
+                Detach(_getter);
                 _getter = value;
-                Childs.Add(_getter);
+                Attach(_getter);
             }
         }
 
@@ -42,9 +43,9 @@ namespace ZenPlatform.Language.Ast.Definitions
             get => _setter;
             set
             {
-                Childs.Remove(_setter);
+                Detach(_setter);
                 _setter = value;
-                Childs.Add(_setter);
+                Attach(_setter);
             }
         }
     }

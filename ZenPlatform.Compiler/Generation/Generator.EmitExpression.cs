@@ -13,6 +13,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Compiler.Generation
@@ -49,10 +50,6 @@ namespace ZenPlatform.Compiler.Generation
                 if (be.Type.IsString())
                     switch (be.BinaryOperatorType)
                     {
-                        case BinaryOperatorType.Add:
-                            e.EmitCall(_bindings.Methods.Concat);
-                            //e.EmitCall(_bindings.String.FindMethod(x => x.Name == "Concat" && x.Parameters.Count == 2));
-                            break;
                         default: throw new NotSupportedException();
                     }
 
@@ -142,51 +139,54 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Name name)
             {
-                var variable = symbolTable.Find(name.Value, SymbolType.Variable | SymbolType.Property, name.GetScope());
+                var symbol = symbolTable.Find(name.Value, SymbolType.Variable | SymbolType.Property, name.GetScope());
 
-                if (variable == null)
+                if (symbol == null)
                     Error("Variable " + name.Value + " are unknown.");
 
-                if (variable.SyntaxObject is ContextVariable)
+                if (symbol is VariableSymbol variable)
                 {
-                    CheckContextVariable(e, variable);
-                }
-
-                if (name.Type is null)
-                    if (variable.SyntaxObject is ITypedNode tn)
-                        name.Type = tn.Type;
-
-                if (variable.CodeObject is ILocal vd)
-                {
-                    if (name.Type is UnionTypeSyntax)
+                    if (variable.SyntaxObject is ContextVariable)
                     {
-                        e.LdLocA(vd);
-                        e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
+                        CheckContextVariable(e, variable);
                     }
-                    else
-                        e.LdLoc(vd);
-                }
-                else if (variable.CodeObject is IField fd)
-                {
-                    e.LdArg_0();
-                    e.LdFld(fd);
-                }
-                else if (variable.CodeObject is IParameter pd)
-                {
-                    Parameter p = variable.SyntaxObject as Parameter;
 
-                    if (name.Type is UnionTypeSyntax)
+                    if (name.Type is null)
+                        if (variable.SyntaxObject is ITypedNode tn)
+                            name.Type = tn.Type;
+
+                    if (variable.CompileObject is ILocal vd)
                     {
-                        e.LdArgA(pd);
-                        e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
+                        if (name.Type is PrimitiveTypeSyntax pts && (pts.IsBoolean() || pts.IsNumeric()) && false)
+                        {
+                            //TODO: need understand then we must load variable\arg by ref. While force disable this tree
+                            e.LdLocA(vd);
+                        }
+                        else
+                            e.LdLoc(vd);
                     }
-                    else
-                        e.LdArg(pd.ArgIndex);
+                    else if (variable.CompileObject is IField fd)
+                    {
+                        e.LdArg_0();
+                        e.LdFld(fd);
+                    }
+                    else if (variable.CompileObject is IParameter pd)
+                    {
+                        Parameter p = variable.SyntaxObject as Parameter;
 
-                    if (p.PassMethod == PassMethod.ByReference)
-                        e.LdIndI4();
+                        if (name.Type is UnionTypeSyntax)
+                        {
+                            e.LdArgA(pd);
+                            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
+                        }
+                        else
+                            e.LdArg(pd.ArgIndex);
+
+                        if (p.PassMethod == PassMethod.ByReference)
+                            e.LdIndI4();
+                    }
                 }
-                else if (variable.CodeObject is IProperty pr)
+                else if (symbol is PropertySymbol ps)
                 {
                     throw new NotImplementedException();
                 }
@@ -194,6 +194,11 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is Call call)
             {
                 EmitCall(e, call, symbolTable);
+            }
+            else if (expression is ClrInternalCall internalCall)
+            {
+                EmitArguments(e, internalCall.Arguments, symbolTable);
+                e.EmitCall(internalCall.Method);
             }
             else if (expression is PropertyLookupExpression le)
             {
@@ -214,7 +219,7 @@ namespace ZenPlatform.Compiler.Generation
                 EmitExpression(e, mle.Current, symbolTable);
 
                 var method = _map.GetMethod(mle.Current.Type, lca.Name.Value,
-                    lca.Arguments.Select(x => x.Expression.Type).ToArray());
+                    lca.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
 
                 lca.Type = method.ReturnType.ToAstType();
 
@@ -294,7 +299,7 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitPostOperation(IEmitter e, SymbolTable symbolTable, PostOperationExpression pis)
         {
-            IType opType = pis.Type.ToClrType(_asm);
+            IType opType = _map.GetClrType(pis.Type);
 
             if (pis.Expression is Name n)
             {
@@ -324,22 +329,24 @@ namespace ZenPlatform.Compiler.Generation
 
                 e.Add();
 
-                if (symbol.CodeObject is IParameter pd)
-                    e.StArg(pd);
+                if (symbol is VariableSymbol vs)
+                {
+                    if (vs.CompileObject is IParameter pd)
+                        e.StArg(pd);
 
-                if (symbol.CodeObject is ILocal vd)
-                    e.StLoc(vd);
-
-                if (symbol.CodeObject is IProperty prd)
+                    if (vs.CompileObject is ILocal vd)
+                        e.StLoc(vd);
+                }
+                else if (symbol is PropertySymbol ps)
                 {
                     e.LdArg_0()
-                        .EmitCall(prd.Setter);
+                        .EmitCall(ps.ClrProperty.Setter);
                 }
             }
             else if (pis.Expression is PropertyLookupExpression ple)
             {
                 var loc = e.DefineLocal(opType);
-                
+
                 //Load context
                 EmitExpression(e, ple.Current, symbolTable);
 
@@ -357,16 +364,16 @@ namespace ZenPlatform.Compiler.Generation
         }
 
 
-        private void CheckContextVariable(IEmitter e, ISymbol symbol)
+        private void CheckContextVariable(IEmitter e, VariableSymbol symbol)
         {
-            if (symbol.CodeObject == null)
+            if (symbol.CompileObject == null)
             {
                 var loc = e.DefineLocal(_ts.FindType<PlatformContext>());
 
                 e.LdContext()
                     .StLoc(loc);
 
-                symbol.CodeObject = loc;
+                symbol.Connect(loc);
             }
         }
     }

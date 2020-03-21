@@ -95,12 +95,6 @@ namespace ZenPlatform.EntityComponent.Configuration
             var md = new MDEntity();
             var r = new ObjectEditor(_inf, md);
             _objs.Add(r);
-
-            var sysId = _inf.Counter.GetId(md.ObjectId);
-
-            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
-                {ObjectId = md.ObjectId, SystemId = sysId, DatabaseName = $"Obj_{sysId}"});
-
             return r;
         }
 

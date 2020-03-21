@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Definitions.Functions;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions
 {
@@ -15,7 +16,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public void AddFunction(Function function)
         {
-            TypeBody.AddFunction(function);
+            TypeBody.Functions.Add(function);
         }
     }
 }

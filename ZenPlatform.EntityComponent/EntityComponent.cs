@@ -1,6 +1,7 @@
 ﻿using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.DataComponent;
+using ZenPlatform.EntityComponent.Compilation;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.EntityComponent.Migrations;

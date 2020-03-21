@@ -15,15 +15,17 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         private readonly DnlibTypeSystem _ts;
         protected readonly PropertyDef PropertyDef;
+        public  ITypeDefOrRef DeclaringType { get; }
         private DnlibContextResolver _cr;
         protected IMethod _getter;
         protected IMethod _setter;
         private List<DnlibCustomAttribute> _customAttributes;
 
-        public DnlibProperty(DnlibTypeSystem typeSystem, PropertyDef property)
+        public DnlibProperty(DnlibTypeSystem typeSystem, PropertyDef property, ITypeDefOrRef declaringType)
         {
             _ts = typeSystem;
             PropertyDef = property;
+            DeclaringType = declaringType;
 
             _cr = new DnlibContextResolver(_ts, PropertyDef.Module);
         }
@@ -37,8 +39,16 @@ namespace ZenPlatform.Compiler.Dnlib
 
         public IType PropertyType => _cr.GetType(PropertyDef.PropertySig.RetType);
 
+        public IMethod CalculateMethod(MethodDef x)
+        {
+            return new DnlibMethod(_ts,
+                new MemberRefUser(x.Module, x.Name, _cr.ResolveMethodSig(x.MethodSig, null),
+                    DeclaringType),
+                x, DeclaringType);
+        }
+
         public IMethod Getter => _getter ??=
-            (PropertyDef.GetMethod == null) ? null : new DnlibMethod(_ts, PropertyDef.GetMethod, PropertyDef.GetMethod, PropertyDef.DeclaringType);
+            (PropertyDef.GetMethod == null) ? null : CalculateMethod(PropertyDef.GetMethod);
 
         public IMethod Setter => _setter ??=
             (PropertyDef.SetMethod == null)

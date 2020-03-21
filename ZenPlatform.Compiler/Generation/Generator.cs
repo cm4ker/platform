@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using MoreLinq.Extensions;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
+using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.UI.Ast;
 using SreTA = System.Reflection.TypeAttributes;
 
@@ -20,21 +23,26 @@ namespace ZenPlatform.Compiler.Generation
 
         private readonly IProject _conf;
 
-
-        private List<CompilationUnit> _cus;
+        private Root _root;
+        private CompilationUnitList _cus;
 
         private ServerAssemblyServiceScope _serviceScope;
 
         private SystemTypeBindings _bindings;
         private SyntaxTreeMemberAccessProvider _map;
 
-        private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
+        //private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
 
         public Generator(GeneratorParameters parameters)
         {
             _parameters = parameters;
 
-            _cus = parameters.Units;
+            if (_root != null)
+            {
+                _root = parameters.Root;
+                _cus = parameters.Root.Units;
+            }
+
             _asm = parameters.Builder;
             _ts = _asm.TypeSystem;
 
@@ -52,6 +60,12 @@ namespace ZenPlatform.Compiler.Generation
 
         private void EmitUI(UINode node)
         {
+        }
+
+        private void CreateBindings()
+        {
+            var b = new ClassTable();
+            b.FillStandard(_bindings);
         }
     }
 }

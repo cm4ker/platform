@@ -25,5 +25,10 @@ namespace ZenPlatform.Core.Querying.Model
         {
             yield return _baseIpType;
         }
+
+        public override string ToString()
+        {
+            return $"Const = {Value}";
+        }
     }
 }

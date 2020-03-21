@@ -11,12 +11,22 @@ namespace ZenPlatform.Language.Ast.Definitions
     public partial class CompilationUnit : SyntaxNode
     {
         public static CompilationUnit Empty =>
-            new CompilationUnit(null, new List<UsingBase>(), new List<TypeEntity>(), new List<NamespaceDeclaration>());
+            new CompilationUnit(null, new UsingList(), new EntityList(), new NamespaceDeclarationList());
 
-        public void AddEntity(TypeEntity type)
+        public IEnumerable<TypeEntity> GetTypes()
         {
-            this.Entityes.Add(type);
-            Childs.Add(type);
+            foreach (var entity in Entityes)
+            {
+                yield return entity;
+            }
+
+            foreach (var ns in NamespaceDeclarations)
+            {
+                foreach (var nsEntitye in ns.Entityes)
+                {
+                    yield return nsEntitye;
+                }
+            }
         }
     }
 }

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
-using ZenPlatform.Compiler.AST.Infrastructure;
+using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
+using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -13,11 +14,18 @@ namespace ZenPlatform.Compiler.Generation
     {
         private void EmitCall(IEmitter e, Call call, SymbolTable symbolTable)
         {
-            var symbol = symbolTable.Find(call.Name.Value, SymbolType.Method, call.GetScope());
+            var symbol = symbolTable.Find<MethodSymbol>(call.Name.Value, call.GetScope());
 
             if (symbol != null)
             {
-                Function function = symbol.SyntaxObject as Function;
+                var func = symbol.SelectOverload(call.Arguments.Select(x => _map.GetClrType(x.Expression.Type))
+                    .ToArray());
+
+                //we need load this arg
+                if (!func.clrMethod.IsStatic)
+                    e.LdArg_0();
+
+                Function function = func.method;
 
                 //
                 // Check arguments
@@ -54,7 +62,7 @@ namespace ZenPlatform.Compiler.Generation
                 }
 
                 Hack:
-                e.EmitCall((IMethod) symbol.CodeObject, call.IsStatement);
+                e.EmitCall(func.clrMethod, call.IsStatement);
             }
             else
             {
@@ -62,7 +70,7 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        private void EmitArguments(IEmitter e, IList<Argument> args, SymbolTable symbolTable)
+        private void EmitArguments(IEmitter e, ArgumentList args, SymbolTable symbolTable)
         {
             foreach (Argument argument in args)
             {
@@ -71,16 +79,16 @@ namespace ZenPlatform.Compiler.Generation
                     // Regular value
                     if (argument.Expression is Name arg)
                     {
-                        var variable = symbolTable.Find(arg.Value, SymbolType.Variable, arg.GetScope());
-                        if (variable.CodeObject is ILocal vd)
+                        var variable = symbolTable.Find<VariableSymbol>(arg.Value, arg.GetScope());
+                        if (variable.CompileObject is ILocal vd)
                         {
                             e.LdLocA(vd);
                         }
-                        else if (variable.CodeObject is IField fd)
+                        else if (variable.CompileObject is IField fd)
                         {
                             e.LdsFldA(fd);
                         }
-                        else if (variable.CodeObject is IParameter pb)
+                        else if (variable.CompileObject is IParameter pb)
                         {
                             e.LdArgA(pb);
                         }

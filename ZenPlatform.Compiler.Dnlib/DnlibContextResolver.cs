@@ -46,16 +46,33 @@ namespace ZenPlatform.Compiler.Dnlib
             return _moduleDef.Import(method);
         }
 
-        public IType GetType(ITypeDefOrRef tr) => _ts.Resolve(tr.ToTypeRef());
-
-        public MethodSig ResolveMethodSig(MethodSig msig)
+        public IType GetType(ITypeDefOrRef tr)
         {
-            if (!(msig.RetType is GenericMVar || msig.RetType is GenericInstSig))
+            if (tr is TypeDefUser)
+                return _ts.Resolve(tr);
+            else
+                return _ts.Resolve(tr.ToTypeRef());
+        }
+
+        public MethodSig ResolveMethodSig(MethodSig msig, IType[] genericArguments)
+        {
+            if (!msig.RetType.ContainsGenericParameter)
             {
                 DnlibType dt = (DnlibType) GetType(msig.RetType);
 
                 if (dt != null)
                     msig.RetType = dt.TypeRef.ToTypeSig();
+            }
+
+            for (int i = 0; i < msig.Params.Count; i++)
+            {
+                if (!msig.Params[i].ContainsGenericParameter)
+                {
+                    DnlibType dt = (DnlibType) GetType(msig.Params[i]);
+
+                    if (dt != null)
+                        msig.Params[i] = dt.TypeRef.ToTypeSig();
+                }
             }
 
             return msig;

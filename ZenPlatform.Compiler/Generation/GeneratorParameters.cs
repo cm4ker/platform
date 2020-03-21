@@ -19,10 +19,12 @@ namespace ZenPlatform.Compiler.Generation
 
         public IProject Configuration { get; }
 
-        /// <summary>
-        /// Юниты компиляции
-        /// </summary>
-        public List<CompilationUnit> Units { get; }
+        public Root Root { get; }
+
+        // /// <summary>
+        // /// Юниты компиляции
+        // /// </summary>
+        // public CompilationUnitList Units { get; }
 
         /// <summary>
         /// Построитель сборки
@@ -35,12 +37,12 @@ namespace ZenPlatform.Compiler.Generation
         public CompilationMode Mode { get; }
 
 
-        public GeneratorParameters(List<CompilationUnit> units, IAssemblyBuilder builder, CompilationMode mode,
+        public GeneratorParameters(Root root, IAssemblyBuilder builder, CompilationMode mode,
             SqlDatabaseType targetDatabaseType, IProject configuration)
         {
             TargetDatabaseType = targetDatabaseType;
             Configuration = configuration;
-            Units = units;
+            Root = root;
             Builder = builder;
             Mode = mode;
         }

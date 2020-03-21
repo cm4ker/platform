@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.Configuration.Common;
 
 namespace ZenPlatform.EntityComponent.Configuration
 {
@@ -15,7 +16,8 @@ namespace ZenPlatform.EntityComponent.Configuration
             Properties = new List<MDProperty>();
             Tables = new List<MDTable>();
             Modules = new List<MDProgramModule>();
-            Commands= new List<MDCommand>();
+            Commands = new List<MDCommand>();
+            Interfaces = new List<MDInterface>();
         }
 
         public string Name { get; set; }
@@ -35,5 +37,7 @@ namespace ZenPlatform.EntityComponent.Configuration
         public List<MDCommand> Commands { get; set; }
 
         public List<MDProgramModule> Modules { get; set; }
+
+        public List<MDInterface> Interfaces { get; set; }
     }
 }

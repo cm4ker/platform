@@ -6,7 +6,7 @@ namespace ZenPlatform.UI.Ast
     {
         public UIWindow With(UINode node)
         {
-            Childs.Add(node);
+            Attach(node);
             return this;
         }
 

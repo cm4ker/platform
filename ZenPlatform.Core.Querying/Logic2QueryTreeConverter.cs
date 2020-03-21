@@ -63,7 +63,7 @@ namespace ZenPlatform.Core.Querying
                 From(x=> x.FromRaw("Select * From Test"))
              */
 
-            ot.ObjectIpType.GetComponent().ComponentImpl.QueryInjector.InjectDataSource(_qm, ot.ObjectIpType, null);
+            ot.ObjectType.GetComponent().ComponentImpl.QueryInjector.InjectTypeSource(_qm, ot.ObjectType, null);
         }
 
         private void GenerateFrom(QFrom from)

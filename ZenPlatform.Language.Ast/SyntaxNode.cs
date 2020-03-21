@@ -1,4 +1,6 @@
+using System;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Language.Ast
@@ -12,8 +14,6 @@ namespace ZenPlatform.Language.Ast
                 Line = lineInfo.Line;
                 Position = lineInfo.Position;
             }
-
-            //  Children = new AstNodeCollection();
         }
 
         public int Line { get; set; }

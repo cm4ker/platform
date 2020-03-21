@@ -45,6 +45,8 @@ namespace ZenPlatform.Compiler.Cecil
             return CecilHelpers.Equals(Reference, o.Reference);
         }
 
+        ITypeSystem IType.TypeSystem => TypeSystem;
+
         public object Id => Reference.FullName;
         public string Name => Reference.Name;
         public string FullName => Reference.FullName;

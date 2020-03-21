@@ -17,7 +17,7 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
 
         public IPType BaseType => _ipType;
         public override string Name => _name ??= CalcName();
-
+        
         public override Guid? BaseId => _ipType.Id;
 
         public int Scale { get; set; }

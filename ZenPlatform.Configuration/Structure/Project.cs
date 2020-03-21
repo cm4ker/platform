@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -14,6 +13,7 @@ using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.Language.Ast.Definitions.Statements;
+using File = System.IO.File;
 
 namespace ZenPlatform.Configuration.Structure
 {
@@ -134,11 +134,9 @@ namespace ZenPlatform.Configuration.Structure
         /// <param name="fileSystem"></param>
         public void Save(IFileSystem fileSystem)
         {
-
             foreach (var mrg in _managers)
             {
                 mrg.Value.Save(_inf, mrg.Key, fileSystem);
-
 
 
                 if (!fileSystem.Exists(PackagesDirectory))
@@ -148,20 +146,12 @@ namespace ZenPlatform.Configuration.Structure
 
                 using (var stream = fileSystem.CreateFile(asmFile))
                 {
-
                     ModuleDefMD module = ModuleDefMD.Load(mrg.Value.GetType().Assembly.Modules.FirstOrDefault());
                     module.Write(stream);
                 }
-
-
-
-
             }
 
             fileSystem.Serialize(DefaultPath.ToString(), _md);
-
-
-            
         }
 
         public void Attach(IComponentRef comRef, IComponentManager mrg)
@@ -225,8 +215,9 @@ namespace ZenPlatform.Configuration.Structure
                                  throw new Exception("Invalid component");
 
                 var manager = (IComponentManager) Activator.CreateInstance(loaderType);
-               
+
                 //Attach(reference, manager);
+
 
                 var editor = manager.Load(this, reference, fileSystem);
 

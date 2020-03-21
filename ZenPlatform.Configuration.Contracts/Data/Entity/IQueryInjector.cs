@@ -14,7 +14,10 @@ namespace ZenPlatform.Configuration.Contracts.Data.Entity
         /// </summary>
         /// <param name="logicalTreeNode">Элемент логического дерева, связанный с данным источником данных</param>
         /// <returns></returns>
-        void InjectDataSource(QueryMachine qm, IPType t, IQueryModelContext logicalTreeNode);
+        void InjectTypeSource(QueryMachine qm, IPType t, IQueryModelContext logicalTreeNode);
+
+
+        void InjectTableSource(QueryMachine qm, ITable t, IQueryModelContext logicalTreeNode);
     }
 
 

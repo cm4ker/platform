@@ -89,7 +89,7 @@ namespace ZenPlatform.EntityComponent.Migrations
         {
             if (oldState == null && actualState != null)
             {
-                var typesToCreate = actualState.GetTypes();
+                var typesToCreate = actualState.GetTypes().Where(x=>x.IsDbAffect);
 
                 typesToCreate.ForEach(e =>
                     plan.AddScope(

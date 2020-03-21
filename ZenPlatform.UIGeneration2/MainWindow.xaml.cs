@@ -4,6 +4,10 @@ using Avalonia.Markup.Xaml;
 
 namespace ZenPlatform.UIBuilder
 {
+    public class MainWindow3 : Window
+    {
+    }
+
     public class MainWindow : Window
     {
         public MainWindow()
@@ -18,7 +22,7 @@ namespace ZenPlatform.UIBuilder
 
         private void InitializeComponent()
         {
-            AvaloniaXamlLoader.Load(this);
+           AvaloniaXamlLoader.Load(this);
         }
 
         public void Changed()

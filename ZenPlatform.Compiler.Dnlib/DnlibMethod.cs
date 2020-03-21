@@ -49,6 +49,9 @@ namespace ZenPlatform.Compiler.Dnlib
                 var sig = new GenericInstMethodSig(typeArguments.Select(x => ((DnlibType) x).TypeRef.ToTypeSig())
                     .ToArray());
 
+                if (sig == null)
+                    throw new Exception("sig is null");
+
                 var generic = new MethodSpecUser(mdr, sig);
 
                 return new DnlibMethod(TypeSystem, generic, generic.ResolveMethodDef(), _declaringTR);
@@ -57,16 +60,44 @@ namespace ZenPlatform.Compiler.Dnlib
             throw new Exception("Can't create generic method");
         }
 
+        public IReadOnlyList<IType> GenericArguments => null;
+
         protected ITypeDefOrRef DeclaringTypeReference => _declaringTR;
 
         public bool IsPublic => MethodDef.IsPublic;
         public bool IsStatic => MethodDef.IsStatic;
 
         public IReadOnlyList<IParameter> Parameters =>
-            _parameters ??= MethodDef.Parameters
+            _parameters ??= CalculateParameters();
+
+        public List<DnlibParameter> CalculateParameters()
+        {
+            void ContextGenericResolver(TypeSig sig, Parameter param)
+            {
+                if (param.Type is GenericInstSig gis && _declaringTR.ToTypeSig() is GenericInstSig ts)
+                {
+                    for (int i = 0; i < gis.GenericArguments.Count; i++)
+                    {
+                        if (gis.GenericArguments[i] is GenericVar gv)
+                        {
+                            gis.GenericArguments[i] = ts.GenericArguments[(int) gv.Number];
+                        }
+                    }
+                }
+            }
+
+
+            return MethodDef.Parameters
                 .Where(x => !x.IsHiddenThisParameter)
-                .Select(p => new DnlibParameter(TypeSystem, MethodDef, _declaringTR.Module, p))
+                .Select(p =>
+                {
+                    ContextGenericResolver(_declaringTR.ToTypeSig(), p);
+
+                    return new DnlibParameter(TypeSystem, MethodDef, _declaringTR.Module, p);
+                })
                 .ToList();
+        }
+
 
         private List<DnlibParameter> _parameters;
 
