@@ -77,6 +77,43 @@ namespace ZenPlatform.Core.Network
     }
 
     [Serializable]
+    public class RequestInvokeUnaryByteArgsNetworkMessage : IInvokeMessage
+    {
+        public Guid Id { get; private set; }
+        public Guid RequestId { get; private set; }
+        public Route Route { get; private set; }
+        public byte[][] Args { get; private set; }
+
+        public RequestInvokeUnaryByteArgsNetworkMessage() { }
+
+        public RequestInvokeUnaryByteArgsNetworkMessage(Route route, byte[][] args)
+        {
+            Id = Guid.NewGuid();
+            Route = route;
+            Args = args;
+        }
+
+    }
+
+    [Serializable]
+    public class ResponceInvokeUnaryByteArgsNetworkMessage : IInvokeMessage
+    {
+        public Guid Id { get; private set; }
+        public Guid RequestId { get; private set; }
+        public byte[] Result { get; private set; }
+
+        public ResponceInvokeUnaryByteArgsNetworkMessage() { }
+
+        public ResponceInvokeUnaryByteArgsNetworkMessage(Guid InvokeId, byte[] result)
+        {
+            Id = Guid.NewGuid();
+            RequestId = InvokeId;
+            Result = result;
+        }
+    }
+
+
+    [Serializable]
     public class ErrorNetworkMessage : INetworkMessage
     {
         public Guid Id { get; private set; }
