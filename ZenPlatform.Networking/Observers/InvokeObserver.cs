@@ -4,6 +4,7 @@ using System.Text;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Tools;
+using ZenPlatform.Serializer;
 
 namespace ZenPlatform.Core.Network.States
 {
@@ -20,8 +21,9 @@ namespace ZenPlatform.Core.Network.States
         public bool CanObserve(Type type)
         {
             return type.Equals(typeof(RequestInvokeInstanceProxy))
-                   || type.Equals(typeof(RequestInvokeUnaryNetworkMessage)) ||
-                   type.Equals(typeof(StartInvokeStreamNetworkMessage));
+                   || type.Equals(typeof(RequestInvokeUnaryNetworkMessage)) 
+                   || type.Equals(typeof(RequestInvokeUnaryByteArgsNetworkMessage)) 
+                   || type.Equals(typeof(StartInvokeStreamNetworkMessage));
         }
 
         public void OnCompleted(IConnectionContext sender)
@@ -60,6 +62,25 @@ namespace ZenPlatform.Core.Network.States
                     }
 
                     break;
+
+                case RequestInvokeUnaryByteArgsNetworkMessage invoke:
+                    if (context is ServerConnectionContext srvContext)
+                    {
+
+                        PlatformSerializer serializer = new PlatformSerializer();
+                        var args = serializer.Deserialize(invoke.Args);
+                        var res = _environment.InvokeService.Invoke(invoke.Route, srvContext.Session, args);
+
+
+                        var result = serializer.Serialize(await res);
+                        var responce = new ResponceInvokeUnaryByteArgsNetworkMessage(invoke.Id, result);
+
+                        srvContext.Connection.Channel.Send(responce);
+                    }
+
+                    break;
+
+
                 case StartInvokeStreamNetworkMessage invokeStream:
                     if (context is ServerConnectionContext serverContext2)
                     {

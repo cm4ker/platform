@@ -34,7 +34,9 @@ namespace ZenPlatform.SimpleIde.ViewModels
 
         public void Open(Project project)
         {
-            _openedConfiguration = new ObservableCollection<IConfigurationItem>(project.Editors.Select(e => e.GetConfigurationTree()));
+
+               _openedConfiguration
+                = new ObservableCollection<IConfigurationItem>(project.Editors.Select(e => e.GetConfigurationTree()));
         }
 
         public ConfigurationTreeViewModel(Project project)

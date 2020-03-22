@@ -4,6 +4,7 @@ using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.TypeSystem;
+using System.Linq;
 
 namespace ZenPlatform.EntityComponent.Configuration.Editors
 {
@@ -35,6 +36,11 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         public ObjectEditor(IInfrastructure inf, MDEntity md) : this(inf)
         {
             _md = md;
+
+            _modules.AddRange(md.Modules.Select(m => new ModuelEditor(m)));
+            _props.AddRange(md.Properties.Select(m => new PropertyEditor(m)));
+            _commands.AddRange(md.Commands.Select(m => new CommandEditor(m)));
+            _tables.AddRange(md.Tables.Select(m => new TableEditor(m)));
         }
 
         public string Name
