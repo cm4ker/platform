@@ -164,8 +164,8 @@ namespace ZenPlatform.Configuration.Structure
             _manager = _inf.TypeManager;
             // _manager.LoadSettings(_inf.Settings.GetSettings());
 
-
-            foreach (var reference in _md.ComponentReferences.ToList())
+            var refs = _md.ComponentReferences.ToArray();
+            foreach (var reference in refs)
             {
                 // Path.Combine(pkgFolder, );
 
@@ -189,25 +189,17 @@ namespace ZenPlatform.Configuration.Structure
 
                 using (var stream = fileSystem.OpenFile(asmPath, FileAccess.Read))
                 {
-                    //check if we load it already
-                    var asmFile = Path.GetTempFileName();
 
-
-                    using (var sw = new FileStream(asmFile, FileMode.Create, FileAccess.Write))
-                        stream.CopyTo(sw);
-
-                    stream.Position = 0;
-
-                    var asmFullName = AssemblyName.GetAssemblyName(asmFile);
-                    var asms = AppDomain.CurrentDomain.GetAssemblies();
-
-                    asm = asms.FirstOrDefault(x => x.FullName == asmFullName.FullName);
-
-                    if (asm == null)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        using (var memoryStream = new MemoryStream())
+                        stream.CopyTo(memoryStream);
+
+                        ModuleContext modCtx = ModuleDef.CreateModuleContext();
+                        ModuleDefMD module = ModuleDefMD.Load(memoryStream.ToArray(), modCtx);
+                        asm = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == module.Assembly.FullName);
+                        if (asm == null)
                         {
-                            stream.CopyTo(memoryStream);
+
                             if (pdbBytes != null)
                                 asm = Assembly.Load(memoryStream.ToArray(), pdbBytes);
                             else
