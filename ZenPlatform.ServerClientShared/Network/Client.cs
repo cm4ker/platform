@@ -11,6 +11,7 @@ using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network.Contracts;
 using ZenPlatform.Core.Tools;
+using ZenPlatform.Serializer;
 
 namespace ZenPlatform.Core.Network
 {
@@ -180,7 +181,12 @@ namespace ZenPlatform.Core.Network
 
             TResponse responce = default;
             Exception exception = null;
-            var message = new RequestInvokeUnaryNetworkMessage(route, args);
+
+            PlatformSerializer serializer = new PlatformSerializer();
+
+            var byteArgs = serializer.Serialize(args);
+
+            var message = new RequestInvokeUnaryByteArgsNetworkMessage(route, byteArgs);
 
             AutoResetEvent restEvent = new AutoResetEvent(false);
 
@@ -191,10 +197,11 @@ namespace ZenPlatform.Core.Network
                     case ErrorNetworkMessage error:
                         exception = error.Exception;
                         break;
-                    case ResponceInvokeUnaryNetworkMessage res:
+                    case ResponceInvokeUnaryByteArgsNetworkMessage res:
                         try
                         {
-                            responce = (TResponse) res.Result;
+                            responce = (TResponse)serializer.Deserialize(res.Result);
+                             
                         }
                         catch (Exception ex)
                         {
