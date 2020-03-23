@@ -96,6 +96,22 @@ public void Overload()
      return Context.UserName; 
  }
 
+ [ClientCall] 
+ public Store GetStore()
+ { 
+     Store s = $Entity.Store.Create();
+     s.Name = ""Souths park"";
+        
+     return s; 
+ }
+
+[ClientCall]
+public Store UpdateName(Store income)
+{
+    income.Name = ""Changed!!!!"";
+    return income;
+}
+
  [Client]
  public void GetUserName()
  {

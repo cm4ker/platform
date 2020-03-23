@@ -185,7 +185,7 @@
             <List Name="GenericParameters" Type="GenericParameterList"/>
             <List Name="Attributes" Type="AttributeList"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
-            <Single Name="Type" Type="TypeSyntax" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="TypeSyntax"/>
         </Arguments>
     </Syntax>
 

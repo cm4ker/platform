@@ -6,6 +6,7 @@ using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Data;
+using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core.Sessions
 {
@@ -30,7 +31,7 @@ namespace ZenPlatform.Core.Sessions
 
         public IUser User { get; }
 
-        public DataContext DataContext => throw new NotSupportedException();
+        public DataContext DataContext => new DataContext(SqlDatabaseType.SqlServer, "Data source=(LocalDb)\\MSSQLLocalDB; Initial catalog=testdb; Integrated Security= true;");
 
         public IEnvironment Environment { get; }
 

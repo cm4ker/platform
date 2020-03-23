@@ -1032,7 +1032,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
             this.Attach(2, (SyntaxNode)genericParameters);
             this.Attach(3, (SyntaxNode)attributes);
             Name = name;
-            Type = type;
+            this.Attach(4, (SyntaxNode)type);
         }
 
         public Block Block
@@ -1074,7 +1074,10 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
 
         public TypeSyntax Type
         {
-            get;
+            get
+            {
+                return (TypeSyntax)this.Childs[4];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)

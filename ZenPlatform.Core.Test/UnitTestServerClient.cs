@@ -121,6 +121,12 @@ namespace ZenPlatform.Core.Test
                         .Invoke(null, new object[] { });
 
                     Assert.Equal("Anonymous", userName);
+
+                    var store = cmdType.GetMethod("GetStore")
+                        .Invoke(null, new object[] { });
+
+                    var store2 = cmdType.GetMethod("UpdateName")
+                        .Invoke(null, new object[] {store});
                 });
             }
         }
