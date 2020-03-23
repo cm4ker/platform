@@ -170,6 +170,9 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             if (ipType.IsObject)
             {
+                ns.AddEntity(new ObjectGenerationTask(ipType, CompilationMode.Client, _component, ipType.Name,
+                    TypeBody.Empty));
+
                 var md = ipType.GetMD<MDEntity>();
 
                 foreach (var cmd in md.Commands)

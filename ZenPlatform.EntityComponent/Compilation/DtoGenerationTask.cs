@@ -32,10 +32,10 @@ namespace ZenPlatform.EntityComponent.Compilation
         public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
         {
             EmitBody(builder, dbType);
+            EmitVersionField(builder);
 
             if (CompilationMode == CompilationMode.Server)
             {
-                EmitVersionField(builder);
                 EmitMappingSupport(builder);
             }
         }
@@ -64,7 +64,6 @@ namespace ZenPlatform.EntityComponent.Compilation
                 var listType = sb.List.MakeGenericType(tableRow);
 
                 builder.DefinePropertyWithBackingField(listType, table.Name, false);
-                
             }
         }
 
