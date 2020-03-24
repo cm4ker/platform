@@ -51,12 +51,12 @@ namespace ZenPlatform.Compiler.Cecil
 
 
         private List<CecilParameter> _parameters;
-        
+
         public IReadOnlyList<IParameter> Parameters =>
             _parameters ??= Definition.Parameters
-            .Select(p => new CecilParameter(TypeSystem, Definition,
-                new ParameterDefinition(p.Name, p.Attributes, ContextResolver.Import(p.ParameterType))))
-            .ToList();
+                .Select(p => new CecilParameter(TypeSystem, Definition,
+                    new ParameterDefinition(p.Name, p.Attributes, ContextResolver.Import(p.ParameterType))))
+                .ToList();
 
         private IEmitter _generator;
 

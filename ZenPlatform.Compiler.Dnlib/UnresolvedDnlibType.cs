@@ -16,7 +16,6 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         public UnresolvedDnlibType(TypeRef typeRef)
         {
-            
             TypeRef = typeRef;
         }
 

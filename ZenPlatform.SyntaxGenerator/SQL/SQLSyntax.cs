@@ -30,7 +30,6 @@ namespace ZenPlatform.SyntaxGenerator.SQL
         [XmlArrayItem("Single", typeof(SyntaxArgumentSingle))]
         public List<SyntaxArgument> Arguments { get; set; }
 
-        [XmlAttribute]
-        public string NS { get; set; }
+        [XmlAttribute] public string NS { get; set; }
     }
 }

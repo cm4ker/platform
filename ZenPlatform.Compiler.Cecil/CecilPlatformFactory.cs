@@ -17,10 +17,10 @@ namespace ZenPlatform.Compiler.Cecil
                     AssemblyResolver = cecilTs,
                     MetadataResolver = cecilTs.MetadataResolver,
                     Kind = ModuleKind.Dll,
-                 });
+                });
 
             var wrapped = (CecilAssembly) cecilTs.RegisterAssembly(def);
-            
+
             return wrapped;
         }
 

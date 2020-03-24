@@ -9,20 +9,21 @@ namespace ZenPlatform.SyntaxGenerator.SQL
         [XmlAttribute] public virtual string Type { get; set; }
         [XmlAttribute] public bool Null { get; set; }
         [XmlAttribute] public bool Base { get; set; }
+
         public bool IsPrimetive()
         {
-            return new string[] { "int", "string", "float", "bool", "JoinType", "SystemMethods", "OrderDirection" }.Contains(Type);
+            return new string[] {"int", "string", "float", "bool", "JoinType", "SystemMethods", "OrderDirection"}
+                .Contains(Type);
         }
+
         public bool IsNeedInitialize()
         {
-
             return !Base && !Null && !IsNeedCreate();
         }
 
 
         public bool IsNeedCreate()
         {
-
             return false;
         }
     }

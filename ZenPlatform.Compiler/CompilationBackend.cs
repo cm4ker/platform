@@ -34,7 +34,7 @@ namespace ZenPlatform.Compiler
         {
             _project = project;
         }
-        
+
         /// <summary>
         /// Скомпилировать поток символов и записать в сборку
         /// </summary>
@@ -74,7 +74,7 @@ namespace ZenPlatform.Compiler
             // Generator g = new Generator(prm);
             //
             // return ab;
-            
+
             throw new NotImplementedException();
         }
 

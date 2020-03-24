@@ -14,14 +14,12 @@ namespace ZenPlatform.Compiler.Sre
             _provider = provider;
             TypeSystem = system;
             _ilg = provider.Generator;
-
         }
 
         public SreEmitter(SreTypeSystem system, ILGenerator ilg)
         {
             TypeSystem = system;
             _ilg = ilg;
-
         }
 
         public IEmitter Emit(OpCode code)

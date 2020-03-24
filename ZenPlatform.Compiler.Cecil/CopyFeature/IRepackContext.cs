@@ -60,19 +60,19 @@ namespace ZenPlatform.Compiler.Cecil.CopyFeature
         public ModuleDefinition TargetAssemblyMainModule => TargetAssemblyDefinition.MainModule;
         public ModuleDefinition PrimaryAssemblyMainModule => PrimaryAssemblyDefinition.MainModule;
 
-        
+
         private ReflectionHelper _reflectionHelper;
         private PlatformFixer _platformFixer;
         private MappingHandler _mappingHandler;
 
         private static readonly Regex TypeRegex = new Regex("^(.*?), ([^>,]+), .*$");
-        
+
         ReflectionHelper IRepackContext.ReflectionHelper => _reflectionHelper;
         PlatformFixer IRepackContext.PlatformFixer => _platformFixer;
         MappingHandler IRepackContext.MappingHandler => _mappingHandler;
         private readonly Dictionary<AssemblyDefinition, int> _aspOffsets = new Dictionary<AssemblyDefinition, int>();
 
-        internal  RepackImporter _repackImporter;
+        internal RepackImporter _repackImporter;
 
         public ILRepack(RepackOptions options, ILogger logger, CecilTypeSystem ts)
         {
@@ -240,7 +240,6 @@ namespace ZenPlatform.Compiler.Cecil.CopyFeature
         {
             try
             {
-               
             }
             catch (Exception)
             {
@@ -271,12 +270,10 @@ namespace ZenPlatform.Compiler.Cecil.CopyFeature
         /// </summary>
         public void Repack()
         {
-           
         }
 
         private void ResolveSearchDirectories()
         {
-            
         }
 
 

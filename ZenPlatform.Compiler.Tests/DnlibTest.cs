@@ -328,8 +328,8 @@ namespace ZenPlatform.Compiler.Tests
 
             var m1 = a.DefineMethod("Test", true, false, false, null, true);
             m1.WithReturnType(sb.Object);
-              
-            
+
+
             var gt = asm.TypeSystem.FindType(typeof(GenClass<>)).MakeGenericType(sb.Int);
             var method = gt.FindMethod(x => x.Name == "Method");
             var generic = method.MakeGenericMethod(sb.String);
@@ -337,9 +337,9 @@ namespace ZenPlatform.Compiler.Tests
             m1.Generator.LdcI4(0)
                 .EmitCall(generic)
                 .Ret();
-            
+
             asm.Write("test.bll");
-            
+
             Assert.NotNull(generic);
         }
     }

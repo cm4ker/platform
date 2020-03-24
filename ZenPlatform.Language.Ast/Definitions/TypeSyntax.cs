@@ -99,7 +99,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             if (Kind == TypeNodeKind.Unknown)
                 Kind = kind;
         }
-        
+
         public override object Clone()
         {
             return MemberwiseClone();

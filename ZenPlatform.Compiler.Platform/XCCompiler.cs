@@ -27,8 +27,9 @@ namespace ZenPlatform.Compiler.Platform
 
         public IAssembly Build(IProject configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
         {
-            var assemblyBuilder = _platform.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
-            
+            var assemblyBuilder =
+                _platform.CreateAssembly($"{configuration.ProjectName}{Enum.GetName(mode.GetType(), mode)}");
+
             var generator = new Generator(new GeneratorParameters(null, assemblyBuilder, mode, targetDatabaseType,
                 configuration));
             generator.BuildConf();
@@ -38,18 +39,18 @@ namespace ZenPlatform.Compiler.Platform
 
         public Root BuildClientAst(IProject configuration)
         {
-
             var assemblyBuilder = _platform.CreateAssembly("Client_ast_assemble");
-            var generator = new Generator(new GeneratorParameters(null, assemblyBuilder, CompilationMode.Client, SqlDatabaseType.Unknown,
+            var generator = new Generator(new GeneratorParameters(null, assemblyBuilder, CompilationMode.Client,
+                SqlDatabaseType.Unknown,
                 configuration));
             return generator.BuildAst();
         }
 
         public Root BuildServerAst(IProject configuration)
         {
-
             var assemblyBuilder = _platform.CreateAssembly("Server_ast_assemble");
-            var generator = new Generator(new GeneratorParameters(null, assemblyBuilder, CompilationMode.Server, SqlDatabaseType.Unknown,
+            var generator = new Generator(new GeneratorParameters(null, assemblyBuilder, CompilationMode.Server,
+                SqlDatabaseType.Unknown,
                 configuration));
             return generator.BuildAst();
         }

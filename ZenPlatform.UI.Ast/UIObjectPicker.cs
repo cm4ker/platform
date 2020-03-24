@@ -4,7 +4,6 @@ namespace ZenPlatform.UI.Ast
     {
         public UIObjectPicker()
         {
-
         }
     }
 }

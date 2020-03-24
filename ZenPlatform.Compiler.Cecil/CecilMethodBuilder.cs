@@ -33,12 +33,12 @@ namespace ZenPlatform.Compiler.Cecil
             var param = new ParameterDefinition(name, ParameterAttributes.None,
                 _md.ImportReference(TypeSystem.GetTypeReference(type)));
 
-           
+
             var cecilParam = new CecilParameter(TypeSystem, _methodDef, param);
             ((List<CecilParameter>) this.Parameters).Add(cecilParam);
-            
+
             _methodDef.Parameters.Add(param);
-            
+
             return cecilParam;
         }
 

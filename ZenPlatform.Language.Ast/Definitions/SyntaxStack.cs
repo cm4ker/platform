@@ -23,10 +23,10 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return internalStack.Pop();
         }
-        
+
         public T Pop<T>()
         {
-            return (T)internalStack.Pop();
+            return (T) internalStack.Pop();
         }
 
         public List<T> PopList<T>()
@@ -34,7 +34,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             return (List<T>) internalStack.Pop();
         }
 
-       
+
         public void PopUntil(object marker, IList reciver)
         {
             object element = internalStack.Pop();
