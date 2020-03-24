@@ -10,7 +10,7 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         Guid? BaseId { get; set; }
 
         Guid? GroupId { get; set; }
-        
+
         string Name { get; set; }
 
         bool IsLink { get; set; }
@@ -20,6 +20,8 @@ namespace ZenPlatform.Configuration.Contracts.TypeSystem
         bool IsManager { get; set; }
 
         bool IsDto { get; set; }
+
+        bool IsUX { get; set; }
 
         bool IsDbAffect { get; set; }
 
