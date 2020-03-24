@@ -54,7 +54,7 @@ namespace ZenPlatform.Shared.Tree
         }
 
         /// <summary>
-        /// Заменяет старую ноду на новую в дочерних относительно текущего
+        /// Заменяет дочернюю ноду
         /// </summary>
         /// <param name="node"></param>
         /// <param name="newNode"></param>

@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Portable.Xaml;
 using ZenPlatform.Avalonia.Wrapper;
 using ZenPlatform.Data;
+using ZenPlatform.Runtime;
 
 namespace ZenPlatform.ThinClient
 {
@@ -27,7 +28,7 @@ namespace ZenPlatform.ThinClient
 
         public IControl Run()
         {
-            var ux = (UXElement) XamlServices.Parse(_xaml);
+            var ux = UX.Parse(_xaml);
 
             var visual = ux.GetUnderlyingControl();
 
