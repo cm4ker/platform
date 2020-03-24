@@ -220,6 +220,41 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             manager.Register(root);
 
+            StageGlobalVarUX(manager);
+        }
+
+        public void StageGlobalVarUX(IGlobalVarManager manager)
+        {
+            var ts = manager.TypeSystem;
+
+            var root = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "UX", (n, e) => { });
+
+            foreach (var type in _component.GetTypes().Where(x => x.IsManager))
+            {
+                var mrgName = $"{type.GetNamespace()}.{type.Name}";
+
+                var mrg = ts.FindType(mrgName);
+
+                var mrgLeaf = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared,
+                    type.GetObjectType().Name,
+                    (n, e) => { });
+
+                root.Attach(mrgLeaf);
+
+                var getMethod = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Shared,
+                    "Get", (n, e) =>
+                    {
+                        var call = n as Call ?? throw new Exception("Can't emit function if it is not a call");
+                        //need add some constant values
+
+                        //e.EmitCall(mrg.FindMethod("Create"), call.IsStatement);
+                    });
+
+                mrgLeaf.Attach(getMethod);
+            }
+
+            manager.Register(root);
+
             /*
              * $.Document.Invoice.Create();
              * $.SomeFunction()
@@ -227,6 +262,7 @@ namespace ZenPlatform.EntityComponent.Compilation
              * MyGM.StaticFunction()
              */
         }
+
 
         public void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {

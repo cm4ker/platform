@@ -1,36 +1,25 @@
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 
-namespace ZenPlatform.EntityComponent.Compilation
+namespace ZenPlatform.EntityComponent.Compilation.UX
 {
     public class FormGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
         public FormGenerationTask(
-            IPType objectType, CompilationMode compilationMode, IComponent component, bool isModule, string name,
+            IPType objectType, MDInterface md, CompilationMode compilationMode, IComponent component, bool isModule,
+            string name,
             TypeBody tb) : base(compilationMode, component, isModule, name, tb)
         {
             ObjectType = objectType;
         }
 
-        public IPType ObjectType { get; }
+        public MDInterface MD { get; }
 
-        /*
-         Server
-            Form
-                Model + UXObject
-         
-         .ctor
-         {
-            UXObj = new UXForm()
-            
-            //Some user initialized code
-            
-            Model = model
-         }
-         */
+        public IPType ObjectType { get; }
 
         public ITypeBuilder Stage0(IAssemblyBuilder asm)
         {

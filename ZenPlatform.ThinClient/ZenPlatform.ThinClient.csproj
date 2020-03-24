@@ -35,6 +35,7 @@
     <ItemGroup>
 <!--      <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj" />-->
       <ProjectReference Include="..\ZenPlatform.Avalonia.Wrapper\ZenPlatform.Avalonia.Wrapper.csproj" />
+      <ProjectReference Include="..\ZenPlatform.Runtime\ZenPlatform.Runtime.csproj" />
       <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
 <!--      <ProjectReference Include="..\ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj" />-->
     </ItemGroup>
