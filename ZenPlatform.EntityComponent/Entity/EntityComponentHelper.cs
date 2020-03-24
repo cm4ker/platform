@@ -25,10 +25,7 @@ namespace ZenPlatform.EntityComponent.Entity
             return ipType.TypeManager.Types.FirstOrDefault(x => x.IsObject && x.GroupId == ipType.GroupId);
         }
 
-        public static T GetMD<T>(this IPType type)
-        {
-            return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.GroupId)?.Metadata;
-        }
+
 
         public static string GetTableDtoRowClassFullName(this ITable table)
         {
