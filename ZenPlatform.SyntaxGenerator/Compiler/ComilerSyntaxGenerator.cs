@@ -43,7 +43,8 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Compiler.Contracts.Symbols")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Expressions")),
+                        SyntaxFactory.UsingDirective(
+                            SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Expressions")),
                         SyntaxFactory.UsingDirective(
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Statements")),
                         SyntaxFactory.UsingDirective(
@@ -199,7 +200,8 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                     if (!argument.DenyChildrenFill)
                     {
                         StatementSyntax fillStmt =
-                            SyntaxFactory.ParseStatement($"this.Attach({slot}, (SyntaxNode){argument.Name.ToCamelCase()});");
+                            SyntaxFactory.ParseStatement(
+                                $"this.Attach({slot}, (SyntaxNode){argument.Name.ToCamelCase()});");
 
                         constructor = constructor.AddBodyStatements(fillStmt);
 

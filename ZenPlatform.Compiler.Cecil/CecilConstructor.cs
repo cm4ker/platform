@@ -26,7 +26,7 @@ namespace ZenPlatform.Compiler.Cecil
         {
             var pd = new ParameterDefinition(ContextResolver.GetReference((ITypeReference) type));
             _methodDef.Parameters.Add(pd);
-           
+
             var pp = new CecilParameter(TypeSystem, _methodDef, pd);
             ((List<CecilParameter>) Parameters).Add(pp);
             return pp;

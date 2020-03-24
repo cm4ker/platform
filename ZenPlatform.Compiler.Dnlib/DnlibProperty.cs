@@ -15,7 +15,7 @@ namespace ZenPlatform.Compiler.Dnlib
     {
         private readonly DnlibTypeSystem _ts;
         protected readonly PropertyDef PropertyDef;
-        public  ITypeDefOrRef DeclaringType { get; }
+        public ITypeDefOrRef DeclaringType { get; }
         private DnlibContextResolver _cr;
         protected IMethod _getter;
         protected IMethod _setter;

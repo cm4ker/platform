@@ -46,7 +46,7 @@ namespace ZenPlatform.Language.Ast
             Console.WriteLine($"We are visit: {node}");
 
             var childs = node.Childs.ToList();
-            
+
             foreach (var child in childs)
             {
                 Visit(child as SyntaxNode);

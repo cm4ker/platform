@@ -12,6 +12,7 @@ namespace ZenPlatform.Compiler.Sre
 
         public IPlatformFactory AsmFactory { get; }
         public ITypeSystem TypeSystem { get; }
+
         public ITypeSystem CreateTypeSystem()
         {
             return new SreTypeSystem();

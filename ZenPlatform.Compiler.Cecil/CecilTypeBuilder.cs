@@ -125,7 +125,8 @@ namespace ZenPlatform.Compiler.Cecil
             return this;
         }
 
-        public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, Mono.Cecil.GenericParameterConstraint>> args)
+        public void DefineGenericParameters(
+            IReadOnlyList<KeyValuePair<string, Mono.Cecil.GenericParameterConstraint>> args)
         {
             foreach (var arg in args)
             {

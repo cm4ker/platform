@@ -192,9 +192,6 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
             foreach (var argument in syntax.Arguments)
             {
-                
-
-              
                 if (!argument.Null)
                 {
                     var parameterSyntax = SyntaxFactory
@@ -207,11 +204,10 @@ namespace ZenPlatform.SyntaxGenerator.QLang
 
                     constructor = constructor.AddParameterListParameters(parameterSyntax);
                 }
-                
-                
-                
+
+
                 if (argument.DenyDeclare) continue;
-                
+
                 if (argument.IsNeedInitialize())
                 {
                     constructor = constructor.AddBodyStatements(
@@ -360,9 +356,6 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                             SyntaxFactory.ParseName("ZenPlatform.Configuration.Structure.Data.Types")),
                         SyntaxFactory.UsingDirective(
                             SyntaxFactory.ParseName("ZenPlatform.Configuration.Contracts"))
-                
-                        
-                
                     );
                 ;
 

@@ -14,6 +14,7 @@ namespace ZenPlatform.Compiler.Sre
         private IReadOnlyList<ICustomAttribute> _customAttributes;
         public AssemblyBuilder Assembly { get; }
         public ModuleBuilder MainModule { get; }
+
         public void Write(Stream stream)
         {
             throw new NotImplementedException();

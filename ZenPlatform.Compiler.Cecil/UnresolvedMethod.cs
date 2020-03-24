@@ -18,6 +18,7 @@ namespace ZenPlatform.Compiler.Cecil
         public IType ReturnType { get; } = UnknownType.Unknown;
         public IReadOnlyList<IParameter> Parameters { get; } = new IParameter[0];
         public IType DeclaringType { get; } = UnknownType.Unknown;
+
         public IMethod MakeGenericMethod(IType[] typeArguments)
         {
             throw new System.NotImplementedException();

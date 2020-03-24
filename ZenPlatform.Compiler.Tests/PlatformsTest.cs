@@ -35,7 +35,7 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.True(true);
         }
-        
+
         [Fact]
         void CompilationClientAndServerTest()
         {
@@ -43,12 +43,12 @@ namespace ZenPlatform.Compiler.Tests
             XCCompiler cd = new XCCompiler(dnlib);
             var asm = cd.Build(r, CompilationMode.Server, SqlDatabaseType.SqlServer);
             var asmClient = cd.Build(r, CompilationMode.Client, SqlDatabaseType.SqlServer);
-            
+
             if (File.Exists("server.bll"))
                 File.Delete("server.bll");
 
             asm.Write("server.bll");
-            
+
             if (File.Exists("client.bll"))
                 File.Delete("client.bll");
 

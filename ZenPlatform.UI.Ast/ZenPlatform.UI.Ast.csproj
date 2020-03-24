@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
     </ItemGroup>
 
 </Project>

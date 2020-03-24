@@ -6,7 +6,6 @@ namespace ZenPlatform.Compiler.Cecil
     {
         public CecilWellKnownTypes(CecilTypeSystem ts)
         {
-            
         }
 
         public IType Int { get; }

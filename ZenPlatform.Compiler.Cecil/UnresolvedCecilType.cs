@@ -4,7 +4,6 @@ using ZenPlatform.Compiler.Contracts;
 
 namespace ZenPlatform.Compiler.Cecil
 {
-    
     [DebuggerDisplay("{" + nameof(Reference) + "}")]
     class UnresolvedCecilType : UnknownType, ITypeReference
     {
