@@ -8,7 +8,7 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
 {
     public class TypeManager : ITypeManager
     {
-        private List<Contracts.TypeSystem.IPType> _types;
+        private List<IPType> _types;
         private List<IPProperty> _properties;
         private List<IPropertyType> _propertyTypes;
         private List<ITable> _tables;
@@ -27,7 +27,7 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
 
         public TypeManager()
         {
-            _types = new List<Contracts.TypeSystem.IPType>();
+            _types = new List<IPType>();
             _properties = new List<IPProperty>();
             _propertyTypes = new List<IPropertyType>();
             _tables = new List<ITable>();
@@ -54,15 +54,15 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
             _objectSettings.Add(new ObjectSetting {ObjectId = _numericPType.Id, SystemId = _numericPType.SystemId});
         }
 
-        public Contracts.TypeSystem.IPType Int => _intPType ??= new IntPType(this);
-        public Contracts.TypeSystem.IPType DateTime => _dateTimePType ??= new DateTimePType(this);
-        public Contracts.TypeSystem.IPType Binary => _binaryPType ??= new BinaryPType(this);
-        public Contracts.TypeSystem.IPType String => _stringPType ??= new StringPType(this);
-        public Contracts.TypeSystem.IPType Boolean => _booleanPType ??= new BooleanPType(this);
-        public Contracts.TypeSystem.IPType Guid => _guidPType ??= new GuidPType(this);
-        public Contracts.TypeSystem.IPType Numeric => _numericPType ??= new NumericPType(this);
+        public IPType Int => _intPType ??= new IntPType(this);
+        public IPType DateTime => _dateTimePType ??= new DateTimePType(this);
+        public IPType Binary => _binaryPType ??= new BinaryPType(this);
+        public IPType String => _stringPType ??= new StringPType(this);
+        public IPType Boolean => _booleanPType ??= new BooleanPType(this);
+        public IPType Guid => _guidPType ??= new GuidPType(this);
+        public IPType Numeric => _numericPType ??= new NumericPType(this);
 
-        public IReadOnlyList<Contracts.TypeSystem.IPType> Types => _types;
+        public IReadOnlyList<IPType> Types => _types;
 
         public IReadOnlyList<IPProperty> Properties => _properties;
 
@@ -76,7 +76,7 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
 
         public IReadOnlyList<IMetadataRow> Metadatas => _metadatas;
 
-        public void Register(Contracts.TypeSystem.IPType ipType)
+        public void Register(IPType ipType)
         {
             if (_types.Exists(x => x.Id == ipType.Id))
                 throw new Exception($"Type id {ipType.Name}:{ipType.Id} already registered");
@@ -117,12 +117,12 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
             return new Component(this);
         }
 
-        public Contracts.TypeSystem.IPType Type()
+        public IPType Type()
         {
             return new PType(this);
         }
 
-        public IPTypeSpec Type(Contracts.TypeSystem.IPType ipType)
+        public IPTypeSpec Type(IPType ipType)
         {
             return new PTypeSpec(ipType, this);
         }

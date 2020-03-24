@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -129,11 +130,10 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                 foreach (var inf in md.Interfaces)
                 {
-                    ns.AddEntity(new FormGenerationTask(ipType, CompilationMode.Server, _component, true, inf.Name,
+                    ns.AddEntity(new FormGenerationTask(ipType, inf, CompilationMode.Server, _component, true, inf.Name,
                         TypeBody.Empty));
                 }
             }
-
 
             r.Units.Add(cu);
         }
