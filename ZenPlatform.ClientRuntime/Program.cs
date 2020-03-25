@@ -1,5 +1,4 @@
 ﻿using System;
-using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.ClientRuntime
@@ -28,5 +27,12 @@ namespace ZenPlatform.ClientRuntime
             get => _client ?? throw new PlatformNotInitializedException();
             set => _client = value;
         }
+    }
+
+    public class UXContainer
+    {
+        public string Markup { get; set; }
+
+        public object ViewModel { get; set; }
     }
 }

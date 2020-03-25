@@ -8,4 +8,8 @@
       <PackageReference Include="Avalonia" Version="0.9.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />
+    </ItemGroup>
+
 </Project>

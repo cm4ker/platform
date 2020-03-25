@@ -21,6 +21,7 @@ namespace ZenPlatform.ThinClient
             {
                 var view = new DockMainWindowViewModel();
 
+
                 var xaml = @"
 <UXForm xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
   <UXGroup Orientation=""Vertical"">
@@ -36,19 +37,14 @@ namespace ZenPlatform.ThinClient
   </UXGroup>
 </UXForm>";
 
-                var a = new RuntimeModel(xaml, null);
-
-                view.ShowDock(a);
-                view.ShowDock(a);
-                view.ShowDock(a);
-                view.ShowDock(a);
-
-                // Program.Test();
-
                 desktopLifetime.MainWindow = new DockMainWindow
                 {
                     DataContext = view,
                 };
+
+
+                ClientEnvironment.Init(desktopLifetime.MainWindow, view);
+                ClientEnvironment.OpenWindow(xaml, null);
             }
 
             base.OnFrameworkInitializationCompleted();

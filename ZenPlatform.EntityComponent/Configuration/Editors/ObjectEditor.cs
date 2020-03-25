@@ -26,7 +26,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         public ObjectEditor(IInfrastructure inf)
         {
             _inf = inf;
-            _tm = _tm;
+            _tm = inf.TypeManager;
 
             _md = new MDEntity();
             _props = new List<PropertyEditor>();
