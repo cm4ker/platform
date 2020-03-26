@@ -56,7 +56,7 @@ namespace ZenPlatform.Compiler.Dnlib
                 ? new TypeRefUser(Assembly.ManifestModule, null, fullName, asmRef)
                 : new TypeRefUser(Assembly.ManifestModule, fullName.Substring(0, lastDot),
                     fullName.Substring(lastDot + 1), asmRef);
-
+            
             var resolved = tref.Resolve(Assembly.ManifestModule);
             if (resolved != null)
                 return TypeCache[fullName] = _ts.GetTypeFromReference(tref);

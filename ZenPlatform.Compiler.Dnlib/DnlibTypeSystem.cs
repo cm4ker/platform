@@ -16,7 +16,9 @@ namespace ZenPlatform.Compiler.Dnlib
     public class DnlibTypeSystem : ITypeSystem
     {
         private List<DnlibAssembly> _asms;
-        private AssemblyResolver _resolver;
+
+        //private AssemblyResolver _resolver;
+        private DnlibAssemblyResolver _resolver;
 
         private Dictionary<ITypeDefOrRef, IType> _typeReferenceCache =
             new Dictionary<ITypeDefOrRef, IType>();
@@ -33,11 +35,20 @@ namespace ZenPlatform.Compiler.Dnlib
         public DnlibTypeSystem(DnlibPlatformFactory factory, IEnumerable<string> paths, string targetPath = null)
         {
             _asms = new List<DnlibAssembly>();
-           
-            _resolver = new AssemblyResolver();
-            _resolver.UseGAC = false;
-            _resolver.FindExactMatch = false;
-            
+
+            // _resolver = new AssemblyResolver();
+            // _resolver.UseGAC = false;
+            // _resolver.FindExactMatch = false;
+            //
+            // _resolver.PreSearchPaths.Add(
+            //     //@"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\3.1.1"
+            //     "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Ref\\3.1.0\\ref\\netcoreapp3.1"
+            // );
+            // _resolver.PreSearchPaths.Add(AppContext.BaseDirectory);
+            //
+            // _resolver.DefaultModuleContext = new ModuleContext(_resolver, new Resolver(_resolver));
+
+            _resolver = new DnlibAssemblyResolver();
             _typeCache = new DnlibTypeCache(this);
 
             if (targetPath != null)
@@ -69,11 +80,13 @@ namespace ZenPlatform.Compiler.Dnlib
 
         internal IAssembly RegisterAssembly(DnlibAssembly assembly)
         {
+            if (_assemblyDic.TryGetValue(assembly.Assembly, out var result))
+                return result;
+
             _asms.Add(assembly);
             _assemblyDic[assembly.Assembly] = assembly;
-            
-            //Resolver.RegisterAsm(assembly.Assembly);
-            
+            _resolver.RegisterAsm(assembly.Assembly);
+
             return assembly;
         }
 
