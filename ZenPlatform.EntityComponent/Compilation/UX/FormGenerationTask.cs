@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using dnlib.DotNet.Resources;
 using NLog.Targets.Wrappers;
 using ReactiveUI;
+using ZenPlatform.Avalonia.Wrapper;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
@@ -11,21 +12,6 @@ using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.EntityComponent.Compilation.UX
 {
-    /*
-        Form
-        {
-            Dic Parameters
-            SetParameter(string, Object);
-            ViewModel Model
-                        
-            string Markup;
-            
-            Show()
-        } 
-      
-     */
-
-
     public class FormGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
         private readonly MDInterface _md;
@@ -50,8 +36,11 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
 
             _viewModel = asm.DefineInstanceType(GetNamespace(), ObjectType.Name + Name + "FormViewModel");
             _viewModel.DefineDefaultConstructor(false);
-
-            return asm.DefineStaticType(GetNamespace(), ObjectType.Name + Name + "Form");
+            
+            var result =
+                asm.DefineInstanceType(GetNamespace(), ObjectType.Name + Name + "Form");
+            
+            return result;
         }
 
         private ITypeSystem _ts;
