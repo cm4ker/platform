@@ -15,6 +15,7 @@
       <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.9.0-preview1" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\ZenPlatform.Avalonia.Wrapper\ZenPlatform.Avalonia.Wrapper.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler\ZenPlatform.Compiler.csproj" />
         <ProjectReference Include="..\ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj" />
         <ProjectReference Include="..\ZenPlatform.Ide.Common\ZenPlatform.Ide.Common.csproj" />

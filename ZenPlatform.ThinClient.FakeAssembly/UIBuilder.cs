@@ -14,8 +14,7 @@ namespace ZenPlatform.ThinClient.FakeAssembly
   <UXGroup Orientation=""Horizontal"">
     <UXTextBox />
     <UXTextBox />
-    <UXTextBox />
-    
+    <UXTextBox />    
   </UXGroup>
 </UXForm>";
 

@@ -17,16 +17,17 @@ namespace ZenPlatform.Compiler.Contracts
                                                     | TypeAttributes.NotPublic
                                                     | TypeAttributes.BeforeFieldInit
                                                     | TypeAttributes.AnsiClass,
-                (baseType == null) ? asm.TypeSystem.GetSystemBindings().Object : baseType);
+                baseType ?? asm.TypeSystem.GetSystemBindings().Object);
         }
 
-        public static ITypeBuilder DefineStaticType(this IAssemblyBuilder asm, string @namespace, string name)
+        public static ITypeBuilder DefineStaticType(this IAssemblyBuilder asm, string @namespace, string name,
+            IType baseType = null)
         {
             return asm.DefineType(@namespace, name, TypeAttributes.Class
                                                     | TypeAttributes.Public | TypeAttributes.Abstract
                                                     | TypeAttributes.BeforeFieldInit
                                                     | TypeAttributes.AnsiClass,
-                asm.TypeSystem.GetSystemBindings().Object);
+                baseType ?? asm.TypeSystem.GetSystemBindings().Object);
         }
 
         public static ICustomAttributeBuilder CreateAttribute<T>(this ITypeSystem ts, params IType[] args)

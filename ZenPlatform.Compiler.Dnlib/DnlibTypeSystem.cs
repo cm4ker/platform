@@ -16,7 +16,7 @@ namespace ZenPlatform.Compiler.Dnlib
     public class DnlibTypeSystem : ITypeSystem
     {
         private List<DnlibAssembly> _asms;
-        private DnlibAssemblyResolver _resolver;
+        private AssemblyResolver _resolver;
 
         private Dictionary<ITypeDefOrRef, IType> _typeReferenceCache =
             new Dictionary<ITypeDefOrRef, IType>();
@@ -33,8 +33,11 @@ namespace ZenPlatform.Compiler.Dnlib
         public DnlibTypeSystem(DnlibPlatformFactory factory, IEnumerable<string> paths, string targetPath = null)
         {
             _asms = new List<DnlibAssembly>();
-            _resolver = new DnlibAssemblyResolver();
-
+           
+            _resolver = new AssemblyResolver();
+            _resolver.UseGAC = false;
+            _resolver.FindExactMatch = false;
+            
             _typeCache = new DnlibTypeCache(this);
 
             if (targetPath != null)
@@ -50,7 +53,7 @@ namespace ZenPlatform.Compiler.Dnlib
             Factory = factory;
         }
 
-        public DnlibAssemblyResolver Resolver => _resolver;
+        public IAssemblyResolver Resolver => _resolver;
 
         public IPlatformFactory Factory { get; }
 
@@ -68,7 +71,9 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             _asms.Add(assembly);
             _assemblyDic[assembly.Assembly] = assembly;
-            Resolver.RegisterAsm(assembly.Assembly);
+            
+            //Resolver.RegisterAsm(assembly.Assembly);
+            
             return assembly;
         }
 
