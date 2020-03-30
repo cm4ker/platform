@@ -131,7 +131,11 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                 foreach (var inf in md.Interfaces)
                 {
-                    ns.AddEntity(new FormGenerationTask(ipType, inf, CompilationMode.Server, _component, true, inf.Name,
+                    ns.AddEntity(new UXFormGenerationTask(ipType, inf, CompilationMode.Server, _component, true,
+                        inf.Name,
+                        TypeBody.Empty));
+                    ns.AddEntity(new FormStaticActionsGenerationTask(ipType, inf, CompilationMode.Server, _component,
+                        true, inf.Name,
                         TypeBody.Empty));
                 }
             }

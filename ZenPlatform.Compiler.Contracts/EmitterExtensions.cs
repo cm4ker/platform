@@ -46,7 +46,7 @@ namespace ZenPlatform.Compiler.Contracts
         public static IEmitter LdFldA(this IEmitter emitter, IField field)
             => emitter.Emit(OpCodes.Ldflda, field);
 
-        public static IEmitter LdsFld(this IEmitter emitter, IField field)
+        public static IEmitter LdSFld(this IEmitter emitter, IField field)
             => emitter.Emit(OpCodes.Ldsfld, field);
 
         public static IEmitter LdsFldA(this IEmitter emitter, IField field)

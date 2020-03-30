@@ -4,6 +4,6 @@ namespace ZenPlatform.Avalonia.Wrapper
 {
     public abstract class UXElement
     {
-        public abstract Control GetUnderlyingControl();
+        public abstract object GetUnderlyingControl();
     }
 }

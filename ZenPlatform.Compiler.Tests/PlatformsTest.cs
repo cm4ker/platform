@@ -37,6 +37,29 @@ namespace ZenPlatform.Compiler.Tests
         }
 
         [Fact]
+        void XamlTest()
+        {
+            var dnlib = new DnlibAssemblyPlatform();
+            XCCompiler cd = new XCCompiler(dnlib);
+            var asm = cd.Build(r, CompilationMode.Server, SqlDatabaseType.SqlServer);
+
+            if (File.Exists("server.bll"))
+                File.Delete("server.bll");
+
+            asm.Write("server.bll");
+
+
+            var loaded = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "server.bll"));
+
+            var cmdType = loaded.GetType("Entity.__StoreEditorForm");
+
+            var result = cmdType.GetMethod("Get")
+                .Invoke(null, BindingFlags.DoNotWrapExceptions, null, new object[] {10}, null);
+
+            Assert.NotNull(result);
+        }
+
+        [Fact]
         void CompilationClientAndServerTest()
         {
             var dnlib = new DnlibAssemblyPlatform();

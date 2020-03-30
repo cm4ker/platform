@@ -31,10 +31,10 @@ namespace ZenPlatform.Avalonia.Wrapper
 
         public void Add(UXElement item)
         {
-            var underlyingControl = item.GetUnderlyingControl();
+            var underlyingControl = (Control) item.GetUnderlyingControl();
             _elements.Add(item);
-            
-            
+
+
             var index = _elements.Count - 1;
 
             if (_gr.Orientation == UXGroupOrientation.Horizontal)
