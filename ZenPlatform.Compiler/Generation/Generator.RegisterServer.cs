@@ -15,8 +15,6 @@ namespace ZenPlatform.Compiler.Generation
         /// <param name="function"></param>
         private void EmitRegisterServerFunction(Function function)
         {
-            //IInvokeService.Register("test", (context, list) => { a(list[0], list[1], list[2]); });
-
             var e = _serviceScope.ServiceInitializerInitMethod.Generator;
             var invs = _serviceScope.InvokeServiceField;
 
