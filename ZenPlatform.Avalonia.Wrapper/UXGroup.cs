@@ -18,7 +18,7 @@ namespace ZenPlatform.Avalonia.Wrapper
 
         public UXGroupCollection Childs { get; }
 
-        public override Control GetUnderlyingControl()
+        public override object GetUnderlyingControl()
         {
             return _g;
         }

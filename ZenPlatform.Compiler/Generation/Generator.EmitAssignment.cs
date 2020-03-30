@@ -75,7 +75,7 @@ namespace ZenPlatform.Compiler.Generation
                     if (variable.CompileObject is ILocal vd)
                         e.LdLoc(vd);
                     else if (variable.CompileObject is IField fd)
-                        e.LdsFld(fd);
+                        e.LdSFld(fd);
                     else if (variable.CompileObject is IParameter pd)
                         e.LdArg(pd.Sequence);
                     // Load index.

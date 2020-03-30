@@ -11,7 +11,7 @@ namespace ZenPlatform.Avalonia.Wrapper
             _c = new TextBox();
         }
 
-        public override Control GetUnderlyingControl()
+        public override object GetUnderlyingControl()
         {
             return _c;
         }

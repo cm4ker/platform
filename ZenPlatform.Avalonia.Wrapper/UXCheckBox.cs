@@ -11,7 +11,7 @@ namespace ZenPlatform.Avalonia.Wrapper
             _cb = new CheckBox();
         }
 
-        public override Control GetUnderlyingControl()
+        public override object GetUnderlyingControl()
         {
             return _cb;
         }
@@ -26,7 +26,7 @@ namespace ZenPlatform.Avalonia.Wrapper
             _b = new Button();
         }
 
-        public override Control GetUnderlyingControl()
+        public override object GetUnderlyingControl()
         {
             return _b;
         }
@@ -41,7 +41,7 @@ namespace ZenPlatform.Avalonia.Wrapper
             _dp = new DatePicker();
         }
 
-        public override Control GetUnderlyingControl()
+        public override object GetUnderlyingControl()
         {
             return _dp;
         }

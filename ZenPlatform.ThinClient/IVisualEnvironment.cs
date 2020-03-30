@@ -30,7 +30,7 @@ namespace ZenPlatform.ThinClient
         {
             var ux = UX.Parse(_xaml);
 
-            var visual = ux.GetUnderlyingControl();
+            var visual = (IControl) ux.GetUnderlyingControl();
 
             if (visual is IDataContextProvider dc)
             {

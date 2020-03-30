@@ -48,12 +48,15 @@ namespace ZenPlatform.Test.Tools
             tableProp1.SetType(store.GetRef());
 
             var i = store.CreateInterface();
-            i.Markup = @"<UXForm xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
+            i.Markup =
+                @"<p:StoreEditorForm 
+                                xmlns:p=""clr-namespace:Entity;assembly=LibraryServer""    
+                                xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
   <UXGroup Orientation=""Horizontal"">
     <UXTextBox />
     <UXTextBox />
   </UXGroup>
-</UXForm>";
+</p:StoreEditorForm>";
             i.Name = "Editor";
 
             var module = store.CreateModule();

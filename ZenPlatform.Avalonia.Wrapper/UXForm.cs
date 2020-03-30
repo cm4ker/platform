@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Portable.Xaml.Markup;
+using ZenPlatform.Avalonia.Wrapper.ControlLayer;
 
 namespace ZenPlatform.Avalonia.Wrapper
 {
@@ -25,9 +26,13 @@ namespace ZenPlatform.Avalonia.Wrapper
             }
         }
 
-        public override Control GetUnderlyingControl()
+        public override object GetUnderlyingControl()
         {
             return _uc;
+        }
+
+        public virtual void CreateOnServer()
+        {
         }
     }
 }
