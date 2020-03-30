@@ -41,8 +41,8 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
             _ts = asm.TypeSystem;
             _sb = _ts.GetSystemBindings();
 
-            _viewModel = asm.DefineInstanceType(GetNamespace(), ObjectType.Name + Name + "FormViewModel");
-            _viewModel.DefineDefaultConstructor(false);
+            // _viewModel = asm.DefineInstanceType(GetNamespace(), ObjectType.Name + Name + "FormViewModel");
+            // _viewModel.DefineDefaultConstructor(false);
 
             var result =
                 asm.DefineInstanceType(GetNamespace(), $"{ObjectType.Name}{Name}Form", _ts.FindType<UXForm>());
@@ -59,6 +59,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
 
         public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
         {
+            builder.DefineDefaultConstructor(false);
         }
 
         public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)

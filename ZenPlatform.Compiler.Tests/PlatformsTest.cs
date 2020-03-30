@@ -48,13 +48,12 @@ namespace ZenPlatform.Compiler.Tests
 
             asm.Write("server.bll");
 
-
             var loaded = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "server.bll"));
 
             var cmdType = loaded.GetType("Entity.__StoreEditorForm");
 
             var result = cmdType.GetMethod("Get")
-                .Invoke(null, BindingFlags.DoNotWrapExceptions, null, new object[] {10}, null);
+                .Invoke(null, BindingFlags.DoNotWrapExceptions, null, new object[] { }, null);
 
             Assert.NotNull(result);
         }
