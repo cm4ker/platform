@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using Dock.Model;
 using Dock.Model.Controls;
-using ZenPlatform.ThinClient.ViewModels;
+using ZenPlatform.ClientRuntime.ViewModels;
 
-namespace ZenPlatform.ThinClient.Dock
+namespace ZenPlatform.ClientRuntime.Dock
 {
     public class DocumentDockContainer: DocumentDock
     {

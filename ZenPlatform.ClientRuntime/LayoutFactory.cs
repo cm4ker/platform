@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Dock.Avalonia.Controls;
 using Dock.Model;
 using Dock.Model.Controls;
-using ZenPlatform.ThinClient.Dock;
+using ZenPlatform.ClientRuntime.Dock;
 
-namespace ZenPlatform.ThinClient
+namespace ZenPlatform.ClientRuntime
 {
     public class LayoutFactory : Factory
     {
@@ -32,7 +32,6 @@ namespace ZenPlatform.ThinClient
         {
             this.ContextLocator = new Dictionary<string, Func<object>>
             {
-                
             };
 
             this.HostWindowLocator = new Dictionary<string, Func<IHostWindow>>
@@ -44,9 +43,7 @@ namespace ZenPlatform.ThinClient
             {
             };
 
-
             base.InitLayout(layout);
-
         }
     }
 }

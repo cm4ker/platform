@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using dnlib.DotNet.Resources;
 using NLog.Targets.Wrappers;
 using Portable.Xaml;
 using ReactiveUI;
 using ZenPlatform.Avalonia.Wrapper;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
@@ -57,7 +59,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
         private IField _f_viewModel;
         private ITypeBuilder _viewModel;
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IAssemblyServiceManager sm)
         {
             builder.DefineDefaultConstructor(false);
         }
@@ -103,7 +105,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
         private IMethod _xamlServiceParse;
 
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IAssemblyServiceManager sm)
         {
             var formType = builder.Assembly.FindType($"{GetNamespace()}.{ObjectType.Name}{Name}Form");
 
@@ -133,7 +135,47 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
                 .EmitCall(formType.FindMethod(nameof(UXForm.CreateOnServer)))
                 .LdLoc(loc)
                 .Ret();
+
+            EmitRegisterServerFunction(sm);
         }
+
+
+        private void EmitRegisterServerFunction(IAssemblyServiceManager sm)
+        {
+            var e = sm.ServiceInitializerInitMethod.Generator;
+            var invs = sm.InvokeServiceField;
+
+            var dlgt = sm.ServiceInitializerType.DefineMethod($"dlgt_{Name}", true, false, false);
+
+            dlgt.DefineParameter("context", _sb.InvokeContext, false, false);
+            var argsParam = dlgt.DefineParameter("args", _sb.Object.MakeArrayType(), false, false);
+            dlgt.WithReturnType(_sb.Object);
+
+            var dle = dlgt.Generator;
+
+            // for (int i = 0; i < method.Parameters.Count; i++)
+            // {
+            //     dle.LdArg(argsParam)
+            //         .LdcI4(i)
+            //         .LdElemRef()
+            //         .Unbox_Any(method.Parameters[i].Type);
+            // }
+
+            dle.EmitCall(_getMethod);
+
+
+            dle.Box(_getMethod.ReturnType).Ret();
+
+            e.LdArg_0()
+                .LdFld(invs)
+                .LdStr($"UX.{Name}")
+                .NewObj(_sb.Route.Constructors.First())
+                .LdArg_0()
+                .LdFtn(dlgt)
+                .NewObj(_sb.ParametricMethod.Constructors.First())
+                .EmitCall(_sb.InvokeService.FindMethod((m) => m.Name == "Register"));
+        }
+
 
         public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
         {

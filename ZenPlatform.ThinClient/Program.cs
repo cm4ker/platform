@@ -6,6 +6,7 @@ using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Portable.Xaml;
 using ZenPlatform.Avalonia.Wrapper;
+using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.ClientServices;
@@ -43,6 +44,8 @@ namespace ZenPlatform.ThinClient
 
             var result = AppBuilder.Configure<App>()
                 .UsePlatformDetect();
+
+            Infrastructure.Main(context.Client);
 
             result.StartWithClassicDesktopLifetime(args);
         }

@@ -45,10 +45,11 @@ namespace ZenPlatform.EntityComponent.Compilation
                 throw new Exception("Component doesn't support this task type");
         }
 
-        public void Stage1(Node task, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage1(Node task, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
+            IAssemblyServiceManager sm)
         {
             if (task is IEntityGenerationTask egt)
-                egt.Stage1(builder, dbType);
+                egt.Stage1(builder, dbType, sm);
             else
                 throw new Exception("Component doesn't support this task type");
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Entity;
@@ -25,7 +26,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             return asm.DefineInstanceType(GetNamespace(), Name, asm.FindType("Entity.EntityLink"));
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IAssemblyServiceManager sm)
         {
             EmitStructure(builder, dbType);
         }

@@ -1,0 +1,8 @@
+<Project>
+    <ItemGroup>
+      <PackageReference Include="Dock.Avalonia" Version="0.9.6" />
+      <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.9.6" />
+      <PackageReference Include="Dock.Avalonia.Themes.Metro" Version="0.9.6" />
+      <PackageReference Include="Dock.Model.ReactiveUI" Version="0.9.6" />
+    </ItemGroup>
+</Project>

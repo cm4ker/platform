@@ -2,9 +2,9 @@
 using System.Reactive;
 using Dock.Model;
 using ReactiveUI;
-using ZenPlatform.ThinClient.Dock;
+using ZenPlatform.ClientRuntime.Dock;
 
-namespace ZenPlatform.ThinClient.ViewModels
+namespace ZenPlatform.ClientRuntime.ViewModels
 {
     public class DockMainWindowViewModel: ViewModelBase, IVisualEnvironment
     {

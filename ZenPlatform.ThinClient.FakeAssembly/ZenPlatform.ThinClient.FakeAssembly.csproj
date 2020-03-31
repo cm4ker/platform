@@ -4,9 +4,7 @@
         <TargetFramework>netcoreapp3.0</TargetFramework>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Avalonia" Version="0.9.3" />
-    </ItemGroup>
+    <Import Project="..\Props\avalonia.props"/>
 
     <ItemGroup>
       <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />

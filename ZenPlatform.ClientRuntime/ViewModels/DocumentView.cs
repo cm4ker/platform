@@ -1,6 +1,6 @@
 ﻿using Dock.Model.Controls;
 
-namespace ZenPlatform.ThinClient.ViewModels
+namespace ZenPlatform.ClientRuntime.ViewModels
 {
     public class DocumentView : Document
     {

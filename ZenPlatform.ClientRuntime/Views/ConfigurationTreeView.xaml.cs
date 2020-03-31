@@ -1,9 +1,9 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ZenPlatform.ThinClient.ViewModels;
+using ZenPlatform.ClientRuntime.ViewModels;
 
-namespace ZenPlatform.ThinClient.Views
+namespace ZenPlatform.ClientRuntime.Views
 {
     public class ConfigurationTreeView : UserControl
     {
@@ -13,8 +13,8 @@ namespace ZenPlatform.ThinClient.Views
         public ConfigurationTreeView()
         {
             this.InitializeComponent();
-            Tree = this.FindControl<TreeView>("TreeView");
-            Tree.DoubleTapped += Tree_DoubleTapped;
+            // Tree = this.FindControl<TreeView>("TreeView");
+            // Tree.DoubleTapped += Tree_DoubleTapped;
         }
 
         private void Tree_DoubleTapped(object sender, RoutedEventArgs e)

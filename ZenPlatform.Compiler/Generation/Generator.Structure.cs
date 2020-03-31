@@ -261,7 +261,8 @@ namespace ZenPlatform.Compiler.Generation
                             }
                         }
 
-                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab, _parameters.TargetDatabaseType, _mode);
+                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab, _parameters.TargetDatabaseType, _mode,
+                            _serviceScope);
                         break;
 
                     default:

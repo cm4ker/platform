@@ -1,12 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Portable.Xaml;
-using ZenPlatform.Avalonia.Wrapper;
-using ZenPlatform.Data;
 using ZenPlatform.Runtime;
 
-namespace ZenPlatform.ThinClient
+namespace ZenPlatform.ClientRuntime
 {
     public interface IVisualEnvironment
     {
