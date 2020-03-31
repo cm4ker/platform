@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Migration", "Ze
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Cli", "ZenPlatform.Builder\ZenPlatform.Cli.csproj", "{4A7467AC-ED2E-4A96-8537-1CE038038E9B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7557}") = "MessageBox.Avalonia", "External\MessageBox.Avalonia\src\MessageBox.Avalonia\MessageBox.Avalonia.csproj", "{4A7467AC-ED2E-4A96-8537-1CE038038E9D}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.PlatformCodeGenerator", "ZenPlatform.PlatformCodeGenerator\ZenPlatform.PlatformCodeGenerator.csproj", "{6018B169-B349-4405-8A6E-9CDC77DD104F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.DataComponent", "ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj", "{595EFE31-5BF9-4C4D-B93E-55AA3831E216}"
@@ -176,6 +178,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Serializer", "ZenPlatform.Serializer\ZenPlatform.Serializer.csproj", "{ABF69E77-4DEE-4A74-92BE-B908E1D31E2D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Runtime", "ZenPlatform.Runtime\ZenPlatform.Runtime.csproj", "{272AF0BD-1E9A-4AAD-9BDC-7E352B7DF7C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{23EFCF51-01CB-4665-A072-86D0C591FD68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2629,6 +2633,8 @@ Global
 		{272AF0BD-1E9A-4AAD-9BDC-7E352B7DF7C7}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{272AF0BD-1E9A-4AAD-9BDC-7E352B7DF7C7}.Release|x86.ActiveCfg = Release|Any CPU
 		{272AF0BD-1E9A-4AAD-9BDC-7E352B7DF7C7}.Release|x86.Build.0 = Release|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2692,6 +2698,7 @@ Global
 		{EEC3F772-76E2-4FB4-A272-10C0B7A671B0} = {600ED7B0-4BED-4D23-B7FA-6B7F25DE64AC}
 		{045440C6-4D2C-495A-93C9-20B4F7D65BD1} = {D3194114-4EF0-406B-BB33-B744BA2CC2AF}
 		{2423B5C5-3A26-4129-90E7-BD508D98DE92} = {D3194114-4EF0-406B-BB33-B744BA2CC2AF}
+		{4A7467AC-ED2E-4A96-8537-1CE038038E9D} = {23EFCF51-01CB-4665-A072-86D0C591FD68}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87366D66-1391-4D90-8999-95A620AD786A}

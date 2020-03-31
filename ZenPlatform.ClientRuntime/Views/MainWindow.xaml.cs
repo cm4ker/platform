@@ -1,19 +1,18 @@
-﻿using System.IO;
-using System.Xml;
-using Avalonia;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Dock.Avalonia.Controls;
 
-namespace ZenPlatform.ThinClient.Views
+namespace ZenPlatform.ClientRuntime.Views
 {
-    public class DockMainWindow : MetroWindow
+    public class MainWindow : Window
     {
-        public DockMainWindow()
+        public MainWindow()
         {
             this.InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif
+            
         }
 
         private void InitializeComponent()

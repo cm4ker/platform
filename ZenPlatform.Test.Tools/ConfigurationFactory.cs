@@ -49,9 +49,9 @@ namespace ZenPlatform.Test.Tools
 
             var i = store.CreateInterface();
             i.Markup =
-                @"<p:StoreEditorForm 
-                                xmlns:p=""clr-namespace:Entity;assembly=LibraryServer""    
-                                xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
+@"<p:StoreEditorForm 
+                xmlns:p=""clr-namespace:Entity;assembly=LibraryServer""    
+                xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
   <UXGroup Orientation=""Horizontal"">
     <UXTextBox />
     <UXTextBox />

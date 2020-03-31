@@ -12,7 +12,6 @@ using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Client
 {
-
     class Program
     {
         static void Main(string[] args)

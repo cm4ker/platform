@@ -2,11 +2,12 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.CodeAnalysis.Diagnostics;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 
 namespace ZenPlatform.Compiler.Generation
 {
-    public class ServerAssemblyServiceScope
+    public class ServerAssemblyServiceScope : IAssemblyServiceManager
     {
         private readonly IAssemblyBuilder _builder;
         private SystemTypeBindings _sb;

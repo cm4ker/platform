@@ -10,6 +10,7 @@ namespace ZenPlatform.ClientRuntime
         public static void Main(IPlatformClient client)
         {
             GlobalScope.Client = client;
+            GlobalScope.Interop = new UXInterop();
         }
     }
 }

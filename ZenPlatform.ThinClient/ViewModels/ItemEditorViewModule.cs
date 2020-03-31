@@ -2,7 +2,7 @@
 
 namespace ZenPlatform.ThinClient.ViewModels
 {
-    public class ItemEditorViewModule: Document
+    public class ItemEditorViewModule : Document
     {
         // private IConfigurationItem _item;
         // public ItemEditorViewModule(IConfigurationItem item)

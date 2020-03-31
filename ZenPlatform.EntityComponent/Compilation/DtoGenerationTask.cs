@@ -1,5 +1,6 @@
 using System.Data.Common;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast;
@@ -29,7 +30,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             return type;
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IAssemblyServiceManager sm)
         {
             EmitBody(builder, dbType);
             EmitVersionField(builder);

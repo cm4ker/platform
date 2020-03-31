@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Reactive;
 using Dock.Model.Controls;
-using ReactiveUI;
-using ZenPlatform.ThinClient.Views;
 
-namespace ZenPlatform.ThinClient.ViewModels
+namespace ZenPlatform.ClientRuntime.ViewModels
 {
     public class ConfigurationTreeViewModel : Tool
     {
+        public IEnumerable<Command> ListCmd => GlobalScope.Interop.Commands;
+
         // private ICollection<IConfigurationItem> _openedConfiguration;
         //
         // private ObservableAsPropertyHelper<IEnumerable<IConfigurationItem>> _configuration;

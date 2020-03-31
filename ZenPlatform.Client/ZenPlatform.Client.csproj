@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
-      <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
     </ItemGroup>
 
 </Project>

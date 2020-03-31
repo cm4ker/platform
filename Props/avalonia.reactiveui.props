@@ -1,0 +1,5 @@
+<Project>
+    <ItemGroup>
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.3" />
+    </ItemGroup>
+</Project>

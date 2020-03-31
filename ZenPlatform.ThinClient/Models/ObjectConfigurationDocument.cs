@@ -1,6 +1,4 @@
-﻿
-
-/*
+﻿/*
 namespace ZenPlatform.SimpleIde.Models
 {
     public class ObjectConfigurationDocument : ReactiveObject, IConfigurationDocument
@@ -108,3 +106,4 @@ namespace ZenPlatform.SimpleIde.Models
     }
 }
 */
+

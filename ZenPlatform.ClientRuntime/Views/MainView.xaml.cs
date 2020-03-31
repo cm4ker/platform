@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace ZenPlatform.ThinClient.Views
+namespace ZenPlatform.ClientRuntime.Views
 {
     public class MainView : UserControl
     {

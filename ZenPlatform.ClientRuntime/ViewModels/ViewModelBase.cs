@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace ZenPlatform.ThinClient.ViewModels
+namespace ZenPlatform.ClientRuntime.ViewModels
 {
     public class ViewModelBase : ReactiveObject
     {

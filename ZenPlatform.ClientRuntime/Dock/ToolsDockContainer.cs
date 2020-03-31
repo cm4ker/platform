@@ -2,7 +2,7 @@
 using Dock.Model;
 using Dock.Model.Controls;
 
-namespace ZenPlatform.ThinClient.Dock
+namespace ZenPlatform.ClientRuntime.Dock
 {
     public class ToolsDockContainer: ToolDock
     {

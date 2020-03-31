@@ -50,6 +50,7 @@ namespace ZenPlatform.Compiler.Tests
 
             var loaded = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "server.bll"));
 
+            var formType = loaded.GetType("Entity.StoreEditorForm");
             var cmdType = loaded.GetType("Entity.__StoreEditorForm");
 
             var result = cmdType.GetMethod("Get")

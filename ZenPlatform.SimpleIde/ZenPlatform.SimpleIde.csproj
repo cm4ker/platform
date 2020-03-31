@@ -28,15 +28,13 @@
     <None Remove="Views\MainView.xaml" />
     <None Remove="Views\MainWindow.xaml" />
   </ItemGroup>
+
+  <Import Project="..\Props\avalonia.props" />
+  <Import Project="..\Props\avalonia.desktop.props" />
+  <Import Project="..\Props\dock.props" />
+  <Import Project="..\Props\portable.xaml.props" />
+  
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.9.3" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.9.0-preview1" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.2" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.2" />
-    <PackageReference Include="Dock.Avalonia" Version="0.9.2" />
-    <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.9.2" />
-    <PackageReference Include="Dock.Avalonia.Themes.Metro" Version="0.9.2" />
-    <PackageReference Include="Dock.Model.ReactiveUI" Version="0.9.2" />
     <PackageReference Include="DynamicData" Version="6.14.3" />
   </ItemGroup>
   <ItemGroup>

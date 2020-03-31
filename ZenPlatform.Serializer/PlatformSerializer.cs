@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Portable.Xaml;
+using ZenPlatform.Avalonia.Wrapper;
 
 namespace ZenPlatform.Serializer
 {
@@ -35,7 +37,7 @@ namespace ZenPlatform.Serializer
 
                     if (value == null && pi.PropertyType == typeof(byte[]))
                         value = new byte[0];
-                    
+
                     if (value is string s)
                         bw.Write(s);
                     else if (value is int i)
@@ -49,6 +51,12 @@ namespace ZenPlatform.Serializer
                     else if (value is byte[] ba)
                         bw.WriteA(ba);
                 }
+            }
+
+            if (obj is UXElement)
+            {
+                bw.Write((int) ValType.UXObject);
+                bw.Write(XamlServices.Save(obj));
             }
             else if (obj is int i)
             {
@@ -134,7 +142,9 @@ namespace ZenPlatform.Serializer
                     }
 
                     return Activator.CreateInstance(objectType, dto);
-
+                case ValType.UXObject:
+                    var xaml = reader.ReadString();
+                    return XamlServices.Parse(xaml);
                 case ValType.Int:
                     return reader.ReadInt32();
                 case ValType.String:
