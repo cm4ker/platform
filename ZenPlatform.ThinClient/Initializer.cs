@@ -70,7 +70,7 @@ namespace ZenPlatform.ThinClient
 
         public Assembly LoadMainAssembly()
         {
-            return typeof(FakeClass).Assembly;
+            return typeof(EntryPoint).Assembly;
         }
 
         public Assembly MainAssembly { get; }
@@ -100,18 +100,18 @@ namespace ZenPlatform.ThinClient
             IServiceCollection services = new ServiceCollection();
 
 
-            services.AddSingleton<IClientPlatformContext, FakeClientPlatformContext>();
-            services.AddSingleton<IPlatformClient, FakePlatformClient>();
-            services.AddSingleton<IProtocolClient, Client>();
+            services.AddSingleton<IClientPlatformContext, ClientPlatformContext>();
+            services.AddSingleton<IPlatformClient, Client>();
+            //services.AddSingleton<IProtocolClient, Client>();
             services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
             services.AddSingleton<PlatformAssemblyLoadContext>();
             services.AddSingleton<IClientAssemblyManager, PlatformClientAssemblyManager>();
-            services.AddSingleton<ITransportClientFactory, SSHTransportClientFactory>();
+            services.AddSingleton<ITransportClientFactory, TCPTransportClientFactory>();
             //services.AddSingleton<IPlatformClient, Client>();
 
             services.AddSingleton(factory =>
             {
-                var client = factory.GetRequiredService<IProtocolClient>();
+                var client = factory.GetRequiredService<IPlatformClient>();
                 return client.GetService<IAssemblyManagerClientService>();
             });
 

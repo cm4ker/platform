@@ -1,11 +1,9 @@
-﻿using System;
-using ZenPlatform.Configuration;
+﻿using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 
 namespace ZenPlatform.Test.Tools
@@ -49,12 +47,18 @@ namespace ZenPlatform.Test.Tools
 
             var i = store.CreateInterface();
             i.Markup =
-@"<p:StoreEditorForm 
+                @"<p:StoreEditorForm 
                 xmlns:p=""clr-namespace:Entity;assembly=LibraryServer""    
                 xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
-  <UXGroup Orientation=""Horizontal"">
+  <UXGroup Orientation=""Vertical"">
     <UXTextBox />
     <UXTextBox />
+    <UXGroup Orientation = ""Horizontal""> 
+        <UXCheckBox />
+<UXCheckBox />
+<UXCheckBox />
+<UXCheckBox />
+    </UXGroup>
   </UXGroup>
 </p:StoreEditorForm>";
             i.Name = "Editor";

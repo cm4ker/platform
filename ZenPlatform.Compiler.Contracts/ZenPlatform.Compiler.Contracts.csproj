@@ -3,6 +3,8 @@
     <PropertyGroup>
         <LangVersion>8</LangVersion>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

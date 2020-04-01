@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using NLog.LayoutRenderers;
 using ZenPlatform.Compiler;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Configuration.Structure;
-using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
@@ -74,9 +70,8 @@ namespace ZenPlatform.Core.Test.Environment
             var bytes = _assemblyManager.GetAssemblyBytes(asms);
             var serverAssembly = Assembly.Load(bytes);
 
-            var serviceType = serverAssembly.GetType("Service.ServerInitializer");
-            var initializerInstance = (IServerInitializer) Activator.CreateInstance(serviceType, InvokeService);
-            initializerInstance.Init();
+            var serviceType = serverAssembly.GetType("EntryPoint");
+            var initializerInstance = serviceType.GetMethod("Main").Invoke(null, new[] {new[] {InvokeService}});
 
             InvokeService.Register(new Route("test"), (c, a) => { return (int) a[0] + 1; });
 
@@ -89,7 +84,6 @@ namespace ZenPlatform.Core.Test.Environment
             InvokeService.Register(new Route("Test_GetProperty"),
                 (c, a) =>
                 {
-                    
                     var typeId = (int) a[0];
                     var propName = (string) a[1];
                     var id = (Guid) a[2];

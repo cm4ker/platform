@@ -7,22 +7,24 @@ using Newtonsoft.Json;
 
 namespace ZenPlatform.Core.Settings
 {
+    public class ConfigFileNameAttribute : Attribute
+    {
+        public string Name { get; set; }
+    }
 
     public interface ISettingsStorage
     {
         T Get<T>() where T : class, new();
         void Save();
-
-
     }
 
-    public class FileSettingsStorage: ISettingsStorage
+    public class FileSettingsStorage : ISettingsStorage
     {
         private Dictionary<Type, object> _cache = new Dictionary<Type, object>();
         private string _settingsPath;
+
         public FileSettingsStorage()
         {
-            
             _settingsPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Settings");
             if (!Directory.Exists(_settingsPath))
                 Directory.CreateDirectory(_settingsPath);
@@ -31,14 +33,19 @@ namespace ZenPlatform.Core.Settings
         public T Get<T>() where T : class, new()
         {
             if (_cache.ContainsKey(typeof(T)))
-                return (T)_cache[typeof(T)];
+                return (T) _cache[typeof(T)];
 
-            var path = Path.Combine(_settingsPath, typeof(T).Name);
+            var attr = typeof(T).GetCustomAttribute<ConfigFileNameAttribute>();
+
+            string path;
+
+            if (attr != null)
+                path = Path.Combine(_settingsPath, attr.Name);
+            else
+                path = Path.Combine(_settingsPath, typeof(T).Name);
 
             if (File.Exists(path))
             {
-
-                
                 JsonSerializer serializer = new JsonSerializer();
                 using (StreamReader sr = new StreamReader(path))
                 using (JsonReader jr = new JsonTextReader(sr))
@@ -54,6 +61,14 @@ namespace ZenPlatform.Core.Settings
             {
                 var newSettings = new T();
                 _cache.Add(typeof(T), newSettings);
+
+                JsonSerializer serializer = new JsonSerializer();
+                using (StreamWriter sr = new StreamWriter(path))
+                using (JsonWriter jr = new JsonTextWriter(sr))
+                {
+                    serializer.Serialize(jr, newSettings);
+                }
+
                 return newSettings;
             }
         }
@@ -64,7 +79,6 @@ namespace ZenPlatform.Core.Settings
             {
                 Save(item);
             }
-
         }
 
         private void Save(object setting)
@@ -73,12 +87,10 @@ namespace ZenPlatform.Core.Settings
 
             JsonSerializer serializer = new JsonSerializer();
             using (StreamWriter sw = new StreamWriter(path))
-                using (JsonWriter jw = new JsonTextWriter(sw))
+            using (JsonWriter jw = new JsonTextWriter(sw))
             {
                 serializer.Serialize(jw, setting);
             }
-
         }
-
     }
 }

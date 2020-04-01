@@ -29,8 +29,10 @@ namespace ZenPlatform.Compiler.Generation
 
         public void Build()
         {
+            _epManager = new EntryPointAssemblyManager(_asm);
+
             if (_mode == CompilationMode.Server && _conf != null)
-                _serviceScope = new ServerAssemblyServiceScope(_asm);
+                _epManager.InitService();
 
             _map = new SyntaxTreeMemberAccessProvider(_root, _ts);
 
@@ -39,8 +41,8 @@ namespace ZenPlatform.Compiler.Generation
             BuildGlobalVar();
             BuildCode();
 
-            if (_conf != null && _mode == CompilationMode.Server)
-                _serviceScope.EndBuild();
+
+            _epManager.EndBuild();
         }
 
         /// <summary>
@@ -262,7 +264,7 @@ namespace ZenPlatform.Compiler.Generation
                         }
 
                         cab.Component.ComponentImpl.Generator.Stage1(cab, tcab, _parameters.TargetDatabaseType, _mode,
-                            _serviceScope);
+                            _epManager);
                         break;
 
                     default:

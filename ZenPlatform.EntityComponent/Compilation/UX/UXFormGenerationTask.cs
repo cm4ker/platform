@@ -6,12 +6,14 @@ using Portable.Xaml;
 using ReactiveUI;
 using ZenPlatform.Avalonia.Wrapper;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.ServerRuntime;
 
 namespace ZenPlatform.EntityComponent.Compilation.UX
 {
@@ -59,7 +61,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
         private IField _f_viewModel;
         private ITypeBuilder _viewModel;
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IAssemblyServiceManager sm)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             builder.DefineDefaultConstructor(false);
         }
@@ -68,6 +70,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
         {
         }
     }
+
 
     public class FormStaticActionsGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
@@ -103,17 +106,18 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
         private IMethodBuilder _getMethod;
         private IField _markup;
         private IMethod _xamlServiceParse;
+        private IMethod _xamlServiceSave;
 
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IAssemblyServiceManager sm)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             var formType = builder.Assembly.FindType($"{GetNamespace()}.{ObjectType.Name}{Name}Form");
 
             _getMethod = builder.DefineMethod("Get", true, true, false);
-            _getMethod.WithReturnType(formType);
+            _getMethod.WithReturnType(_sb.String);
 
-            _xamlServiceParse = _ts.FindType(typeof(XamlServices)).FindMethod(nameof(XamlServices.Parse), _sb.String);
-
+            _xamlServiceParse = _ts.FindType(typeof(XamlService)).FindMethod(nameof(XamlServices.Parse), _sb.String);
+            _xamlServiceSave = _ts.FindType(typeof(XamlService)).FindMethod(nameof(XamlServices.Save), _sb.Object);
             var g = _getMethod.Generator;
 
             var loc = g.DefineLocal(formType);
@@ -134,18 +138,20 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
                 .LdLoc(loc)
                 .EmitCall(formType.FindMethod(nameof(UXForm.CreateOnServer)))
                 .LdLoc(loc)
+                .Box(formType)
+                .EmitCall(_xamlServiceSave)
                 .Ret();
 
             EmitRegisterServerFunction(sm);
         }
 
 
-        private void EmitRegisterServerFunction(IAssemblyServiceManager sm)
+        private void EmitRegisterServerFunction(IEntryPointManager sm)
         {
-            var e = sm.ServiceInitializerInitMethod.Generator;
-            var invs = sm.InvokeServiceField;
+            var e = sm.Main.Generator;
+            var invs = sm.GetISField();
 
-            var dlgt = sm.ServiceInitializerType.DefineMethod($"dlgt_{Name}", true, false, false);
+            var dlgt = sm.EntryPoint.DefineMethod($"dlgt_{Name}", true, true, false);
 
             dlgt.DefineParameter("context", _sb.InvokeContext, false, false);
             var argsParam = dlgt.DefineParameter("args", _sb.Object.MakeArrayType(), false, false);
@@ -153,27 +159,17 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
 
             var dle = dlgt.Generator;
 
-            // for (int i = 0; i < method.Parameters.Count; i++)
-            // {
-            //     dle.LdArg(argsParam)
-            //         .LdcI4(i)
-            //         .LdElemRef()
-            //         .Unbox_Any(method.Parameters[i].Type);
-            // }
-
             dle.EmitCall(_getMethod);
-
 
             dle.Box(_getMethod.ReturnType).Ret();
 
-            e.LdArg_0()
-                .LdFld(invs)
+            e.LdSFld(invs)
                 .LdStr($"UX.{Name}")
                 .NewObj(_sb.Route.Constructors.First())
-                .LdArg_0()
+                .LdNull()
                 .LdFtn(dlgt)
                 .NewObj(_sb.ParametricMethod.Constructors.First())
-                .EmitCall(_sb.InvokeService.FindMethod((m) => m.Name == "Register"));
+                .EmitCall(_sb.InvokeService.FindMethod(m => m.Name == "Register"));
         }
 
 

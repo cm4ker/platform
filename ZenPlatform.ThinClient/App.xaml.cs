@@ -29,7 +29,10 @@ namespace ZenPlatform.ThinClient
                     DataContext = view,
                 };
 
-                ClientEnvironment.Init(desktopLifetime.MainWindow, view);
+                GlobalScope.Interop = new UXClient(desktopLifetime.MainWindow, view);
+
+                Program.ClientMainAssembly.GetType("EntryPoint")?.GetMethod("Main")
+                    ?.Invoke(null, new[] {new object[] { }});
             }
 
             base.OnFrameworkInitializationCompleted();

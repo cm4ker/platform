@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace ZenPlatform.Core.Authentication
 {
     public class BaseAuthenticationProvider : IAuthenticationProvider
     {
         private readonly IUserManager _userManager;
+        private readonly ILogger<BaseAuthenticationProvider> _logger;
+
         public BaseAuthenticationProvider(IUserManager userManager)
         {
             _userManager = userManager;
@@ -16,7 +19,7 @@ namespace ZenPlatform.Core.Authentication
         {
             if (!CanAuthenticate(token)) throw new NotSupportedException("Type of token not supported.");
 
-            if (_userManager.Authenticate(token.Name, (string)token.Credential))
+            if (_userManager.Authenticate(token.Name, (string) token.Credential))
             {
                 return _userManager.FindUserByName(token.Name);
             }

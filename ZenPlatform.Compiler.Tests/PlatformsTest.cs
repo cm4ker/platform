@@ -1,17 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Xunit;
-using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
-using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.ConfigurationExample;
-using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Test.Tools;
 

@@ -2,13 +2,15 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DefineConstants>TRACE;CLIENT</DefineConstants>
     </PropertyGroup>
 
-    <Import Project="..\Props\avalonia.props"/>
-    <Import Project="..\Props\portable.xaml.props"/>
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\portable.xaml.props" />
 
 </Project>

@@ -27,7 +27,7 @@ namespace ZenPlatform.ThinClient
             var context = clientServices.GetRequiredService<IClientPlatformContext>();
             context.Connect(new DatabaseConnectionSettings()
             {
-                Address = "127.0.0.1:12345",
+                Address = "127.0.0.1:12346",
                 Database = "Library"
             });
 
@@ -39,13 +39,15 @@ namespace ZenPlatform.ThinClient
             }
 
             context.Login("admin", "admin");
-
+            GlobalScope.Client = context.Client;
             ClientMainAssembly = context.LoadMainAssembly();
+
+          
+
 
             var result = AppBuilder.Configure<App>()
                 .UsePlatformDetect();
 
-            Infrastructure.Main(context.Client);
 
             result.StartWithClassicDesktopLifetime(args);
         }
