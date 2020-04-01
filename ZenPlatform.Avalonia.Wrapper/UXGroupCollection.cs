@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using Avalonia.Threading;
 #if CLIENT
 using Avalonia.Controls;
 #endif
@@ -45,18 +45,20 @@ namespace ZenPlatform.Avalonia.Wrapper
 
             var index = _elements.Count - 1;
 #if CLIENT
-            if (_gr.Orientation == UXGroupOrientation.Horizontal)
-            {
-                _g.ColumnDefinitions.Add(new ColumnDefinition());
-                Grid.SetColumn(underlyingControl, index);
-            }
-            else
-            {
-                _g.RowDefinitions.Add(new RowDefinition());
-                Grid.SetRow(underlyingControl, index);
-            }
+            
+                if (_gr.Orientation == UXGroupOrientation.Horizontal)
+                {
+                    _g.ColumnDefinitions.Add(new ColumnDefinition());
+                    Grid.SetColumn(underlyingControl, index);
+                }
+                else
+                {
+                    _g.RowDefinitions.Add(new RowDefinition());
+                    Grid.SetRow(underlyingControl, index);
+                }
 
-            _g.Children.Add(underlyingControl);
+                _g.Children.Add(underlyingControl);
+         
 #endif
         }
 

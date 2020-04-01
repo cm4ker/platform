@@ -46,7 +46,7 @@ namespace ZenPlatform.EntityComponent.Compilation
         }
 
         public void Stage1(Node task, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
-            IAssemblyServiceManager sm)
+            IEntryPointManager sm)
         {
             if (task is IEntityGenerationTask egt)
                 egt.Stage1(builder, dbType, sm);
@@ -186,6 +186,13 @@ namespace ZenPlatform.EntityComponent.Compilation
                     ns.AddEntity(
                         new CommandGenerationTask(cmd, CompilationMode.Client, _component, $"__cmd_{cmd.Name}"));
                 }
+                
+                foreach (var inf in md.Interfaces)
+                {
+                    ns.AddEntity(new UXFormClientGenerationTask(ipType, inf, CompilationMode.Client, _component, true,
+                        inf.Name,
+                        TypeBody.Empty));
+                }
             }
 
             r.Units.Add(cu);
@@ -273,6 +280,14 @@ namespace ZenPlatform.EntityComponent.Compilation
         public void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             CreateMainLink(builder);
+        }
+
+        private void CreateEntryPoint(IAssemblyBuilder b)
+        {
+            var ep = b.DefineStaticType("", "EntryPoint");
+            var run = ep.DefineMethod("Run", true, true, false);
+
+            run.Generator.Ret();
         }
 
         private void CreateMainLink(IAssemblyBuilder builder)

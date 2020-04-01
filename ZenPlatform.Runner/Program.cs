@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
+using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Serialisers;
@@ -15,8 +17,13 @@ using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Compiler.Platform;
+using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.DI;
 using ZenPlatform.Core.Environment.Contracts;
+using ZenPlatform.Migration;
 using ZenPlatform.Networking;
 
 namespace ZenPlatform.Runner
@@ -53,7 +60,9 @@ namespace ZenPlatform.Runner
 
 
                     services.AddTransient<IConnectionManager, ConnectionManager>();
-                    services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
+                    services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
+                    services.AddTransient<IDatabaseNetworkListener, TCPListener>();
+
                     services.AddScoped<IInvokeService, InvokeService>();
                     services.AddTransient<INetworkListener, TCPListener>();
                     services.AddTransient<IChannel, Channel>();
@@ -69,6 +78,10 @@ namespace ZenPlatform.Runner
                     services.AddScoped<IAssemblyManager, AssemblyManager>();
                     services.AddScoped<IConfigurationManager, ConfigurationManager>();
                     services.AddScoped<IXCCompiller, XCCompiler>();
+                    services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
+                    services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
+                    services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
+                    services.AddScoped<IMigrationManager, MigrationManager>();
 
 
                     services.AddSingleton<ITestProxyService, TestProxyService>();
@@ -76,7 +89,7 @@ namespace ZenPlatform.Runner
 
                     //services.AddScoped<ITestEnvironment, TestEnvironment>();
                     services.AddScoped<IAdminEnvironment, AdminEnvironment>();
-                    services.AddScoped<IWorkEnvironment, WorkEnvironment>();
+                    services.AddScoped<IWorkEnvironment, DatabaseTestEnvironment>();
 
                     services.AddSingleton<ICacheService, DictionaryCacheService>();
 

@@ -1,7 +1,7 @@
 #if CLIENT
 using Avalonia.Controls;
 #endif
-
+using Avalonia.Threading;
 using Portable.Xaml.Markup;
 
 namespace ZenPlatform.Avalonia.Wrapper
@@ -15,7 +15,7 @@ namespace ZenPlatform.Avalonia.Wrapper
         public UXGroup()
         {
 #if CLIENT
-            _g = new Grid();
+             _g = new Grid();
 #endif
             Childs = new UXGroupCollection(this);
         }

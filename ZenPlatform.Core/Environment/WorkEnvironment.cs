@@ -82,14 +82,12 @@ namespace ZenPlatform.Core.Environment
         /// </summary>
         public override void Initialize(IStartupConfig config)
         {
-            MigrationRunner.Migrate(config.ConnectionString,
-                config.DatabaseType);
+            MigrationRunner.Migrate(config.ConnectionString, config.DatabaseType);
             //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
             base.Initialize(config);
             _logger.Info("Database '{0}' loaded.", Configuration.ProjectName);
 
             AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
-
 
             if (_assemblyManager.CheckConfiguration(Configuration))
                 _assemblyManager.BuildConfiguration(Configuration, StartupConfig.DatabaseType);

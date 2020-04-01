@@ -12,11 +12,9 @@ namespace ZenPlatform.Configuration.Contracts
         Node Root { get; }
     }
 
-    public interface IAssemblyServiceManager
+    public interface IEntryPointManager
     {
-        ITypeBuilder ServiceInitializerType { get; }
-        IMethodBuilder ServiceInitializerInitMethod { get; }
-        IConstructorBuilder ServiceInitializerConstructor { get; }
-        IField InvokeServiceField { get; }
+        ITypeBuilder EntryPoint { get; }
+        IMethodBuilder Main { get; }
     }
 }

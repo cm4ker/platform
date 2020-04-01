@@ -85,8 +85,9 @@ namespace ZenPlatform.Serializer
         {
             var list = new List<byte[]>();
 
-            foreach (var obj in objs)
-                list.Add(Serialize(obj));
+            if (objs != null)
+                foreach (var obj in objs)
+                    list.Add(Serialize(obj));
 
             return list.ToArray();
         }
@@ -143,7 +144,7 @@ namespace ZenPlatform.Serializer
 
                     return Activator.CreateInstance(objectType, dto);
                 case ValType.UXObject:
-                    var xaml = reader.ReadString();
+                    var xaml = reader.ReadString().Replace("LibraryServer", "LibraryClient");
                     return XamlServices.Parse(xaml);
                 case ValType.Int:
                     return reader.ReadInt32();

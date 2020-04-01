@@ -14,7 +14,7 @@ namespace ZenPlatform.Compiler.Contracts
             IType baseType = null)
         {
             return asm.DefineType(@namespace, name, TypeAttributes.Class
-                                                    | TypeAttributes.NotPublic
+                                                    | TypeAttributes.Public
                                                     | TypeAttributes.BeforeFieldInit
                                                     | TypeAttributes.AnsiClass,
                 baseType ?? asm.TypeSystem.GetSystemBindings().Object);

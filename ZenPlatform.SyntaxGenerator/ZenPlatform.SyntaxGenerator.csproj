@@ -5,6 +5,8 @@
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <LangVersion>preview</LangVersion>
         <StartupObject>ZenPlatform.SyntaxGenerator.Program</StartupObject>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

@@ -2,17 +2,19 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj"/>
-        <ProjectReference Include="..\ZenPlatform.Runtime\ZenPlatform.Runtime.csproj"/>
+        <ProjectReference Include="..\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Runtime\ZenPlatform.Runtime.csproj" />
     </ItemGroup>
 
-    <Import Project="..\Props\avalonia.props"/>
-    <Import Project="..\Props\avalonia.desktop.props"/>
-    <Import Project="..\Props\avalonia.xaml.behaviors.props"/>
-    <Import Project="..\Props\dock.props"/>
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\avalonia.desktop.props" />
+    <Import Project="..\Props\avalonia.xaml.behaviors.props" />
+    <Import Project="..\Props\dock.props" />
 
     <ItemGroup>
         <EmbeddedResource Include="Views\ConfigurationTreeView.xaml">

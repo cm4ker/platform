@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+
 using ZenPlatform.Core.Helpers;
+using ZenPlatform.Core.Logging;
 using ZenPlatform.Initializer;
 using ZenPlatform.Data;
 using ZenPlatform.QueryBuilder;
@@ -13,37 +15,13 @@ namespace ZenPlatform.Core.Authentication
     /// </summary>
     public class UserManager : IUserManager
     {
-        /*
-        private readonly ISession _session;
-
-        public UserManager(ISession session)
-        {
-            if (session is SystemSession sys)
-            {
-                _session = sys;
-            }
-            else if (session is UserSession uses)
-            {
-                if (!uses.User.Roles.Any(x => x.Rights.Any(r =>
-                {
-                    if (r is SystemRight sysr && sysr.IsDataAdministrator)
-                        return true;
-                    return false;
-                })))
-                {
-                    throw new NotAuthorizedException();
-                }
-
-                _session = uses;
-            }
-        }
-        */
-
         private readonly IDataContextManager _dataContextManager;
+        private readonly ILogger<UserManager> _logger;
 
-        public UserManager(IDataContextManager dataContextManager)
+        public UserManager(IDataContextManager dataContextManager, ILogger<UserManager> logger)
         {
             _dataContextManager = dataContextManager;
+            _logger = logger;
         }
 
         public IPlatformUser Create()
@@ -90,7 +68,8 @@ namespace ZenPlatform.Core.Authentication
         {
             void Gen(QueryMachine m)
             {
-                m.m_from()
+                m.bg_query()
+                    .m_from()
                     .ld_table(DatabaseConstantNames.USER_TABLE_NAME)
                     .m_where()
                     .ld_column(DatabaseConstantNames.USER_TABLE_ID_FIELD)
@@ -133,31 +112,26 @@ namespace ZenPlatform.Core.Authentication
         {
             void Gen(QueryMachine m)
             {
-                m.m_from()
+                m.bg_query()
+                    .m_from()
                     .ld_table(DatabaseConstantNames.USER_TABLE_NAME)
                     .m_where()
-                    .ld_column(DatabaseConstantNames.USER_TABLE_ID_FIELD)
+                    .ld_column(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
                     .ld_param("p0")
                     .eq()
                     .m_select()
-                    .ld_column(DatabaseConstantNames.USER_TABLE_ID_FIELD)
-                    .ld_column(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
                     .ld_column(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD)
+                    .ld_column(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
+                    .ld_column(DatabaseConstantNames.USER_TABLE_ID_FIELD)
+                    
                     .st_query();
-
-//                var query = new SelectQueryNode();
-//
-//                query
-//                    .From(DatabaseConstantNames.USER_TABLE_NAME)
-//                    .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), "=", x => x.Parameter("p0"))
-//                    .Select(DatabaseConstantNames.USER_TABLE_ID_FIELD)
-//                    .Select(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
-//                    .Select(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD);
             }
 
             using (var cmd = _dataContextManager.GetContext().CreateCommand(Gen))
             {
                 cmd.AddParameterWithValue("p0", name);
+
+                _logger.Trace(cmd.CommandText);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -187,27 +161,24 @@ namespace ZenPlatform.Core.Authentication
         {
             void Gen(QueryMachine m)
             {
-                m.m_from()
+                m.bg_query()
+                    .m_from()
                     .ld_table(DatabaseConstantNames.USER_TABLE_NAME)
                     .m_where()
-                    .ld_column(DatabaseConstantNames.USER_TABLE_ID_FIELD)
+                    .ld_column(DatabaseConstantNames.USER_TABLE_NAME_FIELD)
                     .ld_param("p0")
                     .eq()
                     .m_select()
                     .ld_column(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD)
                     .st_query();
-
-//                var query = new SelectQueryNode();
-//
-//                query
-//                    .From(DatabaseConstantNames.USER_TABLE_NAME)
-//                    .Where(x => x.Field(DatabaseConstantNames.USER_TABLE_NAME_FIELD), "=", x => x.Parameter("p0"))
-//                    .Select(DatabaseConstantNames.USER_TABLE_PASSWORD_FIELD);
             }
 
 
             using (var cmd = _dataContextManager.GetContext().CreateCommand(Gen))
             {
+                _logger.Trace(cmd.CommandText);
+                _logger.Trace($"Credentials= {userName} : {password}");
+
                 cmd.AddParameterWithValue("p0", userName);
 
                 using (StreamReader reader = new StreamReader(new MemoryStream((byte[]) cmd.ExecuteScalar())))

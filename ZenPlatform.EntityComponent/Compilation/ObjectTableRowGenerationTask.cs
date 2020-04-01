@@ -30,7 +30,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             return asm.DefineInstanceType(this.GetNamespace(), Table.GetObjectRowClassName());
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IAssemblyServiceManager sm)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitStructure(builder, dbType);
         }

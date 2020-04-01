@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Core.Environment;
+using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Core
 {
+    [ConfigFileName(Name = "App.config")]
     public class AppConfig
     {
         public AccessPointConfig AccessPoint { get; set; }
 
         public CacheServiceConfig CacheService { get; set; }
-        public List<IStartupConfig> Environments { get; set; }
+        public List<StartupConfig> Environments { get; set; }
 
         public AppConfig()
         {
-            Environments = new List<IStartupConfig>();
+            Environments = new List<StartupConfig>();
             AccessPoint = new AccessPointConfig();
         }
     }
@@ -40,7 +42,7 @@ namespace ZenPlatform.Core
             Listener = new List<ListenerConfig>();
         }
     }
-    
+
     public class ListenerConfig
     {
         public string Address { get; set; }

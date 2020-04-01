@@ -10,10 +10,7 @@ using ZenPlatform.Core.CacheService;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Sessions;
-using ZenPlatform.Core.Tools;
 using ZenPlatform.Data;
-using ZenPlatform.Core.Assemlies;
-using ZenPlatform.Core.Crypto;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Initializer;
 using ZenPlatform.Core.Assemblies;
@@ -26,8 +23,6 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Core.Contracts;
-using ZenPlatform.Core.Configuration;
-using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Core.Environment
@@ -67,8 +62,7 @@ namespace ZenPlatform.Core.Environment
 
         public override void Initialize(IStartupConfig config)
         {
-            MigrationRunner.Migrate(config.ConnectionString,
-                config.DatabaseType);
+            MigrationRunner.Migrate(config.ConnectionString, config.DatabaseType);
 
             /*
             var newProject = XCRoot.Create("Library");
@@ -135,9 +129,8 @@ namespace ZenPlatform.Core.Environment
             var bytes = _assemblyManager.GetAssemblyBytes(asms);
             var serverAssembly = Assembly.Load(bytes);
 
-            var serviceType = serverAssembly.GetType("Service.ServerInitializer");
-            var initializerInstance = (IServerInitializer) Activator.CreateInstance(serviceType, InvokeService);
-            initializerInstance.Init();
+            var serviceType = serverAssembly.GetType("EntryPoint");
+            serviceType.GetMethod("Main").Invoke(null, new[] {new[] {InvokeService}});
 
             InvokeService.Register(new Route("test"), (c, a) => { return (int) a[0] + 1; });
 

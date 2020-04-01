@@ -1,7 +1,7 @@
 #if CLIENT
 using Avalonia.Controls;
+using Avalonia.Threading;
 #endif
-
 using Portable.Xaml.Markup;
 using ZenPlatform.Avalonia.Wrapper.ControlLayer;
 
