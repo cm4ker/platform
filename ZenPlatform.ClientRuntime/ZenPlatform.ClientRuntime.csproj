@@ -9,6 +9,7 @@
     <ItemGroup>
         <ProjectReference Include="..\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj" />
         <ProjectReference Include="..\ZenPlatform.Runtime\ZenPlatform.Runtime.csproj" />
+        <ProjectReference Include="..\ZenPlatform.SharedRuntime\ZenPlatform.SharedRuntime.csproj" />
     </ItemGroup>
 
     <Import Project="..\Props\avalonia.props" />
@@ -32,7 +33,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\External\MessageBox.Avalonia\src\MessageBox.Avalonia\MessageBox.Avalonia.csproj" />        
+      <PackageReference Include="MessageBox.Avalonia" Version="0.9.6.1" />
     </ItemGroup>
-    
 </Project>

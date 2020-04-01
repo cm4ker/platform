@@ -16,7 +16,6 @@ namespace ZenPlatform.ClientRuntime
     {
         private readonly string _xaml;
         private readonly object _dataContext;
-        private object _obj;
 
         public RuntimeModel(string xaml, object dataContext)
         {
@@ -24,15 +23,9 @@ namespace ZenPlatform.ClientRuntime
             _dataContext = dataContext;
         }
 
-        public RuntimeModel(object obj, object dataContext)
-        {
-            _obj = obj;
-            _dataContext = dataContext;
-        }
-
         public IControl Run()
         {
-            var ux = (_xaml == null) ? (UXElement) _obj : UX.Parse(_xaml);
+            var ux =  UX.Parse(_xaml);
 
             var visual = (IControl) ux.GetUnderlyingControl();
 
