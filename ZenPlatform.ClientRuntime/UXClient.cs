@@ -7,6 +7,7 @@ using MessageBox.Avalonia;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using ZenPlatform.ClientRuntime.ViewModels;
+using ZenPlatform.SharedRuntime;
 
 namespace ZenPlatform.ClientRuntime
 {
@@ -25,11 +26,10 @@ namespace ZenPlatform.ClientRuntime
             });
         }
 
-        // public static void OpenWindow(object xaml, object vm)
-        // {
-        //     var r = new RuntimeModel(xaml, vm);
-        //     _vm.ShowDock(r);
-        // }
+        public static void OpenWindow(UXContainer c)
+        {
+            OpenWindow(c.Markup, c.ViewModel);
+        }
 
         public static async void ShowDialog()
         {

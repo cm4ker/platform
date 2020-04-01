@@ -143,9 +143,9 @@ namespace ZenPlatform.Serializer
                     }
 
                     return Activator.CreateInstance(objectType, dto);
-                case ValType.UXObject:
-                    var xaml = reader.ReadString().Replace("LibraryServer", "LibraryClient");
-                    return XamlServices.Parse(xaml);
+                case ValType.UXContainer:
+
+                    return null;
                 case ValType.Int:
                     return reader.ReadInt32();
                 case ValType.String:
