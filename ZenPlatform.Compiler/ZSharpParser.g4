@@ -212,6 +212,7 @@ expressionPostfix:
     | castExpression 
     | '(' expression ')'
     | expressionAtom '[' indexerExpression=expression ']'
+    | anonimousType
 ;
 
 expressionAtom:
@@ -233,6 +234,12 @@ multitype :
 
 typeList: 
     type (',' type)*
+;
+
+anonimousType:
+   '{' 
+    (name '=' expression) (',' name '=' expression)*
+    '}'
 ;
 
 structureType:

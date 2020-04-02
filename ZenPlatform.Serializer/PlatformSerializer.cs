@@ -55,7 +55,7 @@ namespace ZenPlatform.Serializer
 
             if (obj is UXElement)
             {
-                bw.Write((int) ValType.UXObject);
+                bw.Write((int) ValType.UXContainer);
                 bw.Write(XamlServices.Save(obj));
             }
             else if (obj is int i)

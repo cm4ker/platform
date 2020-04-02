@@ -45,7 +45,6 @@
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                         <TextBlock Grid.Row="1" Text="{Binding DisplayName}" TextWrapping="Wrap" />
-
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
