@@ -1,7 +1,5 @@
-﻿
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using System;
-
 using System.Threading;
 using System.Threading.Tasks;
 using ZenPlatform.Core.Network;
@@ -17,6 +15,7 @@ namespace ZenPlatform.Runner
         private readonly ILogger<RunnerService> _logger;
         private readonly IServiceProvider _serviceProvider;
         private IAccessPoint _accessPoint;
+
         public RunnerService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
@@ -26,7 +25,6 @@ namespace ZenPlatform.Runner
 
         public void Dispose()
         {
-
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -34,8 +32,7 @@ namespace ZenPlatform.Runner
             _logger.Info("Starting...");
 
             _accessPoint = _serviceProvider.GetRequiredService<IAccessPoint>();
-
-           var envManager = _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>();
+            var envManager = _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>();
 
             //var route = new Route($"system\\test");
             //registrator.GetInvokeService(route.GetService()).Register(route, (c,a) => { return (int)a[0] + 1; });

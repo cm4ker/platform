@@ -3,12 +3,14 @@
     <PropertyGroup>
         <LangVersion>8</LangVersion>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Language.Infrastructure\ZenPlatform.Language.Infrastructure.csproj" />
-      <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Language.Infrastructure\ZenPlatform.Language.Infrastructure.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
     </ItemGroup>
 
 </Project>

@@ -12,42 +12,25 @@ namespace ZenPlatform.Compiler.Generation
     {
         private void EmitRemoteCall(Function function)
         {
-            IEmitter emitter = function.Builder;
-            var type = _bindings.Client;
-            var client = emitter.DefineLocal(type);
-            emitter.PropGetValue(_bindings.AIClient());
-            emitter.StLoc(client);
-
-            var route = _ts.FindType($"{typeof(Route).Namespace}.{nameof(Route)}",
-                typeof(Route).Assembly.GetName().FullName);
-
-            var method = _bindings.ClientInvoke(_map.GetClrType(function.Type));
-
-            emitter.LdLoc(client);
-
-            //First parameter
-            emitter.LdStr($"{function.FirstParent<TypeEntity>().Name}.{function.Name}");
-            emitter.NewObj(route.Constructors.First());
-
-            //Second parameter
-            emitter.LdcI4(function.Parameters.Count);
-            emitter.NewArr(_bindings.Object);
-            foreach (var p in function.Parameters)
-            {
-                emitter.Dup();
-                var iArg = function.Parameters.IndexOf(p);
-                emitter.LdcI4(iArg);
-                emitter.LdArg(iArg);
-                emitter.Box(_map.GetClrType(p.Type));
-                emitter.StElemRef();
-            }
-
-            emitter.EmitCall(method);
-            //            emitter.LdcI4(0);
-            //            emitter.LdElemI4();
+            function.Builder.RemoteCall(_map.GetClrType(function.Type),
+                $"{function.FirstParent<TypeEntity>().Name}.{function.Name}",
+                e =>
+                {
+                    e.LdcI4(function.Parameters.Count);
+                    e.NewArr(_bindings.Object);
+                    foreach (var p in function.Parameters)
+                    {
+                        e.Dup();
+                        var iArg = function.Parameters.IndexOf(p);
+                        e.LdcI4(iArg);
+                        e.LdArg(iArg);
+                        e.Box(_map.GetClrType(p.Type));
+                        e.StElemRef();
+                    }
+                });
 
             if (!_map.GetClrType(function.Type).Equals(_bindings.Void))
-                emitter.Ret();
+                function.Builder.Ret();
         }
     }
 }

@@ -16,9 +16,14 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
             Type = type;
         }
 
-
         public SymbolType SymbolType => SymbolType.Variable;
+
         public SymbolScopeBySecurity SymbolScope { get; set; }
-        public TypeSyntax Type { get; set; }
+
+        public TypeSyntax Type
+        {
+            get => (TypeSyntax) this.Childs[0];
+            set => this.Attach(0, (SyntaxNode) value.Clone());
+        }
     }
 }

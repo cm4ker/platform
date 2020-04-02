@@ -159,7 +159,7 @@ namespace ZenPlatform.Compiler.Cecil
         public IType BaseType => Definition.BaseType == null
             ? null
             : _baseType ?? (_baseType = TypeSystem.Resolve(
-                  Definition.BaseType.TransformGeneric(Reference)));
+                Definition.BaseType.TransformGeneric(Reference)));
 
         public bool IsValueType => Definition.IsValueType;
         public bool IsEnum => Definition.IsEnum;

@@ -28,8 +28,8 @@ namespace ZenPlatform.Core.Network
         private readonly ITransportClientFactory _tcFactory;
         private ClientConnection _connection;
         private IDisposable _unsubscriber;
-        private int _timeout = 10000;
-        
+        private int _timeout = 1000000;
+
         //TODO: Сделать клиента потокобезопасным
 
         /// <summary>
@@ -200,8 +200,7 @@ namespace ZenPlatform.Core.Network
                     case ResponceInvokeUnaryByteArgsNetworkMessage res:
                         try
                         {
-                            responce = (TResponse)serializer.Deserialize(res.Result);
-                             
+                            responce = (TResponse) serializer.Deserialize(res.Result, true);
                         }
                         catch (Exception ex)
                         {

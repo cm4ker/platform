@@ -21,9 +21,9 @@ namespace ZenPlatform.Compiler.Dnlib
 
             module.Context = new ModuleContext(dnts.Resolver, new DnlibMetadataResolver(dnts.Resolver));
             module.RuntimeVersion = MDHeaderRuntimeVersion.MS_CLR_40;
-            
+
             var ca = new CustomAttribute(new MethodDefUser());
-                        
+
             module.Kind = ModuleKind.Dll;
 
             asmDef.Modules.Add(module);

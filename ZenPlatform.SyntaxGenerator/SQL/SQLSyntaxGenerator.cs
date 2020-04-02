@@ -13,11 +13,10 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 {
     public static class SQLSyntaxGenerator
     {
-
         public static NamespaceDeclarationSyntax MakeBaseNode(string rootNameSpace)
         {
             var ns = SyntaxFactory.NamespaceDeclaration(
-                        SyntaxFactory.ParseName(rootNameSpace));
+                SyntaxFactory.ParseName(rootNameSpace));
 
             var name = "SSyntaxNode";
 
@@ -29,11 +28,11 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                 .WithBody(SyntaxFactory.Block())
                 .WithModifiers(SyntaxTokenList.Create(publicToken));
 
-            
-           var accept =
-                    (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
-                        $"public abstract T Accept<T>(QueryVisitorBase<T> visitor);");
-           members.Add(accept);
+
+            var accept =
+                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public abstract T Accept<T>(QueryVisitorBase<T> visitor);");
+            members.Add(accept);
 
             /*
             var compare =
@@ -50,8 +49,8 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             var cls = SyntaxFactory.ClassDeclaration($"{name}")
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
-             //  .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
-               //     .SimpleBaseType(SyntaxFactory.ParseTypeName("ZenPlatform.QueryBuilder.Common.SqlNode"))))
+                //  .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
+                //     .SimpleBaseType(SyntaxFactory.ParseTypeName("ZenPlatform.QueryBuilder.Common.SqlNode"))))
                 .AddMembers(members.ToArray());
 
 
@@ -65,7 +64,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
         public static NamespaceDeclarationSyntax MakeVisitor(string rootNameSpace, List<SQLSyntax> syntaxes)
         {
             var ns = SyntaxFactory.NamespaceDeclaration(
-                        SyntaxFactory.ParseName(rootNameSpace));
+                SyntaxFactory.ParseName(rootNameSpace));
 
             var name = "QueryVisitorBase";
 
@@ -80,32 +79,32 @@ namespace ZenPlatform.SyntaxGenerator.SQL
             foreach (var syntax in syntaxes)
             {
                 var visitor =
-                    (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
+                    (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
                         $"public virtual T Visit{syntax.Name}({syntax.Name} node){{}}");
 
 
                 visitor = visitor.AddBodyStatements(
-                        SyntaxFactory.ParseStatement($"return DefaultVisit(node);"));
+                    SyntaxFactory.ParseStatement($"return DefaultVisit(node);"));
                 members.Add(visitor);
             }
 
             var defaultVisitor =
-                    (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
-                        $"public virtual T DefaultVisit(SSyntaxNode node){{}}");
+                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public virtual T DefaultVisit(SSyntaxNode node){{}}");
 
 
             defaultVisitor = defaultVisitor.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"return default;"));
+                SyntaxFactory.ParseStatement($"return default;"));
             members.Add(defaultVisitor);
 
             var visit =
-                    (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
-                        $"public virtual T Visit(SSyntaxNode visitable){{}}");
+                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public virtual T Visit(SSyntaxNode visitable){{}}");
 
 
             visit = visit.AddBodyStatements(
                     SyntaxFactory.ParseStatement($"if (visitable is null) return default;"))
-                    .AddBodyStatements(
+                .AddBodyStatements(
                     SyntaxFactory.ParseStatement($"return visitable.Accept(this);"));
             members.Add(visit);
 
@@ -113,9 +112,9 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
                 .AddMembers(constructor)
                 .AddMembers(members.ToArray());
-            
 
-            cls = cls.AddModifiers( SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
+
+            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
 
             cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
@@ -130,11 +129,11 @@ namespace ZenPlatform.SyntaxGenerator.SQL
             //Если в аргументах есть свойства которые нужно создавать через new, 
             //то мы смотрим есть ли уже для этого типа аргумента аргументы конструктора, если нету то пропускаем пока этот класс
             // но если тип свойства - список, то пофиг создадим пустой список
-           // if (!syntax.Arguments.Where(a => a.IsNeedInitialize() && a.GetType().Equals(typeof(SyntaxArgumentSingle))).SequenceEqual(
-           // syntax.Arguments.Where(a => a.IsNeedInitialize() && a.GetType().Equals(typeof(SyntaxArgumentSingle)) && constructors.ContainsKey(a.Type)))) return null;
+            // if (!syntax.Arguments.Where(a => a.IsNeedInitialize() && a.GetType().Equals(typeof(SyntaxArgumentSingle))).SequenceEqual(
+            // syntax.Arguments.Where(a => a.IsNeedInitialize() && a.GetType().Equals(typeof(SyntaxArgumentSingle)) && constructors.ContainsKey(a.Type)))) return null;
 
             var ns = SyntaxFactory.NamespaceDeclaration(
-                        SyntaxFactory.ParseName(rootNameSpace + (sqlSyntax.NS != null ? "." : "") + sqlSyntax.NS));
+                SyntaxFactory.ParseName(rootNameSpace + (sqlSyntax.NS != null ? "." : "") + sqlSyntax.NS));
 
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
@@ -157,33 +156,30 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
             foreach (var argument in sqlSyntax.Arguments)
             {
-                if (argument.Base )
+                if (argument.Base)
                 {
                     initializer = initializer.AddArgumentListArguments(
-                                SyntaxFactory.Argument(SyntaxFactory.ParseName(argument.Name.ToCamelCase())));
+                        SyntaxFactory.Argument(SyntaxFactory.ParseName(argument.Name.ToCamelCase())));
                 }
+
                 if (argument.IsNeedCreate() || (sqlSyntax.Ddl && argument is SyntaxArgumentList))
                 {
-
                     constructor = constructor.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"{argument.Name} = new {argument.Type}();"));
-
+                        SyntaxFactory.ParseStatement($"{argument.Name} = new {argument.Type}();"));
                 }
 
 
                 if (argument.IsNeedInitialize() && !sqlSyntax.Ddl)
-                { 
-
+                {
                     constructor = constructor.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"{argument.Name} = {argument.Name.ToCamelCase()};"));
-
+                        SyntaxFactory.ParseStatement($"{argument.Name} = {argument.Name.ToCamelCase()};"));
                 }
 
-                if ((!(argument.Null || argument.IsNeedCreate()) || argument.Base ) && !sqlSyntax.Ddl)
+                if ((!(argument.Null || argument.IsNeedCreate()) || argument.Base) && !sqlSyntax.Ddl)
                 {
                     var parameterSyntax = SyntaxFactory
-                                .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
-                                .WithType(SyntaxFactory.ParseName(argument.Type));
+                        .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
+                        .WithType(SyntaxFactory.ParseName(argument.Type));
 
                     if (argument is SyntaxArgumentSingle sas && sas.Default != null)
                         parameterSyntax = parameterSyntax.WithDefault(
@@ -191,8 +187,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
                     constructor = constructor.AddParameterListParameters(parameterSyntax);
                 }
-                
-                
+
 
                 /*
                 else if (argument.IsPrimetive() && !argument.Null)
@@ -219,13 +214,13 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                 }
                 */
                 if (!argument.Base)
-                members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
-                                argument.Name).AddModifiers(publicToken)
-                            .WithAccessorList(SyntaxFactory.AccessorList()
-                                .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))
-                                .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
+                    members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
+                            argument.Name).AddModifiers(publicToken)
+                        .WithAccessorList(SyntaxFactory.AccessorList()
+                            .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))
+                            .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
 
                 if (argument is SyntaxArgumentList)
                 {
@@ -237,7 +232,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                     hash.Add($"({argument.Name}.GetHashCode())");
                     cond.Add($"(this.{argument.Name} == node.{argument.Name})");
                 }
-                else if (argument.Type=="object")
+                else if (argument.Type == "object")
                 {
                     hash.Add($"({argument.Name} == null ? 0: {argument.Name}.GetHashCode())");
                     cond.Add($"(this.{argument.Name}.Equals(node.{argument.Name}))");
@@ -247,53 +242,53 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                     hash.Add($"({argument.Name} == null ? 0: {argument.Name}.GetHashCode())");
                     cond.Add($"Compare(this.{argument.Name}, node.{argument.Name})");
                 }
-                
             }
 
             constructor = constructor.WithInitializer(initializer);
             if (cond.Count > 0)
             {
                 var equlse =
-                    (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
+                    (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
                         $"public override bool Equals(object obj){{}}");
                 equlse = equlse.AddBodyStatements(
-                        SyntaxFactory.ParseStatement($"if (!this.GetType().Equals(obj.GetType())) return false;\nvar node = ({sqlSyntax.Name})obj;\nreturn ({string.Join(" && ", cond)});"));
+                    SyntaxFactory.ParseStatement(
+                        $"if (!this.GetType().Equals(obj.GetType())) return false;\nvar node = ({sqlSyntax.Name})obj;\nreturn ({string.Join(" && ", cond)});"));
                 members.Add(equlse);
 
                 var getHash =
-                (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
-                    "public override int GetHashCode(){}");
+                    (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                        "public override int GetHashCode(){}");
 
 
                 getHash = getHash.AddBodyStatements(
-                        SyntaxFactory.ParseStatement($"return {string.Join(" ^ ", hash)};"));
+                    SyntaxFactory.ParseStatement($"return {string.Join(" ^ ", hash)};"));
 
 
                 members.Add(getHash);
-            } else
+            }
+            else
             {
                 var getHash =
-                (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
-                    "public override int GetHashCode(){}");
+                    (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                        "public override int GetHashCode(){}");
 
 
                 getHash = getHash.AddBodyStatements(
-                        SyntaxFactory.ParseStatement($"return base.GetHashCode();"));
+                    SyntaxFactory.ParseStatement($"return base.GetHashCode();"));
 
 
                 members.Add(getHash);
             }
 
             var visitor =
-                (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
+                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
                     "public override T Accept<T>(QueryVisitorBase<T> visitor){}");
 
 
             visitor = visitor.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"return visitor.Visit{sqlSyntax.Name}(this);"));
+                SyntaxFactory.ParseStatement($"return visitor.Visit{sqlSyntax.Name}(this);"));
             members.Add(visitor);
 
-            
 
             var cls = SyntaxFactory.ClassDeclaration(sqlSyntax.Name)
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
@@ -306,11 +301,9 @@ namespace ZenPlatform.SyntaxGenerator.SQL
             cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
 
-
             add = true;
 
             return ns.AddMembers(cls);
-            
         }
 
         public static void Main(string[] args)
@@ -321,7 +314,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
             using (TextReader tr = new StreamReader(args[0]))
             {
                 XmlSerializer xs = new XmlSerializer(typeof(Config));
-                var root = (Config)xs.Deserialize(tr);
+                var root = (Config) xs.Deserialize(tr);
 
                 var unit = SyntaxFactory.CompilationUnit()
                     .AddUsings(
@@ -339,8 +332,8 @@ namespace ZenPlatform.SyntaxGenerator.SQL
 
                 List<SQLSyntax> compliteSyntaxList = new List<SQLSyntax>();
                 while (root.Syntaxes.Count != compliteSyntaxList.Count)
-                foreach (var syntax in root.Syntaxes.Where(s=>!compliteSyntaxList.Contains(s)))
-                {
+                    foreach (var syntax in root.Syntaxes.Where(s => !compliteSyntaxList.Contains(s)))
+                    {
                         bool add = false;
                         var ns = MakeSyntax(syntax, "ZenPlatform.QueryBuilder.Model", out add);
                         if (add)
@@ -348,7 +341,7 @@ namespace ZenPlatform.SyntaxGenerator.SQL
                             compliteSyntaxList.Add(syntax);
                             unit = unit.AddMembers(ns);
                         }
-                }
+                    }
 
                 unit = unit.AddMembers(MakeVisitor("ZenPlatform.QueryBuilder.Visitor", root.Syntaxes));
 

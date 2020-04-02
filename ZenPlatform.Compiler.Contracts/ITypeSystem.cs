@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace ZenPlatform.Compiler.Contracts
 {
@@ -49,6 +50,9 @@ namespace ZenPlatform.Compiler.Contracts
             var name = type.Name;
             var @namespace = type.Namespace;
             var assembly = type.Assembly.GetName().FullName;
+
+            if (assembly.Contains("System.Private.CoreLib"))
+                assembly = ts.GetSystemBindings().MSCORLIB;
 
             return ts.FindType($"{@namespace}.{name}", assembly);
         }

@@ -19,7 +19,7 @@ namespace ZenPlatform.Compiler.Generation
                 throw new ArgumentNullException();
 
             IEmitter emitter = constructor.Builder;
-      
+
             ILocal resultVar = null;
 
             var returnLabel = emitter.DefineLabel();

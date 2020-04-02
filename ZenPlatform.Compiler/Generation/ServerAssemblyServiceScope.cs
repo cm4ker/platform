@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.CodeAnalysis.Diagnostics;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
-using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -17,6 +12,7 @@ namespace ZenPlatform.Compiler.Generation
     {
         private readonly IAssemblyBuilder _builder;
         private SystemTypeBindings _sb;
+
         private const string _serviceInitializerNamespace = "Service";
         private const string _serviceInitializerName = "ServerInitializer";
         private const string _invokeServiceFieldName = "_is";
@@ -68,116 +64,64 @@ namespace ZenPlatform.Compiler.Generation
         }
     }
 
-
-    public enum VarTreeLeafType
+    public class EntryPointAssemblyManager : IEntryPointManager
     {
-        Root,
-        None,
-        Prop,
-        Func
+        private readonly IAssemblyBuilder _builder;
+        private SystemTypeBindings _sb;
+        private ITypeBuilder _ep;
+        private IMethodBuilder _main;
+
+        private const string _classNamespace = "";
+        private const string _className = "EntryPoint";
+
+        private const string _mainMethodName = "Main";
+
+        public EntryPointAssemblyManager(IAssemblyBuilder builder)
+        {
+            _builder = builder;
+
+            _sb = _builder.TypeSystem.GetSystemBindings();
+
+            _ep = builder.DefineStaticType(_classNamespace, _className);
+
+            _main = _ep.DefineMethod(_mainMethodName, true, true, false);
+            _main.DefineParameter("args", _sb.Object.MakeArrayType(), false, false);
+        }
+
+
+        public ITypeBuilder EntryPoint => _ep;
+
+        public IMethodBuilder Main => _main;
+
+        public void EndBuild()
+        {
+            var e = _main.Generator;
+            e.Ret();
+        }
     }
 
-    public class GlobalVarTreeItem : Node
+    public static class EntryPotinExtensions
     {
-        private readonly Action<Node, IEmitter> _e;
-        private List<object> _args;
-        private object _codeObject;
-        private CompilationMode _mode;
+        private const string _invokeServiceFieldName = "_is";
 
-        public GlobalVarTreeItem(VarTreeLeafType type, CompilationMode mode, string name, Action<Node, IEmitter> e)
+        public static void InitService(this IEntryPointManager am)
         {
-            _e = e;
-            Type = type;
-            Name = name;
-            _args = new List<object>();
+            var ep = am.EntryPoint;
+            var sb = ep.TypeSystem.GetSystemBindings();
+            var field = ep.DefineField(sb.InvokeService, _invokeServiceFieldName, false, true);
+
+            am.Main.Generator
+                .LdArg_0()
+                .LdcI4(0)
+                .LdElemRef()
+                .CastClass(sb.InvokeService)
+                .StSFld(field);
         }
 
-        public string Name { get; }
-
-        public VarTreeLeafType Type { get; }
-
-        public object CodeObject => _codeObject;
-
-        public void SetCodeObject(IField field)
+        public static IField GetISField(this IEntryPointManager am)
         {
-            _codeObject = field;
-        }
-
-        public void SetCodeObject(IMethod method)
-        {
-            _codeObject = method;
-        }
-
-        public void SetCodeObject(IProperty prop)
-        {
-            _codeObject = prop;
-        }
-
-        public void AddArgument(string arg)
-        {
-            _args.Add(arg);
-        }
-
-        public void AddArgument(int arg)
-        {
-            _args.Add(arg);
-        }
-
-        public void Emit(Node node, IEmitter e)
-        {
-            _e(node, e);
-        }
-
-        private IReadOnlyList<object> Args => _args.AsReadOnly();
-    }
-
-    public class GlobalVarManager : IGlobalVarManager
-    {
-        public GlobalVarManager(CompilationMode mode, ITypeSystem ts)
-        {
-            Root = new GlobalVarTreeItem(VarTreeLeafType.Root, CompilationMode.Shared, "NoName", null);
-            TypeSystem = ts;
-        }
-
-        public Node Root { get; }
-
-        public ITypeSystem TypeSystem { get; }
-
-        public void Register(Node node)
-        {
-            if (!(node is GlobalVarTreeItem gvar))
-                throw new Exception("Only GlobalVarTreeItem can be in GlobalVarTree");
-
-            Root.Attach(node);
-        }
-
-        public void Emit(IEmitter e, GlobalVar exp, Action<object> onUnknown)
-        {
-            EmitInternal(e, exp.Expression, Root, onUnknown);
-        }
-
-        private void EmitInternal(IEmitter e, Expression exp, Node currentItem,
-            Action<object> onUnknown)
-        {
-            if (exp is LookupExpression le)
-            {
-                if (le.Lookup is Call c)
-                {
-                    var node = currentItem.Childs.Select(x => x as GlobalVarTreeItem)
-                                   .FirstOrDefault(x => x.Name == c.Name.Value && x.Type == VarTreeLeafType.Func) ??
-                               throw new Exception(
-                                   $"Node with name {c.Name} not found in global var. Component must register this name.");
-
-                    onUnknown(c.Arguments);
-
-                    onUnknown(c.Expression);
-
-                    e.EmitCall((IMethod) node.CodeObject);
-                }
-                else if (le.Lookup is Name fe)
-                {
-                }
-            }
+            return am.EntryPoint.FindField(_invokeServiceFieldName) ??
+                   throw new Exception($"Platform not isnitialized you must invoke {nameof(InitService)} method first");
         }
     }
 }

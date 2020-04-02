@@ -3,9 +3,11 @@ using System.Linq;
 using System.Reflection;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.EntityComponent.Compilation.UX;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
 using ZenPlatform.Language.Ast.Definitions;
@@ -43,10 +45,11 @@ namespace ZenPlatform.EntityComponent.Compilation
                 throw new Exception("Component doesn't support this task type");
         }
 
-        public void Stage1(Node task, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage1(Node task, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
+            IEntryPointManager sm)
         {
             if (task is IEntityGenerationTask egt)
-                egt.Stage1(builder, dbType);
+                egt.Stage1(builder, dbType, sm);
             else
                 throw new Exception("Component doesn't support this task type");
         }
@@ -129,11 +132,14 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                 foreach (var inf in md.Interfaces)
                 {
-                    ns.AddEntity(new FormGenerationTask(ipType, CompilationMode.Server, _component, true, inf.Name,
+                    ns.AddEntity(new UXFormGenerationTask(ipType, inf, CompilationMode.Server, _component, true,
+                        inf.Name,
+                        TypeBody.Empty));
+                    ns.AddEntity(new FormStaticActionsGenerationTask(ipType, inf, CompilationMode.Server, _component,
+                        true, inf.Name,
                         TypeBody.Empty));
                 }
             }
-
 
             r.Units.Add(cu);
         }
@@ -170,12 +176,22 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             if (ipType.IsObject)
             {
+                ns.AddEntity(new ObjectGenerationTask(ipType, CompilationMode.Client, _component, ipType.Name,
+                    TypeBody.Empty));
+
                 var md = ipType.GetMD<MDEntity>();
 
                 foreach (var cmd in md.Commands)
                 {
                     ns.AddEntity(
                         new CommandGenerationTask(cmd, CompilationMode.Client, _component, $"__cmd_{cmd.Name}"));
+                }
+                
+                foreach (var inf in md.Interfaces)
+                {
+                    ns.AddEntity(new UXFormClientGenerationTask(ipType, inf, CompilationMode.Client, _component, true,
+                        inf.Name,
+                        TypeBody.Empty));
                 }
             }
 
@@ -217,6 +233,41 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             manager.Register(root);
 
+            StageGlobalVarUX(manager);
+        }
+
+        public void StageGlobalVarUX(IGlobalVarManager manager)
+        {
+            var ts = manager.TypeSystem;
+
+            var root = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared, "UX", (n, e) => { });
+
+            foreach (var type in _component.GetTypes().Where(x => x.IsManager))
+            {
+                var mrgName = $"{type.GetNamespace()}.{type.Name}";
+
+                var mrg = ts.FindType(mrgName);
+
+                var mrgLeaf = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared,
+                    type.GetObjectType().Name,
+                    (n, e) => { });
+
+                root.Attach(mrgLeaf);
+
+                var getMethod = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Shared,
+                    "Get", (n, e) =>
+                    {
+                        var call = n as Call ?? throw new Exception("Can't emit function if it is not a call");
+                        //need add some constant values
+
+                        //e.EmitCall(mrg.FindMethod("Create"), call.IsStatement);
+                    });
+
+                mrgLeaf.Attach(getMethod);
+            }
+
+            manager.Register(root);
+
             /*
              * $.Document.Invoice.Create();
              * $.SomeFunction()
@@ -225,9 +276,18 @@ namespace ZenPlatform.EntityComponent.Compilation
              */
         }
 
+
         public void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             CreateMainLink(builder);
+        }
+
+        private void CreateEntryPoint(IAssemblyBuilder b)
+        {
+            var ep = b.DefineStaticType("", "EntryPoint");
+            var run = ep.DefineMethod("Run", true, true, false);
+
+            run.Generator.Ret();
         }
 
         private void CreateMainLink(IAssemblyBuilder builder)

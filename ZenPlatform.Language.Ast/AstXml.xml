@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <Config>
 
-    <Syntax Name="Root"/>
-    <Syntax Name="CompilationUnit"/>
+    <Syntax Name="Root" />
+    <Syntax Name="CompilationUnit" />
 
-    <Syntax Name="Expression" Abstract="True"/>
-    <Syntax Name="BinaryOperation" Base="Expression"/>
+    <Syntax Name="Expression" Abstract="True" />
+    <Syntax Name="BinaryOperation" Base="Expression" />
 
 </Config>
-    

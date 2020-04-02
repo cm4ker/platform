@@ -43,7 +43,7 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly));
-            
+
             AssemblyDef def;
 
             List<string> paths = new List<string>();
@@ -70,7 +70,7 @@ namespace ZenPlatform.Compiler.Dnlib
                     {
                         def = AssemblyDef.Load(dllPath,
                             new ModuleContext(this, new DnlibMetadataResolver(this)));
-                        
+
                         libraries.Add(libname, def);
 
                         return def;
@@ -86,11 +86,9 @@ namespace ZenPlatform.Compiler.Dnlib
                 }
 
 
-                
                 throw new ResolveException(assembly.Name);
             }
-            
-            
+
 
             return def;
         }

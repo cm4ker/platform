@@ -28,7 +28,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
     }
 
-    public partial class NamespaceDeclaration 
+    public partial class NamespaceDeclaration
     {
         public void AddEntity(TypeEntity type)
         {
@@ -40,6 +40,5 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return this.FirstParent<NamespaceDeclaration>()?.Name ?? "";
         }
-        
     }
 }

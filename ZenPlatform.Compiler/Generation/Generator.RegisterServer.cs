@@ -15,12 +15,10 @@ namespace ZenPlatform.Compiler.Generation
         /// <param name="function"></param>
         private void EmitRegisterServerFunction(Function function)
         {
-            //IInvokeService.Register("test", (context, list) => { a(list[0], list[1], list[2]); });
+            var e = _epManager.Main.Generator;
+            var invs = _epManager.GetISField();
 
-            var e = _serviceScope.ServiceInitializerInitMethod.Generator;
-            var invs = _serviceScope.InvokeServiceField;
-
-            var dlgt = _serviceScope.ServiceInitializerType.DefineMethod($"dlgt_{function.Name}", true, false, false);
+            var dlgt = _epManager.EntryPoint.DefineMethod($"dlgt_{function.Name}", true, true, false);
 
             dlgt.DefineParameter("context", _bindings.InvokeContext, false, false);
             var argsParam = dlgt.DefineParameter("args", _bindings.Object.MakeArrayType(), false, false);
@@ -49,20 +47,13 @@ namespace ZenPlatform.Compiler.Generation
                 dle.Box(method.ReturnType).Ret();
             }
 
-            e.LdArg_0()
-                .LdFld(invs)
+            e.LdSFld(invs)
                 .LdStr($"{function.FirstParent<TypeEntity>().Name}.{function.Name}")
                 .NewObj(_bindings.Route.Constructors.First())
-                .LdArg_0()
+                .LdNull()
                 .LdFtn(dlgt)
                 .NewObj(_bindings.ParametricMethod.Constructors.First())
-                .EmitCall(_bindings.InvokeService.FindMethod((m) => m.Name == "Register"));
-        }
-
-        private void EmitEndRegisterServerFunction()
-        {
-            var e = _serviceScope.ServiceInitializerInitMethod.Generator;
-            e.Ret();
+                .EmitCall(_bindings.InvokeService.FindMethod(m => m.Name == "Register"));
         }
     }
 }

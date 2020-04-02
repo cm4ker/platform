@@ -21,8 +21,8 @@ namespace ZenPlatform.Core.Network.States
         public bool CanObserve(Type type)
         {
             return type.Equals(typeof(RequestInvokeInstanceProxy))
-                   || type.Equals(typeof(RequestInvokeUnaryNetworkMessage)) 
-                   || type.Equals(typeof(RequestInvokeUnaryByteArgsNetworkMessage)) 
+                   || type.Equals(typeof(RequestInvokeUnaryNetworkMessage))
+                   || type.Equals(typeof(RequestInvokeUnaryByteArgsNetworkMessage))
                    || type.Equals(typeof(StartInvokeStreamNetworkMessage));
         }
 
@@ -66,9 +66,8 @@ namespace ZenPlatform.Core.Network.States
                 case RequestInvokeUnaryByteArgsNetworkMessage invoke:
                     if (context is ServerConnectionContext srvContext)
                     {
-
                         PlatformSerializer serializer = new PlatformSerializer();
-                        var args = serializer.Deserialize(invoke.Args);
+                        var args = serializer.Deserialize(invoke.Args, false);
                         var res = _environment.InvokeService.Invoke(invoke.Route, srvContext.Session, args);
 
 

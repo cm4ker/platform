@@ -1,5 +1,6 @@
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
@@ -38,7 +39,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             return asm.DefineStaticType(GetNamespace(), Name);
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
         }
 

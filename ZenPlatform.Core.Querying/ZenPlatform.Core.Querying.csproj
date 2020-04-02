@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\ZenPlatform.Configuration.Common\ZenPlatform.Configuration.Common.csproj" />
@@ -21,7 +23,7 @@
         <Content Include=".\ZSqlGrammar.g4" />
     </ItemGroup>
     
-    <ItemGroup>
-        <Compile Include="obj\Debug\netcoreapp3.0\*.cs" />
-    </ItemGroup>
+<!--    <ItemGroup>-->
+<!--        <Compile Include="obj\Debug\netcoreapp3.0\*.cs" />-->
+<!--    </ItemGroup>-->
 </Project>

@@ -2,10 +2,37 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Runtime\ZenPlatform.Runtime.csproj" />
+        <ProjectReference Include="..\ZenPlatform.SharedRuntime\ZenPlatform.SharedRuntime.csproj" />
     </ItemGroup>
 
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\avalonia.desktop.props" />
+    <Import Project="..\Props\avalonia.xaml.behaviors.props" />
+    <Import Project="..\Props\dock.props" />
+
+    <ItemGroup>
+        <EmbeddedResource Include="Views\ConfigurationTreeView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Views\DockMainWindow.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Views\MainView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Views\MainWindow.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MessageBox.Avalonia" Version="0.9.6.1" />
+    </ItemGroup>
 </Project>

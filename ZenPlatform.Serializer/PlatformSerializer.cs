@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Portable.Xaml;
+using ZenPlatform.Avalonia.Wrapper;
 
 namespace ZenPlatform.Serializer
 {
@@ -15,7 +18,7 @@ namespace ZenPlatform.Serializer
 
             if (obj is IDtoObject c)
             {
-                bw.Write((int)ValType.DtoObject);
+                bw.Write((int) ValType.DtoObject);
 
                 var dto = c.GetDto();
 
@@ -32,6 +35,9 @@ namespace ZenPlatform.Serializer
                 {
                     var value = pi.GetMethod.Invoke(dto, null);
 
+                    if (value == null && pi.PropertyType == typeof(byte[]))
+                        value = new byte[0];
+
                     if (value is string s)
                         bw.Write(s);
                     else if (value is int i)
@@ -45,6 +51,22 @@ namespace ZenPlatform.Serializer
                     else if (value is byte[] ba)
                         bw.WriteA(ba);
                 }
+            }
+
+            if (obj is UXElement)
+            {
+                bw.Write((int) ValType.UXContainer);
+                bw.Write(XamlServices.Save(obj));
+            }
+            else if (obj is int i)
+            {
+                bw.Write((int) ValType.Int);
+                bw.Write(i);
+            }
+            else if (obj is string s)
+            {
+                bw.Write((int) ValType.String);
+                bw.Write(s);
             }
         }
 
@@ -63,18 +85,19 @@ namespace ZenPlatform.Serializer
         {
             var list = new List<byte[]>();
 
-            foreach (var obj in objs)
-                list.Add(Serialize(obj));
+            if (objs != null)
+                foreach (var obj in objs)
+                    list.Add(Serialize(obj));
 
             return list.ToArray();
         }
 
 
-        public object Deserialize(Stream stream)
+        public object Deserialize(Stream stream, bool isClient)
         {
             BinaryReader reader = new BinaryReader(stream);
 
-            var val = (ValType)reader.ReadInt32();
+            var val = (ValType) reader.ReadInt32();
 
             switch (val)
             {
@@ -83,8 +106,20 @@ namespace ZenPlatform.Serializer
                     var dtoName = reader.ReadString();
 
 
-                    var objectType = Type.GetType(objectName) ?? throw new Exception($"Unknown type {objectName}");
-                    var dtoType = Type.GetType(dtoName) ?? throw new Exception($"Unknown type {dtoName}");
+                    //TODO Remove this ugly hack and provide clear 
+                    Assembly platformAsm;
+
+                    if (!isClient)
+                        platformAsm = AppDomain.CurrentDomain.GetAssemblies()
+                            .FirstOrDefault(x => x.GetName().Name == "LibraryServer");
+                    else
+                        platformAsm = AppDomain.CurrentDomain.GetAssemblies()
+                            .FirstOrDefault(x => x.GetName().Name == "LibraryClient");
+
+
+                    var objectType = platformAsm.GetType(objectName) ??
+                                     throw new Exception($"Unknown type {objectName}");
+                    var dtoType = platformAsm.GetType(dtoName) ?? throw new Exception($"Unknown type {dtoName}");
 
                     var dto = Activator.CreateInstance(dtoType);
 
@@ -94,22 +129,27 @@ namespace ZenPlatform.Serializer
                     foreach (var pi in ordered)
                     {
                         if (pi.PropertyType == typeof(string))
-                            pi.SetMethod.Invoke(dto, new object[] { reader.ReadString() });
+                            pi.SetMethod.Invoke(dto, new object[] {reader.ReadString()});
                         if (pi.PropertyType == typeof(int))
-                            pi.SetMethod.Invoke(dto, new object[] { reader.ReadInt32() });
+                            pi.SetMethod.Invoke(dto, new object[] {reader.ReadInt32()});
                         if (pi.PropertyType == typeof(byte))
-                            pi.SetMethod.Invoke(dto, new object[] { reader.ReadByte() });
+                            pi.SetMethod.Invoke(dto, new object[] {reader.ReadByte()});
                         if (pi.PropertyType == typeof(DateTime))
-                            pi.SetMethod.Invoke(dto, new object[] { reader.ReadDateTime() });
+                            pi.SetMethod.Invoke(dto, new object[] {reader.ReadDateTime()});
                         if (pi.PropertyType == typeof(Guid))
-                            pi.SetMethod.Invoke(dto, new object[] { reader.ReadGuid() });
+                            pi.SetMethod.Invoke(dto, new object[] {reader.ReadGuid()});
                         if (pi.PropertyType == typeof(byte[]))
-                            pi.SetMethod.Invoke(dto, new object[] { reader.ReadByteArray() });
+                            pi.SetMethod.Invoke(dto, new object[] {reader.ReadByteArray()});
                     }
 
                     return Activator.CreateInstance(objectType, dto);
+                case ValType.UXContainer:
 
-
+                    return null;
+                case ValType.Int:
+                    return reader.ReadInt32();
+                case ValType.String:
+                    return reader.ReadString();
                 default:
                     throw new NotImplementedException();
             }
@@ -118,20 +158,19 @@ namespace ZenPlatform.Serializer
         }
 
 
-        public object Deserialize(byte[] bytes)
+        public object Deserialize(byte[] bytes, bool isClient)
         {
-            return this.Deserialize(new MemoryStream(bytes));
+            return this.Deserialize(new MemoryStream(bytes), isClient);
         }
 
 
-        public object[] Deserialize(byte[][] data)
+        public object[] Deserialize(byte[][] data, bool isClient)
         {
             var list = new List<object>();
             foreach (var bytes in data)
-                list.Add(this.Deserialize(new MemoryStream(bytes)));
+                list.Add(this.Deserialize(new MemoryStream(bytes), isClient));
 
             return list.ToArray();
         }
-
     }
 }

@@ -11,4 +11,10 @@ namespace ZenPlatform.Configuration.Contracts
 
         Node Root { get; }
     }
+
+    public interface IEntryPointManager
+    {
+        ITypeBuilder EntryPoint { get; }
+        IMethodBuilder Main { get; }
+    }
 }

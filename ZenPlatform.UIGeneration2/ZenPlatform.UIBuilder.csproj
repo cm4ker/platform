@@ -1,30 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj" />
-    <ProjectReference Include="..\ZenPlatform.Core.Querying\ZenPlatform.Core.Querying.csproj" />
-    <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
-    <ProjectReference Include="..\ZenPlatform.Test.Tools\ZenPlatform.Test.Tools.csproj" />
-    <ProjectReference Include="..\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="App.xaml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainWindow.xaml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.9.4" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.4" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.4" />
-    <PackageReference Include="Portable.Xaml" Version="0.24.0" />
-  </ItemGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Core.Querying\ZenPlatform.Core.Querying.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Test.Tools\ZenPlatform.Test.Tools.csproj" />
+        <ProjectReference Include="..\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="App.xaml">
+            <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Include="MainWindow.xaml">
+            <SubType>Designer</SubType>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\avalonia.desktop.props" />
+    <Import Project="..\Props\avalonia.reactiveui.props" />
+    <Import Project="..\Props\portable.xaml.props" />
+
 </Project>

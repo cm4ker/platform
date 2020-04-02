@@ -52,7 +52,8 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
         /// <param name="mode"></param>
-        void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
+        void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
+            IEntryPointManager sm);
 
         /// <summary>
         /// Стадия 2 формирование реализаций методов и свойств

@@ -60,7 +60,7 @@ namespace ZenPlatform.Compiler.Dnlib
             _properties ??= TypeDef.Properties.Select(x => new DnlibProperty(_ts, x, TypeRef)).ToList();
 
         public IReadOnlyList<IField> Fields =>
-            _fields ??= TypeDef.Fields.Select(x => new DnlibField(x)).ToList();
+            _fields ??= TypeDef.Fields.Select(x => new DnlibField(_ts, x)).ToList();
 
         public IReadOnlyList<IEventInfo> Events { get; }
 

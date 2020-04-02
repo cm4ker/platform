@@ -10,7 +10,7 @@ namespace ZenPlatform.Language.Ast.Definitions
     public partial class Module
     {
         public SymbolScopeBySecurity SymbolScope { get; set; }
-        
+
         public void AddFunction(Function function)
         {
             TypeBody.Functions.Add(function);
