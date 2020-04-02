@@ -104,6 +104,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return MemberwiseClone();
         }
+
+        public override string ToString()
+        {
+            return TypeName;
+        }
     }
 
     public partial class ArrayTypeSyntax

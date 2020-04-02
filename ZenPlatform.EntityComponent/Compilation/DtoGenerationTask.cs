@@ -1,5 +1,7 @@
 using System.Data.Common;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Entity;
@@ -21,16 +23,15 @@ namespace ZenPlatform.EntityComponent.Compilation
 
         public IPType DtoType { get; }
 
-        public ITypeBuilder Stage0(IAssemblyBuilder asm)
+        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
         {
             var type = asm.DefineInstanceType(this.GetNamespace(), DtoType.Name);
-
             type.DefineDefaultConstructor(false);
 
             return type;
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitBody(builder, dbType);
             EmitVersionField(builder);
@@ -41,11 +42,11 @@ namespace ZenPlatform.EntityComponent.Compilation
             }
         }
 
-        public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
         }
 
-        private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = DtoType;
 
@@ -64,21 +65,20 @@ namespace ZenPlatform.EntityComponent.Compilation
                 var tableRow = ts.GetType(table.GetTableDtoRowClassFullName());
                 var listType = sb.List.MakeGenericType(tableRow);
 
-                builder.DefinePropertyWithBackingField(listType, table.Name, false);
+                //builder.DefinePropertyWithBackingField(listType, table.Name, false);
             }
         }
 
-        private void EmitMappingSupport(ITypeBuilder tb)
+        private void EmitMappingSupport(SreTypeBuilder tb)
         {
             var _ts = tb.Assembly.TypeSystem;
             var _bindings = _ts.GetSystemBindings();
-
-            tb.AddInterfaceImplementation(_ts.FindType<ICanMap>());
+            tb.AddInterfaceImplementation(_ts.Resolve<ICanMap>());
 
             var readerMethod = tb.DefineMethod(nameof(ICanMap.Map), true, false, true);
-            var rg = readerMethod.Generator;
+            var rg = readerMethod.Body;
 
-            var readerType = _ts.FindType<DbDataReader>();
+            var readerType = _ts.Resolve<DbDataReader>();
 
             var readerParam =
                 readerMethod.DefineParameter("reader", readerType, false, false);
@@ -90,24 +90,25 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                 rg
                     .LdArg_0()
-                    .LdArg(readerParam.ArgIndex)
-                    .LdStr(mt.Parameters[0].ToString())
-                    .EmitCall(readerType.FindMethod("get_Item", _bindings.String))
-                    .Unbox_Any(property.PropertyType)
-                    .EmitCall(property.Setter);
+                    .LdArg(readerParam)
+                    .LdLit(mt.Parameters[0].ToString())
+                    .LdElem()
+                    .Cast(property.PropertyType)
+                    .StProp(property)
+                    .Statement();
             }
 
-            rg.Ret();
+            //rg.Ret();
         }
 
-        private void EmitVersionField(ITypeBuilder tb)
+        private void EmitVersionField(SreTypeBuilder tb)
         {
             var _ts = tb.Assembly.TypeSystem;
             var _b = _ts.GetSystemBindings();
             var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version", false);
         }
 
-        private void EmitDefaultValues(ITypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitDefaultValues(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             var set = DtoType;
 

@@ -50,6 +50,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             throw new System.NotImplementedException();
         }
 
+        public override void Accept(AstVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
+
         public T this[int index] => (T) Childs[index];
 
         public int Count => Childs.Count;

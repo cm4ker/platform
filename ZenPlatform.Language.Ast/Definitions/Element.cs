@@ -35,5 +35,10 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             throw new System.NotImplementedException();
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

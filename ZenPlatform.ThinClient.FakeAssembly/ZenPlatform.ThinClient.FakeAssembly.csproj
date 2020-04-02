@@ -10,6 +10,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />
+      <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
+      <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />
+      <ProjectReference Include="..\ZenPlatform.ServerRuntime\ZenPlatform.ServerRuntime.csproj" />
     </ItemGroup>
 
 </Project>

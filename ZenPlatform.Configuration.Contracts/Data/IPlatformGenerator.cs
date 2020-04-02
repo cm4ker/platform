@@ -1,4 +1,5 @@
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
@@ -43,7 +44,7 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// <param name="asm"></param>
         /// <param name="task"></param>
         /// <returns></returns>
-        ITypeBuilder Stage0(IAssemblyBuilder asm, Node task);
+        SreTypeBuilder Stage0(SreAssemblyBuilder asm, Node task);
 
         /// <summary>
         /// Стадия 1 формирование внутреннего каркаса класса (Методы + Свойства + Поля + События)
@@ -52,7 +53,7 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
         /// <param name="mode"></param>
-        void Stage1(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
+        void Stage1(Node astTree, SreTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
             IEntryPointManager sm);
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
         /// <param name="mode"></param>
-        void Stage2(Node astTree, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
+        void Stage2(Node astTree, SreTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
 
         /// <summary>
         /// Инфраструктурная стадия
@@ -70,6 +71,6 @@ namespace ZenPlatform.Configuration.Contracts.Data
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
         /// <param name="mode"></param>
-        void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
+        void StageInfrastructure(SreAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -21,22 +23,22 @@ namespace ZenPlatform.EntityComponent.Compilation
             LinkType = linkType;
         }
 
-        public ITypeBuilder Stage0(IAssemblyBuilder asm)
+        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
         {
             return asm.DefineInstanceType(GetNamespace(), Name, asm.FindType("Entity.EntityLink"));
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitStructure(builder, dbType);
         }
 
-        public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             EmitBody(builder, dbType);
         }
 
-        private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = LinkType;
             var set = LinkType ?? throw new Exception("This component can generate only SingleEntity");
@@ -61,7 +63,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             }
         }
 
-        public void EmitStructure(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void EmitStructure(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = LinkType;
             var ts = builder.Assembly.TypeSystem;
@@ -74,17 +76,14 @@ namespace ZenPlatform.EntityComponent.Compilation
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
 
             var c = builder.DefineConstructor(false, dtoType);
-            var g = c.Generator;
+            var g = c.Body;
 
             var dtoPrivate = builder.DefineField(dtoType, "_dto", false, false);
 
-
             g.LdArg_0()
-                .EmitCall(builder.BaseType.FindConstructor())
-                .LdArg_0()
                 .LdArg(1)
                 .StFld(dtoPrivate)
-                .Ret();
+                .Statement();
 
             foreach (var prop in type.Properties)
             {
@@ -96,7 +95,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                     ? sb.Object
                     : prop.Types.First().ConvertType(sb);
 
-                IProperty baseProp = null;
+                SreProperty baseProp = null;
 
                 if (propName == "Id")
                 {

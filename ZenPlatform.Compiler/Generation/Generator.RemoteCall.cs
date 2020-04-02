@@ -16,21 +16,20 @@ namespace ZenPlatform.Compiler.Generation
                 $"{function.FirstParent<TypeEntity>().Name}.{function.Name}",
                 e =>
                 {
-                    e.LdcI4(function.Parameters.Count);
-                    e.NewArr(_bindings.Object);
+                    e.LdLit(function.Parameters.Count);
+                    var b = e.NewArrAdv(_bindings.Object);
                     foreach (var p in function.Parameters)
                     {
-                        e.Dup();
                         var iArg = function.Parameters.IndexOf(p);
-                        e.LdcI4(iArg);
                         e.LdArg(iArg);
-                        e.Box(_map.GetClrType(p.Type));
-                        e.StElemRef();
+                        b.PopArg();
                     }
+
+                    b.EndBuild();
                 });
 
             if (!_map.GetClrType(function.Type).Equals(_bindings.Void))
-                function.Builder.Ret();
+                function.Builder.Ret().Statement();
         }
     }
 }

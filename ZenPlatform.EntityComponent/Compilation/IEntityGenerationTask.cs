@@ -1,4 +1,4 @@
-using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.QueryBuilder;
 
@@ -6,8 +6,8 @@ namespace ZenPlatform.EntityComponent.Compilation
 {
     public interface IEntityGenerationTask
     {
-        ITypeBuilder Stage0(IAssemblyBuilder asm);
-        void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm);
-        void Stage2(ITypeBuilder builder, SqlDatabaseType dbType);
+        SreTypeBuilder Stage0(SreAssemblyBuilder asm);
+        void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm);
+        void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType);
     }
 }

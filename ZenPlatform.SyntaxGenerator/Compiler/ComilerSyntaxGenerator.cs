@@ -21,6 +21,11 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
             .AddModifiers(partialToken);
 
+        private static ClassDeclarationSyntax astTreeBaseCls2 = SyntaxFactory.ClassDeclaration("AstVisitorBase")
+            .AddModifiers(publicToken)
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
+            .AddModifiers(partialToken);
+
         public static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -49,7 +54,8 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Statements")),
                         SyntaxFactory.UsingDirective(
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Functions")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Infrastructure"))
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Infrastructure")),
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Symbols"))
                     );
 
 
@@ -77,6 +83,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                 var nsAst = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(ns_root));
 
                 nsAst = nsAst.AddMembers(astTreeBaseCls);
+                nsAst = nsAst.AddMembers(astTreeBaseCls2);
 
                 unit = unit.AddMembers(nsAst);
 
@@ -119,6 +126,30 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
         }
 
 
+        private static MemberDeclarationSyntax GetVisitorMethod2(CompilerSyntax syntax)
+        {
+            var visitor =
+                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    "public override void Accept(AstVisitorBase visitor){}");
+
+            if (!syntax.IsAbstract)
+            {
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"visitor.Visit{syntax.Name}(this);"));
+
+                var visitorBaseMethod = (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public virtual void Visit{syntax.Name}({syntax.Name} arg) {{ DefaultVisit(arg); }}");
+
+                astTreeBaseCls2 = astTreeBaseCls2.AddMembers(visitorBaseMethod);
+            }
+            else
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"throw new NotImplementedException();"));
+
+
+            return visitor;
+        }
+
         private static MemberDeclarationSyntax GenerateListClass(CompilerSyntax syntax)
         {
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
@@ -134,6 +165,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
 
             members.Add(constructor);
             members.Add(GetVisitorMethod(syntax));
+            members.Add(GetVisitorMethod2(syntax));
 
             return SyntaxFactory.ClassDeclaration(syntax.Name)
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
@@ -222,6 +254,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
 
 
             members.Add(GetVisitorMethod(syntax));
+            members.Add(GetVisitorMethod2(syntax));
 
             var cls = SyntaxFactory.ClassDeclaration(syntax.Name)
                 .WithModifiers(SyntaxTokenList.Create(publicToken))

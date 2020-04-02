@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ZenPlatform.EntityComponent.Compilation
 {
-    abstract class EntityTable<TDtoRowClass, TObjectClass> : IEnumerable<TObjectClass>
+    public abstract class EntityTable<TDtoRowClass, TObjectClass> : IEnumerable<TObjectClass>
     {
         protected List<TDtoRowClass> DtoRef { get; }
 
