@@ -3,27 +3,26 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DefineConstants>TRACE; CLIENT</DefineConstants>
+    </PropertyGroup>
+
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\avalonia.desktop.props" />
+    <Import Project="..\Props\dock.props" />
+    <Import Project="..\Props\portable.xaml.props" />
+
     <ItemGroup>
-      <EmbeddedResource Include="App.xaml">
-        <SubType>Designer</SubType>
-      </EmbeddedResource>
-      <EmbeddedResource Include="MainWindow.xaml">
-        <SubType>Designer</SubType>
-      </EmbeddedResource>
-      <EmbeddedResource Include="Views\ConfigurationTreeView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </EmbeddedResource>
-      <EmbeddedResource Include="Views\DockMainWindow.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </EmbeddedResource>
-      <EmbeddedResource Include="Views\MainView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </EmbeddedResource>
-      <EmbeddedResource Include="Views\MainWindow.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </EmbeddedResource>
+        <EmbeddedResource Include="App.xaml">
+            <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Include="MainWindow.xaml">
+            <SubType>Designer</SubType>
+        </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
@@ -31,23 +30,13 @@
             <Generator>MSBuild:Compile</Generator>
         </None>
     </ItemGroup>
-
+    
     <ItemGroup>
-<!--      <ProjectReference Include="..\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj" />-->
-      <ProjectReference Include="..\ZenPlatform.Avalonia.Wrapper\ZenPlatform.Avalonia.Wrapper.csproj" />
-      <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
-<!--      <ProjectReference Include="..\ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj" />-->
+        <ProjectReference Include="..\ZenPlatform.Avalonia.Wrapper\ZenPlatform.Avalonia.Wrapper.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Runtime\ZenPlatform.Runtime.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj" />
+        
     </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Avalonia.Desktop" Version="0.9.3" />
-      <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.3" />
-      <PackageReference Include="Dock.Avalonia" Version="0.9.3" />
-      <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.9.3" />
-      <PackageReference Include="Dock.Avalonia.Themes.Metro" Version="0.9.3" />
-      <PackageReference Include="Dock.Model.ReactiveUI" Version="0.9.3" />
-      <PackageReference Include="Portable.Xaml" Version="0.24.0" />
-    </ItemGroup>
-
-
 </Project>

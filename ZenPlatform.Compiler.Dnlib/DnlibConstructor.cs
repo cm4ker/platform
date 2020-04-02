@@ -30,7 +30,7 @@ namespace ZenPlatform.Compiler.Dnlib
             methodDef, methodDef, declType)
         {
             _methodDef = methodDef;
-            _methodDef.Body = new CilBody() ;
+            _methodDef.Body = new CilBody();
         }
 
         private IEmitter _generator;
@@ -40,19 +40,19 @@ namespace ZenPlatform.Compiler.Dnlib
         public IParameter DefineParameter(IType type)
         {
             var dtype = (DnlibType) type;
-            
+
             var typeSig = dtype.TypeRef.ToTypeSig();
             MethodDef.MethodSig.Params.Add(typeSig);
-            
+
             MethodDef.Parameters.UpdateParameterTypes();
 
             var p = MethodDef.Parameters.Last();
             p.CreateParamDef();
-             
+
             var dp = new DnlibParameter(TypeSystem, MethodDef, DeclaringTypeReference.Module, p);
-            
-            ((List<DnlibParameter>)Parameters).Add(dp);
-            
+
+            ((List<DnlibParameter>) Parameters).Add(dp);
+
             return dp;
         }
     }

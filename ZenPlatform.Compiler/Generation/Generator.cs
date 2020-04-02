@@ -26,7 +26,7 @@ namespace ZenPlatform.Compiler.Generation
         private Root _root;
         private CompilationUnitList _cus;
 
-        private ServerAssemblyServiceScope _serviceScope;
+        private EntryPointAssemblyManager _epManager;
 
         private SystemTypeBindings _bindings;
         private SyntaxTreeMemberAccessProvider _map;

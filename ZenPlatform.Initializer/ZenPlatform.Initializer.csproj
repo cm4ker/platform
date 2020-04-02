@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
+    <Configurations>Debug;Release;DebugServer</Configurations>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">

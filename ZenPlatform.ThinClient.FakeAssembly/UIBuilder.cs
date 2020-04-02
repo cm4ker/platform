@@ -1,11 +1,12 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using ZenPlatform.ClientRuntime;
 
 namespace ZenPlatform.ThinClient.FakeAssembly
 {
-    public class UIBuilder
+    public class UX
     {
-        public static string GetDesktop()
+        public static UXContainer GetDesktop()
         {
             //Preapre: Get XAML from the server + invoke server logic
             var xaml = @"
@@ -13,11 +14,12 @@ namespace ZenPlatform.ThinClient.FakeAssembly
   <UXGroup Orientation=""Horizontal"">
     <UXTextBox />
     <UXTextBox />
-    <UXTextBox />
+    <UXTextBox />    
   </UXGroup>
 </UXForm>";
 
-            return xaml;
+
+            return new UXContainer {Markup = xaml, ViewModel = null};
         }
 
         public static IControl GetDocumentForm()
@@ -25,4 +27,21 @@ namespace ZenPlatform.ThinClient.FakeAssembly
             return null;
         }
     }
+
+/*
+ 
+ */
+/*
+ Instance call
+ 
+    Client                        Server
+                                    
+        
+ OnClientMethod             OnServerMethodCall
+       |                           ^
+       V         ObjectPack        |
+ OnServerMethod -------------> UnpackObject 
+                        
+ 
+ */
 }

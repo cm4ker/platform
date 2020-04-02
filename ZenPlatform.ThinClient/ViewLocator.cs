@@ -4,6 +4,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Dock.Model;
 using ReactiveUI;
+using ZenPlatform.ClientRuntime;
+using ZenPlatform.ClientRuntime.ViewModels;
 using ZenPlatform.ThinClient.ViewModels;
 
 namespace ZenPlatform.ThinClient
@@ -23,12 +25,12 @@ namespace ZenPlatform.ThinClient
                 return rm.Run();
 
             Type type = null;
-            
+
             {
                 var name = data?.GetType().FullName?.Replace("ViewModel", "View");
 
                 if (name != null)
-                    type = Type.GetType(name);
+                    type = typeof(GlobalScope).Assembly.GetType(name);
             }
 
             if (type != null)

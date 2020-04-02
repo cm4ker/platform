@@ -18,7 +18,7 @@ namespace ZenPlatform.Core.Test
                         Type = ListenerType.Test }
                 }
             },
-            Environments = new List<IStartupConfig>() {
+            Environments = new List<StartupConfig>() {
                 new StartupConfig() {
                     ConnectionString = "",
                     DatabaseType = QueryBuilder.SqlDatabaseType.SqlServer

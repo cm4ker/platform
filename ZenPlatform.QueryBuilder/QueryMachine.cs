@@ -225,6 +225,9 @@ namespace ZenPlatform.QueryBuilder
 
         private void ChangeContextType(MachineContextType contextType)
         {
+            if (_currentContext == null)
+                throw new Exception("You need begin new query. Now the context is null");
+
             switch (_currentContext.Type)
             {
                 case MachineContextType.Select:

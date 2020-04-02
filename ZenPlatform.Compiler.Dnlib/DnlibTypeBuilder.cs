@@ -51,7 +51,7 @@ namespace ZenPlatform.Compiler.Dnlib
             field.Access |= (isPublic) ? FieldAttributes.Public : FieldAttributes.Private;
             field.DeclaringType = TypeDef;
 
-            var dfield = new DnlibField(field);
+            var dfield = new DnlibField(_ts, field);
 
             ((List<DnlibField>) Fields).Add(dfield);
 
@@ -143,7 +143,8 @@ namespace ZenPlatform.Compiler.Dnlib
             var name = (isStatic) ? ".cctor" : ".ctor";
             var c = new MethodDefUser(name, sig);
 
-
+            c.IsStatic = isStatic;
+            
             c.Attributes |= MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Public |
                             MethodAttributes.HideBySig;
 
@@ -169,32 +170,6 @@ namespace ZenPlatform.Compiler.Dnlib
         }
 
         public IType EndBuild()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class DnlibField : IField
-    {
-        public FieldDef FieldDef { get; }
-
-        public DnlibField(FieldDef fieldDef)
-        {
-            FieldDef = fieldDef;
-        }
-
-        public bool Equals(IField other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string Name => FieldDef.Name;
-        public IType FieldType { get; }
-        public bool IsPublic { get; }
-        public bool IsStatic { get; }
-        public bool IsLiteral { get; }
-
-        public object GetLiteralValue()
         {
             throw new NotImplementedException();
         }

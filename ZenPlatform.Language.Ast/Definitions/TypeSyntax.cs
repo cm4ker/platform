@@ -23,7 +23,6 @@ namespace ZenPlatform.Language.Ast.Definitions
         Context,
         Type,
         Session,
-        UnionType,
     }
 
     public static class TypeNodeKindExtension
@@ -53,9 +52,14 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// <summary>
     /// Тип
     /// </summary>
-    public abstract partial class TypeSyntax : SyntaxNode
+    public abstract partial class TypeSyntax : ICloneable
     {
         public TypeNodeKind Kind { get; protected set; }
+
+        public virtual object Clone()
+        {
+            throw new NotImplementedException(this.GetType().FullName);
+        }
     }
 
     public partial class PrimitiveTypeSyntax
@@ -66,6 +70,11 @@ namespace ZenPlatform.Language.Ast.Definitions
 
             Kind = kind;
         }
+
+        public override object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 
     public partial class SingleTypeSyntax
@@ -73,8 +82,6 @@ namespace ZenPlatform.Language.Ast.Definitions
         public SingleTypeSyntax(ILineInfo lineInfo, string typeName, TypeNodeKind kind) : this(lineInfo)
         {
             TypeName = typeName;
-
-            if (kind == TypeNodeKind.UnionType) throw new Exception("Single type can't be a union type");
 
             Kind = kind;
         }
@@ -91,6 +98,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             if (Kind == TypeNodeKind.Unknown)
                 Kind = kind;
+        }
+
+        public override object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 
@@ -112,8 +124,6 @@ namespace ZenPlatform.Language.Ast.Definitions
             args)
         {
             TypeName = typeName;
-
-            if (kind == TypeNodeKind.UnionType) throw new Exception("Single type can't be a union type");
 
             Kind = kind;
         }

@@ -5,12 +5,14 @@ using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.TypeSystem;
 using System.Linq;
+using ZenPlatform.Configuration.Common.TypeSystem;
 
 namespace ZenPlatform.EntityComponent.Configuration.Editors
 {
     public class ObjectEditor
     {
         private readonly IInfrastructure _inf;
+        private readonly ITypeManager _tm;
         private IComponent _com;
         private MDEntity _md;
         private readonly List<PropertyEditor> _props;
@@ -24,6 +26,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
         public ObjectEditor(IInfrastructure inf)
         {
             _inf = inf;
+            _tm = inf.TypeManager;
 
             _md = new MDEntity();
             _props = new List<PropertyEditor>();
@@ -120,14 +123,14 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             RegisterManager();
             RegisterLink();
 
-            _inf.TypeManager.AddMD(_md.ObjectId, _com.Id, _md);
+            _tm.AddMD(_md.ObjectId, _com.Id, _md);
         }
 
         #region Register in type system
 
         private void RegisterManager()
         {
-            var tm = _inf.TypeManager;
+            var tm = _tm;
 
             var oType = tm.Type();
             oType.IsManager = true;
@@ -139,7 +142,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             oType.ComponentId = _com.Info.ComponentId;
 
-            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            _tm.AddOrUpdateSetting(new ObjectSetting
             {
                 ObjectId = oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
             });
@@ -150,7 +153,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
         private void RegisterObject()
         {
-            var oType = _inf.TypeManager.Type();
+            var oType = _tm.Type();
             oType.IsObject = true;
 
             oType.Id = _md.ObjectId;
@@ -162,80 +165,80 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             oType.ComponentId = _com.Info.ComponentId;
 
-            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            _tm.AddOrUpdateSetting(new ObjectSetting
             {
                 ObjectId = oType.Id, SystemId = _inf.Counter.GetId(oType.Id),
                 DatabaseName = $"Obj_{_inf.Counter.GetId(oType.Id)}"
             });
 
-            _inf.TypeManager.Register(oType);
+            _tm.Register(oType);
 
             RegisterId(_md.ObjectId);
             RegisterName(_md.ObjectId);
 
             foreach (var prop in _md.Properties)
             {
-                var tProp = _inf.TypeManager.Property();
+                var tProp = _tm.Property();
                 tProp.Name = prop.Name;
                 tProp.Id = prop.Guid;
                 tProp.ParentId = _md.ObjectId;
 
                 foreach (var pType in prop.Types)
                 {
-                    var tPropType = _inf.TypeManager.PropertyType();
+                    var tPropType = _tm.PropertyType();
                     tPropType.PropertyParentId = _md.ObjectId;
                     tPropType.PropertyId = tProp.Id;
-                    tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
-                    _inf.TypeManager.Register(tPropType);
+                    tPropType.TypeId = pType.GetTypeId(_tm);
+                    _tm.Register(tPropType);
                 }
 
-                _inf.TypeManager.Register(tProp);
+                _tm.Register(tProp);
             }
 
             foreach (var table in _md.Tables)
             {
-                var tTable = _inf.TypeManager.Table();
+                var tTable = _tm.Table();
                 tTable.Name = table.Name;
                 tTable.ParentId = _md.ObjectId;
                 tTable.GroupId = table.Guid;
                 tTable.Id = Guid.NewGuid();
 
-                _inf.TypeManager.Register(tTable);
+                _tm.Register(tTable);
 
                 var sysId = _inf.Counter.GetId(tTable.Id);
 
-                _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                _tm.AddOrUpdateSetting(new ObjectSetting
                     {ObjectId = tTable.Id, SystemId = sysId, DatabaseName = $"Tbl_{sysId}"});
 
                 foreach (var prop in table.Properties)
                 {
-                    var tProp = _inf.TypeManager.Property();
+                    var tProp = _tm.Property();
                     tProp.Name = prop.Name;
                     tProp.Id = prop.Guid;
                     tProp.ParentId = tTable.Id;
 
                     foreach (var pType in prop.Types)
                     {
-                        var tPropType = _inf.TypeManager.PropertyType();
+                        var tPropType = _tm.PropertyType();
                         tPropType.PropertyParentId = tTable.Id;
                         tPropType.PropertyId = tProp.Id;
-                        tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
-                        _inf.TypeManager.Register(tPropType);
+                        tPropType.TypeId = pType.GetTypeId(_tm);
+                        _tm.Register(tPropType);
                     }
 
                     sysId = _inf.Counter.GetId(tProp.Id);
 
-                    _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                    _tm.AddOrUpdateSetting(new ObjectSetting
                         {ObjectId = tProp.Id, SystemId = sysId, DatabaseName = $"Fld_{sysId}"});
 
-                    _inf.TypeManager.Register(tProp);
+                    _tm.Register(tProp);
                 }
             }
         }
 
         private void RegisterDto()
         {
-            var tm = _inf.TypeManager;
+            var tm = _tm;
 
             var oType = tm.Type();
             oType.IsDto = true;
@@ -246,7 +249,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
             oType.IsAsmAvaliable = true;
             oType.ComponentId = _com.Info.ComponentId;
 
-            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            _tm.AddOrUpdateSetting(new ObjectSetting
             {
                 ObjectId = oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
             });
@@ -258,72 +261,72 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             foreach (var prop in _md.Properties)
             {
-                var tProp = _inf.TypeManager.Property();
+                var tProp = _tm.Property();
                 tProp.Name = prop.Name;
                 tProp.Id = prop.Guid;
                 tProp.ParentId = _md.DtoId;
 
                 foreach (var pType in prop.Types)
                 {
-                    var tPropType = _inf.TypeManager.PropertyType();
+                    var tPropType = _tm.PropertyType();
                     tPropType.PropertyParentId = _md.DtoId;
                     tPropType.PropertyId = tProp.Id;
-                    tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
-                    _inf.TypeManager.Register(tPropType);
+                    tPropType.TypeId = pType.GetTypeId(_tm);
+                    _tm.Register(tPropType);
                 }
 
                 var sysId = _inf.Counter.GetId(tProp.Id);
 
-                _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                _tm.AddOrUpdateSetting(new ObjectSetting
                     {ObjectId = tProp.Id, SystemId = sysId, DatabaseName = $"Fld_{sysId}"});
 
-                _inf.TypeManager.Register(tProp);
+                _tm.Register(tProp);
             }
 
             foreach (var table in _md.Tables)
             {
-                var tTable = _inf.TypeManager.Table();
+                var tTable = _tm.Table();
                 tTable.Name = table.Name;
                 tTable.ParentId = _md.DtoId;
                 tTable.GroupId = table.Guid;
                 tTable.Id = Guid.NewGuid();
 
-                _inf.TypeManager.Register(tTable);
+                _tm.Register(tTable);
 
                 var sysId = _inf.Counter.GetId(tTable.Id);
 
-                _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                _tm.AddOrUpdateSetting(new ObjectSetting
                     {ObjectId = tTable.Id, SystemId = sysId, DatabaseName = $"Tbl_{sysId}"});
 
                 foreach (var prop in table.Properties)
                 {
-                    var tProp = _inf.TypeManager.Property();
+                    var tProp = _tm.Property();
                     tProp.Name = prop.Name;
                     tProp.Id = prop.Guid;
                     tProp.ParentId = tTable.Id;
 
                     foreach (var pType in prop.Types)
                     {
-                        var tPropType = _inf.TypeManager.PropertyType();
+                        var tPropType = _tm.PropertyType();
                         tPropType.PropertyParentId = tTable.Id;
                         tPropType.PropertyId = tProp.Id;
-                        tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
-                        _inf.TypeManager.Register(tPropType);
+                        tPropType.TypeId = pType.GetTypeId(_tm);
+                        _tm.Register(tPropType);
                     }
 
                     sysId = _inf.Counter.GetId(tProp.Id);
 
-                    _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                    _tm.AddOrUpdateSetting(new ObjectSetting
                         {ObjectId = tProp.Id, SystemId = sysId, DatabaseName = $"Fld_{sysId}"});
 
-                    _inf.TypeManager.Register(tProp);
+                    _tm.Register(tProp);
                 }
             }
         }
 
         private void RegisterLink()
         {
-            var oType = _inf.TypeManager.Type();
+            var oType = _tm.Type();
             oType.IsLink = true;
             oType.IsQueryAvaliable = false;
             oType.IsAsmAvaliable = true;
@@ -339,7 +342,7 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
             foreach (var prop in _md.Properties)
             {
-                var tProp = _inf.TypeManager.Property();
+                var tProp = _tm.Property();
                 tProp.Name = prop.Name;
                 tProp.Id = prop.Guid;
                 tProp.ParentId = oType.Id;
@@ -347,35 +350,35 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
                 foreach (var pType in prop.Types)
                 {
-                    var tPropType = _inf.TypeManager.PropertyType();
+                    var tPropType = _tm.PropertyType();
                     tPropType.PropertyParentId = oType.Id;
                     tPropType.PropertyId = tProp.Id;
-                    tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
-                    _inf.TypeManager.Register(tPropType);
+                    tPropType.TypeId = pType.GetTypeId(_tm);
+                    _tm.Register(tPropType);
                 }
 
-                _inf.TypeManager.Register(tProp);
+                _tm.Register(tProp);
             }
 
 
             foreach (var table in _md.Tables)
             {
-                var tTable = _inf.TypeManager.Table();
+                var tTable = _tm.Table();
                 tTable.Name = table.Name;
                 tTable.ParentId = _md.LinkId;
                 tTable.GroupId = table.Guid;
                 tTable.Id = Guid.NewGuid();
 
-                _inf.TypeManager.Register(tTable);
+                _tm.Register(tTable);
 
                 var sysId = _inf.Counter.GetId(tTable.Id);
 
-                _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+                _tm.AddOrUpdateSetting(new ObjectSetting
                     {ObjectId = tTable.Id, SystemId = sysId, DatabaseName = $"Tbl_{sysId}"});
 
                 foreach (var prop in table.Properties)
                 {
-                    var tProp = _inf.TypeManager.Property();
+                    var tProp = _tm.Property();
                     tProp.Name = prop.Name;
                     tProp.Id = prop.Guid;
                     tProp.ParentId = tTable.Id;
@@ -383,23 +386,35 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
                     foreach (var pType in prop.Types)
                     {
-                        var tPropType = _inf.TypeManager.PropertyType();
+                        var tPropType = _tm.PropertyType();
                         tPropType.PropertyParentId = tTable.Id;
                         tPropType.PropertyId = tProp.Id;
-                        tPropType.TypeId = pType.GetTypeId(_inf.TypeManager);
-                        _inf.TypeManager.Register(tPropType);
+                        tPropType.TypeId = pType.GetTypeId(_tm);
+                        _tm.Register(tPropType);
                     }
 
-                    _inf.TypeManager.Register(tProp);
+                    _tm.Register(tProp);
                 }
             }
 
-            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            _tm.AddOrUpdateSetting(new ObjectSetting
             {
                 ObjectId = oType.Id, SystemId = _inf.Counter.GetId(oType.Id)
             });
 
-            _inf.TypeManager.Register(oType);
+            _tm.Register(oType);
+        }
+
+        private void RegisterInterface()
+        {
+            foreach (var mdUx in _md.Interfaces)
+            {
+                var ux = _tm.CreateUX();
+                ux.Name = mdUx.Name;
+                ux.GroupId = mdUx.Guid;
+
+                _tm.Register(ux);
+            }
         }
 
         #endregion
@@ -408,50 +423,50 @@ namespace ZenPlatform.EntityComponent.Configuration.Editors
 
         void RegisterId(Guid parentId)
         {
-            var tProp = _inf.TypeManager.Property();
+            var tProp = _tm.Property();
             tProp.Name = "Id";
             tProp.Id = Guid.Parse("7DB25AF5-1609-4B0E-A99C-60576336167D");
             tProp.ParentId = parentId;
             tProp.IsUnique = true;
 
-            var tPropType = _inf.TypeManager.PropertyType();
+            var tPropType = _tm.PropertyType();
             tPropType.PropertyParentId = parentId;
             tPropType.PropertyId = tProp.Id;
-            tPropType.TypeId = _inf.TypeManager.Guid.Id;
-            _inf.TypeManager.Register(tPropType);
+            tPropType.TypeId = _tm.Guid.Id;
+            _tm.Register(tPropType);
 
             var sysId = _inf.Counter.GetId(tProp.Id);
 
-            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            _tm.AddOrUpdateSetting(new ObjectSetting
                 {ObjectId = tProp.Id, SystemId = sysId, DatabaseName = $"Fld_{sysId}"});
 
-            _inf.TypeManager.Register(tProp);
+            _tm.Register(tProp);
         }
 
         void RegisterName(Guid parentId)
         {
-            var tProp = _inf.TypeManager.Property();
+            var tProp = _tm.Property();
             tProp.Name = "Name";
             tProp.Id = Guid.Parse("583C34B4-5B80-4BF5-92BF-FCEBEA60BFC4");
             tProp.ParentId = parentId;
 
-            var tPropType = _inf.TypeManager.PropertyType();
+            var tPropType = _tm.PropertyType();
             tPropType.PropertyParentId = parentId;
             tPropType.PropertyId = tProp.Id;
 
-            var type = _inf.TypeManager.String.GetSpec();
+            var type = _tm.String.GetSpec();
             type.Size = 300;
 
             tPropType.TypeId = type.Id;
-            _inf.TypeManager.Register(tPropType);
-            _inf.TypeManager.Register(type);
+            _tm.Register(tPropType);
+            _tm.Register(type);
 
             var sysId = _inf.Counter.GetId(tProp.Id);
 
-            _inf.TypeManager.AddOrUpdateSetting(new ObjectSetting
+            _tm.AddOrUpdateSetting(new ObjectSetting
                 {ObjectId = tProp.Id, SystemId = sysId, DatabaseName = $"Fld_{sysId}"});
 
-            _inf.TypeManager.Register(tProp);
+            _tm.Register(tProp);
         }
 
         #endregion

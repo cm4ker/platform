@@ -1,17 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Xunit;
-using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
-using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.ConfigurationExample;
-using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Test.Tools;
 
@@ -35,7 +30,30 @@ namespace ZenPlatform.Compiler.Tests
 
             Assert.True(true);
         }
-        
+
+        [Fact]
+        void XamlTest()
+        {
+            var dnlib = new DnlibAssemblyPlatform();
+            XCCompiler cd = new XCCompiler(dnlib);
+            var asm = cd.Build(r, CompilationMode.Server, SqlDatabaseType.SqlServer);
+
+            if (File.Exists("server.bll"))
+                File.Delete("server.bll");
+
+            asm.Write("server.bll");
+
+            var loaded = Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "server.bll"));
+
+            var formType = loaded.GetType("Entity.StoreEditorForm");
+            var cmdType = loaded.GetType("Entity.__StoreEditorForm");
+
+            var result = cmdType.GetMethod("Get")
+                .Invoke(null, BindingFlags.DoNotWrapExceptions, null, new object[] { }, null);
+
+            Assert.NotNull(result);
+        }
+
         [Fact]
         void CompilationClientAndServerTest()
         {
@@ -43,12 +61,12 @@ namespace ZenPlatform.Compiler.Tests
             XCCompiler cd = new XCCompiler(dnlib);
             var asm = cd.Build(r, CompilationMode.Server, SqlDatabaseType.SqlServer);
             var asmClient = cd.Build(r, CompilationMode.Client, SqlDatabaseType.SqlServer);
-            
+
             if (File.Exists("server.bll"))
                 File.Delete("server.bll");
 
             asm.Write("server.bll");
-            
+
             if (File.Exists("client.bll"))
                 File.Delete("client.bll");
 

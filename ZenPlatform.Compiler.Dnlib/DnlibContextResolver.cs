@@ -1,5 +1,6 @@
 using System;
 using dnlib.DotNet;
+using dnlib.DotNet.Resources;
 using ZenPlatform.Compiler.Contracts;
 using IField = dnlib.DotNet.IField;
 using IMethod = dnlib.DotNet.IMethod;
@@ -82,7 +83,10 @@ namespace ZenPlatform.Compiler.Dnlib
         {
             if (tsig.AssemblyQualifiedName.Contains("System.Private.CoreLib"))
             {
-                return _ts.FindAssembly(_ts.GetSystemBindings().MSCORLIB).FindType(tsig.FullName);
+                if (tsig.IsGenericInstanceType)
+                    return _ts.FindAssembly(_ts.GetSystemBindings().MSCORLIB).FindType(tsig.ToTypeDefOrRef().ScopeType.FullName);
+                else
+                    return _ts.FindAssembly(_ts.GetSystemBindings().MSCORLIB).FindType(tsig.FullName);
             }
             else
             {

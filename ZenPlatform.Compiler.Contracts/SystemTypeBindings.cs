@@ -38,6 +38,8 @@ namespace ZenPlatform.Compiler.Contracts
 
         public IType Int => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Int32)}", MSCORLIB);
 
+        public IType IntPrt => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(IntPtr)}", MSCORLIB);
+
         public IType Int64 => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Int64)}", MSCORLIB);
 
         public IType String => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(String)}", MSCORLIB);
@@ -89,6 +91,8 @@ namespace ZenPlatform.Compiler.Contracts
         public IType UnionTypeStorage => _ts.FindType<UnionTypeStorage>();
 
         public IType ParametricMethod => _ts.FindType<ParametricMethod>();
+
+        public IType Action => _ts.FindType<Action>();
 
 
         public SystemMethods Methods { get; }

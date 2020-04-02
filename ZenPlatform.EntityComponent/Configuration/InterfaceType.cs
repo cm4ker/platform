@@ -4,6 +4,6 @@ namespace ZenPlatform.EntityComponent.Configuration
     {
         List,
         Element,
-        Selector
+        Selector,
     }
 }

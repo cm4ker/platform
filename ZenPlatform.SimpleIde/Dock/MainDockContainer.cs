@@ -70,6 +70,9 @@ namespace ZenPlatform.SimpleIde.Dock
             
             var split = LayoutFactory.CreateSplitterDock();
             split.Proportion = 0.3;
+            
+            _leftTools.Proportion = 0.3;
+            
             // mainLayout.ActiveDockable = null;
             mainLayout.VisibleDockables = LayoutFactory.CreateList<IDockable>(
                 _leftTools,

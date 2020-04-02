@@ -2,6 +2,7 @@ using System.Linq;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
@@ -11,6 +12,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Symbols;
 using ZenPlatform.QueryBuilder;
+using ZenPlatform.Serializer;
 
 namespace ZenPlatform.EntityComponent.Compilation
 {
@@ -23,7 +25,7 @@ namespace ZenPlatform.EntityComponent.Compilation
         {
             ObjectType = objectType;
             DtoType = objectType.GetDtoType();
-            
+
             GenerateObjectClassUserModules(ObjectType);
         }
 
@@ -35,7 +37,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             return asm.DefineInstanceType(GetNamespace(), Name);
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitStructure(builder, dbType);
         }
@@ -47,7 +49,6 @@ namespace ZenPlatform.EntityComponent.Compilation
 
         public void EmitStructure(ITypeBuilder builder, SqlDatabaseType dbType)
         {
-            var type = ObjectType;
             var set = ObjectType;
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
@@ -68,47 +69,67 @@ namespace ZenPlatform.EntityComponent.Compilation
                 .StFld(dtoPrivate)
                 .Ret();
 
-            foreach (var prop in set.Properties)
+            if (CompilationMode.HasFlag(CompilationMode.Server))
             {
-                var propName = prop.Name;
+                foreach (var prop in set.Properties)
+                {
+                    var propName = prop.Name;
 
-                var propType = (prop.Types.Count() > 1)
-                    ? sb.Object
-                    : prop.Types.First().ConvertType(sb);
+                    var propType = (prop.Types.Count() > 1)
+                        ? sb.Object
+                        : prop.Types.First().ConvertType(sb);
 
-                var hasSet = !prop.IsReadOnly;
+                    var hasSet = !prop.IsReadOnly;
 
 
-                var codeObj = builder.DefineProperty(propType, propName, true, hasSet, false);
-                TypeBody.SymbolTable.AddProperty(new Property(null, propName, propType.ToAstType()))
-                    .Connect(codeObj.prop);
+                    var codeObj = builder.DefineProperty(propType, propName, true, hasSet, false);
+                    TypeBody.SymbolTable.AddProperty(new Property(null, propName, propType.ToAstType()))
+                        .Connect(codeObj.prop);
+                }
+
+
+                foreach (var table in set.Tables)
+                {
+                    var full = $"{GetNamespace()}.{table.GetObjectRowCollectionClassName()}";
+                    var t = ts.FindType(full);
+                    var dtoTableProp = dtoType.FindProperty(table.Name);
+
+                    var prop = builder.DefineProperty(t, table.Name, true, false, false);
+                    prop.getMethod.Generator
+                        .LdArg_0()
+                        .LdFld(dtoPrivate)
+                        .EmitCall(dtoTableProp.Getter)
+                        .NewObj(t.FindConstructor(dtoTableProp.PropertyType))
+                        .Ret();
+
+                    TypeBody.SymbolTable.AddProperty(new Property(null, table.Name, t.ToAstType()))
+                        .Connect(prop.prop);
+                }
+
+                var saveBuilder = builder.DefineMethod("Save", true, false, false);
+
+                var astMethod = new Function(null, null, new ParameterList(), new GenericParameterList(),
+                    new AttributeList(), saveBuilder.Name,
+                    saveBuilder.ReturnType.ToAstType());
+
+                TypeBody.SymbolTable.AddMethod(astMethod)
+                    .ConnectOverload(astMethod, saveBuilder);
             }
 
-            foreach (var table in set.Tables)
-            {
-                var full = $"{GetNamespace()}.{table.GetObjectRowCollectionClassName()}";
-                var t = ts.FindType(full);
-                var dtoTableProp = dtoType.FindProperty(table.Name);
+            EmitIDtoObject(builder, dtoPrivate);
+        }
 
-                var prop = builder.DefineProperty(t, table.Name, true, false, false);
-                prop.getMethod.Generator
-                    .LdArg_0()
-                    .LdFld(dtoPrivate)
-                    .EmitCall(dtoTableProp.Getter)
-                    .NewObj(t.FindConstructor(dtoTableProp.PropertyType))
-                    .Ret();
+        private void EmitIDtoObject(ITypeBuilder b, IField dtoPrivate)
+        {
+            var ts = b.Assembly.TypeSystem;
+            b.AddInterfaceImplementation(ts.FindType<IDtoObject>());
 
-                TypeBody.SymbolTable.AddProperty(new Property(null, table.Name, t.ToAstType()))
-                    .Connect(prop.prop);
-            }
-
-            var saveBuilder = builder.DefineMethod("Save", true, false, false);
-
-            var astMethod = new Function(null, null, new ParameterList(), new GenericParameterList(), new AttributeList(), saveBuilder.Name,
-                saveBuilder.ReturnType.ToAstType());
-
-            TypeBody.SymbolTable.AddMethod(astMethod)
-                .ConnectOverload(astMethod, saveBuilder);
+            var m = b.DefineMethod(nameof(IDtoObject.GetDto), true, false, true);
+            m.WithReturnType(ts.GetSystemBindings().Object);
+            var g = m.Generator;
+            g.LdArg_0()
+                .LdFld(dtoPrivate)
+                .Ret();
         }
 
         private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)
@@ -123,27 +144,29 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             var dtoType = ts.FindType($"{@namespace}.{dtoClassName}");
 
-
             var dtoPrivate = builder.FindField("_dto");
 
-            var mrg = ts.FindType($"{@namespace}.{set.GetManagerType().Name}");
-            var mrgGet = mrg.FindMethod("Get", sb.Guid);
-
-            foreach (var prop in set.Properties)
+            if (CompilationMode.HasFlag(CompilationMode.Server))
             {
-                SharedGenerators.EmitObjectProperty(builder, prop, sb, dtoType, dtoPrivate, ts, mrgGet, GetNamespace());
+                var mrg = ts.FindType($"{@namespace}.{set.GetManagerType().Name}");
+                var mrgGet = mrg.FindMethod("Get", sb.Guid);
+
+                foreach (var prop in set.Properties)
+                {
+                    SharedGenerators.EmitObjectProperty(builder, prop, sb, dtoType, dtoPrivate, ts, mrgGet,
+                        GetNamespace());
+                }
+
+                var saveBuilder = (IMethodBuilder) builder.FindMethod("Save");
+
+                var sg = saveBuilder.Generator;
+
+                sg
+                    .LdArg_0()
+                    .LdFld(dtoPrivate)
+                    .EmitCall(mrg.FindMethod("Save", dtoType))
+                    .Ret();
             }
-
-
-            var saveBuilder = (IMethodBuilder) builder.FindMethod("Save");
-
-            var sg = saveBuilder.Generator;
-
-            sg
-                .LdArg_0()
-                .LdFld(dtoPrivate)
-                .EmitCall(mrg.FindMethod("Save", dtoType))
-                .Ret();
         }
 
         private void GenerateObjectClassUserModules(IPType type)

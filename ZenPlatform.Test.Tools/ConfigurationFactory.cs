@@ -1,11 +1,9 @@
-﻿using System;
-using ZenPlatform.Configuration;
+﻿using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 
 namespace ZenPlatform.Test.Tools
@@ -48,12 +46,21 @@ namespace ZenPlatform.Test.Tools
             tableProp1.SetType(store.GetRef());
 
             var i = store.CreateInterface();
-            i.Markup = @"<UXForm xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
-  <UXGroup Orientation=""Horizontal"">
+            i.Markup =
+                @"<p:StoreEditorForm 
+                xmlns:p=""clr-namespace:Entity;assembly=LibraryServer""    
+                xmlns=""clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper"">
+  <UXGroup Orientation=""Vertical"">
     <UXTextBox />
     <UXTextBox />
+    <UXGroup Orientation = ""Horizontal""> 
+        <UXCheckBox />
+<UXCheckBox />
+<UXCheckBox />
+<UXCheckBox />
+    </UXGroup>
   </UXGroup>
-</UXForm>";
+</p:StoreEditorForm>";
             i.Name = "Editor";
 
             var module = store.CreateModule();
@@ -95,6 +102,22 @@ public void Overload()
     // s.Save();    
      return Context.UserName; 
  }
+
+ [ClientCall] 
+ public Store GetStore()
+ { 
+     Store s = $Entity.Store.Create();
+     s.Name = ""Souths park"";
+        
+     return s; 
+ }
+
+[ClientCall]
+public Store UpdateName(Store income)
+{
+    income.Name = ""Changed!!!!"";
+    return income;
+}
 
  [Client]
  public void GetUserName()

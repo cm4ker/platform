@@ -31,7 +31,8 @@ namespace ZenPlatform.Compiler.Dnlib
             ((List<DnlibCustomAttribute>) CustomAttributes).Add(dnlibAttr);
         }
 
-        public DnlibPropertyBuilder(DnlibTypeSystem ts, PropertyDef property, ITypeDefOrRef declaringType) : base(ts, property, declaringType)
+        public DnlibPropertyBuilder(DnlibTypeSystem ts, PropertyDef property, ITypeDefOrRef declaringType) : base(ts,
+            property, declaringType)
         {
         }
     }

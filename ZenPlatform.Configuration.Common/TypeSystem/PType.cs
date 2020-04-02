@@ -34,6 +34,8 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
 
         public virtual bool IsDto { get; set; }
         
+        public virtual bool IsUX { get; set; }
+
         public bool IsDbAffect { get; set; }
 
         public virtual bool IsPrimitive => false;

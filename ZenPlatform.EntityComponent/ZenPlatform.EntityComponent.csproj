@@ -1,25 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
     <ItemGroup>
-      <None Remove="IDE\Editors\UIPropertyEditor.xaml" />
+        <None Remove="IDE\Editors\UIPropertyEditor.xaml" />
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Include="IDE\Editors\UiPropertyEditor.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </EmbeddedResource>
+        <EmbeddedResource Include="IDE\Editors\UiPropertyEditor.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </EmbeddedResource>
     </ItemGroup>
+
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\avalonia.avaloniaedit.props" />
+
     <ItemGroup>
-      <PackageReference Include="Avalonia" Version="0.9.3" />
-      <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.9.0-preview1" />
-    </ItemGroup>
-    <ItemGroup>
+        <ProjectReference Include="..\ZenPlatform.Avalonia.Wrapper\ZenPlatform.Avalonia.Wrapper.csproj" />
         <ProjectReference Include="..\ZenPlatform.Compiler\ZenPlatform.Compiler.csproj" />
         <ProjectReference Include="..\ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj" />
         <ProjectReference Include="..\ZenPlatform.Ide.Common\ZenPlatform.Ide.Common.csproj" />
         <ProjectReference Include="..\ZenPlatform.Ide.Contract\ZenPlatform.Ide.Contracts.csproj" />
         <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
         <ProjectReference Include="..\ZenPlatform.Migration\ZenPlatform.Migration.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ServerRuntime\ZenPlatform.ServerRuntime.csproj" />
     </ItemGroup>
 </Project>

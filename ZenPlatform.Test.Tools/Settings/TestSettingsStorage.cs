@@ -26,7 +26,7 @@ namespace ZenPlatform.Core.Test
                     }
                 }
             },
-            Environments = new List<IStartupConfig>()
+            Environments = new List<StartupConfig>()
             {
                 new StartupConfig()
                 {

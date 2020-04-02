@@ -14,6 +14,7 @@ namespace ZenPlatform.Serializer
         Long = 5,
         ByteArray = 6,
         Datetime = 7,
-        DtoObject = 8
+        DtoObject = 8,
+        UXContainer = 9
     }
 }

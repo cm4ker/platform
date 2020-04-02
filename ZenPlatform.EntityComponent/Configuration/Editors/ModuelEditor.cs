@@ -44,7 +44,8 @@ namespace ZenPlatform.EntityComponent.Configuration
         public CommandEditor(MDCommand md)
         {
             _md = md;
-            _md.Module = new MDProgramModule();
+            if (_md.Module == null)
+                _md.Module = new MDProgramModule();
         }
 
         public string Name
@@ -52,13 +53,13 @@ namespace ZenPlatform.EntityComponent.Configuration
             get => _md.Name;
             set => _md.Name = value;
         }
-        
+
         public string DisplayName
         {
             get => _md.DisplayName;
             set => _md.DisplayName = value;
         }
-        
+
         public string ModuleText
         {
             get => _md.Module.ModuleText;

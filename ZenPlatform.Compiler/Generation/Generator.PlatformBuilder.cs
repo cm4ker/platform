@@ -27,7 +27,7 @@ namespace ZenPlatform.Compiler.Generation
             _cus = _root.Units;
             AstPlatformTypes.System(_root, _asm.TypeSystem);
             AstScopeRegister.Apply(_root);
-            
+
             LoweringOptimizer.Apply(_ts, _root);
 
             Build();
