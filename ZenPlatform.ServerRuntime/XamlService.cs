@@ -1,72 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Portable.Xaml;
-using Portable.Xaml.Schema;
-using ZenPlatform.Core.Contracts;
-using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.ServerRuntime
 {
-    public class MyXamlType : XamlType
-    {
-        public MyXamlType(Type underlyingType, XamlSchemaContext schemaContext) : base(underlyingType, schemaContext)
-        {
-        }
-
-        public MyXamlType(Type underlyingType, XamlSchemaContext schemaContext, XamlTypeInvoker invoker) : base(
-            underlyingType, schemaContext, invoker)
-        {
-        }
-
-        public MyXamlType(string unknownTypeNamespace, string unknownTypeName, IList<XamlType> typeArguments,
-            XamlSchemaContext schemaContext) : base(unknownTypeNamespace, unknownTypeName, typeArguments, schemaContext)
-        {
-        }
-
-        protected MyXamlType(string typeName, IList<XamlType> typeArguments, XamlSchemaContext schemaContext) : base(
-            typeName, typeArguments, schemaContext)
-        {
-        }
-
-        protected override bool LookupIsPublic()
-        {
-            return true;
-
-            return base.LookupIsPublic();
-        }
-    }
-
-    public class MyXamlSchemaContext : XamlSchemaContext
-    {
-        protected override Assembly OnAssemblyResolve(string assemblyName)
-        {
-            if (assemblyName.Contains("LibraryServer"))
-            {
-                var lookup = new AssemblyName(assemblyName);
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    if (assembly.GetName().Matches(lookup))
-                    {
-                        Console.WriteLine("Founded!!!");
-                        return assembly;
-                    }
-                }
-            }
-
-            return base.OnAssemblyResolve(assemblyName);
-        }
-
-        public override XamlType GetXamlType(Type type)
-        {
-            Console.WriteLine("THE TYPE IS :" + type);
-            return new MyXamlType(type, this);
-        }
-    }
-
     public static class XamlService
     {
         public static string Save(object instance)

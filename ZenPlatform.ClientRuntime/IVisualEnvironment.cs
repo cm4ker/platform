@@ -25,7 +25,7 @@ namespace ZenPlatform.ClientRuntime
 
         public IControl Run()
         {
-            var ux =  UX.Parse(_xaml);
+            var ux = UX.Parse(_xaml);
 
             var visual = (IControl) ux.GetUnderlyingControl();
 
