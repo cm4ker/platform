@@ -10,15 +10,15 @@ namespace ZenPlatform.Compiler.Contracts
             return ab.TypeSystem.Factory.CreateAttribute(ab.TypeSystem, type, args);
         }
 
-        public static ITypeBuilder DefineInstanceType(this IAssemblyBuilder asm, string @namespace, string name,
-            IType baseType = null)
-        {
-            return asm.DefineType(@namespace, name, TypeAttributes.Class
-                                                    | TypeAttributes.Public
-                                                    | TypeAttributes.BeforeFieldInit
-                                                    | TypeAttributes.AnsiClass,
-                baseType ?? asm.TypeSystem.GetSystemBindings().Object);
-        }
+        // public static ITypeBuilder DefineInstanceType(this IAssemblyBuilder asm, string @namespace, string name,
+        //     IType baseType = null)
+        // {
+        //     return asm.DefineType(@namespace, name, TypeAttributes.Class
+        //                                             | TypeAttributes.Public
+        //                                             | TypeAttributes.BeforeFieldInit
+        //                                             | TypeAttributes.AnsiClass,
+        //         baseType ?? asm.TypeSystem.GetSystemBindings().Object);
+        // }
 
         public static ITypeBuilder DefineStaticType(this IAssemblyBuilder asm, string @namespace, string name,
             IType baseType = null)

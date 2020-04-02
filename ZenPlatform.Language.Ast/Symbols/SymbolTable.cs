@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 
@@ -23,7 +24,7 @@ namespace ZenPlatform.Language.Ast.Symbols
             return symbol;
         }
 
-        public static MethodSymbol AddMethod(this SymbolTable st, Function syntaxObject, IMethod compileObject)
+        public static MethodSymbol AddMethod(this SymbolTable st, Function syntaxObject, SreMethod compileObject)
         {
             var symbol = st.Find<MethodSymbol>(syntaxObject);
 

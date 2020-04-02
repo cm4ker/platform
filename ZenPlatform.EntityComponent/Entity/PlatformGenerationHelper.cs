@@ -1,4 +1,5 @@
-using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -9,7 +10,7 @@ namespace ZenPlatform.EntityComponent.Entity
 {
     public static class PlatformGenerationHelper
     {
-        public static IType ConvertType(this ZenPlatform.Configuration.Contracts.TypeSystem.IPType pt,
+        public static SreType ConvertType(this IPType pt,
             SystemTypeBindings sb)
         {
             if (pt.IsTypeSpec)

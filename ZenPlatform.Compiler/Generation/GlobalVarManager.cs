@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
@@ -10,7 +11,7 @@ namespace ZenPlatform.Compiler.Generation
 {
     public class GlobalVarManager : IGlobalVarManager
     {
-        public GlobalVarManager(CompilationMode mode, ITypeSystem ts)
+        public GlobalVarManager(CompilationMode mode, SreTypeSystem ts)
         {
             Root = new GlobalVarTreeItem(VarTreeLeafType.Root, CompilationMode.Shared, "NoName", null);
             TypeSystem = ts;
@@ -18,7 +19,7 @@ namespace ZenPlatform.Compiler.Generation
 
         public Node Root { get; }
 
-        public ITypeSystem TypeSystem { get; }
+        public SreTypeSystem TypeSystem { get; }
 
         public void Register(Node node)
         {
@@ -47,7 +48,7 @@ namespace ZenPlatform.Compiler.Generation
 
                     onUnknown(c.Arguments);
 
-                    onUnknown(c.Expression);
+                    //onUnknown(c.Expression);
 
                     e.EmitCall((IMethod) node.CodeObject);
                 }

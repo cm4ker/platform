@@ -1,6 +1,8 @@
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Entity;
@@ -25,25 +27,25 @@ namespace ZenPlatform.EntityComponent.Compilation
         public IPType ObjectType { get; }
         public ITable Table { get; }
 
-        public ITypeBuilder Stage0(IAssemblyBuilder asm)
+        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
         {
             return asm.DefineInstanceType(this.GetNamespace(), Table.GetObjectRowClassName());
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitStructure(builder, dbType);
         }
 
-        public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             EmitBody(builder, dbType);
         }
 
-        private IType _dtoRowType;
-        private IField _dtoPrivate;
+        private SreType _dtoRowType;
+        private SreField _dtoPrivate;
 
-        private void EmitStructure(ITypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitStructure(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             var ts = builder.TypeSystem;
             var sb = ts.GetSystemBindings();
@@ -51,11 +53,11 @@ namespace ZenPlatform.EntityComponent.Compilation
             _dtoRowType = ts.FindType(Table.GetTableDtoRowClassFullName());
             var ctor = builder.DefineConstructor(false, _dtoRowType);
 
-            var g = ctor.Generator;
+            var g = ctor.Body;
             _dtoPrivate = builder.DefineField(_dtoRowType, "_dtoRow", false, false);
 
             g.LdArg_0()
-                .EmitCall(builder.BaseType.FindConstructor())
+                .Call(builder.BaseType.FindConstructor())
                 .LdArg_0()
                 .LdArg(1)
                 .StFld(_dtoPrivate)
@@ -64,30 +66,30 @@ namespace ZenPlatform.EntityComponent.Compilation
             foreach (var prop in Table.Properties)
             {
                 bool propertyGenerated = false;
-
+                
                 var propName = prop.Name;
-
+                
                 var propType = (prop.Types.Count() > 1)
                     ? sb.Object
                     : prop.Types.First().ConvertType(sb);
-
+                
                 var hasSet = !prop.IsReadOnly;
-
-
+                
+                
                 var codeObj = builder.DefineProperty(propType, propName, true, hasSet, false);
                 TypeBody.SymbolTable.AddProperty(new Property(null, propName, propType.ToAstType()))
                     .Connect(codeObj.prop);
             }
         }
 
-        private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             var ts = builder.TypeSystem;
             var sb = builder.TypeSystem.GetSystemBindings();
-
+            
             var mrg = ts.FindType($"{GetNamespace()}.{ObjectType.GetManagerType().Name}");
             var mrgGet = mrg.FindMethod("Get", sb.Guid);
-
+            
             foreach (var prop in Table.Properties)
             {
                 SharedGenerators.EmitObjectProperty(builder, prop, sb, _dtoRowType, _dtoPrivate, ts, mrgGet,

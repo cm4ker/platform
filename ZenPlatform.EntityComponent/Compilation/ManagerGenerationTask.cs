@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
@@ -30,22 +32,22 @@ namespace ZenPlatform.EntityComponent.Compilation
             _qm = new QueryMachine();
         }
 
-        public ITypeBuilder Stage0(IAssemblyBuilder asm)
+        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
         {
             return asm.DefineInstanceType(GetNamespace(), Name);
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitStructure(builder, dbType);
         }
 
-        public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             EmitBody(builder, dbType);
         }
 
-        public void EmitStructure(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void EmitStructure(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             var managerType = ManagerType;
             var pLinkType = managerType.GetLinkType();
@@ -77,7 +79,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                 .DefineParameter("dto", dtoType, false, false);
         }
 
-        private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
             var pManagerType = ManagerType;
             var pObjectType = pManagerType.GetObjectType();
@@ -100,18 +102,20 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             var nGuid = sb.Guid.FindMethod(nameof(Guid.NewGuid));
 
-            var create = (IMethodBuilder) builder.FindMethod("Create");
+            var create = (SreMethodBuilder) builder.FindMethod("Create");
 
-            var cg = create.Generator;
+            var cg = create.Body;
 
             var dto = cg.DefineLocal(dtoType);
 
             cg
                 .NewObj(dtoType.FindConstructor())
                 .StLoc(dto)
+                .Statement()
                 .LdLoc(dto)
-                .EmitCall(nGuid)
-                .EmitCall(dtoType.FindProperty("Id").Setter);
+                .Call(nGuid)
+                .StProp(dtoType.FindProperty("Id"))
+                .Statement();
 
             //init default values
 
@@ -124,38 +128,38 @@ namespace ZenPlatform.EntityComponent.Compilation
                     if (property.PropertyType == sb.DateTime)
                         cg.LdLoc(dto)
                             .LdDefaultDateTime()
-                            .EmitCall(property.Setter);
+                            .StProp(property).Statement();
                     else if (property.PropertyType.Equals(byteArr))
                     {
                         cg.LdLoc(dto)
-                            .LdcI4(0)
+                            .LdLit(0)
                             .NewArr(sb.Byte)
-                            .EmitCall(property.Setter);
+                            .StProp(property).Statement();
                     }
                     else if (property.PropertyType.Equals(sb.String))
                     {
                         cg.LdLoc(dto)
-                            .LdStr("")
-                            .EmitCall(property.Setter);
+                            .LdLit("")
+                            .StProp(property).Statement();
                     }
                 }
             }
 
             cg.LdLoc(dto)
                 .NewObj(objectType.FindConstructor(dtoType))
-                .Ret()
+                .Ret().Statement()
                 ;
 
             //Get method
-            var get = (IMethodBuilder) builder.FindMethod("Get", sb.Guid);
+            var get = (SreMethodBuilder) builder.FindMethod("Get", sb.Guid);
 
-            var gg = get.Generator;
-            var dxcType = ts.FindType<DbCommand>();
-            var readerType = ts.FindType<DbDataReader>();
+            var gg = get.Body;
+            var dxcType = ts.Resolve<DbCommand>();
+            var readerType = ts.Resolve<DbDataReader>();
 
-            var pcolType = ts.FindType<DbParameterCollection>();
+            var pcolType = ts.Resolve<DbParameterCollection>();
 
-            var parameterType = ts.FindType<DbParameter>();
+            var parameterType = ts.Resolve<DbParameter>();
             var dxcLoc = gg.DefineLocal(dxcType);
             var readerLoc = gg.DefineLocal(readerType);
             var p_loc = gg.DefineLocal(parameterType);
@@ -174,58 +178,70 @@ namespace ZenPlatform.EntityComponent.Compilation
             gg
                 .NewDbCmdFromContext()
                 .StLoc(dxcLoc)
+                .Statement()
                 .LdLoc(dxcLoc)
-                .LdStr(compiler.Compile(q))
-                .EmitCall(sb.DbCommand.FindProperty(nameof(DbCommand.CommandText)).Setter)
+                .LdLit(compiler.Compile(q))
+                .StProp(sb.DbCommand.FindProperty(nameof(DbCommand.CommandText)))
+                .Statement()
 
                 //load parameter
                 .LdLoc(dxcLoc)
-                .EmitCall(sb.DbCommand.FindMethod(nameof(DbCommand.CreateParameter)))
+                .Call(sb.DbCommand.FindMethod(nameof(DbCommand.CreateParameter)))
                 .StLoc(p_loc)
+                .Statement()
                 .LdLoc(p_loc)
-                .LdStr("P_0")
-                .EmitCall(parameterType.FindProperty(nameof(DbParameter.ParameterName)).Setter)
+                .LdLit("P_0")
+                .StProp(parameterType.FindProperty(nameof(DbParameter.ParameterName)))
+                .Statement()
                 .LdLoc(p_loc)
                 .LdArg(get.Parameters[0].ArgIndex)
-                .Box(get.Parameters[0].Type)
-                .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter)
+                //.Box(get.Parameters[0].Type)
+                .StProp(parameterType.FindProperty(nameof(DbParameter.Value)))
+                .Statement()
                 .LdLoc(dxcLoc)
-                .EmitCall(dxcType.FindProperty(nameof(DbCommand.Parameters)).Getter)
+                .LdProp(dxcType.FindProperty(nameof(DbCommand.Parameters)))
                 //collection on stack
                 .LdLoc(p_loc)
-                .EmitCall(pcolType.FindMethod("Add", sb.Object), true)
+                .Call(pcolType.FindMethod("Add", sb.Object))
+                .Statement()
 
                 //ExecuteReader        
                 .LdLoc(dxcLoc)
-                .EmitCall(sb.DbCommand.FindMethod(nameof(DbCommand.ExecuteReader)))
+                .Call(sb.DbCommand.FindMethod(nameof(DbCommand.ExecuteReader)))
                 .StLoc(readerLoc)
+                .Statement()
                 .LdLoc(readerLoc)
-                .EmitCall(readerType.FindMethod(nameof(DbDataReader.Read)), true)
+                .Call(readerType.FindMethod(nameof(DbDataReader.Read)))
+                .Statement()
 
                 //Create dto and map it
                 .NewObj(dtoType.FindConstructor())
                 .StLoc(dto)
+                .Statement()
                 .LdLoc(dto)
                 .LdLoc(readerLoc)
-                .EmitCall(dtoType.FindMethod("Map", readerType))
+                .Call(dtoType.FindMethod("Map", readerType))
+                .Statement()
 
                 //release reader
                 .LdLoc(readerLoc)
-                .EmitCall(readerType.FindMethod(nameof(DbDataReader.Dispose)), true)
+                .Call(readerType.FindMethod(nameof(DbDataReader.Dispose)))
+                .Statement()
 
                 //release command
                 .LdLoc(dxcLoc)
-                .EmitCall(sb.DbCommand.FindMethod(nameof(DbCommand.Dispose)), true)
+                .Call(sb.DbCommand.FindMethod(nameof(DbCommand.Dispose)))
+                .Statement()
 
                 //Create link
                 .LdLoc(dto)
                 .NewObj(linkType.FindConstructor(dtoType))
-                .Ret();
+                .Ret().Statement();
 
             EmitSavingSupport(builder, dbType);
         }
 
-        private void EmitSavingSupport(ITypeBuilder tb, SqlDatabaseType dbType)
+        private void EmitSavingSupport(SreTypeBuilder tb, SqlDatabaseType dbType)
         {
             var set = ManagerType;
 
@@ -238,20 +254,20 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             var dtoType = ts.FindType($"{set.GetNamespace()}.{set.GetDtoType().Name}");
 
-            var saveMethod = (IMethodBuilder) tb.FindMethod("Save", dtoType);
+            var saveMethod = (SreMethodBuilder) tb.FindMethod("Save", dtoType);
 
-            var rg = saveMethod.Generator;
+            var rg = saveMethod.Body;
 
 
-            var cmdType = ts.FindType<DbCommand>();
-            var parameterType = ts.FindType<DbParameter>();
-            var pcolType = ts.FindType<DbParameterCollection>();
+            var cmdType = ts.Resolve<DbCommand>();
+            var parameterType = ts.Resolve<DbParameter>();
+            var pcolType = ts.Resolve<DbParameterCollection>();
 
             var dtoParam = saveMethod.Parameters[0];
 
             var indexp = 0;
 
-            var p_loc = rg.DefineLocal(ts.FindType<DbParameter>());
+            var p_loc = rg.DefineLocal(ts.Resolve<DbParameter>());
 
             var versionF = dtoType.Properties.First(x => x.Name == "Version");
 
@@ -260,28 +276,27 @@ namespace ZenPlatform.EntityComponent.Compilation
             if (versionF != null)
             {
                 rg.NewDbCmdFromContext()
-                    .StLoc(cmdLoc);
+                    .StLoc(cmdLoc)
+                    .Statement();
 
-                var narg = rg.DefineLabel();
-                var end = rg.DefineLabel();
                 rg.LdArg(dtoParam)
-                    .EmitCall(versionF.Getter)
-                    .LdNull()
-                    .Ceq()
-                    .BrTrue(narg);
-
-                rg
+                    .LdProp(versionF)
+                    .Null()
+                    .Cneq()
+                    .Block()
                     .LdLoc(cmdLoc)
-                    .LdStr(compiler.Compile(GetUpdateQuery(pObjectType)))
-                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
-                    .Br(end);
-
-                rg
-                    .MarkLabel(narg)
+                    .LdLit(compiler.Compile(GetUpdateQuery(pObjectType)))
+                    .StProp(cmdType.FindProperty(nameof(DbCommand.CommandText)))
+                    .Statement()
+                    .EndBlock()
+                    .Block()
                     .LdLoc(cmdLoc)
-                    .LdStr(compiler.Compile(GetInsertQuery(pObjectType)))
-                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.CommandText)).Setter)
-                    .MarkLabel(end);
+                    .LdLit(compiler.Compile(GetInsertQuery(pObjectType)))
+                    .StProp(cmdType.FindProperty(nameof(DbCommand.CommandText)))
+                    .Statement()
+                    .EndBlock()
+                    .TryIf()
+                    .Statement();
             }
 
             foreach (var property in dtoType.Properties)
@@ -290,30 +305,33 @@ namespace ZenPlatform.EntityComponent.Compilation
                 if (m is null) continue;
 
                 rg.LdLoc(cmdLoc)
-                    .EmitCall(cmdType.FindMethod(nameof(DbCommand.CreateParameter)))
+                    .Call(cmdType.FindMethod(nameof(DbCommand.CreateParameter)))
                     .StLoc(p_loc)
+                    .Statement()
                     //add param to collection
                     .LdLoc(cmdLoc)
-                    .EmitCall(cmdType.FindProperty(nameof(DbCommand.Parameters)).Getter)
+                    .LdProp(cmdType.FindProperty(nameof(DbCommand.Parameters)))
                     //collection on stack
                     .LdLoc(p_loc)
-                    .EmitCall(pcolType.FindMethod("Add", sb.Object), true)
+                    .Call(pcolType.FindMethod("Add", sb.Object))
+                    .Statement()
                     //endadd
                     .LdLoc(p_loc)
-                    .LdStr($"P_{indexp}")
-                    .EmitCall(parameterType.FindProperty(nameof(DbParameter.ParameterName)).Setter)
+                    .LdLit($"P_{indexp}")
+                    .StProp(parameterType.FindProperty(nameof(DbParameter.ParameterName)))
+                    .Statement()
                     .LdLoc(p_loc)
                     .LdArg_0()
-                    .EmitCall(property.Getter)
-                    .Box(property.PropertyType)
-                    .EmitCall(parameterType.FindProperty(nameof(DbParameter.Value)).Setter);
+                    .LdProp(property)
+                    .StProp(parameterType.FindProperty(nameof(DbParameter.Value)))
+                    .Statement();
 
                 indexp++;
             }
 
             rg.LdLoc(cmdLoc)
-                .EmitCall(cmdType.FindMethod(nameof(DbCommand.ExecuteNonQuery)), true)
-                .Ret();
+                .Call(cmdType.FindMethod(nameof(DbCommand.ExecuteNonQuery)))
+                .Statement();
         }
 
         private SSyntaxNode GetInsertQuery(IPType se)

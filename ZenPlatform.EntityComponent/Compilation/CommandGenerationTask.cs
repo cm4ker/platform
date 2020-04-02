@@ -1,5 +1,7 @@
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
@@ -34,16 +36,16 @@ namespace ZenPlatform.EntityComponent.Compilation
             Replace(TypeBody, typeBody);
         }
 
-        public ITypeBuilder Stage0(IAssemblyBuilder asm)
+        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
         {
             return asm.DefineStaticType(GetNamespace(), Name);
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
         }
 
-        public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
         {
         }
     }

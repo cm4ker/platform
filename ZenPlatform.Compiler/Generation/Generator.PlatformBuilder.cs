@@ -25,10 +25,10 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             _cus = _root.Units;
-            AstPlatformTypes.System(_root, _asm.TypeSystem);
+            // AstPlatformTypes.System(_root, _asm.TypeSystem);
             AstScopeRegister.Apply(_root);
 
-            LoweringOptimizer.Apply(_ts, _root);
+            // LoweringOptimizer.Apply(_ts, _root);
 
             Build();
         }
@@ -50,7 +50,7 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             _cus = root.Units;
-            AstPlatformTypes.System(_root, _asm.TypeSystem);
+            // AstPlatformTypes.System(_root, _asm.TypeSystem);
             AstScopeRegister.Apply(root);
 
             return root;

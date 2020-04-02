@@ -22,6 +22,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitFunctionList(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitFunctionList(this);
+        }
     }
 }
 
@@ -36,6 +41,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitFieldList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitFieldList(this);
         }
     }
 }
@@ -52,6 +62,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitPropertyList(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitPropertyList(this);
+        }
     }
 }
 
@@ -66,6 +81,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitConstructorList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitConstructorList(this);
         }
     }
 }
@@ -82,6 +102,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitTypeList(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitTypeList(this);
+        }
     }
 }
 
@@ -96,6 +121,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitStatementList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitStatementList(this);
         }
     }
 }
@@ -112,6 +142,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitParameterList(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitParameterList(this);
+        }
     }
 }
 
@@ -126,6 +161,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitGenericParameterList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitGenericParameterList(this);
         }
     }
 }
@@ -142,6 +182,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitAttributeList(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitAttributeList(this);
+        }
     }
 }
 
@@ -156,6 +201,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitArgumentList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitArgumentList(this);
         }
     }
 }
@@ -172,6 +222,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitMatchAtomList(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitMatchAtomList(this);
+        }
     }
 }
 
@@ -186,6 +241,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitUsingList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitUsingList(this);
         }
     }
 }
@@ -202,6 +262,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitEntityList(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitEntityList(this);
+        }
     }
 }
 
@@ -217,6 +282,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitNamespaceDeclarationList(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitNamespaceDeclarationList(this);
+        }
     }
 }
 
@@ -231,6 +301,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitCompilationUnitList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitCompilationUnitList(this);
         }
     }
 }
@@ -252,6 +327,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitRoot(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitRoot(this);
         }
 
         public SymbolTable SymbolTable { get; set; }
@@ -293,6 +373,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             return visitor.VisitNamespaceDeclaration(this);
         }
 
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitNamespaceDeclaration(this);
+        }
+
         public SymbolTable SymbolTable { get; set; }
     }
 }
@@ -328,6 +413,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitCompilationUnit(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitCompilationUnit(this);
+        }
     }
 }
 
@@ -343,6 +433,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public String Name { get; }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(AstVisitorBase visitor)
         {
             throw new NotImplementedException();
         }
@@ -364,6 +459,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitUsingDeclaration(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitUsingDeclaration(this);
+        }
     }
 }
 
@@ -384,6 +484,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitUsingAliasDeclaration(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitUsingAliasDeclaration(this);
         }
     }
 }
@@ -432,6 +537,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             return visitor.VisitTypeBody(this);
         }
 
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitTypeBody(this);
+        }
+
         public SymbolTable SymbolTable { get; set; }
     }
 }
@@ -463,6 +573,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             throw new NotImplementedException();
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
@@ -477,6 +592,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitClass(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitClass(this);
         }
     }
 }
@@ -493,6 +613,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitModule(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitModule(this);
+        }
     }
 }
 
@@ -508,6 +633,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             throw new NotImplementedException();
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
@@ -520,6 +650,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(AstVisitorBase visitor)
         {
             throw new NotImplementedException();
         }
@@ -554,6 +689,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             return visitor.VisitBinaryExpression(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitBinaryExpression(this);
+        }
     }
 }
 
@@ -576,6 +716,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         public UnaryOperatorType OperaotrType { get; }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(AstVisitorBase visitor)
         {
             throw new NotImplementedException();
         }
@@ -610,6 +755,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             return visitor.VisitCastExpression(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitCastExpression(this);
+        }
     }
 }
 
@@ -641,6 +791,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             return visitor.VisitIndexerExpression(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitIndexerExpression(this);
+        }
     }
 }
 
@@ -665,6 +820,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitLogicalOrArithmeticExpression(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitLogicalOrArithmeticExpression(this);
         }
     }
 }
@@ -700,6 +860,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             return visitor.VisitAssignment(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitAssignment(this);
+        }
     }
 }
 
@@ -712,6 +877,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(AstVisitorBase visitor)
         {
             throw new NotImplementedException();
         }
@@ -730,6 +900,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitPrimitiveTypeSyntax(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitPrimitiveTypeSyntax(this);
+        }
     }
 }
 
@@ -744,6 +919,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitSingleTypeSyntax(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitSingleTypeSyntax(this);
         }
     }
 }
@@ -760,6 +940,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitArrayTypeSyntax(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitArrayTypeSyntax(this);
+        }
     }
 }
 
@@ -774,6 +959,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitUnionTypeSyntax(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitUnionTypeSyntax(this);
         }
     }
 }
@@ -796,6 +986,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitGenericTypeSyntax(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitGenericTypeSyntax(this);
+        }
     }
 }
 
@@ -816,6 +1011,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitBlock(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitBlock(this);
         }
 
         public SymbolTable SymbolTable { get; set; }
@@ -840,6 +1040,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         {
             return visitor.VisitParameter(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitParameter(this);
+        }
     }
 }
 
@@ -858,6 +1063,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         {
             return visitor.VisitGenericParameter(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitGenericParameter(this);
+        }
     }
 }
 
@@ -873,6 +1083,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitAttributeSyntax(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitAttributeSyntax(this);
+        }
     }
 }
 
@@ -885,6 +1100,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(AstVisitorBase visitor)
         {
             throw new NotImplementedException();
         }
@@ -939,6 +1159,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
             return visitor.VisitFunction(this);
         }
 
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitFunction(this);
+        }
+
         public SymbolTable SymbolTable { get; set; }
     }
 }
@@ -978,6 +1203,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             return visitor.VisitConstructor(this);
         }
 
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitConstructor(this);
+        }
+
         public SymbolTable SymbolTable { get; set; }
     }
 }
@@ -996,6 +1226,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitField(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitField(this);
         }
     }
 }
@@ -1024,6 +1259,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitProperty(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitProperty(this);
+        }
     }
 }
 
@@ -1048,6 +1288,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitArgument(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitArgument(this);
         }
     }
 }
@@ -1079,6 +1324,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitCall(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitCall(this);
+        }
     }
 }
 
@@ -1099,6 +1349,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitReturn(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitReturn(this);
         }
     }
 }
@@ -1130,6 +1385,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitVariable(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitVariable(this);
+        }
     }
 }
 
@@ -1154,6 +1414,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitContextVariable(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitContextVariable(this);
+        }
     }
 }
 
@@ -1168,6 +1433,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitLiteral(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitLiteral(this);
         }
     }
 }
@@ -1186,6 +1456,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitName(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitName(this);
         }
     }
 }
@@ -1210,6 +1485,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitGetFieldExpression(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitGetFieldExpression(this);
         }
     }
 }
@@ -1238,6 +1518,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             throw new NotImplementedException();
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
@@ -1254,6 +1539,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             return visitor.VisitPropertyLookupExpression(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitPropertyLookupExpression(this);
+        }
     }
 }
 
@@ -1269,6 +1559,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitMethodLookupExpression(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitMethodLookupExpression(this);
         }
     }
 }
@@ -1293,6 +1588,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitAssignFieldExpression(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitAssignFieldExpression(this);
         }
     }
 }
@@ -1320,6 +1620,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitDoWhile(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitDoWhile(this);
         }
     }
 }
@@ -1354,6 +1659,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             return visitor.VisitTry(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitTry(this);
+        }
     }
 }
 
@@ -1374,6 +1684,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitExpressionStatement(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitExpressionStatement(this);
         }
     }
 }
@@ -1415,6 +1730,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             return visitor.VisitFor(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitFor(this);
+        }
     }
 }
 
@@ -1448,6 +1768,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             return visitor.VisitIf(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitIf(this);
+        }
     }
 }
 
@@ -1469,6 +1794,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             throw new NotImplementedException();
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
@@ -1484,6 +1814,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             return visitor.VisitPostIncrementExpression(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitPostIncrementExpression(this);
+        }
     }
 }
 
@@ -1498,6 +1833,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitPostDecrementExpression(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitPostDecrementExpression(this);
         }
     }
 }
@@ -1519,6 +1859,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitThrow(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitThrow(this);
         }
     }
 }
@@ -1553,6 +1898,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             return visitor.VisitMatchAtom(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitMatchAtom(this);
+        }
     }
 }
 
@@ -1580,6 +1930,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             return visitor.VisitMatch(this);
         }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitMatch(this);
+        }
     }
 }
 
@@ -1600,6 +1955,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             return visitor.VisitGlobalVar(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitGlobalVar(this);
         }
     }
 }
@@ -1921,6 +2281,324 @@ namespace ZenPlatform.Language.Ast
         public virtual T VisitGlobalVar(GlobalVar arg)
         {
             return DefaultVisit(arg);
+        }
+    }
+
+    public abstract partial class AstVisitorBase
+    {
+        public virtual void VisitFunctionList(FunctionList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitFieldList(FieldList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitPropertyList(PropertyList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitConstructorList(ConstructorList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitTypeList(TypeList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitStatementList(StatementList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitParameterList(ParameterList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitGenericParameterList(GenericParameterList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitAttributeList(AttributeList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitArgumentList(ArgumentList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitMatchAtomList(MatchAtomList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitUsingList(UsingList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitEntityList(EntityList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitNamespaceDeclarationList(NamespaceDeclarationList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitCompilationUnitList(CompilationUnitList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitRoot(Root arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitNamespaceDeclaration(NamespaceDeclaration arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitCompilationUnit(CompilationUnit arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitUsingDeclaration(UsingDeclaration arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitUsingAliasDeclaration(UsingAliasDeclaration arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitTypeBody(TypeBody arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitClass(Class arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitModule(Module arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitBinaryExpression(BinaryExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitCastExpression(CastExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitIndexerExpression(IndexerExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitLogicalOrArithmeticExpression(LogicalOrArithmeticExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitAssignment(Assignment arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitPrimitiveTypeSyntax(PrimitiveTypeSyntax arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitSingleTypeSyntax(SingleTypeSyntax arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitArrayTypeSyntax(ArrayTypeSyntax arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitUnionTypeSyntax(UnionTypeSyntax arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitGenericTypeSyntax(GenericTypeSyntax arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitBlock(Block arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitParameter(Parameter arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitGenericParameter(GenericParameter arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitAttributeSyntax(AttributeSyntax arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitFunction(Function arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitConstructor(Constructor arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitField(Field arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitProperty(Property arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitArgument(Argument arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitCall(Call arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitReturn(Return arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitVariable(Variable arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitContextVariable(ContextVariable arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitLiteral(Literal arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitName(Name arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitGetFieldExpression(GetFieldExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitPropertyLookupExpression(PropertyLookupExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitMethodLookupExpression(MethodLookupExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitAssignFieldExpression(AssignFieldExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitDoWhile(DoWhile arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitTry(Try arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitExpressionStatement(ExpressionStatement arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitFor(For arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitIf(If arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitPostIncrementExpression(PostIncrementExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitPostDecrementExpression(PostDecrementExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitThrow(Throw arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitMatchAtom(MatchAtom arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitMatch(Match arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitGlobalVar(GlobalVar arg)
+        {
+            DefaultVisit(arg);
         }
     }
 }

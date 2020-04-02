@@ -1,8 +1,4 @@
-﻿using System.Data.Common;
-using System.Data.SqlClient;
-using BufferedDataReaderDotNet;
-
-namespace ZenPlatform.ServerRPC
+﻿namespace ZenPlatform.ServerRPC
 {
     class Program
     {

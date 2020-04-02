@@ -1,19 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Avalonia.Remote.Protocol.Designer;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Core;
-using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Symbols;
 using ArrayTypeSyntax = ZenPlatform.Language.Ast.Definitions.ArrayTypeSyntax;
+using SystemTypeBindings = ZenPlatform.Compiler.Roslyn.SystemTypeBindings;
 using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 
 namespace ZenPlatform.Compiler
@@ -25,11 +22,11 @@ namespace ZenPlatform.Compiler
         private readonly SystemTypeBindings _stb;
         private List<TypeEntity> _types;
 
-        private Dictionary<string, List<IProperty>> _props;
-        private Dictionary<string, List<IMethod>> _methods;
-        private ITypeSystem _ts;
+        private Dictionary<string, List<SreProperty>> _props;
+        private Dictionary<string, List<SreInvokableBase>> _methods;
+        private SreTypeSystem _ts;
 
-        public SyntaxTreeMemberAccessProvider(Root root, ITypeSystem ts)
+        public SyntaxTreeMemberAccessProvider(Root root, SreTypeSystem ts)
         {
             _cu = root.Units;
             _root = root;
@@ -38,13 +35,13 @@ namespace ZenPlatform.Compiler
             _stb = ts.GetSystemBindings();
             _types = _cu.GetNodes<TypeEntity>().ToList();
 
-            _props = new Dictionary<string, List<IProperty>>();
-            _methods = new Dictionary<string, List<IMethod>>();
+            _props = new Dictionary<string, List<SreProperty>>();
+            _methods = new Dictionary<string, List<SreInvokableBase>>();
 
             RegisterStatic();
         }
 
-        public IType GetClrType(TypeSyntax typeSyntax)
+        public SreType GetClrType(TypeSyntax typeSyntax)
         {
             if (typeSyntax is SingleTypeSyntax stn)
             {
@@ -52,7 +49,7 @@ namespace ZenPlatform.Compiler
             }
             else if (typeSyntax is GenericTypeSyntax gts)
             {
-                IType[] args = new IType[gts.Args.Count];
+                SreType[] args = new SreType[gts.Args.Count];
 
                 for (int i = 0; i < gts.Args.Count; i++)
                 {
@@ -79,7 +76,7 @@ namespace ZenPlatform.Compiler
             throw new Exception("Type not resolved");
         }
 
-        public IType GetClrType(SingleTypeSyntax type)
+        public SreType GetClrType(SingleTypeSyntax type)
         {
             var result = TypeFinder.Apply(type, _root);
 
@@ -89,7 +86,7 @@ namespace ZenPlatform.Compiler
             return result.ClrType;
         }
 
-        private IType GetPrimitiveType(PrimitiveTypeSyntax pts)
+        private SreType GetPrimitiveType(PrimitiveTypeSyntax pts)
         {
             return pts.Kind switch
             {
@@ -102,12 +99,12 @@ namespace ZenPlatform.Compiler
                 TypeNodeKind.Object => _stb.Object,
                 TypeNodeKind.Void => _stb.Void,
                 TypeNodeKind.Session => _stb.Session,
-                TypeNodeKind.Context => _ts.FindType<PlatformContext>(),
+                TypeNodeKind.Context => _ts.Resolve<PlatformContext>(),
                 _ => throw new Exception($"This type is not primitive {pts.Kind}")
             };
         }
 
-        public IMethod GetMethod(TypeSyntax type, string name, IType[] args)
+        public SreMethod GetMethod(TypeSyntax type, string name, SreType[] args)
         {
             if (type is SingleTypeSyntax sts)
             {
@@ -116,7 +113,7 @@ namespace ZenPlatform.Compiler
 
                 var funcDef = typeDef?.TypeBody.SymbolTable.Find<MethodSymbol>(name, SymbolScopeBySecurity.User);
 
-                IMethod m = funcDef?.SelectOverload(args).clrMethod;
+                SreMethod m = funcDef?.SelectOverload(args).clrMethod;
 
                 return m ?? throw new Exception($"Property {name} not found");
             }
@@ -130,7 +127,7 @@ namespace ZenPlatform.Compiler
             throw new Exception("Unknown type");
         }
 
-        public IProperty GetProperty(TypeSyntax type, string name)
+        public SreProperty GetProperty(TypeSyntax type, string name)
         {
             if (type is SingleTypeSyntax sts)
             {
@@ -160,18 +157,18 @@ namespace ZenPlatform.Compiler
             return typeDef.TypeBody.SymbolTable.GetAll<MethodSymbol>(SymbolType.Method).Select(x => x.Name).ToList();
         }
 
-        public void RegisterProperty(string fullTypeName, IProperty prop)
+        public void RegisterProperty(string fullTypeName, SreProperty prop)
         {
             if (!_props.ContainsKey(fullTypeName))
-                _props[fullTypeName] = new List<IProperty>();
+                _props[fullTypeName] = new List<SreProperty>();
 
             _props[fullTypeName].Add(prop);
         }
 
-        public void RegisterMethod(string fullTypeName, IMethod method)
+        public void RegisterMethod(string fullTypeName, SreInvokableBase method)
         {
             if (!_methods.ContainsKey(fullTypeName))
-                _methods[fullTypeName] = new List<IMethod>();
+                _methods[fullTypeName] = new List<SreInvokableBase>();
 
             _methods[fullTypeName].Add(method);
         }
@@ -189,7 +186,7 @@ namespace ZenPlatform.Compiler
                     TypeNodeKind.Boolean => _stb.Boolean.FullName,
                     TypeNodeKind.Object => _stb.Object.FullName,
                     TypeNodeKind.Byte => _stb.Byte.FullName,
-                    TypeNodeKind.Context => _stb.TypeSystem.FindType<PlatformContext>().FullName,
+                    TypeNodeKind.Context => _stb.TypeSystem.Resolve<PlatformContext>().FullName,
                     _ => throw new Exception("")
                 };
             }
@@ -205,7 +202,7 @@ namespace ZenPlatform.Compiler
             throw new NotImplementedException();
         }
 
-        private IProperty GetCachedProperty(string typeName, string propName)
+        private SreProperty GetCachedProperty(string typeName, string propName)
         {
             if (_props.ContainsKey(typeName))
                 return _props[typeName].FirstOrDefault(x => x.Name == propName);
@@ -213,7 +210,7 @@ namespace ZenPlatform.Compiler
             return null;
         }
 
-        private IMethod GetCachedMethod(string typeName, string methodName, string[] typeNameArgs = null)
+        private SreInvokableBase GetCachedMethod(string typeName, string methodName, string[] typeNameArgs = null)
         {
             if (_methods.ContainsKey(typeName))
                 return _methods[typeName]
@@ -230,7 +227,7 @@ namespace ZenPlatform.Compiler
 
         private void RegisterStatic()
         {
-            var context = _stb.TypeSystem.FindType<PlatformContext>();
+            var context = _stb.TypeSystem.Resolve<PlatformContext>();
             RegisterProperty(context.FullName, context.FindProperty(nameof(PlatformContext.Session)));
             RegisterProperty(context.FullName, context.FindProperty(nameof(PlatformContext.UserName)));
         }

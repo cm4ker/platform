@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
@@ -14,6 +15,8 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Shared.Tree;
 using Root = ZenPlatform.Language.Ast.Definitions.Root;
+using TypeExtensions = ZenPlatform.Compiler.Roslyn.TypeExtensions;
+using TypeSystemExtensions = ZenPlatform.Compiler.Roslyn.TypeSystemExtensions2;
 
 namespace ZenPlatform.EntityComponent.Compilation
 {
@@ -37,7 +40,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             _rules = new GeneratorRules(component);
         }
 
-        public ITypeBuilder Stage0(IAssemblyBuilder asm, Node task)
+        public SreTypeBuilder Stage0(SreAssemblyBuilder asm, Node task)
         {
             if (task is IEntityGenerationTask egt)
                 return egt.Stage0(asm);
@@ -45,7 +48,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                 throw new Exception("Component doesn't support this task type");
         }
 
-        public void Stage1(Node task, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
+        public void Stage1(Node task, SreTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
             IEntryPointManager sm)
         {
             if (task is IEntityGenerationTask egt)
@@ -54,7 +57,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                 throw new Exception("Component doesn't support this task type");
         }
 
-        public void Stage2(Node task, ITypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage2(Node task, SreTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (task is IEntityGenerationTask egt)
                 egt.Stage2(builder, dbType);
@@ -186,7 +189,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                     ns.AddEntity(
                         new CommandGenerationTask(cmd, CompilationMode.Client, _component, $"__cmd_{cmd.Name}"));
                 }
-                
+
                 foreach (var inf in md.Interfaces)
                 {
                     ns.AddEntity(new UXFormClientGenerationTask(ipType, inf, CompilationMode.Client, _component, true,
@@ -225,7 +228,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                     "Create", (n, e) =>
                     {
                         var call = n as Call ?? throw new Exception("Can't emit function if it is not a call");
-                        e.EmitCall(mrg.FindMethod("Create"), call.IsStatement);
+                        e.Call(TypeExtensions.FindMethod(mrg, "Create"));
                     });
 
                 mrgLeaf.Attach(createMethod);
@@ -277,48 +280,48 @@ namespace ZenPlatform.EntityComponent.Compilation
         }
 
 
-        public void StageInfrastructure(IAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void StageInfrastructure(SreAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             CreateMainLink(builder);
         }
 
-        private void CreateEntryPoint(IAssemblyBuilder b)
+        private void CreateEntryPoint(SreAssemblyBuilder b)
         {
-            var ep = b.DefineStaticType("", "EntryPoint");
+            var ep = TypeSystemExtensions.DefineStaticType(b, "", "EntryPoint");
             var run = ep.DefineMethod("Run", true, true, false);
 
-            run.Generator.Ret();
+            // run.Generator.Ret();
         }
 
-        private void CreateMainLink(IAssemblyBuilder builder)
+        private void CreateMainLink(SreAssemblyBuilder builder)
         {
-            var ts = builder.TypeSystem;
-            var b = ts.GetSystemBindings();
-
-            var linkType = builder.DefineType(_component.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule),
-                "EntityLink",
-                TypeAttributes.Class | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit,
-                b.Object);
-
-            linkType.AddInterfaceImplementation(ts.FindType<ILink>());
-
-            var idBack = linkType.DefineField(b.Guid, ConventionsHelper.GetBackingFieldName("Id"), false, false);
-            linkType.DefineProperty(b.Guid, "Id", idBack, true, false, true);
-
-            var typeBack = linkType.DefineField(b.Int, ConventionsHelper.GetBackingFieldName("Type"), false, false);
-            linkType.DefineProperty(b.Int, "Type", typeBack, true, false, true);
-
-            var presentationBack = linkType.DefineField(b.String, ConventionsHelper.GetBackingFieldName("Presentation"),
-                false, false);
-            linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false, true);
-
-            var ctor = linkType.DefineConstructor(false);
-
-            var e = ctor.Generator;
-
-            e.LdArg_0()
-                .EmitCall(b.Object.Constructors[0])
-                .Ret();
+            // var ts = builder.TypeSystem;
+            // var b = ts.GetSystemBindings();
+            //
+            // var linkType = builder.DefineType(_component.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule),
+            //     "EntityLink",
+            //     TypeAttributes.Class | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit,
+            //     b.Object);
+            //
+            // linkType.AddInterfaceImplementation(ts.FindType<ILink>());
+            //
+            // var idBack = linkType.DefineField(b.Guid, ConventionsHelper.GetBackingFieldName("Id"), false, false);
+            // linkType.DefineProperty(b.Guid, "Id", idBack, true, false, true);
+            //
+            // var typeBack = linkType.DefineField(b.Int, ConventionsHelper.GetBackingFieldName("Type"), false, false);
+            // linkType.DefineProperty(b.Int, "Type", typeBack, true, false, true);
+            //
+            // var presentationBack = linkType.DefineField(b.String, ConventionsHelper.GetBackingFieldName("Presentation"),
+            //     false, false);
+            // linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false, true);
+            //
+            // var ctor = linkType.DefineConstructor(false);
+            //
+            // var e = ctor.Generator;
+            //
+            // e.LdArg_0()
+            //     .EmitCall(b.Object.Constructors[0])
+            //     .Ret();
         }
     }
 }

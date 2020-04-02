@@ -1,15 +1,18 @@
 using System;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Entity;
+using SystemTypeBindings = ZenPlatform.Compiler.Roslyn.SystemTypeBindings;
 
 namespace ZenPlatform.EntityComponent.Compilation
 {
     public static class SharedGenerators
     {
-        public static void EmitDtoProperty(ITypeBuilder builder, IPProperty prop, SystemTypeBindings sb)
+        public static void EmitDtoProperty(SreTypeBuilder builder, IPProperty prop, SystemTypeBindings sb)
         {
             bool propertyGenerated = false;
             if (prop.IsSelfLink) return;
@@ -34,8 +37,8 @@ namespace ZenPlatform.EntityComponent.Compilation
                     clsSchema.FullName, false);
 
                 var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
-                propBuilder.SetAttribute(attr);
                 attr.SetParameters(dbSchema.FullName);
+                propBuilder.SetAttribute(attr);
             }
 
 
@@ -55,13 +58,14 @@ namespace ZenPlatform.EntityComponent.Compilation
                             ? ColumnSchemaType.Value
                             : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
-                    IType propType = ctype.ConvertType(sb);
+                    SreType propType = ctype.ConvertType(sb);
 
                     var propBuilder = builder.DefinePropertyWithBackingField(propType, propName, false);
 
                     var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
-                    propBuilder.SetAttribute(attr);
                     attr.SetParameters(dbColName);
+                    propBuilder.SetAttribute(attr);
+
 
                     if (!prop.IsUnique)
                     {
@@ -90,8 +94,9 @@ namespace ZenPlatform.EntityComponent.Compilation
                         var propBuilder = builder.DefinePropertyWithBackingField(sb.Guid, propName, false);
 
                         var attr = builder.CreateAttribute<MapToAttribute>(sb.String);
-                        propBuilder.SetAttribute(attr);
                         attr.SetParameters(dbColName);
+                        propBuilder.SetAttribute(attr);
+
 
                         if (!prop.IsUnique)
                         {
@@ -104,9 +109,8 @@ namespace ZenPlatform.EntityComponent.Compilation
         }
 
 
-        public static void EmitObjectProperty(ITypeBuilder builder, IPProperty prop, SystemTypeBindings sb,
-            IType dtoType,
-            IField dtoPrivate, ITypeSystem ts, IMethod mrgGet, string ns)
+        public static void EmitObjectProperty(SreTypeBuilder builder, IPProperty prop, SystemTypeBindings sb,
+            SreType dtoType, SreField dtoPrivate, SreTypeSystem ts, SreMethod mrgGet, string ns)
         {
             var propName = prop.Name;
 
@@ -114,9 +118,9 @@ namespace ZenPlatform.EntityComponent.Compilation
                 ? sb.Object
                 : prop.Types.First().ConvertType(sb);
 
-            var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
-            var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
-            var setBuilder = ((IMethodBuilder) propBuilder.Setter)?.Generator;
+            var propBuilder = (SrePropertyBuilder) builder.FindProperty(propName);
+            var getBuilder = ((SreMethodBuilder) propBuilder.Getter).Body;
+            var setBuilder = ((SreMethodBuilder) propBuilder.Setter)?.Body;
 
             if (prop.Types.Count() > 1)
             {
@@ -142,61 +146,77 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                     var compileType = ctype.ConvertType(sb);
 
-                    var label = getBuilder.DefineLabel();
+                    //var label = getBuilder.DefineLabel();
 
                     //GETTER
                     getBuilder
                         .LdArg_0()
                         .LdFld(dtoPrivate)
-                        .EmitCall(dtoTypeProp.Getter)
-                        .LdcI4((int) ctype.GetSettings().SystemId)
-                        .BneUn(label)
+                        .Call(dtoTypeProp.Getter)
+                        .LdLit((int) ctype.GetSettings().SystemId)
+                        .Ceq()
+                        .Block()
                         .LdArg_0()
                         .LdFld(dtoPrivate)
-                        .EmitCall(dtoProp.Getter);
-
-                    if (ctype.IsLink)
-                    {
-                        var mrgRemote = ts.FindType($"{ns}.{ctype.GetManagerType().Name}");
-                        var mrgRemoteGet = mrgRemote.FindMethod("Get", sb.Guid);
-                        getBuilder.EmitCall(mrgRemoteGet);
-                    }
-                    else if (compileType.IsValueType)
-                        getBuilder.Box(compileType);
-
-                    getBuilder
+                        .Call(dtoProp.Getter)
                         .Ret()
-                        .MarkLabel(label);
+                        .Statement()
+                        .EndBlock()
+                        .Nothing()
+                        .TryIf()
+                        .Statement();
 
+
+                    // if (ctype.IsLink)
+                    // {
+                    //     var mrgRemote = ts.FindType($"{ns}.{ctype.GetManagerType().Name}");
+                    //     var mrgRemoteGet = mrgRemote.FindMethod("Get", sb.Guid);
+                    //     getBuilder.Call(mrgRemoteGet);
+                    // }
 
                     if (setBuilder != null)
                     {
-                        label = setBuilder.DefineLabel();
+                        //label = setBuilder.DefineLabel();
                         //SETTER
-                        setBuilder
+                        var block = setBuilder
                             .LdArg(1)
                             .IsInst(compileType)
-                            .BrFalse(label)
+                            .Block()
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .LdArg(1)
-                            .Unbox_Any(compileType);
+                            .Cast(compileType);
 
                         if (ctype.IsLink)
-                            setBuilder.EmitCall(compileType.FindProperty("Id").Getter);
+                            block.Call(compileType.FindProperty("Id").Getter);
 
-                        setBuilder.EmitCall(dtoProp.Setter)
+                        block
+                            .Call(dtoProp.Setter)
+                            .Statement()
                             .LdArg_0()
                             .LdFld(dtoPrivate)
-                            .LdcI4((int) ctype.GetSettings().SystemId)
-                            .EmitCall(dtoTypeProp.Setter)
+                            .LdLit((int) ctype.GetSettings().SystemId)
+                            .Call(dtoTypeProp.Setter)
+                            .Statement()
                             .Ret()
-                            .MarkLabel(label);
+                            .Statement()
+                            .EndBlock()
+                            .Nothing()
+                            .TryIf()
+                            .Statement();
+
+
+                        // setBuilder.Call(dtoProp.Setter)
+                        //     .LdArg_0()
+                        //     .LdFld(dtoPrivate)
+                        //     .LdLit((int) ctype.GetSettings().SystemId)
+                        //     .Call(dtoTypeProp.Setter)
+                        //     .Statement();
                     }
                 }
 
-                getBuilder.Throw(sb.Exception);
-                setBuilder.Throw(sb.Exception);
+                getBuilder.Throw(sb.Exception).Statement();
+                setBuilder?.Throw(sb.Exception).Statement();
 
                 // getBuilder.Ret();
                 // setBuilder.Ret();
@@ -218,17 +238,18 @@ namespace ZenPlatform.EntityComponent.Compilation
                     getBuilder
                         .LdArg_0()
                         .LdFld(dtoPrivate)
-                        .EmitCall(dtoProp.Getter);
+                        .Call(dtoProp.Getter);
 
                     if (ctype.IsLink)
                     {
                         var mrgRemote = ts.FindType($"{ns}.{ctype.GetManagerType().Name}");
                         var mrgRemoteGet = mrgRemote.FindMethod("Get", sb.Guid);
-                        getBuilder.EmitCall(mrgRemoteGet);
+                        getBuilder.Call(mrgRemoteGet);
                     }
 
                     getBuilder
-                        .Ret();
+                        .Ret()
+                        .Statement();
 
                     if (setBuilder != null)
                     {
@@ -238,27 +259,27 @@ namespace ZenPlatform.EntityComponent.Compilation
                             .LdArg(1);
 
                         if (ctype.IsLink)
-                            setBuilder.EmitCall(compileType.FindProperty("Id").Getter);
+                            setBuilder.Call(compileType.FindProperty("Id").Getter);
 
-                        setBuilder.EmitCall(dtoProp.Setter)
-                            .Ret();
+                        setBuilder.Call(dtoProp.Setter)
+                            .Statement();
                     }
                 }
                 else
                 {
                     getBuilder
                         .LdArg_0()
-                        .EmitCall(builder.FindProperty("Id").Getter)
-                        .EmitCall(mrgGet)
+                        .Call(builder.FindProperty("Id").Getter)
+                        .Call(mrgGet)
                         .Ret();
                 }
             }
         }
 
 
-        public static void EmitLinkProperty(ITypeBuilder builder, IPProperty prop, SystemTypeBindings sb,
-            IType dtoType,
-            IField dtoPrivate, ITypeSystem ts, IMethod mrgGet, string ns)
+        public static void EmitLinkProperty(SreTypeBuilder builder, IPProperty prop, SystemTypeBindings sb,
+            SreType dtoType,
+            SreField dtoPrivate, SreTypeSystem ts, SreMethod mrgGet, string ns)
         {
             bool propertyGenerated = false;
 
@@ -268,8 +289,8 @@ namespace ZenPlatform.EntityComponent.Compilation
                 ? sb.Object
                 : prop.Types.First().ConvertType(sb);
 
-            var propBuilder = (IPropertyBuilder) builder.FindProperty(propName);
-            var getBuilder = ((IMethodBuilder) propBuilder.Getter).Generator;
+            var propBuilder = (SrePropertyBuilder) builder.FindProperty(propName);
+            var getBuilder = ((SreMethodBuilder) propBuilder.Getter).Body;
 
             // var valueParam = propBuilder.setMethod.Parameters[0];
 
@@ -297,28 +318,27 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                     var compileType = ctype.ConvertType(sb);
 
-                    var label = getBuilder.DefineLabel();
+                    //var label = getBuilder.DefineLabel();
 
                     //GETTER
                     getBuilder
                         .LdArg_0()
                         .LdFld(dtoPrivate)
-                        .EmitCall(dtoTypeProp.Getter)
-                        .LdcI4((int) ctype.GetSettings().SystemId)
-                        .BneUn(label)
+                        .Call(dtoTypeProp.Getter)
+                        .LdLit((int) ctype.GetSettings().SystemId)
+                        .Ceq()
+                        .Block()
                         .LdArg_0()
                         .LdFld(dtoPrivate)
-                        .EmitCall(dtoProp.Getter);
+                        .Call(dtoProp.Getter)
+                        .Ret().Statement()
+                        .EndBlock()
+                        .Nothing()
+                        .TryIf().Statement();
 
-                    if (compileType.IsValueType)
-                        getBuilder.Box(compileType);
-
-                    getBuilder
-                        .Ret()
-                        .MarkLabel(label);
                 }
 
-                getBuilder.Throw(sb.Exception);
+                getBuilder.Throw(sb.Exception).Statement();
 
 
                 // getBuilder.Ret();
@@ -336,16 +356,16 @@ namespace ZenPlatform.EntityComponent.Compilation
                     getBuilder
                         .LdArg_0()
                         .LdFld(dtoPrivate)
-                        .EmitCall(dtofield.Getter)
-                        .Ret();
+                        .Call(dtofield.Getter)
+                        .Ret().Statement();
                 }
                 else
                 {
                     getBuilder
                         .LdArg_0()
-                        .EmitCall(builder.FindProperty("Id").Getter)
-                        .EmitCall(mrgGet)
-                        .Ret();
+                        .Call(builder.FindProperty("Id").Getter)
+                        .Call(mrgGet)
+                        .Ret().Statement();
                 }
             }
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using MoreLinq.Extensions;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Language.Ast;
@@ -9,6 +10,7 @@ using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.UI.Ast;
 using SreTA = System.Reflection.TypeAttributes;
+using SystemTypeBindings = ZenPlatform.Compiler.Roslyn.SystemTypeBindings;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -17,8 +19,8 @@ namespace ZenPlatform.Compiler.Generation
         private readonly GeneratorParameters _parameters;
 
         //private readonly CompilationUnit _cu;
-        private readonly IAssemblyBuilder _asm;
-        private readonly ITypeSystem _ts;
+        private readonly SreAssemblyBuilder _asm;
+        private readonly SreTypeSystem _ts;
         private readonly CompilationMode _mode;
 
         private readonly IProject _conf;
@@ -37,7 +39,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             _parameters = parameters;
 
-            if (_root != null)
+            if (parameters.Root != null)
             {
                 _root = parameters.Root;
                 _cus = parameters.Root.Units;
@@ -62,10 +64,10 @@ namespace ZenPlatform.Compiler.Generation
         {
         }
 
-        private void CreateBindings()
-        {
-            var b = new ClassTable();
-            b.FillStandard(_bindings);
-        }
+        // private void CreateBindings()
+        // {
+        //     var b = new ClassTable();
+        //     b.FillStandard(_bindings);
+        // }
     }
 }

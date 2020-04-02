@@ -2,15 +2,18 @@ using System;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Symbols;
 using ZenPlatform.Shared.Tree;
+using Call = ZenPlatform.Language.Ast.Definitions.Call;
+using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private Node EmitGlobalVar(IEmitter e, Node currentGv, Expression expr, SymbolTable symbolTable)
+        private Node EmitGlobalVar(RBlockBuilder e, Node currentGv, Expression expr, SymbolTable symbolTable)
         {
             if (expr is Name n)
             {

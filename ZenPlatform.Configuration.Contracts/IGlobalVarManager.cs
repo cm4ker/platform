@@ -1,11 +1,12 @@
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn.DnlibBackend;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Configuration.Contracts
 {
     public interface IGlobalVarManager
     {
-        ITypeSystem TypeSystem { get; }
+        SreTypeSystem TypeSystem { get; }
 
         void Register(Node node);
 
@@ -14,7 +15,7 @@ namespace ZenPlatform.Configuration.Contracts
 
     public interface IEntryPointManager
     {
-        ITypeBuilder EntryPoint { get; }
-        IMethodBuilder Main { get; }
+        SreTypeBuilder EntryPoint { get; }
+        SreMethodBuilder Main { get; }
     }
 }
