@@ -12,8 +12,6 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public class QLang
     {
-        private readonly IProject _conf;
-
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
@@ -25,13 +23,12 @@ namespace ZenPlatform.Core.Querying.Model
             Component
         }
 
-        public QLang(IProject conf)
+        public QLang(ITypeManager conf)
         {
-            _conf = conf;
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
-            _tb = new QLangTypeBuilder(_conf);
-            _tm = conf.TypeManager;
+            _tb = new QLangTypeBuilder(_tm);
+            _tm = conf;
         }
 
         public ITypeManager TypeManager => _tm;
@@ -137,7 +134,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void ld_component(string componentName)
         {
-            var component = _conf.TypeManager.FindComponentByName(componentName);
+            var component = _tm.FindComponentByName(componentName);
             _logicStack.Push(component);
         }
 

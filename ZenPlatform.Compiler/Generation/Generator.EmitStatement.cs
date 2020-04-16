@@ -1,14 +1,7 @@
-using System;
-using System.Linq;
-using System.Reflection.Emit;
 using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
-using ZenPlatform.Language.Ast.Symbols;
 using For = ZenPlatform.Language.Ast.Definitions.Statements.For;
 using Return = ZenPlatform.Language.Ast.Definitions.Statements.Return;
 using Statement = ZenPlatform.Language.Ast.Definitions.Statements.Statement;
@@ -30,123 +23,80 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     EmitExpression(e, ret.Expression, context.SymbolTable);
                     e.Ret();
-                    // if (returnVariable.Type == _bindings.Object)
-                    // {
-                    //     var clrType = _map.GetClrType(ret.Expression.Type);
-                    //     if (clrType.IsValueType && !clrType.IsArray)
-                    //         e.Box(clrType);
-                    // }
-                }
-
-                if (inTry)
-                {
-                    //e.StLoc(returnVariable);
-                    // e.Leave(returnLabel);
-                }
-                else
-                {
-                    // e.StLoc(returnVariable);
-                    // .Br(returnLabel);
                 }
             }
             else if (statement is If ifStatement)
             {
-                // // Eval condition
-                // EmitExpression(e, ifStatement.Condition, context.SymbolTable);
-                //
-                // var exit = e.DefineLabel();
-                // if (ifStatement.IfBlock != null && ifStatement.ElseBlock == null)
-                // {
-                //     e.BrFalse(exit);
-                //     EmitBody(e, ifStatement.IfBlock, returnLabel, ref returnVariable);
-                // }
-                // else if (ifStatement.IfBlock != null && ifStatement.ElseBlock != null)
-                // {
-                //     ifStatement.IfBlock.SymbolTable = new SymbolTable(context.SymbolTable);
-                //     ifStatement.ElseBlock.SymbolTable = new SymbolTable(context.SymbolTable);
-                //
-                //     ILabel elseLabel = e.DefineLabel();
-                //
-                //     e.BrFalse(elseLabel);
-                //     EmitBody(e, ifStatement.IfBlock, returnLabel, ref returnVariable);
-                //     e.Br(exit);
-                //     e.MarkLabel(elseLabel);
-                //     EmitBody(e, ifStatement.ElseBlock, returnLabel, ref returnVariable);
-                // }
-                //
-                // e.MarkLabel(exit);
+                // Eval condition
+                EmitExpression(e, ifStatement.Condition, context.SymbolTable);
+
+                var @ifBlock = e.Block();
+
+                EmitBody(ifBlock, ifStatement.IfBlock, returnLabel);
+
+                ifBlock.EndBlock();
+
+                if (ifStatement.ElseBlock == null)
+                    e.Nothing();
+                else
+                {
+                    var @elseBlock = e.Block();
+
+                    EmitBody(elseBlock, ifStatement.ElseBlock, returnLabel);
+
+                    ifBlock.EndBlock();
+                }
+
+                e.If();
             }
 
-            else if (statement is While)
+            else if (statement is While whileStatement)
             {
-                // //
-                // // Generate while statement.
-                // //
-                //
-                // While whileStatement = statement as While;
-                // whileStatement.Block.SymbolTable = new SymbolTable(context.SymbolTable);
-                // ILabel begin = e.DefineLabel();
-                // ILabel exit = e.DefineLabel();
-                //
-                // e.MarkLabel(begin);
-                // // Eval condition
-                // EmitExpression(e, whileStatement.Condition, context.SymbolTable);
-                // e.BrFalse(exit);
-                // EmitBody(e, whileStatement.Block, returnLabel, ref returnVariable);
-                //
-                // e.Br(begin)
-                //     .MarkLabel(exit);
+                EmitExpression(e, whileStatement.Condition, context.SymbolTable);
+
+                var whileBlock = e.Block();
+
+                EmitBody(whileBlock, whileStatement.Block, returnLabel);
+
+                whileBlock.EndBlock();
+
+                e.While();
             }
-            else if (statement is DoWhile)
+            else if (statement is For forStatement)
             {
-                // //
-                // // Generate do statement.
-                // //
                 //
-                // DoWhile doWhileStatement = statement as DoWhile;
-                // doWhileStatement.Block.SymbolTable = new SymbolTable(context.SymbolTable);
+                // Generate for statement.
                 //
-                // ILabel loop = e.DefineLabel();
-                // e.MarkLabel(loop);
-                // EmitBody(e, doWhileStatement.Block, returnLabel, ref returnVariable);
-                // EmitExpression(e, doWhileStatement.Condition, context.SymbolTable);
-                // e.BrTrue(loop);
-            }
-            else if (statement is For)
-            {
-                // //
-                // // Generate for statement.
-                // //
-                //
-                // For forStatement = statement as For;
-                // forStatement.Block.SymbolTable = new SymbolTable(context.SymbolTable);
-                //
-                // ILabel loop = e.DefineLabel();
-                // ILabel exit = e.DefineLabel();
-                //
-                // // Emit initializer
-                // EmitExpression(e, forStatement.Initializer, context.SymbolTable);
-                // e.MarkLabel(loop);
-                // // Emit condition
-                // EmitExpression(e, forStatement.Condition, context.SymbolTable);
-                // e.BrFalse(exit);
-                // // Emit body
-                // EmitBody(e, forStatement.Block, returnLabel, ref returnVariable);
-                // // Emit counter
-                // EmitExpression(e, forStatement.Counter, context.SymbolTable);
-                // //EmitAssignment(il, forStatement.Counter, context.SymbolTable);
-                // e.Br(loop);
-                // e.MarkLabel(exit);
+
+                // Emit initializer
+                EmitExpression(e, forStatement.Initializer, context.SymbolTable);
+                // Emit condition
+                EmitExpression(e, forStatement.Condition, context.SymbolTable);
+                // Emit counter
+                EmitExpression(e, forStatement.Counter, context.SymbolTable);
+
+                // Emit body
+
+                var forBlock = e.Block();
+
+                EmitBody(forBlock, forStatement.Block, returnLabel);
+
+                forBlock.EndBlock();
+
+                e.For();
             }
             else if (statement is Try ts)
             {
-                // var exLocal = e.DefineLocal(_ts.FindType("System.Exception"));
-                // e.BeginExceptionBlock();
-                // EmitBody(e, ts.TryBlock, returnLabel, ref returnVariable, true);
-                // e.BeginCatchBlock(_ts.FindType("System.Exception"));
-                // e.StLoc(exLocal);
-                // EmitBody(e, ts.CatchBlock, returnLabel, ref returnVariable, true);
-                // e.EndExceptionBlock();
+                var tryBlock = e.Block();
+                EmitBody(tryBlock, ts.TryBlock, returnLabel);
+                tryBlock.EndBlock();
+
+                var catchBlock = e.Block();
+                EmitBody(catchBlock, ts.CatchBlock, returnLabel);
+                catchBlock.EndBlock();
+
+                e.Nothing()
+                    .Try();
             }
             else if (statement is Match mt)
             {

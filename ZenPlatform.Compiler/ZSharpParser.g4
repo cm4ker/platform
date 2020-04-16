@@ -80,9 +80,10 @@ statement:
         ((variableDeclaration 
         | expression
         | assigment
-        | (RETURN returnExpression = expression))
+        | (RETURN returnExpression = expression)
+        | throwStatement)
         ';'+ )
-         | (ifStatement | forStatement | whileStatement | tryStatement)
+         | (ifStatement | forStatement | whileStatement | tryStatement ) ';'*
         ; 
 
 statements: 
@@ -287,3 +288,7 @@ tryStatement:
     TRY instructionsOrSingleStatement 
     (CATCH catchExp=instructionsOrSingleStatement)? 
     (FINALLY finallyExp=instructionsOrSingleStatement)?;
+    
+throwStatement:
+ THROW expression?
+;

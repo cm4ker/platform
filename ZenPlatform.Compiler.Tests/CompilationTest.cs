@@ -64,29 +64,58 @@ namespace NS {
             Compile(script);
         }
 
+
         [Fact]
-        public void BindingTest()
+        public void ifTest()
         {
-            // ClassTable ct = new ClassTable();
-            // ct.FillStandard(Ap.TypeSystem.GetSystemBindings());
-            //
-            // var res = ct.FindType("int");
-            // Assert.Equal("System.Int32", res.FullName);
-            //
-            // res = ct.FindType("Platform", "Int64");
-            //
-            // Assert.Equal("System.Int64", res.FullName);
-            //
-            // res = ct.FindType("Platform.Int64");
-            //
-            // Assert.Equal("System.Int64", res.FullName);
-            //
-            // res = ct.FindType("Platform.SomeNamespace.Int64");
-            //
-            // Assert.Equal("System.Int64", res.FullName);
-            //
-            // res = ct.FindType("Platform.SomeNamespace", "Int64");
-            // Assert.Equal("System.Int64", res.FullName);
+            var script = "int Main() { if(10 > 1) return 1; else return 0;}";
+
+            var result = (int) this.CompileAndRun(script);
+
+            Assert.Equal(1, result);
+        }
+
+
+        [Fact]
+        public void WhileTest()
+        {
+            var script = "int Main() { int i = 0; while(i < 10) i++; return i;}";
+
+            var result = (int) this.CompileAndRun(script);
+
+            Assert.Equal(10, result);
+        }
+
+
+        [Fact]
+        public void ForTest()
+        {
+            var script = "int Main() {int a = 0; for(int i = 0; i < 10; i++){ a++; } return a;}";
+
+            var result = (int) this.CompileAndRun(script);
+
+            Assert.Equal(10, result);
+        }
+
+        [Fact]
+        public void TryCatchTest()
+        {
+            var script =
+                @"
+int Main() 
+{
+ try{
+    throw ""This is exception message"";
+}
+catch
+{
+return 1;
+}
+}";
+
+            var result = (int) this.CompileAndRun(script);
+
+            Assert.Equal(1, result);
         }
     }
 }

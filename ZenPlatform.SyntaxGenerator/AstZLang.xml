@@ -327,6 +327,13 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="While" Base="Statement" NS="Statements">
+        <Arguments>
+            <Single Name="Block" Type="Block" />
+            <Single Name="Condition" Type="Expression" />
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="If" Base="Statement" NS="Statements">
         <Arguments>
             <Single Name="ElseBlock" Type="Block" />

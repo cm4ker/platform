@@ -14,7 +14,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class FunctionList : SyntaxCollectionNode<Function>
     {
-        public FunctionList() : base(null)
+        public FunctionList(): base(null)
         {
         }
 
@@ -34,7 +34,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class FieldList : SyntaxCollectionNode<Field>
     {
-        public FieldList() : base(null)
+        public FieldList(): base(null)
         {
         }
 
@@ -54,7 +54,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class PropertyList : SyntaxCollectionNode<Property>
     {
-        public PropertyList() : base(null)
+        public PropertyList(): base(null)
         {
         }
 
@@ -74,7 +74,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class ConstructorList : SyntaxCollectionNode<Constructor>
     {
-        public ConstructorList() : base(null)
+        public ConstructorList(): base(null)
         {
         }
 
@@ -94,7 +94,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class TypeList : SyntaxCollectionNode<TypeSyntax>
     {
-        public TypeList() : base(null)
+        public TypeList(): base(null)
         {
         }
 
@@ -114,7 +114,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class StatementList : SyntaxCollectionNode<Statement>
     {
-        public StatementList() : base(null)
+        public StatementList(): base(null)
         {
         }
 
@@ -134,7 +134,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class ParameterList : SyntaxCollectionNode<Parameter>
     {
-        public ParameterList() : base(null)
+        public ParameterList(): base(null)
         {
         }
 
@@ -154,7 +154,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class GenericParameterList : SyntaxCollectionNode<GenericParameter>
     {
-        public GenericParameterList() : base(null)
+        public GenericParameterList(): base(null)
         {
         }
 
@@ -174,7 +174,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class AttributeList : SyntaxCollectionNode<AttributeSyntax>
     {
-        public AttributeList() : base(null)
+        public AttributeList(): base(null)
         {
         }
 
@@ -194,7 +194,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class ArgumentList : SyntaxCollectionNode<Argument>
     {
-        public ArgumentList() : base(null)
+        public ArgumentList(): base(null)
         {
         }
 
@@ -214,7 +214,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class MatchAtomList : SyntaxCollectionNode<MatchAtom>
     {
-        public MatchAtomList() : base(null)
+        public MatchAtomList(): base(null)
         {
         }
 
@@ -234,7 +234,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class UsingList : SyntaxCollectionNode<UsingBase>
     {
-        public UsingList() : base(null)
+        public UsingList(): base(null)
         {
         }
 
@@ -254,7 +254,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class EntityList : SyntaxCollectionNode<TypeEntity>
     {
-        public EntityList() : base(null)
+        public EntityList(): base(null)
         {
         }
 
@@ -274,7 +274,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class NamespaceDeclarationList : SyntaxCollectionNode<NamespaceDeclaration>
     {
-        public NamespaceDeclarationList() : base(null)
+        public NamespaceDeclarationList(): base(null)
         {
         }
 
@@ -294,7 +294,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class CompilationUnitList : SyntaxCollectionNode<CompilationUnit>
     {
-        public CompilationUnitList() : base(null)
+        public CompilationUnitList(): base(null)
         {
         }
 
@@ -314,14 +314,17 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Root : SyntaxNode, IScoped
     {
-        public Root(ILineInfo lineInfo, CompilationUnitList units) : base(lineInfo)
+        public Root(ILineInfo lineInfo, CompilationUnitList units): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) units);
+            this.Attach(0, (SyntaxNode)units);
         }
 
         public CompilationUnitList Units
         {
-            get { return (CompilationUnitList) this.Childs[0]; }
+            get
+            {
+                return (CompilationUnitList)this.Childs[0];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -334,7 +337,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             visitor.VisitRoot(this);
         }
 
-        public SymbolTable SymbolTable { get; set; }
+        public SymbolTable SymbolTable
+        {
+            get;
+            set;
+        }
     }
 }
 
@@ -342,30 +349,41 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class NamespaceDeclaration : SyntaxNode, IScoped
     {
-        public NamespaceDeclaration(ILineInfo lineInfo, String name, UsingList usings, EntityList entityes,
-            NamespaceDeclarationList namespaceDeclarations) : base(lineInfo)
+        public NamespaceDeclaration(ILineInfo lineInfo, String name, UsingList usings, EntityList entityes, NamespaceDeclarationList namespaceDeclarations): base(lineInfo)
         {
             Name = name;
-            this.Attach(0, (SyntaxNode) usings);
-            this.Attach(1, (SyntaxNode) entityes);
-            this.Attach(2, (SyntaxNode) namespaceDeclarations);
+            this.Attach(0, (SyntaxNode)usings);
+            this.Attach(1, (SyntaxNode)entityes);
+            this.Attach(2, (SyntaxNode)namespaceDeclarations);
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public UsingList Usings
         {
-            get { return (UsingList) this.Childs[0]; }
+            get
+            {
+                return (UsingList)this.Childs[0];
+            }
         }
 
         public EntityList Entityes
         {
-            get { return (EntityList) this.Childs[1]; }
+            get
+            {
+                return (EntityList)this.Childs[1];
+            }
         }
 
         public NamespaceDeclarationList NamespaceDeclarations
         {
-            get { return (NamespaceDeclarationList) this.Childs[2]; }
+            get
+            {
+                return (NamespaceDeclarationList)this.Childs[2];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -378,7 +396,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             visitor.VisitNamespaceDeclaration(this);
         }
 
-        public SymbolTable SymbolTable { get; set; }
+        public SymbolTable SymbolTable
+        {
+            get;
+            set;
+        }
     }
 }
 
@@ -386,27 +408,35 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class CompilationUnit : SyntaxNode
     {
-        public CompilationUnit(ILineInfo lineInfo, UsingList usings, EntityList entityes,
-            NamespaceDeclarationList namespaceDeclarations) : base(lineInfo)
+        public CompilationUnit(ILineInfo lineInfo, UsingList usings, EntityList entityes, NamespaceDeclarationList namespaceDeclarations): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) usings);
-            this.Attach(1, (SyntaxNode) entityes);
-            this.Attach(2, (SyntaxNode) namespaceDeclarations);
+            this.Attach(0, (SyntaxNode)usings);
+            this.Attach(1, (SyntaxNode)entityes);
+            this.Attach(2, (SyntaxNode)namespaceDeclarations);
         }
 
         public UsingList Usings
         {
-            get { return (UsingList) this.Childs[0]; }
+            get
+            {
+                return (UsingList)this.Childs[0];
+            }
         }
 
         public EntityList Entityes
         {
-            get { return (EntityList) this.Childs[1]; }
+            get
+            {
+                return (EntityList)this.Childs[1];
+            }
         }
 
         public NamespaceDeclarationList NamespaceDeclarations
         {
-            get { return (NamespaceDeclarationList) this.Childs[2]; }
+            get
+            {
+                return (NamespaceDeclarationList)this.Childs[2];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -425,12 +455,15 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public abstract partial class UsingBase : SyntaxNode
     {
-        public UsingBase(ILineInfo lineInfo, String name) : base(lineInfo)
+        public UsingBase(ILineInfo lineInfo, String name): base(lineInfo)
         {
             Name = name;
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -448,12 +481,15 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class UsingDeclaration : UsingBase
     {
-        public UsingDeclaration(ILineInfo lineInfo, String name) : base(lineInfo, name)
+        public UsingDeclaration(ILineInfo lineInfo, String name): base(lineInfo, name)
         {
             Name = name;
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -471,15 +507,21 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class UsingAliasDeclaration : UsingBase
     {
-        public UsingAliasDeclaration(ILineInfo lineInfo, String className, String alias) : base(lineInfo, className)
+        public UsingAliasDeclaration(ILineInfo lineInfo, String className, String alias): base(lineInfo, className)
         {
             ClassName = className;
             Alias = alias;
         }
 
-        public String ClassName { get; }
+        public String ClassName
+        {
+            get;
+        }
 
-        public String Alias { get; }
+        public String Alias
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -497,39 +539,53 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class TypeBody : SyntaxNode, IScoped
     {
-        public TypeBody(ILineInfo lineInfo, FunctionList functions, FieldList fields, PropertyList properties,
-            ConstructorList constructors, UsingList usings) : base(lineInfo)
+        public TypeBody(ILineInfo lineInfo, FunctionList functions, FieldList fields, PropertyList properties, ConstructorList constructors, UsingList usings): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) functions);
-            this.Attach(1, (SyntaxNode) fields);
-            this.Attach(2, (SyntaxNode) properties);
-            this.Attach(3, (SyntaxNode) constructors);
-            this.Attach(4, (SyntaxNode) usings);
+            this.Attach(0, (SyntaxNode)functions);
+            this.Attach(1, (SyntaxNode)fields);
+            this.Attach(2, (SyntaxNode)properties);
+            this.Attach(3, (SyntaxNode)constructors);
+            this.Attach(4, (SyntaxNode)usings);
         }
 
         public FunctionList Functions
         {
-            get { return (FunctionList) this.Childs[0]; }
+            get
+            {
+                return (FunctionList)this.Childs[0];
+            }
         }
 
         public FieldList Fields
         {
-            get { return (FieldList) this.Childs[1]; }
+            get
+            {
+                return (FieldList)this.Childs[1];
+            }
         }
 
         public PropertyList Properties
         {
-            get { return (PropertyList) this.Childs[2]; }
+            get
+            {
+                return (PropertyList)this.Childs[2];
+            }
         }
 
         public ConstructorList Constructors
         {
-            get { return (ConstructorList) this.Childs[3]; }
+            get
+            {
+                return (ConstructorList)this.Childs[3];
+            }
         }
 
         public UsingList Usings
         {
-            get { return (UsingList) this.Childs[4]; }
+            get
+            {
+                return (UsingList)this.Childs[4];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -542,7 +598,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             visitor.VisitTypeBody(this);
         }
 
-        public SymbolTable SymbolTable { get; set; }
+        public SymbolTable SymbolTable
+        {
+            get;
+            set;
+        }
     }
 }
 
@@ -550,23 +610,32 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public abstract partial class TypeEntity : SyntaxNode
     {
-        public TypeEntity(ILineInfo lineInfo, TypeBody typeBody, String name, TypeSyntax @base = null) : base(lineInfo)
+        public TypeEntity(ILineInfo lineInfo, TypeBody typeBody, String name, TypeSyntax @base = null): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) typeBody);
+            this.Attach(0, (SyntaxNode)typeBody);
             Name = name;
-            this.Attach(1, (SyntaxNode) @base);
+            this.Attach(1, (SyntaxNode)@base);
         }
 
         public TypeBody TypeBody
         {
-            get { return (TypeBody) this.Childs[0]; }
+            get
+            {
+                return (TypeBody)this.Childs[0];
+            }
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public TypeSyntax Base
         {
-            get { return (TypeSyntax) this.Childs[1]; }
+            get
+            {
+                return (TypeSyntax)this.Childs[1];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -585,7 +654,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Class : TypeEntity, IAstSymbol
     {
-        public Class(ILineInfo lineInfo, TypeBody typeBody, String name) : base(lineInfo, typeBody, name)
+        public Class(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, typeBody, name)
         {
         }
 
@@ -605,7 +674,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Module : TypeEntity, IAstSymbol
     {
-        public Module(ILineInfo lineInfo, TypeBody typeBody, String name) : base(lineInfo, typeBody, name)
+        public Module(ILineInfo lineInfo, TypeBody typeBody, String name): base(lineInfo, typeBody, name)
         {
         }
 
@@ -625,7 +694,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public abstract partial class Expression : SyntaxNode
     {
-        public Expression(ILineInfo lineInfo) : base(lineInfo)
+        public Expression(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -645,7 +714,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 {
     public abstract partial class Statement : SyntaxNode
     {
-        public Statement(ILineInfo lineInfo) : base(lineInfo)
+        public Statement(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -665,25 +734,33 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class BinaryExpression : Expression
     {
-        public BinaryExpression(ILineInfo lineInfo, Expression right, Expression left,
-            BinaryOperatorType binaryOperatorType) : base(lineInfo)
+        public BinaryExpression(ILineInfo lineInfo, Expression right, Expression left, BinaryOperatorType binaryOperatorType): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) right);
-            this.Attach(1, (SyntaxNode) left);
+            this.Attach(0, (SyntaxNode)right);
+            this.Attach(1, (SyntaxNode)left);
             BinaryOperatorType = binaryOperatorType;
         }
 
         public Expression Right
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public Expression Left
         {
-            get { return (Expression) this.Childs[1]; }
+            get
+            {
+                return (Expression)this.Childs[1];
+            }
         }
 
-        public BinaryOperatorType BinaryOperatorType { get; }
+        public BinaryOperatorType BinaryOperatorType
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -701,19 +778,24 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public abstract partial class UnaryExpression : Expression
     {
-        public UnaryExpression(ILineInfo lineInfo, Expression expression, UnaryOperatorType operaotrType) :
-            base(lineInfo)
+        public UnaryExpression(ILineInfo lineInfo, Expression expression, UnaryOperatorType operaotrType): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)expression);
             OperaotrType = operaotrType;
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
-        public UnaryOperatorType OperaotrType { get; }
+        public UnaryOperatorType OperaotrType
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -731,25 +813,33 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class CastExpression : UnaryExpression
     {
-        public CastExpression(ILineInfo lineInfo, Expression expression, TypeSyntax castType,
-            UnaryOperatorType operaotrType) : base(lineInfo, expression, operaotrType)
+        public CastExpression(ILineInfo lineInfo, Expression expression, TypeSyntax castType, UnaryOperatorType operaotrType): base(lineInfo, expression, operaotrType)
         {
-            this.Attach(0, (SyntaxNode) expression);
-            this.Attach(1, (SyntaxNode) castType);
+            this.Attach(0, (SyntaxNode)expression);
+            this.Attach(1, (SyntaxNode)castType);
             OperaotrType = operaotrType;
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public TypeSyntax CastType
         {
-            get { return (TypeSyntax) this.Childs[1]; }
+            get
+            {
+                return (TypeSyntax)this.Childs[1];
+            }
         }
 
-        public UnaryOperatorType OperaotrType { get; }
+        public UnaryOperatorType OperaotrType
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -767,25 +857,33 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class IndexerExpression : UnaryExpression
     {
-        public IndexerExpression(ILineInfo lineInfo, Expression indexer, Expression expression,
-            UnaryOperatorType operaotrType) : base(lineInfo, expression, operaotrType)
+        public IndexerExpression(ILineInfo lineInfo, Expression indexer, Expression expression, UnaryOperatorType operaotrType): base(lineInfo, expression, operaotrType)
         {
-            this.Attach(0, (SyntaxNode) indexer);
-            this.Attach(1, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)indexer);
+            this.Attach(1, (SyntaxNode)expression);
             OperaotrType = operaotrType;
         }
 
         public Expression Indexer
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[1]; }
+            get
+            {
+                return (Expression)this.Childs[1];
+            }
         }
 
-        public UnaryOperatorType OperaotrType { get; }
+        public UnaryOperatorType OperaotrType
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -803,19 +901,24 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class LogicalOrArithmeticExpression : UnaryExpression
     {
-        public LogicalOrArithmeticExpression(ILineInfo lineInfo, Expression expression, UnaryOperatorType operaotrType)
-            : base(lineInfo, expression, operaotrType)
+        public LogicalOrArithmeticExpression(ILineInfo lineInfo, Expression expression, UnaryOperatorType operaotrType): base(lineInfo, expression, operaotrType)
         {
-            this.Attach(0, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)expression);
             OperaotrType = operaotrType;
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
-        public UnaryOperatorType OperaotrType { get; }
+        public UnaryOperatorType OperaotrType
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -833,27 +936,35 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class Assignment : Expression
     {
-        public Assignment(ILineInfo lineInfo, Expression value, Expression index, ICanBeAssigned assignable) :
-            base(lineInfo)
+        public Assignment(ILineInfo lineInfo, Expression value, Expression index, ICanBeAssigned assignable): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) value);
-            this.Attach(1, (SyntaxNode) index);
-            this.Attach(2, (SyntaxNode) assignable);
+            this.Attach(0, (SyntaxNode)value);
+            this.Attach(1, (SyntaxNode)index);
+            this.Attach(2, (SyntaxNode)assignable);
         }
 
         public Expression Value
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public Expression Index
         {
-            get { return (Expression) this.Childs[1]; }
+            get
+            {
+                return (Expression)this.Childs[1];
+            }
         }
 
         public ICanBeAssigned Assignable
         {
-            get { return (ICanBeAssigned) this.Childs[2]; }
+            get
+            {
+                return (ICanBeAssigned)this.Childs[2];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -872,7 +983,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public abstract partial class TypeSyntax : SyntaxNode
     {
-        public TypeSyntax(ILineInfo lineInfo) : base(lineInfo)
+        public TypeSyntax(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -892,7 +1003,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class PrimitiveTypeSyntax : TypeSyntax
     {
-        public PrimitiveTypeSyntax(ILineInfo lineInfo) : base(lineInfo)
+        public PrimitiveTypeSyntax(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -912,7 +1023,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class SingleTypeSyntax : TypeSyntax
     {
-        public SingleTypeSyntax(ILineInfo lineInfo) : base(lineInfo)
+        public SingleTypeSyntax(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -932,7 +1043,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class ArrayTypeSyntax : TypeSyntax
     {
-        public ArrayTypeSyntax(ILineInfo lineInfo) : base(lineInfo)
+        public ArrayTypeSyntax(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -952,7 +1063,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class UnionTypeSyntax : TypeSyntax
     {
-        public UnionTypeSyntax(ILineInfo lineInfo) : base(lineInfo)
+        public UnionTypeSyntax(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -972,14 +1083,17 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class GenericTypeSyntax : TypeSyntax
     {
-        public GenericTypeSyntax(ILineInfo lineInfo, TypeList args) : base(lineInfo)
+        public GenericTypeSyntax(ILineInfo lineInfo, TypeList args): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) args);
+            this.Attach(0, (SyntaxNode)args);
         }
 
         public TypeList Args
         {
-            get { return (TypeList) this.Childs[0]; }
+            get
+            {
+                return (TypeList)this.Childs[0];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -998,14 +1112,17 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Block : SyntaxNode, IScoped
     {
-        public Block(ILineInfo lineInfo, StatementList statements) : base(lineInfo)
+        public Block(ILineInfo lineInfo, StatementList statements): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) statements);
+            this.Attach(0, (SyntaxNode)statements);
         }
 
         public StatementList Statements
         {
-            get { return (StatementList) this.Childs[0]; }
+            get
+            {
+                return (StatementList)this.Childs[0];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1018,7 +1135,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             visitor.VisitBlock(this);
         }
 
-        public SymbolTable SymbolTable { get; set; }
+        public SymbolTable SymbolTable
+        {
+            get;
+            set;
+        }
     }
 }
 
@@ -1026,15 +1147,21 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
 {
     public partial class Parameter : SyntaxNode, IAstSymbol
     {
-        public Parameter(ILineInfo lineInfo, String name, PassMethod passMethod = PassMethod.ByValue) : base(lineInfo)
+        public Parameter(ILineInfo lineInfo, String name, PassMethod passMethod = PassMethod.ByValue): base(lineInfo)
         {
             Name = name;
             PassMethod = passMethod;
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
-        public PassMethod PassMethod { get; }
+        public PassMethod PassMethod
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1052,12 +1179,15 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
 {
     public partial class GenericParameter : SyntaxNode
     {
-        public GenericParameter(ILineInfo lineInfo, String name) : base(lineInfo)
+        public GenericParameter(ILineInfo lineInfo, String name): base(lineInfo)
         {
             Name = name;
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1075,7 +1205,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class AttributeSyntax : SyntaxNode
     {
-        public AttributeSyntax(ILineInfo lineInfo) : base(lineInfo)
+        public AttributeSyntax(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -1095,7 +1225,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public abstract partial class Member : SyntaxNode
     {
-        public Member(ILineInfo lineInfo) : base(lineInfo)
+        public Member(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -1115,43 +1245,59 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
 {
     public partial class Function : Member, IScoped, IAstSymbol
     {
-        public Function(ILineInfo lineInfo, Block block, ParameterList parameters,
-            GenericParameterList genericParameters, AttributeList attributes, String name,
-            TypeSyntax type) : base(lineInfo)
+        public Function(ILineInfo lineInfo, Block block, ParameterList parameters, GenericParameterList genericParameters, AttributeList attributes, String name, TypeSyntax type): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) block);
-            this.Attach(1, (SyntaxNode) parameters);
-            this.Attach(2, (SyntaxNode) genericParameters);
-            this.Attach(3, (SyntaxNode) attributes);
+            this.Attach(0, (SyntaxNode)block);
+            this.Attach(1, (SyntaxNode)parameters);
+            this.Attach(2, (SyntaxNode)genericParameters);
+            this.Attach(3, (SyntaxNode)attributes);
             Name = name;
-            this.Attach(4, (SyntaxNode) type);
+            this.Attach(4, (SyntaxNode)type);
         }
 
         public Block Block
         {
-            get { return (Block) this.Childs[0]; }
+            get
+            {
+                return (Block)this.Childs[0];
+            }
         }
 
         public ParameterList Parameters
         {
-            get { return (ParameterList) this.Childs[1]; }
+            get
+            {
+                return (ParameterList)this.Childs[1];
+            }
         }
 
         public GenericParameterList GenericParameters
         {
-            get { return (GenericParameterList) this.Childs[2]; }
+            get
+            {
+                return (GenericParameterList)this.Childs[2];
+            }
         }
 
         public AttributeList Attributes
         {
-            get { return (AttributeList) this.Childs[3]; }
+            get
+            {
+                return (AttributeList)this.Childs[3];
+            }
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public TypeSyntax Type
         {
-            get { return (TypeSyntax) this.Childs[4]; }
+            get
+            {
+                return (TypeSyntax)this.Childs[4];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1164,7 +1310,11 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
             visitor.VisitFunction(this);
         }
 
-        public SymbolTable SymbolTable { get; set; }
+        public SymbolTable SymbolTable
+        {
+            get;
+            set;
+        }
     }
 }
 
@@ -1172,31 +1322,42 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Constructor : Member, IScoped, IAstSymbol
     {
-        public Constructor(ILineInfo lineInfo, Block block, ParameterList parameters, AttributeList attributes,
-            String name) : base(lineInfo)
+        public Constructor(ILineInfo lineInfo, Block block, ParameterList parameters, AttributeList attributes, String name): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) block);
-            this.Attach(1, (SyntaxNode) parameters);
-            this.Attach(2, (SyntaxNode) attributes);
+            this.Attach(0, (SyntaxNode)block);
+            this.Attach(1, (SyntaxNode)parameters);
+            this.Attach(2, (SyntaxNode)attributes);
             Name = name;
         }
 
         public Block Block
         {
-            get { return (Block) this.Childs[0]; }
+            get
+            {
+                return (Block)this.Childs[0];
+            }
         }
 
         public ParameterList Parameters
         {
-            get { return (ParameterList) this.Childs[1]; }
+            get
+            {
+                return (ParameterList)this.Childs[1];
+            }
         }
 
         public AttributeList Attributes
         {
-            get { return (AttributeList) this.Childs[2]; }
+            get
+            {
+                return (AttributeList)this.Childs[2];
+            }
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1208,7 +1369,11 @@ namespace ZenPlatform.Language.Ast.Definitions
             visitor.VisitConstructor(this);
         }
 
-        public SymbolTable SymbolTable { get; set; }
+        public SymbolTable SymbolTable
+        {
+            get;
+            set;
+        }
     }
 }
 
@@ -1216,12 +1381,15 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Field : Member, IAstSymbol
     {
-        public Field(ILineInfo lineInfo, String name) : base(lineInfo)
+        public Field(ILineInfo lineInfo, String name): base(lineInfo)
         {
             Name = name;
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1239,21 +1407,30 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Property : Member, IAstSymbol
     {
-        public Property(ILineInfo lineInfo, String name, TypeSyntax type, String mapTo = null) : base(lineInfo)
+        public Property(ILineInfo lineInfo, String name, TypeSyntax type, String mapTo = null): base(lineInfo)
         {
             Name = name;
-            this.Attach(0, (SyntaxNode) type);
+            this.Attach(0, (SyntaxNode)type);
             MapTo = mapTo;
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public TypeSyntax Type
         {
-            get { return (TypeSyntax) this.Childs[0]; }
+            get
+            {
+                return (TypeSyntax)this.Childs[0];
+            }
         }
 
-        public String MapTo { get; }
+        public String MapTo
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1271,19 +1448,24 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
 {
     public partial class Argument : SyntaxNode
     {
-        public Argument(ILineInfo lineInfo, Expression expression, PassMethod passMethod = PassMethod.ByValue) :
-            base(lineInfo)
+        public Argument(ILineInfo lineInfo, Expression expression, PassMethod passMethod = PassMethod.ByValue): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)expression);
             PassMethod = passMethod;
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
-        public PassMethod PassMethod { get; }
+        public PassMethod PassMethod
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1301,23 +1483,32 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Call : Expression
     {
-        public Call(ILineInfo lineInfo, ArgumentList arguments, Name name, Expression expression) : base(lineInfo)
+        public Call(ILineInfo lineInfo, ArgumentList arguments, Name name, Expression expression): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) arguments);
+            this.Attach(0, (SyntaxNode)arguments);
             Name = name;
-            this.Attach(1, (SyntaxNode) expression);
+            this.Attach(1, (SyntaxNode)expression);
         }
 
         public ArgumentList Arguments
         {
-            get { return (ArgumentList) this.Childs[0]; }
+            get
+            {
+                return (ArgumentList)this.Childs[0];
+            }
         }
 
-        public Name Name { get; }
+        public Name Name
+        {
+            get;
+        }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[1]; }
+            get
+            {
+                return (Expression)this.Childs[1];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1336,14 +1527,17 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 {
     public partial class Return : Statement
     {
-        public Return(ILineInfo lineInfo, Expression expression) : base(lineInfo)
+        public Return(ILineInfo lineInfo, Expression expression): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)expression);
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1362,23 +1556,32 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Variable : Expression, IAstSymbol
     {
-        public Variable(ILineInfo lineInfo, Expression value, String name, TypeSyntax type) : base(lineInfo)
+        public Variable(ILineInfo lineInfo, Expression value, String name, TypeSyntax type): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) value);
+            this.Attach(0, (SyntaxNode)value);
             Name = name;
-            this.Attach(1, (SyntaxNode) type);
+            this.Attach(1, (SyntaxNode)type);
         }
 
         public Expression Value
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public TypeSyntax Type
         {
-            get { return (TypeSyntax) this.Childs[1]; }
+            get
+            {
+                return (TypeSyntax)this.Childs[1];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1397,17 +1600,23 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class ContextVariable : Expression, IAstSymbol
     {
-        public ContextVariable(ILineInfo lineInfo, String name, TypeSyntax type) : base(lineInfo)
+        public ContextVariable(ILineInfo lineInfo, String name, TypeSyntax type): base(lineInfo)
         {
             Name = name;
-            this.Attach(0, (SyntaxNode) type);
+            this.Attach(0, (SyntaxNode)type);
         }
 
-        public String Name { get; }
+        public String Name
+        {
+            get;
+        }
 
         public TypeSyntax Type
         {
-            get { return (TypeSyntax) this.Childs[0]; }
+            get
+            {
+                return (TypeSyntax)this.Childs[0];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1426,7 +1635,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Literal : Expression
     {
-        public Literal(ILineInfo lineInfo) : base(lineInfo)
+        public Literal(ILineInfo lineInfo): base(lineInfo)
         {
         }
 
@@ -1446,12 +1655,15 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Name : Expression
     {
-        public Name(ILineInfo lineInfo, String value) : base(lineInfo)
+        public Name(ILineInfo lineInfo, String value): base(lineInfo)
         {
             Value = value;
         }
 
-        public String Value { get; }
+        public String Value
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1469,18 +1681,24 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class GetFieldExpression : Expression
     {
-        public GetFieldExpression(ILineInfo lineInfo, Expression expression, String fieldName) : base(lineInfo)
+        public GetFieldExpression(ILineInfo lineInfo, Expression expression, String fieldName): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)expression);
             FieldName = fieldName;
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
-        public String FieldName { get; }
+        public String FieldName
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1498,20 +1716,26 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public abstract partial class LookupExpression : Expression
     {
-        public LookupExpression(ILineInfo lineInfo, Expression lookup, Expression current) : base(lineInfo)
+        public LookupExpression(ILineInfo lineInfo, Expression lookup, Expression current): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) lookup);
-            this.Attach(1, (SyntaxNode) current);
+            this.Attach(0, (SyntaxNode)lookup);
+            this.Attach(1, (SyntaxNode)current);
         }
 
         public Expression Lookup
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public Expression Current
         {
-            get { return (Expression) this.Childs[1]; }
+            get
+            {
+                return (Expression)this.Childs[1];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1530,8 +1754,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class PropertyLookupExpression : LookupExpression
     {
-        public PropertyLookupExpression(ILineInfo lineInfo, Expression lookup, Expression current) : base(lineInfo,
-            lookup, current)
+        public PropertyLookupExpression(ILineInfo lineInfo, Expression lookup, Expression current): base(lineInfo, lookup, current)
         {
         }
 
@@ -1551,8 +1774,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class MethodLookupExpression : LookupExpression
     {
-        public MethodLookupExpression(ILineInfo lineInfo, Expression lookup, Expression current) : base(lineInfo,
-            lookup, current)
+        public MethodLookupExpression(ILineInfo lineInfo, Expression lookup, Expression current): base(lineInfo, lookup, current)
         {
         }
 
@@ -1572,18 +1794,24 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class AssignFieldExpression : Expression
     {
-        public AssignFieldExpression(ILineInfo lineInfo, Expression expression, String fieldName) : base(lineInfo)
+        public AssignFieldExpression(ILineInfo lineInfo, Expression expression, String fieldName): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)expression);
             FieldName = fieldName;
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
-        public String FieldName { get; }
+        public String FieldName
+        {
+            get;
+        }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1601,20 +1829,26 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 {
     public partial class DoWhile : Statement
     {
-        public DoWhile(ILineInfo lineInfo, Expression condition, Block block) : base(lineInfo)
+        public DoWhile(ILineInfo lineInfo, Expression condition, Block block): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) condition);
-            this.Attach(1, (SyntaxNode) block);
+            this.Attach(0, (SyntaxNode)condition);
+            this.Attach(1, (SyntaxNode)block);
         }
 
         public Expression Condition
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public Block Block
         {
-            get { return (Block) this.Childs[1]; }
+            get
+            {
+                return (Block)this.Childs[1];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1633,26 +1867,35 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 {
     public partial class Try : Statement
     {
-        public Try(ILineInfo lineInfo, Block tryBlock, Block catchBlock, Block finallyBlock) : base(lineInfo)
+        public Try(ILineInfo lineInfo, Block tryBlock, Block catchBlock, Block finallyBlock): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) tryBlock);
-            this.Attach(1, (SyntaxNode) catchBlock);
-            this.Attach(2, (SyntaxNode) finallyBlock);
+            this.Attach(0, (SyntaxNode)tryBlock);
+            this.Attach(1, (SyntaxNode)catchBlock);
+            this.Attach(2, (SyntaxNode)finallyBlock);
         }
 
         public Block TryBlock
         {
-            get { return (Block) this.Childs[0]; }
+            get
+            {
+                return (Block)this.Childs[0];
+            }
         }
 
         public Block CatchBlock
         {
-            get { return (Block) this.Childs[1]; }
+            get
+            {
+                return (Block)this.Childs[1];
+            }
         }
 
         public Block FinallyBlock
         {
-            get { return (Block) this.Childs[2]; }
+            get
+            {
+                return (Block)this.Childs[2];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1671,14 +1914,17 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 {
     public partial class ExpressionStatement : Statement
     {
-        public ExpressionStatement(ILineInfo lineInfo, Expression expression) : base(lineInfo)
+        public ExpressionStatement(ILineInfo lineInfo, Expression expression): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)expression);
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1697,33 +1943,44 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 {
     public partial class For : Statement
     {
-        public For(ILineInfo lineInfo, Block block, Expression counter, Expression condition,
-            Expression initializer) : base(lineInfo)
+        public For(ILineInfo lineInfo, Block block, Expression counter, Expression condition, Expression initializer): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) block);
-            this.Attach(1, (SyntaxNode) counter);
-            this.Attach(2, (SyntaxNode) condition);
-            this.Attach(3, (SyntaxNode) initializer);
+            this.Attach(0, (SyntaxNode)block);
+            this.Attach(1, (SyntaxNode)counter);
+            this.Attach(2, (SyntaxNode)condition);
+            this.Attach(3, (SyntaxNode)initializer);
         }
 
         public Block Block
         {
-            get { return (Block) this.Childs[0]; }
+            get
+            {
+                return (Block)this.Childs[0];
+            }
         }
 
         public Expression Counter
         {
-            get { return (Expression) this.Childs[1]; }
+            get
+            {
+                return (Expression)this.Childs[1];
+            }
         }
 
         public Expression Condition
         {
-            get { return (Expression) this.Childs[2]; }
+            get
+            {
+                return (Expression)this.Childs[2];
+            }
         }
 
         public Expression Initializer
         {
-            get { return (Expression) this.Childs[3]; }
+            get
+            {
+                return (Expression)this.Childs[3];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1740,28 +1997,75 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 
 namespace ZenPlatform.Language.Ast.Definitions.Statements
 {
-    public partial class If : Statement
+    public partial class While : Statement
     {
-        public If(ILineInfo lineInfo, Block elseBlock, Block ifBlock, Expression condition) : base(lineInfo)
+        public While(ILineInfo lineInfo, Block block, Expression condition): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) elseBlock);
-            this.Attach(1, (SyntaxNode) ifBlock);
-            this.Attach(2, (SyntaxNode) condition);
+            this.Attach(0, (SyntaxNode)block);
+            this.Attach(1, (SyntaxNode)condition);
         }
 
-        public Block ElseBlock
+        public Block Block
         {
-            get { return (Block) this.Childs[0]; }
-        }
-
-        public Block IfBlock
-        {
-            get { return (Block) this.Childs[1]; }
+            get
+            {
+                return (Block)this.Childs[0];
+            }
         }
 
         public Expression Condition
         {
-            get { return (Expression) this.Childs[2]; }
+            get
+            {
+                return (Expression)this.Childs[1];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitWhile(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitWhile(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Language.Ast.Definitions.Statements
+{
+    public partial class If : Statement
+    {
+        public If(ILineInfo lineInfo, Block elseBlock, Block ifBlock, Expression condition): base(lineInfo)
+        {
+            this.Attach(0, (SyntaxNode)elseBlock);
+            this.Attach(1, (SyntaxNode)ifBlock);
+            this.Attach(2, (SyntaxNode)condition);
+        }
+
+        public Block ElseBlock
+        {
+            get
+            {
+                return (Block)this.Childs[0];
+            }
+        }
+
+        public Block IfBlock
+        {
+            get
+            {
+                return (Block)this.Childs[1];
+            }
+        }
+
+        public Expression Condition
+        {
+            get
+            {
+                return (Expression)this.Childs[2];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1780,14 +2084,17 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public abstract partial class PostOperationExpression : Expression
     {
-        public PostOperationExpression(ILineInfo lineInfo, Expression expression) : base(lineInfo)
+        public PostOperationExpression(ILineInfo lineInfo, Expression expression): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)expression);
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1806,7 +2113,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class PostIncrementExpression : PostOperationExpression
     {
-        public PostIncrementExpression(ILineInfo lineInfo, Expression expression) : base(lineInfo, expression)
+        public PostIncrementExpression(ILineInfo lineInfo, Expression expression): base(lineInfo, expression)
         {
         }
 
@@ -1826,7 +2133,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class PostDecrementExpression : PostOperationExpression
     {
-        public PostDecrementExpression(ILineInfo lineInfo, Expression expression) : base(lineInfo, expression)
+        public PostDecrementExpression(ILineInfo lineInfo, Expression expression): base(lineInfo, expression)
         {
         }
 
@@ -1846,14 +2153,17 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class Throw : Expression
     {
-        public Throw(ILineInfo lineInfo, Expression exception) : base(lineInfo)
+        public Throw(ILineInfo lineInfo, Expression exception): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) exception);
+            this.Attach(0, (SyntaxNode)exception);
         }
 
         public Expression Exception
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1872,26 +2182,35 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 {
     public partial class MatchAtom : SyntaxNode
     {
-        public MatchAtom(ILineInfo lineInfo, Block block, Expression expression, TypeSyntax type) : base(lineInfo)
+        public MatchAtom(ILineInfo lineInfo, Block block, Expression expression, TypeSyntax type): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) block);
-            this.Attach(1, (SyntaxNode) expression);
-            this.Attach(2, (SyntaxNode) type);
+            this.Attach(0, (SyntaxNode)block);
+            this.Attach(1, (SyntaxNode)expression);
+            this.Attach(2, (SyntaxNode)type);
         }
 
         public Block Block
         {
-            get { return (Block) this.Childs[0]; }
+            get
+            {
+                return (Block)this.Childs[0];
+            }
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[1]; }
+            get
+            {
+                return (Expression)this.Childs[1];
+            }
         }
 
         public TypeSyntax Type
         {
-            get { return (TypeSyntax) this.Childs[2]; }
+            get
+            {
+                return (TypeSyntax)this.Childs[2];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1910,20 +2229,26 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
 {
     public partial class Match : Statement
     {
-        public Match(ILineInfo lineInfo, MatchAtomList matches, Expression expression) : base(lineInfo)
+        public Match(ILineInfo lineInfo, MatchAtomList matches, Expression expression): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) matches);
-            this.Attach(1, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)matches);
+            this.Attach(1, (SyntaxNode)expression);
         }
 
         public MatchAtomList Matches
         {
-            get { return (MatchAtomList) this.Childs[0]; }
+            get
+            {
+                return (MatchAtomList)this.Childs[0];
+            }
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[1]; }
+            get
+            {
+                return (Expression)this.Childs[1];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1942,14 +2267,17 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
     public partial class GlobalVar : Expression
     {
-        public GlobalVar(ILineInfo lineInfo, Expression expression) : base(lineInfo)
+        public GlobalVar(ILineInfo lineInfo, Expression expression): base(lineInfo)
         {
-            this.Attach(0, (SyntaxNode) expression);
+            this.Attach(0, (SyntaxNode)expression);
         }
 
         public Expression Expression
         {
-            get { return (Expression) this.Childs[0]; }
+            get
+            {
+                return (Expression)this.Childs[0];
+            }
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -2244,6 +2572,11 @@ namespace ZenPlatform.Language.Ast
         }
 
         public virtual T VisitFor(For arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitWhile(While arg)
         {
             return DefaultVisit(arg);
         }
@@ -2562,6 +2895,11 @@ namespace ZenPlatform.Language.Ast
         }
 
         public virtual void VisitFor(For arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitWhile(While arg)
         {
             DefaultVisit(arg);
         }

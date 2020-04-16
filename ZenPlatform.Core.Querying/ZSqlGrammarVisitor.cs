@@ -1,5 +1,6 @@
 ﻿using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Querying.Model;
 
@@ -12,9 +13,9 @@ namespace ZenPlatform.Core.Querying
     {
         private readonly QLang _stack;
 
-        public ZSqlGrammarVisitor(IProject configuration, DataQueryConstructorContext context)
+        public ZSqlGrammarVisitor(ITypeManager tm, DataQueryConstructorContext context)
         {
-            _stack = new QLang(configuration);
+            _stack = new QLang(tm);
         }
 
         public ZSqlGrammarVisitor(QLang stackMachine)

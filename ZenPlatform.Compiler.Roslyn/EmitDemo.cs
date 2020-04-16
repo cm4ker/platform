@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,14 +17,6 @@ namespace ZenPlatform.Compiler.Roslyn
     {
         public static void GenerateAssembly(string code, string path, string[] assemblies = null)
         {
-            //dump code
-
-            var dir = Path.GetDirectoryName(path);
-            var fileName = "dumped.gen";
-
-            using (var sw = new StreamWriter(Path.Combine(dir, fileName)))
-                sw.Write(code);
-
             // 1. Generate AssemblyInfo.cs-like C# code and parse syntax tree
             StringBuilder asmInfo = new StringBuilder();
 
@@ -37,6 +30,14 @@ namespace ZenPlatform.Compiler.Roslyn
 
             var asmInfoTree = CSharpSyntaxTree.ParseText(asmInfo.ToString(), encoding: Encoding.Default);
             var tree = SyntaxFactory.ParseSyntaxTree(code);
+
+
+            var dir = Path.GetDirectoryName(path);
+            var fileName = "dumped.cs";
+
+            using (var sw = new StreamWriter(Path.Combine(dir, fileName)))
+                sw.Write(tree.GetRoot().NormalizeWhitespace().ToFullString());
+
 
             // Detect the file location for the library that defines the object type
             var systemRefLocation = typeof(object).GetTypeInfo().Assembly.Location;
@@ -78,7 +79,7 @@ namespace ZenPlatform.Compiler.Roslyn
             if (compilationResult.Success)
             {
                 // Load the assembly
-               // Assembly asm = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
+                // Assembly asm = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
             }
 
             else

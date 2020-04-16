@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ZenPlatform.Configuration.Contracts;
 
-namespace ZenPlatform.Configuration
+namespace ZenPlatform.Configuration.Common.TypeSystem
 {
     public class XCComponentInformation : IXCComponentInformation
     {

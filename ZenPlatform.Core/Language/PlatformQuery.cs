@@ -139,7 +139,7 @@ namespace ZenPlatform.Core.Language
             CommonTokenStream commonTokenStream = new CommonTokenStream(speakLexer);
             ZSqlGrammarParser speakParser = new ZSqlGrammarParser(commonTokenStream);
             ZSqlGrammarVisitor visitor =
-                new ZSqlGrammarVisitor(((PlatformEnvironment) _session.Environment).Configuration, context);
+                new ZSqlGrammarVisitor(((PlatformEnvironment) _session.Environment).Configuration.TypeManager, context);
 
             var result = visitor.Visit(speakParser.parse());
 

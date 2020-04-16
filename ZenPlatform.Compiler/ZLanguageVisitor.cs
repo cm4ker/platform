@@ -700,6 +700,17 @@ namespace ZenPlatform.Compiler
             return result;
         }
 
+
+        public override SyntaxNode VisitThrowStatement(ZSharpParser.ThrowStatementContext context)
+        {
+            base.VisitThrowStatement(context);
+
+            var result = new Throw(context.start.ToLineInfo(), _syntaxStack.PopExpression());
+            _syntaxStack.Push(result);
+
+            return result;
+        }
+
         public override SyntaxNode VisitStatement(ZSharpParser.StatementContext context)
         {
             base.VisitStatement(context);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 
@@ -373,16 +374,24 @@ namespace ZenPlatform.Compiler.Roslyn
             return _parent;
         }
 
-        public RBlockBuilder TryIf()
+        public RBlockBuilder If()
         {
             _stack.Push(new RXIf(PopBlock(), PopBlock(), PopExp()));
             return this;
         }
 
-        public RBlockBuilder TryWhile()
+        public RBlockBuilder While()
         {
+            _stack.Push(new RXWhile(PopBlock(), PopExp()));
             return this;
         }
+
+        public RBlockBuilder Try()
+        {
+            _stack.Push(new RXTry(PopBlock(), PopBlock(), PopBlock()));
+            return this;
+        }
+
 
         public RBlockBuilder TryCall()
         {
@@ -411,6 +420,12 @@ namespace ZenPlatform.Compiler.Roslyn
             return this;
         }
 
+        public RBlockBuilder Throw()
+        {
+            Push(new RXThrow(PopExp()));
+            return this;
+        }
+
         public RBlockBuilder Throw(RoslynType type)
         {
             var con = type.Constructors.FirstOrDefault(x => !x.Parameters.Any());
@@ -419,8 +434,7 @@ namespace ZenPlatform.Compiler.Roslyn
                 throw new Exception("Exception haven't default constructor use NewObj + Throw instead");
 
             NewObj(con);
-            Push(new RXThrow(PopExp()));
-            return this;
+            return Throw();
         }
 
         public RBlockBuilder StProp(RoslynProperty prop)

@@ -1,6 +1,7 @@
 ﻿using System;
 using Portable.Xaml.Markup;
 using ZenPlatform.Configuration;
+using ZenPlatform.Configuration.Common.TypeSystem;
 
 [assembly: XmlnsDefinition("http://zplatform.com/conf/entityComponent", "ZenPlatform.EntityComponent.Configuration")]
 

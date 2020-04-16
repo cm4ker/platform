@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using SharpFileSystem.Database;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.Core.Configuration;
 using ZenPlatform.Data;
 using ZenPlatform.Data.Tools;

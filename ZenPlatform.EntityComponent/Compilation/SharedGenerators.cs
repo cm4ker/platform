@@ -163,7 +163,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                         .Statement()
                         .EndBlock()
                         .Nothing()
-                        .TryIf()
+                        .If()
                         .Statement();
 
 
@@ -202,7 +202,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                             .Statement()
                             .EndBlock()
                             .Nothing()
-                            .TryIf()
+                            .If()
                             .Statement();
 
 
@@ -334,7 +334,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                         .Ret().Statement()
                         .EndBlock()
                         .Nothing()
-                        .TryIf().Statement();
+                        .If().Statement();
 
                 }
 
