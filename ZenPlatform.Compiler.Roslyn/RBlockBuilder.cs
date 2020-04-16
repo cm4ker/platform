@@ -9,7 +9,7 @@ namespace ZenPlatform.Compiler.Roslyn
 {
     public class RBlockBuilder
     {
-        private readonly SreInvokableBase _method;
+        private readonly RoslynInvokableBase _method;
         private RBlockBuilder _parent;
 
         private int _localIndex = 0;
@@ -30,18 +30,18 @@ namespace ZenPlatform.Compiler.Roslyn
 
         public List<Expression> BaseCall { get; set; } = new List<Expression>();
 
-        public RBlockBuilder(SreTypeSystem ts, SreInvokableBase method) : this(ts, method, null)
+        public RBlockBuilder(RoslynTypeSystem ts, RoslynInvokableBase method) : this(ts, method, null)
         {
         }
 
-        public RBlockBuilder(SreTypeSystem ts, SreInvokableBase method, RBlockBuilder parent)
+        public RBlockBuilder(RoslynTypeSystem ts, RoslynInvokableBase method, RBlockBuilder parent)
         {
             _parent = parent;
             TypeSystem = ts;
             _method = method;
         }
 
-        public SreTypeSystem TypeSystem { get; }
+        public RoslynTypeSystem TypeSystem { get; }
 
         private Expression PopExp()
         {
@@ -53,12 +53,12 @@ namespace ZenPlatform.Compiler.Roslyn
             return (RBlockBuilder) Pop();
         }
 
-        private SreType PopType()
+        private RoslynType PopType()
         {
-            return (SreType) Pop();
+            return (RoslynType) Pop();
         }
 
-        public RLocal DefineLocal(SreType type)
+        public RLocal DefineLocal(RoslynType type)
         {
             var loc = new RLocal($"loc{GetNextLocIndex()}", type);
             _locals.Add(loc);
@@ -77,26 +77,26 @@ namespace ZenPlatform.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder StFld(SreField field)
+        public RBlockBuilder StFld(RoslynField field)
         {
             _stack.Push(new Assign(PopExp(), new LookUp(new NameExpression(field.Name), PopExp())));
             return this;
         }
 
-        public RBlockBuilder StSFld(SreField field)
+        public RBlockBuilder StSFld(RoslynField field)
         {
             _stack.Push(new Assign(PopExp(),
                 new LookUp(new NameExpression(field.Name), new TypeToken(field.DeclaringType))));
             return this;
         }
 
-        public RBlockBuilder LdSFld(SreField field)
+        public RBlockBuilder LdSFld(RoslynField field)
         {
             _stack.Push(new LookUp(new NameExpression(field.Name), new TypeToken(field.DeclaringType)));
             return this;
         }
 
-        public RBlockBuilder NewObj(SreConstructor c)
+        public RBlockBuilder NewObj(RoslynConstructor c)
         {
             Expression[] args = new Expression[c.Parameters.Count];
             for (int i = 0; i < c.Parameters.Count; i++)
@@ -109,13 +109,13 @@ namespace ZenPlatform.Compiler.Roslyn
         }
 
 
-        public RBlockBuilder NewArr(SreType c)
+        public RBlockBuilder NewArr(RoslynType c)
         {
             Push(new NewArrayExpression(c, PopExp()));
             return this;
         }
 
-        public AdvancedArrayBuilder NewArrAdv(SreType c)
+        public AdvancedArrayBuilder NewArrAdv(RoslynType c)
         {
             return new AdvancedArrayBuilder(PopExp(), c, this);
         }
@@ -144,13 +144,13 @@ namespace ZenPlatform.Compiler.Roslyn
         }
 
 
-        public RBlockBuilder LdFld(SreField fld)
+        public RBlockBuilder LdFld(RoslynField fld)
         {
             _stack.Push(new LookUp(new NameExpression(fld.Name), PopExp()));
             return this;
         }
 
-        public RBlockBuilder LdArg(SreParameter p)
+        public RBlockBuilder LdArg(RoslynParameter p)
         {
             _stack.Push(new NameExpression(p.Name));
             return this;
@@ -192,7 +192,7 @@ namespace ZenPlatform.Compiler.Roslyn
         }
 
 
-        public RBlockBuilder LdFtn(SreMethod method)
+        public RBlockBuilder LdFtn(RoslynMethod method)
         {
             _stack.Push(new NameExpression(method.Name));
             return this;
@@ -261,7 +261,7 @@ namespace ZenPlatform.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder StArg(SreParameter arg)
+        public RBlockBuilder StArg(RoslynParameter arg)
         {
             _stack.Push(new Assign(PopExp(), new NameExpression(arg.Name)));
             return this;
@@ -391,27 +391,27 @@ namespace ZenPlatform.Compiler.Roslyn
 
         public RBlockBuilder Ret()
         {
-            if (_method is SreConstructor ||
-                _method is SreMethod m && m.ReturnType == m.System.GetSystemBindings().Void)
+            if (_method is RoslynConstructor ||
+                _method is RoslynMethod m && m.ReturnType == m.System.GetSystemBindings().Void)
                 Nothing();
 
             _stack.Push(new Return(PopExp()));
             return this;
         }
 
-        public RBlockBuilder IsInst(SreType type)
+        public RBlockBuilder IsInst(RoslynType type)
         {
             _stack.Push(new Is(type, PopExp()));
             return this;
         }
 
-        public RBlockBuilder Cast(SreType type)
+        public RBlockBuilder Cast(RoslynType type)
         {
             _stack.Push(new Cast(type, PopExp()));
             return this;
         }
 
-        public RBlockBuilder Throw(SreType type)
+        public RBlockBuilder Throw(RoslynType type)
         {
             var con = type.Constructors.FirstOrDefault(x => !x.Parameters.Any());
 
@@ -423,7 +423,7 @@ namespace ZenPlatform.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder StProp(SreProperty prop)
+        public RBlockBuilder StProp(RoslynProperty prop)
         {
             if (prop.Setter.IsStatic)
                 throw new Exception("This not allowed yet");
@@ -433,7 +433,7 @@ namespace ZenPlatform.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder LdProp(SreProperty prop)
+        public RBlockBuilder LdProp(RoslynProperty prop)
         {
             if (prop.Getter.IsStatic)
             {
@@ -446,7 +446,7 @@ namespace ZenPlatform.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder Call(SreInvokableBase method)
+        public RBlockBuilder Call(RoslynInvokableBase method)
         {
             Expression[] args = new Expression[method.Parameters.Count];
             for (int i = method.Parameters.Count - 1; i >= 0; i--)
@@ -454,7 +454,7 @@ namespace ZenPlatform.Compiler.Roslyn
                 args[i] = PopExp();
             }
 
-            if (_method is SreConstructor && method is SreConstructor)
+            if (_method is RoslynConstructor && method is RoslynConstructor)
             {
                 //if we call constructor inside constructor then we want call base
 
@@ -518,63 +518,6 @@ namespace ZenPlatform.Compiler.Roslyn
         public RBlockBuilder LdNull()
         {
             return Null();
-        }
-    }
-
-    public class AdvancedArrayBuilder : Expression
-    {
-        private readonly Expression _capacity;
-        private readonly SreType _type;
-        private readonly RBlockBuilder _parentBlock;
-
-        private readonly List<Expression> _args = new List<Expression>();
-
-        public AdvancedArrayBuilder(Expression capacity, SreType type, RBlockBuilder parentBlock)
-        {
-            _capacity = capacity;
-            _type = type;
-            _parentBlock = parentBlock;
-        }
-
-        public RBlockBuilder Block => _parentBlock;
-
-        public AdvancedArrayBuilder PopArg()
-        {
-            _args.Add((Expression) Block.Pop());
-            return this;
-        }
-
-        public RBlockBuilder EndBuild()
-        {
-            _parentBlock.Push(this);
-            return _parentBlock;
-        }
-
-        public override void Dump(TextWriter tw)
-        {
-            tw.W("new ");
-
-            _type.DumpRef(tw);
-            using (tw.SquareBrace())
-            {
-                _capacity?.Dump(tw);
-            }
-
-            using (tw.CurlyBrace())
-            {
-                var wasFirst = false;
-                foreach (var arg in _args)
-                {
-                    if (wasFirst)
-                        tw.W(",");
-
-                    arg.Dump(tw);
-
-                    wasFirst = true;
-                }
-            }
-
-            //new Test[10] {exp1, exp2, exp3}
         }
     }
 }

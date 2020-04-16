@@ -32,22 +32,22 @@ namespace ZenPlatform.EntityComponent.Compilation
             _qm = new QueryMachine();
         }
 
-        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm)
         {
             return asm.DefineInstanceType(GetNamespace(), Name);
         }
 
-        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(RoslynTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitStructure(builder, dbType);
         }
 
-        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             EmitBody(builder, dbType);
         }
 
-        public void EmitStructure(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void EmitStructure(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var managerType = ManagerType;
             var pLinkType = managerType.GetLinkType();
@@ -79,7 +79,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                 .DefineParameter("dto", dtoType, false, false);
         }
 
-        private void EmitBody(SreTypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var pManagerType = ManagerType;
             var pObjectType = pManagerType.GetObjectType();
@@ -102,7 +102,7 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             var nGuid = sb.Guid.FindMethod(nameof(Guid.NewGuid));
 
-            var create = (SreMethodBuilder) builder.FindMethod("Create");
+            var create = (RoslynMethodBuilder) builder.FindMethod("Create");
 
             var cg = create.Body;
 
@@ -151,7 +151,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                 ;
 
             //Get method
-            var get = (SreMethodBuilder) builder.FindMethod("Get", sb.Guid);
+            var get = (RoslynMethodBuilder) builder.FindMethod("Get", sb.Guid);
 
             var gg = get.Body;
             var dxcType = ts.Resolve<DbCommand>();
@@ -241,7 +241,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             EmitSavingSupport(builder, dbType);
         }
 
-        private void EmitSavingSupport(SreTypeBuilder tb, SqlDatabaseType dbType)
+        private void EmitSavingSupport(RoslynTypeBuilder tb, SqlDatabaseType dbType)
         {
             var set = ManagerType;
 
@@ -254,7 +254,7 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             var dtoType = ts.FindType($"{set.GetNamespace()}.{set.GetDtoType().Name}");
 
-            var saveMethod = (SreMethodBuilder) tb.FindMethod("Save", dtoType);
+            var saveMethod = (RoslynMethodBuilder) tb.FindMethod("Save", dtoType);
 
             var rg = saveMethod.Body;
 

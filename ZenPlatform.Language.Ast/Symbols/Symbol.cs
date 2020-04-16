@@ -55,13 +55,13 @@ namespace ZenPlatform.Language.Ast.Symbols
 
     public class MethodSymbol : Symbol
     {
-        private SreType declaringType;
+        private RoslynType declaringType;
 
-        private readonly Dictionary<Function, SreMethod> _overloads;
+        private readonly Dictionary<Function, RoslynMethod> _overloads;
 
         public MethodSymbol(Function f) : base(f.Name, SymbolType.Method)
         {
-            _overloads = new Dictionary<Function, SreMethod>();
+            _overloads = new Dictionary<Function, RoslynMethod>();
 
             DeclareOverload(f);
         }
@@ -79,7 +79,7 @@ namespace ZenPlatform.Language.Ast.Symbols
             _overloads.Add(f, null);
         }
 
-        public void ConnectOverload(Function f, SreMethod method)
+        public void ConnectOverload(Function f, RoslynMethod method)
         {
             if (!_overloads.ContainsKey(f))
             {
@@ -91,7 +91,7 @@ namespace ZenPlatform.Language.Ast.Symbols
             _overloads[f] = method;
         }
 
-        public (Function method, SreMethod clrMethod) SelectOverload(SreType[] args)
+        public (Function method, RoslynMethod clrMethod) SelectOverload(RoslynType[] args)
         {
             if (_overloads.Count == 0)
                 throw new Exception(
@@ -166,11 +166,11 @@ namespace ZenPlatform.Language.Ast.Symbols
             Type = type;
         }
 
-        public SreType ClrType { get; private set; }
+        public RoslynType ClrType { get; private set; }
 
         public TypeEntity Type { get; }
 
-        public void Connect(SreType type)
+        public void Connect(RoslynType type)
         {
             ClrType = type;
         }
@@ -185,9 +185,9 @@ namespace ZenPlatform.Language.Ast.Symbols
 
         public Property Property { get; }
 
-        public SreProperty ClrProperty { get; private set; }
+        public RoslynProperty ClrProperty { get; private set; }
 
-        public void Connect(SreProperty prop)
+        public void Connect(RoslynProperty prop)
         {
             ClrProperty = prop;
         }

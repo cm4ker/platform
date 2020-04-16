@@ -35,7 +35,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
 
         public IPType ObjectType { get; }
 
-        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm)
         {
             _ts = asm.TypeSystem;
 
@@ -48,19 +48,19 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
             return result;
         }
 
-        private SreTypeSystem _ts;
+        private RoslynTypeSystem _ts;
         private SystemTypeBindings _sb;
-        private SreField _markup;
-        private SreField _params;
-        private SreField _f_viewModel;
-        private SreTypeBuilder _viewModel;
+        private RoslynField _markup;
+        private RoslynField _params;
+        private RoslynField _f_viewModel;
+        private RoslynTypeBuilder _viewModel;
 
-        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(RoslynTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             // builder.DefineDefaultConstructor(false);
         }
 
-        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
         }
     }

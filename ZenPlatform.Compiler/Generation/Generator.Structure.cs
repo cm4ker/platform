@@ -18,16 +18,16 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private Dictionary<TypeEntity, SreTypeBuilder> _stage0 = new Dictionary<TypeEntity, SreTypeBuilder>();
-        private Dictionary<Function, SreMethodBuilder> _stage1Methods = new Dictionary<Function, SreMethodBuilder>();
+        private Dictionary<TypeEntity, RoslynTypeBuilder> _stage0 = new Dictionary<TypeEntity, RoslynTypeBuilder>();
+        private Dictionary<Function, RoslynMethodBuilder> _stage1Methods = new Dictionary<Function, RoslynMethodBuilder>();
 
-        private Dictionary<Property, SrePropertyBuilder> _stage1Properties =
-            new Dictionary<Property, SrePropertyBuilder>();
+        private Dictionary<Property, RoslynPropertyBuilder> _stage1Properties =
+            new Dictionary<Property, RoslynPropertyBuilder>();
 
-        private Dictionary<Field, SreField> _stage1Fields = new Dictionary<Field, SreField>();
+        private Dictionary<Field, RoslynField> _stage1Fields = new Dictionary<Field, RoslynField>();
 
-        private Dictionary<Constructor, SreConstructorBuilder> _stage1constructors =
-            new Dictionary<Constructor, SreConstructorBuilder>();
+        private Dictionary<Constructor, RoslynConstructorBuilder> _stage1constructors =
+            new Dictionary<Constructor, RoslynConstructorBuilder>();
 
         private GlobalVarManager _varManager;
 
@@ -125,7 +125,7 @@ namespace ZenPlatform.Compiler.Generation
             if (_stage0.ContainsKey(typeEntity))
                 return;
 
-            void AfterPreBuild<T>(T sym, SreTypeBuilder tb) where T : TypeEntity, IAstSymbol
+            void AfterPreBuild<T>(T sym, RoslynTypeBuilder tb) where T : TypeEntity, IAstSymbol
             {
                 var st = sym.FirstParent<IScoped>().SymbolTable;
                 var symbol = st.Find<TypeSymbol>(sym);
@@ -347,7 +347,7 @@ namespace ZenPlatform.Compiler.Generation
         }
 
 
-        private SreMethodBuilder PrebuildFunction(Function function, SreTypeBuilder tb, bool isClass)
+        private RoslynMethodBuilder PrebuildFunction(Function function, RoslynTypeBuilder tb, bool isClass)
         {
             /* 
              * [Client]
@@ -383,7 +383,7 @@ namespace ZenPlatform.Compiler.Generation
             return method;
         }
 
-        private SrePropertyBuilder PrebuildProperty(Property property, SreTypeBuilder tb)
+        private RoslynPropertyBuilder PrebuildProperty(Property property, RoslynTypeBuilder tb)
         {
             var propBuilder = tb.DefineProperty(_map.GetClrType(property.Type), property.Name, false);
 
@@ -432,7 +432,7 @@ namespace ZenPlatform.Compiler.Generation
             return propBuilder;
         }
 
-        private void BuildProperty(Property property, SreTypeBuilder tb, SrePropertyBuilder pb)
+        private void BuildProperty(Property property, RoslynTypeBuilder tb, RoslynPropertyBuilder pb)
         {
             // if (property.Getter != null)
             // {
@@ -479,12 +479,12 @@ namespace ZenPlatform.Compiler.Generation
             // }
         }
 
-        private SreField PrebuildField(Field field, SreTypeBuilder tb)
+        private RoslynField PrebuildField(Field field, RoslynTypeBuilder tb)
         {
             return tb.DefineField(_map.GetClrType(field.Type), field.Name, false, false);
         }
 
-        private SreConstructorBuilder PrebuildConstructor(Constructor constructor, SreTypeBuilder tb)
+        private RoslynConstructorBuilder PrebuildConstructor(Constructor constructor, RoslynTypeBuilder tb)
         {
             var c = tb.DefineConstructor(false);
 
@@ -500,7 +500,7 @@ namespace ZenPlatform.Compiler.Generation
             return c;
         }
 
-        private SreTypeBuilder PreBuildClass(Class @class)
+        private RoslynTypeBuilder PreBuildClass(Class @class)
         {
             var tb = _asm.DefineType(
                 (@class.GetNamespace()),
@@ -515,7 +515,7 @@ namespace ZenPlatform.Compiler.Generation
             return tb;
         }
 
-        private SreTypeBuilder PreBuildModule(Module module)
+        private RoslynTypeBuilder PreBuildModule(Module module)
         {
             return _asm.DefineType(
                 module.GetNamespace(),
@@ -535,7 +535,7 @@ namespace ZenPlatform.Compiler.Generation
             return null;
         }
 
-        private SreTypeBuilder PreBuildComponentAst(ComponentAstTask astTask)
+        private RoslynTypeBuilder PreBuildComponentAst(ComponentAstTask astTask)
         {
             return astTask.Component.ComponentImpl.Generator.Stage0(_asm, astTask);
         }

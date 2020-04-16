@@ -1,4 +1,5 @@
 using System.Data.Common;
+using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Compiler.Roslyn.DnlibBackend;
@@ -13,6 +14,8 @@ namespace ZenPlatform.EntityComponent.Compilation
 {
     public class DtoGenerationTask : ComponentAstTask, IEntityGenerationTask
     {
+        private RoslynConstructorBuilder _constructor;
+
         public DtoGenerationTask(
             IPType dtoType,
             CompilationMode compilationMode, IComponent component, string name, TypeBody tb)
@@ -23,15 +26,15 @@ namespace ZenPlatform.EntityComponent.Compilation
 
         public IPType DtoType { get; }
 
-        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm)
         {
             var type = asm.DefineInstanceType(this.GetNamespace(), DtoType.Name);
-            type.DefineDefaultConstructor(false);
+            _constructor = type.DefineDefaultConstructor(false);
 
             return type;
         }
 
-        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(RoslynTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitBody(builder, dbType);
             EmitVersionField(builder);
@@ -42,11 +45,11 @@ namespace ZenPlatform.EntityComponent.Compilation
             }
         }
 
-        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
         }
 
-        private void EmitBody(SreTypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = DtoType;
 
@@ -64,12 +67,17 @@ namespace ZenPlatform.EntityComponent.Compilation
             {
                 var tableRow = ts.GetType(table.GetTableDtoRowClassFullName());
                 var listType = sb.List.MakeGenericType(tableRow);
+                var prop = builder.DefineProperty(listType, table.Name, true, false, false);
 
-                //builder.DefinePropertyWithBackingField(listType, table.Name, false);
+
+                _constructor.Body.LdArg_0().NewObj(listType.FindConstructor()).StFld(prop.field).Statement();
+
+
+                prop.getMethod.Body.LdArg_0().LdFld(prop.field).Ret().Statement();
             }
         }
 
-        private void EmitMappingSupport(SreTypeBuilder tb)
+        private void EmitMappingSupport(RoslynTypeBuilder tb)
         {
             var _ts = tb.Assembly.TypeSystem;
             var _bindings = _ts.GetSystemBindings();
@@ -101,14 +109,14 @@ namespace ZenPlatform.EntityComponent.Compilation
             //rg.Ret();
         }
 
-        private void EmitVersionField(SreTypeBuilder tb)
+        private void EmitVersionField(RoslynTypeBuilder tb)
         {
             var _ts = tb.Assembly.TypeSystem;
             var _b = _ts.GetSystemBindings();
             var prop = tb.DefinePropertyWithBackingField(_b.Byte.MakeArrayType(), "Version", false);
         }
 
-        private void EmitDefaultValues(SreTypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitDefaultValues(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var set = DtoType;
 

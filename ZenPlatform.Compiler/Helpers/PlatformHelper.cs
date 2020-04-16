@@ -69,19 +69,19 @@ namespace ZenPlatform.Compiler.Helpers
         }
 
 
-        public static SreMethod ClientInvoke(this SystemTypeBindings b)
+        public static RoslynMethod ClientInvoke(this SystemTypeBindings b)
         {
             return b.Client.Methods.FirstOrDefault(x => x.Name == nameof(IPlatformClient.Invoke)) ??
                    throw new NotSupportedException();
         }
 
-        public static SreMethod ClientInvoke(this SystemTypeBindings b, params SreType[] genParams)
+        public static RoslynMethod ClientInvoke(this SystemTypeBindings b, params RoslynType[] genParams)
         {
             return b.Client.Methods.FirstOrDefault(x => x.Name == "Invoke")?.MakeGenericMethod(genParams) ??
                    throw new NotSupportedException();
         }
 
-        public static SreType AsmInf(this SystemTypeBindings b)
+        public static RoslynType AsmInf(this SystemTypeBindings b)
         {
             return b.TypeSystem.FindType($"{typeof(GlobalScope).Namespace}.{nameof(GlobalScope)}",
                 typeof(GlobalScope).Assembly.GetName().FullName);
@@ -92,13 +92,13 @@ namespace ZenPlatform.Compiler.Helpers
         /// </summary>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static SreProperty? AIClient(this SystemTypeBindings b)
+        public static RoslynProperty? AIClient(this SystemTypeBindings b)
         {
             return b.AsmInf().Properties.First(x => x.Name == nameof(GlobalScope.Client));
         }
 
 
-        public static RBlockBuilder RemoteCall(this RBlockBuilder e, SreType result, string route,
+        public static RBlockBuilder RemoteCall(this RBlockBuilder e, RoslynType result, string route,
             Action<RBlockBuilder> paramHandler)
         {
             RBlockBuilder emitter = e;
@@ -170,9 +170,9 @@ namespace ZenPlatform.Compiler.Helpers
             return GetSingle(type);
         }
 
-        public static TypeSyntax ToAstType(this SreType type)
+        public static TypeSyntax ToAstType(this RoslynType type)
         {
-            SingleTypeSyntax GetSingle(SreType elementType)
+            SingleTypeSyntax GetSingle(RoslynType elementType)
             {
                 var singleType = new SingleTypeSyntax(null, elementType.FullName, TypeNodeKind.Unknown);
 
@@ -195,7 +195,7 @@ namespace ZenPlatform.Compiler.Helpers
                 return singleType;
             }
 
-            TypeSyntax GetArray(SreType elementType)
+            TypeSyntax GetArray(RoslynType elementType)
             {
                 if (elementType.IsArray)
                     return GetArray(elementType.ArrayElementType);

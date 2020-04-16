@@ -5,11 +5,11 @@ namespace ZenPlatform.Compiler.Roslyn
 {
     public class Declare : Expression
     {
-        private readonly SreType _type;
+        private readonly RoslynType _type;
         private readonly NameExpression _name;
         private readonly Expression _initializer;
 
-        public Declare(Expression initializer, NameExpression name, SreType type)
+        public Declare(Expression initializer, NameExpression name, RoslynType type)
         {
             _type = type;
             _name = name;

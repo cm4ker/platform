@@ -34,7 +34,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
 
         public IPType ObjectType { get; }
 
-        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm)
         {
             _ts = asm.TypeSystem;
             _sb = _ts.GetSystemBindings();
@@ -46,15 +46,15 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
             return result;
         }
 
-        private SreTypeSystem _ts;
+        private RoslynTypeSystem _ts;
         private SystemTypeBindings _sb;
-        private SreMethodBuilder _getMethod;
-        private SreField _markup;
-        private SreMethod _xamlServiceParse;
-        private SreMethod _xamlServiceSave;
+        private RoslynMethodBuilder _getMethod;
+        private RoslynField _markup;
+        private RoslynMethod _xamlServiceParse;
+        private RoslynMethod _xamlServiceSave;
 
 
-        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(RoslynTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             var formType = builder.Assembly.FindType($"{GetNamespace()}.{ObjectType.Name}{Name}Form");
 
@@ -120,7 +120,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
         }
 
 
-        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
         }
     }

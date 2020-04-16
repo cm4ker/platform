@@ -30,7 +30,7 @@ namespace ZenPlatform.Compiler.Generation
         /// <summary>
         /// Построитель сборки
         /// </summary>
-        public SreAssemblyBuilder Builder { get; }
+        public RoslynAssemblyBuilder Builder { get; }
 
         /// <summary>
         /// Аттрибуты компиляции
@@ -38,7 +38,7 @@ namespace ZenPlatform.Compiler.Generation
         public CompilationMode Mode { get; }
 
 
-        public GeneratorParameters(Root root, SreAssemblyBuilder builder, CompilationMode mode,
+        public GeneratorParameters(Root root, RoslynAssemblyBuilder builder, CompilationMode mode,
             SqlDatabaseType targetDatabaseType, IProject configuration)
         {
             TargetDatabaseType = targetDatabaseType;
