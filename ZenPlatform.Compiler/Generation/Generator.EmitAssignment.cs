@@ -6,7 +6,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Compiler.Roslyn;
-using ZenPlatform.Compiler.Roslyn.DnlibBackend;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Core.Querying;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;

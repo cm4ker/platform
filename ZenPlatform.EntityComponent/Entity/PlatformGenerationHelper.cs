@@ -1,5 +1,5 @@
 using ZenPlatform.Compiler.Roslyn;
-using ZenPlatform.Compiler.Roslyn.DnlibBackend;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;

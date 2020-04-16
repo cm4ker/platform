@@ -2,7 +2,7 @@ using System;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;
 
-namespace ZenPlatform.Compiler.Roslyn.DnlibBackend
+namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 {
     public class RoslynPlatformFactory
     {

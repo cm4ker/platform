@@ -4,7 +4,7 @@ using System.IO;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 
-namespace ZenPlatform.Compiler.Roslyn.DnlibBackend
+namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 {
     public class RoslynTypeBuilder : RoslynType
     {

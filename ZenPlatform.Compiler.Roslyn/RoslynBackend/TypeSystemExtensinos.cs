@@ -1,6 +1,6 @@
 using System;
 
-namespace ZenPlatform.Compiler.Roslyn.DnlibBackend
+namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 {
     public static class TypeSystemExtensinos
     {

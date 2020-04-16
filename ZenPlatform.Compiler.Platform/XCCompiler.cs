@@ -4,7 +4,7 @@ using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Compiler.Generation;
-using ZenPlatform.Compiler.Roslyn.DnlibBackend;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
