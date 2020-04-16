@@ -23,11 +23,11 @@ namespace ZenPlatform.Core
 
         public DataContext DataContext => Session.DataContext;
 
-        public bool IsTypeManagerAvaliable => Session.Environment is IPlatformEnvironment;
+        public bool IsTypeManagerAvailable => Session.Environment is IPlatformEnvironment;
 
-        public ITypeManager TypeManager => Environment?.;
-        
-        public IPlatformEnvironment Environment => Session.Environment as IPlatformEnvironment
+        public ITypeManager TypeManager => Environment?.Configuration.TypeManager;
+
+        public IPlatformEnvironment Environment => Session.Environment as IPlatformEnvironment;
     }
 
     public class ContextHelper

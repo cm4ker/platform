@@ -21,7 +21,7 @@ namespace ZenPlatform.Compiler.Generation
 
             var dlgt = _epManager.EntryPoint.DefineMethod($"dlgt_{function.Name}", true, true, false);
 
-            dlgt.DefineParameter("context", _bindings.InvokeContext, false, false);
+            dlgt.DefineParameter("context", _ts.InvokeContext(), false, false);
             var argsParam = dlgt.DefineParameter("args", _bindings.Object.MakeArrayType(), false, false);
             dlgt.WithReturnType(_bindings.Object);
 
@@ -50,11 +50,11 @@ namespace ZenPlatform.Compiler.Generation
 
             e.LdSFld(invs)
                 .LdLit($"{function.FirstParent<TypeEntity>().Name}.{function.Name}")
-                .NewObj(_bindings.Route.Constructors.First())
+                .NewObj(_ts.Route().Constructors.First())
                 //.Null()
                 .LdFtn(dlgt)
                 //.NewObj(_bindings.ParametricMethod.Constructors.First())
-                .Call(_bindings.InvokeService.FindMethod(m => m.Name == "Register"))
+                .Call(_ts.InvokeService().FindMethod(m => m.Name == "Register"))
                 .Statement();
         }
     }

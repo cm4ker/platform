@@ -13,7 +13,6 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj" />
       <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
     </ItemGroup>
 
