@@ -4,7 +4,7 @@ using Mono.CompilerServices.SymbolWriter;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
-using ZenPlatform.Compiler.Roslyn.DnlibBackend;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;

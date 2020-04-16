@@ -1,7 +1,7 @@
 using System.IO;
 using dnlib.DotNet;
 
-namespace ZenPlatform.Compiler.Roslyn.DnlibBackend
+namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 {
     public class RoslynMethod : RoslynInvokableBase
     {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
-using ZenPlatform.Compiler.Roslyn.DnlibBackend;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;

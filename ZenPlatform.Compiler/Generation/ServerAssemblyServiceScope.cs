@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.CodeAnalysis.Diagnostics;
 using ZenPlatform.Compiler.Roslyn;
-using ZenPlatform.Compiler.Roslyn.DnlibBackend;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 

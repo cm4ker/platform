@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace ZenPlatform.Compiler.Roslyn.DnlibBackend
+namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 {
     public abstract class RoslynMemberBase
     {

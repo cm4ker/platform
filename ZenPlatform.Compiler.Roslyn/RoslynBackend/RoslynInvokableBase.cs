@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using dnlib.DotNet;
 
-namespace ZenPlatform.Compiler.Roslyn.DnlibBackend
+namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 {
     [DebuggerDisplay("{" + nameof(Name) + "}")]
     public abstract class RoslynInvokableBase : RoslynMemberBase

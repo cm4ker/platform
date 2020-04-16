@@ -5,7 +5,7 @@ using System.Text;
 using dnlib.DotNet;
 using TypeAttributes = System.Reflection.TypeAttributes;
 
-namespace ZenPlatform.Compiler.Roslyn.DnlibBackend
+namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 {
     public class RoslynAssemblyBuilder : RoslynAssembly
     {

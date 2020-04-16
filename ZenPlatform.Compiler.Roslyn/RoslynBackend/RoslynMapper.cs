@@ -10,7 +10,7 @@ using SreOpCodes = System.Reflection.Emit.OpCodes;
 using SreTypeAttr = System.Reflection.TypeAttributes;
 
 
-namespace ZenPlatform.Compiler.Roslyn.DnlibBackend
+namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 {
     public static class RoslynMapper
     {
