@@ -4,6 +4,7 @@ using ZenPlatform.Avalonia.Wrapper;
 using ZenPlatform.Compiler.Contracts;
 //using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Contracts;
@@ -99,7 +100,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
 
             var dlgt = sm.EntryPoint.DefineMethod($"dlgt_{Name}", true, true, false);
 
-            dlgt.DefineParameter("context", _sb.InvokeContext, false, false);
+            dlgt.DefineParameter("context", _ts.InvokeContext(), false, false);
             var argsParam = dlgt.DefineParameter("args", _sb.Object.MakeArrayType(), false, false);
             dlgt.WithReturnType(_sb.Object);
 
@@ -111,11 +112,11 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
 
             e.LdSFld(invs)
                 .LdLit($"UX.{Name}")
-                .NewObj(_sb.Route.Constructors.First())
+                .NewObj(_ts.Route().Constructors.First())
                 //.Null()
                 .LdFtn(dlgt)
                 //.NewObj(_sb.ParametricMethod.Constructors.First())
-                .Call(_sb.InvokeService.FindMethod(m => m.Name == "Register"))
+                .Call(_ts.InvokeService().FindMethod(m => m.Name == "Register"))
                 .Statement();
         }
 

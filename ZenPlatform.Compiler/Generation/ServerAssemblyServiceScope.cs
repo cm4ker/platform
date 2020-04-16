@@ -2,69 +2,16 @@ using System;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.CodeAnalysis.Diagnostics;
+using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Contracts;
+using ZenPlatform.Core.Network;
 using ZenPlatform.Language.Ast.Definitions.Functions;
+using SystemTypeBindings = ZenPlatform.Compiler.Roslyn.SystemTypeBindings;
 
 namespace ZenPlatform.Compiler.Generation
 {
-    // public class ServerAssemblyServiceScope
-    // {
-    //     private readonly SreAssemblyBuilder _builder;
-    //     private SystemTypeBindings _sb;
-    //
-    //     private const string _serviceInitializerNamespace = "Service";
-    //     private const string _serviceInitializerName = "ServerInitializer";
-    //     private const string _invokeServiceFieldName = "_is";
-    //
-    //     private const string _servInitMethod = "Init";
-    //
-    //     public ServerAssemblyServiceScope(SreAssemblyBuilder builder)
-    //     {
-    //         _builder = builder;
-    //
-    //        // _sb = _builder.TypeSystem.GetSystemBindings();
-    //
-    //         ServiceInitializerType = builder.DefineType(_serviceInitializerNamespace, _serviceInitializerName,
-    //             TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.AnsiClass
-    //             | TypeAttributes.AutoClass | TypeAttributes.BeforeFieldInit,
-    //             _sb.Object);
-    //
-    //         ServiceInitializerType.AddInterfaceImplementation(_sb.ServerInitializer);
-    //
-    //         ServiceInitializerInitMethod = ServiceInitializerType.DefineMethod(_servInitMethod, true, false, true);
-    //
-    //         ServiceInitializerConstructor = ServiceInitializerType.DefineConstructor(false, _sb.InvokeService);
-    //
-    //         InvokeServiceField =
-    //             ServiceInitializerType.DefineField(_sb.InvokeService, _invokeServiceFieldName, false, false);
-    //
-    //         var e = ServiceInitializerConstructor.Generator;
-    //
-    //         e.LdArg_0()
-    //             .EmitCall(_sb.Object.Constructors[0])
-    //             .LdArg_0()
-    //             .LdArg(1)
-    //             .StFld(InvokeServiceField)
-    //             .Ret();
-    //     }
-    //
-    //     public SreTypeBuilder ServiceInitializerType { get; }
-    //
-    //     public SreMethodBuilder ServiceInitializerInitMethod { get; }
-    //
-    //     public SreConstructorBuilder ServiceInitializerConstructor { get; }
-    //
-    //     public SreField InvokeServiceField { get; private set; }
-    //
-    //     // public void EndBuild()
-    //     // {
-    //     //     var e = ServiceInitializerInitMethod.Generator;
-    //     //     e.Ret();
-    //     // }
-    // }
-
     public class EntryPointAssemblyManager : IEntryPointManager
     {
         private readonly RoslynAssemblyBuilder _builder;
@@ -104,17 +51,22 @@ namespace ZenPlatform.Compiler.Generation
     {
         private const string _invokeServiceFieldName = "_is";
 
+        public static RoslynType InvokeService(this RoslynTypeSystem ts)
+        {
+            return ts.FindType<IInvokeService>();
+        }
+
         public static void InitService(this IEntryPointManager am)
         {
             var ep = am.EntryPoint;
-            var sb = ep.TypeSystem.GetSystemBindings();
-            var field = ep.DefineField(sb.InvokeService, _invokeServiceFieldName, false, true);
+            var sb = ep.TypeSystem;
+            var field = ep.DefineField(sb.InvokeService(), _invokeServiceFieldName, false, true);
 
             am.Main.Body
                 .LdArg_0()
                 .LdLit(0)
                 .LdElem()
-                .Cast(sb.InvokeService)
+                .Cast(sb.InvokeService())
                 .StSFld(field)
                 .Statement();
         }

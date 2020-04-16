@@ -9,6 +9,8 @@ using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Network;
+using ZenPlatform.Core.Network;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Core.Network.Contracts;
@@ -68,16 +70,31 @@ namespace ZenPlatform.Compiler.Helpers
             return e;
         }
 
-
-        public static RoslynMethod ClientInvoke(this SystemTypeBindings b)
+        public static RoslynType Client(this RoslynTypeSystem ts)
         {
-            return b.Client.Methods.FirstOrDefault(x => x.Name == nameof(IPlatformClient.Invoke)) ??
+            return ts.FindType<IProtocolClient>();
+        }
+
+        
+        public static RoslynType InvokeContext(this RoslynTypeSystem ts)
+        {
+            return ts.FindType<InvokeContext>();
+        }
+
+        public static RoslynType Route(this RoslynTypeSystem ts)
+        {
+            return ts.FindType<Route>();
+        }
+        
+        public static RoslynMethod ClientInvoke(this RoslynTypeSystem b)
+        {
+            return b.Client().Methods.FirstOrDefault(x => x.Name == nameof(IPlatformClient.Invoke)) ??
                    throw new NotSupportedException();
         }
 
-        public static RoslynMethod ClientInvoke(this SystemTypeBindings b, params RoslynType[] genParams)
+        public static RoslynMethod ClientInvoke(this RoslynTypeSystem b, params RoslynType[] genParams)
         {
-            return b.Client.Methods.FirstOrDefault(x => x.Name == "Invoke")?.MakeGenericMethod(genParams) ??
+            return b.Client().Methods.FirstOrDefault(x => x.Name == "Invoke")?.MakeGenericMethod(genParams) ??
                    throw new NotSupportedException();
         }
 
@@ -104,7 +121,7 @@ namespace ZenPlatform.Compiler.Helpers
             RBlockBuilder emitter = e;
             var ts = e.TypeSystem;
             var sb = ts.GetSystemBindings();
-            var type = sb.Client;
+            var type = ts.Client();
 
             var client = emitter.DefineLocal(type);
             emitter.LdProp(sb.AIClient());
@@ -114,7 +131,7 @@ namespace ZenPlatform.Compiler.Helpers
             var routeType = ts.FindType($"{typeof(Route).Namespace}.{nameof(Route)}",
                 typeof(Route).Assembly.GetName().FullName);
 
-            var method = sb.ClientInvoke(result);
+            var method = ts.ClientInvoke(result);
 
             emitter.LdLoc(client);
 

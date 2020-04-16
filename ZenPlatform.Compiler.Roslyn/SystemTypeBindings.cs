@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
-using ZenPlatform.Core.Contracts;
-using ZenPlatform.Core.Contracts.Network;
-using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Compiler.Roslyn
 {
@@ -69,15 +66,17 @@ namespace ZenPlatform.Compiler.Roslyn
 
         public RoslynType DbCommand => _ts.Resolve<System.Data.Common.DbCommand>();
 
-        public RoslynType Client => _ts.Resolve<IProtocolClient>(); // _ts.FindType<Client>()
-
-        public RoslynType ServerInitializer => _ts.Resolve<IServerInitializer>();
-
-        public RoslynType InvokeService => _ts.Resolve<IInvokeService>();
-
-        public RoslynType InvokeContext => _ts.Resolve<InvokeContext>();
-
-        public RoslynType Route => _ts.Resolve<Route>();
+        // public RoslynType Client => _ts.Resolve<IProtocolClient>();
+        //
+        // public RoslynType ServerInitializer => _ts.Resolve<IServerInitializer>();
+        //
+        // public RoslynType InvokeService => _ts.Resolve<IInvokeService>();
+        //
+        // public RoslynType InvokeContext => _ts.Resolve<InvokeContext>();
+        //
+        // public RoslynType Route => _ts.Resolve<Route>();
+        //
+        // public RoslynType ParametricMethod => _ts.Resolve<ParametricMethod>();
 
         public RoslynType Session => _ts.FindType($"ZenPlatform.Core.Sessions.Session", PLATFORM_CORE);
 
@@ -88,7 +87,7 @@ namespace ZenPlatform.Compiler.Roslyn
         //
         // public SreType UnionTypeStorage => _ts.FindType<UnionTypeStorage>();
         //
-        public RoslynType ParametricMethod => _ts.Resolve<ParametricMethod>();
+
 
         public RoslynType Action => _ts.Resolve<Action>();
 

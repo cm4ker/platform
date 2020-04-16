@@ -1,4 +1,3 @@
-using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Shared.Tree;
 

@@ -95,7 +95,7 @@ public void Overload()
  }
 
 [ClientCall] 
- public string CreateAndSaveStore()
+ public void CreateAndSaveStore()
  {
     Store s = $Entity.Store.Create();
     s.Name = ""Souths park"";
