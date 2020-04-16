@@ -5,10 +5,10 @@ namespace ZenPlatform.Compiler.Roslyn
 {
     public class CastExpression : Expression
     {
-        private readonly SreType _castType;
+        private readonly RoslynType _castType;
         private readonly Expression _exp;
 
-        public CastExpression(SreType castType, Expression exp)
+        public CastExpression(RoslynType castType, Expression exp)
         {
             _castType = castType;
             _exp = exp;

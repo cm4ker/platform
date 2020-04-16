@@ -40,7 +40,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             _rules = new GeneratorRules(component);
         }
 
-        public SreTypeBuilder Stage0(SreAssemblyBuilder asm, Node task)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm, Node task)
         {
             if (task is IEntityGenerationTask egt)
                 return egt.Stage0(asm);
@@ -48,7 +48,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                 throw new Exception("Component doesn't support this task type");
         }
 
-        public void Stage1(Node task, SreTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
+        public void Stage1(Node task, RoslynTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
             IEntryPointManager sm)
         {
             if (task is IEntityGenerationTask egt)
@@ -57,7 +57,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                 throw new Exception("Component doesn't support this task type");
         }
 
-        public void Stage2(Node task, SreTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void Stage2(Node task, RoslynTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             if (task is IEntityGenerationTask egt)
                 egt.Stage2(builder, dbType);
@@ -280,12 +280,12 @@ namespace ZenPlatform.EntityComponent.Compilation
         }
 
 
-        public void StageInfrastructure(SreAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
+        public void StageInfrastructure(RoslynAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode)
         {
             CreateMainLink(builder);
         }
 
-        private void CreateEntryPoint(SreAssemblyBuilder b)
+        private void CreateEntryPoint(RoslynAssemblyBuilder b)
         {
             var ep = TypeSystemExtensions.DefineStaticType(b, "", "EntryPoint");
             var run = ep.DefineMethod("Run", true, true, false);
@@ -293,7 +293,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             // run.Generator.Ret();
         }
 
-        private void CreateMainLink(SreAssemblyBuilder builder)
+        private void CreateMainLink(RoslynAssemblyBuilder builder)
         {
             // var ts = builder.TypeSystem;
             // var b = ts.GetSystemBindings();

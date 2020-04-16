@@ -25,7 +25,7 @@ namespace ZenPlatform.EntityComponent.Compilation
         public IPType ObjectType { get; }
         public ITable Table { get; }
 
-        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm)
         {
             var ts = asm.TypeSystem;
             _objectRow = ts.FindType(Table.GetObjectRowFullClassName());
@@ -37,21 +37,21 @@ namespace ZenPlatform.EntityComponent.Compilation
             return type;
         }
 
-        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(RoslynTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitStructure(builder, dbType);
         }
 
-        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             EmitBody(builder, dbType);
         }
 
-        private SreType _objectRow;
-        private SreType _dtoRowType;
+        private RoslynType _objectRow;
+        private RoslynType _dtoRowType;
 
 
-        private void EmitStructure(SreTypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitStructure(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var ts = builder.TypeSystem;
             var sb = ts.GetSystemBindings();
@@ -105,7 +105,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                 .Statement();
         }
 
-        private void EmitBody(SreTypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
         }
     }

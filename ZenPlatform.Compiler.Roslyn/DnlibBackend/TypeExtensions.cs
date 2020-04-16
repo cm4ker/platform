@@ -4,9 +4,9 @@ namespace ZenPlatform.Compiler.Roslyn.DnlibBackend
 {
     public static class TypeExtensions
     {
-        public static ITypeDefOrRef GetRef(this SreType type)
+        public static ITypeDefOrRef GetRef(this RoslynType type)
         {
-            return ((SreType) type)?.TypeRef;
+            return type?.TypeRef;
         }
     }
 }

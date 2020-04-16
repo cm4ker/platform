@@ -16,7 +16,7 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitFunction(Function function, SreMethodBuilder method)
+        private void EmitFunction(Function function, RoslynMethodBuilder method)
         {
             if (function == null)
                 throw new ArgumentNullException();

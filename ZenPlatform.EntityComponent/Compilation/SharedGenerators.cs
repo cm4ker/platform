@@ -12,7 +12,7 @@ namespace ZenPlatform.EntityComponent.Compilation
 {
     public static class SharedGenerators
     {
-        public static void EmitDtoProperty(SreTypeBuilder builder, IPProperty prop, SystemTypeBindings sb)
+        public static void EmitDtoProperty(RoslynTypeBuilder builder, IPProperty prop, SystemTypeBindings sb)
         {
             bool propertyGenerated = false;
             if (prop.IsSelfLink) return;
@@ -58,7 +58,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                             ? ColumnSchemaType.Value
                             : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
-                    SreType propType = ctype.ConvertType(sb);
+                    RoslynType propType = ctype.ConvertType(sb);
 
                     var propBuilder = builder.DefinePropertyWithBackingField(propType, propName, false);
 
@@ -109,8 +109,8 @@ namespace ZenPlatform.EntityComponent.Compilation
         }
 
 
-        public static void EmitObjectProperty(SreTypeBuilder builder, IPProperty prop, SystemTypeBindings sb,
-            SreType dtoType, SreField dtoPrivate, SreTypeSystem ts, SreMethod mrgGet, string ns)
+        public static void EmitObjectProperty(RoslynTypeBuilder builder, IPProperty prop, SystemTypeBindings sb,
+            RoslynType dtoType, RoslynField dtoPrivate, RoslynTypeSystem ts, RoslynMethod mrgGet, string ns)
         {
             var propName = prop.Name;
 
@@ -118,9 +118,9 @@ namespace ZenPlatform.EntityComponent.Compilation
                 ? sb.Object
                 : prop.Types.First().ConvertType(sb);
 
-            var propBuilder = (SrePropertyBuilder) builder.FindProperty(propName);
-            var getBuilder = ((SreMethodBuilder) propBuilder.Getter).Body;
-            var setBuilder = ((SreMethodBuilder) propBuilder.Setter)?.Body;
+            var propBuilder = (RoslynPropertyBuilder) builder.FindProperty(propName);
+            var getBuilder = ((RoslynMethodBuilder) propBuilder.Getter).Body;
+            var setBuilder = ((RoslynMethodBuilder) propBuilder.Setter)?.Body;
 
             if (prop.Types.Count() > 1)
             {
@@ -277,9 +277,9 @@ namespace ZenPlatform.EntityComponent.Compilation
         }
 
 
-        public static void EmitLinkProperty(SreTypeBuilder builder, IPProperty prop, SystemTypeBindings sb,
-            SreType dtoType,
-            SreField dtoPrivate, SreTypeSystem ts, SreMethod mrgGet, string ns)
+        public static void EmitLinkProperty(RoslynTypeBuilder builder, IPProperty prop, SystemTypeBindings sb,
+            RoslynType dtoType,
+            RoslynField dtoPrivate, RoslynTypeSystem ts, RoslynMethod mrgGet, string ns)
         {
             bool propertyGenerated = false;
 
@@ -289,8 +289,8 @@ namespace ZenPlatform.EntityComponent.Compilation
                 ? sb.Object
                 : prop.Types.First().ConvertType(sb);
 
-            var propBuilder = (SrePropertyBuilder) builder.FindProperty(propName);
-            var getBuilder = ((SreMethodBuilder) propBuilder.Getter).Body;
+            var propBuilder = (RoslynPropertyBuilder) builder.FindProperty(propName);
+            var getBuilder = ((RoslynMethodBuilder) propBuilder.Getter).Body;
 
             // var valueParam = propBuilder.setMethod.Parameters[0];
 

@@ -24,7 +24,7 @@ namespace ZenPlatform.Language.Ast.Symbols
             return symbol;
         }
 
-        public static MethodSymbol AddMethod(this SymbolTable st, Function syntaxObject, SreMethod compileObject)
+        public static MethodSymbol AddMethod(this SymbolTable st, Function syntaxObject, RoslynMethod compileObject)
         {
             var symbol = st.Find<MethodSymbol>(syntaxObject);
 

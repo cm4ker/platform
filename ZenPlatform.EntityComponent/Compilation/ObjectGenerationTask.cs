@@ -34,22 +34,22 @@ namespace ZenPlatform.EntityComponent.Compilation
         public IPType ObjectType { get; }
         public IPType DtoType { get; }
 
-        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm)
         {
             return asm.DefineInstanceType(GetNamespace(), Name);
         }
 
-        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(RoslynTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitStructure(builder, dbType);
         }
 
-        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             EmitBody(builder, dbType);
         }
 
-        public void EmitStructure(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void EmitStructure(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var set = ObjectType;
             var ts = builder.Assembly.TypeSystem;
@@ -89,20 +89,22 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                 foreach (var table in set.Tables)
                 {
-                    // var full = $"{GetNamespace()}.{table.GetObjectRowCollectionClassName()}";
-                    // var t = ts.FindType(full);
-                    // var dtoTableProp = dtoType.FindProperty(table.Name);
-                    //
-                    // var prop = builder.DefineProperty(t, table.Name, true, false, false);
-                    // prop.getMethod.Generator
-                    //     .LdArg_0()
-                    //     .LdFld(dtoPrivate)
-                    //     .EmitCall(dtoTableProp.Getter)
-                    //     .NewObj(t.FindConstructor(dtoTableProp.PropertyType))
-                    //     .Ret();
-                    //
-                    // TypeBody.SymbolTable.AddProperty(new Property(null, table.Name, t.ToAstType()))
-                    //     .Connect(prop.prop);
+                    var full = $"{GetNamespace()}.{table.GetObjectRowCollectionClassName()}";
+                    var t = ts.FindType(full);
+                    var dtoTableProp = dtoType.FindProperty(table.Name);
+
+                    var prop = builder.DefineProperty(t, table.Name, true, false, false);
+
+                    prop.getMethod.Body
+                        .LdArg_0()
+                        .LdFld(dtoPrivate)
+                        .Call(dtoTableProp.Getter)
+                        .NewObj(t.FindConstructor(dtoTableProp.PropertyType))
+                        .Ret()
+                        .Statement();
+
+                    TypeBody.SymbolTable.AddProperty(new Property(null, table.Name, t.ToAstType()))
+                        .Connect(prop.prop);
                 }
 
                 var saveBuilder = builder.DefineMethod("Save", true, false, false);
@@ -117,7 +119,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             EmitIDtoObject(builder, dtoPrivate);
         }
 
-        private void EmitIDtoObject(SreTypeBuilder b, SreField dtoPrivate)
+        private void EmitIDtoObject(RoslynTypeBuilder b, RoslynField dtoPrivate)
         {
             // var ts = b.Assembly.TypeSystem;
             // b.AddInterfaceImplementation(ts.FindType<IDtoObject>());
@@ -130,7 +132,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             //     .Ret();
         }
 
-        private void EmitBody(SreTypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = ObjectType;
             var set = ObjectType;
@@ -155,7 +157,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                         GetNamespace());
                 }
 
-                var saveBuilder = (SreMethodBuilder) builder.FindMethod("Save");
+                var saveBuilder = (RoslynMethodBuilder) builder.FindMethod("Save");
 
                 var sg = saveBuilder.Body;
 

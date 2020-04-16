@@ -7,15 +7,15 @@ namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitConstructor(Constructor constructor, SreTypeBuilder type,
-            SreConstructorBuilder stage1Constructor)
+        private void EmitConstructor(Constructor constructor, RoslynTypeBuilder type,
+            RoslynConstructorBuilder stage1Constructor)
         {
             constructor.Builder = stage1Constructor.Body;
 
             EmitConstructor(constructor, type);
         }
 
-        private void EmitConstructor(Constructor constructor, SreTypeBuilder type)
+        private void EmitConstructor(Constructor constructor, RoslynTypeBuilder type)
         {
             if (constructor == null)
                 throw new ArgumentNullException();

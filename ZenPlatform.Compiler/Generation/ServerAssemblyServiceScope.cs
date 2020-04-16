@@ -67,17 +67,17 @@ namespace ZenPlatform.Compiler.Generation
 
     public class EntryPointAssemblyManager : IEntryPointManager
     {
-        private readonly SreAssemblyBuilder _builder;
+        private readonly RoslynAssemblyBuilder _builder;
         private SystemTypeBindings _sb;
-        private SreTypeBuilder _ep;
-        private SreMethodBuilder _main;
+        private RoslynTypeBuilder _ep;
+        private RoslynMethodBuilder _main;
 
         private const string _classNamespace = "";
         private const string _className = "EntryPoint";
 
         private const string _mainMethodName = "Main";
 
-        public EntryPointAssemblyManager(SreAssemblyBuilder builder)
+        public EntryPointAssemblyManager(RoslynAssemblyBuilder builder)
         {
             _builder = builder;
 
@@ -89,9 +89,9 @@ namespace ZenPlatform.Compiler.Generation
         }
 
 
-        public SreTypeBuilder EntryPoint => _ep;
+        public RoslynTypeBuilder EntryPoint => _ep;
 
-        public SreMethodBuilder Main => _main;
+        public RoslynMethodBuilder Main => _main;
 
         public void EndBuild()
         {
@@ -119,7 +119,7 @@ namespace ZenPlatform.Compiler.Generation
                 .Statement();
         }
 
-        public static SreField GetISField(this IEntryPointManager am)
+        public static RoslynField GetISField(this IEntryPointManager am)
         {
             return am.EntryPoint.FindField(_invokeServiceFieldName) ??
                    throw new Exception($"Platform not isnitialized you must invoke {nameof(InitService)} method first");

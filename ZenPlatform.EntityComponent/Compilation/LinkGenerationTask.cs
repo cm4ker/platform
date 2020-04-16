@@ -23,22 +23,22 @@ namespace ZenPlatform.EntityComponent.Compilation
             LinkType = linkType;
         }
 
-        public SreTypeBuilder Stage0(SreAssemblyBuilder asm)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm)
         {
             return asm.DefineInstanceType(GetNamespace(), Name, asm.FindType("Entity.EntityLink"));
         }
 
-        public void Stage1(SreTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(RoslynTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitStructure(builder, dbType);
         }
 
-        public void Stage2(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             EmitBody(builder, dbType);
         }
 
-        private void EmitBody(SreTypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = LinkType;
             var set = LinkType ?? throw new Exception("This component can generate only SingleEntity");
@@ -63,7 +63,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             }
         }
 
-        public void EmitStructure(SreTypeBuilder builder, SqlDatabaseType dbType)
+        public void EmitStructure(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var type = LinkType;
             var ts = builder.Assembly.TypeSystem;
@@ -95,7 +95,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                     ? sb.Object
                     : prop.Types.First().ConvertType(sb);
 
-                SreProperty baseProp = null;
+                RoslynProperty baseProp = null;
 
                 if (propName == "Id")
                 {

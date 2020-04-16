@@ -7,9 +7,9 @@ namespace ZenPlatform.Compiler.Roslyn
 {
     public static class TypeExtensions
     {
-        public static string GetFqn(this SreType type) => $"{type.Assembly?.Name}:{type.Namespace}.{type.Name}";
+        public static string GetFqn(this RoslynType type) => $"{type.Assembly?.Name}:{type.Namespace}.{type.Name}";
 
-        public static string GetFullName(this SreType type)
+        public static string GetFullName(this RoslynType type)
         {
             var name = type.Name;
             if (type.Namespace != null)
@@ -19,7 +19,7 @@ namespace ZenPlatform.Compiler.Roslyn
             return name;
         }
 
-        public static SreType GetType(this SreTypeSystem sys, string fullName)
+        public static RoslynType GetType(this RoslynTypeSystem sys, string fullName)
         {
             var f = sys.FindType(fullName);
             if (f == null)
@@ -28,8 +28,8 @@ namespace ZenPlatform.Compiler.Roslyn
             return f;
         }
 
-        public static IEnumerable<SreInvokableBase> FindMethods(this SreType type,
-            Func<SreInvokableBase, bool> criteria)
+        public static IEnumerable<RoslynInvokableBase> FindMethods(this RoslynType type,
+            Func<RoslynInvokableBase, bool> criteria)
         {
             foreach (var m in type.Methods)
                 if (criteria(m))
@@ -44,7 +44,7 @@ namespace ZenPlatform.Compiler.Roslyn
                     yield return m;
         }
 
-        public static SreMethod FindMethod(this SreType type, Func<SreMethod, bool> criteria)
+        public static RoslynMethod FindMethod(this RoslynType type, Func<RoslynMethod, bool> criteria)
         {
             foreach (var m in type.Methods)
                 if (criteria(m))
@@ -59,7 +59,7 @@ namespace ZenPlatform.Compiler.Roslyn
             return null;
         }
 
-        public static SreMethod FindMethod(this SreType type, string name, params SreType[] args)
+        public static RoslynMethod FindMethod(this RoslynType type, string name, params RoslynType[] args)
         {
             return type.FindMethod(m =>
             {
@@ -81,8 +81,8 @@ namespace ZenPlatform.Compiler.Roslyn
             });
         }
 
-        public static SreInvokableBase FindMethod(this SreType type, string name, SreType returnType,
-            bool allowDowncast, params SreType[] args)
+        public static RoslynInvokableBase FindMethod(this RoslynType type, string name, RoslynType returnType,
+            bool allowDowncast, params RoslynType[] args)
         {
             foreach (var m in type.Methods)
             {
@@ -109,10 +109,10 @@ namespace ZenPlatform.Compiler.Roslyn
             return null;
         }
 
-        public static SreConstructor FindConstructor(this SreType type, List<SreType> args = null)
+        public static RoslynConstructor FindConstructor(this RoslynType type, List<RoslynType> args = null)
         {
             if (args == null)
-                args = new List<SreType>();
+                args = new List<RoslynType>();
             foreach (var ctor in type.Constructors.Where(c => c.IsPublic
                                                               && !c.IsStatic
                                                               && c.Parameters.Count == args.Count))
@@ -133,27 +133,27 @@ namespace ZenPlatform.Compiler.Roslyn
             return null;
         }
 
-        public static SreConstructor FindConstructor(this SreType type, params SreType[] args)
+        public static RoslynConstructor FindConstructor(this RoslynType type, params RoslynType[] args)
         {
             return FindConstructor(type, args.ToList());
         }
 
-        public static bool IsNullable(this SreType type)
+        public static bool IsNullable(this RoslynType type)
         {
             var def = type.GenericTypeDefinition;
             if (def == null) return false;
             return def.Namespace == "System" && def.Name == "Nullable`1";
         }
 
-        public static bool IsNullableOf(this SreType type, SreType vtype)
+        public static bool IsNullableOf(this RoslynType type, RoslynType vtype)
         {
             return type.IsNullable() && type.GenericArguments[0].Equals(vtype);
         }
 
-        public static SreType MakeGenericType(this SreType type, params SreType[] typeArguments)
+        public static RoslynType MakeGenericType(this RoslynType type, params RoslynType[] typeArguments)
             => type.MakeGenericType(typeArguments);
 
-        public static bool IsAssignableFrom(this SreType to, SreType type)
+        public static bool IsAssignableFrom(this RoslynType to, RoslynType type)
         {
             if (type.IsValueType
                 && to.GenericTypeDefinition?.FullName == "System.Nullable`1"
@@ -174,7 +174,7 @@ namespace ZenPlatform.Compiler.Roslyn
             return false;
         }
 
-        public static IEnumerable<SreType> GetAllInterfaces(this SreType type)
+        public static IEnumerable<RoslynType> GetAllInterfaces(this RoslynType type)
         {
             foreach (var i in type.Interfaces)
                 yield return i;
@@ -192,12 +192,12 @@ namespace ZenPlatform.Compiler.Roslyn
         //                 yield return p;
         //     }
         //
-        public static SreProperty FindProperty(this SreType t, string name)
+        public static RoslynProperty FindProperty(this RoslynType t, string name)
         {
             return FindProperty(t, (x => x.Name == name));
         }
 
-        public static SreProperty FindProperty(this SreType t, Func<SreProperty, bool> criteria)
+        public static RoslynProperty FindProperty(this RoslynType t, Func<RoslynProperty, bool> criteria)
         {
             var result = t.Properties.FirstOrDefault(criteria);
 
@@ -208,12 +208,12 @@ namespace ZenPlatform.Compiler.Roslyn
         }
 
 
-        public static SreField FindField(this SreType t, string name)
+        public static RoslynField FindField(this RoslynType t, string name)
         {
             return FindField(t, (x => x.Name == name));
         }
 
-        public static SreField FindField(this SreType t, Func<SreField, bool> criteria)
+        public static RoslynField FindField(this RoslynType t, Func<RoslynField, bool> criteria)
         {
             return t.Fields.FirstOrDefault(criteria);
         }
@@ -252,14 +252,14 @@ namespace ZenPlatform.Compiler.Roslyn
         //         return emitter;
         //     }
         //
-        public static SrePropertyBuilder DefineProperty(this SreTypeBuilder tb, SreType type, string name,
-            SreField backingField, bool interfaceImpl)
+        public static RoslynPropertyBuilder DefineProperty(this RoslynTypeBuilder tb, RoslynType type, string name,
+            RoslynField backingField, bool interfaceImpl)
         {
             return DefineProperty(tb, type, name, backingField, true, true, interfaceImpl);
         }
 
-        public static SrePropertyBuilder DefineProperty(this SreTypeBuilder tb, SreType type, string name,
-            SreField backingField, bool hasGet, bool hasSet, bool interfaceImpl)
+        public static RoslynPropertyBuilder DefineProperty(this RoslynTypeBuilder tb, RoslynType type, string name,
+            RoslynField backingField, bool hasGet, bool hasSet, bool interfaceImpl)
         {
             var result = tb.DefineProperty(type, name, false);
             if (hasGet)
@@ -287,14 +287,14 @@ namespace ZenPlatform.Compiler.Roslyn
             return result;
         }
 
-        public static (SrePropertyBuilder prop, SreField field, SreMethodBuilder getMethod, SreMethodBuilder setMethod)
-            DefineProperty(this SreTypeBuilder tb, SreType type, string name, bool hasGet, bool hasSet,
+        public static (RoslynPropertyBuilder prop, RoslynField field, RoslynMethodBuilder getMethod, RoslynMethodBuilder setMethod)
+            DefineProperty(this RoslynTypeBuilder tb, RoslynType type, string name, bool hasGet, bool hasSet,
                 bool interfaceImpl,
-                SreProperty overrideProperty = null)
+                RoslynProperty overrideProperty = null)
         {
             var backingField = tb.DefineField(type, ConventionsHelper.GetBackingFieldName(name), false, false);
 
-            SreMethodBuilder getMethod = null, setMethod = null;
+            RoslynMethodBuilder getMethod = null, setMethod = null;
 
             var result = tb.DefineProperty(type, name, false);
             if (hasGet)
@@ -315,7 +315,7 @@ namespace ZenPlatform.Compiler.Roslyn
             return (result, backingField, getMethod, setMethod);
         }
 
-        public static SrePropertyBuilder DefinePropertyWithBackingField(this SreTypeBuilder tb, SreType type,
+        public static RoslynPropertyBuilder DefinePropertyWithBackingField(this RoslynTypeBuilder tb, RoslynType type,
             string name,
             bool interfaceImpl)
         {
@@ -330,27 +330,13 @@ namespace ZenPlatform.Compiler.Roslyn
         //     }
         //
         //
-        public static SreConstructorBuilder DefineDefaultConstructor(this SreTypeBuilder tb, bool isStatic)
+        public static RoslynConstructorBuilder DefineDefaultConstructor(this RoslynTypeBuilder tb, bool isStatic)
         {
             var c = tb.DefineConstructor(isStatic);
             // if (!isStatic)
             //     c.Body.LdArg_0().EmitCall(tb.BaseType.Constructors[0]).Ret();
 
             return c;
-        }
-    }
-
-    public static class ConventionsHelper
-    {
-        public static string GetBackingFieldName(string name) => $"{name}k__BackingField";
-    }
-
-    public static class PropertyExtension
-    {
-        public static SreCustomAttribute FindCustomAttribute<T>(this SreProperty property)
-        {
-            var type = property.PropertyType.Assembly.TypeSystem.Resolve<T>();
-            return property.FindCustomAttribute(type);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace ZenPlatform.Compiler.Platform
         }
 
 
-        public SreAssemblyBuilder Build(IProject configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
+        public RoslynAssemblyBuilder Build(IProject configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
         {
             var assemblyBuilder =
                 _platform.AsmFactory.CreateAssembly(_platform.TypeSystem,
@@ -45,7 +45,7 @@ namespace ZenPlatform.Compiler.Platform
             return assemblyBuilder;
         }
         
-        public SreAssemblyBuilder Build2(IProject configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
+        public RoslynAssemblyBuilder Build2(IProject configuration, CompilationMode mode, SqlDatabaseType targetDatabaseType)
         {
             var assemblyBuilder =
                 _platform.AsmFactory.CreateAssembly(_platform.TypeSystem,

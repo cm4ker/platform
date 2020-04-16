@@ -19,8 +19,8 @@ namespace ZenPlatform.Compiler.Generation
         private readonly GeneratorParameters _parameters;
 
         //private readonly CompilationUnit _cu;
-        private readonly SreAssemblyBuilder _asm;
-        private readonly SreTypeSystem _ts;
+        private readonly RoslynAssemblyBuilder _asm;
+        private readonly RoslynTypeSystem _ts;
         private readonly CompilationMode _mode;
 
         private readonly IProject _conf;

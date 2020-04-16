@@ -4,7 +4,7 @@ namespace ZenPlatform.Compiler.Roslyn
 {
     public class RLocal
     {
-        public RLocal(string name, SreType type)
+        public RLocal(string name, RoslynType type)
         {
             Name = name;
             Type = type;
@@ -12,6 +12,6 @@ namespace ZenPlatform.Compiler.Roslyn
 
         public string Name { get; }
 
-        public SreType Type { get; }
+        public RoslynType Type { get; }
     }
 }

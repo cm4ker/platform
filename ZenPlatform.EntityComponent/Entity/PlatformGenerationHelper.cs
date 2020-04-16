@@ -10,7 +10,7 @@ namespace ZenPlatform.EntityComponent.Entity
 {
     public static class PlatformGenerationHelper
     {
-        public static SreType ConvertType(this IPType pt,
+        public static RoslynType ConvertType(this IPType pt,
             SystemTypeBindings sb)
         {
             if (pt.IsTypeSpec)

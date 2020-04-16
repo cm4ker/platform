@@ -11,7 +11,7 @@ namespace ZenPlatform.Compiler.Generation
 {
     public class GlobalVarManager : IGlobalVarManager
     {
-        public GlobalVarManager(CompilationMode mode, SreTypeSystem ts)
+        public GlobalVarManager(CompilationMode mode, RoslynTypeSystem ts)
         {
             Root = new GlobalVarTreeItem(VarTreeLeafType.Root, CompilationMode.Shared, "NoName", null);
             TypeSystem = ts;
@@ -19,7 +19,7 @@ namespace ZenPlatform.Compiler.Generation
 
         public Node Root { get; }
 
-        public SreTypeSystem TypeSystem { get; }
+        public RoslynTypeSystem TypeSystem { get; }
 
         public void Register(Node node)
         {

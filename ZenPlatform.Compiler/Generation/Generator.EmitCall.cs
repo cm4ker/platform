@@ -91,7 +91,7 @@ namespace ZenPlatform.Compiler.Generation
                         {
                             // e.LdsFldA(fd);
                         }
-                        else if (variable.CompileObject is SreParameter pb)
+                        else if (variable.CompileObject is RoslynParameter pb)
                         {
                             e.LdArg(pb);
                         }

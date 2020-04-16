@@ -34,7 +34,7 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is UnionTypeSyntax;
 
-                    if (variable.CompileObject is SreParameter pd)
+                    if (variable.CompileObject is RoslynParameter pd)
                     {
                         Parameter p = variable.SyntaxObject as Parameter;
                         if (p.PassMethod == PassMethod.ByReference)
@@ -61,9 +61,9 @@ namespace ZenPlatform.Compiler.Generation
                     // Store
                     if (variable.CompileObject is RLocal vd)
                         e.StLoc(vd);
-                    else if (variable.CompileObject is SreField fd)
+                    else if (variable.CompileObject is RoslynField fd)
                         e.StFld(fd);
-                    else if (variable.CompileObject is SreParameter ppd)
+                    else if (variable.CompileObject is RoslynParameter ppd)
                     {
                         // Parameter p = variable.SyntaxObject as Parameter;
                         // if (p.PassMethod == PassMethod.ByReference)

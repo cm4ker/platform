@@ -6,7 +6,7 @@ namespace ZenPlatform.Configuration.Contracts
 {
     public interface IGlobalVarManager
     {
-        SreTypeSystem TypeSystem { get; }
+        RoslynTypeSystem TypeSystem { get; }
 
         void Register(Node node);
 
@@ -15,7 +15,7 @@ namespace ZenPlatform.Configuration.Contracts
 
     public interface IEntryPointManager
     {
-        SreTypeBuilder EntryPoint { get; }
-        SreMethodBuilder Main { get; }
+        RoslynTypeBuilder EntryPoint { get; }
+        RoslynMethodBuilder Main { get; }
     }
 }
