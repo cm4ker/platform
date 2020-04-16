@@ -1,7 +1,7 @@
 using System;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 
-namespace ZenPlatform.Configuration.TypeSystem
+namespace ZenPlatform.Configuration.Common.TypeSystem
 {
     public class ObjectSetting : IObjectSetting
     {

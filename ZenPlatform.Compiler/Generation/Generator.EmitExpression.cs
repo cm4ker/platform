@@ -213,7 +213,6 @@ namespace ZenPlatform.Compiler.Generation
                 lna.Type = prop.PropertyType.ToAstType();
                 e.LdProp(prop);
             }
-
             else if (expression is MethodLookupExpression mle)
             {
                 var lca = mle.Lookup as Call;
@@ -243,10 +242,20 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Throw th)
             {
-                // EmitExpression(e, th.Exception, symbolTable);
-                // var constructor = _ts.GetSystemBindings().Exception.FindConstructor(_bindings.String);
-                // e.NewObj(constructor);
-                // e.Throw();
+                EmitExpression(e, th.Exception, symbolTable);
+
+                if (th.Exception != null)
+                {
+                    var constructor = _ts.GetSystemBindings().Exception.FindConstructor(_bindings.String);
+                    e.NewObj(constructor);
+                }
+                else
+                {
+                    var constructor = _ts.GetSystemBindings().Exception.FindConstructor();
+                    e.NewObj(constructor);
+                }
+
+                e.Throw();
             }
             else if (expression is Assignment asg)
             {

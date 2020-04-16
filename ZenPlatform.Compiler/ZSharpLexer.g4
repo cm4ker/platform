@@ -38,6 +38,8 @@ TRY : 'try';
 CATCH: 'catch';
 FINALLY: 'finally';
 
+THROW : 'throw';
+
 IF : 'if';
 ELSE : 'else';
 FOR : 'for';

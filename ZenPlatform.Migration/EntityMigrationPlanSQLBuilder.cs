@@ -6,7 +6,6 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Migration;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
-using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.QueryBuilder.Builders;
 using ZenPlatform.QueryBuilder.Model;
 

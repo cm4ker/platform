@@ -5,7 +5,6 @@ using System.Text;
 using Antlr4.Runtime;
 using MoreLinq.Extensions;
 using SharpGen.Runtime.Win32;
-using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Querying;
 using ZenPlatform.Core.Querying.Model;

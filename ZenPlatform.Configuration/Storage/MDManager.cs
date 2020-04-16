@@ -5,7 +5,6 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
-using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Storage
 {

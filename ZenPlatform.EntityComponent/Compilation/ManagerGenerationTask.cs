@@ -295,7 +295,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                     .StProp(cmdType.FindProperty(nameof(DbCommand.CommandText)))
                     .Statement()
                     .EndBlock()
-                    .TryIf()
+                    .If()
                     .Statement();
             }
 

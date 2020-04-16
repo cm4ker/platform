@@ -1,6 +1,5 @@
 using System;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Common.TypeSystem
 {

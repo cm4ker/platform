@@ -10,23 +10,23 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public class QLangTypeBuilder
     {
-        private readonly IProject _conf;
+        private readonly ITypeManager _conf;
 
-        public QLangTypeBuilder(IProject conf)
+        public QLangTypeBuilder(ITypeManager conf)
         {
             _conf = conf;
         }
 
         public IPType String(int size)
         {
-            var spec = _conf.TypeManager.String.GetSpec();
+            var spec = _conf.String.GetSpec();
             spec.Size = size;
             return spec;
         }
 
         public IPType Numeric(int scale, int precision)
         {
-            var spec = _conf.TypeManager.Numeric.GetSpec();
+            var spec = _conf.Numeric.GetSpec();
             spec.Scale = scale;
             spec.Precision = precision;
             return spec;
@@ -34,7 +34,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public IPType Date()
         {
-            return _conf.TypeManager.DateTime;
+            return _conf.DateTime;
         }
 
         public IPType Parse(string typeName)
@@ -43,7 +43,7 @@ namespace ZenPlatform.Core.Querying.Model
             {
                 var parts = typeName.Split(".");
 
-                return _conf.TypeManager.FindComponentByName(parts[0]).FindTypeByName(parts[1]);
+                return _conf.FindComponentByName(parts[0]).FindTypeByName(parts[1]);
             }
 
             Regex r = new Regex(@"(\b[^()]+)(\((.*)\))?$");

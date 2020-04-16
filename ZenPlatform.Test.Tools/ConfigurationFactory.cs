@@ -94,12 +94,20 @@ public void Overload()
      ClientCallProc(10);
  }
 
+[ClientCall] 
+ public string CreateAndSaveStore()
+ {
+    Store s = $Entity.Store.Create();
+    s.Name = ""Souths park"";
+    s.Save();   
+ }
+
+
  [ClientCall] 
  public string GetUserNameServer()
  { 
-     //Store s = $Entity.Store.Create();
-     //s.Name = ""Souths park"";
-    // s.Save();    
+     CreateAndSaveStore();
+
      return Context.UserName; 
  }
 

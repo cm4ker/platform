@@ -1,7 +1,8 @@
+using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Data;
 
-namespace ZenPlatform.Core.Environment
+namespace ZenPlatform.Core.Contracts.Environment
 {
     public interface IPlatformEnvironment : IInitializibleEnvironment<IStartupConfig>
     {
@@ -9,5 +10,7 @@ namespace ZenPlatform.Core.Environment
         /// Менеджер доступа к данным
         /// </summary>
         IDataContextManager DataContextManager { get; }
+
+        IProject Configuration { get; }
     }
 }

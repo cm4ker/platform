@@ -31,4 +31,58 @@ namespace ZenPlatform.Compiler.Roslyn
             }
         }
     }
+
+    public class RXWhile : Expression
+    {
+        private readonly RBlockBuilder _block;
+        private readonly Expression _condition;
+
+        public RXWhile(RBlockBuilder block, Expression condition)
+        {
+            _block = block;
+            _condition = condition;
+        }
+
+        public override void Dump(TextWriter tw)
+        {
+            tw.W("while");
+
+            using (tw.Parenthesis())
+                _condition.Dump(tw);
+
+            _block.Dump(tw);
+        }
+    }
+
+    public class RXTry : Expression
+    {
+        private readonly RBlockBuilder _finallyBlock;
+        private readonly RBlockBuilder _catchBlock;
+        private readonly RBlockBuilder _tryBlock;
+
+        public RXTry(RBlockBuilder finallyBlock, RBlockBuilder catchBlock, RBlockBuilder tryBlock)
+        {
+            _finallyBlock = finallyBlock;
+            _catchBlock = catchBlock;
+            _tryBlock = tryBlock;
+        }
+
+        public override void Dump(TextWriter tw)
+        {
+            tw.W("try");
+            _tryBlock.Dump(tw);
+
+            if (_catchBlock != null)
+            {
+                tw.W("catch");
+                _catchBlock.Dump(tw);
+            }
+
+            if (_finallyBlock != null)
+            {
+                tw.W("finally");
+                _finallyBlock.Dump(tw);
+            }
+        }
+    }
 }

@@ -11,7 +11,6 @@ using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Configuration.Structure.Data;
-using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using File = System.IO.File;
 

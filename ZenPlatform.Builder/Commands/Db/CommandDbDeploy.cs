@@ -10,6 +10,7 @@ using ZenPlatform.Core.Environment;
 using System.IO.Compression;
 using SharpFileSystem.Database;
 using SharpFileSystem.FileSystems;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Initializer;
 
 namespace ZenPlatform.Cli.Commands.Db

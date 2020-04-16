@@ -214,6 +214,18 @@ namespace ZenPlatform.Compiler.Visitor
             return base.VisitFor(obj);
         }
 
+        public override object VisitWhile(While obj)
+        {
+            if (obj.Block.SymbolTable == null)
+            {
+                var parent = obj.FirstParent<Block>();
+                if (parent != null)
+                    obj.Block.SymbolTable = new SymbolTable(parent.SymbolTable);
+            }
+
+            return base.VisitWhile(obj);
+        }
+
         public override object VisitTry(Try obj)
         {
             if (obj.TryBlock.SymbolTable == null)
