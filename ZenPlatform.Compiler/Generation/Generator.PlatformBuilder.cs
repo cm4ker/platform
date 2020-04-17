@@ -4,6 +4,7 @@ using Portable.Xaml;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.ServerRuntime;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -27,6 +28,8 @@ namespace ZenPlatform.Compiler.Generation
 
             _cus = _root.Units;
             AstScopeRegister.Apply(_root);
+            if (_mode.HasFlag(CompilationMode.Server))
+                ServerCompilerHelper.Init(_root, _ts);
             var test = XamlServices.Save(_conf.TypeManager);
             Build();
         }

@@ -18,6 +18,8 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class Block : IScoped
     {
+        public static Block Empty => new Block(null, new StatementList());
+
         /// <summary>
         /// Создать блок из коллекции инструкций
         /// </summary>
@@ -28,6 +30,8 @@ namespace ZenPlatform.Language.Ast.Definitions
 
     public class SyntaxCollectionNode<T> : SyntaxNode, IEnumerable<T> where T : SyntaxNode
     {
+        
+
         public SyntaxCollectionNode(ILineInfo lineInfo) : base(lineInfo)
         {
         }

@@ -216,7 +216,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             if (obj is BindingClass bc)
             {
-                _table.AddClass(string.Join(".", _namespaceStack.ToArray()), bc, bc.BindingType);
+                //   _table.AddClass(string.Join(".", _namespaceStack.ToArray()), bc, bc.BindingType);
             }
 
             return base.VisitTypeEntity(obj);

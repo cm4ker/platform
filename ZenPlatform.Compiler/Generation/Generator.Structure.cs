@@ -6,12 +6,14 @@ using System.Runtime.InteropServices;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Symbols;
+using ZenPlatform.ServerRuntime;
 using Module = ZenPlatform.Language.Ast.Definitions.Module;
 
 namespace ZenPlatform.Compiler.Generation
@@ -19,7 +21,9 @@ namespace ZenPlatform.Compiler.Generation
     public partial class Generator
     {
         private Dictionary<TypeEntity, RoslynTypeBuilder> _stage0 = new Dictionary<TypeEntity, RoslynTypeBuilder>();
-        private Dictionary<Function, RoslynMethodBuilder> _stage1Methods = new Dictionary<Function, RoslynMethodBuilder>();
+
+        private Dictionary<Function, RoslynMethodBuilder> _stage1Methods =
+            new Dictionary<Function, RoslynMethodBuilder>();
 
         private Dictionary<Property, RoslynPropertyBuilder> _stage1Properties =
             new Dictionary<Property, RoslynPropertyBuilder>();
@@ -39,13 +43,25 @@ namespace ZenPlatform.Compiler.Generation
                 _epManager.InitService();
 
             _map = new SyntaxTreeMemberAccessProvider(_root, _ts);
-
+            
             BuildInfrastructure();
             BuildStructure();
             BuildGlobalVar();
             BuildCode();
 
             _epManager.EndBuild();
+        }
+
+
+        private void InitGlobalVar(GlobalVarManager mrg)
+        {
+            var item = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Server, "Query",
+                (node, builder) =>
+                {
+                    builder.NewObj(_ts.Resolve<PlatformQuery>().FindConstructor());
+                });
+
+            mrg.Register(item);
         }
 
         /// <summary>
@@ -56,6 +72,8 @@ namespace ZenPlatform.Compiler.Generation
             if (_conf != null)
             {
                 _varManager = new GlobalVarManager(_mode, _ts);
+
+                InitGlobalVar(_varManager);
 
                 foreach (var component in _conf.TypeManager.Components)
                 {
@@ -205,7 +223,7 @@ namespace ZenPlatform.Compiler.Generation
                             if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
                                 _mode == CompilationMode.Server)
                             {
-                                 EmitRegisterServerFunction(function);
+                                EmitRegisterServerFunction(function);
                             }
                         }
 
@@ -264,7 +282,7 @@ namespace ZenPlatform.Compiler.Generation
                             if (_conf != null && function.Flags == FunctionFlags.ServerClientCall &&
                                 _mode == CompilationMode.Server)
                             {
-                                 EmitRegisterServerFunction(function);
+                                EmitRegisterServerFunction(function);
                             }
                         }
 

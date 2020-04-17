@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
+      <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
     </ItemGroup>
 
 </Project>
