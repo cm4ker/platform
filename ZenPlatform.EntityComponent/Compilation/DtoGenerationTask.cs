@@ -70,10 +70,10 @@ namespace ZenPlatform.EntityComponent.Compilation
                 var prop = builder.DefineProperty(listType, table.Name, true, false, false);
 
 
-                _constructor.Body.LdArg_0().NewObj(listType.FindConstructor()).StFld(prop.field).Statement();
+                _constructor.Body.LdArg_0().NewObj(listType.FindConstructor()).StFld(prop.field);
 
 
-                prop.getMethod.Body.LdArg_0().LdFld(prop.field).Ret().Statement();
+                prop.getMethod.Body.LdArg_0().LdFld(prop.field).Ret();
             }
         }
 
@@ -103,7 +103,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                     .LdElem()
                     .Cast(property.PropertyType)
                     .StProp(property)
-                    .Statement();
+                    ;
             }
 
             //rg.Ret();

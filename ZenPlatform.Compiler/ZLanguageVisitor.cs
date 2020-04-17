@@ -259,32 +259,32 @@ namespace ZenPlatform.Compiler
 
                 if (context.string_literal().REGULAR_STRING() != null)
                     result = new Literal(li, text.Substring(1, text.Length - 2),
-                        new PrimitiveTypeSyntax(li, TypeNodeKind.String));
+                        new PrimitiveTypeSyntax(li, TypeNodeKind.String), false);
                 else
                     result = new Literal(li, text.Substring(2, text.Length - 3),
-                        new PrimitiveTypeSyntax(li, TypeNodeKind.String));
+                        new PrimitiveTypeSyntax(li, TypeNodeKind.String), false);
 
                 result.ObjectiveValue = result.Value;
             }
             else if (context.boolean_literal() != null)
             {
-                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Boolean));
+                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Boolean), false);
                 result.ObjectiveValue = bool.Parse(result.Value);
             }
             else if (context.INTEGER_LITERAL() != null)
             {
-                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Int));
+                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Int), false);
                 result.ObjectiveValue = int.Parse(result.Value);
             }
             else if (context.REAL_LITERAL() != null)
             {
-                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Double));
+                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Double), false);
                 result.ObjectiveValue = double.Parse(result.Value);
             }
             else if (context.CHARACTER_LITERAL() != null)
             {
                 result = new Literal(li, context.GetText().Substring(1, 1),
-                    new PrimitiveTypeSyntax(li, TypeNodeKind.Char));
+                    new PrimitiveTypeSyntax(li, TypeNodeKind.Char), false);
                 result.ObjectiveValue = result.Value[0];
             }
 
@@ -609,6 +609,19 @@ namespace ZenPlatform.Compiler
             }
 
             return null;
+        }
+
+        public override SyntaxNode VisitSql_literal(ZSharpParser.Sql_literalContext context)
+        {
+            var text = context.GetText();
+            text = Regex.Unescape(text ?? throw new NullReferenceException());
+            text = text.Substring(2, text.Length - 3);
+
+            var result = new Literal(context.start.ToLineInfo(), text,
+                new PrimitiveTypeSyntax(null, TypeNodeKind.String), true);
+            _syntaxStack.Push(result);
+
+            return base.VisitSql_literal(context);
         }
 
         public override SyntaxNode VisitExpressionRelational(ZSharpParser.ExpressionRelationalContext context)

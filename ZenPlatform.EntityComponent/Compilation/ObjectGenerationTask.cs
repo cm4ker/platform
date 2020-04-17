@@ -66,7 +66,7 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             g.LdArg_0().LdArg(c.Parameters.First())
                 .StFld(dtoPrivate)
-                .Statement();
+                ;
 
             if (CompilationMode.HasFlag(CompilationMode.Server))
             {
@@ -101,7 +101,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                         .Call(dtoTableProp.Getter)
                         .NewObj(t.FindConstructor(dtoTableProp.PropertyType))
                         .Ret()
-                        .Statement();
+                        ;
 
                     TypeBody.SymbolTable.AddProperty(new Property(null, table.Name, t.ToAstType()))
                         .Connect(prop.prop);
@@ -165,7 +165,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                     .LdArg_0()
                     .LdFld(dtoPrivate)
                     .Call(mrg.FindMethod("Save", dtoType))
-                    .Statement();
+                    ;
             }
         }
 

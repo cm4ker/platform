@@ -67,8 +67,7 @@ namespace ZenPlatform.Compiler.Generation
                 .LdLit(0)
                 .LdElem()
                 .Cast(sb.InvokeService())
-                .StSFld(field)
-                .Statement();
+                .StSFld(field);
         }
 
         public static RoslynField GetISField(this IEntryPointManager am)

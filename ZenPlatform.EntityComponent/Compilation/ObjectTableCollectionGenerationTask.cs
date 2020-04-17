@@ -65,7 +65,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             g.LdArg_0()
                 .LdArg(1)
                 .Call(builder.BaseType.FindConstructor(dtoListType))
-                .Statement();
+                ;
 
 
             var baseMethod = builder.BaseType.FindMethod("Add");
@@ -86,23 +86,23 @@ namespace ZenPlatform.EntityComponent.Compilation
             g2
                 .NewObj(_dtoRowType.FindConstructor())
                 .StLoc(dtoRowLocal)
-                .Statement()
+                
                 .LdLoc(dtoRowLocal)
                 .NewObj(_objectRow.FindConstructor(_dtoRowType))
                 .StLoc(objRowLocal)
-                .Statement()
+                
                 .LdArg_0()
                 .LdProp(baseDtoProp)
                 .LdLoc(dtoRowLocal)
                 .Call(addDtoMethod)
-                .Statement()
+                
                 .LdArg_0()
                 .LdProp(baseObjProp)
                 .LdLoc(objRowLocal)
                 .Call(addObjMethod)
                 .LdLoc(objRowLocal)
                 .Ret()
-                .Statement();
+                ;
         }
 
         private void EmitBody(RoslynTypeBuilder builder, SqlDatabaseType dbType)

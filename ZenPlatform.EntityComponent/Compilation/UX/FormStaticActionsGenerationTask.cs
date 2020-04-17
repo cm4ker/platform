@@ -81,13 +81,11 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
                 .Call(_xamlServiceParse)
                 .Cast(formType)
                 .StLoc(loc)
-                .Statement()
                 .LdLoc(loc)
                 .Call(formType.FindMethod(nameof(UXForm.CreateOnServer)))
-                .Statement()
                 .LdLoc(loc)
                 .Call(_xamlServiceSave)
-                .Ret().Statement();
+                .Ret();
 
             EmitRegisterServerFunction(sm);
         }
@@ -108,7 +106,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
 
             dle.Call(_getMethod);
 
-            dle.Ret().Statement();
+            dle.Ret();
 
             e.LdSFld(invs)
                 .LdLit($"UX.{Name}")
@@ -117,7 +115,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
                 .LdFtn(dlgt)
                 //.NewObj(_sb.ParametricMethod.Constructors.First())
                 .Call(_ts.InvokeService().FindMethod(m => m.Name == "Register"))
-                .Statement();
+                ;
         }
 
 

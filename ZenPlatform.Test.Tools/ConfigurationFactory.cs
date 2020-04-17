@@ -88,6 +88,12 @@ public void Overload()
      return a; 
  }
 
+ public void ExecuteSql()
+ {
+     string sql = Q""FROM Entity.Store SELECT Id"" ;
+ }
+
+
  [Client]
  public void OnClientClientCallProc()
  {
