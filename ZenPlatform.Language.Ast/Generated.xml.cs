@@ -1635,8 +1635,20 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Literal : Expression
     {
-        public Literal(ILineInfo lineInfo): base(lineInfo)
+        public Literal(ILineInfo lineInfo, String value,  bool  isSqlLiteral): base(lineInfo)
         {
+            Value = value;
+            IsSqlLiteral = isSqlLiteral;
+        }
+
+        public String Value
+        {
+            get;
+        }
+
+        public bool IsSqlLiteral
+        {
+            get;
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)

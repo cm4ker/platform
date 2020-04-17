@@ -114,8 +114,6 @@ namespace ZenPlatform.Compiler.Generation
                 //     e.MarkLabel(label);
                 // }
             }
-
-            e.Statement();
         }
     }
 }

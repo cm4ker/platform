@@ -109,6 +109,21 @@ namespace ZenPlatform.Compiler.Roslyn
             return this;
         }
 
+        /*
+         
+         var i = new int[10];
+         i[0] = 1;
+         ..
+         i[1] = 2;
+         ..
+         i[2]
+         ....
+         
+         var i = new int[10] {1,2,3,4,5};
+         
+         new Call(new int[10] {1,2,3,4,5});
+         
+         */
 
         public RBlockBuilder NewArr(RoslynType c)
         {
@@ -322,20 +337,6 @@ namespace ZenPlatform.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder Statement()
-        {
-            try
-            {
-                _stack.Push(new Statement(PopExp()));
-            }
-            catch (Exception exception)
-            {
-                //ignored
-            }
-
-            return this;
-        }
-
         public RBlockBuilder Declare()
         {
             _stack.Push(new Declare(PopExp(), (NameExpression) _stack.Pop(), PopType()));
@@ -510,7 +511,9 @@ namespace ZenPlatform.Compiler.Roslyn
                 {
                     try
                     {
-                        ((Statement) item).Dump(tw);
+                        var stmt = new Statement((Expression) item);
+                        //((Statement) item).Dump(tw);
+                        stmt.Dump(tw);
                         tw.W("\n");
                     }
                     catch (Exception ex)

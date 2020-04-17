@@ -12,6 +12,7 @@ namespace ZenPlatform.Core.Querying
             nameWalker.Visit(machine.top() as QItem);
         }
 
+        
         public static string Compile(this QLang machine, bool popArg = false)
         {
             machine.PrepareFromTop();

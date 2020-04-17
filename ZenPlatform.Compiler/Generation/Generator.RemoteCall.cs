@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.Generation
                 });
 
             if (!_map.GetClrType(function.Type).Equals(_bindings.Void))
-                function.Builder.Ret().Statement();
+                function.Builder.Ret();
         }
     }
 }

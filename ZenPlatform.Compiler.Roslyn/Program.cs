@@ -45,19 +45,15 @@ namespace ZenPlatform.Compiler.Roslyn
 
             b.NewObj(listOfStrings.Constructors.First())
                 .StLoc(loc3)
-                .Statement()
                 .LdLoc(loc3)
                 .LdLit("This is for collection")
                 .Call(addMethod)
-                .Statement()
                 .Push(new BinaryExpression(new CastExpression(intType, new Literal(10.8)),
                     new Literal(10),
                     BKind.Plus))
                 .StLoc(loc)
-                .Statement()
                 .LdLit(10)
                 .StArg(param)
-                .Statement()
                 .Push(new Literal(10))
                 .Inline(loc2)
                 .LdLoc(loc2)
@@ -69,18 +65,14 @@ namespace ZenPlatform.Compiler.Roslyn
             b2.Push(new Literal(10))
                 .Call(intToString)
                 .StLoc(someStringLoc)
-                .Statement()
                 .EndBlock();
             b.For()
-                .Statement()
                 .Nothing()
                 .LdLit(11)
                 .LdLit(12)
                 .Call(method)
-                .Statement()
                 .LdArg(param)
-                .Ret()
-                .Statement();
+                .Ret();
 
             var sb = new StringBuilder();
             asm.Dump(new StringWriter(sb));

@@ -83,7 +83,7 @@ namespace ZenPlatform.EntityComponent.Compilation
             g.LdArg_0()
                 .LdArg(1)
                 .StFld(dtoPrivate)
-                .Statement();
+               ;
 
             foreach (var prop in type.Properties)
             {

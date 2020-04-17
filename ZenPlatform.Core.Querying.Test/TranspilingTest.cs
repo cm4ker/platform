@@ -17,7 +17,7 @@ namespace ZenPlatform.Core.Querying.Test
         public TranspilingTest()
         {
             conf = ConfigurationFactory.Create();
-            _m = new Querying.Model.QLang(conf);
+            _m = new Querying.Model.QLang(conf.TypeManager);
         }
 
         [Fact]

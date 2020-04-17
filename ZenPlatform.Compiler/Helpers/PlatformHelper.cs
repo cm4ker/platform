@@ -125,8 +125,7 @@ namespace ZenPlatform.Compiler.Helpers
 
             var client = emitter.DefineLocal(type);
             emitter.LdProp(sb.AIClient());
-            emitter.StLoc(client)
-                .Statement();
+            emitter.StLoc(client);
 
             var routeType = ts.FindType($"{typeof(Route).Namespace}.{nameof(Route)}",
                 typeof(Route).Assembly.GetName().FullName);

@@ -41,11 +41,11 @@ namespace ZenPlatform.Compiler.Generation
 
             if (method.ReturnType == _bindings.Void)
             {
-                dle.Null().Ret().Statement();
+                dle.Null().Ret();
             }
             else
             {
-                dle.Ret().Statement();
+                dle.Ret();
             }
 
             e.LdSFld(invs)
@@ -54,8 +54,7 @@ namespace ZenPlatform.Compiler.Generation
                 //.Null()
                 .LdFtn(dlgt)
                 //.NewObj(_bindings.ParametricMethod.Constructors.First())
-                .Call(_ts.InvokeService().FindMethod(m => m.Name == "Register"))
-                .Statement();
+                .Call(_ts.InvokeService().FindMethod(m => m.Name == "Register"));
         }
     }
 }

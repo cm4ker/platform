@@ -75,8 +75,7 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
                 .RemoteCall(_sb.String, $"UX.{Name}", e => { e.LdNull(); })
                 .Null()
                 .Call(openWindow)
-                .Ret()
-                .Statement();
+                .Ret();
         }
 
         public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)

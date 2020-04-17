@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using Antlr4.Runtime;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
@@ -10,6 +12,8 @@ using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Core;
+using ZenPlatform.Core.Querying;
+using ZenPlatform.Core.Querying.Model;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
@@ -17,6 +21,8 @@ using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.Language.Ast.Symbols;
+using ZenPlatform.QueryBuilder.Model;
+using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.Shared.Tree;
 using BinaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.BinaryExpression;
 using Call = ZenPlatform.Language.Ast.Definitions.Call;
@@ -129,24 +135,64 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expression is Literal literal)
             {
-                switch (literal.Type.Kind)
+                if (literal.IsSqlLiteral)
                 {
-                    case TypeNodeKind.Int:
-                        e.LdLit(Int32.Parse(literal.Value));
-                        break;
-                    case TypeNodeKind.String:
-                        e.LdLit(literal.Value);
-                        break;
-                    case TypeNodeKind.Double:
-                        e.LdLit(double.Parse(literal.Value, CultureInfo.InvariantCulture));
-                        break;
-                    case TypeNodeKind.Char:
-                        e.LdLit(char.Parse(literal.Value));
-                        break;
-                    case TypeNodeKind.Boolean:
-                        e.LdLit(bool.Parse(literal.Value) ? 1 : 0);
-                        break;
+                    //need compile sql expression!
+                    var _m = new QLang(_conf.TypeManager);
+
+                    AntlrInputStream inputStream = new AntlrInputStream(literal.Value);
+                    ZSqlGrammarLexer speakLexer = new ZSqlGrammarLexer(inputStream);
+                    CommonTokenStream commonTokenStream = new CommonTokenStream(speakLexer);
+                    ZSqlGrammarParser parser = new ZSqlGrammarParser(commonTokenStream);
+                    ZSqlGrammarVisitor visitor = new ZSqlGrammarVisitor(_m);
+
+                    visitor.Visit(parser.parse());
+
+                    var output = new StringWriter();
+                    string sqlString = "";
+
+                    try
+                    {
+                        var qitem = _m.top() as QItem;
+
+                        //Create aliases for tree
+                        var pwalker = new PhysicalNameWalker();
+                        pwalker.Visit(qitem);
+
+                        //Create query
+                        var realWalker = new RealWalker(_m.TypeManager);
+                        realWalker.Visit(qitem);
+
+                        var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
+                        sqlString = new SQLVisitorBase().Visit(syntax);
+                    }
+                    catch (Exception ex)
+                    {
+                        sqlString = $"MSG: {ex.Message}\nST: {ex.StackTrace}";
+                        throw;
+                    }
+
+                    e.LdLit(sqlString);
                 }
+                else
+                    switch (literal.Type.Kind)
+                    {
+                        case TypeNodeKind.Int:
+                            e.LdLit(Int32.Parse(literal.Value));
+                            break;
+                        case TypeNodeKind.String:
+                            e.LdLit(literal.Value);
+                            break;
+                        case TypeNodeKind.Double:
+                            e.LdLit(double.Parse(literal.Value, CultureInfo.InvariantCulture));
+                            break;
+                        case TypeNodeKind.Char:
+                            e.LdLit(char.Parse(literal.Value));
+                            break;
+                        case TypeNodeKind.Boolean:
+                            e.LdLit(bool.Parse(literal.Value) ? 1 : 0);
+                            break;
+                    }
             }
             else if (expression is Name name)
             {
@@ -374,8 +420,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 e.LdContext()
                     .StLoc(loc);
-                e.Statement();
-
+          
                 symbol.Connect(loc);
             }
         }

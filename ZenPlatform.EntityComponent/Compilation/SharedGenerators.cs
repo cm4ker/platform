@@ -160,11 +160,11 @@ namespace ZenPlatform.EntityComponent.Compilation
                         .LdFld(dtoPrivate)
                         .Call(dtoProp.Getter)
                         .Ret()
-                        .Statement()
+                        
                         .EndBlock()
                         .Nothing()
                         .If()
-                        .Statement();
+                        ;
 
 
                     // if (ctype.IsLink)
@@ -192,18 +192,18 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                         block
                             .Call(dtoProp.Setter)
-                            .Statement()
+                            
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .LdLit((int) ctype.GetSettings().SystemId)
                             .Call(dtoTypeProp.Setter)
-                            .Statement()
+                            
                             .Ret()
-                            .Statement()
+                            
                             .EndBlock()
                             .Nothing()
                             .If()
-                            .Statement();
+                            ;
 
 
                         // setBuilder.Call(dtoProp.Setter)
@@ -215,8 +215,8 @@ namespace ZenPlatform.EntityComponent.Compilation
                     }
                 }
 
-                getBuilder.Throw(sb.Exception).Statement();
-                setBuilder?.Throw(sb.Exception).Statement();
+                getBuilder.Throw(sb.Exception);
+                setBuilder?.Throw(sb.Exception);
 
                 // getBuilder.Ret();
                 // setBuilder.Ret();
@@ -249,7 +249,7 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                     getBuilder
                         .Ret()
-                        .Statement();
+                        ;
 
                     if (setBuilder != null)
                     {
@@ -262,7 +262,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                             setBuilder.Call(compileType.FindProperty("Id").Getter);
 
                         setBuilder.Call(dtoProp.Setter)
-                            .Statement();
+                            ;
                     }
                 }
                 else
@@ -331,14 +331,14 @@ namespace ZenPlatform.EntityComponent.Compilation
                         .LdArg_0()
                         .LdFld(dtoPrivate)
                         .Call(dtoProp.Getter)
-                        .Ret().Statement()
+                        .Ret()
                         .EndBlock()
                         .Nothing()
-                        .If().Statement();
+                        .If();
 
                 }
 
-                getBuilder.Throw(sb.Exception).Statement();
+                getBuilder.Throw(sb.Exception);
 
 
                 // getBuilder.Ret();
@@ -357,7 +357,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                         .LdArg_0()
                         .LdFld(dtoPrivate)
                         .Call(dtofield.Getter)
-                        .Ret().Statement();
+                        .Ret();
                 }
                 else
                 {
@@ -365,7 +365,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                         .LdArg_0()
                         .Call(builder.FindProperty("Id").Getter)
                         .Call(mrgGet)
-                        .Ret().Statement();
+                        .Ret();
                 }
             }
         }

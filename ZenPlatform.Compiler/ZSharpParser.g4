@@ -218,6 +218,7 @@ expressionPostfix:
 
 expressionAtom:
     literal
+    | sql_literal
     | name
     | globalVar
 ;

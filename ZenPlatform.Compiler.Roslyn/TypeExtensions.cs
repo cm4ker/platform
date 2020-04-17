@@ -269,8 +269,7 @@ namespace ZenPlatform.Compiler.Roslyn
                 getMethod.Body
                     .LdArg_0()
                     .LdFld(backingField)
-                    .Ret()
-                    .Statement();
+                    .Ret();
 
                 result = result.WithGetter(getMethod);
             }
@@ -279,7 +278,7 @@ namespace ZenPlatform.Compiler.Roslyn
             {
                 var setMethod = tb.DefineMethod($"__set_{name}", true, false, interfaceImpl);
                 var par = setMethod.DefineParameter("value", type, false, false);
-                setMethod.Body.LdArg_0().LdArg(par).StFld(backingField).Statement();
+                setMethod.Body.LdArg_0().LdArg(par).StFld(backingField);
 
                 result = result.WithSetter(setMethod);
             }
