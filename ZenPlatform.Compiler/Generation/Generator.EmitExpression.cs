@@ -23,6 +23,7 @@ using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.Language.Ast.Symbols;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
+using ZenPlatform.ServerRuntime;
 using ZenPlatform.Shared.Tree;
 using BinaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.BinaryExpression;
 using Call = ZenPlatform.Language.Ast.Definitions.Call;
@@ -138,40 +139,7 @@ namespace ZenPlatform.Compiler.Generation
                 if (literal.IsSqlLiteral)
                 {
                     //need compile sql expression!
-                    var _m = new QLang(_conf.TypeManager);
-
-                    AntlrInputStream inputStream = new AntlrInputStream(literal.Value);
-                    ZSqlGrammarLexer speakLexer = new ZSqlGrammarLexer(inputStream);
-                    CommonTokenStream commonTokenStream = new CommonTokenStream(speakLexer);
-                    ZSqlGrammarParser parser = new ZSqlGrammarParser(commonTokenStream);
-                    ZSqlGrammarVisitor visitor = new ZSqlGrammarVisitor(_m);
-
-                    visitor.Visit(parser.parse());
-
-                    var output = new StringWriter();
-                    string sqlString = "";
-
-                    try
-                    {
-                        var qitem = _m.top() as QItem;
-
-                        //Create aliases for tree
-                        var pwalker = new PhysicalNameWalker();
-                        pwalker.Visit(qitem);
-
-                        //Create query
-                        var realWalker = new RealWalker(_m.TypeManager);
-                        realWalker.Visit(qitem);
-
-                        var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
-                        sqlString = new SQLVisitorBase().Visit(syntax);
-                    }
-                    catch (Exception ex)
-                    {
-                        sqlString = $"MSG: {ex.Message}\nST: {ex.StackTrace}";
-                        throw;
-                    }
-
+                    var sqlString = ServerCompilerHelper.Compile(_conf.TypeManager, literal.Value);
                     e.LdLit(sqlString);
                 }
                 else
@@ -420,7 +388,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 e.LdContext()
                     .StLoc(loc);
-          
+
                 symbol.Connect(loc);
             }
         }

@@ -12,7 +12,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         public SymbolType SymbolType => SymbolType.Type;
 
 
-        public string GetNamespace()
+        public virtual string GetNamespace()
         {
             var parent = FirstParent<NamespaceDeclaration>();
 

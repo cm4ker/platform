@@ -60,6 +60,13 @@ namespace ZenPlatform.Language.Ast.Symbols
             return typeSymbol;
         }
 
+        public TypeSymbol AddType(TypeEntity te, RoslynType type)
+        {
+            var typeSymbol = AddType(te);
+            typeSymbol.Connect(type);
+            return typeSymbol;
+        }
+
         public VariableSymbol AddVariable(IAstSymbol p)
         {
             var variableSymbol = new VariableSymbol(p);

@@ -134,6 +134,8 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class ParameterList : SyntaxCollectionNode<Parameter>
     {
+        public static ParameterList Empty => new ParameterList();
+        
         public ParameterList(): base(null)
         {
         }
@@ -154,6 +156,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class GenericParameterList : SyntaxCollectionNode<GenericParameter>
     {
+        public static GenericParameterList Empty => new GenericParameterList();
         public GenericParameterList(): base(null)
         {
         }
@@ -174,6 +177,8 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class AttributeList : SyntaxCollectionNode<AttributeSyntax>
     {
+        
+        public static AttributeList Empty => new AttributeList();
         public AttributeList(): base(null)
         {
         }

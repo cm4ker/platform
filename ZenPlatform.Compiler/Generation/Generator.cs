@@ -8,6 +8,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
+using ZenPlatform.ServerRuntime;
 using ZenPlatform.UI.Ast;
 using SreTA = System.Reflection.TypeAttributes;
 using SystemTypeBindings = ZenPlatform.Compiler.Roslyn.SystemTypeBindings;

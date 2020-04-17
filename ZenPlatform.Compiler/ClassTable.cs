@@ -92,17 +92,17 @@ namespace ZenPlatform.Compiler
     {
         public static void FillStandard(this ClassTable bc, SystemTypeBindings sb)
         {
-            var @int = new BindingClass("int", sb.Int);
-            var @string = new BindingClass("string", sb.String);
-            var @guid = new BindingClass("guid", sb.Guid);
-            var @int64 = new BindingClass("i64", sb.Int64);
-            var @int642 = new BindingClass("Platform.SomeNamespace.Int64", sb.Int64);
-
-            bc.AddClass(@int, @int.BindingType);
-            bc.AddClass(@string, @string.BindingType);
-            bc.AddClass(guid, @guid.BindingType);
-            bc.AddClass(int64, @int64.BindingType);
-            bc.AddClass(int642, @int642.BindingType);
+            // var @int = new BindingClass("int", sb.Int);
+            // var @string = new BindingClass("string", sb.String);
+            // var @guid = new BindingClass("guid", sb.Guid);
+            // var @int64 = new BindingClass("i64", sb.Int64);
+            // var @int642 = new BindingClass("Platform.SomeNamespace.Int64", sb.Int64);
+            //
+            // bc.AddClass(@int, @int.BindingType);
+            // bc.AddClass(@string, @string.BindingType);
+            // bc.AddClass(guid, @guid.BindingType);
+            // bc.AddClass(int64, @int64.BindingType);
+            // bc.AddClass(int642, @int642.BindingType);
         }
     }
 }

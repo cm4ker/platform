@@ -303,12 +303,14 @@ namespace ZenPlatform.Compiler
             base.VisitVariableDeclaration(context);
 
             SyntaxNode result;
+
+            string varName = context.IDENTIFIER()?.GetText() ?? throw new Exception("Variable name not found");
+
             if (context.expression() == null)
-                result = new Variable(context.start.ToLineInfo(), null, context.IDENTIFIER().GetText(),
+                result = new Variable(context.start.ToLineInfo(), null, varName,
                     _syntaxStack.PopType());
             else
-                result = new Variable(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
-                    context.IDENTIFIER().GetText(),
+                result = new Variable(context.start.ToLineInfo(), _syntaxStack.PopExpression(), varName,
                     _syntaxStack.PopType());
 
             _syntaxStack.Push(result);

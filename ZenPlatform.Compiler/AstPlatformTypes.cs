@@ -16,15 +16,15 @@ namespace ZenPlatform.Compiler
 
             cu.NamespaceDeclarations.Add(ns);
 
-            cu.Entityes.Add(new BindingClass("String", sb.String));
-            cu.Entityes.Add(new BindingClass("Int32", sb.Int));
-            cu.Entityes.Add(new BindingClass("Int64", sb.Int64));
-            cu.Entityes.Add(new BindingClass("Char", sb.Char));
-            cu.Entityes.Add(new BindingClass("Double", sb.Double));
-            cu.Entityes.Add(new BindingClass("Boolean", sb.Boolean));
-            cu.Entityes.Add(new BindingClass("Byte", sb.Byte));
-            cu.Entityes.Add(new BindingClass("DateTime", sb.DateTime));
-            cu.Entityes.Add(new BindingClass("PlatformContext", ts.FindType<PlatformContext>()));
+            // cu.Entityes.Add(new BindingClass("String", sb.String));
+            // cu.Entityes.Add(new BindingClass("Int32", sb.Int));
+            // cu.Entityes.Add(new BindingClass("Int64", sb.Int64));
+            // cu.Entityes.Add(new BindingClass("Char", sb.Char));
+            // cu.Entityes.Add(new BindingClass("Double", sb.Double));
+            // cu.Entityes.Add(new BindingClass("Boolean", sb.Boolean));
+            // cu.Entityes.Add(new BindingClass("Byte", sb.Byte));
+            // cu.Entityes.Add(new BindingClass("DateTime", sb.DateTime));
+            // cu.Entityes.Add(new BindingClass("PlatformContext", ts.FindType<PlatformContext>()));
         }
     }
 }

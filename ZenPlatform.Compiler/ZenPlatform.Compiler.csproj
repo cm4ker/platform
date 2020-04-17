@@ -41,6 +41,7 @@
         <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
         <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
         <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ServerRuntime\ZenPlatform.ServerRuntime.csproj" />
         <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
         <ProjectReference Include="..\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj" />
     </ItemGroup>

@@ -90,7 +90,15 @@ public void Overload()
 
  public void ExecuteSql()
  {
-     string sql = Q""FROM Entity.Store SELECT Id"" ;
+    Query a = $Query();
+    a.Text = ""FROM Entity.Store SELECT Id"";
+    DataReader r = a.ExecuteReader();
+
+    while(r.Read())
+    {
+        int i = 0 ;
+        i++;
+    }
  }
 
 
