@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <Config>
-
-
     <Syntax IsList="true" Base="Function" Name="FunctionList"/>
     <Syntax IsList="true" Base="Field" Name="FieldList"/>
     <Syntax IsList="true" Base="Property" Name="PropertyList"/>

@@ -187,6 +187,11 @@ namespace ZenPlatform.Shared.Tree
 
         public List<OneWayNode> Children { get; }
 
+        public void Attach(int index, OneWayNode node)
+        {
+            Children.Insert(index, node);
+        }
+
 
         /// <summary>
         /// Получить дочерний элемент по типу

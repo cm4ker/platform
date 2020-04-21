@@ -74,5 +74,10 @@ namespace ZenPlatform.Core.Querying.Model
 
 
         public Dictionary<string, object> AttachedPropery { get; }
+        
+        
+        public abstract T Accept<T>(QLangVisitorBase<T> visitor);
+        
+        public abstract void Accept(QLangVisitorBase visitor);
     }
 }

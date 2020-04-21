@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <Config>
+    <Syntax IsList="true" Base="QField" Name="FieldList"/>
+    <Syntax IsList="true" Base="QFromItem" Name="JoinList"/>
+    <Syntax IsList="true" Base="QExpression" Name="ExpressionList"/>
+    <Syntax IsList="true" Base="QDataSource" Name="DataSourceList"/>
+    <Syntax IsList="true" Base="QWhen" Name="WhenList"/>
+    
     <Syntax Name="QExpression" Base="QItem" />
 
     <Syntax Name="QQuery" Base="QItem">
@@ -16,20 +22,20 @@
 
     <Syntax Name="QSelect" Base="QItem">
         <Arguments>
-            <List Name="Fields" Type="List&lt;QField&gt;" />
+            <List Name="Fields" Type="FieldList" />
         </Arguments>
     </Syntax>
 
     <Syntax Name="QFrom" Base="QItem">
         <Arguments>
-            <List Name="Joins" Type="IEnumerable&lt;QFromItem&gt;" />
+            <List Name="Joins" Type="JoinList" />
             <Single Name="Source" Type="QDataSource" />
         </Arguments>
     </Syntax>
 
     <Syntax Name="QGroupBy" Base="QItem">
         <Arguments>
-            <List Name="Expressions" Type="List&lt;QExpression&gt;" />
+            <List Name="Expressions" Type="ExpressionList" />
         </Arguments>
     </Syntax>
 
@@ -52,7 +58,7 @@
 
     <Syntax Name="QCombinedDataSource" Base="QDataSource">
         <Arguments>
-            <List Name="DataSources" Type="List&lt;QDataSource&gt;" />
+            <List Name="DataSources" Type="DataSourceList" />
         </Arguments>
     </Syntax>
 
@@ -137,7 +143,7 @@
     <Syntax Name="QCase" Base="QExpression">
         <Arguments>
             <Single Name="Else" Type="QExpression" />
-            <List Name="Whens" Type="List&lt;QWhen&gt;" />
+            <List Name="Whens" Type="WhenList" />
         </Arguments>
     </Syntax>
 

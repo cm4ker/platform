@@ -17,12 +17,6 @@ namespace ZenPlatform.Core.Querying.Model
         private QLangTypeBuilder _tb;
         private ITypeManager _tm;
 
-        private enum InstructionContext
-        {
-            None,
-            Component
-        }
-
         public QLang(ITypeManager conf)
         {
             _logicStack = new LogicStack();
@@ -37,95 +31,90 @@ namespace ZenPlatform.Core.Querying.Model
 
         #region Context modifiers
 
-        private void ChangeContext(QueryContext nContext)
+        public enum ListType
         {
-            if (nContext < CurrentScope.QueryContext && nContext != QueryContext.None)
-                throw new Exception($"Can't change context {CurrentScope.QueryContext} to {nContext}");
-
-
-            switch (CurrentScope.QueryContext)
-            {
-                case QueryContext.None:
-                    break;
-                case QueryContext.From:
-                    m_from_close();
-                    break;
-                case QueryContext.Where:
-                    m_where_close();
-                    break;
-                case QueryContext.GroupBy:
-                    m_group_by_close();
-                    break;
-                case QueryContext.Having:
-                    m_having_close();
-                    break;
-                case QueryContext.Select:
-                    m_select_close();
-                    break;
-                case QueryContext.OrderBy:
-                    m_order_by_close();
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
-
-            CurrentScope.QueryContext = nContext;
+            Field,
+            DataSource,
+            When,
+            Expression,
+            Join
         }
 
-        private void m_order_by_close()
+        /// <summary>
+        /// Load on the stack list of fields
+        /// </summary>
+        public void new_list(ListType type)
+        {
+            switch (type)
+            {
+                case ListType.Field:
+                    _logicStack.Push(new FieldList());
+                    break;
+                case ListType.DataSource:
+                    _logicStack.Push(new DataSourceList());
+                    break;
+                case ListType.When:
+                    _logicStack.Push(new WhenList());
+                    break;
+                case ListType.Expression:
+                    _logicStack.Push(new ExpressionList());
+                    break;
+                case ListType.Join:
+                    _logicStack.Push(new JoinList());
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
+        /// <summary>
+        /// Duplicate item on stack
+        /// </summary>
+        public void dup()
+        {
+            _logicStack.Push(_logicStack.Peek());
+        }
+
+        public void st_elem()
+        {
+            var element = _logicStack.Pop();
+            var objColl = _logicStack.Pop();
+
+            if (!(objColl is IQCollection coll))
+                throw new Exception(
+                    $"Stack corrupted. The collection is not an instance of the IQCollection. Current type is ({objColl.GetType()})");
+
+            coll.Add(element);
+        }
+
+        private void order_by()
         {
             _logicStack.Push(new QOrderBy(_logicStack.PopItems<QExpression>()));
         }
 
-        private void m_having_close()
+        private void having()
         {
             _logicStack.Push(new QHaving(_logicStack.PopExpression()));
         }
 
-
-        public void m_from()
+        public void from()
         {
-            ChangeContext(QueryContext.From);
+            _logicStack.Push(new QFrom(_logicStack.PopItem<JoinList>(), _logicStack.PopDataSource()));
         }
 
-        private void m_from_close()
+        public void select()
         {
-            _logicStack.Push(new QFrom(_logicStack.PopItems<QFromItem>(), _logicStack.PopDataSource()));
+            _logicStack.Push(new QSelect(_logicStack.PopItem<FieldList>()));
         }
 
-        private void m_select_close()
-        {
-            _logicStack.Push(new QSelect(_logicStack.PopFields()));
-        }
-
-        private void m_where_close()
+        private void where()
         {
             _logicStack.Push(new QWhere(_logicStack.PopExpression()));
         }
 
-        private void m_group_by_close()
+        private void gorup_by()
         {
-            _logicStack.Push(new QGroupBy(_logicStack.PopItems<QExpression>()));
-        }
-
-        public void m_select()
-        {
-            ChangeContext(QueryContext.Select);
-        }
-
-        public void m_where()
-        {
-            ChangeContext(QueryContext.Where);
-        }
-
-        public void m_group_by()
-        {
-            ChangeContext(QueryContext.GroupBy);
-        }
-
-        public void m_having()
-        {
-            ChangeContext(QueryContext.Having);
+            _logicStack.Push(new QGroupBy(_logicStack.PopItem<ExpressionList>()));
         }
 
         #endregion
@@ -205,6 +194,12 @@ namespace ZenPlatform.Core.Querying.Model
             }
         }
 
+
+        public void ld_nothing()
+        {
+            _logicStack.Push(null);
+        }
+
         public void ld_field(string name)
         {
             var ds = _logicStack.PopDataSource();
@@ -228,10 +223,10 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void @as(string alias)
         {
-            if (CurrentScope.QueryContext == QueryContext.From)
-            {
-                var source = _logicStack.PopDataSource();
+            var item = _logicStack.Pop();
 
+            if (item is QDataSource source)
+            {
                 var ds = new QAliasedDataSource(source, alias);
 
                 _logicStack.Push(ds);
@@ -241,23 +236,17 @@ namespace ZenPlatform.Core.Querying.Model
 
                 CurrentScope.Scope.Add(alias, ds);
             }
-            else if (CurrentScope.QueryContext == QueryContext.Select)
+            else if (item is QSelectExpression expr)
             {
-                var expr = _logicStack.PopExpression();
                 _logicStack.Push(new QAliasedSelectExpression(expr, alias));
             }
             else
             {
-                throw new Exception("In this context alias not available");
+                throw new Exception("In this element not available for aliasing");
             }
         }
 
-        public void bg_query()
-        {
-            _scope.Push(new LogicScope());
-        }
-
-        public void begin_data_request()
+        public void new_scope()
         {
             _scope.Push(new LogicScope());
         }
@@ -269,23 +258,25 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void st_data_request()
         {
-            if (CurrentScope.QueryContext != QueryContext.None)
-                throw new Exception(
-                    $"You can save query only in the 'Select' context. Current context {CurrentScope.QueryContext}");
             _scope.Pop();
-
-            _logicStack.Push(new QDataRequest(_logicStack.PopItems<QField>()));
+            _logicStack.Push(new QDataRequest(_logicStack.PopItem<FieldList>()));
         }
 
-        public void st_query()
+        /// <summary>
+        /// Pop from stack
+        /// QOrderBy
+        /// QSelect
+        /// QHaving
+        /// QGroupBy
+        /// QWhere
+        /// QFrom
+        ///
+        /// in that order
+        /// </summary>
+        public void new_query()
         {
-            if (CurrentScope.QueryContext != QueryContext.Select && CurrentScope.QueryContext != QueryContext.OrderBy)
-                throw new Exception(
-                    $"You can save query only in the 'Select' or 'Order by' context. Current context {CurrentScope.QueryContext}");
-
-            ChangeContext(QueryContext.None);
-
             _scope.Pop();
+
 
             _logicStack.Push(new QQuery(_logicStack.PopItem<QOrderBy>(),
                 _logicStack.PopItem<QSelect>(), _logicStack.PopItem<QHaving>(),
@@ -294,6 +285,20 @@ namespace ZenPlatform.Core.Querying.Model
 
             if (_scope.Count > 0) //мы находимся во внутреннем запросе
                 _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));
+        }
+
+
+        public void new_result_column()
+        {
+            var expr = pop();
+            if (expr is QField item)
+            {
+                _logicStack.Push(new QSelectExpression(item));
+            }
+            else if (expr is QExpression exp)
+            {
+                _logicStack.Push(new QSelectExpression(exp));
+            }
         }
 
         /// <summary>
@@ -442,7 +447,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void @case()
         {
-            _logicStack.Push(new QCase(_logicStack.PopExpression(), _logicStack.PopItems<QWhen>()));
+            _logicStack.Push(new QCase(_logicStack.PopExpression(), _logicStack.PopItem<WhenList>()));
         }
 
         public void when()
@@ -466,66 +471,4 @@ namespace ZenPlatform.Core.Querying.Model
             _logicStack.Push(new QConst(_tm.Numeric, number));
         }
     }
-
-    /*
-     
-    begin_query 
-    
-    m_from
-    
-    ld_component "Document"
-    ld_type "Invoice"
-    alias "A"
-    ld_component "Reference"
-    ld_type "Contractors"
-    alias "B"
-    
-    ld_name "A" <-- name context
-    ld_field "Id"                                SELECT SUM(A.Count) AS SumOfCount, COUNT(Fld123)
-                                            =>   FROM Document.Invoice A
-    ld_name "B" <-- name context                    JOIN Reference.Contractors B
-    ld_field "Id"                                        ON A.Id = B.Id
-    
-    eq
-    
-    on 
-    
-    join    
-    
-    m_select
-    
-    ld_name "A"
-    ld_field "Count" 
-    sum
-    alias "SumOfCount" <------ depend on context automatically wrap into SelectAliasedExpr Or SourceAliasedExpr 
-    st_field <---save complex field on the stack
-
-    ld_source_context        // load entire context
-    //This need if we use field without alias
-    ld_field "Fld123"   
-    count             
-    
-    
-    //condition
-    ld_name "A"
-    ld_field "Count"
-    ld_const 5    
-    
-    eq
-    
-    //else
-    ld_empty
-    
-    //then
-    ld_name "A"
-    ld_field "Count"
-        
-    case_when
-    
-    case
-    
-        
-    st_query <--- save query on  the stack
-    
-    */
 }

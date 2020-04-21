@@ -1,5 +1,4 @@
 using ZenPlatform.Core.Querying.Model;
-using ZenPlatform.Core.Querying.Visitor;
 
 namespace ZenPlatform.Core.Querying
 {
