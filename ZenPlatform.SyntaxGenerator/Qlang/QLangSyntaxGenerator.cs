@@ -3,335 +3,36 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ZenPlatform.SyntaxGenerator.Compiler;
 
-namespace ZenPlatform.SyntaxGenerator.QLang
+namespace ZenPlatform.SyntaxGenerator.Qlang
 {
     public static class QLangSyntaxGenerator
     {
-        private static string NameBase = "QItem";
+        private static SyntaxToken publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
+        private static SyntaxToken partialToken = SyntaxFactory.Token(SyntaxKind.PartialKeyword);
+
+        private static string ns_root = "ZenPlatform.Core.Querying.Model";
+        private static string ns_definitions = $"{ns_root}";
+        
         private static string VisitorClassName = "QLangVisitorBase";
-
-
-        public static NamespaceDeclarationSyntax MakeBaseNode(string rootNameSpace)
-        {
-            var ns = SyntaxFactory.NamespaceDeclaration(
-                SyntaxFactory.ParseName(rootNameSpace));
-
-            var name = NameBase;
-
-            List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
-
-            var publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
-
-            var constructor = SyntaxFactory.ConstructorDeclaration(name)
-                .WithBody(SyntaxFactory.Block())
-                .WithModifiers(SyntaxTokenList.Create(publicToken));
-
-
-            var accept =
-                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                    $"public abstract T Accept<T>({VisitorClassName}<T> visitor);");
-            members.Add(accept);
-
-            /*
-            var compare =
-                (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
-                    "public bool Compare(QuerySyntaxNode node1, QuerySyntaxNode node2){}");
-
-
-            compare = compare.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"if (node1==null && node2==null) return true; if (node1==null && node2!=null) return false; if (node1!=null && node2==null) return false; return node1.Equals(node2);"));
-
-            members.Add(compare);
-            */
-
-
-            var cls = SyntaxFactory.ClassDeclaration($"{name}")
-                .WithModifiers(SyntaxTokenList.Create(publicToken))
-                //  .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
-                //     .SimpleBaseType(SyntaxFactory.ParseTypeName("ZenPlatform.QueryBuilder.Common.SqlNode"))))
-                .AddMembers(members.ToArray());
-
-
-            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
-
-            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
-
-            return ns.AddMembers(cls);
-        }
-
-        public static NamespaceDeclarationSyntax MakeVisitor(string rootNameSpace, List<QLangSyntax> syntaxes)
-        {
-            var ns = SyntaxFactory.NamespaceDeclaration(
-                SyntaxFactory.ParseName(rootNameSpace));
-
-
-            List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
-
-            var publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
-
-            var constructor = SyntaxFactory.ConstructorDeclaration(VisitorClassName)
-                .WithBody(SyntaxFactory.Block())
-                .WithModifiers(SyntaxTokenList.Create(publicToken));
-
-            foreach (var syntax in syntaxes)
-            {
-                var visitor =
-                    (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                        $"public virtual T Visit{syntax.Name}({syntax.Name} node){{}}");
-
-
-                visitor = visitor.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"return DefaultVisit(node);"));
-                members.Add(visitor);
-            }
-
-            var defaultVisitor =
-                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                    $"public virtual T DefaultVisit({NameBase} node){{}}");
-
-
-            defaultVisitor = defaultVisitor.AddBodyStatements(
-                SyntaxFactory.ParseStatement($"return default;"));
-            members.Add(defaultVisitor);
-
-            var visit =
-                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                    $"public virtual T Visit({NameBase} visitable){{}}");
-
-
-            visit = visit.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"if (visitable is null) return default;"))
-                .AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"return visitable.Accept(this);"));
-            members.Add(visit);
-
-            var cls = SyntaxFactory.ClassDeclaration($"{VisitorClassName}<T>")
-                .WithModifiers(SyntaxTokenList.Create(publicToken))
-                .AddMembers(constructor)
-                .AddMembers(members.ToArray());
-
-
-            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
-
-            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
-
-            return ns.AddMembers(cls);
-        }
-
-        //public static Dictionary<string, List<SyntaxArgument>> constructors = new Dictionary<string, List<SyntaxArgument>>();
-
-        public static NamespaceDeclarationSyntax MakeSyntax(QLangSyntax syntax, string rootNameSpace, out bool add)
-        {
-            add = false;
-            //Если в аргументах есть свойства которые нужно создавать через new, 
-            //то мы смотрим есть ли уже для этого типа аргумента аргументы конструктора, если нету то пропускаем пока этот класс
-            // но если тип свойства - список, то пофиг создадим пустой список
-            // if (!syntax.Arguments.Where(a => a.IsNeedInitialize() && a.GetType().Equals(typeof(SyntaxArgumentSingle))).SequenceEqual(
-            // syntax.Arguments.Where(a => a.IsNeedInitialize() && a.GetType().Equals(typeof(SyntaxArgumentSingle)) && constructors.ContainsKey(a.Type)))) return null;
-
-            var ns = SyntaxFactory.NamespaceDeclaration(
-                SyntaxFactory.ParseName(rootNameSpace + (syntax.NS != null ? "." : "") + syntax.NS));
-
-            List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
-
-
-            var publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
-
-
-            var block = SyntaxFactory.Block().AddStatements();
-            var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer);
-
-            foreach (var arg in syntax.Arguments)
-            {
-                if (arg is SyntaxArgumentSingle && (!arg.DenyChildrenFill && !arg.DenyDeclare))
-                {
-                    block = block.AddStatements(SyntaxFactory.ParseStatement($"Childs.Add({arg.Name.ToCamelCase()});"));
-                }
-                else if (arg is SyntaxArgumentList && !arg.DenyChildrenFill && !arg.DenyDeclare)
-                {
-                    block = block.AddStatements(
-                        SyntaxFactory.ParseStatement(
-                            $"foreach(var item in {arg.Name.ToCamelCase()}) Childs.Add(item);"));
-                }
-
-                if (!arg.DenyDeclare)
-                    block = block.AddStatements(
-                        SyntaxFactory.ParseStatement($"{arg.Name} = {arg.Name.ToCamelCase()} ;"));
-
-
-                if (arg.PassBase)
-                    initializer = initializer.AddArgumentListArguments(
-                        SyntaxFactory.Argument(SyntaxFactory.ParseName(arg.Name.ToCamelCase())));
-            }
-
-            var constructor = SyntaxFactory.ConstructorDeclaration(syntax.Name)
-                // .WithParameterList(SyntaxFactory.ParameterList()
-                //     .AddParameters(SyntaxFactory.Parameter(
-                //         SyntaxFactory.Identifier("lineInfo")).WithType(SyntaxFactory.ParseName("ILineInfo"))))
-                .WithBody(block)
-                .WithModifiers(SyntaxTokenList.Create(publicToken));
-
-            constructor = constructor.WithInitializer(initializer);
-
-
-            //var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,
-            //    SyntaxFactory.ArgumentList()
-            //       .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseName("lineInfo"))));
-
-            //var argForConstructor = new List<SyntaxArgument>();
-
-
-            var cond = new List<string>();
-            var hash = new List<string>();
-
-            foreach (var argument in syntax.Arguments)
-            {
-                if (!argument.Null)
-                {
-                    var parameterSyntax = SyntaxFactory
-                        .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
-                        .WithType(SyntaxFactory.ParseName(argument.Type));
-
-                    if (argument is SyntaxArgumentSingle sas && sas.Default != null)
-                        parameterSyntax = parameterSyntax.WithDefault(
-                            SyntaxFactory.EqualsValueClause(SyntaxFactory.ParseExpression(sas.Default)));
-
-                    constructor = constructor.AddParameterListParameters(parameterSyntax);
-                }
-
-
-                if (argument.DenyDeclare) continue;
-
-                if (argument.IsNeedInitialize())
-                {
-                    constructor = constructor.AddBodyStatements(
-                        SyntaxFactory.ParseStatement($"{argument.Name} = new {argument.Type}();"));
-                }
-
-                /*
-                else if (argument.IsPrimetive() && !argument.Null)
-                {
-                    //argForConstructor.Add(argument);
-                    var parameterSyntax = SyntaxFactory
-                        .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
-                        .WithType(SyntaxFactory.ParseName(argument.Type));
-
-                    if (argument is SyntaxArgumentSingle sas && sas.Default != null)
-                        parameterSyntax = parameterSyntax.WithDefault(
-                            SyntaxFactory.EqualsValueClause(SyntaxFactory.ParseExpression(sas.Default)));
-
-
-                    constructor = constructor.AddParameterListParameters(parameterSyntax);
-
-                    var ae = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.ParseName(argument.Name),
-                    SyntaxFactory.ParseName(argument.Name.ToCamelCase()));
-
-                    constructor = constructor.AddBodyStatements(SyntaxFactory.ExpressionStatement(ae));
-
-
-                }
-                */
-
-                members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
-                        argument.Name).AddModifiers(publicToken)
-                    .WithAccessorList(SyntaxFactory.AccessorList()
-                        .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))
-                        .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
-
-                if (argument is SyntaxArgumentList)
-                {
-                    hash.Add($"Xor({argument.Name},i => i.GetHashCode())");
-                    cond.Add($"SequenceEqual(this.{argument.Name},node.{argument.Name})");
-                }
-                else if (argument.IsPrimetive())
-                {
-                    hash.Add($"({argument.Name}.GetHashCode())");
-                    cond.Add($"(this.{argument.Name} == node.{argument.Name})");
-                }
-                else if (argument.Type == "object")
-                {
-                    hash.Add($"({argument.Name} == null ? 0: {argument.Name}.GetHashCode())");
-                    cond.Add($"(this.{argument.Name}.Equals(node.{argument.Name}))");
-                }
-                else
-                {
-                    hash.Add($"({argument.Name} == null ? 0: {argument.Name}.GetHashCode())");
-                    cond.Add($"Compare(this.{argument.Name}, node.{argument.Name})");
-                }
-            }
-
-            if (cond.Count > 0)
-            {
-                var equlse =
-                    (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                        $"public override bool Equals(object obj){{}}");
-                equlse = equlse.AddBodyStatements(
-                    SyntaxFactory.ParseStatement(
-                        $"if (!this.GetType().Equals(obj.GetType())) return false;\nvar node = ({syntax.Name})obj;\nreturn ({string.Join(" && ", cond)});"));
-                members.Add(equlse);
-
-                var getHash =
-                    (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                        "public override int GetHashCode(){}");
-
-
-                getHash = getHash.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"return {string.Join(" ^ ", hash)};"));
-
-
-                members.Add(getHash);
-            }
-            else
-            {
-                var getHash =
-                    (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                        "public override int GetHashCode(){}");
-
-
-                getHash = getHash.AddBodyStatements(
-                    SyntaxFactory.ParseStatement($"return base.GetHashCode();"));
-
-
-                members.Add(getHash);
-            }
-
-            var visitor =
-                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                    $"public override T Accept<T>({VisitorClassName}<T> visitor){{}}");
-
-
-            visitor = visitor.AddBodyStatements(
-                SyntaxFactory.ParseStatement($"return visitor.Visit{syntax.Name}(this);"));
-            members.Add(visitor);
-
-
-            var cls = SyntaxFactory.ClassDeclaration(syntax.Name)
-                .WithModifiers(SyntaxTokenList.Create(publicToken))
-                .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
-                    .SimpleBaseType(SyntaxFactory.ParseTypeName(syntax.Base))))
-                .AddMembers(constructor)
-                .AddMembers(members.ToArray());
-
-
-            if (syntax.IsAbstract)
-                cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
-
-
-            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
-
-            add = true;
-
-            return ns.AddMembers(cls);
-        }
+        private static string NameBase = "QItem";
+        
+        private static ClassDeclarationSyntax astTreeBaseCls = SyntaxFactory.ClassDeclaration($"{VisitorClassName}<T>")
+            .AddModifiers(publicToken)
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
+            .AddModifiers(partialToken);
+
+        private static ClassDeclarationSyntax astTreeBaseCls2 = SyntaxFactory.ClassDeclaration($"{VisitorClassName}")
+            .AddModifiers(publicToken)
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
+            .AddModifiers(partialToken);
+
+ 
 
         public static void Main(string[] args)
         {
@@ -343,40 +44,47 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                 XmlSerializer xs = new XmlSerializer(typeof(Config));
                 var root = (Config) xs.Deserialize(tr);
 
+                StringBuilder sb = new StringBuilder();
+
+                sb.AppendLine("/// <auto-generated />\n\n");
+
                 var unit = SyntaxFactory.CompilationUnit()
                     .AddUsings(
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Linq")),
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Querying.Model")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Core.Querying.Visitor")),
                         SyntaxFactory.UsingDirective(
-                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Contracts.TypeSystem")),
-                        SyntaxFactory.UsingDirective(
-                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Structure.Data.Types")),
-                        SyntaxFactory.UsingDirective(
-                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Contracts"))
+                            SyntaxFactory.ParseName("ZenPlatform.Configuration.Contracts.TypeSystem"))
+                        
                     );
-                ;
 
 
-                unit = unit.AddMembers(MakeBaseNode("ZenPlatform.Core.Querying.Model"));
+                
 
+                foreach (var syntax in root.Syntaxes)
+                {
+                    var ns = SyntaxFactory.NamespaceDeclaration(
+                        SyntaxFactory.ParseName(ns_definitions + (syntax.NS != null ? "." : "") + syntax.NS));
 
-                List<QLangSyntax> compliteSyntaxList = new List<QLangSyntax>();
-                while (root.Syntaxes.Count != compliteSyntaxList.Count)
-                    foreach (var syntax in root.Syntaxes.Where(s => !compliteSyntaxList.Contains(s)))
-                    {
-                        bool add = false;
-                        var ns = MakeSyntax(syntax, "ZenPlatform.Core.Querying.Model", out add);
-                        if (add)
-                        {
-                            compliteSyntaxList.Add(syntax);
-                            unit = unit.AddMembers(ns);
-                        }
-                    }
+                    MemberDeclarationSyntax cls;
 
-                unit = unit.AddMembers(MakeVisitor("ZenPlatform.Core.Querying.Visitor", root.Syntaxes));
+                    if (syntax.IsList)
+                        cls = GenerateListClass(syntax);
+                    else
+                        cls = GenerateClass(syntax);
+
+                    ns = ns.AddMembers(cls);
+                    unit = unit.AddMembers(ns);
+
+                    //Console.WriteLine(ns.NormalizeWhitespace());
+                }
+
+                var nsAst = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(ns_root));
+
+                nsAst = nsAst.AddMembers(astTreeBaseCls);
+                nsAst = nsAst.AddMembers(astTreeBaseCls2);
+
+                unit = unit.AddMembers(nsAst);
 
                 if (args.Length == 2)
                 {
@@ -390,6 +98,204 @@ namespace ZenPlatform.SyntaxGenerator.QLang
                     Console.WriteLine(unit.NormalizeWhitespace());
                 }
             }
+        }
+
+        private static MemberDeclarationSyntax GetVisitorMethod(CompilerSyntax syntax)
+        {
+            var visitor =
+                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public override T Accept<T>({VisitorClassName}<T> visitor){{}}");
+
+            if (!syntax.IsAbstract)
+            {
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"return visitor.Visit{syntax.Name}(this);"));
+
+                var visitorBaseMethod = (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public virtual T Visit{syntax.Name}({syntax.Name} arg) {{ return DefaultVisit(arg); }}");
+
+                astTreeBaseCls = astTreeBaseCls.AddMembers(visitorBaseMethod);
+            }
+            else
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"throw new NotImplementedException();"));
+
+
+            return visitor;
+        }
+
+        private static MemberDeclarationSyntax GetVisitorMethod2(CompilerSyntax syntax)
+        {
+            var visitor =
+                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public override void Accept({VisitorClassName} visitor){{}}");
+
+            if (!syntax.IsAbstract)
+            {
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"visitor.Visit{syntax.Name}(this);"));
+
+                var visitorBaseMethod = (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public virtual void Visit{syntax.Name}({syntax.Name} arg) {{ DefaultVisit(arg); }}");
+
+                astTreeBaseCls2 = astTreeBaseCls2.AddMembers(visitorBaseMethod);
+            }
+            else
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"throw new NotImplementedException();"));
+
+
+            return visitor;
+        }
+
+        private static MemberDeclarationSyntax GenerateListClass(CompilerSyntax syntax)
+        {
+            List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
+
+            var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,
+                SyntaxFactory.ArgumentList()
+                    .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseExpression("null"))));
+
+            var constructor = SyntaxFactory.ConstructorDeclaration(syntax.Name)
+                .WithBody(SyntaxFactory.Block())
+                .WithModifiers(SyntaxTokenList.Create(publicToken));
+                //.WithInitializer(initializer);
+
+            members.Add(constructor);
+            members.Add(GetVisitorMethod(syntax));
+            members.Add(GetVisitorMethod2(syntax));
+
+            return SyntaxFactory.ClassDeclaration(syntax.Name)
+                .WithModifiers(SyntaxTokenList.Create(publicToken))
+                .AddMembers(members.ToArray())
+                .WithBaseList(SyntaxFactory.BaseList()
+                    .AddTypes(SyntaxFactory.SimpleBaseType(
+                        SyntaxFactory.ParseTypeName($"QCollectionItem<{syntax.Base}>"))));
+        }
+
+        private static MemberDeclarationSyntax GenerateClass(CompilerSyntax syntax)
+        {
+            List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
+
+
+            var constructor = SyntaxFactory.ConstructorDeclaration(syntax.Name)
+                .WithParameterList(SyntaxFactory.ParameterList()
+                    // .AddParameters(SyntaxFactory.Parameter(
+                    //     SyntaxFactory.Identifier("lineInfo")).WithType(SyntaxFactory.ParseName("ILineInfo")))
+                )
+                .WithBody(SyntaxFactory.Block())
+                .WithModifiers(SyntaxTokenList.Create(publicToken));
+
+            var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,
+                SyntaxFactory.ArgumentList()
+                 //   .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseName("lineInfo")))
+                );
+
+
+            var slot = 0;
+
+            foreach (var argument in syntax.Arguments)
+            {
+                var parameterSyntax = SyntaxFactory
+                    .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
+                    .WithType(SyntaxFactory.ParseName(argument.Type));
+
+                if (argument is SyntaxArgumentSingle sas && sas.Default != null)
+                    parameterSyntax = parameterSyntax.WithDefault(
+                        SyntaxFactory.EqualsValueClause(SyntaxFactory.ParseExpression(sas.Default)));
+
+
+                if (argument.PassBase)
+                    initializer = initializer.AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.ParseName(argument.Name.ToCamelCase())));
+
+
+                constructor = constructor.AddParameterListParameters(parameterSyntax);
+
+
+                if (!argument.OnlyArgument)
+                {
+                    var getter = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration);
+
+                    if (argument.DenyChildrenFill)
+                        getter = getter.WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                    else
+                        getter = getter.AddBodyStatements(
+                            SyntaxFactory.ParseStatement($"return ({argument.Type})this.Children[{slot}];"));
+
+                    members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
+                            argument.Name).AddModifiers(publicToken)
+                        .WithAccessorList(SyntaxFactory.AccessorList()
+                            .AddAccessors(getter)));
+
+
+                    if (!argument.DenyChildrenFill)
+                    {
+                        StatementSyntax fillStmt =
+                            SyntaxFactory.ParseStatement(
+                                $"this.Attach({slot}, ({NameBase}){argument.Name.ToCamelCase()});");
+
+                        constructor = constructor.AddBodyStatements(fillStmt);
+
+                        slot++;
+                    }
+                    else
+                    {
+                        var ae = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                            SyntaxFactory.ParseName(argument.Name),
+                            SyntaxFactory.ParseName(argument.Name.ToCamelCase()));
+
+                        constructor = constructor.AddBodyStatements(SyntaxFactory.ExpressionStatement(ae));
+                    }
+                }
+            }
+
+            constructor = constructor.WithInitializer(initializer);
+
+
+            members.Add(GetVisitorMethod(syntax));
+            members.Add(GetVisitorMethod2(syntax));
+
+            var cls = SyntaxFactory.ClassDeclaration(syntax.Name)
+                .WithModifiers(SyntaxTokenList.Create(publicToken))
+                .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
+                    .SimpleBaseType(SyntaxFactory.ParseTypeName(syntax.Base))))
+                .AddMembers(constructor)
+                .AddMembers(members.ToArray());
+
+            if (syntax.IsAbstract)
+                cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
+
+            cls = cls.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+
+            if (syntax.IsScoped)
+            {
+                cls = cls.AddBaseListTypes(
+                    SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("IScoped")));
+
+                cls = cls.AddMembers(SyntaxFactory.PropertyDeclaration(
+                        SyntaxFactory.ParseTypeName("SymbolTable"),
+                        "SymbolTable").AddModifiers(publicToken)
+                    .WithAccessorList(SyntaxFactory.AccessorList()
+                        .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))
+                        .AddAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))));
+            }
+
+            if (syntax.IsSymbol)
+            {
+                cls = cls.AddBaseListTypes(
+                    SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("IAstSymbol")));
+
+                if (syntax.Arguments.All(x => x.Name != "Name") && !syntax.NotThrowExMembersNotFound)
+                {
+                    throw new Exception(
+                        $"Syntax {syntax.Name} has Symbol attribute but hasn't Name argument! Please add the Name argument for the escape this exception or add `NotThrowExMembersNotFound` attribute");
+                }
+            }
+
+            return cls;
         }
     }
 }

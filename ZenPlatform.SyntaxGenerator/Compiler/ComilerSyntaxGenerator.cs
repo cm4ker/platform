@@ -26,6 +26,10 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
             .AddModifiers(partialToken);
 
+        private static string ns_root = "ZenPlatform.Language.Ast";
+        private static string VisitorClassName = "AstVisitorBase";
+        private static string NameBase = "SyntaxNode";
+
         public static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -54,12 +58,12 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Statements")),
                         SyntaxFactory.UsingDirective(
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Functions")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Infrastructure")),
+                        SyntaxFactory.UsingDirective(
+                            SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Infrastructure")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Symbols"))
                     );
 
 
-                var ns_root = "ZenPlatform.Language.Ast";
                 var ns_definitions = $"{ns_root}.Definitions";
 
                 foreach (var syntax in root.Syntaxes)
@@ -105,7 +109,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
         {
             var visitor =
                 (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                    "public override T Accept<T>(AstVisitorBase<T> visitor){}");
+                    $"public override T Accept<T>({VisitorClassName}<T> visitor){{}}");
 
             if (!syntax.IsAbstract)
             {
@@ -124,7 +128,6 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
 
             return visitor;
         }
-
 
         private static MemberDeclarationSyntax GetVisitorMethod2(CompilerSyntax syntax)
         {
@@ -233,7 +236,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                     {
                         StatementSyntax fillStmt =
                             SyntaxFactory.ParseStatement(
-                                $"this.Attach({slot}, (SyntaxNode){argument.Name.ToCamelCase()});");
+                                $"this.Attach({slot}, ({NameBase}){argument.Name.ToCamelCase()});");
 
                         constructor = constructor.AddBodyStatements(fillStmt);
 

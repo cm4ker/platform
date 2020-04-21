@@ -337,10 +337,11 @@ namespace ZenPlatform.Core.Querying
 
             Visit(node.Source);
 
-            foreach (var nodeJoin in node.Joins)
-            {
-                VisitQFromItem(nodeJoin);
-            }
+            if (node.Joins != null)
+                foreach (var nodeJoin in node.Joins)
+                {
+                    VisitQFromItem(nodeJoin);
+                }
 
             return null;
         }

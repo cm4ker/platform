@@ -1,17 +1,105 @@
 using System;
-using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
-using ZenPlatform.Core.Querying.Model;
-using ZenPlatform.Core.Querying.Visitor;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.Structure.Data.Types;
-using ZenPlatform.Configuration.Contracts;
 
 namespace ZenPlatform.Core.Querying.Model
 {
-    public abstract partial class QItem
+    public class FieldList : QCollectionItem<QField>
     {
-        public abstract T Accept<T>(QLangVisitorBase<T> visitor);
+        public FieldList()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitFieldList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitFieldList(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
+    public class JoinList : QCollectionItem<QFromItem>
+    {
+        public JoinList()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitJoinList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitJoinList(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
+    public class ExpressionList : QCollectionItem<QExpression>
+    {
+        public ExpressionList()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitExpressionList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitExpressionList(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
+    public class DataSourceList : QCollectionItem<QDataSource>
+    {
+        public DataSourceList()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitDataSourceList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitDataSourceList(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
+    public class WhenList : QCollectionItem<QWhen>
+    {
+        public WhenList()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitWhenList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitWhenList(this);
+        }
     }
 }
 
@@ -23,14 +111,14 @@ namespace ZenPlatform.Core.Querying.Model
         {
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQExpression(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQExpression(this);
         }
     }
 }
@@ -41,70 +129,70 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where, QFrom from): base()
         {
-            Children.Add(orderBy);
-            OrderBy = orderBy;
-            Children.Add(select);
-            Select = select;
-            Children.Add(having);
-            Having = having;
-            Children.Add(groupBy);
-            GroupBy = groupBy;
-            Children.Add(where);
-            Where = where;
-            Children.Add(from);
-            From = from;
+            this.Attach(0, (QItem)orderBy);
+            this.Attach(1, (QItem)select);
+            this.Attach(2, (QItem)having);
+            this.Attach(3, (QItem)groupBy);
+            this.Attach(4, (QItem)where);
+            this.Attach(5, (QItem)from);
         }
 
         public QOrderBy OrderBy
         {
-            get;
-            set;
+            get
+            {
+                return (QOrderBy)this.Children[0];
+            }
         }
 
         public QSelect Select
         {
-            get;
-            set;
+            get
+            {
+                return (QSelect)this.Children[1];
+            }
         }
 
         public QHaving Having
         {
-            get;
-            set;
+            get
+            {
+                return (QHaving)this.Children[2];
+            }
         }
 
         public QGroupBy GroupBy
         {
-            get;
-            set;
+            get
+            {
+                return (QGroupBy)this.Children[3];
+            }
         }
 
         public QWhere Where
         {
-            get;
-            set;
+            get
+            {
+                return (QWhere)this.Children[4];
+            }
         }
 
         public QFrom From
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QQuery ) obj ;  return  ( Compare ( this . OrderBy ,  node . OrderBy ) && Compare ( this . Select ,  node . Select ) && Compare ( this . Having ,  node . Having ) && Compare ( this . GroupBy ,  node . GroupBy ) && Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (OrderBy == null ? 0 : OrderBy.GetHashCode()) ^ (Select == null ? 0 : Select.GetHashCode()) ^ (Having == null ? 0 : Having.GetHashCode()) ^ (GroupBy == null ? 0 : GroupBy.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
+            get
+            {
+                return (QFrom)this.Children[5];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQQuery(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQQuery(this);
         }
     }
 }
@@ -113,33 +201,27 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QSelect : QItem
     {
-        public QSelect(List<QField> fields): base()
+        public QSelect(FieldList fields): base()
         {
-            foreach (var item in fields)
-                Children.Add(item);
-            Fields = fields;
+            this.Attach(0, (QItem)fields);
         }
 
-        public List<QField> Fields
+        public FieldList Fields
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QSelect ) obj ;  return  ( SequenceEqual ( this . Fields ,  node . Fields ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return Xor(Fields, i => i.GetHashCode());
+            get
+            {
+                return (FieldList)this.Children[0];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQSelect(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQSelect(this);
         }
     }
 }
@@ -148,41 +230,36 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QFrom : QItem
     {
-        public QFrom(IEnumerable<QFromItem> joins, QDataSource source): base()
+        public QFrom(JoinList joins, QDataSource source): base()
         {
-            foreach (var item in joins)
-                Children.Add(item);
-            Joins = joins;
-            Children.Add(source);
-            Source = source;
+            this.Attach(0, (QItem)joins);
+            this.Attach(1, (QItem)source);
         }
 
-        public IEnumerable<QFromItem> Joins
+        public JoinList Joins
         {
-            get;
-            set;
+            get
+            {
+                return (JoinList)this.Children[0];
+            }
         }
 
         public QDataSource Source
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QFrom ) obj ;  return  ( SequenceEqual ( this . Joins ,  node . Joins ) && Compare ( this . Source ,  node . Source ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return Xor(Joins, i => i.GetHashCode()) ^ (Source == null ? 0 : Source.GetHashCode());
+            get
+            {
+                return (QDataSource)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQFrom(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQFrom(this);
         }
     }
 }
@@ -191,33 +268,27 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QGroupBy : QItem
     {
-        public QGroupBy(List<QExpression> expressions): base()
+        public QGroupBy(ExpressionList expressions): base()
         {
-            foreach (var item in expressions)
-                Children.Add(item);
-            Expressions = expressions;
+            this.Attach(0, (QItem)expressions);
         }
 
-        public List<QExpression> Expressions
+        public ExpressionList Expressions
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QGroupBy ) obj ;  return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return Xor(Expressions, i => i.GetHashCode());
+            get
+            {
+                return (ExpressionList)this.Children[0];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQGroupBy(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQGroupBy(this);
         }
     }
 }
@@ -230,14 +301,14 @@ namespace ZenPlatform.Core.Querying.Model
         {
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQOrderBy(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQOrderBy(this);
         }
     }
 }
@@ -248,30 +319,25 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QWhere(QExpression expression): base()
         {
-            Children.Add(expression);
-            Expression = expression;
+            this.Attach(0, (QItem)expression);
         }
 
         public QExpression Expression
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QWhere ) obj ;  return  ( Compare ( this . Expression ,  node . Expression ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Expression == null ? 0 : Expression.GetHashCode());
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQWhere(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQWhere(this);
         }
     }
 }
@@ -284,14 +350,14 @@ namespace ZenPlatform.Core.Querying.Model
         {
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQHaving(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQHaving(this);
         }
     }
 }
@@ -304,14 +370,14 @@ namespace ZenPlatform.Core.Querying.Model
         {
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQDataSource(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQDataSource(this);
         }
     }
 }
@@ -322,37 +388,31 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QAliasedDataSource(QDataSource parentSource, String alias): base()
         {
-            Children.Add(parentSource);
-            ParentSource = parentSource;
+            this.Attach(0, (QItem)parentSource);
             Alias = alias;
         }
 
         public QDataSource ParentSource
         {
-            get;
-            set;
+            get
+            {
+                return (QDataSource)this.Children[0];
+            }
         }
 
         public String Alias
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QAliasedDataSource ) obj ;  return  ( Compare ( this . ParentSource ,  node . ParentSource ) && Compare ( this . Alias ,  node . Alias ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (ParentSource == null ? 0 : ParentSource.GetHashCode()) ^ (Alias == null ? 0 : Alias.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQAliasedDataSource(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQAliasedDataSource(this);
         }
     }
 }
@@ -361,33 +421,27 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCombinedDataSource : QDataSource
     {
-        public QCombinedDataSource(List<QDataSource> dataSources): base()
+        public QCombinedDataSource(DataSourceList dataSources): base()
         {
-            foreach (var item in dataSources)
-                Children.Add(item);
-            DataSources = dataSources;
+            this.Attach(0, (QItem)dataSources);
         }
 
-        public List<QDataSource> DataSources
+        public DataSourceList DataSources
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QCombinedDataSource ) obj ;  return  ( SequenceEqual ( this . DataSources ,  node . DataSources ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return Xor(DataSources, i => i.GetHashCode());
+            get
+            {
+                return (DataSourceList)this.Children[0];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQCombinedDataSource(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQCombinedDataSource(this);
         }
     }
 }
@@ -398,30 +452,25 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QNestedQuery(QQuery nested): base()
         {
-            Children.Add(nested);
-            Nested = nested;
+            this.Attach(0, (QItem)nested);
         }
 
         public QQuery Nested
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QNestedQuery ) obj ;  return  ( Compare ( this . Nested ,  node . Nested ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Nested == null ? 0 : Nested.GetHashCode());
+            get
+            {
+                return (QQuery)this.Children[0];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQNestedQuery(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQNestedQuery(this);
         }
     }
 }
@@ -434,14 +483,14 @@ namespace ZenPlatform.Core.Querying.Model
         {
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitQPlatformDataSource(this);
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            throw new NotImplementedException();
         }
     }
 }
@@ -454,14 +503,14 @@ namespace ZenPlatform.Core.Querying.Model
         {
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQObjectTable(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQObjectTable(this);
         }
     }
 }
@@ -472,37 +521,31 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QTable(QObjectTable objectTable, ITable table): base()
         {
-            Children.Add(objectTable);
-            ObjectTable = objectTable;
+            this.Attach(0, (QItem)objectTable);
             Table = table;
         }
 
         public QObjectTable ObjectTable
         {
-            get;
-            set;
+            get
+            {
+                return (QObjectTable)this.Children[0];
+            }
         }
 
         public ITable Table
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QTable ) obj ;  return  ( Compare ( this . ObjectTable ,  node . ObjectTable ) && Compare ( this . Table ,  node . Table ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (ObjectTable == null ? 0 : ObjectTable.GetHashCode()) ^ (Table == null ? 0 : Table.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQTable(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQTable(this);
         }
     }
 }
@@ -513,30 +556,25 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QField(QItem element): base()
         {
-            Children.Add(element);
-            Element = element;
+            this.Attach(0, (QItem)element);
         }
 
         public QItem Element
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QField ) obj ;  return  ( Compare ( this . Element ,  node . Element ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Element == null ? 0 : Element.GetHashCode());
+            get
+            {
+                return (QItem)this.Children[0];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitQField(this);
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            throw new NotImplementedException();
         }
     }
 }
@@ -554,29 +592,21 @@ namespace ZenPlatform.Core.Querying.Model
         public QField Field
         {
             get;
-            set;
         }
 
         public QDataSource DataSource
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QIntermediateSourceField ) obj ;  return  ( Compare ( this . Field ,  node . Field ) && Compare ( this . DataSource ,  node . DataSource ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Field == null ? 0 : Field.GetHashCode()) ^ (DataSource == null ? 0 : DataSource.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQIntermediateSourceField(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQIntermediateSourceField(this);
         }
     }
 }
@@ -594,29 +624,21 @@ namespace ZenPlatform.Core.Querying.Model
         public QField Field
         {
             get;
-            set;
         }
 
         public QDataSource DataSource
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QNestedQueryField ) obj ;  return  ( Compare ( this . Field ,  node . Field ) && Compare ( this . DataSource ,  node . DataSource ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Field == null ? 0 : Field.GetHashCode()) ^ (DataSource == null ? 0 : DataSource.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQNestedQueryField(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQNestedQueryField(this);
         }
     }
 }
@@ -634,29 +656,21 @@ namespace ZenPlatform.Core.Querying.Model
         public String PropName
         {
             get;
-            set;
         }
 
         public QExpression BaseExpression
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QLookupField ) obj ;  return  ( Compare ( this . PropName ,  node . PropName ) && Compare ( this . BaseExpression ,  node . BaseExpression ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (PropName == null ? 0 : PropName.GetHashCode()) ^ (BaseExpression == null ? 0 : BaseExpression.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQLookupField(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQLookupField(this);
         }
     }
 }
@@ -674,29 +688,21 @@ namespace ZenPlatform.Core.Querying.Model
         public QPlatformDataSource PlatformSource
         {
             get;
-            set;
         }
 
         public IPProperty Property
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QSourceFieldExpression ) obj ;  return  ( Compare ( this . PlatformSource ,  node . PlatformSource ) && Compare ( this . Property ,  node . Property ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (PlatformSource == null ? 0 : PlatformSource.GetHashCode()) ^ (Property == null ? 0 : Property.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQSourceFieldExpression(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQSourceFieldExpression(this);
         }
     }
 }
@@ -713,23 +719,16 @@ namespace ZenPlatform.Core.Querying.Model
         public QExpression Expression
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QSelectExpression ) obj ;  return  ( Compare ( this . Expression ,  node . Expression ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Expression == null ? 0 : Expression.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQSelectExpression(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQSelectExpression(this);
         }
     }
 }
@@ -747,29 +746,21 @@ namespace ZenPlatform.Core.Querying.Model
         public QExpression AliasedExpression
         {
             get;
-            set;
         }
 
         public String Alias
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QAliasedSelectExpression ) obj ;  return  ( Compare ( this . AliasedExpression ,  node . AliasedExpression ) && Compare ( this . Alias ,  node . Alias ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (AliasedExpression == null ? 0 : AliasedExpression.GetHashCode()) ^ (Alias == null ? 0 : Alias.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQAliasedSelectExpression(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQAliasedSelectExpression(this);
         }
     }
 }
@@ -780,45 +771,40 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QFromItem(QExpression condition, QDataSource joined, QJoinType joinType): base()
         {
-            Children.Add(condition);
-            Condition = condition;
-            Children.Add(joined);
-            Joined = joined;
+            this.Attach(0, (QItem)condition);
+            this.Attach(1, (QItem)joined);
             JoinType = joinType;
         }
 
         public QExpression Condition
         {
-            get;
-            set;
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
         }
 
         public QDataSource Joined
         {
-            get;
-            set;
+            get
+            {
+                return (QDataSource)this.Children[1];
+            }
         }
 
         public QJoinType JoinType
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QFromItem ) obj ;  return  ( Compare ( this . Condition ,  node . Condition ) && Compare ( this . Joined ,  node . Joined ) && Compare ( this . JoinType ,  node . JoinType ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Condition == null ? 0 : Condition.GetHashCode()) ^ (Joined == null ? 0 : Joined.GetHashCode()) ^ (JoinType == null ? 0 : JoinType.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQFromItem(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQFromItem(this);
         }
     }
 }
@@ -831,14 +817,14 @@ namespace ZenPlatform.Core.Querying.Model
         {
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQConst(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQConst(this);
         }
     }
 }
@@ -855,23 +841,16 @@ namespace ZenPlatform.Core.Querying.Model
         public String Name
         {
             get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QParameter ) obj ;  return  ( Compare ( this . Name ,  node . Name ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Name == null ? 0 : Name.GetHashCode());
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQParameter(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQParameter(this);
         }
     }
 }
@@ -880,41 +859,36 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCase : QExpression
     {
-        public QCase(QExpression @else, List<QWhen> whens): base()
+        public QCase(QExpression @else, WhenList whens): base()
         {
-            Children.Add(@else);
-            Else = @else;
-            foreach (var item in whens)
-                Children.Add(item);
-            Whens = whens;
+            this.Attach(0, (QItem)@else);
+            this.Attach(1, (QItem)whens);
         }
 
         public QExpression Else
         {
-            get;
-            set;
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
         }
 
-        public List<QWhen> Whens
+        public WhenList Whens
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QCase ) obj ;  return  ( Compare ( this . Else ,  node . Else ) && SequenceEqual ( this . Whens ,  node . Whens ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Else == null ? 0 : Else.GetHashCode()) ^ Xor(Whens, i => i.GetHashCode());
+            get
+            {
+                return (WhenList)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQCase(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQCase(this);
         }
     }
 }
@@ -925,38 +899,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QWhen(QExpression then, QOperationExpression @when): base()
         {
-            Children.Add(then);
-            Then = then;
-            Children.Add(@when);
-            When = @when;
+            this.Attach(0, (QItem)then);
+            this.Attach(1, (QItem)@when);
         }
 
         public QExpression Then
         {
-            get;
-            set;
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
         }
 
         public QOperationExpression When
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QWhen ) obj ;  return  ( Compare ( this . Then ,  node . Then ) && Compare ( this . When ,  node . When ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Then == null ? 0 : Then.GetHashCode()) ^ (When == null ? 0 : When.GetHashCode());
+            get
+            {
+                return (QOperationExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQWhen(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQWhen(this);
         }
     }
 }
@@ -967,38 +937,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QOperationExpression(QExpression left, QExpression right): base()
         {
-            Children.Add(left);
-            Left = left;
-            Children.Add(right);
-            Right = right;
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
         public QExpression Left
         {
-            get;
-            set;
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
         }
 
         public QExpression Right
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QOperationExpression ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQOperationExpression(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQOperationExpression(this);
         }
     }
 }
@@ -1009,16 +975,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QAnd(QExpression left, QExpression right): base(left, right)
         {
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
-        public override int GetHashCode()
+        public QExpression Left
         {
-            return base.GetHashCode();
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public QExpression Right
+        {
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQAnd(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQAnd(this);
         }
     }
 }
@@ -1029,16 +1013,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QAdd(QExpression left, QExpression right): base(left, right)
         {
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
-        public override int GetHashCode()
+        public QExpression Left
         {
-            return base.GetHashCode();
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public QExpression Right
+        {
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQAdd(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQAdd(this);
         }
     }
 }
@@ -1049,16 +1051,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QOr(QExpression left, QExpression right): base(left, right)
         {
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
-        public override int GetHashCode()
+        public QExpression Left
         {
-            return base.GetHashCode();
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public QExpression Right
+        {
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQOr(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQOr(this);
         }
     }
 }
@@ -1069,16 +1089,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QEquals(QExpression left, QExpression right): base(left, right)
         {
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
-        public override int GetHashCode()
+        public QExpression Left
         {
-            return base.GetHashCode();
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public QExpression Right
+        {
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQEquals(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQEquals(this);
         }
     }
 }
@@ -1089,16 +1127,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QNotEquals(QExpression left, QExpression right): base(left, right)
         {
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
-        public override int GetHashCode()
+        public QExpression Left
         {
-            return base.GetHashCode();
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public QExpression Right
+        {
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQNotEquals(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQNotEquals(this);
         }
     }
 }
@@ -1109,16 +1165,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QGreatThen(QExpression left, QExpression right): base(left, right)
         {
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
-        public override int GetHashCode()
+        public QExpression Left
         {
-            return base.GetHashCode();
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public QExpression Right
+        {
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQGreatThen(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQGreatThen(this);
         }
     }
 }
@@ -1129,16 +1203,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QLessThen(QExpression left, QExpression right): base(left, right)
         {
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
-        public override int GetHashCode()
+        public QExpression Left
         {
-            return base.GetHashCode();
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public QExpression Right
+        {
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQLessThen(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQLessThen(this);
         }
     }
 }
@@ -1149,16 +1241,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QLessThenOrEquals(QExpression left, QExpression right): base(left, right)
         {
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
-        public override int GetHashCode()
+        public QExpression Left
         {
-            return base.GetHashCode();
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public QExpression Right
+        {
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQLessThenOrEquals(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQLessThenOrEquals(this);
         }
     }
 }
@@ -1169,16 +1279,34 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QGreatThenOrEquals(QExpression left, QExpression right): base(left, right)
         {
+            this.Attach(0, (QItem)left);
+            this.Attach(1, (QItem)right);
         }
 
-        public override int GetHashCode()
+        public QExpression Left
         {
-            return base.GetHashCode();
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public QExpression Right
+        {
+            get
+            {
+                return (QExpression)this.Children[1];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQGreatThenOrEquals(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQGreatThenOrEquals(this);
         }
     }
 }
@@ -1190,248 +1318,449 @@ namespace ZenPlatform.Core.Querying.Model
         public QCast(IPType type, QExpression baseExpression): base()
         {
             Type = type;
-            Children.Add(baseExpression);
-            BaseExpression = baseExpression;
+            this.Attach(0, (QItem)baseExpression);
         }
 
         public IPType Type
         {
             get;
-            set;
         }
 
         public QExpression BaseExpression
         {
-            get;
-            set;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( QCast ) obj ;  return  ( Compare ( this . Type ,  node . Type ) && Compare ( this . BaseExpression ,  node . BaseExpression ) ) ; 
-        }
-
-        public override int GetHashCode()
-        {
-            return (Type == null ? 0 : Type.GetHashCode()) ^ (BaseExpression == null ? 0 : BaseExpression.GetHashCode());
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
             return visitor.VisitQCast(this);
         }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQCast(this);
+        }
     }
 }
 
-namespace ZenPlatform.Core.Querying.Visitor
+namespace ZenPlatform.Core.Querying.Model
 {
     public abstract partial class QLangVisitorBase<T>
     {
-        public QLangVisitorBase()
+        public virtual T VisitFieldList(FieldList arg)
         {
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQExpression(QExpression node)
+        public virtual T VisitJoinList(JoinList arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQQuery(QQuery node)
+        public virtual T VisitExpressionList(ExpressionList arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQSelect(QSelect node)
+        public virtual T VisitDataSourceList(DataSourceList arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQFrom(QFrom node)
+        public virtual T VisitWhenList(WhenList arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQGroupBy(QGroupBy node)
+        public virtual T VisitQExpression(QExpression arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQOrderBy(QOrderBy node)
+        public virtual T VisitQQuery(QQuery arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQWhere(QWhere node)
+        public virtual T VisitQSelect(QSelect arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQHaving(QHaving node)
+        public virtual T VisitQFrom(QFrom arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQDataSource(QDataSource node)
+        public virtual T VisitQGroupBy(QGroupBy arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQAliasedDataSource(QAliasedDataSource node)
+        public virtual T VisitQOrderBy(QOrderBy arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQCombinedDataSource(QCombinedDataSource node)
+        public virtual T VisitQWhere(QWhere arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQNestedQuery(QNestedQuery node)
+        public virtual T VisitQHaving(QHaving arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQPlatformDataSource(QPlatformDataSource node)
+        public virtual T VisitQDataSource(QDataSource arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQObjectTable(QObjectTable node)
+        public virtual T VisitQAliasedDataSource(QAliasedDataSource arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQTable(QTable node)
+        public virtual T VisitQCombinedDataSource(QCombinedDataSource arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQField(QField node)
+        public virtual T VisitQNestedQuery(QNestedQuery arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQIntermediateSourceField(QIntermediateSourceField node)
+        public virtual T VisitQObjectTable(QObjectTable arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQNestedQueryField(QNestedQueryField node)
+        public virtual T VisitQTable(QTable arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQLookupField(QLookupField node)
+        public virtual T VisitQIntermediateSourceField(QIntermediateSourceField arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQSourceFieldExpression(QSourceFieldExpression node)
+        public virtual T VisitQNestedQueryField(QNestedQueryField arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQSelectExpression(QSelectExpression node)
+        public virtual T VisitQLookupField(QLookupField arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQAliasedSelectExpression(QAliasedSelectExpression node)
+        public virtual T VisitQSourceFieldExpression(QSourceFieldExpression arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQFromItem(QFromItem node)
+        public virtual T VisitQSelectExpression(QSelectExpression arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQConst(QConst node)
+        public virtual T VisitQAliasedSelectExpression(QAliasedSelectExpression arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQParameter(QParameter node)
+        public virtual T VisitQFromItem(QFromItem arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQCase(QCase node)
+        public virtual T VisitQConst(QConst arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQWhen(QWhen node)
+        public virtual T VisitQParameter(QParameter arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQOperationExpression(QOperationExpression node)
+        public virtual T VisitQCase(QCase arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQAnd(QAnd node)
+        public virtual T VisitQWhen(QWhen arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQAdd(QAdd node)
+        public virtual T VisitQOperationExpression(QOperationExpression arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQOr(QOr node)
+        public virtual T VisitQAnd(QAnd arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQEquals(QEquals node)
+        public virtual T VisitQAdd(QAdd arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQNotEquals(QNotEquals node)
+        public virtual T VisitQOr(QOr arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQGreatThen(QGreatThen node)
+        public virtual T VisitQEquals(QEquals arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQLessThen(QLessThen node)
+        public virtual T VisitQNotEquals(QNotEquals arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQLessThenOrEquals(QLessThenOrEquals node)
+        public virtual T VisitQGreatThen(QGreatThen arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQGreatThenOrEquals(QGreatThenOrEquals node)
+        public virtual T VisitQLessThen(QLessThen arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T VisitQCast(QCast node)
+        public virtual T VisitQLessThenOrEquals(QLessThenOrEquals arg)
         {
-            return DefaultVisit(node);
+            return DefaultVisit(arg);
         }
 
-        public virtual T DefaultVisit(QItem node)
+        public virtual T VisitQGreatThenOrEquals(QGreatThenOrEquals arg)
         {
-            return default;
+            return DefaultVisit(arg);
         }
 
-        public virtual T Visit(QItem visitable)
+        public virtual T VisitQCast(QCast arg)
         {
-            if (visitable is null)
-                return default;
-            return visitable.Accept(this);
+            return DefaultVisit(arg);
+        }
+    }
+
+    public abstract partial class QLangVisitorBase
+    {
+        public virtual void VisitFieldList(FieldList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitJoinList(JoinList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitExpressionList(ExpressionList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitDataSourceList(DataSourceList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitWhenList(WhenList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQExpression(QExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQQuery(QQuery arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQSelect(QSelect arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQFrom(QFrom arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQGroupBy(QGroupBy arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQOrderBy(QOrderBy arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQWhere(QWhere arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQHaving(QHaving arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQDataSource(QDataSource arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQAliasedDataSource(QAliasedDataSource arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQCombinedDataSource(QCombinedDataSource arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQNestedQuery(QNestedQuery arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQObjectTable(QObjectTable arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQTable(QTable arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQIntermediateSourceField(QIntermediateSourceField arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQNestedQueryField(QNestedQueryField arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQLookupField(QLookupField arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQSourceFieldExpression(QSourceFieldExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQSelectExpression(QSelectExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQAliasedSelectExpression(QAliasedSelectExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQFromItem(QFromItem arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQConst(QConst arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQParameter(QParameter arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQCase(QCase arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQWhen(QWhen arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQOperationExpression(QOperationExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQAnd(QAnd arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQAdd(QAdd arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQOr(QOr arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQEquals(QEquals arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQNotEquals(QNotEquals arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQGreatThen(QGreatThen arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQLessThen(QLessThen arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQLessThenOrEquals(QLessThenOrEquals arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQGreatThenOrEquals(QGreatThenOrEquals arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQCast(QCast arg)
+        {
+            DefaultVisit(arg);
         }
     }
 }
