@@ -14,11 +14,11 @@ namespace ZenPlatform.Shared.Tree
     public class Node : IChildItem<Node>, IParentItem<Node, Node>
     {
         private Node _parent;
-        private ChildItemCollection<Node, Node> _childs;
+        private readonly ChildItemCollection<Node, Node> _children;
 
         public Node()
         {
-            _childs = new ChildItemCollection<Node, Node>(this);
+            _children = new ChildItemCollection<Node, Node>(this);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace ZenPlatform.Shared.Tree
         /// <summary>
         /// Дочерние элекменты
         /// </summary>
-        public IReadOnlyChildItemCollection<Node, Node> Childs => _childs;
+        public IReadOnlyChildItemCollection<Node, Node> Children => _children;
 
         /// <summary>
         /// Добавить подчинённую ноду
@@ -50,7 +50,7 @@ namespace ZenPlatform.Shared.Tree
         public virtual void Add(Node node)
         {
             if (node == this) throw new Exception("Recursial dependency not allowed");
-            _childs.Add(node);
+            _children.Add(node);
         }
 
         /// <summary>
@@ -60,11 +60,11 @@ namespace ZenPlatform.Shared.Tree
         /// <param name="newNode"></param>
         public virtual void Replace(Node node, Node newNode)
         {
-            var index = _childs.IndexOf(node);
+            var index = _children.IndexOf(node);
 
             if (index >= 0)
             {
-                Detach(Childs[index]);
+                Detach(Children[index]);
                 Attach(index, newNode);
             }
         }
@@ -76,11 +76,11 @@ namespace ZenPlatform.Shared.Tree
         /// <param name="newNode"></param>
         public virtual void ReplaceOrAttach(Node node, Node newNode)
         {
-            var index = _childs.IndexOf(node);
+            var index = _children.IndexOf(node);
 
             if (index >= 0)
             {
-                Detach(Childs[index]);
+                Detach(Children[index]);
                 newNode.Attach(index, this);
             }
             else
@@ -103,7 +103,7 @@ namespace ZenPlatform.Shared.Tree
 
         public virtual IEnumerable<T> GetNodes<T>() where T : Node
         {
-            foreach (var child in Childs)
+            foreach (var child in Children)
             {
                 if (child is T c) yield return c;
 
@@ -122,7 +122,7 @@ namespace ZenPlatform.Shared.Tree
         /// <returns></returns>
         public virtual Node GetChild<T>() where T : Node
         {
-            foreach (var child in Childs)
+            foreach (var child in Children)
             {
                 if (child is T) return child;
             }
@@ -146,7 +146,7 @@ namespace ZenPlatform.Shared.Tree
         /// </summary>
         public void Detach(Node node)
         {
-            _childs.Remove(node);
+            _children.Remove(node);
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace ZenPlatform.Shared.Tree
         public void Attach(Node node)
         {
             node?.Parent?.Detach(node);
-            _childs.Add(node);
+            _children.Add(node);
         }
 
 
@@ -168,13 +168,13 @@ namespace ZenPlatform.Shared.Tree
         public void Attach(int index, Node node)
         {
             node?.Parent?.Detach(node);
-            _childs.Insert(index, node);
+            _children.Insert(index, node);
         }
 
 
         public int IndexOf(Node node)
         {
-            return _childs.IndexOf(node);
+            return _children.IndexOf(node);
         }
     }
 
@@ -182,9 +182,25 @@ namespace ZenPlatform.Shared.Tree
     {
         public OneWayNode()
         {
-            Childs = new List<OneWayNode>();
+            Children = new List<OneWayNode>();
         }
 
-        public List<OneWayNode> Childs { get; }
+        public List<OneWayNode> Children { get; }
+
+
+        /// <summary>
+        /// Получить дочерний элемент по типу
+        /// </summary>
+        /// <typeparam name="T">Тип дочернего элемента</typeparam>
+        /// <returns></returns>
+        public virtual OneWayNode GetChild<T>() where T : OneWayNode
+        {
+            foreach (var child in Children)
+            {
+                if (child is T) return child;
+            }
+
+            return null;
+        }
     }
 }

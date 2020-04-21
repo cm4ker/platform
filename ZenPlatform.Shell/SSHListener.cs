@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Cli;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;

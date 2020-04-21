@@ -7,8 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DB\BufferedDataReader\BufferedDataReader.csproj" />
       <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
       <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
+      <ProjectReference Include="..\ZenPlatform.SharedRuntime\ZenPlatform.SharedRuntime.csproj" />
     </ItemGroup>
 
 </Project>

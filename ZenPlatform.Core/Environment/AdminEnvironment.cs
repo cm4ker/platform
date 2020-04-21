@@ -10,6 +10,7 @@ using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.Logging;
 using System.IO;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Environment;
 
 namespace ZenPlatform.Core.Environment
 {

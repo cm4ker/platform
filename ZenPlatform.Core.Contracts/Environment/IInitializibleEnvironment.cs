@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using ZenPlatform.Core.Authentication;
-using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Network;
 
-namespace ZenPlatform.Core.Environment.Contracts
+namespace ZenPlatform.Core.Contracts.Environment
 {
     public interface IEnvironment
     {

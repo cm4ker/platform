@@ -146,7 +146,7 @@ namespace ZenPlatform.Compiler.Visitor
         {
             _queue.Enqueue(node);
 
-            var childs = node.Childs.ToList();
+            var childs = node.Children.ToList();
 
             foreach (var child in childs)
             {

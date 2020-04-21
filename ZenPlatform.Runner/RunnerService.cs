@@ -6,6 +6,7 @@ using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Runner

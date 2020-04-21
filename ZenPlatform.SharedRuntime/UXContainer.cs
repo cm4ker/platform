@@ -1,3 +1,5 @@
+using System;
+
 namespace ZenPlatform.SharedRuntime
 {
     public class UXContainer
@@ -16,4 +18,6 @@ namespace ZenPlatform.SharedRuntime
 
         public object ViewModel { get; set; }
     }
+
+
 }

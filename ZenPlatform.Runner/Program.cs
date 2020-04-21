@@ -21,8 +21,8 @@ using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Core.Assemlies;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.DI;
-using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Migration;
 using ZenPlatform.Networking;
 

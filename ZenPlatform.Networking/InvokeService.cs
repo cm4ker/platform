@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using ZenPlatform.Core.Logging;
-using ZenPlatform.Core.Sessions;
-using ZenPlatform.Core.Tools;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
+using ZenPlatform.Core;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Contracts.Network;
+using ZenPlatform.Core.Logging;
+using ZenPlatform.Core.Network;
 
-namespace ZenPlatform.Core.Network
+namespace ZenPlatform.Networking
 {
     public class InvokeService : IInvokeService //, IConnectionObserver<IConnectionContext>
     {

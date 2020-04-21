@@ -25,9 +25,14 @@ namespace ZenPlatform.Core
 
         public bool IsTypeManagerAvailable => Session.Environment is IPlatformEnvironment;
 
+        public bool IsLinkFactoryAvailable => Environment is IWorkEnvironment;
+
         public ITypeManager TypeManager => Environment?.Configuration.TypeManager;
 
         public IPlatformEnvironment Environment => Session.Environment as IPlatformEnvironment;
+
+        public ILinkFactory LinkFactory => (Session.Environment as IWorkEnvironment)?.LinkFactory ??
+                                           throw new Exception("Work environment is not available");
     }
 
     public class ContextHelper

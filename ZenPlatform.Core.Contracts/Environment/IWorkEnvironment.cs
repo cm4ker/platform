@@ -1,17 +1,12 @@
 using ZenPlatform.Configuration.Contracts;
-using ZenPlatform.Core.Environment;
-using ZenPlatform.Core.Environment.Contracts;
-using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Contracts.Environment
 {
-    public interface IPlatformEnvironment : IInitializibleEnvironment<IStartupConfig>
+    /// <summary>
+    ///  Рабочая среда обеспечивает доступ пользователя к контексту какого-то прикладного решения
+    /// </summary>
+    public interface IWorkEnvironment : IPlatformEnvironment
     {
-        /// <summary>
-        /// Менеджер доступа к данным
-        /// </summary>
-        IDataContextManager DataContextManager { get; }
-
-        IProject Configuration { get; }
+        ILinkFactory LinkFactory { get; }
     }
 }

@@ -22,7 +22,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
 
         public TypeSyntax Type
         {
-            get => (TypeSyntax) this.Childs[0];
+            get => (TypeSyntax) this.Children[0];
             set => this.Attach(0, (SyntaxNode) value.Clone());
         }
     }

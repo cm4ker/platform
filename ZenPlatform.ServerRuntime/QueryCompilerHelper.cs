@@ -16,7 +16,7 @@ using ZenPlatform.QueryBuilder.Visitor;
 
 namespace ZenPlatform.ServerRuntime
 {
-    public class ServerCompilerHelper
+    public class QueryCompilerHelper
     {
         public static Class Query;
 
@@ -56,7 +56,7 @@ namespace ZenPlatform.ServerRuntime
                 drType.FindMethod(nameof(PlatformReader.Read)));
         }
 
-        public static string Compile(ITypeManager tm, string sql)
+        public static (string sql, QItem logicalTree) Compile(ITypeManager tm, string sql)
         {
             //need compile sql expression!
             var _m = new QLang(tm);
@@ -71,18 +71,18 @@ namespace ZenPlatform.ServerRuntime
 
             string sqlString = "";
 
-            var qitem = _m.top() as QItem;
+            var logicalTree = _m.top() as QItem;
 
             //Create aliases for tree
             var pwalker = new PhysicalNameWalker();
-            pwalker.Visit(qitem);
+            pwalker.Visit(logicalTree);
 
             //Create query
             var realWalker = new RealWalker(_m.TypeManager);
-            realWalker.Visit(qitem);
+            realWalker.Visit(logicalTree);
 
             var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
-            return new SQLVisitorBase().Visit(syntax);
+            return (new SQLVisitorBase().Visit(syntax), logicalTree);
         }
     }
 }

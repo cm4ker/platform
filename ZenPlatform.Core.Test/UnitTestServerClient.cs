@@ -24,7 +24,7 @@ using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
-using ZenPlatform.Core.Environment.Contracts;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Core.Test.Logging;
 using ZenPlatform.Test.Tools;

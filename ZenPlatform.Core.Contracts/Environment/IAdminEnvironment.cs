@@ -1,6 +1,4 @@
-using ZenPlatform.Core.Environment.Contracts;
-
-namespace ZenPlatform.Core.Environment
+namespace ZenPlatform.Core.Contracts.Environment
 {
     /// <summary>
     /// <br /> Интрфейс среды для администрирования

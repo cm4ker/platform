@@ -1,8 +1,10 @@
 using System;
 using System.Data.Common;
+using dnlib.DotNet;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Querying;
+using ZenPlatform.Core.Querying.Model;
 
 namespace ZenPlatform.ServerRuntime
 {
@@ -13,8 +15,8 @@ namespace ZenPlatform.ServerRuntime
      2) 
      
      */
-    
-    
+
+
     public class PlatformQuery
     {
         private ITypeManager _tm;
@@ -23,6 +25,7 @@ namespace ZenPlatform.ServerRuntime
         private bool _needRecompile;
         private PlatformContext _context;
         private DbCommand _command;
+        private QItem _logicalTree;
 
         public PlatformQuery()
         {
@@ -48,11 +51,45 @@ namespace ZenPlatform.ServerRuntime
         public PlatformReader ExecuteReader()
         {
             if (_needRecompile)
-                _compiled = ServerCompilerHelper.Compile(_tm, _text);
+            {
+                var result = QueryCompilerHelper.Compile(_tm, _text);
 
+                /*
+                 
+                 SELECT 
+                    A1, A2, A3, A4, A5 ....
+                    ^   ^   ^   ^   ^
+                   MappedTo O1  MappedTo O2
+                 FROM
+                    T1 ....
+                 
+                 1) Link (StoreLink, InvoiceLink ... etc)
+                 2) Literal (Guid, String, int, Double ... etc)
+                 
+                 => {
+                 
+                    Reader.Invoice => Manager.Invoice.Get((Guid)Reader["Fld_255"]);
+                    
+                    Reader.Link => 
+                    
+                 
+                 }
+                                
+                 */
+
+                _compiled = result.sql;
+                _logicalTree = result.logicalTree;
+            }
+
+            
+            
             _command.CommandText = _compiled;
 
-            return new PlatformReader();
+            return new ApplicationCachedPlatformReader(_command.ExecuteReader(), _logicalTree, _context);
+        }
+
+        public void SetParameter(string paramName, object value)
+        {
         }
 
         public void Execute()

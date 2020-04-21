@@ -38,7 +38,7 @@ namespace ZenPlatform.Compiler.Contracts
             Мы знаем, кто сюда может прийти, какие поля и так далее
     
             (Documents, References)
-                if(DataReader[_Type1] == 5)
+                if(DataReader[_Type1] == 5)    
                 {
                      var documentBag =  {construct some document bag from DataReader}
                      var link = new DocumentLink(DataReader[_Type1], DataReader[_Id], documentBag)
@@ -54,14 +54,4 @@ namespace ZenPlatform.Compiler.Contracts
           
      
      */
-    /// <summary>
-    /// Ссылка на единичный объект компонента 
-    /// </summary>
-    public interface ILink
-    {
-        Guid Id { get; }
-        int Type { get; }
-
-        string Presentation { get; }
-    }
 }

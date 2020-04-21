@@ -8,6 +8,7 @@ using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts.Environment;
 
 namespace ZenPlatform.Core.Network
 {

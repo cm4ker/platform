@@ -14,7 +14,7 @@ using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Contracts;
-using ZenPlatform.Core.Environment.Contracts;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Core.Test.Environment
@@ -104,5 +104,7 @@ namespace ZenPlatform.Core.Test.Environment
                 }
             });
         }
+
+        public ILinkFactory LinkFactory { get; }
     }
 }

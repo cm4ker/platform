@@ -29,7 +29,7 @@ namespace ZenPlatform.Compiler.Generation
             _cus = _root.Units;
             AstScopeRegister.Apply(_root);
             if (_mode.HasFlag(CompilationMode.Server))
-                ServerCompilerHelper.Init(_root, _ts);
+                QueryCompilerHelper.Init(_root, _ts);
             var test = XamlServices.Save(_conf.TypeManager);
             Build();
         }

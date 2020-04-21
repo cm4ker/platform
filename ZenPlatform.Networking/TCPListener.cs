@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Logging;
 

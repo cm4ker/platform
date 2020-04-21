@@ -1,10 +1,25 @@
+
+public static class Test
+{
+    public static object Factory()
+    {
+        dynamic a = new {};
+        
+        a.Test = 
+    }
+}
+
 public abstract class EntryPoint : System.Object
 {
     static ZenPlatform.Core.Network.IInvokeService _is;
+    static ZenPlatform.Core.Contracts.ILinkFactory _lf;
 
     public static void Main(System.Object[] args)
     {
         EntryPoint._is = ((ZenPlatform.Core.Network.IInvokeService) args[0]);
+        _lf = ((ZenPlatform.Core.Contracts.ILinkFactory) args[1]);
+        _lf.Register(1, (guid, s) => new Entity.StoreLink(guid, s));
+        
         EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.ClientCallProc"),
             dlgt_ClientCallProc);
         EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.CreateAndSaveStore"),
