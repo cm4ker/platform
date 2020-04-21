@@ -5,7 +5,6 @@ using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.DI;
 using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Core.Contracts.Environment;
-using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Settings;
 
 namespace ZenPlatform.Core.Environment

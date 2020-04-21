@@ -58,18 +58,18 @@ namespace ZenPlatform.Core.Querying.Test
 
             var ds = _m.top() as QAliasedDataSource;
             
-            Assert.Equal(1, ds.Childs.Count);
+            Assert.Equal(1, ds.Children.Count);
             _m.m_select();
-            Assert.Equal(1, ds.Childs.Count);
+            Assert.Equal(1, ds.Children.Count);
             _m.ld_name("A");
-            Assert.Equal(1, ds.Childs.Count);
+            Assert.Equal(1, ds.Children.Count);
             _m.ld_field("Id");
-            Assert.Equal(1, ds.Childs.Count);
+            Assert.Equal(1, ds.Children.Count);
             _m.st_query();
             
             var query = (QQuery) _m.top();
             
-            Assert.Equal(1, ds.Childs.Count);
+            Assert.Equal(1, ds.Children.Count);
             Assert.NotNull(query);
         }
 

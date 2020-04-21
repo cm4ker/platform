@@ -17,7 +17,7 @@ namespace ZenPlatform.Compiler.Generation
         {
             if (expr is Name n)
             {
-                var gv = currentGv.Childs.First(x =>
+                var gv = currentGv.Children.First(x =>
                 {
                     var gvar = x as GlobalVarTreeItem;
 
@@ -33,7 +33,7 @@ namespace ZenPlatform.Compiler.Generation
             }
             else if (expr is Call c)
             {
-                var gv = currentGv.Childs.First(x =>
+                var gv = currentGv.Children.First(x =>
                 {
                     var gvar = x as GlobalVarTreeItem;
 

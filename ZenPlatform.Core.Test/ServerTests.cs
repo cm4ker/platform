@@ -4,8 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
-using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Network;
 
 namespace ZenPlatform.Core.Test

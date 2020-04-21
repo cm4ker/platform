@@ -26,7 +26,7 @@ namespace ZenPlatform.Language.Ast
 
             Console.WriteLine(node.GetType().Name);
 
-            var childs = node.Childs.ToArray();
+            var childs = node.Children.ToArray();
 
             for (int i = 0; i < childs.Length; i++)
                 (childs[i] as SyntaxNode).PrintPretty(indent, i == childs.Length - 1);

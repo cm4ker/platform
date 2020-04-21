@@ -3,8 +3,8 @@ using System.Collections.Concurrent;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.CacheService;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
-using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Data;
 
 namespace ZenPlatform.Core.Sessions

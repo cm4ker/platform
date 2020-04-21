@@ -1,6 +1,6 @@
 ﻿using System;
 using ZenPlatform.Core.Authentication;
-using ZenPlatform.Core.Environment.Contracts;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.Data;
 

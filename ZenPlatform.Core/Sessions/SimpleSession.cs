@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
-using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Data;
 using ZenPlatform.QueryBuilder;
 

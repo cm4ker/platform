@@ -328,7 +328,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (CompilationUnitList)this.Childs[0];
+                return (CompilationUnitList)this.Children[0];
             }
         }
 
@@ -371,7 +371,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (UsingList)this.Childs[0];
+                return (UsingList)this.Children[0];
             }
         }
 
@@ -379,7 +379,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (EntityList)this.Childs[1];
+                return (EntityList)this.Children[1];
             }
         }
 
@@ -387,7 +387,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (NamespaceDeclarationList)this.Childs[2];
+                return (NamespaceDeclarationList)this.Children[2];
             }
         }
 
@@ -424,7 +424,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (UsingList)this.Childs[0];
+                return (UsingList)this.Children[0];
             }
         }
 
@@ -432,7 +432,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (EntityList)this.Childs[1];
+                return (EntityList)this.Children[1];
             }
         }
 
@@ -440,7 +440,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (NamespaceDeclarationList)this.Childs[2];
+                return (NamespaceDeclarationList)this.Children[2];
             }
         }
 
@@ -557,7 +557,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (FunctionList)this.Childs[0];
+                return (FunctionList)this.Children[0];
             }
         }
 
@@ -565,7 +565,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (FieldList)this.Childs[1];
+                return (FieldList)this.Children[1];
             }
         }
 
@@ -573,7 +573,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (PropertyList)this.Childs[2];
+                return (PropertyList)this.Children[2];
             }
         }
 
@@ -581,7 +581,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (ConstructorList)this.Childs[3];
+                return (ConstructorList)this.Children[3];
             }
         }
 
@@ -589,7 +589,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (UsingList)this.Childs[4];
+                return (UsingList)this.Children[4];
             }
         }
 
@@ -626,7 +626,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (TypeBody)this.Childs[0];
+                return (TypeBody)this.Children[0];
             }
         }
 
@@ -639,7 +639,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (TypeSyntax)this.Childs[1];
+                return (TypeSyntax)this.Children[1];
             }
         }
 
@@ -750,7 +750,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -758,7 +758,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[1];
+                return (Expression)this.Children[1];
             }
         }
 
@@ -793,7 +793,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -829,7 +829,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -837,7 +837,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (TypeSyntax)this.Childs[1];
+                return (TypeSyntax)this.Children[1];
             }
         }
 
@@ -873,7 +873,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -881,7 +881,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[1];
+                return (Expression)this.Children[1];
             }
         }
 
@@ -916,7 +916,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -952,7 +952,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -960,7 +960,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[1];
+                return (Expression)this.Children[1];
             }
         }
 
@@ -968,7 +968,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (ICanBeAssigned)this.Childs[2];
+                return (ICanBeAssigned)this.Children[2];
             }
         }
 
@@ -1097,7 +1097,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (TypeList)this.Childs[0];
+                return (TypeList)this.Children[0];
             }
         }
 
@@ -1126,7 +1126,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (StatementList)this.Childs[0];
+                return (StatementList)this.Children[0];
             }
         }
 
@@ -1264,7 +1264,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         {
             get
             {
-                return (Block)this.Childs[0];
+                return (Block)this.Children[0];
             }
         }
 
@@ -1272,7 +1272,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         {
             get
             {
-                return (ParameterList)this.Childs[1];
+                return (ParameterList)this.Children[1];
             }
         }
 
@@ -1280,7 +1280,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         {
             get
             {
-                return (GenericParameterList)this.Childs[2];
+                return (GenericParameterList)this.Children[2];
             }
         }
 
@@ -1288,7 +1288,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         {
             get
             {
-                return (AttributeList)this.Childs[3];
+                return (AttributeList)this.Children[3];
             }
         }
 
@@ -1301,7 +1301,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         {
             get
             {
-                return (TypeSyntax)this.Childs[4];
+                return (TypeSyntax)this.Children[4];
             }
         }
 
@@ -1339,7 +1339,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (Block)this.Childs[0];
+                return (Block)this.Children[0];
             }
         }
 
@@ -1347,7 +1347,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (ParameterList)this.Childs[1];
+                return (ParameterList)this.Children[1];
             }
         }
 
@@ -1355,7 +1355,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (AttributeList)this.Childs[2];
+                return (AttributeList)this.Children[2];
             }
         }
 
@@ -1428,7 +1428,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (TypeSyntax)this.Childs[0];
+                return (TypeSyntax)this.Children[0];
             }
         }
 
@@ -1463,7 +1463,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -1499,7 +1499,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (ArgumentList)this.Childs[0];
+                return (ArgumentList)this.Children[0];
             }
         }
 
@@ -1512,7 +1512,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (Expression)this.Childs[1];
+                return (Expression)this.Children[1];
             }
         }
 
@@ -1541,7 +1541,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -1572,7 +1572,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -1585,7 +1585,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (TypeSyntax)this.Childs[1];
+                return (TypeSyntax)this.Children[1];
             }
         }
 
@@ -1620,7 +1620,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (TypeSyntax)this.Childs[0];
+                return (TypeSyntax)this.Children[0];
             }
         }
 
@@ -1708,7 +1708,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -1743,7 +1743,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -1751,7 +1751,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (Expression)this.Childs[1];
+                return (Expression)this.Children[1];
             }
         }
 
@@ -1821,7 +1821,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -1856,7 +1856,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -1864,7 +1864,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Block)this.Childs[1];
+                return (Block)this.Children[1];
             }
         }
 
@@ -1895,7 +1895,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Block)this.Childs[0];
+                return (Block)this.Children[0];
             }
         }
 
@@ -1903,7 +1903,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Block)this.Childs[1];
+                return (Block)this.Children[1];
             }
         }
 
@@ -1911,7 +1911,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Block)this.Childs[2];
+                return (Block)this.Children[2];
             }
         }
 
@@ -1940,7 +1940,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -1972,7 +1972,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Block)this.Childs[0];
+                return (Block)this.Children[0];
             }
         }
 
@@ -1980,7 +1980,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[1];
+                return (Expression)this.Children[1];
             }
         }
 
@@ -1988,7 +1988,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[2];
+                return (Expression)this.Children[2];
             }
         }
 
@@ -1996,7 +1996,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[3];
+                return (Expression)this.Children[3];
             }
         }
 
@@ -2026,7 +2026,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Block)this.Childs[0];
+                return (Block)this.Children[0];
             }
         }
 
@@ -2034,7 +2034,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[1];
+                return (Expression)this.Children[1];
             }
         }
 
@@ -2065,7 +2065,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Block)this.Childs[0];
+                return (Block)this.Children[0];
             }
         }
 
@@ -2073,7 +2073,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Block)this.Childs[1];
+                return (Block)this.Children[1];
             }
         }
 
@@ -2081,7 +2081,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[2];
+                return (Expression)this.Children[2];
             }
         }
 
@@ -2110,7 +2110,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -2179,7 +2179,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 
@@ -2210,7 +2210,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Block)this.Childs[0];
+                return (Block)this.Children[0];
             }
         }
 
@@ -2218,7 +2218,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[1];
+                return (Expression)this.Children[1];
             }
         }
 
@@ -2226,7 +2226,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (TypeSyntax)this.Childs[2];
+                return (TypeSyntax)this.Children[2];
             }
         }
 
@@ -2256,7 +2256,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (MatchAtomList)this.Childs[0];
+                return (MatchAtomList)this.Children[0];
             }
         }
 
@@ -2264,7 +2264,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Statements
         {
             get
             {
-                return (Expression)this.Childs[1];
+                return (Expression)this.Children[1];
             }
         }
 
@@ -2293,7 +2293,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Expressions
         {
             get
             {
-                return (Expression)this.Childs[0];
+                return (Expression)this.Children[0];
             }
         }
 

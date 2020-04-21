@@ -139,8 +139,8 @@ namespace ZenPlatform.Compiler.Generation
                 if (literal.IsSqlLiteral)
                 {
                     //need compile sql expression!
-                    var sqlString = ServerCompilerHelper.Compile(_conf.TypeManager, literal.Value);
-                    e.LdLit(sqlString);
+                    var result = QueryCompilerHelper.Compile(_conf.TypeManager, literal.Value);
+                    e.LdLit(result.sql);
                 }
                 else
                     switch (literal.Type.Kind)

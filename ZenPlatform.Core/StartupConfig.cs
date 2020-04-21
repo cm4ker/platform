@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Core.Environment;
+﻿using ZenPlatform.Core.Contracts.Environment;
+using ZenPlatform.Core.Environment;
 using ZenPlatform.QueryBuilder;
 
 namespace ZenPlatform.Core

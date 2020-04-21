@@ -171,18 +171,13 @@ namespace ZenPlatform.EntityComponent.Compilation
             var compiler = SqlCompillerBase.FormEnum(dbType);
 
 
-            // DbCommand d;
-            //
-            // d.ExecuteReader()
-
             gg
                 .NewDbCmdFromContext()
                 .StLoc(dxcLoc)
                 
                 .LdLoc(dxcLoc)
                 .LdLit(compiler.Compile(q))
-                .StProp(sb.DbCommand.FindProperty(nameof(DbCommand.CommandText)))
-                
+                .StProp(sb.DbCommand.FindProperty(nameof(DbCommand.CommandText)))                
 
                 //load parameter
                 .LdLoc(dxcLoc)
@@ -202,8 +197,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                 .LdProp(dxcType.FindProperty(nameof(DbCommand.Parameters)))
                 //collection on stack
                 .LdLoc(p_loc)
-                .Call(pcolType.FindMethod("Add", sb.Object))
-                
+                .Call(pcolType.FindMethod("Add", sb.Object))                
 
                 //ExecuteReader        
                 .LdLoc(dxcLoc)
@@ -212,7 +206,6 @@ namespace ZenPlatform.EntityComponent.Compilation
                 
                 .LdLoc(readerLoc)
                 .Call(readerType.FindMethod(nameof(DbDataReader.Read)))
-                
 
                 //Create dto and map it
                 .NewObj(dtoType.FindConstructor())
@@ -221,17 +214,14 @@ namespace ZenPlatform.EntityComponent.Compilation
                 .LdLoc(dto)
                 .LdLoc(readerLoc)
                 .Call(dtoType.FindMethod("Map", readerType))
-                
-
+  
                 //release reader
                 .LdLoc(readerLoc)
                 .Call(readerType.FindMethod(nameof(DbDataReader.Dispose)))
-                
 
                 //release command
                 .LdLoc(dxcLoc)
                 .Call(sb.DbCommand.FindMethod(nameof(DbCommand.Dispose)))
-                
 
                 //Create link
                 .LdLoc(dto)

@@ -13,12 +13,12 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public override IEnumerable<IPType> GetExpressionType()
         {
-            return ((QExpression) Childs.First()).GetExpressionType();
+            return ((QExpression) Children.First()).GetExpressionType();
         }
 
         public override string GetName()
         {
-            if (Childs.First() is QField ase) return ase.GetName();
+            if (Children.First() is QField ase) return ase.GetName();
             return base.GetName();
         }
 

@@ -59,9 +59,9 @@ namespace ZenPlatform.Language.Ast.Definitions
             throw new NotImplementedException();
         }
 
-        public T this[int index] => (T) Childs[index];
+        public T this[int index] => (T) Children[index];
 
-        public int Count => Childs.Count;
+        public int Count => Children.Count;
 
         // public List<T> ToList()
         // {
@@ -70,7 +70,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (var node in Childs)
+            foreach (var node in Children)
             {
                 var child = (T) node;
 

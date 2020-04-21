@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Network;
 
