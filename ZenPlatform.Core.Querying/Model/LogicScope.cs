@@ -18,7 +18,7 @@ namespace ZenPlatform.Core.Querying.Model
         public LogicScope()
         {
             Scope = new Dictionary<string, QDataSource>();
-            ScopedDataSources = new DataSourceList();
+            ScopedDataSources = new QDataSourceList();
         }
 
         public QueryContext QueryContext;
@@ -28,6 +28,6 @@ namespace ZenPlatform.Core.Querying.Model
         /// </summary>
         public Dictionary<string, QDataSource> Scope { get; set; }
 
-        public DataSourceList ScopedDataSources { get; set; }
+        public QDataSourceList ScopedDataSources { get; set; }
     }
 }

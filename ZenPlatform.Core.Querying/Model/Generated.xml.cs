@@ -5,100 +5,120 @@ using ZenPlatform.Configuration.Contracts.TypeSystem;
 
 namespace ZenPlatform.Core.Querying.Model
 {
-    public class FieldList : QCollectionItem<QField>
+    public class QFieldList : QCollectionItem<QField>
     {
-        public FieldList()
+        public QFieldList()
         {
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitFieldList(this);
+            return visitor.VisitQFieldList(this);
         }
 
         public override void Accept(QLangVisitorBase visitor)
         {
-            visitor.VisitFieldList(this);
+            visitor.VisitQFieldList(this);
         }
     }
 }
 
 namespace ZenPlatform.Core.Querying.Model
 {
-    public class JoinList : QCollectionItem<QFromItem>
+    public class QJoinList : QCollectionItem<QFromItem>
     {
-        public JoinList()
+        public QJoinList()
         {
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitJoinList(this);
+            return visitor.VisitQJoinList(this);
         }
 
         public override void Accept(QLangVisitorBase visitor)
         {
-            visitor.VisitJoinList(this);
+            visitor.VisitQJoinList(this);
         }
     }
 }
 
 namespace ZenPlatform.Core.Querying.Model
 {
-    public class ExpressionList : QCollectionItem<QExpression>
+    public class QExpressionList : QCollectionItem<QExpression>
     {
-        public ExpressionList()
+        public QExpressionList()
         {
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitExpressionList(this);
+            return visitor.VisitQExpressionList(this);
         }
 
         public override void Accept(QLangVisitorBase visitor)
         {
-            visitor.VisitExpressionList(this);
+            visitor.VisitQExpressionList(this);
         }
     }
 }
 
 namespace ZenPlatform.Core.Querying.Model
 {
-    public class DataSourceList : QCollectionItem<QDataSource>
+    public class QDataSourceList : QCollectionItem<QDataSource>
     {
-        public DataSourceList()
+        public QDataSourceList()
         {
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitDataSourceList(this);
+            return visitor.VisitQDataSourceList(this);
         }
 
         public override void Accept(QLangVisitorBase visitor)
         {
-            visitor.VisitDataSourceList(this);
+            visitor.VisitQDataSourceList(this);
         }
     }
 }
 
 namespace ZenPlatform.Core.Querying.Model
 {
-    public class WhenList : QCollectionItem<QWhen>
+    public class QWhenList : QCollectionItem<QWhen>
     {
-        public WhenList()
+        public QWhenList()
         {
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitWhenList(this);
+            return visitor.VisitQWhenList(this);
         }
 
         public override void Accept(QLangVisitorBase visitor)
         {
-            visitor.VisitWhenList(this);
+            visitor.VisitQWhenList(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
+    public class QQueryList : QCollectionItem<QQuery>
+    {
+        public QQueryList()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQQueryList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQQueryList(this);
         }
     }
 }
@@ -201,16 +221,16 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QSelect : QItem
     {
-        public QSelect(FieldList fields): base()
+        public QSelect(QFieldList fields): base()
         {
             this.Attach(0, (QItem)fields);
         }
 
-        public FieldList Fields
+        public QFieldList Fields
         {
             get
             {
-                return (FieldList)this.Children[0];
+                return (QFieldList)this.Children[0];
             }
         }
 
@@ -230,17 +250,17 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QFrom : QItem
     {
-        public QFrom(JoinList joins, QDataSource source): base()
+        public QFrom(QJoinList joins, QDataSource source): base()
         {
             this.Attach(0, (QItem)joins);
             this.Attach(1, (QItem)source);
         }
 
-        public JoinList Joins
+        public QJoinList Joins
         {
             get
             {
-                return (JoinList)this.Children[0];
+                return (QJoinList)this.Children[0];
             }
         }
 
@@ -268,16 +288,16 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QGroupBy : QItem
     {
-        public QGroupBy(ExpressionList expressions): base()
+        public QGroupBy(QExpressionList expressions): base()
         {
             this.Attach(0, (QItem)expressions);
         }
 
-        public ExpressionList Expressions
+        public QExpressionList Expressions
         {
             get
             {
-                return (ExpressionList)this.Children[0];
+                return (QExpressionList)this.Children[0];
             }
         }
 
@@ -421,16 +441,16 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCombinedDataSource : QDataSource
     {
-        public QCombinedDataSource(DataSourceList dataSources): base()
+        public QCombinedDataSource(QDataSourceList dataSources): base()
         {
             this.Attach(0, (QItem)dataSources);
         }
 
-        public DataSourceList DataSources
+        public QDataSourceList DataSources
         {
             get
             {
-                return (DataSourceList)this.Children[0];
+                return (QDataSourceList)this.Children[0];
             }
         }
 
@@ -859,7 +879,7 @@ namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QCase : QExpression
     {
-        public QCase(QExpression @else, WhenList whens): base()
+        public QCase(QExpression @else, QWhenList whens): base()
         {
             this.Attach(0, (QItem)@else);
             this.Attach(1, (QItem)whens);
@@ -873,11 +893,11 @@ namespace ZenPlatform.Core.Querying.Model
             }
         }
 
-        public WhenList Whens
+        public QWhenList Whens
         {
             get
             {
-                return (WhenList)this.Children[1];
+                return (QWhenList)this.Children[1];
             }
         }
 
@@ -1348,29 +1368,63 @@ namespace ZenPlatform.Core.Querying.Model
 
 namespace ZenPlatform.Core.Querying.Model
 {
+    public partial class QDataRequest : QItem
+    {
+        public QDataRequest(QFieldList source): base()
+        {
+            this.Attach(0, (QItem)source);
+        }
+
+        public QFieldList Source
+        {
+            get
+            {
+                return (QFieldList)this.Children[0];
+            }
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQDataRequest(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQDataRequest(this);
+        }
+    }
+}
+
+namespace ZenPlatform.Core.Querying.Model
+{
     public abstract partial class QLangVisitorBase<T>
     {
-        public virtual T VisitFieldList(FieldList arg)
+        public virtual T VisitQFieldList(QFieldList arg)
         {
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitJoinList(JoinList arg)
+        public virtual T VisitQJoinList(QJoinList arg)
         {
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitExpressionList(ExpressionList arg)
+        public virtual T VisitQExpressionList(QExpressionList arg)
         {
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitDataSourceList(DataSourceList arg)
+        public virtual T VisitQDataSourceList(QDataSourceList arg)
         {
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitWhenList(WhenList arg)
+        public virtual T VisitQWhenList(QWhenList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQQueryList(QQueryList arg)
         {
             return DefaultVisit(arg);
         }
@@ -1554,31 +1608,41 @@ namespace ZenPlatform.Core.Querying.Model
         {
             return DefaultVisit(arg);
         }
+
+        public virtual T VisitQDataRequest(QDataRequest arg)
+        {
+            return DefaultVisit(arg);
+        }
     }
 
     public abstract partial class QLangVisitorBase
     {
-        public virtual void VisitFieldList(FieldList arg)
+        public virtual void VisitQFieldList(QFieldList arg)
         {
             DefaultVisit(arg);
         }
 
-        public virtual void VisitJoinList(JoinList arg)
+        public virtual void VisitQJoinList(QJoinList arg)
         {
             DefaultVisit(arg);
         }
 
-        public virtual void VisitExpressionList(ExpressionList arg)
+        public virtual void VisitQExpressionList(QExpressionList arg)
         {
             DefaultVisit(arg);
         }
 
-        public virtual void VisitDataSourceList(DataSourceList arg)
+        public virtual void VisitQDataSourceList(QDataSourceList arg)
         {
             DefaultVisit(arg);
         }
 
-        public virtual void VisitWhenList(WhenList arg)
+        public virtual void VisitQWhenList(QWhenList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQQueryList(QQueryList arg)
         {
             DefaultVisit(arg);
         }
@@ -1759,6 +1823,11 @@ namespace ZenPlatform.Core.Querying.Model
         }
 
         public virtual void VisitQCast(QCast arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQDataRequest(QDataRequest arg)
         {
             DefaultVisit(arg);
         }

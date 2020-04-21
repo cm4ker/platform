@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using ZenPlatform.Compiler.Contracts;
-using ZenPlatform.Compiler.Platform;
+﻿using System.IO;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Core.Assemlies;
 
-namespace ZenPlatform.Core.Test.Assemblies
+namespace ZenPlatform.Test.Tools.Assemblies
 {
     public class TestClientAssemblyManager : IClientAssemblyManager
     {
-        private IAssembly _assembly;
+        private RoslynAssemblyBuilder _assembly;
 
-        public TestClientAssemblyManager(IAssembly assembly)
+        public TestClientAssemblyManager(RoslynAssemblyBuilder assembly)
         {
             _assembly = assembly;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ZenPlatform.QueryBuilder.Model;
 
 namespace ZenPlatform.Core.Querying.Model
@@ -22,6 +23,11 @@ namespace ZenPlatform.Core.Querying.Model
                 throw new Exception("This is not allowed");
 
             Add(s);
+        }
+
+        public T Last()
+        {
+            return (T) Children.Last();
         }
 
         public void Add(T item)

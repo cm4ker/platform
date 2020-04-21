@@ -56,7 +56,7 @@ namespace ZenPlatform.ServerRuntime
                 drType.FindMethod(nameof(PlatformReader.Read)));
         }
 
-        public static (string sql, QItem logicalTree) Compile(ITypeManager tm, string sql)
+        public static (string sql, QQueryList logicalTree) Compile(ITypeManager tm, string sql)
         {
             //need compile sql expression!
             var _m = new QLang(tm);
@@ -71,7 +71,9 @@ namespace ZenPlatform.ServerRuntime
 
             string sqlString = "";
 
-            var logicalTree = _m.top() as QItem;
+            var logicalTree = _m.top() as QQueryList ??
+                              throw new Exception("Query stack machine after parsing MUST return the QueryList");
+            ;
 
             //Create aliases for tree
             var pwalker = new PhysicalNameWalker();
