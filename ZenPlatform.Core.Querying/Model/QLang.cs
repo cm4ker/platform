@@ -37,7 +37,8 @@ namespace ZenPlatform.Core.Querying.Model
             DataSource,
             When,
             Expression,
-            Join
+            Join,
+            Query
         }
 
         /// <summary>
@@ -48,19 +49,22 @@ namespace ZenPlatform.Core.Querying.Model
             switch (type)
             {
                 case ListType.Field:
-                    _logicStack.Push(new FieldList());
+                    _logicStack.Push(new QFieldList());
                     break;
                 case ListType.DataSource:
-                    _logicStack.Push(new DataSourceList());
+                    _logicStack.Push(new QDataSourceList());
                     break;
                 case ListType.When:
-                    _logicStack.Push(new WhenList());
+                    _logicStack.Push(new QWhenList());
                     break;
                 case ListType.Expression:
-                    _logicStack.Push(new ExpressionList());
+                    _logicStack.Push(new QExpressionList());
                     break;
                 case ListType.Join:
-                    _logicStack.Push(new JoinList());
+                    _logicStack.Push(new QJoinList());
+                    break;
+                case ListType.Query:
+                    _logicStack.Push(new QQueryList());
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -99,12 +103,12 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void from()
         {
-            _logicStack.Push(new QFrom(_logicStack.PopItem<JoinList>(), _logicStack.PopDataSource()));
+            _logicStack.Push(new QFrom(_logicStack.PopItem<QJoinList>(), _logicStack.PopDataSource()));
         }
 
         public void select()
         {
-            _logicStack.Push(new QSelect(_logicStack.PopItem<FieldList>()));
+            _logicStack.Push(new QSelect(_logicStack.PopItem<QFieldList>()));
         }
 
         private void where()
@@ -114,7 +118,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         private void gorup_by()
         {
-            _logicStack.Push(new QGroupBy(_logicStack.PopItem<ExpressionList>()));
+            _logicStack.Push(new QGroupBy(_logicStack.PopItem<QExpressionList>()));
         }
 
         #endregion
@@ -259,7 +263,7 @@ namespace ZenPlatform.Core.Querying.Model
         public void st_data_request()
         {
             _scope.Pop();
-            _logicStack.Push(new QDataRequest(_logicStack.PopItem<FieldList>()));
+            _logicStack.Push(new QDataRequest(_logicStack.PopItem<QFieldList>()));
         }
 
         /// <summary>
@@ -447,7 +451,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void @case()
         {
-            _logicStack.Push(new QCase(_logicStack.PopExpression(), _logicStack.PopItem<WhenList>()));
+            _logicStack.Push(new QCase(_logicStack.PopExpression(), _logicStack.PopItem<QWhenList>()));
         }
 
         public void when()

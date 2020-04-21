@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using System.Linq;
 using dnlib.DotNet;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Core;
@@ -25,7 +26,7 @@ namespace ZenPlatform.ServerRuntime
         private bool _needRecompile;
         private PlatformContext _context;
         private DbCommand _command;
-        private QItem _logicalTree;
+        private QQueryList _logicalTree;
 
         public PlatformQuery()
         {
@@ -81,11 +82,10 @@ namespace ZenPlatform.ServerRuntime
                 _logicalTree = result.logicalTree;
             }
 
-            
-            
+
             _command.CommandText = _compiled;
 
-            return new ApplicationCachedPlatformReader(_command.ExecuteReader(), _logicalTree, _context);
+            return new ApplicationCachedPlatformReader(_command.ExecuteReader(), _logicalTree.Last(), _context);
         }
 
         public void SetParameter(string paramName, object value)

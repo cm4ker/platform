@@ -23,8 +23,16 @@ namespace ZenPlatform.Core.Querying
             _stack = stackMachine;
         }
 
+        public override object VisitSql_stmt_list(ZSqlGrammarParser.Sql_stmt_listContext context)
+        {
+            _stack.new_list(QLang.ListType.Query);
+
+            return base.VisitSql_stmt_list(context);
+        }
+
         public override object VisitQuery_stmt(ZSqlGrammarParser.Query_stmtContext context)
         {
+            _stack.dup();
             _stack.new_scope();
 
             if (context.from_stmt() != null)
@@ -43,6 +51,7 @@ namespace ZenPlatform.Core.Querying
                 Visit(context.select_stmt());
 
             _stack.new_query();
+            _stack.st_elem();
 
             return null;
         }
@@ -182,10 +191,10 @@ namespace ZenPlatform.Core.Querying
             _stack.dup();
             base.VisitResult_column(context);
             _stack.new_result_column();
-            
+
             if (context.column_alias() != null)
                 _stack.@as(context.column_alias().GetText());
-            
+
             _stack.st_elem();
             return null;
         }
