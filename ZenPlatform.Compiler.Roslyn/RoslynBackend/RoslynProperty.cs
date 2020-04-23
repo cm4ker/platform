@@ -46,10 +46,10 @@ namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
                 x, DeclaringTypeInternal);
         }
 
-        public RoslynMethod Getter => _getter ??=
+        public virtual RoslynMethod Getter => _getter ??=
             (PropertyDef.GetMethod == null) ? null : CalculateMethod(PropertyDef.GetMethod);
 
-        public RoslynMethod Setter => _setter ??=
+        public virtual RoslynMethod Setter => _setter ??=
             (PropertyDef.SetMethod == null)
                 ? null
                 : new RoslynMethod(_ts, PropertyDef.SetMethod, PropertyDef.SetMethod, PropertyDef.DeclaringType);

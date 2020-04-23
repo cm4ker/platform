@@ -128,6 +128,7 @@ namespace ZenPlatform.Core.Querying
             _l.WriteLine("ct_query");
 
             Visit(node.From);
+            Visit(node.Where);
             Visit(node.Select);
 
             _qm.st_query();
@@ -186,6 +187,16 @@ namespace ZenPlatform.Core.Querying
         {
         }
 
+        public override object VisitQAdd(QAdd node)
+        {
+            if (!OptimizeOperation(node, () => _qm.eq(), () => _qm.and()))
+            {
+                base.VisitQAdd(node);
+                _qm.add();
+            }
+
+            return null;
+        }
 
         public override object VisitQEquals(QEquals node)
         {
@@ -342,6 +353,17 @@ namespace ZenPlatform.Core.Querying
                 {
                     VisitQFromItem(nodeJoin);
                 }
+
+            return null;
+        }
+
+
+        public override object VisitQWhere(QWhere node)
+        {
+            _qm.m_where();
+            _l.WriteLine("m_where");
+
+            Visit(node.Expression);
 
             return null;
         }

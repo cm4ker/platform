@@ -4,6 +4,7 @@ using dnlib.DotNet;
 using dnlib.DotNet.MD;
 using dnlib.PE;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Extensions;
 using IType = ZenPlatform.Compiler.Contracts.IType;
 
 namespace ZenPlatform.Compiler.Dnlib

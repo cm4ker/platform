@@ -12,9 +12,9 @@ namespace ZenPlatform.Core.Querying
         public override object VisitQQuery(QQuery node)
         {
             VisitQFrom(node.From);
-//            VisitQWhere(node.Where);
-//            VisitQGroupBy(node.GroupBy);
-//            VisitQHaving(node.Having);
+            VisitQWhere(node.Where);
+            VisitQGroupBy(node.GroupBy);
+            VisitQHaving(node.Having);
             VisitQSelect(node.Select);
 
             return null;

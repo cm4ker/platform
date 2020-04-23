@@ -13,6 +13,7 @@
       <ProjectReference Include="..\ZenPlatform.Migration\ZenPlatform.Migration.csproj" />
       <ProjectReference Include="..\ZenPlatform.Networking\ZenPlatform.Networking.csproj" />
       <ProjectReference Include="..\ZenPlatform.Shell\ZenPlatform.Shell.csproj" />
+      <ProjectReference Include="..\ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,51 +1,32 @@
-
-public static class Test
-{
-    public static object Factory()
-    {
-        dynamic a = new {};
-        
-        a.Test = 
-    }
-}
-
 public abstract class EntryPoint : System.Object
 {
     static ZenPlatform.Core.Network.IInvokeService _is;
     static ZenPlatform.Core.Contracts.ILinkFactory _lf;
-
     public static void Main(System.Object[] args)
     {
-        EntryPoint._is = ((ZenPlatform.Core.Network.IInvokeService) args[0]);
-        _lf = ((ZenPlatform.Core.Contracts.ILinkFactory) args[1]);
-        _lf.Register(1, (guid, s) => new Entity.StoreLink(guid, s));
-        
-        EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.ClientCallProc"),
-            dlgt_ClientCallProc);
-        EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.CreateAndSaveStore"),
-            dlgt_CreateAndSaveStore);
-        EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.GetUserNameServer"),
-            dlgt_GetUserNameServer);
+        EntryPoint._is = ((ZenPlatform.Core.Network.IInvokeService)args[0]);
+        EntryPoint._lf = ((ZenPlatform.Core.Contracts.ILinkFactory)args[1]);
+        EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.ClientCallProc"), dlgt_ClientCallProc);
+        EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.CreateAndSaveStore"), dlgt_CreateAndSaveStore);
+        EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.GetUserNameServer"), dlgt_GetUserNameServer);
         EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.GetStore"), dlgt_GetStore);
-        EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.UpdateName"),
-            dlgt_UpdateName);
+        EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("__cmd_HelloFromServer.UpdateName"), dlgt_UpdateName);
         EntryPoint._is.Register(new ZenPlatform.Core.Contracts.Route("UX.Editor"), dlgt_Editor);
+        EntryPoint._lf.Register(110, fac_StoreLink);
     }
 
-    public static System.Object dlgt_ClientCallProc(ZenPlatform.Core.Network.InvokeContext context,
-        System.Object[] args)
+    public static System.Object dlgt_ClientCallProc(ZenPlatform.Core.Network.InvokeContext context, System.Object[] args)
     {
-        return Entity.__cmd_HelloFromServer.ClientCallProc(((System.Int32) args[0]));
+        return Entity.__cmd_HelloFromServer.ClientCallProc(((System.Int32)args[0]));
     }
 
-    public static System.Object dlgt_CreateAndSaveStore(ZenPlatform.Core.Network.InvokeContext context,
-        System.Object[] args)
+    public static System.Object dlgt_CreateAndSaveStore(ZenPlatform.Core.Network.InvokeContext context, System.Object[] args)
     {
-        return Entity.__cmd_HelloFromServer.CreateAndSaveStore();
+        Entity.__cmd_HelloFromServer.CreateAndSaveStore();
+        return null;
     }
 
-    public static System.Object dlgt_GetUserNameServer(ZenPlatform.Core.Network.InvokeContext context,
-        System.Object[] args)
+    public static System.Object dlgt_GetUserNameServer(ZenPlatform.Core.Network.InvokeContext context, System.Object[] args)
     {
         return Entity.__cmd_HelloFromServer.GetUserNameServer();
     }
@@ -57,12 +38,63 @@ public abstract class EntryPoint : System.Object
 
     public static System.Object dlgt_UpdateName(ZenPlatform.Core.Network.InvokeContext context, System.Object[] args)
     {
-        return Entity.__cmd_HelloFromServer.UpdateName(((Entity.Store) args[0]));
+        return Entity.__cmd_HelloFromServer.UpdateName(((Entity.Store)args[0]));
     }
 
     public static System.Object dlgt_Editor(ZenPlatform.Core.Network.InvokeContext context, System.Object[] args)
     {
         return Entity.__StoreEditorForm.Get();
+    }
+
+    public static ZenPlatform.Core.Contracts.ILink fac_StoreLink(System.Guid p1, System.String p2)
+    {
+        return new Entity.StoreLink(p1, p2);
+    }
+}
+
+namespace Entity
+{
+    public class EntityLink : System.Object, ZenPlatform.Core.Contracts.ILink
+    {
+        System.Guid ik__BackingField;
+        System.Int32 tk__BackingField;
+        System.String pk__BackingField;
+        public EntityLink(System.Guid A_1, System.Int32 A_2, System.String A_3): base()
+        {
+            this.ik__BackingField = A_1;
+            this.tk__BackingField = A_2;
+            this.pk__BackingField = A_3;
+        }
+
+        public System.Guid Id
+        {
+            get => __get_Id();
+        }
+
+        public System.Int32 TypeId
+        {
+            get => __get_TypeId();
+        }
+
+        public System.String Presentation
+        {
+            get => __get_Presentation();
+        }
+
+        public virtual System.Guid __get_Id()
+        {
+            return this.ik__BackingField;
+        }
+
+        public virtual System.Int32 __get_TypeId()
+        {
+            return this.tk__BackingField;
+        }
+
+        public virtual System.String __get_Presentation()
+        {
+            return this.pk__BackingField;
+        }
     }
 }
 
@@ -73,8 +105,7 @@ namespace Entity
         System.Int32 TProp1_Typek__BackingField;
         System.String TProp1_Stringk__BackingField;
         System.Guid TProp1_Refk__BackingField;
-
-        public RowDto_Store_ExampleTable() : base()
+        public RowDto_Store_ExampleTable(): base()
         {
         }
 
@@ -130,7 +161,7 @@ namespace Entity
 
 namespace Entity
 {
-    public class _Store : System.Object
+    public class _Store : System.Object, ZenPlatform.Compiler.Contracts.ICanMap
     {
         System.Guid Idk__BackingField;
         System.String Namek__BackingField;
@@ -142,8 +173,7 @@ namespace Entity
         System.Guid Property1_Refk__BackingField;
         System.Collections.Generic.List<Entity.RowDto_Store_ExampleTable> ExampleTablek__BackingField;
         System.Byte[] Versionk__BackingField;
-
-        public _Store() : base()
+        public _Store(): base()
         {
             this.ExampleTablek__BackingField = new System.Collections.Generic.List<Entity.RowDto_Store_ExampleTable>();
         }
@@ -302,16 +332,16 @@ namespace Entity
             this.Versionk__BackingField = value;
         }
 
-        public void Map(System.Data.Common.DbDataReader reader)
+        public virtual void Map(System.Data.Common.DbDataReader reader)
         {
-            this.Id = ((System.Guid) reader["Fld_101"]);
-            this.Name = ((System.String) reader["Fld_102"]);
-            this.Property1_Type = ((System.Int32) reader["Fld_103_Type"]);
-            this.Property1_DateTime = ((System.DateTime) reader["Fld_103_DateTime"]);
-            this.Property1_Int = ((System.Int32) reader["Fld_103_Int"]);
-            this.Property1_Boolean = ((System.Boolean) reader["Fld_103_Boolean"]);
-            this.Property1_Numeric = ((System.Double) reader["Fld_103_Numeric"]);
-            this.Property1_Ref = ((System.Guid) reader["Fld_103_Ref"]);
+            this.Id = ((System.Guid)reader["Fld_101"]);
+            this.Name = ((System.String)reader["Fld_102"]);
+            this.Property1_Type = ((System.Int32)reader["Fld_103_Type"]);
+            this.Property1_DateTime = ((System.DateTime)reader["Fld_103_DateTime"]);
+            this.Property1_Int = ((System.Int32)reader["Fld_103_Int"]);
+            this.Property1_Boolean = ((System.Boolean)reader["Fld_103_Boolean"]);
+            this.Property1_Numeric = ((System.Double)reader["Fld_103_Numeric"]);
+            this.Property1_Ref = ((System.Guid)reader["Fld_103_Ref"]);
         }
     }
 }
@@ -322,9 +352,10 @@ namespace Entity
     {
         Entity.RowDto_Store_ExampleTable _dtoRow;
         System.Object TProp1k__BackingField;
-
-        public RWRowDtoWrapperStore_ExampleTable(Entity.RowDto_Store_ExampleTable A_1) : base()
+        public RWRowDtoWrapperStore_ExampleTable(Entity.RowDto_Store_ExampleTable A_1): base()
         {
+            this._dtoRow = A_1;
+            return;
         }
 
         public System.Object TProp1
@@ -354,7 +385,7 @@ namespace Entity
         {
             if (value is System.String)
             {
-                this._dtoRow.__set_TProp1_String(((System.String) value));
+                this._dtoRow.__set_TProp1_String(((System.String)value));
                 this._dtoRow.__set_TProp1_Type(6);
                 return;
             }
@@ -362,7 +393,7 @@ namespace Entity
             ;
             if (value is Entity.StoreLink)
             {
-                this._dtoRow.__set_TProp1_Ref(((Entity.StoreLink) value).__get_Id());
+                this._dtoRow.__set_TProp1_Ref(((Entity.StoreLink)value).__get_Id());
                 this._dtoRow.__set_TProp1_Type(110);
                 return;
             }
@@ -375,11 +406,9 @@ namespace Entity
 
 namespace Entity
 {
-    public class RWRowCollectionStore_ExampleTable : ZenPlatform.EntityComponent.Compilation.EntityTable<
-        Entity.RowDto_Store_ExampleTable, Entity.RWRowDtoWrapperStore_ExampleTable>
+    public class RWRowCollectionStore_ExampleTable : ZenPlatform.EntityComponent.Compilation.EntityTable<Entity.RowDto_Store_ExampleTable, Entity.RWRowDtoWrapperStore_ExampleTable>
     {
-        public RWRowCollectionStore_ExampleTable(System.Collections.Generic.List<Entity.RowDto_Store_ExampleTable> A_1)
-            : base(A_1)
+        public RWRowCollectionStore_ExampleTable(System.Collections.Generic.List<Entity.RowDto_Store_ExampleTable> A_1): base(A_1)
         {
         }
 
@@ -390,6 +419,7 @@ namespace Entity
             loc0 = new Entity.RowDto_Store_ExampleTable();
             loc1 = new Entity.RWRowDtoWrapperStore_ExampleTable(loc0);
             this.DtoRef.Add(loc0);
+            this.ObjRef.Add(loc1);
             return loc1;
         }
     }
@@ -404,8 +434,7 @@ namespace Entity
         System.String Namek__BackingField;
         System.Object Property1k__BackingField;
         Entity.RWRowCollectionStore_ExampleTable ExampleTablek__BackingField;
-
-        public Store(Entity._Store A_1) : base()
+        public Store(Entity._Store A_1): base()
         {
             this._dto = A_1;
         }
@@ -506,7 +535,7 @@ namespace Entity
         {
             if (value is System.DateTime)
             {
-                this._dto.__set_Property1_DateTime(((System.DateTime) value));
+                this._dto.__set_Property1_DateTime(((System.DateTime)value));
                 this._dto.__set_Property1_Type(3);
                 return;
             }
@@ -514,7 +543,7 @@ namespace Entity
             ;
             if (value is System.Int32)
             {
-                this._dto.__set_Property1_Type(((System.Int32) value));
+                this._dto.__set_Property1_Type(((System.Int32)value));
                 this._dto.__set_Property1_Type(7);
                 return;
             }
@@ -522,7 +551,7 @@ namespace Entity
             ;
             if (value is System.Boolean)
             {
-                this._dto.__set_Property1_Boolean(((System.Boolean) value));
+                this._dto.__set_Property1_Boolean(((System.Boolean)value));
                 this._dto.__set_Property1_Type(2);
                 return;
             }
@@ -530,7 +559,7 @@ namespace Entity
             ;
             if (value is System.Double)
             {
-                this._dto.__set_Property1_Numeric(((System.Double) value));
+                this._dto.__set_Property1_Numeric(((System.Double)value));
                 this._dto.__set_Property1_Type(5);
                 return;
             }
@@ -538,7 +567,7 @@ namespace Entity
             ;
             if (value is Entity.StoreLink)
             {
-                this._dto.__set_Property1_Ref(((Entity.StoreLink) value).__get_Id());
+                this._dto.__set_Property1_Ref(((Entity.StoreLink)value).__get_Id());
                 this._dto.__set_Property1_Type(110);
                 return;
             }
@@ -569,7 +598,24 @@ namespace Entity
             return a;
         }
 
-        public static System.String CreateAndSaveStore()
+        public static void ExecuteSql()
+        {
+            ZenPlatform.ServerRuntime.PlatformQuery loc0;
+            ZenPlatform.ServerRuntime.PlatformReader loc1;
+            loc0 = new ZenPlatform.ServerRuntime.PlatformQuery();
+            loc0.Text = "FROM Entity.Store SELECT Id";
+            loc1 = loc0.ExecuteReader();
+            while (loc1.Read())
+            {
+                System.Int32 loc2;
+                loc2 = 0;
+                loc2 = loc2 + 1;
+            }
+
+            ;
+        }
+
+        public static void CreateAndSaveStore()
         {
             Entity.Store loc0;
             loc0 = Entity.StoreManager.Create();
@@ -613,16 +659,16 @@ namespace Entity
     public abstract class __StoreEditorForm : System.Object
     {
         static System.String _markup;
-
-        public __StoreEditorForm() : base()
+        public __StoreEditorForm(): base()
         {
+            Entity.__StoreEditorForm._markup = "<p:StoreEditorForm \r\n                xmlns:p=\"clr-namespace:Entity;assembly=LibraryServer\"    \r\n                xmlns=\"clr-namespace:ZenPlatform.Avalonia.Wrapper;assembly=ZenPlatform.Avalonia.Wrapper\">\r\n  <UXGroup Orientation=\"Vertical\">\r\n    <UXTextBox />\r\n    <UXTextBox />\r\n    <UXGroup Orientation = \"Horizontal\"> \r\n        <UXCheckBox />\r\n<UXCheckBox />\r\n<UXCheckBox />\r\n<UXCheckBox />\r\n    </UXGroup>\r\n  </UXGroup>\r\n</p:StoreEditorForm>";
+            return;
         }
 
         public static System.String Get()
         {
             Entity.StoreEditorForm loc0;
-            loc0 = ((Entity.StoreEditorForm) ZenPlatform.ServerRuntime.XamlService.Parse(Entity.__StoreEditorForm
-                ._markup));
+            loc0 = ((Entity.StoreEditorForm)ZenPlatform.ServerRuntime.XamlService.Parse(Entity.__StoreEditorForm._markup));
             loc0.CreateOnServer();
             return ZenPlatform.ServerRuntime.XamlService.Save(loc0);
         }
@@ -645,13 +691,17 @@ namespace Entity
 
         public static Entity.StoreLink Get(System.Guid id)
         {
+            return new Entity.StoreLink(id);
+        }
+
+        public static Entity._Store GetDto(System.Guid id)
+        {
             System.Data.Common.DbCommand loc0;
             System.Data.Common.DbDataReader loc1;
             System.Data.Common.DbParameter loc2;
             Entity._Store loc3;
             loc0 = ZenPlatform.Core.ContextHelper.GetContext().DataContext.CreateCommand();
-            loc0.CommandText =
-                "SELECT T0.Fld_103_Ref,\nT0.Fld_103_Numeric,\nT0.Fld_103_Boolean,\nT0.Fld_103_Int,\nT0.Fld_103_DateTime,\nT0.Fld_103_Type,\nT0.Fld_102\nFROM\nObj_106 as T0\nWHERE\n@P_0 = T0.Fld_101\n";
+            loc0.CommandText = "SELECT T0.Fld_103_Ref,\nT0.Fld_103_Numeric,\nT0.Fld_103_Boolean,\nT0.Fld_103_Int,\nT0.Fld_103_DateTime,\nT0.Fld_103_Type,\nT0.Fld_102\nFROM\nObj_106 as T0\nWHERE\n@P_0 = T0.Fld_101\n";
             loc2 = loc0.CreateParameter();
             loc2.ParameterName = "P_0";
             loc2.Value = id;
@@ -662,7 +712,7 @@ namespace Entity
             loc3.Map(loc1);
             loc1.Dispose();
             loc0.Dispose();
-            return new Entity.StoreLink(loc3);
+            return loc3;
         }
 
         public static void Save(Entity._Store dto)
@@ -672,13 +722,11 @@ namespace Entity
             loc1 = ZenPlatform.Core.ContextHelper.GetContext().DataContext.CreateCommand();
             if (dto.Version != null)
             {
-                loc1.CommandText =
-                    "UPDATE Obj_106 as T0\nSET T0.Fld_103_Ref = @P_7, T0.Fld_103_Numeric = @P_6, T0.Fld_103_Boolean = @P_5, T0.Fld_103_Int = @P_4, T0.Fld_103_DateTime = @P_3, T0.Fld_103_Type = @P_2, T0.Fld_102 = @P_1\nWHERE\n@P_0 = T0.Fld_101\n";
+                loc1.CommandText = "UPDATE Obj_106 as T0\nSET T0.Fld_103_Ref = @P_7, T0.Fld_103_Numeric = @P_6, T0.Fld_103_Boolean = @P_5, T0.Fld_103_Int = @P_4, T0.Fld_103_DateTime = @P_3, T0.Fld_103_Type = @P_2, T0.Fld_102 = @P_1\nWHERE\n@P_0 = T0.Fld_101\n";
             }
             else
             {
-                loc1.CommandText =
-                    "INSERT INTO Obj_106(Fld_103_Ref, Fld_103_Numeric, Fld_103_Boolean, Fld_103_Int, Fld_103_DateTime, Fld_103_Type, Fld_102, Fld_101)\nVALUES\n(@P_7, @P_6, @P_5, @P_4, @P_3, @P_2, @P_1, @P_0)\n";
+                loc1.CommandText = "INSERT INTO Obj_106(Fld_103_Ref, Fld_103_Numeric, Fld_103_Boolean, Fld_103_Int, Fld_103_DateTime, Fld_103_Type, Fld_102, Fld_101)\nVALUES\n(@P_7, @P_6, @P_5, @P_4, @P_3, @P_2, @P_1, @P_0)\n";
             }
 
             ;
@@ -723,25 +771,50 @@ namespace Entity
 {
     public class RORowDtoWrapperStoreLink_ExampleTable : System.Object
     {
+        Entity.RowDto_Store_ExampleTable _dtoRow;
+        System.Object TProp1k__BackingField;
+        public RORowDtoWrapperStoreLink_ExampleTable(Entity.RowDto_Store_ExampleTable A_1): base()
+        {
+            this._dtoRow = A_1;
+            return;
+        }
+
+        public System.Object TProp1
+        {
+            get => __get_TProp1();
+        }
+
+        public System.Object __get_TProp1()
+        {
+            if (this._dtoRow.__get_TProp1_Type() == 6)
+            {
+                return this._dtoRow.__get_TProp1_String();
+            }
+
+            ;
+            if (this._dtoRow.__get_TProp1_Type() == 110)
+            {
+                return this._dtoRow.__get_TProp1_Ref();
+            }
+
+            ;
+            throw new System.Exception();
+        }
     }
 }
 
 namespace Entity
 {
-    public class StoreLink : System.Object
+    public class StoreLink : Entity.EntityLink
     {
         Entity._Store _dto;
-        System.Guid Idk__BackingField;
         System.Object Property1k__BackingField;
-
-        public StoreLink(Entity._Store A_1) : base()
+        public StoreLink(System.Guid A_1, System.String A_2): base(A_1, 110, A_2)
         {
-            this._dto = A_1;
         }
 
-        public System.Guid Id
+        public StoreLink(System.Guid A_1): base(A_1, 110, System.String.Format("Link: [{0}]", A_1))
         {
-            get => __get_Id();
         }
 
         public System.Object Property1
@@ -749,13 +822,14 @@ namespace Entity
             get => __get_Property1();
         }
 
-        public System.Guid __get_Id()
-        {
-            return this._dto.__get_Id();
-        }
-
         public System.Object __get_Property1()
         {
+            if (this._dto == null)
+            {
+                this.Reload();
+            }
+
+            ;
             if (this._dto.__get_Property1_Type() == 3)
             {
                 return this._dto.__get_Property1_DateTime();
@@ -787,6 +861,11 @@ namespace Entity
 
             ;
             throw new System.Exception();
+        }
+
+        public void Reload()
+        {
+            this._dto = Entity.StoreManager.GetDto(this.Id);
         }
     }
 }

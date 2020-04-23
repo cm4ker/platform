@@ -22,6 +22,12 @@ namespace ZenPlatform.Compiler.Roslyn
             _type = LiteralType.Numeric;
         }
 
+        public Literal(uint literal)
+        {
+            _literal = literal.ToString();
+            _type = LiteralType.Numeric;
+        }
+
         public Literal(decimal literal)
         {
             _literal = literal.ToString(CultureInfo.InvariantCulture);

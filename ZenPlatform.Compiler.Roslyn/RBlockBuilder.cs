@@ -100,7 +100,7 @@ namespace ZenPlatform.Compiler.Roslyn
         public RBlockBuilder NewObj(RoslynConstructor c)
         {
             Expression[] args = new Expression[c.Parameters.Count];
-            for (int i = 0; i < c.Parameters.Count; i++)
+            for (int i = c.Parameters.Count - 1; i >= 0; i--)
             {
                 args[i] = PopExp();
             }
@@ -192,6 +192,12 @@ namespace ZenPlatform.Compiler.Roslyn
         public RBlockBuilder LdLit(decimal d)
         {
             _stack.Push(new Literal(d));
+            return this;
+        }
+
+        public RBlockBuilder LdLit(uint i)
+        {
+            _stack.Push(new Literal(i));
             return this;
         }
 
@@ -477,6 +483,9 @@ namespace ZenPlatform.Compiler.Roslyn
                 {
                     PopExp();
                 }
+
+                if (BaseCall.Any())
+                    throw new Exception("You call base constructor twice in the constructor. This should never happen");
 
                 BaseCall.AddRange(args);
                 return this;

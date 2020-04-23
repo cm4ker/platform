@@ -10,6 +10,7 @@ using Xunit;
 using ZenPlatform.ClientRuntime;
 using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Extensions;
 using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Language.Ast.Definitions;
 using Attribute = System.Attribute;

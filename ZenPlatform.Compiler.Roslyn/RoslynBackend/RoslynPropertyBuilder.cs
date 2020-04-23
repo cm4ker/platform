@@ -28,8 +28,9 @@ namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
             ((List<RoslynCustomAttribute>) CustomAttributes).Add(dnlibAttr);
         }
 
-        public RoslynPropertyBuilder(RoslynTypeSystem ts, PropertyDef property, ITypeDefOrRef declaringTypeInternal) : base(ts,
-            property, declaringTypeInternal)
+        public RoslynPropertyBuilder(RoslynTypeSystem ts, PropertyDef property, ITypeDefOrRef declaringTypeInternal) :
+            base(ts,
+                property, declaringTypeInternal)
         {
         }
 

@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace ZenPlatform.Compiler.Contracts
+namespace ZenPlatform.Compiler.Contracts.Extensions
 {
     public static class TypeSystemExtensions
     {

@@ -69,9 +69,15 @@ namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 
             using (tw.Parenthesis())
             {
+                var wasFirst = false;
                 foreach (var exp in Body.BaseCall)
                 {
+                    if (wasFirst)
+                        tw.W(",");
+                        
                     exp.Dump(tw);
+
+                    wasFirst = true;
                 }
             }
 

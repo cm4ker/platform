@@ -121,8 +121,8 @@ namespace ZenPlatform.Compiler.Generation
             if (_conf != null)
                 foreach (var dataComponent in _conf.TypeManager.Components)
                 {
-                    // dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm, _parameters.TargetDatabaseType,
-                    //     _mode);
+                    dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm, _parameters.TargetDatabaseType,
+                        _mode);
                 }
         }
 

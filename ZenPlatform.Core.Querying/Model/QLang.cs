@@ -21,8 +21,9 @@ namespace ZenPlatform.Core.Querying.Model
         {
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
-            _tb = new QLangTypeBuilder(_tm);
             _tm = conf;
+            _tb = new QLangTypeBuilder(_tm);
+            
         }
 
         public ITypeManager TypeManager => _tm;
@@ -111,7 +112,7 @@ namespace ZenPlatform.Core.Querying.Model
             _logicStack.Push(new QSelect(_logicStack.PopItem<QFieldList>()));
         }
 
-        private void where()
+        public void where()
         {
             _logicStack.Push(new QWhere(_logicStack.PopExpression()));
         }
@@ -380,6 +381,7 @@ namespace ZenPlatform.Core.Querying.Model
         {
             _logicStack.Push(new QAdd(_logicStack.PopExpression(), _logicStack.PopExpression()));
         }
+
 
         /// <summary>
         /// Равно

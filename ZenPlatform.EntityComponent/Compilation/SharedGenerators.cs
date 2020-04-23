@@ -160,7 +160,6 @@ namespace ZenPlatform.EntityComponent.Compilation
                         .LdFld(dtoPrivate)
                         .Call(dtoProp.Getter)
                         .Ret()
-                        
                         .EndBlock()
                         .Nothing()
                         .If()
@@ -192,14 +191,11 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                         block
                             .Call(dtoProp.Setter)
-                            
                             .LdArg_0()
                             .LdFld(dtoPrivate)
                             .LdLit((int) ctype.GetSettings().SystemId)
                             .Call(dtoTypeProp.Setter)
-                            
                             .Ret()
-                            
                             .EndBlock()
                             .Nothing()
                             .If()
@@ -279,10 +275,8 @@ namespace ZenPlatform.EntityComponent.Compilation
 
         public static void EmitLinkProperty(RoslynTypeBuilder builder, IPProperty prop, SystemTypeBindings sb,
             RoslynType dtoType,
-            RoslynField dtoPrivate, RoslynTypeSystem ts, RoslynMethod mrgGet, string ns)
+            RoslynField dtoPrivate, RoslynTypeSystem ts, RoslynMethod mrgGet, string ns, RoslynMethod reload)
         {
-            bool propertyGenerated = false;
-
             var propName = prop.Name;
 
             var propType = (prop.Types.Count() > 1)
@@ -294,6 +288,19 @@ namespace ZenPlatform.EntityComponent.Compilation
 
             // var valueParam = propBuilder.setMethod.Parameters[0];
 
+            if (reload != null)
+                getBuilder
+                    .LdArg_0()
+                    .LdFld(dtoPrivate)
+                    .LdNull()
+                    .Ceq()
+                    .Block()
+                    .LdArg_0()
+                    .Call(reload)
+                    .EndBlock()
+                    .Nothing()
+                    .If();
+            
             if (prop.Types.Count() > 1)
             {
                 var typeField = prop.GetObjSchema()
@@ -320,6 +327,8 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                     //var label = getBuilder.DefineLabel();
 
+                 
+
                     //GETTER
                     getBuilder
                         .LdArg_0()
@@ -335,7 +344,6 @@ namespace ZenPlatform.EntityComponent.Compilation
                         .EndBlock()
                         .Nothing()
                         .If();
-
                 }
 
                 getBuilder.Throw(sb.Exception);

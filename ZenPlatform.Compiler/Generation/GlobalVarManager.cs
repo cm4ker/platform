@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Extensions;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Language.Ast.Definitions;

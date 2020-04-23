@@ -65,7 +65,7 @@ namespace ZenPlatform.Compiler.Roslyn
             // A single, immutable invocation to the compiler
             // to produce a library
 
-            var optimizationLevel = OptimizationLevel.Debug;
+            var optimizationLevel = OptimizationLevel.Release;
 
             var compilation = CSharpCompilation.Create(Path.GetFileName(path))
                 .WithOptions(

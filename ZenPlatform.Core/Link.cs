@@ -20,7 +20,7 @@ namespace ZenPlatform.Core
             _presentation = presentation;
         }
 
-        public Guid LinkId => _linkId;
+        public Guid Id => _linkId;
 
         public int TypeId => _typeId;
 
