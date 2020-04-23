@@ -8,6 +8,7 @@ using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Core;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Symbols;
 using ArrayTypeSyntax = ZenPlatform.Language.Ast.Definitions.ArrayTypeSyntax;
 using SystemTypeBindings = ZenPlatform.Compiler.Roslyn.SystemTypeBindings;
@@ -92,6 +93,7 @@ namespace ZenPlatform.Compiler
             {
                 TypeNodeKind.Boolean => _stb.Boolean,
                 TypeNodeKind.Int => _stb.Int,
+                TypeNodeKind.Uid => _stb.Guid,
                 TypeNodeKind.Char => _stb.Char,
                 TypeNodeKind.Double => _stb.Double,
                 TypeNodeKind.String => _stb.String,
@@ -104,7 +106,7 @@ namespace ZenPlatform.Compiler
             };
         }
 
-        public RoslynMethod GetMethod(TypeSyntax type, string name, RoslynType[] args)
+        public (RoslynMethod clrMethod, Function astMethod ) GetMethod(TypeSyntax type, string name, RoslynType[] args)
         {
             if (type is SingleTypeSyntax sts)
             {
@@ -113,15 +115,18 @@ namespace ZenPlatform.Compiler
 
                 var funcDef = typeDef?.TypeBody.SymbolTable.Find<MethodSymbol>(name, SymbolScopeBySecurity.User);
 
-                RoslynMethod m = funcDef?.SelectOverload(args).clrMethod;
+                var a = funcDef?.SelectOverload(args) ?? throw new Exception($"Method {name} not found");
 
-                return m ?? throw new Exception($"Property {name} not found");
+                RoslynMethod clr = a.clrMethod;
+                Function ast = a.method;
+
+                return (clr, ast);
             }
             else if (type is PrimitiveTypeSyntax pts)
             {
                 var pType = GetPrimitiveType(pts);
-
-                return pType.FindMethod(name) ?? throw new Exception("Property not found");
+                var clrMethod = pType.FindMethod(name) ?? throw new Exception("Property not found");
+                return (clrMethod, null);
             }
 
             throw new Exception("Unknown type");

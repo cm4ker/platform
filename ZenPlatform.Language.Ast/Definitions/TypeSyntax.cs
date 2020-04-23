@@ -14,6 +14,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         String,
         Void,
         Int,
+        Uid,
         Double,
         Char,
         Boolean,

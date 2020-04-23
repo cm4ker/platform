@@ -27,7 +27,10 @@ namespace ZenPlatform.Language.Ast.Definitions
                 return _type;
             }
 
-            set { _type = value; }
+            set
+            {
+                _type = value;
+            }
         }
     }
 

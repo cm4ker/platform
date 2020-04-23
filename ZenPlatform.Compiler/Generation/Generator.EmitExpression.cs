@@ -6,6 +6,7 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
+using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
@@ -118,8 +119,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (ue is CastExpression ce)
                 {
-                    EmitExpression(e, ce.Expression, symbolTable);
-                    //EmitConvert(e, ce, symbolTable);
+                    EmitCast(e, ce, symbolTable);
                 }
             }
             else if (expression is Literal literal)
@@ -209,11 +209,24 @@ namespace ZenPlatform.Compiler.Generation
             {
                 EmitExpression(e, le.Current, symbolTable);
 
-                var lna = le.Lookup as Name;
+                var lna = le.Lookup as Name ?? throw new Exception("Lookup mush be Name node type");
 
-                var prop = _map.GetProperty(le.Current.Type, lna.Value);
-                lna.Type = prop.PropertyType.ToAstType();
-                e.LdProp(prop);
+                if (le.Current.Type.Kind == TypeNodeKind.Type &&
+                    TypeFinder.Apply(le.Current.Type, _root)?.Type == QueryCompilerHelper.DataReader)
+                {
+                    //ugly hack
+                    //TODO: introduce redirected dynamic properties
+
+                    //this is reader type redirect propNames to expr[expr]
+                    e.LdLit(lna.Value);
+                    e.LdElem();
+                }
+                else
+                {
+                    var prop = _map.GetProperty(le.Current.Type, lna.Value);
+                    lna.Type = prop.PropertyType.ToAstType();
+                    e.LdProp(prop);
+                }
             }
             else if (expression is MethodLookupExpression mle)
             {
@@ -224,10 +237,13 @@ namespace ZenPlatform.Compiler.Generation
                 var method = _map.GetMethod(mle.Current.Type, lca.Name.Value,
                     lca.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
 
-                lca.Type = method.ReturnType.ToAstType();
+                var resultType = (TypeSyntax) method.astMethod.Type.Clone();
+
+                lca.Type = resultType;
+                lca.Attach(resultType);
 
                 EmitArguments(e, lca.Arguments, symbolTable);
-                e.Call(method);
+                e.Call(method.clrMethod);
             }
 
             else if (expression is PostIncrementExpression pis)

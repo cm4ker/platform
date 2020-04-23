@@ -2,6 +2,14 @@ using ZenPlatform.Compiler.Contracts.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions.Expressions
 {
+    public partial class GlobalVar
+    {
+        public override TypeSyntax Type
+        {
+            get => Expression.Type;
+        }
+    }
+
     public partial class Assignment : Expression
     {
         public override TypeSyntax Type

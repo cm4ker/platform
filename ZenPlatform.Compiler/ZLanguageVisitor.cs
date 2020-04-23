@@ -1,23 +1,18 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Npgsql.NameTranslation;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
-using ZenPlatform.Language.Ast.Definitions.Extension;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ArrayTypeSyntax = ZenPlatform.Language.Ast.Definitions.ArrayTypeSyntax;
 using AttributeSyntax = ZenPlatform.Language.Ast.Definitions.AttributeSyntax;
 using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
+using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 
 namespace ZenPlatform.Compiler
 {
@@ -218,6 +213,7 @@ namespace ZenPlatform.Compiler
 
             if (context.STRING() != null) t = TypeNodeKind.String;
             else if (context.INT() != null) t = TypeNodeKind.Int;
+            else if (context.UID() != null) t = TypeNodeKind.Uid;
             else if (context.OBJECT() != null) t = TypeNodeKind.Object;
             else if (context.BOOL() != null) t = TypeNodeKind.Boolean;
             else if (context.DOUBLE() != null) t = TypeNodeKind.Double;
@@ -303,15 +299,28 @@ namespace ZenPlatform.Compiler
             base.VisitVariableDeclaration(context);
 
             SyntaxNode result;
+            Expression value;
+            TypeSyntax type;
 
             string varName = context.IDENTIFIER()?.GetText() ?? throw new Exception("Variable name not found");
 
             if (context.expression() == null)
-                result = new Variable(context.start.ToLineInfo(), null, varName,
-                    _syntaxStack.PopType());
+            {
+                value = null;
+            }
             else
-                result = new Variable(context.start.ToLineInfo(), _syntaxStack.PopExpression(), varName,
-                    _syntaxStack.PopType());
+            {
+                value = _syntaxStack.PopExpression();
+            }
+
+            if (context.variableType().VAR() != null)
+            {
+                type = new PrimitiveTypeSyntax(null, TypeNodeKind.Unknown);
+            }
+            else
+                type = _syntaxStack.PopType();
+
+            result = new Variable(context.start.ToLineInfo(), value, varName, type);
 
             _syntaxStack.Push(result);
             return result;

@@ -90,14 +90,13 @@ public void Overload()
 
  public void ExecuteSql()
  {
-    Query a = $Query();
+    var a = $Query();
     a.Text = ""FROM Entity.Store SELECT Id"";
-    DataReader r = a.ExecuteReader();
+    var r = a.ExecuteReader();
 
     while(r.Read())
     {
-        int i = 0 ;
-        i++;
+        var g = (uid)r.Id;
     }
  }
 

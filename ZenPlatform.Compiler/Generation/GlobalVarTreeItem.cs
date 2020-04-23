@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Compiler.Generation
@@ -12,9 +13,16 @@ namespace ZenPlatform.Compiler.Generation
         private List<object> _args;
         private object _codeObject;
         private CompilationMode _mode;
+        private TypeSyntax _astType;
 
-        public GlobalVarTreeItem(VarTreeLeafType type, CompilationMode mode, string name, Action<Node, RBlockBuilder> e)
+        public GlobalVarTreeItem(VarTreeLeafType type, CompilationMode mode, string name, Action<Node, RBlockBuilder> e,
+            TypeSyntax astType = null)
         {
+            if (astType == null && type == VarTreeLeafType.Func)
+                astType = new PrimitiveTypeSyntax(null, TypeNodeKind.Void);
+
+            _astType = astType;
+
             _e = e;
             Type = type;
             Name = name;
@@ -26,6 +34,8 @@ namespace ZenPlatform.Compiler.Generation
         public VarTreeLeafType Type { get; }
 
         public object CodeObject => _codeObject;
+
+        public TypeSyntax AstType => _astType;
 
         public void SetCodeObject(IField field)
         {

@@ -15,6 +15,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
     {
         private static SyntaxToken publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
         private static SyntaxToken partialToken = SyntaxFactory.Token(SyntaxKind.PartialKeyword);
+        private static SyntaxToken staticToken = SyntaxFactory.Token(SyntaxKind.StaticKeyword);
 
         private static ClassDeclarationSyntax astTreeBaseCls = SyntaxFactory.ClassDeclaration("AstVisitorBase<T>")
             .AddModifiers(publicToken)
@@ -166,6 +167,9 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
                 .WithInitializer(initializer);
 
+
+            members.Add(
+                SyntaxFactory.ParseMemberDeclaration($"public static {syntax.Name} Empty => new {syntax.Name}();"));
             members.Add(constructor);
             members.Add(GetVisitorMethod(syntax));
             members.Add(GetVisitorMethod2(syntax));
@@ -224,7 +228,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                         getter = getter.WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
                     else
                         getter = getter.AddBodyStatements(
-                            SyntaxFactory.ParseStatement($"return ({argument.Type})this.Childs[{slot}];"));
+                            SyntaxFactory.ParseStatement($"return ({argument.Type})this.Children[{slot}];"));
 
                     members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
                             argument.Name).AddModifiers(publicToken)

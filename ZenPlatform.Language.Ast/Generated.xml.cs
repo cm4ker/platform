@@ -14,6 +14,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class FunctionList : SyntaxCollectionNode<Function>
     {
+        public static FunctionList Empty => new FunctionList();
         public FunctionList(): base(null)
         {
         }
@@ -34,6 +35,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class FieldList : SyntaxCollectionNode<Field>
     {
+        public static FieldList Empty => new FieldList();
         public FieldList(): base(null)
         {
         }
@@ -54,6 +56,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class PropertyList : SyntaxCollectionNode<Property>
     {
+        public static PropertyList Empty => new PropertyList();
         public PropertyList(): base(null)
         {
         }
@@ -74,6 +77,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class ConstructorList : SyntaxCollectionNode<Constructor>
     {
+        public static ConstructorList Empty => new ConstructorList();
         public ConstructorList(): base(null)
         {
         }
@@ -94,6 +98,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class TypeList : SyntaxCollectionNode<TypeSyntax>
     {
+        public static TypeList Empty => new TypeList();
         public TypeList(): base(null)
         {
         }
@@ -114,6 +119,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class StatementList : SyntaxCollectionNode<Statement>
     {
+        public static StatementList Empty => new StatementList();
         public StatementList(): base(null)
         {
         }
@@ -135,7 +141,6 @@ namespace ZenPlatform.Language.Ast.Definitions
     public class ParameterList : SyntaxCollectionNode<Parameter>
     {
         public static ParameterList Empty => new ParameterList();
-        
         public ParameterList(): base(null)
         {
         }
@@ -177,7 +182,6 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class AttributeList : SyntaxCollectionNode<AttributeSyntax>
     {
-        
         public static AttributeList Empty => new AttributeList();
         public AttributeList(): base(null)
         {
@@ -199,6 +203,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class ArgumentList : SyntaxCollectionNode<Argument>
     {
+        public static ArgumentList Empty => new ArgumentList();
         public ArgumentList(): base(null)
         {
         }
@@ -219,6 +224,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class MatchAtomList : SyntaxCollectionNode<MatchAtom>
     {
+        public static MatchAtomList Empty => new MatchAtomList();
         public MatchAtomList(): base(null)
         {
         }
@@ -239,6 +245,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class UsingList : SyntaxCollectionNode<UsingBase>
     {
+        public static UsingList Empty => new UsingList();
         public UsingList(): base(null)
         {
         }
@@ -259,6 +266,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class EntityList : SyntaxCollectionNode<TypeEntity>
     {
+        public static EntityList Empty => new EntityList();
         public EntityList(): base(null)
         {
         }
@@ -279,6 +287,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class NamespaceDeclarationList : SyntaxCollectionNode<NamespaceDeclaration>
     {
+        public static NamespaceDeclarationList Empty => new NamespaceDeclarationList();
         public NamespaceDeclarationList(): base(null)
         {
         }
@@ -299,6 +308,7 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public class CompilationUnitList : SyntaxCollectionNode<CompilationUnit>
     {
+        public static CompilationUnitList Empty => new CompilationUnitList();
         public CompilationUnitList(): base(null)
         {
         }
@@ -1561,11 +1571,11 @@ namespace ZenPlatform.Language.Ast.Definitions
 {
     public partial class Variable : Expression, IAstSymbol
     {
-        public Variable(ILineInfo lineInfo, Expression value, String name, TypeSyntax type): base(lineInfo)
+        public Variable(ILineInfo lineInfo, Expression value, String name, TypeSyntax variableType): base(lineInfo)
         {
             this.Attach(0, (SyntaxNode)value);
             Name = name;
-            this.Attach(1, (SyntaxNode)type);
+            this.Attach(1, (SyntaxNode)variableType);
         }
 
         public Expression Value
@@ -1581,7 +1591,7 @@ namespace ZenPlatform.Language.Ast.Definitions
             get;
         }
 
-        public TypeSyntax Type
+        public TypeSyntax VariableType
         {
             get
             {
