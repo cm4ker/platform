@@ -54,7 +54,7 @@ namespace ZenPlatform.QueryBuilder
         {
             List<T> result = new List<T>();
             int i = 0;
-            while (TryPop(out T item) && (++i < count && count > 0 || count == 0))
+            while ((++i <= count && count > 0 || count == 0) && TryPop(out T item))
             {
                 result.Add(item);
             }

@@ -106,10 +106,15 @@ namespace ZenPlatform.Compiler.Roslyn
                 _stb = stb;
             }
 
-            // public SreMethod Concat => _stb.String.FindMethod(x =>
-            //     x.Name == nameof(string.Concat) && x.Parameters.Count == 2
-            //                                     && x.Parameters[0].Type == _stb.String &&
-            //                                     x.Parameters[1].Type == _stb.String);
+            public RoslynMethod Concat => _stb.String.FindMethod(x =>
+                x.Name == nameof(string.Concat) && x.Parameters.Count == 2
+                                                && x.Parameters[0].Type == _stb.String &&
+                                                x.Parameters[1].Type == _stb.String);
+
+            public RoslynMethod Format => _stb.String.FindMethod(x =>
+                x.Name == nameof(string.Format) && x.Parameters.Count == 2
+                                                && x.Parameters[0].Type.Equals(_stb.String) &&
+                                                x.Parameters[1].Type.Equals(_stb.Object.MakeArrayType()));
         }
     }
 }

@@ -995,24 +995,6 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QAnd(QExpression left, QExpression right): base(left, right)
         {
-            this.Attach(0, (QItem)left);
-            this.Attach(1, (QItem)right);
-        }
-
-        public QExpression Left
-        {
-            get
-            {
-                return (QExpression)this.Children[0];
-            }
-        }
-
-        public QExpression Right
-        {
-            get
-            {
-                return (QExpression)this.Children[1];
-            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1033,24 +1015,6 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QAdd(QExpression left, QExpression right): base(left, right)
         {
-            this.Attach(0, (QItem)left);
-            this.Attach(1, (QItem)right);
-        }
-
-        public QExpression Left
-        {
-            get
-            {
-                return (QExpression)this.Children[0];
-            }
-        }
-
-        public QExpression Right
-        {
-            get
-            {
-                return (QExpression)this.Children[1];
-            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1071,24 +1035,6 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QOr(QExpression left, QExpression right): base(left, right)
         {
-            this.Attach(0, (QItem)left);
-            this.Attach(1, (QItem)right);
-        }
-
-        public QExpression Left
-        {
-            get
-            {
-                return (QExpression)this.Children[0];
-            }
-        }
-
-        public QExpression Right
-        {
-            get
-            {
-                return (QExpression)this.Children[1];
-            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1109,24 +1055,6 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QEquals(QExpression left, QExpression right): base(left, right)
         {
-            this.Attach(0, (QItem)left);
-            this.Attach(1, (QItem)right);
-        }
-
-        public QExpression Left
-        {
-            get
-            {
-                return (QExpression)this.Children[0];
-            }
-        }
-
-        public QExpression Right
-        {
-            get
-            {
-                return (QExpression)this.Children[1];
-            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1147,24 +1075,6 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QNotEquals(QExpression left, QExpression right): base(left, right)
         {
-            this.Attach(0, (QItem)left);
-            this.Attach(1, (QItem)right);
-        }
-
-        public QExpression Left
-        {
-            get
-            {
-                return (QExpression)this.Children[0];
-            }
-        }
-
-        public QExpression Right
-        {
-            get
-            {
-                return (QExpression)this.Children[1];
-            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1185,24 +1095,6 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QGreatThen(QExpression left, QExpression right): base(left, right)
         {
-            this.Attach(0, (QItem)left);
-            this.Attach(1, (QItem)right);
-        }
-
-        public QExpression Left
-        {
-            get
-            {
-                return (QExpression)this.Children[0];
-            }
-        }
-
-        public QExpression Right
-        {
-            get
-            {
-                return (QExpression)this.Children[1];
-            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1223,24 +1115,6 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QLessThen(QExpression left, QExpression right): base(left, right)
         {
-            this.Attach(0, (QItem)left);
-            this.Attach(1, (QItem)right);
-        }
-
-        public QExpression Left
-        {
-            get
-            {
-                return (QExpression)this.Children[0];
-            }
-        }
-
-        public QExpression Right
-        {
-            get
-            {
-                return (QExpression)this.Children[1];
-            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1261,24 +1135,6 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QLessThenOrEquals(QExpression left, QExpression right): base(left, right)
         {
-            this.Attach(0, (QItem)left);
-            this.Attach(1, (QItem)right);
-        }
-
-        public QExpression Left
-        {
-            get
-            {
-                return (QExpression)this.Children[0];
-            }
-        }
-
-        public QExpression Right
-        {
-            get
-            {
-                return (QExpression)this.Children[1];
-            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -1299,24 +1155,6 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public QGreatThenOrEquals(QExpression left, QExpression right): base(left, right)
         {
-            this.Attach(0, (QItem)left);
-            this.Attach(1, (QItem)right);
-        }
-
-        public QExpression Left
-        {
-            get
-            {
-                return (QExpression)this.Children[0];
-            }
-        }
-
-        public QExpression Right
-        {
-            get
-            {
-                return (QExpression)this.Children[1];
-            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)

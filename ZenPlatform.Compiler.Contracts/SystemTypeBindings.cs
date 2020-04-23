@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ZenPlatform.Compiler.Contracts.Extensions;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Contracts.Network;

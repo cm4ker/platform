@@ -70,12 +70,14 @@ namespace ZenPlatform.Core.Test
 
                 var env = service.GetService<IWorkEnvironment>();
 
+                env.Initialize(null);
+
                 var session = env.CreateSession(new Anonymous());
 
                 ContextHelper.SetContext(new PlatformContext(session));
 
                 PlatformQuery q = new PlatformQuery();
-                q.Text = "FROM Entity.Store SELECT A = 1, B = 2, C = Property1";
+                q.Text = "FROM Entity.Store SELECT A = 1, B = 2 + 1, C = Property1";
                 var reader = q.ExecuteReader();
                 var reader2 = q.ExecuteReader();
 

@@ -17,7 +17,7 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
 
         public IPType BaseType => _ipType;
         public override string Name => _name ??= CalcName();
-        
+
         public override Guid? BaseId => _ipType.Id;
 
         public int Scale { get; set; }
@@ -29,6 +29,8 @@ namespace ZenPlatform.Configuration.Common.TypeSystem
         public override bool IsTypeSpec => true;
 
         public override bool IsPrimitive => _ipType.IsPrimitive;
+
+        public override PrimitiveKind PrimitiveKind => _ipType.PrimitiveKind;
 
         private string CalcName()
         {

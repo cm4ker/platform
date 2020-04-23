@@ -71,7 +71,6 @@ namespace ZenPlatform.ServerRuntime
                 var valueColumn = cols.FirstOrDefault(x =>
                     x.PlatformIpType.GetSettings().SystemId == typeId && x.SchemaType != ColumnSchemaType.Type);
 
-
                 if (valueColumn == null)
                     throw new Exception("Value column is not defined");
 

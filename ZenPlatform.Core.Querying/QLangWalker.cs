@@ -8,6 +8,9 @@ namespace ZenPlatform.Core.Querying
 
         public override object DefaultVisit(QItem node)
         {
+            if (node == null)
+                return default;
+
             Depth++;
             foreach (var child in node.Children)
             {

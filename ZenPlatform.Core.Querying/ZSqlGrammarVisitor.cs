@@ -1,4 +1,5 @@
-﻿using ZenPlatform.Configuration.Contracts;
+﻿using System;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
@@ -99,6 +100,14 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
+
+        public override object VisitWhere_stmt(ZSqlGrammarParser.Where_stmtContext context)
+        {
+             base.VisitWhere_stmt(context);
+             _stack.where();
+             return null;
+        }
+
         public override object VisitFrom_stmt(ZSqlGrammarParser.From_stmtContext context)
         {
             base.VisitFrom_stmt(context);
@@ -167,6 +176,19 @@ namespace ZenPlatform.Core.Querying
                 _stack.ld_source_context();
 
             _stack.ld_field(context.column_name().GetText());
+
+            return null;
+        }
+
+        public override object VisitExprAdditive(ZSqlGrammarParser.ExprAdditiveContext context)
+        {
+            base.VisitExprAdditive(context);
+
+            if (context.exprAdditive() != null)
+            {
+                if (context.PLUS() != null) _stack.add();
+                if (context.MINUS() != null) throw new Exception("Not implemented");
+            }
 
             return null;
         }

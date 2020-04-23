@@ -16,7 +16,7 @@ namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
             Body = new RBlockBuilder(typeSystem, this);
         }
 
-        public RoslynParameter DefineParameter(string name, RoslynType type, bool isOut, bool iTmpSreBackendf)
+        public RoslynParameter DefineParameter(string name, RoslynType type, bool isOut, bool isRef)
         {
             var dtype = (RoslynType) type;
 
@@ -42,7 +42,6 @@ namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
             return this;
         }
 
-
         public RBlockBuilder Body { get; }
 
         public void Dump(TextWriter tw)
@@ -52,9 +51,12 @@ namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
             if (IsStatic)
                 tw.Write("static ");
 
-            if(MethodDef.HasOverrides)
+            if (MethodDef.HasOverrides)
                 tw.Write("override ");
-            
+            else if (MethodDef.IsVirtual)
+                tw.Write("virtual ");
+
+
             ReturnType.DumpRef(tw);
 
             tw.Space().W(Name);
@@ -78,8 +80,5 @@ namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 
             Body.Dump(tw);
         }
-
-
-        
     }
 }

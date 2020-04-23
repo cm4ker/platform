@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection.Emit;
+using ZenPlatform.Compiler.Contracts.Extensions;
 
 namespace ZenPlatform.Compiler.Contracts
 {

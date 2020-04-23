@@ -15,10 +15,38 @@ using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Contracts.Environment;
+using ZenPlatform.QueryBuilder;
 using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Core.Test.Environment
 {
+    public class TestAsmManager : IAssemblyManager
+    {
+        public void BuildConfiguration(IProject configuration, SqlDatabaseType dbType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CheckConfiguration(IProject configuration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<AssemblyDescription> GetAssemblies(IProject conf)
+        {
+            yield return new AssemblyDescription()
+            {
+                AssemblyHash = "Some Hash", ConfigurationHash = "Some Hash", Name = "Server", Type = AssemblyType.Server
+            };
+        }
+
+        public byte[] GetAssemblyBytes(AssemblyDescription description)
+        {
+            return File.ReadAllBytes(typeof(EntryPoint).Assembly.Location);
+        }
+    }
+
+
     public class TestEnvironment : IWorkEnvironment
     {
         private IStartupConfig _config;
@@ -38,6 +66,7 @@ namespace ZenPlatform.Core.Test.Environment
         public IProject Configuration => ConfigurationFactory.Create();
 
         public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService,
+            ILinkFactory linkFactory,
             ILogger<TestEnvironment> logger,
             IAssemblyManager assemblyManager)
         {
@@ -45,6 +74,7 @@ namespace ZenPlatform.Core.Test.Environment
             AuthenticationManager = authenticationManager;
             AuthenticationManager.RegisterProvider(new AnonymousAuthenticationProvider());
             InvokeService = invokeService;
+            LinkFactory = linkFactory;
             _assemblyManager = assemblyManager;
             _logger = logger;
         }
@@ -61,8 +91,8 @@ namespace ZenPlatform.Core.Test.Environment
             _logger.Info("TEST ENVIRONMENT START.");
 
 
-            if (_assemblyManager.CheckConfiguration(Configuration))
-                _assemblyManager.BuildConfiguration(Configuration, _config.DatabaseType);
+            // if (_assemblyManager.CheckConfiguration(Configuration))
+            //     _assemblyManager.BuildConfiguration(Configuration, _config.DatabaseType);
 
 
             var asms = _assemblyManager.GetAssemblies(Configuration).First(x => x.Type == AssemblyType.Server);
@@ -70,8 +100,9 @@ namespace ZenPlatform.Core.Test.Environment
             var bytes = _assemblyManager.GetAssemblyBytes(asms);
             var serverAssembly = Assembly.Load(bytes);
 
-            var serviceType = serverAssembly.GetType("EntryPoint");
-            var initializerInstance = serviceType.GetMethod("Main").Invoke(null, new[] {new[] {InvokeService}});
+            var serviceType = serverAssembly.GetType("EntryPoint") ?? throw new NullReferenceException("Entry point");
+            var initializerInstance =
+                serviceType.GetMethod("Main")?.Invoke(null, new[] {new Object[] {InvokeService, LinkFactory}});
 
             InvokeService.Register(new Route("test"), (c, a) => { return (int) a[0] + 1; });
 

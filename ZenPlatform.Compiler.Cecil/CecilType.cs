@@ -5,6 +5,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Extensions;
 using ICustomAttribute = ZenPlatform.Compiler.Contracts.ICustomAttribute;
 
 namespace ZenPlatform.Compiler.Cecil

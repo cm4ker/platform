@@ -132,6 +132,7 @@ namespace ZenPlatform.Compiler
             if (type is SingleTypeSyntax sts)
             {
                 var symbol = TypeFinder.Apply(sts, _root);
+
                 var typeDef = symbol.Type;
 
                 var propDef = typeDef?.TypeBody.SymbolTable.Find<PropertySymbol>(name, SymbolScopeBySecurity.User);

@@ -28,9 +28,11 @@ namespace ZenPlatform.Compiler.Generation
 
             _cus = _root.Units;
             AstScopeRegister.Apply(_root);
+
+            //Add Querying support to the platform
             if (_mode.HasFlag(CompilationMode.Server))
                 QueryCompilerHelper.Init(_root, _ts);
-            var test = XamlServices.Save(_conf.TypeManager);
+
             Build();
         }
 

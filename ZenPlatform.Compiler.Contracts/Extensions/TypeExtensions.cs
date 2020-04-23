@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Security.Cryptography.X509Certificates;
 
-namespace ZenPlatform.Compiler.Contracts
+namespace ZenPlatform.Compiler.Contracts.Extensions
 {
     public static class TypeExtensions
     {

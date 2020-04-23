@@ -23,6 +23,7 @@ using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Test.Assemblies;
 using ZenPlatform.Core.Test.Environment;
@@ -57,7 +58,7 @@ namespace ZenPlatform.Core.Test
             services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
             services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
             services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
-            services.AddScoped<IAssemblyManager, AssemblyManager>();
+            services.AddScoped<IAssemblyManager, TestAsmManager>();
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
             services.AddSingleton<IFileSystem, MemoryFileSystem>();
             services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
@@ -65,6 +66,7 @@ namespace ZenPlatform.Core.Test
             services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
             services.AddScoped<IConfigurationManager, ConfigurationManager>();
             services.AddScoped<IXCCompiller, XCCompiler>();
+            services.AddScoped<ILinkFactory, LinkFactory>();
 
 
             //services.AddSingleton<ITestProxyService, TestProxyService>();

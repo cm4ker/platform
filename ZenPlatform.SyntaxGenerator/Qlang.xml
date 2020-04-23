@@ -164,63 +164,62 @@
         </Arguments>
     </Syntax>
 
-
     <Syntax Name="QAnd" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" DenyDeclare="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" DenyDeclare="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="QAdd" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" DenyDeclare="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" DenyDeclare="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="QOr" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" DenyDeclare="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" DenyDeclare="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="QEquals" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" DenyDeclare="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" DenyDeclare="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QNotEquals" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" DenyDeclare="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" DenyDeclare="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QGreatThen" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" DenyDeclare="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" DenyDeclare="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QLessThen" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" DenyDeclare="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" DenyDeclare="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QLessThenOrEquals" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" DenyDeclare="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" DenyDeclare="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="QGreatThenOrEquals" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" DenyDeclare="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" DenyDeclare="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
     <!-- End Operation expression -->

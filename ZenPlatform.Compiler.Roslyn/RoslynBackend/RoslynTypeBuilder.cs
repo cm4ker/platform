@@ -44,7 +44,9 @@ namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
         public void AddInterfaceImplementation(RoslynType type)
         {
             var dType = (RoslynType) type;
+            _interfaces.Add(type);
             this.TypeDef.Interfaces.Add(new InterfaceImplUser(dType.TypeRef));
+            
         }
 
         public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, GenericParameterConstraint>> names)
@@ -197,12 +199,19 @@ namespace ZenPlatform.Compiler.Roslyn.RoslynBackend
 
             if (IsAbstract)
                 sw.Write("abstract ");
-
+            
             sw.Write("class ");
             sw.Write(Name);
 
             sw.W(":");
             BaseType.DumpRef(sw);
+
+            foreach (var inf in Interfaces)
+            {
+                sw.W(",");
+                inf.DumpRef(sw);
+            }
+
 
             using (sw.CurlyBrace())
             {

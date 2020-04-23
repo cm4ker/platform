@@ -1,13 +1,15 @@
 using System;
 using System.Linq;
-using System.Reflection;
+using dnlib.DotNet;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Contracts.Extensions;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
+using ZenPlatform.Core.Contracts;
 using ZenPlatform.EntityComponent.Compilation.UX;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.EntityComponent.Entity;
@@ -17,6 +19,8 @@ using ZenPlatform.Shared.Tree;
 using Root = ZenPlatform.Language.Ast.Definitions.Root;
 using TypeExtensions = ZenPlatform.Compiler.Roslyn.TypeExtensions;
 using TypeSystemExtensions = ZenPlatform.Compiler.Roslyn.TypeSystemExtensions2;
+using ConventionsHelper = ZenPlatform.Compiler.Roslyn.ConventionsHelper;
+using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ZenPlatform.EntityComponent.Compilation
 {
@@ -295,33 +299,46 @@ namespace ZenPlatform.EntityComponent.Compilation
 
         private void CreateMainLink(RoslynAssemblyBuilder builder)
         {
-            // var ts = builder.TypeSystem;
-            // var b = ts.GetSystemBindings();
-            //
-            // var linkType = builder.DefineType(_component.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule),
-            //     "EntityLink",
-            //     TypeAttributes.Class | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit,
-            //     b.Object);
-            //
-            // linkType.AddInterfaceImplementation(ts.FindType<ILink>());
-            //
-            // var idBack = linkType.DefineField(b.Guid, ConventionsHelper.GetBackingFieldName("Id"), false, false);
-            // linkType.DefineProperty(b.Guid, "Id", idBack, true, false, true);
-            //
-            // var typeBack = linkType.DefineField(b.Int, ConventionsHelper.GetBackingFieldName("Type"), false, false);
-            // linkType.DefineProperty(b.Int, "Type", typeBack, true, false, true);
-            //
-            // var presentationBack = linkType.DefineField(b.String, ConventionsHelper.GetBackingFieldName("Presentation"),
-            //     false, false);
-            // linkType.DefineProperty(b.String, "Presentation", presentationBack, true, false, true);
-            //
-            // var ctor = linkType.DefineConstructor(false);
-            //
-            // var e = ctor.Generator;
-            //
-            // e.LdArg_0()
-            //     .EmitCall(b.Object.Constructors[0])
-            //     .Ret();
+            var ts = builder.TypeSystem;
+            var b = ts.GetSystemBindings();
+
+            var linkType = builder.DefineType(_component.GetCodeRuleExpression(CodeGenRuleType.NamespaceRule),
+                "EntityLink",
+                TypeAttributes.Class | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit |
+                TypeAttributes.Public,
+                b.Object);
+
+            linkType.AddInterfaceImplementation(ts.FindType<ILink>());
+
+            var idBack = linkType.DefineField(b.Guid, ConventionsHelper.GetBackingFieldName("i"), false, false);
+
+            TypeExtensions.DefineProperty(linkType, b.Guid, nameof(ILink.Id), idBack, true, false, true);
+
+            var typeBack = linkType.DefineField(b.Int, ConventionsHelper.GetBackingFieldName("t"), false, false);
+            TypeExtensions.DefineProperty(linkType, b.Int, nameof(ILink.TypeId), typeBack, true, false, true);
+
+            var presentationBack = linkType.DefineField(b.String, ConventionsHelper.GetBackingFieldName("p"),
+                false, false);
+            TypeExtensions.DefineProperty(linkType, b.String, nameof(ILink.Presentation), presentationBack, true, false,
+                true);
+
+            var ctor = linkType.DefineConstructor(false);
+
+            var p1 = ctor.DefineParameter(b.Guid);
+            var p2 = ctor.DefineParameter(b.Int);
+            var p3 = ctor.DefineParameter(b.String);
+
+
+            ctor.Body
+                .LdArg_0()
+                .LdArg(p1)
+                .StFld(idBack)
+                .LdArg_0()
+                .LdArg(p2)
+                .StFld(typeBack)
+                .LdArg_0()
+                .LdArg(p3)
+                .StFld(presentationBack);
         }
     }
 }
