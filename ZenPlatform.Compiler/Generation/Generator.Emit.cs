@@ -4,13 +4,14 @@ using Mono.CompilerServices.SymbolWriter;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Language.Ast.Definitions;
-using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.Language.Ast.Symbols;
+using CastExpression = ZenPlatform.Language.Ast.Definitions.Expressions.CastExpression;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -58,35 +59,43 @@ namespace ZenPlatform.Compiler.Generation
             // emitter.Ret();
         }
 
-//         private void EmitConvert(IEmitter e, CastExpression expression, SymbolTable symbolTable)
-//         {
-//             if (expression.Expression is Name name)
-//             {
-//                 var variable = symbolTable.Find<VariableSymbol>(name.Value, name.GetScope());
-//                 if (variable == null)
-//                     Error("Assignment variable " + name.Value + " unknown.");
+        private void EmitCast(RBlockBuilder e, CastExpression cast, SymbolTable symbolTable)
+        {
+            EmitExpression(e, cast.Expression, symbolTable);
+            e.Cast(_map.GetClrType(cast.CastType));
+            
+            
+            // if (cast.Expression is Name name)
+            // {
+            //     var variable = symbolTable.Find<VariableSymbol>(name.Value, name.GetScope());
+            //
+            //     if (variable == null)
+            //         Error("Assignment variable " + name.Value + " unknown.");
+            //
+            //     if (variable.SyntaxObject is Variable v)
+            //         cast.Expression.Type = v.Type;
+            //
+            //     else if (variable.SyntaxObject is Parameter p)
+            //         cast.Expression.Type = p.Type;
+            //
+            //
+            // }
+
+            //TODO: Нужно доделать ComputingEngine
+//            TypeNode valueType;
 //
-//                 if (variable.SyntaxObject is Variable v)
-//                     expression.Expression.Type = v.Type;
-//                 else if (variable.SyntaxObject is Parameter p)
-//                     expression.Expression.Type = p.Type;
-//             }
+//            if (expression.Value is IndexerExpression ie && ie.Type is ArrayTypeNode atn)
+//            {
+//                valueType = atn.ElementType;
+//            }
 //
-//             //TODO: Нужно доделать ComputingEngine
-// //            TypeNode valueType;
-// //
-// //            if (expression.Value is IndexerExpression ie && ie.Type is ArrayTypeNode atn)
-// //            {
-// //                valueType = atn.ElementType;
-// //            }
-// //
-// //
-// //            var convertType = expression.Type.Type;
-// //            if (valueType is null || (valueType.IsValueType && convertType.IsValueType))
-// //            {
-// //                EmitConvCode(e, convertType);
-// //            }
-//         }
+//
+//            var convertType = expression.Type.Type;
+//            if (valueType is null || (valueType.IsValueType && convertType.IsValueType))
+//            {
+//                EmitConvCode(e, convertType);
+//            }
+        }
 
         // private void EmitConvCode(IEmitter e, IType type)
         // {

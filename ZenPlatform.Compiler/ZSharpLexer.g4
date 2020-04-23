@@ -26,6 +26,7 @@ SHARP:         '#'                                -> mode(DIRECTIVE_MODE);
 VAR : 'var';
 BOOL : 'bool';
 INT : 'int';
+UID : 'uid';
 DOUBLE : 'double';
 CHAR : 'char';
 STRING : 'string';

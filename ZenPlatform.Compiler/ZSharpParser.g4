@@ -250,6 +250,7 @@ structureType:
 primitiveType:
     BOOL 
     | INT
+    | UID
     | STRING 
     | CHAR 
     | DOUBLE

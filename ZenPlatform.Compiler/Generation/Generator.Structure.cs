@@ -43,7 +43,7 @@ namespace ZenPlatform.Compiler.Generation
                 _epManager.InitService();
 
             _map = new SyntaxTreeMemberAccessProvider(_root, _ts);
-            
+
             BuildInfrastructure();
             BuildStructure();
             BuildGlobalVar();
@@ -56,10 +56,8 @@ namespace ZenPlatform.Compiler.Generation
         private void InitGlobalVar(GlobalVarManager mrg)
         {
             var item = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Server, "Query",
-                (node, builder) =>
-                {
-                    builder.NewObj(_ts.Resolve<PlatformQuery>().FindConstructor());
-                });
+                (node, builder) => { builder.NewObj(_ts.Resolve<PlatformQuery>().FindConstructor()); },
+                new SingleTypeSyntax(null, "Query", TypeNodeKind.Type));
 
             mrg.Register(item);
         }

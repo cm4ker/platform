@@ -59,6 +59,13 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             //store phase
+
+            if (variable.Value == null || variable.Type == null || variable.Type.Kind == TypeNodeKind.Unknown)
+            {
+                throw new Exception(
+                    $"variable L:{variable.Line}P:{variable.Position} {variable.Name} type is unknown");
+            }
+
             RLocal local = e.DefineLocal(_map.GetClrType(variable.Type));
 
             if (variable.Value is Expression ex)

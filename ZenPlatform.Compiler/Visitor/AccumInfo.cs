@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Core.Annotations;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
@@ -58,7 +59,7 @@ namespace ZenPlatform.Compiler.Visitor
         private Queue<SyntaxNode> _queue;
 
 
-        public static TypeSymbol Apply(TypeSyntax typeNode, SyntaxNode node)
+        public static TypeSymbol Apply([NotNull] TypeSyntax typeNode, [NotNull] SyntaxNode node)
         {
             var p = new TypeFinder(typeNode);
             return p.Visit(node);

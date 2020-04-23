@@ -237,7 +237,7 @@
         <Arguments>
             <Single Name="Value" Type="Expression"/>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
-            <Single Name="Type" Type="TypeSyntax"/>
+            <Single Name="VariableType" Type="TypeSyntax"/>
         </Arguments>
     </Syntax>
 
