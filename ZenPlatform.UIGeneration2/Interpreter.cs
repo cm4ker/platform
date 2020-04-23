@@ -1,15 +1,8 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Antlr4.Runtime;
-using MoreLinq.Extensions;
-using SharpGen.Runtime.Win32;
-using ZenPlatform.Configuration.TypeSystem;
-using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Querying;
 using ZenPlatform.Core.Querying.Model;
-using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder.Model;
 using ZenPlatform.QueryBuilder.Visitor;
 using ZenPlatform.Test.Tools;
@@ -51,7 +44,8 @@ namespace ZenPlatform.UIBuilder
 
         public Interpreter()
         {
-            _m = new QLang(ConfigurationFactory.Create());
+            var proj = ConfigurationFactory.Create();
+            _m = new QLang(proj.TypeManager);
         }
 
         public (string Output1, string Output2) RunQuery(string sql)

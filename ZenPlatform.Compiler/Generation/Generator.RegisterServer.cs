@@ -2,6 +2,7 @@ using System.Dynamic;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 
@@ -15,45 +16,45 @@ namespace ZenPlatform.Compiler.Generation
         /// <param name="function"></param>
         private void EmitRegisterServerFunction(Function function)
         {
-            var e = _epManager.Main.Generator;
+            var e = _epManager.Main.Body;
             var invs = _epManager.GetISField();
 
             var dlgt = _epManager.EntryPoint.DefineMethod($"dlgt_{function.Name}", true, true, false);
 
-            dlgt.DefineParameter("context", _bindings.InvokeContext, false, false);
+            dlgt.DefineParameter("context", _ts.InvokeContext(), false, false);
             var argsParam = dlgt.DefineParameter("args", _bindings.Object.MakeArrayType(), false, false);
             dlgt.WithReturnType(_bindings.Object);
 
             var method = _stage1Methods[function];
 
-            var dle = dlgt.Generator;
+            var dle = dlgt.Body;
 
             for (int i = 0; i < method.Parameters.Count; i++)
             {
                 dle.LdArg(argsParam)
-                    .LdcI4(i)
-                    .LdElemRef()
-                    .Unbox_Any(method.Parameters[i].Type);
+                    .LdLit(i)
+                    .LdElem()
+                    .Cast(method.Parameters[i].Type);
             }
 
-            dle.EmitCall(method);
+            dle.Call(method);
 
             if (method.ReturnType == _bindings.Void)
             {
-                dle.LdNull().Ret();
+                dle.Null().Ret();
             }
             else
             {
-                dle.Box(method.ReturnType).Ret();
+                dle.Ret();
             }
 
             e.LdSFld(invs)
-                .LdStr($"{function.FirstParent<TypeEntity>().Name}.{function.Name}")
-                .NewObj(_bindings.Route.Constructors.First())
-                .LdNull()
+                .LdLit($"{function.FirstParent<TypeEntity>().Name}.{function.Name}")
+                .NewObj(_ts.Route().Constructors.First())
+                //.Null()
                 .LdFtn(dlgt)
-                .NewObj(_bindings.ParametricMethod.Constructors.First())
-                .EmitCall(_bindings.InvokeService.FindMethod(m => m.Name == "Register"));
+                //.NewObj(_bindings.ParametricMethod.Constructors.First())
+                .Call(_ts.InvokeService().FindMethod(m => m.Name == "Register"));
         }
     }
 }

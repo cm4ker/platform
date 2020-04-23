@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.TypeSystem;
 
 namespace ZenPlatform.Configuration.Common.TypeSystem
 {

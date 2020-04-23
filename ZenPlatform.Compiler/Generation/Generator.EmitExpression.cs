@@ -1,26 +1,31 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
+using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Core;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
-using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.Language.Ast.Symbols;
-using ZenPlatform.Shared.Tree;
+using ZenPlatform.ServerRuntime;
+using BinaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.BinaryExpression;
+using Call = ZenPlatform.Language.Ast.Definitions.Call;
+using CastExpression = ZenPlatform.Language.Ast.Definitions.Expressions.CastExpression;
+using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
+using Literal = ZenPlatform.Language.Ast.Definitions.Literal;
+using UnaryExpression = ZenPlatform.Language.Ast.Definitions.Expressions.UnaryExpression;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitExpression(IEmitter e, Expression expression, SymbolTable symbolTable)
+        private void EmitExpression(RBlockBuilder e, Expression expression, SymbolTable symbolTable)
         {
             if (expression is BinaryExpression be)
             {
@@ -50,7 +55,9 @@ namespace ZenPlatform.Compiler.Generation
                 if (be.Type.IsString())
                     switch (be.BinaryOperatorType)
                     {
-                        default: throw new NotSupportedException();
+                        case BinaryOperatorType.Add:
+                            e.Add();
+                            break;
                     }
 
                 if (be.Type.IsBoolean())
@@ -61,7 +68,7 @@ namespace ZenPlatform.Compiler.Generation
                             e.Ceq();
                             break;
                         case BinaryOperatorType.NotEqual:
-                            e.NotEqual();
+                            e.Cneq();
                             break;
                         case BinaryOperatorType.GreaterThen:
                             e.Cgt();
@@ -90,7 +97,7 @@ namespace ZenPlatform.Compiler.Generation
                 {
                     EmitExpression(e, ie.Expression, symbolTable);
                     EmitExpression(e, ie.Indexer, symbolTable);
-                    e.LdElemI4();
+                    e.LdElem();
                 }
 
                 if (ue is LogicalOrArithmeticExpression lae)
@@ -112,30 +119,36 @@ namespace ZenPlatform.Compiler.Generation
 
                 if (ue is CastExpression ce)
                 {
-                    EmitExpression(e, ce.Expression, symbolTable);
-                    EmitConvert(e, ce, symbolTable);
+                    EmitCast(e, ce, symbolTable);
                 }
             }
             else if (expression is Literal literal)
             {
-                switch (literal.Type.Kind)
+                if (literal.IsSqlLiteral)
                 {
-                    case TypeNodeKind.Int:
-                        e.LdcI4(Int32.Parse(literal.Value));
-                        break;
-                    case TypeNodeKind.String:
-                        e.LdStr(literal.Value);
-                        break;
-                    case TypeNodeKind.Double:
-                        e.LdcR8(double.Parse(literal.Value, CultureInfo.InvariantCulture));
-                        break;
-                    case TypeNodeKind.Char:
-                        e.LdcI4(char.ConvertToUtf32(literal.Value, 0));
-                        break;
-                    case TypeNodeKind.Boolean:
-                        e.LdcI4(bool.Parse(literal.Value) ? 1 : 0);
-                        break;
+                    //need compile sql expression!
+                    var result = QueryCompilerHelper.Compile(_conf.TypeManager, literal.Value);
+                    e.LdLit(result.sql);
                 }
+                else
+                    switch (literal.Type.Kind)
+                    {
+                        case TypeNodeKind.Int:
+                            e.LdLit(Int32.Parse(literal.Value));
+                            break;
+                        case TypeNodeKind.String:
+                            e.LdLit(literal.Value);
+                            break;
+                        case TypeNodeKind.Double:
+                            e.LdLit(double.Parse(literal.Value, CultureInfo.InvariantCulture));
+                            break;
+                        case TypeNodeKind.Char:
+                            e.LdLit(char.Parse(literal.Value));
+                            break;
+                        case TypeNodeKind.Boolean:
+                            e.LdLit(bool.Parse(literal.Value) ? 1 : 0);
+                            break;
+                    }
             }
             else if (expression is Name name)
             {
@@ -155,35 +168,27 @@ namespace ZenPlatform.Compiler.Generation
                         if (variable.SyntaxObject is ITypedNode tn)
                             name.Type = tn.Type;
 
-                    if (variable.CompileObject is ILocal vd)
+                    if (variable.CompileObject is RLocal vd)
                     {
                         if (name.Type is PrimitiveTypeSyntax pts && (pts.IsBoolean() || pts.IsNumeric()) && false)
                         {
                             //TODO: need understand then we must load variable\arg by ref. While force disable this tree
-                            e.LdLocA(vd);
+                            // e.LdLocA(vd);
                         }
                         else
                             e.LdLoc(vd);
                     }
                     else if (variable.CompileObject is IField fd)
                     {
-                        e.LdArg_0();
-                        e.LdFld(fd);
+                        // e.LdArg_0();
+                        // e.LdFld(fd);
                     }
-                    else if (variable.CompileObject is IParameter pd)
+                    else if (variable.CompileObject is RoslynParameter pd)
                     {
-                        Parameter p = variable.SyntaxObject as Parameter;
+                        e.LdArg(pd);
 
-                        if (name.Type is UnionTypeSyntax)
-                        {
-                            e.LdArgA(pd);
-                            e.EmitCall(_bindings.UnionTypeStorage.FindProperty("Value").Getter);
-                        }
-                        else
-                            e.LdArg(pd.ArgIndex);
-
-                        if (p.PassMethod == PassMethod.ByReference)
-                            e.LdIndI4();
+                        // if (p.PassMethod == PassMethod.ByReference)
+                        //     e.LdIndI4();
                     }
                 }
                 else if (symbol is PropertySymbol ps)
@@ -198,20 +203,31 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is ClrInternalCall internalCall)
             {
                 EmitArguments(e, internalCall.Arguments, symbolTable);
-                e.EmitCall(internalCall.Method);
+                // e.Call(internalCall.Method);
             }
             else if (expression is PropertyLookupExpression le)
             {
                 EmitExpression(e, le.Current, symbolTable);
 
-                var lna = le.Lookup as Name;
+                var lna = le.Lookup as Name ?? throw new Exception("Lookup mush be Name node type");
 
-                var prop = _map.GetProperty(le.Current.Type, lna.Value);
-                lna.Type = prop.PropertyType.ToAstType();
+                if (le.Current.Type.Kind == TypeNodeKind.Type &&
+                    TypeFinder.Apply(le.Current.Type, _root)?.Type == QueryCompilerHelper.DataReader)
+                {
+                    //ugly hack
+                    //TODO: introduce redirected dynamic properties
 
-                e.EmitCall(prop.Getter);
+                    //this is reader type redirect propNames to expr[expr]
+                    e.LdLit(lna.Value);
+                    e.LdElem();
+                }
+                else
+                {
+                    var prop = _map.GetProperty(le.Current.Type, lna.Value);
+                    lna.Type = prop.PropertyType.ToAstType();
+                    e.LdProp(prop);
+                }
             }
-
             else if (expression is MethodLookupExpression mle)
             {
                 var lca = mle.Lookup as Call;
@@ -221,10 +237,13 @@ namespace ZenPlatform.Compiler.Generation
                 var method = _map.GetMethod(mle.Current.Type, lca.Name.Value,
                     lca.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
 
-                lca.Type = method.ReturnType.ToAstType();
+                var resultType = (TypeSyntax) method.astMethod.Type.Clone();
+
+                lca.Type = resultType;
+                lca.Attach(resultType);
 
                 EmitArguments(e, lca.Arguments, symbolTable);
-                e.EmitCall(method);
+                e.Call(method.clrMethod);
             }
 
             else if (expression is PostIncrementExpression pis)
@@ -242,8 +261,18 @@ namespace ZenPlatform.Compiler.Generation
             else if (expression is Throw th)
             {
                 EmitExpression(e, th.Exception, symbolTable);
-                var constructor = _ts.GetSystemBindings().Exception.FindConstructor(_bindings.String);
-                e.NewObj(constructor);
+
+                if (th.Exception != null)
+                {
+                    var constructor = _ts.GetSystemBindings().Exception.FindConstructor(_bindings.String);
+                    e.NewObj(constructor);
+                }
+                else
+                {
+                    var constructor = _ts.GetSystemBindings().Exception.FindConstructor();
+                    e.NewObj(constructor);
+                }
+
                 e.Throw();
             }
             else if (expression is Assignment asg)
@@ -297,78 +326,69 @@ namespace ZenPlatform.Compiler.Generation
             }
         }
 
-        private void EmitPostOperation(IEmitter e, SymbolTable symbolTable, PostOperationExpression pis)
+        private void EmitPostOperation(RBlockBuilder e, SymbolTable symbolTable, PostOperationExpression pis)
         {
-            IType opType = _map.GetClrType(pis.Type);
-
-            if (pis.Expression is Name n)
+            if (pis.Expression is Name)
             {
-                var symbol = symbolTable.Find(n.Value, SymbolType.Variable | SymbolType.Property,
-                    SymbolScopeBySecurity.Shared);
-
-                var needLoc = symbol.Type == SymbolType.Property;
-
-                ILocal loc = null;
-
-                if (needLoc)
-                    loc = e.DefineLocal(opType);
-
                 EmitExpression(e, pis.Expression, symbolTable);
-
-                if (needLoc)
-                {
-                    e.StLoc(loc)
-                        .LdLoc(loc);
-                }
-
-
-                if (pis is PostIncrementExpression)
-                    EmitIncrement(e, opType);
-                else
-                    EmitDecrement(e, opType);
-
-                e.Add();
-
-                if (symbol is VariableSymbol vs)
-                {
-                    if (vs.CompileObject is IParameter pd)
-                        e.StArg(pd);
-
-                    if (vs.CompileObject is ILocal vd)
-                        e.StLoc(vd);
-                }
-                else if (symbol is PropertySymbol ps)
-                {
-                    e.LdArg_0()
-                        .EmitCall(ps.ClrProperty.Setter);
-                }
+                EmitExpression(e, pis.Expression, symbolTable);
+                e.LdLit(1).Add().Assign();
             }
-            else if (pis.Expression is PropertyLookupExpression ple)
-            {
-                var loc = e.DefineLocal(opType);
 
-                //Load context
-                EmitExpression(e, ple.Current, symbolTable);
 
-                //Assign new value
-                var prop = _map.GetProperty(ple.Current.Type, (ple.Lookup as Name).Value);
-                e.LdLoc(loc);
-
-                if (pis is PostIncrementExpression)
-                    EmitIncrement(e, opType);
-                else
-                    EmitDecrement(e, opType);
-
-                e.EmitCall(prop.Setter);
-            }
+            // IType opType = _map.GetClrType(pis.Type);
+            //
+            // if (pis.Expression is Name n)
+            // {
+            //     EmitExpression(e, pis.Expression, symbolTable);
+            //
+            //     if (pis is PostIncrementExpression)
+            //         EmitIncrement(e, opType);
+            //     else
+            //         EmitDecrement(e, opType);
+            //
+            //     e.Add();
+            //
+            //     if (symbol is VariableSymbol vs)
+            //     {
+            //         if (vs.CompileObject is IParameter pd)
+            //             e.StArg(pd);
+            //
+            //         if (vs.CompileObject is ILocal vd)
+            //             e.StLoc(vd);
+            //     }
+            //     else if (symbol is PropertySymbol ps)
+            //     {
+            //         e.LdArg_0()
+            //             .EmitCall(ps.ClrProperty.Setter);
+            //     }
+            // }
+            // else if (pis.Expression is PropertyLookupExpression ple)
+            // {
+            //     var loc = e.DefineLocal(opType);
+            //
+            //     //Load context
+            //     EmitExpression(e, ple.Current, symbolTable);
+            //
+            //     //Assign new value
+            //     var prop = _map.GetProperty(ple.Current.Type, (ple.Lookup as Name).Value);
+            //     e.LdLoc(loc);
+            //
+            //     if (pis is PostIncrementExpression)
+            //         EmitIncrement(e, opType);
+            //     else
+            //         EmitDecrement(e, opType);
+            //
+            //     e.EmitCall(prop.Setter);
+            // }
         }
 
 
-        private void CheckContextVariable(IEmitter e, VariableSymbol symbol)
+        private void CheckContextVariable(RBlockBuilder e, VariableSymbol symbol)
         {
             if (symbol.CompileObject == null)
             {
-                var loc = e.DefineLocal(_ts.FindType<PlatformContext>());
+                var loc = e.DefineLocal(_ts.Resolve<PlatformContext>());
 
                 e.LdContext()
                     .StLoc(loc);

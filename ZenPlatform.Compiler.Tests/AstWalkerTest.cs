@@ -20,7 +20,7 @@ namespace ZenPlatform.Compiler.Tests
                 {
                     new NamespaceDeclaration(null, "System", new UsingList(), new EntityList
                     {
-                        new BindingClass("Test", new UnknownType("Test"))
+                        //new BindingClass("Test", new UnknownType("Test"))
                     }, null)
                 });
 

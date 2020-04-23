@@ -1,15 +1,14 @@
-using System.Collections.Generic;
-using dnlib.DotNet.Resources;
-using NLog.Targets.Wrappers;
-using ReactiveUI;
 using ZenPlatform.Avalonia.Wrapper;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.QueryBuilder;
+using SystemTypeBindings = ZenPlatform.Compiler.Roslyn.SystemTypeBindings;
 
 namespace ZenPlatform.EntityComponent.Compilation.UX
 {
@@ -36,33 +35,32 @@ namespace ZenPlatform.EntityComponent.Compilation.UX
 
         public IPType ObjectType { get; }
 
-        public ITypeBuilder Stage0(IAssemblyBuilder asm)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm)
         {
             _ts = asm.TypeSystem;
-            _sb = _ts.GetSystemBindings();
 
             // _viewModel = asm.DefineInstanceType(GetNamespace(), ObjectType.Name + Name + "FormViewModel");
             // _viewModel.DefineDefaultConstructor(false);
 
             var result =
-                asm.DefineInstanceType(GetNamespace(), $"{ObjectType.Name}{Name}Form", _ts.FindType<UXForm>());
+                asm.DefineInstanceType(GetNamespace(), $"{ObjectType.Name}{Name}Form", _ts.Resolve<UXForm>());
 
             return result;
         }
 
-        private ITypeSystem _ts;
+        private RoslynTypeSystem _ts;
         private SystemTypeBindings _sb;
-        private IField _markup;
-        private IField _params;
-        private IField _f_viewModel;
-        private ITypeBuilder _viewModel;
+        private RoslynField _markup;
+        private RoslynField _params;
+        private RoslynField _f_viewModel;
+        private RoslynTypeBuilder _viewModel;
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(RoslynTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
-            builder.DefineDefaultConstructor(false);
+            // builder.DefineDefaultConstructor(false);
         }
 
-        public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
         }
     }

@@ -10,7 +10,6 @@ using ZenPlatform.Configuration.Structure.Data;
 using ZenPlatform.EntityComponent.IDE;
 using ZenPlatform.Ide.Common;
 using ZenPlatform.Ide.Contracts;
-using ZenPlatform.Configuration.TypeSystem;
 using ZenPlatform.EntityComponent.Configuration.Editors;
 using System.IO;
 

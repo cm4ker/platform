@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Symbols;
@@ -12,7 +13,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         /// <summary>
         /// Билдер IL кода
         /// </summary>
-        public IEmitter Builder;
+        public RBlockBuilder Builder;
 
         public SymbolType SymbolType => SymbolType.Constructor;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Language.Ast.Definitions;
@@ -70,14 +71,16 @@ namespace ZenPlatform.Language.Ast
      if(a == b)
      
      */
+
     public class BindingClass : TypeEntity, IAstSymbol
     {
-        public BindingClass(string forwardedName, IType bindingType) : base(null, TypeBody.Empty, forwardedName, null)
+        public BindingClass(string forwardedName, RoslynType bindingType) : base(null, TypeBody.Empty, forwardedName,
+            null)
         {
             BindingType = bindingType;
         }
 
-        public IType BindingType { get; set; }
+        public RoslynType BindingType { get; set; }
 
         public SymbolScopeBySecurity SymbolScope { get; set; }
 

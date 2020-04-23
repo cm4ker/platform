@@ -2,19 +2,22 @@ using System;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Symbols;
 using ZenPlatform.Shared.Tree;
+using Call = ZenPlatform.Language.Ast.Definitions.Call;
+using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private Node EmitGlobalVar(IEmitter e, Node currentGv, Expression expr, SymbolTable symbolTable)
+        private Node EmitGlobalVar(RBlockBuilder e, Node currentGv, Expression expr, SymbolTable symbolTable)
         {
             if (expr is Name n)
             {
-                var gv = currentGv.Childs.First(x =>
+                var gv = currentGv.Children.First(x =>
                 {
                     var gvar = x as GlobalVarTreeItem;
 
@@ -24,13 +27,19 @@ namespace ZenPlatform.Compiler.Generation
                     return false;
                 }) as GlobalVarTreeItem;
 
+                if (n.Type is null || n.Type.Kind == TypeNodeKind.Unknown)
+                {
+                    n.Type = gv.AstType;
+                    n.Attach(n.Type);
+                }
+                
                 gv?.Emit(n, e);
 
                 return gv;
             }
             else if (expr is Call c)
             {
-                var gv = currentGv.Childs.First(x =>
+                var gv = currentGv.Children.First(x =>
                 {
                     var gvar = x as GlobalVarTreeItem;
 
@@ -41,6 +50,11 @@ namespace ZenPlatform.Compiler.Generation
                 }) as GlobalVarTreeItem;
 
                 EmitArguments(e, c.Arguments, symbolTable);
+                if (c.Type is null || c.Type.Kind == TypeNodeKind.Unknown)
+                {
+                    c.Type = gv.AstType;
+                    c.Attach(c.Type);
+                }
 
                 gv?.Emit(c, e);
 

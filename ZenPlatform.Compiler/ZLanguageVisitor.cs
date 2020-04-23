@@ -1,23 +1,18 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Npgsql.NameTranslation;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
-using ZenPlatform.Language.Ast.Definitions.Extension;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Definitions.Statements;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ArrayTypeSyntax = ZenPlatform.Language.Ast.Definitions.ArrayTypeSyntax;
 using AttributeSyntax = ZenPlatform.Language.Ast.Definitions.AttributeSyntax;
 using Expression = ZenPlatform.Language.Ast.Definitions.Expression;
+using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 
 namespace ZenPlatform.Compiler
 {
@@ -218,6 +213,7 @@ namespace ZenPlatform.Compiler
 
             if (context.STRING() != null) t = TypeNodeKind.String;
             else if (context.INT() != null) t = TypeNodeKind.Int;
+            else if (context.UID() != null) t = TypeNodeKind.Uid;
             else if (context.OBJECT() != null) t = TypeNodeKind.Object;
             else if (context.BOOL() != null) t = TypeNodeKind.Boolean;
             else if (context.DOUBLE() != null) t = TypeNodeKind.Double;
@@ -259,32 +255,32 @@ namespace ZenPlatform.Compiler
 
                 if (context.string_literal().REGULAR_STRING() != null)
                     result = new Literal(li, text.Substring(1, text.Length - 2),
-                        new PrimitiveTypeSyntax(li, TypeNodeKind.String));
+                        new PrimitiveTypeSyntax(li, TypeNodeKind.String), false);
                 else
                     result = new Literal(li, text.Substring(2, text.Length - 3),
-                        new PrimitiveTypeSyntax(li, TypeNodeKind.String));
+                        new PrimitiveTypeSyntax(li, TypeNodeKind.String), false);
 
                 result.ObjectiveValue = result.Value;
             }
             else if (context.boolean_literal() != null)
             {
-                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Boolean));
+                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Boolean), false);
                 result.ObjectiveValue = bool.Parse(result.Value);
             }
             else if (context.INTEGER_LITERAL() != null)
             {
-                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Int));
+                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Int), false);
                 result.ObjectiveValue = int.Parse(result.Value);
             }
             else if (context.REAL_LITERAL() != null)
             {
-                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Double));
+                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Double), false);
                 result.ObjectiveValue = double.Parse(result.Value);
             }
             else if (context.CHARACTER_LITERAL() != null)
             {
                 result = new Literal(li, context.GetText().Substring(1, 1),
-                    new PrimitiveTypeSyntax(li, TypeNodeKind.Char));
+                    new PrimitiveTypeSyntax(li, TypeNodeKind.Char), false);
                 result.ObjectiveValue = result.Value[0];
             }
 
@@ -303,13 +299,28 @@ namespace ZenPlatform.Compiler
             base.VisitVariableDeclaration(context);
 
             SyntaxNode result;
+            Expression value;
+            TypeSyntax type;
+
+            string varName = context.IDENTIFIER()?.GetText() ?? throw new Exception("Variable name not found");
+
             if (context.expression() == null)
-                result = new Variable(context.start.ToLineInfo(), null, context.IDENTIFIER().GetText(),
-                    _syntaxStack.PopType());
+            {
+                value = null;
+            }
             else
-                result = new Variable(context.start.ToLineInfo(), _syntaxStack.PopExpression(),
-                    context.IDENTIFIER().GetText(),
-                    _syntaxStack.PopType());
+            {
+                value = _syntaxStack.PopExpression();
+            }
+
+            if (context.variableType().VAR() != null)
+            {
+                type = new PrimitiveTypeSyntax(null, TypeNodeKind.Unknown);
+            }
+            else
+                type = _syntaxStack.PopType();
+
+            result = new Variable(context.start.ToLineInfo(), value, varName, type);
 
             _syntaxStack.Push(result);
             return result;
@@ -611,6 +622,19 @@ namespace ZenPlatform.Compiler
             return null;
         }
 
+        public override SyntaxNode VisitSql_literal(ZSharpParser.Sql_literalContext context)
+        {
+            var text = context.GetText();
+            text = Regex.Unescape(text ?? throw new NullReferenceException());
+            text = text.Substring(2, text.Length - 3);
+
+            var result = new Literal(context.start.ToLineInfo(), text,
+                new PrimitiveTypeSyntax(null, TypeNodeKind.String), true);
+            _syntaxStack.Push(result);
+
+            return base.VisitSql_literal(context);
+        }
+
         public override SyntaxNode VisitExpressionRelational(ZSharpParser.ExpressionRelationalContext context)
         {
             base.VisitExpressionRelational(context);
@@ -695,6 +719,17 @@ namespace ZenPlatform.Compiler
                 result = new Assignment(context.start.ToLineInfo(), _syntaxStack.PopExpression(), null,
                     (ICanBeAssigned) _syntaxStack.PopExpression());
 
+            _syntaxStack.Push(result);
+
+            return result;
+        }
+
+
+        public override SyntaxNode VisitThrowStatement(ZSharpParser.ThrowStatementContext context)
+        {
+            base.VisitThrowStatement(context);
+
+            var result = new Throw(context.start.ToLineInfo(), _syntaxStack.PopExpression());
             _syntaxStack.Push(result);
 
             return result;

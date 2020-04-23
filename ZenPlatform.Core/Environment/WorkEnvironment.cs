@@ -18,7 +18,7 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Initializer;
 using ZenPlatform.Core.Assemblies;
 using ZenPlatform.Core.Contracts;
-using ZenPlatform.Core.Environment.Contracts;
+using ZenPlatform.Core.Contracts.Environment;
 
 namespace ZenPlatform.Core.Environment
 {
@@ -29,33 +29,7 @@ namespace ZenPlatform.Core.Environment
     {
         private object _locking;
 
-        /*
-         *  Среда должна обеспечиватьдоступ к конфигурации. Так как именно в среду будет загружаться конфигурация 
-         *  
-         *  
-         *  Необходимо реализовать следующий интерфейс:
-         *      
-         *      Env.ConfigurationManager.Load(string path)      -- Загружает конфигурацию из каталога
-         *      Env.ConfigurationManager.LoadDb()               -- Загружает конфигурацию базы данных
-         *      Env.ConfigurationManager.UnLoad(string path)    -- Выгружает конфигурацию конфигурацию
-         *      Env.ConfigurationManager.Apply()                -- Применяет текущую загруженную конфигурацию, в этот момент применяются все изменения
-         *
-         *
-         *
-         * System session. Не должна быть инкапсулирована в WorkEnvironment
-         * по той причине, что у нас будет несколько ProcessWorker'ов (PS)
-         * и их нужно всех синхронизировать между собой, чтобы изменять конфигурацию
-         *
-         * Простое решение - инкапсулировать SystemSession внутри SystemProcessWorker это позволит
-         * запускать новые PS после изменения базы данных 
-         *
-         *
-         * Утверждение выше ^ ошибочно! Системная сессия не является ничем плохим. Она лишь предоставляет доступ к базе данных непосредственно для среды.
-         * Среда должна уметь как минимум загружать конфигурацию. Проверять пользователей и так далее. Для всего этого необходимо подключение к БД.
-         *
-         */
-
-        public WorkEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
+        public WorkEnvironment(IInvokeService invokeService, ILinkFactory linkFactory, ILogger<WorkEnvironment> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
             IAssemblyManager assemblyManager, IConfigurationManipulator manipulator) :
@@ -66,6 +40,7 @@ namespace ZenPlatform.Core.Environment
             _logger = logger;
             _userManager = userManager;
             InvokeService = invokeService;
+            LinkFactory = linkFactory;
             _assemblyManager = assemblyManager;
 
             Globals = new Dictionary<string, object>();
@@ -229,5 +204,7 @@ namespace ZenPlatform.Core.Environment
 
             throw new Exception($"Manager for type {type.Name} not found");
         }
+
+        public ILinkFactory LinkFactory { get; }
     }
 }

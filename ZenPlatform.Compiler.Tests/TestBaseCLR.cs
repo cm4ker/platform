@@ -8,6 +8,8 @@ using ZenPlatform.Compiler.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Compiler.Generation;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
@@ -20,7 +22,7 @@ namespace ZenPlatform.Compiler.Tests
     {
         private ZLanguageVisitor _zlv;
 
-        protected IAssemblyPlatform Ap = new DnlibAssemblyPlatform();
+        protected RoslynAssemblyPlatform Ap = new RoslynAssemblyPlatform();
         //IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
         public TestBaseCLR()
@@ -40,8 +42,7 @@ namespace ZenPlatform.Compiler.Tests
 
             Type execClass = a.GetType($"{cName}");
 
-            MethodInfo method = execClass.GetMethod(methodName,
-                BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            MethodInfo method = execClass.GetMethod(methodName);
 
             object result = method.Invoke(null, null);
 
@@ -58,7 +59,6 @@ namespace ZenPlatform.Compiler.Tests
         public void ImportRef()
         {
             var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
-            asm.ImportWithCopy(asm.TypeSystem.GetSystemBindings().Client);
             var asmName = $"test.bll";
 
             if (File.Exists(asmName))
@@ -107,7 +107,7 @@ namespace ZenPlatform.Compiler.Tests
             Root r = new Root(null, new CompilationUnitList {cu});
 
             AstScopeRegister.Apply(r);
-            LoweringOptimizer.Apply(asm.TypeSystem, r);
+            // LoweringOptimizer.Apply(asm.TypeSystem, r);
 
             var gp = new GeneratorParameters(r, asm, CompilationMode.Server,
                 SqlDatabaseType.SqlServer, null);
@@ -122,8 +122,8 @@ namespace ZenPlatform.Compiler.Tests
 
             try
             {
-                asm.Write(asmName);
                 var asmPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, asmName);
+                asm.Write(asmPath);
                 var result = ExecuteAndUnload(asmPath, node.Name, out var wr);
 
                 for (int i = 0; i < 8 && wr.IsAlive; i++)

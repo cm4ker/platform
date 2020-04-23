@@ -14,7 +14,6 @@ using ZenPlatform.Data;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Initializer;
 using ZenPlatform.Core.Assemblies;
-using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Migration;
 using ZenPlatform.Compiler;
 using ZenPlatform.Configuration;
@@ -23,6 +22,7 @@ using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
 using ZenPlatform.Configuration.Storage;
 using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Test.Tools;
 
 namespace ZenPlatform.Core.Environment
@@ -36,7 +36,8 @@ namespace ZenPlatform.Core.Environment
 
         public IMigrationManager MigrationManager { get; }
 
-        public DatabaseTestEnvironment(IInvokeService invokeService, ILogger<WorkEnvironment> logger,
+        public DatabaseTestEnvironment(IInvokeService invokeService, ILinkFactory linkFactory,
+            ILogger<WorkEnvironment> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
             IAssemblyManager assemblyManager, IMigrationManager migrationManager,
@@ -47,7 +48,10 @@ namespace ZenPlatform.Core.Environment
             _serviceProvider = serviceProvider;
             _logger = logger;
             _userManager = userManager;
+
             InvokeService = invokeService;
+            LinkFactory = linkFactory;
+
             _assemblyManager = assemblyManager;
 
             Globals = new Dictionary<string, object>();
@@ -127,13 +131,18 @@ namespace ZenPlatform.Core.Environment
             var asms = _assemblyManager.GetAssemblies(Configuration).First(x => x.Type == AssemblyType.Server);
 
             var bytes = _assemblyManager.GetAssemblyBytes(asms);
+
+            _logger.Info("Starting load server assembly");
             var serverAssembly = Assembly.Load(bytes);
+            var serviceType = serverAssembly.GetType("EntryPoint") ??
+                              throw new Exception("Entry point in assembly not defined");
+            var main = serviceType.GetMethod("Main") ?? throw new Exception("Main method not found");
 
-            var serviceType = serverAssembly.GetType("EntryPoint");
-            serviceType.GetMethod("Main").Invoke(null, new[] {new[] {InvokeService}});
 
-            InvokeService.Register(new Route("test"), (c, a) => { return (int) a[0] + 1; });
+            _logger.Info("Run entry point of server assembly");
+            main.Invoke(null, new[] {new object[] {InvokeService, LinkFactory}});
 
+            InvokeService.Register(new Route("test"), (c, a) => (int) a[0] + 1);
             InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
             {
                 using (StreamWriter writer = new StreamWriter(stream))
@@ -253,5 +262,7 @@ namespace ZenPlatform.Core.Environment
 
             throw new Exception($"Manager for type {type.Name} not found");
         }
+
+        public ILinkFactory LinkFactory { get; }
     }
 }

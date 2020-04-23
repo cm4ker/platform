@@ -4,6 +4,6 @@
         where TParent : class
         where TChild : class, IChildItem<TParent>
     {
-        IReadOnlyChildItemCollection<TParent, TChild> Childs { get; }
+        IReadOnlyChildItemCollection<TParent, TChild> Children { get; }
     }
 }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using Microsoft.CodeAnalysis.Operations;
 using Portable.Xaml;
 
 namespace ZenPlatform.ServerRuntime
@@ -46,10 +47,10 @@ namespace ZenPlatform.ServerRuntime
         public static void Save(XamlWriter xamlWriter, object instance)
         {
             if (xamlWriter == null)
-                throw new ArgumentNullException(nameof (xamlWriter));
+                throw new ArgumentNullException(nameof(xamlWriter));
             XamlServices.Transform((XamlReader) new XamlObjectReader(instance, xamlWriter.SchemaContext), xamlWriter);
         }
-        
+
         public static bool Matches(this AssemblyName name, AssemblyName other)
         {
             if (name == other)

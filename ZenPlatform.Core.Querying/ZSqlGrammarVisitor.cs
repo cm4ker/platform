@@ -1,5 +1,7 @@
-﻿using ZenPlatform.Configuration.Contracts;
+﻿using System;
+using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data.Entity;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Core.Querying.Model;
 
@@ -12,9 +14,9 @@ namespace ZenPlatform.Core.Querying
     {
         private readonly QLang _stack;
 
-        public ZSqlGrammarVisitor(IProject configuration, DataQueryConstructorContext context)
+        public ZSqlGrammarVisitor(ITypeManager tm, DataQueryConstructorContext context)
         {
-            _stack = new QLang(configuration);
+            _stack = new QLang(tm);
         }
 
         public ZSqlGrammarVisitor(QLang stackMachine)
@@ -22,9 +24,17 @@ namespace ZenPlatform.Core.Querying
             _stack = stackMachine;
         }
 
+        public override object VisitSql_stmt_list(ZSqlGrammarParser.Sql_stmt_listContext context)
+        {
+            _stack.new_list(QLang.ListType.Query);
+
+            return base.VisitSql_stmt_list(context);
+        }
+
         public override object VisitQuery_stmt(ZSqlGrammarParser.Query_stmtContext context)
         {
-            _stack.bg_query();
+            _stack.dup();
+            _stack.new_scope();
 
             if (context.from_stmt() != null)
                 Visit(context.from_stmt());
@@ -41,7 +51,8 @@ namespace ZenPlatform.Core.Querying
             if (context.select_stmt() != null)
                 Visit(context.select_stmt());
 
-            _stack.st_query();
+            _stack.new_query();
+            _stack.st_elem();
 
             return null;
         }
@@ -80,14 +91,29 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitSelect_stmt(ZSqlGrammarParser.Select_stmtContext context)
         {
-            _stack.m_select();
-            return base.VisitSelect_stmt(context);
+            _stack.new_list(QLang.ListType.Field);
+
+            base.VisitSelect_stmt(context);
+
+            _stack.select();
+
+            return null;
+        }
+
+
+        public override object VisitWhere_stmt(ZSqlGrammarParser.Where_stmtContext context)
+        {
+             base.VisitWhere_stmt(context);
+             _stack.where();
+             return null;
         }
 
         public override object VisitFrom_stmt(ZSqlGrammarParser.From_stmtContext context)
         {
-            _stack.m_from();
-            return base.VisitFrom_stmt(context);
+            base.VisitFrom_stmt(context);
+
+            _stack.@from();
+            return null;
         }
 
         public override object VisitTable(ZSqlGrammarParser.TableContext context)
@@ -154,6 +180,19 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
+        public override object VisitExprAdditive(ZSqlGrammarParser.ExprAdditiveContext context)
+        {
+            base.VisitExprAdditive(context);
+
+            if (context.exprAdditive() != null)
+            {
+                if (context.PLUS() != null) _stack.add();
+                if (context.MINUS() != null) throw new Exception("Not implemented");
+            }
+
+            return null;
+        }
+
         public override object VisitType_name(ZSqlGrammarParser.Type_nameContext context)
         {
             _stack.ld_type(context.GetText());
@@ -170,11 +209,15 @@ namespace ZenPlatform.Core.Querying
 
         public override object VisitResult_column(ZSqlGrammarParser.Result_columnContext context)
         {
+            //duplicate array of fields for load the new result column into it
+            _stack.dup();
             base.VisitResult_column(context);
+            _stack.new_result_column();
 
             if (context.column_alias() != null)
                 _stack.@as(context.column_alias().GetText());
 
+            _stack.st_elem();
             return null;
         }
     }

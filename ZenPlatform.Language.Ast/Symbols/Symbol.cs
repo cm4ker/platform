@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 
@@ -53,13 +55,13 @@ namespace ZenPlatform.Language.Ast.Symbols
 
     public class MethodSymbol : Symbol
     {
-        private IType declaringType;
+        private RoslynType declaringType;
 
-        private readonly Dictionary<Function, IMethod> _overloads;
+        private readonly Dictionary<Function, RoslynMethod> _overloads;
 
         public MethodSymbol(Function f) : base(f.Name, SymbolType.Method)
         {
-            _overloads = new Dictionary<Function, IMethod>();
+            _overloads = new Dictionary<Function, RoslynMethod>();
 
             DeclareOverload(f);
         }
@@ -77,7 +79,7 @@ namespace ZenPlatform.Language.Ast.Symbols
             _overloads.Add(f, null);
         }
 
-        public void ConnectOverload(Function f, IMethod method)
+        public void ConnectOverload(Function f, RoslynMethod method)
         {
             if (!_overloads.ContainsKey(f))
             {
@@ -89,7 +91,7 @@ namespace ZenPlatform.Language.Ast.Symbols
             _overloads[f] = method;
         }
 
-        public (Function method, IMethod clrMethod) SelectOverload(IType[] args)
+        public (Function method, RoslynMethod clrMethod) SelectOverload(RoslynType[] args)
         {
             if (_overloads.Count == 0)
                 throw new Exception(
@@ -164,11 +166,11 @@ namespace ZenPlatform.Language.Ast.Symbols
             Type = type;
         }
 
-        public IType ClrType { get; private set; }
+        public RoslynType ClrType { get; private set; }
 
         public TypeEntity Type { get; }
 
-        public void Connect(IType type)
+        public void Connect(RoslynType type)
         {
             ClrType = type;
         }
@@ -183,9 +185,9 @@ namespace ZenPlatform.Language.Ast.Symbols
 
         public Property Property { get; }
 
-        public IProperty ClrProperty { get; private set; }
+        public RoslynProperty ClrProperty { get; private set; }
 
-        public void Connect(IProperty prop)
+        public void Connect(RoslynProperty prop)
         {
             ClrProperty = prop;
         }

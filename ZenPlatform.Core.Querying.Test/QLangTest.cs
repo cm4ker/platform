@@ -19,57 +19,58 @@ namespace ZenPlatform.Core.Querying.Test
         public QLangTest()
         {
             conf = ConfigurationFactory.Create();
-            _m = new QLang(conf);
+            _m = new QLang(conf.TypeManager);
         }
 
         [Fact]
         public void QlangSimpleTest()
         {
             _m.reset();
-            _m.bg_query();
-            _m.m_from();
-            
+            _m.new_scope();
+
             _m.ld_component("Entity");
             _m.ld_object_type("Store");
             _m.@as("A");
-            
-            _m.m_select();
+            _m.@from();
 
+            _m.new_list(QLang.ListType.Field);
             _m.ld_name("A");
             _m.ld_field("Id");
-            
-            _m.st_query();
-            
+            _m.st_elem();
+            _m.select();
+
+            _m.new_query();
+
             var query = (QQuery) _m.top();
 
             Assert.NotNull(query);
         }
-        
+
         [Fact]
         public void QlangSimpleAliasedChildrens()
         {
             _m.reset();
-            _m.bg_query();
-            _m.m_from();
-            
+            _m.new_scope();
+
+
             _m.ld_component("Entity");
             _m.ld_object_type("Store");
             _m.@as("A");
+            _m.@from();
 
             var ds = _m.top() as QAliasedDataSource;
-            
-            Assert.Equal(1, ds.Childs.Count);
-            _m.m_select();
-            Assert.Equal(1, ds.Childs.Count);
+
+            _m.new_list(QLang.ListType.Field);
+            Assert.Equal(1, ds.Children.Count);
             _m.ld_name("A");
-            Assert.Equal(1, ds.Childs.Count);
+            Assert.Equal(1, ds.Children.Count);
             _m.ld_field("Id");
-            Assert.Equal(1, ds.Childs.Count);
-            _m.st_query();
-            
+            Assert.Equal(1, ds.Children.Count);
+            _m.new_query();
+
             var query = (QQuery) _m.top();
-            
-            Assert.Equal(1, ds.Childs.Count);
+
+            Assert.Equal(1, ds.Children.Count);
             Assert.NotNull(query);
         }
 
@@ -78,9 +79,8 @@ namespace ZenPlatform.Core.Querying.Test
         {
             _m.reset();
 
-            _m.bg_query();
+            _m.new_scope();
 
-            _m.m_from();
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
@@ -100,7 +100,6 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.join();
 
-            _m.m_select();
 
             _m.ld_name("A");
             _m.ld_field("Store");
@@ -109,7 +108,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             Assert.Equal(3, result.GetExpressionType().Count());
 
-            _m.st_query();
+            _m.new_query();
 
             var query = (QQuery) _m.top();
 
@@ -121,15 +120,13 @@ namespace ZenPlatform.Core.Querying.Test
         public void QlangCaseTest()
         {
             _m.reset();
-            _m.bg_query();
+            _m.new_scope();
 
-            _m.m_from();
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
             _m.@as("A");
 
-            _m.m_select();
 
             _m.ld_name("A");
             _m.ld_field("Store");
@@ -169,7 +166,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             Assert.Equal(3, result.GetExpressionType().Count());
 
-            _m.st_query();
+            _m.new_query();
 
             var query = (QQuery) _m.top();
 
@@ -180,29 +177,26 @@ namespace ZenPlatform.Core.Querying.Test
         public void NastedQueryTest()
         {
             _m.reset();
-            _m.bg_query();
-
-            _m.m_from();
+            _m.new_scope();
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
             _m.@as("A");
 
             //start nested query
-            _m.bg_query();
-            _m.m_from();
+            _m.new_scope();
 
             _m.ld_component("Entity");
             _m.ld_object_type("Store");
             _m.@as("B");
 
-            _m.m_select();
+            _m.@from();
 
             _m.ld_name("B");
             _m.ld_field("Id");
             _m.@as("NestedIdField");
 
-            _m.st_query();
+            _m.new_query();
             //store query on stack
 
             Assert.True(_m.top() is QNestedQuery);
@@ -219,12 +213,11 @@ namespace ZenPlatform.Core.Querying.Test
 
             _m.join();
 
-            _m.m_select();
 
             _m.ld_name("A");
             _m.ld_field("Store");
 
-            _m.st_query();
+            _m.new_query();
             var query = _m.top();
         }
 
@@ -232,15 +225,13 @@ namespace ZenPlatform.Core.Querying.Test
         public void WhereTest()
         {
             _m.reset();
-            _m.bg_query();
+            _m.new_scope();
 
-            _m.m_from();
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
             _m.@as("A");
 
-            _m.m_where();
 
             _m.ld_name("A");
             _m.ld_field("Id");
@@ -248,7 +239,7 @@ namespace ZenPlatform.Core.Querying.Test
             _m.ld_param("P_01");
 
             _m.eq();
-            _m.m_select();
+
 
             Assert.True(_m.top() is QWhere);
             _m.ld_name("A");
@@ -258,7 +249,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             Assert.Equal(3, result.GetExpressionType().Count());
 
-            _m.st_query();
+            _m.new_query();
 
             var query = (QQuery) _m.top();
 
@@ -270,15 +261,14 @@ namespace ZenPlatform.Core.Querying.Test
         public void LookupTest()
         {
             _m.reset();
-            _m.bg_query();
+            _m.new_scope();
 
-            _m.m_from();
 
             _m.ld_component("Entity");
             _m.ld_object_type("Invoice");
             _m.@as("A");
 
-            _m.m_select();
+
             _m.ld_name("A");
             _m.ld_field("Store");
             var storeField = _m.top() as QField;
@@ -294,7 +284,7 @@ namespace ZenPlatform.Core.Querying.Test
 
             Assert.Equal(storeField.GetExpressionType(), field.GetExpressionType());
 
-            _m.st_query();
+            _m.new_query();
         }
 
 
@@ -311,11 +301,16 @@ namespace ZenPlatform.Core.Querying.Test
              */
             _m.reset();
 
-            _m.begin_data_request();
+            _m.new_scope();
+            _m.new_list(QLang.ListType.Field);
+            _m.dup();
+
             _m.ld_component("Entity");
-            _m.ld_object_type("Invoice");
-            _m.ld_field("Store");
-            _m.lookup("Name");
+            _m.ld_object_type("Store");
+            _m.ld_field("Property1");
+            _m.lookup("Id");
+            _m.st_elem();
+
             _m.st_data_request();
 
             var dr = _m.top() as QDataRequest;
@@ -323,9 +318,9 @@ namespace ZenPlatform.Core.Querying.Test
             Assert.Single(dr.Source);
 
 
-            // DataRequestGenerator drg = new DataRequestGenerator();
-
-            // drg.Gen(dr);
+             // DataRequestGenerator drg = new DataRequestGenerator();
+             //
+             // drg.Gen(dr);
         }
     }
 }

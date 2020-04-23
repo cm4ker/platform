@@ -124,7 +124,7 @@ namespace ZenPlatform.Core.Querying
             }
             else if (field is QAliasedSelectExpression ase)
             {
-                if (ase.Childs.First() is QSourceFieldExpression f)
+                if (ase.Children.First() is QSourceFieldExpression f)
                 {
                     GenerateSourceField(f, ase.Alias);
                 }

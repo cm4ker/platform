@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
-using ZenPlatform.Core.Environment.Contracts;
 
 namespace ZenPlatform.Core.Network
 {

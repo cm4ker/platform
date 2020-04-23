@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Environment;
 using System.Net.Sockets;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Core.Network

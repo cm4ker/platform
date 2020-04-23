@@ -21,5 +21,7 @@ namespace ZenPlatform.Language.Ast
         public int Position { get; set; }
 
         public abstract T Accept<T>(AstVisitorBase<T> visitor);
+        
+        public abstract void Accept(AstVisitorBase visitor);
     }
 }

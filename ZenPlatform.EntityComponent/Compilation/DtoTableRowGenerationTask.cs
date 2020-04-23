@@ -1,4 +1,6 @@
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.EntityComponent.Entity;
@@ -23,7 +25,7 @@ namespace ZenPlatform.EntityComponent.Compilation
         public IPType DtoType { get; }
         public ITable Table { get; }
 
-        public ITypeBuilder Stage0(IAssemblyBuilder asm)
+        public RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm)
         {
             var type = asm.DefineInstanceType(this.GetNamespace(), Table.GetDtoRowClassName());
 
@@ -32,16 +34,16 @@ namespace ZenPlatform.EntityComponent.Compilation
             return type;
         }
 
-        public void Stage1(ITypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
+        public void Stage1(RoslynTypeBuilder builder, SqlDatabaseType dbType, IEntryPointManager sm)
         {
             EmitBody(builder, dbType);
         }
 
-        public void Stage2(ITypeBuilder builder, SqlDatabaseType dbType)
+        public void Stage2(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
         }
 
-        private void EmitBody(ITypeBuilder builder, SqlDatabaseType dbType)
+        private void EmitBody(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();

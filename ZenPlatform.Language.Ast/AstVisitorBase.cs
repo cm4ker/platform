@@ -39,13 +39,42 @@ namespace ZenPlatform.Language.Ast
         }
     }
 
+
+    public abstract partial class AstVisitorBase
+    {
+        private Stack<SyntaxNode> _visitStack;
+        private bool _break;
+
+        protected Stack<SyntaxNode> VisitStack => _visitStack;
+
+        public AstVisitorBase()
+        {
+            _visitStack = new Stack<SyntaxNode>();
+        }
+
+        public virtual void Visit(SyntaxNode visitable)
+        {
+            visitable?.Accept(this);
+        }
+
+        public virtual void DefaultVisit(SyntaxNode node)
+        {
+        }
+
+        public virtual void VisitTypeEntity(TypeEntity obj)
+        {
+            DefaultVisit(obj);
+        }
+    }
+
+
     public class AstWalker<T> : AstVisitorBase<T>
     {
         public override T DefaultVisit(SyntaxNode node)
         {
             Console.WriteLine($"We are visit: {node}");
 
-            var childs = node.Childs.ToList();
+            var childs = node.Children.ToList();
 
             foreach (var child in childs)
             {
@@ -53,6 +82,23 @@ namespace ZenPlatform.Language.Ast
             }
 
             return base.DefaultVisit(node);
+        }
+    }
+
+    public class AstWalker : AstVisitorBase
+    {
+        public override void DefaultVisit(SyntaxNode node)
+        {
+            Console.WriteLine($"We are visit: {node}");
+
+            var childs = node.Children.ToList();
+
+            foreach (var child in childs)
+            {
+                Visit(child as SyntaxNode);
+            }
+
+            base.DefaultVisit(node);
         }
     }
 }

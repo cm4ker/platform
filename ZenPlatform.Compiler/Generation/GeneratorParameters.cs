@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Language.Ast.Definitions;
@@ -29,7 +30,7 @@ namespace ZenPlatform.Compiler.Generation
         /// <summary>
         /// Построитель сборки
         /// </summary>
-        public IAssemblyBuilder Builder { get; }
+        public RoslynAssemblyBuilder Builder { get; }
 
         /// <summary>
         /// Аттрибуты компиляции
@@ -37,7 +38,7 @@ namespace ZenPlatform.Compiler.Generation
         public CompilationMode Mode { get; }
 
 
-        public GeneratorParameters(Root root, IAssemblyBuilder builder, CompilationMode mode,
+        public GeneratorParameters(Root root, RoslynAssemblyBuilder builder, CompilationMode mode,
             SqlDatabaseType targetDatabaseType, IProject configuration)
         {
             TargetDatabaseType = targetDatabaseType;

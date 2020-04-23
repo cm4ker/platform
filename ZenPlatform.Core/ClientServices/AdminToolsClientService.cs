@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Configuration;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Settings;

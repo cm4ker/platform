@@ -1,4 +1,5 @@
 
+
 lexer grammar ZSharpLexer;
 channels { COMMENTS_CHANNEL, DIRECTIVE }
 
@@ -25,6 +26,7 @@ SHARP:         '#'                                -> mode(DIRECTIVE_MODE);
 VAR : 'var';
 BOOL : 'bool';
 INT : 'int';
+UID : 'uid';
 DOUBLE : 'double';
 CHAR : 'char';
 STRING : 'string';
@@ -37,6 +39,8 @@ RETURN : 'return';
 TRY : 'try';
 CATCH: 'catch';
 FINALLY: 'finally';
+
+THROW : 'throw';
 
 IF : 'if';
 ELSE : 'else';

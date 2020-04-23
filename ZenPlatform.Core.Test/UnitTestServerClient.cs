@@ -20,14 +20,16 @@ using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core.Contracts;
-using ZenPlatform.Core.Environment.Contracts;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.QueryBuilder;
 using ZenPlatform.Core.Test.Logging;
 using ZenPlatform.Test.Tools;
+using ZenPlatform.Test.Tools.Assemblies;
 
 namespace ZenPlatform.Core.Test
 {
@@ -160,7 +162,7 @@ namespace ZenPlatform.Core.Test
         [Fact]
         public void CompileAndLoadAssembly()
         {
-            var compiller = new XCCompiler(new DnlibAssemblyPlatform());
+            var compiller = new XCCompiler(new RoslynAssemblyPlatform());
 
             var root = ConfigurationFactory.Create();
 
@@ -195,7 +197,7 @@ namespace ZenPlatform.Core.Test
         {
             var storage = new TestAssemblyStorage();
             var manager =
-                new AssemblyManager(new XCCompiler(new DnlibAssemblyPlatform()), storage,
+                new AssemblyManager(new XCCompiler(new RoslynAssemblyPlatform()), storage,
                     new XUnitLogger<AssemblyManager>(_testOutput),
                     new XCConfManipulator());
 

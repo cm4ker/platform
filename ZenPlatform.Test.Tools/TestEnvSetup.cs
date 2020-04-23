@@ -14,7 +14,6 @@ using ZenPlatform.Core.Serialisers;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Tools;
 using ZenPlatform.Core.Assemlies;
-using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Network.Contracts;
 using ZenPlatform.Networking;
 using Xunit.Abstractions;
@@ -24,6 +23,8 @@ using ZenPlatform.Compiler.Platform;
 using ZenPlatform.Configuration;
 using ZenPlatform.Configuration.Contracts;
 using ZenPlatform.Configuration.Contracts.Data;
+using ZenPlatform.Core.Contracts;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Test.Assemblies;
 using ZenPlatform.Core.Test.Environment;
 using ZenPlatform.Migration;
@@ -57,7 +58,7 @@ namespace ZenPlatform.Core.Test
             services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
             services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
             services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
-            services.AddScoped<IAssemblyManager, AssemblyManager>();
+            services.AddScoped<IAssemblyManager, TestAsmManager>();
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
             services.AddSingleton<IFileSystem, MemoryFileSystem>();
             services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
@@ -65,6 +66,7 @@ namespace ZenPlatform.Core.Test
             services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
             services.AddScoped<IConfigurationManager, ConfigurationManager>();
             services.AddScoped<IXCCompiller, XCCompiler>();
+            services.AddScoped<ILinkFactory, LinkFactory>();
 
 
             //services.AddSingleton<ITestProxyService, TestProxyService>();

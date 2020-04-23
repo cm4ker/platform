@@ -4,6 +4,7 @@ using System.Linq;
 using ZenPlatform.Compiler;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Roslyn;
 using ZenPlatform.Language.Ast.Symbols;
 
 namespace ZenPlatform.Language.Ast.Definitions.Functions
@@ -29,7 +30,7 @@ namespace ZenPlatform.Language.Ast.Definitions.Functions
         /// <summary>
         /// Билдер IL кода
         /// </summary>
-        public IEmitter Builder;
+        public RBlockBuilder Builder;
 
         private readonly Block _block;
 

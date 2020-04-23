@@ -174,7 +174,7 @@ namespace ZenPlatform.UIBuilder.Compilers
 
             //Items
             _xamlWriter.WriteStartMember(contentProperty);
-            foreach (var node in uiTab.Childs)
+            foreach (var node in uiTab.Children)
             {
                 VisitNode((UINode) node, sw);
             }
@@ -194,7 +194,7 @@ namespace ZenPlatform.UIBuilder.Compilers
             _xamlWriter.WriteStartObject(textBoxType);
             //Items
             _xamlWriter.WriteStartMember(itemsProperty);
-            foreach (var node in uiTabControl.Childs)
+            foreach (var node in uiTabControl.Children)
             {
                 VisitNode((UINode) node, sw);
             }
@@ -239,7 +239,7 @@ namespace ZenPlatform.UIBuilder.Compilers
             //Content
             _xamlWriter.WriteStartMember(contentProperty);
 
-            foreach (var node in uiGroup.Childs)
+            foreach (var node in uiGroup.Children)
             {
                 VisitNode((UINode) node, sw);
             }
@@ -330,7 +330,7 @@ namespace ZenPlatform.UIBuilder.Compilers
             //Content
             _xamlWriter.WriteStartMember(contentProperty);
 
-            foreach (var node in uiWindow.Childs)
+            foreach (var node in uiWindow.Children)
             {
                 VisitNode((UINode) node, sw);
             }

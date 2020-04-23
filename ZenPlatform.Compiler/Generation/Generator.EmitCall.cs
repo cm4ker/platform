@@ -2,17 +2,20 @@ using System.Collections.Generic;
 using System.Linq;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Expressions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Infrastructure;
 using ZenPlatform.Language.Ast.Symbols;
+using Call = ZenPlatform.Language.Ast.Definitions.Call;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitCall(IEmitter e, Call call, SymbolTable symbolTable)
+        private void EmitCall(RBlockBuilder e, Call call, SymbolTable symbolTable)
         {
             var symbol = symbolTable.Find<MethodSymbol>(call.Name.Value, call.GetScope());
 
@@ -23,7 +26,7 @@ namespace ZenPlatform.Compiler.Generation
 
                 //we need load this arg
                 if (!func.clrMethod.IsStatic)
-                    e.LdArg_0();
+                    e.LdArg(0);
 
                 Function function = func.method;
 
@@ -62,15 +65,15 @@ namespace ZenPlatform.Compiler.Generation
                 }
 
                 Hack:
-                e.EmitCall(func.clrMethod, call.IsStatement);
+                e.Call(func.clrMethod);
             }
             else
             {
-                Error("Unknown function name. [" + call.Name + "]");
+                Error("Unknown function name. [" + call.Name.Value + "]");
             }
         }
 
-        private void EmitArguments(IEmitter e, ArgumentList args, SymbolTable symbolTable)
+        private void EmitArguments(RBlockBuilder e, ArgumentList args, SymbolTable symbolTable)
         {
             foreach (Argument argument in args)
             {
@@ -80,17 +83,17 @@ namespace ZenPlatform.Compiler.Generation
                     if (argument.Expression is Name arg)
                     {
                         var variable = symbolTable.Find<VariableSymbol>(arg.Value, arg.GetScope());
-                        if (variable.CompileObject is ILocal vd)
+                        if (variable.CompileObject is RLocal vd)
                         {
-                            e.LdLocA(vd);
+                            e.LdLoc(vd);
                         }
                         else if (variable.CompileObject is IField fd)
                         {
-                            e.LdsFldA(fd);
+                            // e.LdsFldA(fd);
                         }
-                        else if (variable.CompileObject is IParameter pb)
+                        else if (variable.CompileObject is RoslynParameter pb)
                         {
-                            e.LdArgA(pb);
+                            e.LdArg(pb);
                         }
                     }
                     else if (argument.Expression is IndexerExpression ue)
@@ -119,7 +122,7 @@ namespace ZenPlatform.Compiler.Generation
                             // }
 
                             EmitExpression(e, ue.Indexer, symbolTable);
-                            e.LdElemA();
+                            // e.LdElemA();
                         }
                     }
                     else

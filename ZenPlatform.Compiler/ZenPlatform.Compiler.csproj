@@ -18,9 +18,9 @@
 
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
 
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.8.2" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.1.0" />
 
-        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.8.2" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.1.0" />
         <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     </ItemGroup>
     <ItemGroup>
@@ -35,11 +35,13 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj" />
-        <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
-        <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Compiler.Roslyn\ZenPlatform.Compiler.Roslyn.csproj" />
+<!--        <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />-->
+<!--        <ProjectReference Include="..\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj" />-->
         <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
         <ProjectReference Include="..\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj" />
         <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ServerRuntime\ZenPlatform.ServerRuntime.csproj" />
         <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
         <ProjectReference Include="..\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj" />
     </ItemGroup>

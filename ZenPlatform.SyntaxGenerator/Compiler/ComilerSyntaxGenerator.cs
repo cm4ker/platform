@@ -15,11 +15,21 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
     {
         private static SyntaxToken publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
         private static SyntaxToken partialToken = SyntaxFactory.Token(SyntaxKind.PartialKeyword);
+        private static SyntaxToken staticToken = SyntaxFactory.Token(SyntaxKind.StaticKeyword);
 
         private static ClassDeclarationSyntax astTreeBaseCls = SyntaxFactory.ClassDeclaration("AstVisitorBase<T>")
             .AddModifiers(publicToken)
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
             .AddModifiers(partialToken);
+
+        private static ClassDeclarationSyntax astTreeBaseCls2 = SyntaxFactory.ClassDeclaration("AstVisitorBase")
+            .AddModifiers(publicToken)
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
+            .AddModifiers(partialToken);
+
+        private static string ns_root = "ZenPlatform.Language.Ast";
+        private static string VisitorClassName = "AstVisitorBase";
+        private static string NameBase = "SyntaxNode";
 
         public static void Main(string[] args)
         {
@@ -49,11 +59,12 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Statements")),
                         SyntaxFactory.UsingDirective(
                             SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Definitions.Functions")),
-                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Infrastructure"))
+                        SyntaxFactory.UsingDirective(
+                            SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Infrastructure")),
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("ZenPlatform.Language.Ast.Symbols"))
                     );
 
 
-                var ns_root = "ZenPlatform.Language.Ast";
                 var ns_definitions = $"{ns_root}.Definitions";
 
                 foreach (var syntax in root.Syntaxes)
@@ -77,6 +88,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                 var nsAst = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(ns_root));
 
                 nsAst = nsAst.AddMembers(astTreeBaseCls);
+                nsAst = nsAst.AddMembers(astTreeBaseCls2);
 
                 unit = unit.AddMembers(nsAst);
 
@@ -98,7 +110,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
         {
             var visitor =
                 (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                    "public override T Accept<T>(AstVisitorBase<T> visitor){}");
+                    $"public override T Accept<T>({VisitorClassName}<T> visitor){{}}");
 
             if (!syntax.IsAbstract)
             {
@@ -118,6 +130,29 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
             return visitor;
         }
 
+        private static MemberDeclarationSyntax GetVisitorMethod2(CompilerSyntax syntax)
+        {
+            var visitor =
+                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    "public override void Accept(AstVisitorBase visitor){}");
+
+            if (!syntax.IsAbstract)
+            {
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"visitor.Visit{syntax.Name}(this);"));
+
+                var visitorBaseMethod = (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                    $"public virtual void Visit{syntax.Name}({syntax.Name} arg) {{ DefaultVisit(arg); }}");
+
+                astTreeBaseCls2 = astTreeBaseCls2.AddMembers(visitorBaseMethod);
+            }
+            else
+                visitor = visitor.AddBodyStatements(
+                    SyntaxFactory.ParseStatement($"throw new NotImplementedException();"));
+
+
+            return visitor;
+        }
 
         private static MemberDeclarationSyntax GenerateListClass(CompilerSyntax syntax)
         {
@@ -132,8 +167,12 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
                 .WithInitializer(initializer);
 
+
+            members.Add(
+                SyntaxFactory.ParseMemberDeclaration($"public static {syntax.Name} Empty => new {syntax.Name}();"));
             members.Add(constructor);
             members.Add(GetVisitorMethod(syntax));
+            members.Add(GetVisitorMethod2(syntax));
 
             return SyntaxFactory.ClassDeclaration(syntax.Name)
                 .WithModifiers(SyntaxTokenList.Create(publicToken))
@@ -189,7 +228,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                         getter = getter.WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
                     else
                         getter = getter.AddBodyStatements(
-                            SyntaxFactory.ParseStatement($"return ({argument.Type})this.Childs[{slot}];"));
+                            SyntaxFactory.ParseStatement($"return ({argument.Type})this.Children[{slot}];"));
 
                     members.Add(SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(argument.Type),
                             argument.Name).AddModifiers(publicToken)
@@ -201,7 +240,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
                     {
                         StatementSyntax fillStmt =
                             SyntaxFactory.ParseStatement(
-                                $"this.Attach({slot}, (SyntaxNode){argument.Name.ToCamelCase()});");
+                                $"this.Attach({slot}, ({NameBase}){argument.Name.ToCamelCase()});");
 
                         constructor = constructor.AddBodyStatements(fillStmt);
 
@@ -222,6 +261,7 @@ namespace ZenPlatform.SyntaxGenerator.Compiler
 
 
             members.Add(GetVisitorMethod(syntax));
+            members.Add(GetVisitorMethod2(syntax));
 
             var cls = SyntaxFactory.ClassDeclaration(syntax.Name)
                 .WithModifiers(SyntaxTokenList.Create(publicToken))

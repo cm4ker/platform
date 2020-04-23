@@ -7,22 +7,24 @@ namespace ZenPlatform.Language.Ast.Definitions
     /// </summary>
     public partial class Literal
     {
+        private TypeSyntax _type;
+
         /// <summary>
         /// Создать литерал
         /// </summary>
         /// <param name="value">Текстовое представление литерала</param>
         /// <param name="type">Тип литерала</param>
-        public Literal(ILineInfo li, string value, TypeSyntax type) : this(li)
+        /// <param name="isSqlLiteral"></param>
+        public Literal(ILineInfo li, string value, TypeSyntax type, bool isSqlLiteral) : this(li, value, isSqlLiteral)
         {
-            Value = value;
-            Type = type;
+            _type = type;
         }
 
-
-        /// <summary>
-        /// Текстовое представление литерала, строки и символы включают кавычки
-        /// </summary>
-        public string Value { get; set; }
+        public override TypeSyntax Type
+        {
+            get => _type;
+            set => _type = value;
+        }
 
         /// <summary>
         /// Действительное значение

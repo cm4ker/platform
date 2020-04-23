@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using ZenPlatform.Configuration.Common;
 using ZenPlatform.Configuration.Contracts.Store;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
-using ZenPlatform.Configuration.TypeSystem;
 using System.Linq;
 using ZenPlatform.Configuration.Common.TypeSystem;
 

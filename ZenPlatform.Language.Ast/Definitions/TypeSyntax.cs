@@ -14,6 +14,7 @@ namespace ZenPlatform.Language.Ast.Definitions
         String,
         Void,
         Int,
+        Uid,
         Double,
         Char,
         Boolean,
@@ -103,6 +104,11 @@ namespace ZenPlatform.Language.Ast.Definitions
         public override object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public override string ToString()
+        {
+            return TypeName;
         }
     }
 

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using ZenPlatform.Compiler.Contracts.Extensions;
 using ZenPlatform.Compiler.Infrastructure;
 using ZenPlatform.Core.Contracts;
 using ZenPlatform.Core.Contracts.Network;
 using ZenPlatform.Core.Network;
-using ZenPlatform.Core.Network.Contracts;
 
 namespace ZenPlatform.Compiler.Contracts
 {

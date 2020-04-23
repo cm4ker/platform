@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Avalonia.Remote.Protocol.Designer;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Mono.Cecil;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
-using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Core;
-using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Symbols;
 using ArrayTypeSyntax = ZenPlatform.Language.Ast.Definitions.ArrayTypeSyntax;
+using SystemTypeBindings = ZenPlatform.Compiler.Roslyn.SystemTypeBindings;
 using TypeSyntax = ZenPlatform.Language.Ast.Definitions.TypeSyntax;
 
 namespace ZenPlatform.Compiler
@@ -25,11 +23,11 @@ namespace ZenPlatform.Compiler
         private readonly SystemTypeBindings _stb;
         private List<TypeEntity> _types;
 
-        private Dictionary<string, List<IProperty>> _props;
-        private Dictionary<string, List<IMethod>> _methods;
-        private ITypeSystem _ts;
+        private Dictionary<string, List<RoslynProperty>> _props;
+        private Dictionary<string, List<RoslynInvokableBase>> _methods;
+        private RoslynTypeSystem _ts;
 
-        public SyntaxTreeMemberAccessProvider(Root root, ITypeSystem ts)
+        public SyntaxTreeMemberAccessProvider(Root root, RoslynTypeSystem ts)
         {
             _cu = root.Units;
             _root = root;
@@ -38,13 +36,13 @@ namespace ZenPlatform.Compiler
             _stb = ts.GetSystemBindings();
             _types = _cu.GetNodes<TypeEntity>().ToList();
 
-            _props = new Dictionary<string, List<IProperty>>();
-            _methods = new Dictionary<string, List<IMethod>>();
+            _props = new Dictionary<string, List<RoslynProperty>>();
+            _methods = new Dictionary<string, List<RoslynInvokableBase>>();
 
             RegisterStatic();
         }
 
-        public IType GetClrType(TypeSyntax typeSyntax)
+        public RoslynType GetClrType(TypeSyntax typeSyntax)
         {
             if (typeSyntax is SingleTypeSyntax stn)
             {
@@ -52,7 +50,7 @@ namespace ZenPlatform.Compiler
             }
             else if (typeSyntax is GenericTypeSyntax gts)
             {
-                IType[] args = new IType[gts.Args.Count];
+                RoslynType[] args = new RoslynType[gts.Args.Count];
 
                 for (int i = 0; i < gts.Args.Count; i++)
                 {
@@ -79,7 +77,7 @@ namespace ZenPlatform.Compiler
             throw new Exception("Type not resolved");
         }
 
-        public IType GetClrType(SingleTypeSyntax type)
+        public RoslynType GetClrType(SingleTypeSyntax type)
         {
             var result = TypeFinder.Apply(type, _root);
 
@@ -89,12 +87,13 @@ namespace ZenPlatform.Compiler
             return result.ClrType;
         }
 
-        private IType GetPrimitiveType(PrimitiveTypeSyntax pts)
+        private RoslynType GetPrimitiveType(PrimitiveTypeSyntax pts)
         {
             return pts.Kind switch
             {
                 TypeNodeKind.Boolean => _stb.Boolean,
                 TypeNodeKind.Int => _stb.Int,
+                TypeNodeKind.Uid => _stb.Guid,
                 TypeNodeKind.Char => _stb.Char,
                 TypeNodeKind.Double => _stb.Double,
                 TypeNodeKind.String => _stb.String,
@@ -102,12 +101,12 @@ namespace ZenPlatform.Compiler
                 TypeNodeKind.Object => _stb.Object,
                 TypeNodeKind.Void => _stb.Void,
                 TypeNodeKind.Session => _stb.Session,
-                TypeNodeKind.Context => _ts.FindType<PlatformContext>(),
+                TypeNodeKind.Context => _ts.Resolve<PlatformContext>(),
                 _ => throw new Exception($"This type is not primitive {pts.Kind}")
             };
         }
 
-        public IMethod GetMethod(TypeSyntax type, string name, IType[] args)
+        public (RoslynMethod clrMethod, Function astMethod ) GetMethod(TypeSyntax type, string name, RoslynType[] args)
         {
             if (type is SingleTypeSyntax sts)
             {
@@ -116,25 +115,29 @@ namespace ZenPlatform.Compiler
 
                 var funcDef = typeDef?.TypeBody.SymbolTable.Find<MethodSymbol>(name, SymbolScopeBySecurity.User);
 
-                IMethod m = funcDef?.SelectOverload(args).clrMethod;
+                var a = funcDef?.SelectOverload(args) ?? throw new Exception($"Method {name} not found");
 
-                return m ?? throw new Exception($"Property {name} not found");
+                RoslynMethod clr = a.clrMethod;
+                Function ast = a.method;
+
+                return (clr, ast);
             }
             else if (type is PrimitiveTypeSyntax pts)
             {
                 var pType = GetPrimitiveType(pts);
-
-                return pType.FindMethod(name) ?? throw new Exception("Property not found");
+                var clrMethod = pType.FindMethod(name) ?? throw new Exception("Property not found");
+                return (clrMethod, null);
             }
 
             throw new Exception("Unknown type");
         }
 
-        public IProperty GetProperty(TypeSyntax type, string name)
+        public RoslynProperty GetProperty(TypeSyntax type, string name)
         {
             if (type is SingleTypeSyntax sts)
             {
                 var symbol = TypeFinder.Apply(sts, _root);
+
                 var typeDef = symbol.Type;
 
                 var propDef = typeDef?.TypeBody.SymbolTable.Find<PropertySymbol>(name, SymbolScopeBySecurity.User);
@@ -160,18 +163,18 @@ namespace ZenPlatform.Compiler
             return typeDef.TypeBody.SymbolTable.GetAll<MethodSymbol>(SymbolType.Method).Select(x => x.Name).ToList();
         }
 
-        public void RegisterProperty(string fullTypeName, IProperty prop)
+        public void RegisterProperty(string fullTypeName, RoslynProperty prop)
         {
             if (!_props.ContainsKey(fullTypeName))
-                _props[fullTypeName] = new List<IProperty>();
+                _props[fullTypeName] = new List<RoslynProperty>();
 
             _props[fullTypeName].Add(prop);
         }
 
-        public void RegisterMethod(string fullTypeName, IMethod method)
+        public void RegisterMethod(string fullTypeName, RoslynInvokableBase method)
         {
             if (!_methods.ContainsKey(fullTypeName))
-                _methods[fullTypeName] = new List<IMethod>();
+                _methods[fullTypeName] = new List<RoslynInvokableBase>();
 
             _methods[fullTypeName].Add(method);
         }
@@ -189,7 +192,7 @@ namespace ZenPlatform.Compiler
                     TypeNodeKind.Boolean => _stb.Boolean.FullName,
                     TypeNodeKind.Object => _stb.Object.FullName,
                     TypeNodeKind.Byte => _stb.Byte.FullName,
-                    TypeNodeKind.Context => _stb.TypeSystem.FindType<PlatformContext>().FullName,
+                    TypeNodeKind.Context => _stb.TypeSystem.Resolve<PlatformContext>().FullName,
                     _ => throw new Exception("")
                 };
             }
@@ -205,7 +208,7 @@ namespace ZenPlatform.Compiler
             throw new NotImplementedException();
         }
 
-        private IProperty GetCachedProperty(string typeName, string propName)
+        private RoslynProperty GetCachedProperty(string typeName, string propName)
         {
             if (_props.ContainsKey(typeName))
                 return _props[typeName].FirstOrDefault(x => x.Name == propName);
@@ -213,7 +216,7 @@ namespace ZenPlatform.Compiler
             return null;
         }
 
-        private IMethod GetCachedMethod(string typeName, string methodName, string[] typeNameArgs = null)
+        private RoslynInvokableBase GetCachedMethod(string typeName, string methodName, string[] typeNameArgs = null)
         {
             if (_methods.ContainsKey(typeName))
                 return _methods[typeName]
@@ -230,7 +233,7 @@ namespace ZenPlatform.Compiler
 
         private void RegisterStatic()
         {
-            var context = _stb.TypeSystem.FindType<PlatformContext>();
+            var context = _stb.TypeSystem.Resolve<PlatformContext>();
             RegisterProperty(context.FullName, context.FindProperty(nameof(PlatformContext.Session)));
             RegisterProperty(context.FullName, context.FindProperty(nameof(PlatformContext.UserName)));
         }

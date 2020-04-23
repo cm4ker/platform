@@ -1,11 +1,11 @@
-using ZenPlatform.Compiler.Contracts;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Shared.Tree;
 
 namespace ZenPlatform.Configuration.Contracts
 {
     public interface IGlobalVarManager
     {
-        ITypeSystem TypeSystem { get; }
+        RoslynTypeSystem TypeSystem { get; }
 
         void Register(Node node);
 
@@ -14,7 +14,7 @@ namespace ZenPlatform.Configuration.Contracts
 
     public interface IEntryPointManager
     {
-        ITypeBuilder EntryPoint { get; }
-        IMethodBuilder Main { get; }
+        RoslynTypeBuilder EntryPoint { get; }
+        RoslynMethodBuilder Main { get; }
     }
 }

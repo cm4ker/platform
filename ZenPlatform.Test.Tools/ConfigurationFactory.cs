@@ -88,18 +88,39 @@ public void Overload()
      return a; 
  }
 
+ public void ExecuteSql()
+ {
+    var a = $Query();
+    a.Text = ""FROM Entity.Store SELECT Id"";
+    var r = a.ExecuteReader();
+
+    while(r.Read())
+    {
+        var g = (uid)r.Id;
+    }
+ }
+
+
  [Client]
  public void OnClientClientCallProc()
  {
      ClientCallProc(10);
  }
 
+[ClientCall] 
+ public void CreateAndSaveStore()
+ {
+    Store s = $Entity.Store.Create();
+    s.Name = ""Souths park"";
+    s.Save();   
+ }
+
+
  [ClientCall] 
  public string GetUserNameServer()
  { 
-     //Store s = $Entity.Store.Create();
-     //s.Name = ""Souths park"";
-    // s.Save();    
+     CreateAndSaveStore();
+
      return Context.UserName; 
  }
 

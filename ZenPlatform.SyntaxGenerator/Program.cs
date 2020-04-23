@@ -1,5 +1,6 @@
 ﻿using System;
 using ZenPlatform.SyntaxGenerator.Compiler;
+using ZenPlatform.SyntaxGenerator.Qlang;
 using ZenPlatform.SyntaxGenerator.QLang;
 using ZenPlatform.SyntaxGenerator.SQL;
 

@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
 
 namespace ZenPlatform.Core.Network

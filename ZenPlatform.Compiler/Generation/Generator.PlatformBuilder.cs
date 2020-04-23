@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using Portable.Xaml;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Language.Ast.Definitions;
+using ZenPlatform.ServerRuntime;
 
 namespace ZenPlatform.Compiler.Generation
 {
@@ -25,10 +27,11 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             _cus = _root.Units;
-            AstPlatformTypes.System(_root, _asm.TypeSystem);
             AstScopeRegister.Apply(_root);
 
-            LoweringOptimizer.Apply(_ts, _root);
+            //Add Querying support to the platform
+            if (_mode.HasFlag(CompilationMode.Server))
+                QueryCompilerHelper.Init(_root, _ts);
 
             Build();
         }
@@ -50,7 +53,7 @@ namespace ZenPlatform.Compiler.Generation
             }
 
             _cus = root.Units;
-            AstPlatformTypes.System(_root, _asm.TypeSystem);
+            // AstPlatformTypes.System(_root, _asm.TypeSystem);
             AstScopeRegister.Apply(root);
 
             return root;

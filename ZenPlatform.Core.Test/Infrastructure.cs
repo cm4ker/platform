@@ -11,41 +11,41 @@ namespace ZenPlatform.Core.Test
         {
             if (bag.Has("Id"))
                 Id = bag.Get<Guid>("Id");
-
+    
             if (bag.Has("Type"))
-                Type = bag.Get<int>("Type");
+                TypeId = bag.Get<int>("Type");
         }
-
+    
         public Guid Id { get; }
-
-        public int Type { get; }
-
+    
+        public int TypeId { get; }
+    
         public virtual string Name => "Entity";
-
+    
         public string Presentation => ToString();
-
+    
         public override string ToString()
         {
-            return $"{Name} = ({Type}:{{{Id}}})";
+            return $"{Name} = ({TypeId}:{{{Id}}})";
         }
     }
-
+    
     public class StoreLink : EntityLink
     {
         public StoreLink(ViewBag bag) : base(bag)
         {
         }
     }
-
+    
     public class InvoiceLink : EntityLink
     {
         private StoreLink _store;
-
+    
         public InvoiceLink(ViewBag bag) : base(bag)
         {
         }
-
+    
         public StoreLink Store => _store ??=
-            new StoreLink(GlobalScope.Client.Invoke<ViewBag>(new Route("Test_GetProperty"), Type, nameof(Store), Id));
+            new StoreLink(GlobalScope.Client.Invoke<ViewBag>(new Route("Test_GetProperty"), TypeId, nameof(Store), Id));
     }
 }

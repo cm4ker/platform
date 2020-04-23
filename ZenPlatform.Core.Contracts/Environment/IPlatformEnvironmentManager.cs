@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using ZenPlatform.Core.Environment.Contracts;
-using ZenPlatform.QueryBuilder;
 
-namespace ZenPlatform.Core.Environment
+namespace ZenPlatform.Core.Contracts.Environment
 {
     /// <summary>
     /// Менеджер среды 
@@ -14,18 +12,5 @@ namespace ZenPlatform.Core.Environment
         void AddWorkEnvironment(IStartupConfig config);
 
         List<IEnvironment> GetEnvironmentList();
-    }
-
-    public interface IStartupConfig
-    {
-        /// <summary>
-        /// Строка подключения к базе
-        /// </summary>
-        string ConnectionString { get; set; }
-
-        /// <summary>
-        /// Тип базы данных, которую будет обслуживать рабочий процесс
-        /// </summary>
-        SqlDatabaseType DatabaseType { get; set; }
     }
 }

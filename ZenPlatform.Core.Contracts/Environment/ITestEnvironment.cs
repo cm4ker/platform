@@ -1,3 +1,3 @@
-namespace ZenPlatform.Core.Environment
+namespace ZenPlatform.Core.Contracts.Environment
 {
 }

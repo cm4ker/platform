@@ -6,24 +6,32 @@ using System.Runtime.InteropServices;
 using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Contracts.Symbols;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Configuration.Common.TypeSystem;
 using ZenPlatform.Language.Ast;
 using ZenPlatform.Language.Ast.Definitions;
 using ZenPlatform.Language.Ast.Definitions.Functions;
 using ZenPlatform.Language.Ast.Symbols;
+using ZenPlatform.ServerRuntime;
 using Module = ZenPlatform.Language.Ast.Definitions.Module;
 
 namespace ZenPlatform.Compiler.Generation
 {
     public partial class Generator
     {
-        private Dictionary<TypeEntity, ITypeBuilder> _stage0 = new Dictionary<TypeEntity, ITypeBuilder>();
-        private Dictionary<Function, IMethodBuilder> _stage1Methods = new Dictionary<Function, IMethodBuilder>();
-        private Dictionary<Property, IPropertyBuilder> _stage1Properties = new Dictionary<Property, IPropertyBuilder>();
-        private Dictionary<Field, IField> _stage1Fields = new Dictionary<Field, IField>();
+        private Dictionary<TypeEntity, RoslynTypeBuilder> _stage0 = new Dictionary<TypeEntity, RoslynTypeBuilder>();
 
-        private Dictionary<Constructor, IConstructorBuilder> _stage1constructors =
-            new Dictionary<Constructor, IConstructorBuilder>();
+        private Dictionary<Function, RoslynMethodBuilder> _stage1Methods =
+            new Dictionary<Function, RoslynMethodBuilder>();
+
+        private Dictionary<Property, RoslynPropertyBuilder> _stage1Properties =
+            new Dictionary<Property, RoslynPropertyBuilder>();
+
+        private Dictionary<Field, RoslynField> _stage1Fields = new Dictionary<Field, RoslynField>();
+
+        private Dictionary<Constructor, RoslynConstructorBuilder> _stage1constructors =
+            new Dictionary<Constructor, RoslynConstructorBuilder>();
 
         private GlobalVarManager _varManager;
 
@@ -41,8 +49,17 @@ namespace ZenPlatform.Compiler.Generation
             BuildGlobalVar();
             BuildCode();
 
-
             _epManager.EndBuild();
+        }
+
+
+        private void InitGlobalVar(GlobalVarManager mrg)
+        {
+            var item = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Server, "Query",
+                (node, builder) => { builder.NewObj(_ts.Resolve<PlatformQuery>().FindConstructor()); },
+                new SingleTypeSyntax(null, "Query", TypeNodeKind.Type));
+
+            mrg.Register(item);
         }
 
         /// <summary>
@@ -53,6 +70,8 @@ namespace ZenPlatform.Compiler.Generation
             if (_conf != null)
             {
                 _varManager = new GlobalVarManager(_mode, _ts);
+
+                InitGlobalVar(_varManager);
 
                 foreach (var component in _conf.TypeManager.Components)
                 {
@@ -122,7 +141,7 @@ namespace ZenPlatform.Compiler.Generation
             if (_stage0.ContainsKey(typeEntity))
                 return;
 
-            void AfterPreBuild<T>(T sym, ITypeBuilder tb) where T : TypeEntity, IAstSymbol
+            void AfterPreBuild<T>(T sym, RoslynTypeBuilder tb) where T : TypeEntity, IAstSymbol
             {
                 var st = sym.FirstParent<IScoped>().SymbolTable;
                 var symbol = st.Find<TypeSymbol>(sym);
@@ -147,7 +166,9 @@ namespace ZenPlatform.Compiler.Generation
                 case ComponentAstTask co:
                 {
                     var tco = PreBuildComponentAst(co);
-                    if (tco is null) throw new Exception("Compilation error: component return null class builder");
+                    if (tco is null)
+                        throw new Exception(
+                            $"Compilation error: component return null class builder for task {co.Name}");
                     AfterPreBuild(co, tco);
                     break;
                 }
@@ -342,7 +363,7 @@ namespace ZenPlatform.Compiler.Generation
         }
 
 
-        private IMethodBuilder PrebuildFunction(Function function, ITypeBuilder tb, bool isClass)
+        private RoslynMethodBuilder PrebuildFunction(Function function, RoslynTypeBuilder tb, bool isClass)
         {
             /* 
              * [Client]
@@ -378,108 +399,108 @@ namespace ZenPlatform.Compiler.Generation
             return method;
         }
 
-        private IPropertyBuilder PrebuildProperty(Property property, ITypeBuilder tb)
+        private RoslynPropertyBuilder PrebuildProperty(Property property, RoslynTypeBuilder tb)
         {
             var propBuilder = tb.DefineProperty(_map.GetClrType(property.Type), property.Name, false);
 
-            IField backField = null;
-
-
-            if (property.Setter == null && property.Getter == null)
-            {
-                backField = tb.DefineField(_map.GetClrType(property.Type), $"{property.Name}_backingField", false,
-                    false);
-            }
-
-            if (property.HasGetter || property.Getter != null)
-            {
-                var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
-                getMethod.WithReturnType(_map.GetClrType(property.Type));
-
-                if (property.Getter == null)
-                {
-                    if (backField != null)
-                        getMethod.Generator.LdArg_0().LdFld(backField).Ret();
-                }
-
-                propBuilder.WithGetter(getMethod);
-            }
-
-            if (property.HasSetter || property.Setter != null)
-            {
-                var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
-                setMethod.WithReturnType(_bindings.Void);
-                setMethod.DefineParameter("value", _map.GetClrType(property.Type), false, false);
-
-
-                if (property.Setter == null)
-                {
-                    if (backField != null)
-                        setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
-                    else
-                        setMethod.Generator.Ret();
-                }
-
-
-                propBuilder.WithSetter(setMethod);
-            }
+            // IField backField = null;
+            //
+            //
+            // if (property.Setter == null && property.Getter == null)
+            // {
+            //     backField = tb.DefineField(_map.GetClrType(property.Type), $"{property.Name}_backingField", false,
+            //         false);
+            // }
+            //
+            // if (property.HasGetter || property.Getter != null)
+            // {
+            //     var getMethod = tb.DefineMethod($"get_{property.Name}", true, false, false);
+            //     getMethod.WithReturnType(_map.GetClrType(property.Type));
+            //
+            //     if (property.Getter == null)
+            //     {
+            //         if (backField != null)
+            //             getMethod.Generator.LdArg_0().LdFld(backField).Ret();
+            //     }
+            //
+            //     propBuilder.WithGetter(getMethod);
+            // }
+            //
+            // if (property.HasSetter || property.Setter != null)
+            // {
+            //     var setMethod = tb.DefineMethod($"set_{property.Name}", true, false, false);
+            //     setMethod.WithReturnType(_bindings.Void);
+            //     setMethod.DefineParameter("value", _map.GetClrType(property.Type), false, false);
+            //
+            //
+            //     if (property.Setter == null)
+            //     {
+            //         if (backField != null)
+            //             setMethod.Generator.LdArg_0().LdArg(1).StFld(backField).Ret();
+            //         else
+            //             setMethod.Generator.Ret();
+            //     }
+            //
+            //
+            //     propBuilder.WithSetter(setMethod);
+            // }
 
             return propBuilder;
         }
 
-        private void BuildProperty(Property property, ITypeBuilder tb, IPropertyBuilder pb)
+        private void BuildProperty(Property property, RoslynTypeBuilder tb, RoslynPropertyBuilder pb)
         {
-            if (property.Getter != null)
-            {
-                var mb = tb.DefinedMethods.First(x => x.Name == pb.Getter.Name);
-
-                IEmitter emitter = mb.Generator;
-                emitter.InitLocals = true;
-
-                ILocal resultVar = null;
-
-                resultVar = emitter.DefineLocal(_map.GetClrType(property.Type));
-
-                var returnLabel = emitter.DefineLabel();
-                EmitBody(emitter, property.Getter, returnLabel, ref resultVar);
-
-                emitter.MarkLabel(returnLabel);
-
-                if (resultVar != null)
-                    emitter.LdLoc(resultVar);
-
-                emitter.Ret();
-            }
-
-            if (property.Setter != null)
-            {
-                var mb = tb.DefinedMethods.First(x => x.Name == pb.Setter.Name);
-
-                IEmitter emitter = mb.Generator;
-                emitter.InitLocals = true;
-
-                ILocal resultVar = null;
-
-                resultVar = emitter.DefineLocal(_map.GetClrType(property.Type));
-
-                var valueSym =
-                    property.Setter.SymbolTable.Find<VariableSymbol>("value", SymbolScopeBySecurity.Shared);
-                valueSym.Connect(mb.Parameters[0]);
-
-                var returnLabel = emitter.DefineLabel();
-                EmitBody(emitter, property.Setter, returnLabel, ref resultVar);
-
-                emitter.MarkLabel(returnLabel);
-                emitter.Ret();
-            }
+            // if (property.Getter != null)
+            // {
+            //     var mb = tb.DefinedMethods.First(x => x.Name == pb.Getter.Name);
+            //
+            //     IEmitter emitter = mb.Generator;
+            //     emitter.InitLocals = true;
+            //
+            //     ILocal resultVar = null;
+            //
+            //     resultVar = emitter.DefineLocal(_map.GetClrType(property.Type));
+            //
+            //     var returnLabel = emitter.DefineLabel();
+            //     EmitBody(emitter, property.Getter, returnLabel, ref resultVar);
+            //
+            //     emitter.MarkLabel(returnLabel);
+            //
+            //     if (resultVar != null)
+            //         emitter.LdLoc(resultVar);
+            //
+            //     emitter.Ret();
+            // }
+            //
+            // if (property.Setter != null)
+            // {
+            //     var mb = tb.DefinedMethods.First(x => x.Name == pb.Setter.Name);
+            //
+            //     IEmitter emitter = mb.Generator;
+            //     emitter.InitLocals = true;
+            //
+            //     ILocal resultVar = null;
+            //
+            //     resultVar = emitter.DefineLocal(_map.GetClrType(property.Type));
+            //
+            //     var valueSym =
+            //         property.Setter.SymbolTable.Find<VariableSymbol>("value", SymbolScopeBySecurity.Shared);
+            //     valueSym.Connect(mb.Parameters[0]);
+            //
+            //     var returnLabel = emitter.DefineLabel();
+            //     EmitBody(emitter, property.Setter, returnLabel, ref resultVar);
+            //
+            //     emitter.MarkLabel(returnLabel);
+            //     emitter.Ret();
+            // }
         }
 
-        private IField PrebuildField(Field field, ITypeBuilder tb)
+        private RoslynField PrebuildField(Field field, RoslynTypeBuilder tb)
         {
             return tb.DefineField(_map.GetClrType(field.Type), field.Name, false, false);
         }
 
-        private IConstructorBuilder PrebuildConstructor(Constructor constructor, ITypeBuilder tb)
+        private RoslynConstructorBuilder PrebuildConstructor(Constructor constructor, RoslynTypeBuilder tb)
         {
             var c = tb.DefineConstructor(false);
 
@@ -495,7 +516,7 @@ namespace ZenPlatform.Compiler.Generation
             return c;
         }
 
-        private ITypeBuilder PreBuildClass(Class @class)
+        private RoslynTypeBuilder PreBuildClass(Class @class)
         {
             var tb = _asm.DefineType(
                 (@class.GetNamespace()),
@@ -510,7 +531,7 @@ namespace ZenPlatform.Compiler.Generation
             return tb;
         }
 
-        private ITypeBuilder PreBuildModule(Module module)
+        private RoslynTypeBuilder PreBuildModule(Module module)
         {
             return _asm.DefineType(
                 module.GetNamespace(),
@@ -530,7 +551,7 @@ namespace ZenPlatform.Compiler.Generation
             return null;
         }
 
-        private ITypeBuilder PreBuildComponentAst(ComponentAstTask astTask)
+        private RoslynTypeBuilder PreBuildComponentAst(ComponentAstTask astTask)
         {
             return astTask.Component.ComponentImpl.Generator.Stage0(_asm, astTask);
         }

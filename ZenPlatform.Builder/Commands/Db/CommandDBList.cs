@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
 
 namespace ZenPlatform.Cli.Commands.Db

@@ -13,14 +13,16 @@ using ZenPlatform.Compiler.Contracts;
 using ZenPlatform.Compiler.Dnlib;
 using ZenPlatform.Compiler.Generation;
 using ZenPlatform.Compiler.Helpers;
+using ZenPlatform.Compiler.Roslyn;
+using ZenPlatform.Compiler.Roslyn.RoslynBackend;
 using ZenPlatform.Compiler.Visitor;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Configuration.Structure;
 using ZenPlatform.ConfigurationExample;
 using ZenPlatform.Core;
 using ZenPlatform.Core.Authentication;
+using ZenPlatform.Core.Contracts.Environment;
 using ZenPlatform.Core.Environment;
-using ZenPlatform.Core.Environment.Contracts;
 using ZenPlatform.Core.Sessions;
 using ZenPlatform.Core.Test;
 using ZenPlatform.EntityComponent.Entity;
@@ -49,7 +51,7 @@ namespace ZenPlatform.Component.Tests
         public void Build()
         {
             var conf = ConfigurationFactory.Create();
-            IAssemblyPlatform pl = new DnlibAssemblyPlatform();
+            RoslynAssemblyPlatform pl = new RoslynAssemblyPlatform();
 
             var server = pl.CreateAssembly("Server");
             var client = pl.CreateAssembly("Client");
