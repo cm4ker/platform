@@ -23,7 +23,6 @@ namespace ZenPlatform.Core.Querying.Model
             _scope = new Stack<LogicScope>();
             _tm = conf;
             _tb = new QLangTypeBuilder(_tm);
-            
         }
 
         public ITypeManager TypeManager => _tm;
@@ -286,7 +285,7 @@ namespace ZenPlatform.Core.Querying.Model
             _logicStack.Push(new QQuery(_logicStack.PopItem<QOrderBy>(),
                 _logicStack.PopItem<QSelect>(), _logicStack.PopItem<QHaving>(),
                 _logicStack.PopItem<QGroupBy>(), _logicStack.PopItem<QWhere>(),
-                _logicStack.PopFrom()));
+                _logicStack.PopItem<QFrom>()));
 
             if (_scope.Count > 0) //мы находимся во внутреннем запросе
                 _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));
