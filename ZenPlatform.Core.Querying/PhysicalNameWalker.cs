@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Core.Querying.Model;
 
@@ -9,6 +11,14 @@ namespace ZenPlatform.Core.Querying
         public int _fieldCount;
         public int _tableCount;
 
+        public int _paramCount;
+        private Dictionary<string, int> _params;
+
+        public PhysicalNameWalker()
+        {
+            _params = new Dictionary<string, int>();
+        }
+        
         public override object VisitQQuery(QQuery node)
         {
             VisitQFrom(node.From);
@@ -61,6 +71,23 @@ namespace ZenPlatform.Core.Querying
         {
             base.VisitQIntermediateSourceField(node);
             node.SetDbName(node.Field.GetDbName());
+            return null;
+        }
+
+
+        public override object VisitQParameter(QParameter arg)
+        {
+            if (_params.TryGetValue(arg.Name, out var index))
+            {
+                arg.SetDbNameIfEmpty($"p{index}");
+            }
+            else
+            {
+                _params.Add(arg.Name, _paramCount);
+                arg.SetDbNameIfEmpty($"p{_paramCount++}");
+            }
+
+
             return null;
         }
 

@@ -101,11 +101,17 @@ namespace ZenPlatform.Core.Querying
         }
 
 
+        public override object VisitParameter(ZSqlGrammarParser.ParameterContext context)
+        {
+            _stack.ld_param(context.IDENTIFIER().GetText());
+            return null;
+        }
+
         public override object VisitWhere_stmt(ZSqlGrammarParser.Where_stmtContext context)
         {
-             base.VisitWhere_stmt(context);
-             _stack.where();
-             return null;
+            base.VisitWhere_stmt(context);
+            _stack.where();
+            return null;
         }
 
         public override object VisitFrom_stmt(ZSqlGrammarParser.From_stmtContext context)
