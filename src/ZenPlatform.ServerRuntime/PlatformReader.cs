@@ -44,7 +44,7 @@ namespace ZenPlatform.ServerRuntime
             _buffered = _reader.GetBufferedData(BufferedDataOptions.Default);
             _bufferedReader = _buffered.GetDataReader();
 
-            
+
             _reader.Dispose();
             Analyze();
         }
