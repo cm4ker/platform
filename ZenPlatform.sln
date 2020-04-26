@@ -3,33 +3,33 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration", "ZenPlatform.Configuration\ZenPlatform.Configuration.csproj", "{83A2D27E-C01A-4338-997A-8F407573DA0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "srcZenPlatform.Configuration", "src\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj", "{83A2D27E-C01A-4338-997A-8F407573DA0C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Data", "ZenPlatform.Data\ZenPlatform.Data.csproj", "{5811219B-6CB7-4AAB-92BA-BD941FC43883}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Data", "src\ZenPlatform.Data\ZenPlatform.Data.csproj", "{5811219B-6CB7-4AAB-92BA-BD941FC43883}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Migration", "ZenPlatform.Migration\ZenPlatform.Migration.csproj", "{5F9D872F-2B23-440F-AC83-99D20293349D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Migration", "src\ZenPlatform.Migration\ZenPlatform.Migration.csproj", "{5F9D872F-2B23-440F-AC83-99D20293349D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Cli", "ZenPlatform.Builder\ZenPlatform.Cli.csproj", "{4A7467AC-ED2E-4A96-8537-1CE038038E9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Cli", "src\ZenPlatform.Builder\ZenPlatform.Cli.csproj", "{4A7467AC-ED2E-4A96-8537-1CE038038E9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.PlatformCodeGenerator", "ZenPlatform.PlatformCodeGenerator\ZenPlatform.PlatformCodeGenerator.csproj", "{6018B169-B349-4405-8A6E-9CDC77DD104F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.PlatformCodeGenerator", "src\ZenPlatform.PlatformCodeGenerator\ZenPlatform.PlatformCodeGenerator.csproj", "{6018B169-B349-4405-8A6E-9CDC77DD104F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.DataComponent", "ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj", "{595EFE31-5BF9-4C4D-B93E-55AA3831E216}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.DataComponent", "src\ZenPlatform.ConfigurationDataComponent\ZenPlatform.DataComponent.csproj", "{595EFE31-5BF9-4C4D-B93E-55AA3831E216}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.EntityComponent", "ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj", "{1416F06A-2DD0-4573-8BEB-75547AADAF10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.EntityComponent", "src\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj", "{1416F06A-2DD0-4573-8BEB-75547AADAF10}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core", "ZenPlatform.Core\ZenPlatform.Core.csproj", "{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core", "src\ZenPlatform.Core\ZenPlatform.Core.csproj", "{3F7B0D57-DE6C-46EA-B9B7-BD153803DCBC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.System", "ZenPlatform.System\ZenPlatform.System.csproj", "{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.System", "src\ZenPlatform.System\ZenPlatform.System.csproj", "{75EE2FD8-19C0-48E3-8D83-DC7D2CEA317C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ThinClient", "ZenPlatform.ThinClient\ZenPlatform.ThinClient.csproj", "{045440C6-4D2C-495A-93C9-20B4F7D65BD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ThinClient", "src\ZenPlatform.ThinClient\ZenPlatform.ThinClient.csproj", "{045440C6-4D2C-495A-93C9-20B4F7D65BD1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConnectionServer", "ZenPlatform.ConnectionServer\ZenPlatform.ConnectionServer.csproj", "{0B6D83D1-8DE3-4B32-84C8-2770DBFBB615}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ConnectionServer", "src\ZenPlatform.ConnectionServer\ZenPlatform.ConnectionServer.csproj", "{0B6D83D1-8DE3-4B32-84C8-2770DBFBB615}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.UIBuilder", "ZenPlatform.UIGeneration2\ZenPlatform.UIBuilder.csproj", "{6298E023-E6CF-422D-B12D-49A64B33D601}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.UIBuilder", "src\ZenPlatform.UIGeneration2\ZenPlatform.UIBuilder.csproj", "{6298E023-E6CF-422D-B12D-49A64B33D601}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ApplicationServer", "ZenPlatform.ApplicationServer\ZenPlatform.ApplicationServer.csproj", "{4276280D-D771-4572-A690-AF8188163F4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ApplicationServer", "src\ZenPlatform.ApplicationServer\ZenPlatform.ApplicationServer.csproj", "{4276280D-D771-4572-A690-AF8188163F4F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Interface", "ZenPlatform.Interface\ZenPlatform.Interface.csproj", "{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Interface", "src\ZenPlatform.Interface\ZenPlatform.Interface.csproj", "{E4B13439-FDA7-4DE7-AF5A-6AE4230F323D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{DCBBB387-C25A-4571-8267-BEAA839EB1E8}"
 EndProject
@@ -37,151 +37,151 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IDE", "IDE", "{9BC66EAE-D56
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{3EE6451A-06AB-4635-BC3E-2CD05075D9A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IDE", "ZenPlatform.IDE\ZenPlatform.IDE.csproj", "{F9576AA1-E4DA-44D3-9131-C083D5B3599E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IDE", "src\ZenPlatform.IDE\ZenPlatform.IDE.csproj", "{F9576AA1-E4DA-44D3-9131-C083D5B3599E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{60F9DF35-0F24-4B1B-AE89-43D43BAF8160}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ServerManagementTool", "ZenPlatform.ServerManagementTool\ZenPlatform.ServerManagementTool.csproj", "{B3D50BBE-68B5-46EF-A308-129E8862241E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ServerManagementTool", "src\ZenPlatform.ServerManagementTool\ZenPlatform.ServerManagementTool.csproj", "{B3D50BBE-68B5-46EF-A308-129E8862241E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Settings", "ZenPlatform.Settings\ZenPlatform.Settings.csproj", "{337434DB-58FA-474F-8A9F-EE5C9FD80EF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Settings", "src\ZenPlatform.Settings\ZenPlatform.Settings.csproj", "{337434DB-58FA-474F-8A9F-EE5C9FD80EF9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Shared", "ZenPlatform.Shared\ZenPlatform.Shared.csproj", "{D95C261A-8C0F-4DC0-91C6-90C46C31B80F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Shared", "src\ZenPlatform.Shared\ZenPlatform.Shared.csproj", "{D95C261A-8C0F-4DC0-91C6-90C46C31B80F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{A81AD719-77EB-4159-9DE9-8E8C2C0229AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Initializer", "ZenPlatform.Initializer\ZenPlatform.Initializer.csproj", "{35C9D631-02CF-4DFD-9B59-71DC69489733}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Initializer", "src\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj", "{35C9D631-02CF-4DFD-9B59-71DC69489733}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryUIBuilder", "ZenPlatform.QueryUIBuilder\ZenPlatform.QueryUIBuilder.csproj", "{D1D8377F-6FA1-4B09-BC43-D30758AF7103}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryUIBuilder", "src\ZenPlatform.QueryUIBuilder\ZenPlatform.QueryUIBuilder.csproj", "{D1D8377F-6FA1-4B09-BC43-D30758AF7103}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Server", "ZenPlatform.ConfigurationServer\ZenPlatform.IdeIntegration.Server.csproj", "{E38829E8-E501-4222-BB70-DA023F9BADD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Server", "src\ZenPlatform.ConfigurationServer\ZenPlatform.IdeIntegration.Server.csproj", "{E38829E8-E501-4222-BB70-DA023F9BADD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Client", "ZenPlatform.ConfigurationServerClient\ZenPlatform.IdeIntegration.Client.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Client", "src\ZenPlatform.ConfigurationServerClient\ZenPlatform.IdeIntegration.Client.csproj", "{255ACB94-338C-47DA-818A-3E0ABE5455B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Shared", "ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj", "{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.IdeIntegration.Shared", "src\ZenPlatform.ConfigurationServerShared\ZenPlatform.IdeIntegration.Shared.csproj", "{3B0EB2A7-04C6-4C46-9068-0CB6DF29DCB1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Controls.Avalonia", "ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj", "{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Controls.Avalonia", "src\ZenPlatform.Controls.Avalonia\ZenPlatform.Controls.Avalonia.csproj", "{937BA658-AA0F-43B4-BB1E-7D3197DD9E24}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Pidl", "ZenPlatform.Pidl\ZenPlatform.Pidl.csproj", "{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Pidl", "src\ZenPlatform.Pidl\ZenPlatform.Pidl.csproj", "{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler", "ZenPlatform.Compiler\ZenPlatform.Compiler.csproj", "{E90E3BA8-D1B1-4D68-8C4A-A8B3CD3AA02F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler", "src\ZenPlatform.Compiler\ZenPlatform.Compiler.csproj", "{E90E3BA8-D1B1-4D68-8C4A-A8B3CD3AA02F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compiler", "Compiler", "{D720452A-AC33-4FB7-B641-159F44FC5D06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Cecil", "ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj", "{9D60AC48-45A9-4F65-B796-898F56D9D256}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Cecil", "src\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj", "{9D60AC48-45A9-4F65-B796-898F56D9D256}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Sre", "ZenPlatform.Compiler.Sre\ZenPlatform.Compiler.Sre.csproj", "{FD68EBFB-11FC-4612-AB7F-7E0FDE352EAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Sre", "src\ZenPlatform.Compiler.Sre\ZenPlatform.Compiler.Sre.csproj", "{FD68EBFB-11FC-4612-AB7F-7E0FDE352EAB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Contracts", "ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj", "{CB9307A1-D35C-4034-8853-11B5BDB10C65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Contracts", "src\ZenPlatform.Compiler.Contracts\ZenPlatform.Compiler.Contracts.csproj", "{CB9307A1-D35C-4034-8853-11B5BDB10C65}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ServerRPC", "ServerRPC\ZenPlatform.ServerRPC.csproj", "{BA8D8CFB-0F4D-483B-BEB0-5B77F8DA9FD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ServerRPC", "src\ServerRPC\ZenPlatform.ServerRPC.csproj", "{BA8D8CFB-0F4D-483B-BEB0-5B77F8DA9FD8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Runner", "ZenPlatform.Runner\ZenPlatform.Runner.csproj", "{5BA8A224-81EF-49B6-9B4A-D918CAB0B614}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Runner", "src\ZenPlatform.Runner\ZenPlatform.Runner.csproj", "{5BA8A224-81EF-49B6-9B4A-D918CAB0B614}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ClientRuntime", "ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj", "{CDB9FAD5-5752-4F3A-8391-A46C8F8A6532}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ClientRuntime", "src\ZenPlatform.ClientRuntime\ZenPlatform.ClientRuntime.csproj", "{CDB9FAD5-5752-4F3A-8391-A46C8F8A6532}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ServerClientShared", "ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj", "{F85C3AAA-8E92-4DF2-B17E-F64386A4983D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ServerClientShared", "src\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj", "{F85C3AAA-8E92-4DF2-B17E-F64386A4983D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Language.Ast", "ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj", "{D653F822-166F-4B02-A603-5027DA84A9EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Language.Ast", "src\ZenPlatform.Language.Ast\ZenPlatform.Language.Ast.csproj", "{D653F822-166F-4B02-A603-5027DA84A9EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Language.Infrastructure", "ZenPlatform.Language.Infrastructure\ZenPlatform.Language.Infrastructure.csproj", "{8F7FABBF-99E0-42C0-8C30-1626E3BEFFF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Language.Infrastructure", "src\ZenPlatform.Language.Infrastructure\ZenPlatform.Language.Infrastructure.csproj", "{8F7FABBF-99E0-42C0-8C30-1626E3BEFFF3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Tests", "ZenPlatform.Compiler.Tests\ZenPlatform.Compiler.Tests.csproj", "{BA867BBC-2CBB-4848-8108-0EDA4DC9FAD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Tests", "src\ZenPlatform.Compiler.Tests\ZenPlatform.Compiler.Tests.csproj", "{BA867BBC-2CBB-4848-8108-0EDA4DC9FAD7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.ComputingEngine", "ZenPlatform.Compiler.ComputingEngine\ZenPlatform.Compiler.ComputingEngine.csproj", "{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.ComputingEngine", "src\ZenPlatform.Compiler.ComputingEngine\ZenPlatform.Compiler.ComputingEngine.csproj", "{7A5DE3A6-A1A2-4D44-A155-8EF158076BCC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Platform", "ZenPlatform.Compiler.Platform\ZenPlatform.Compiler.Platform.csproj", "{77F0D330-0C1F-4D8D-B05C-7BEF402749E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Platform", "src\ZenPlatform.Compiler.Platform\ZenPlatform.Compiler.Platform.csproj", "{77F0D330-0C1F-4D8D-B05C-7BEF402749E7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.SyntaxGenerator", "ZenPlatform.SyntaxGenerator\ZenPlatform.SyntaxGenerator.csproj", "{41C68053-B10C-4836-A98A-204022CCEDA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.SyntaxGenerator", "src\ZenPlatform.SyntaxGenerator\ZenPlatform.SyntaxGenerator.csproj", "{41C68053-B10C-4836-A98A-204022CCEDA7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Dnlib", "ZenPlatform.Compiler.Dnlib\ZenPlatform.Compiler.Dnlib.csproj", "{259E14B2-B6D3-470B-9348-BF37BE25AF03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Dnlib", "src\ZenPlatform.Compiler.Dnlib\ZenPlatform.Compiler.Dnlib.csproj", "{259E14B2-B6D3-470B-9348-BF37BE25AF03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Component.Tests", "ZenPlatform.Component.Tests\ZenPlatform.Component.Tests.csproj", "{6F78BF0D-D47D-4A6F-BE2F-B4E9BB1D304E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Component.Tests", "src\ZenPlatform.Component.Tests\ZenPlatform.Component.Tests.csproj", "{6F78BF0D-D47D-4A6F-BE2F-B4E9BB1D304E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Test", "ZenPlatform.Core.Test\ZenPlatform.Core.Test.csproj", "{27BB7A0D-E074-488B-B774-4CF9AFD1A6CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Test", "src\ZenPlatform.Core.Test\ZenPlatform.Core.Test.csproj", "{27BB7A0D-E074-488B-B774-4CF9AFD1A6CF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Contracts", "ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj", "{27B54484-31D4-447E-BDBB-FDFF2576D355}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Contracts", "src\ZenPlatform.Core.Contracts\ZenPlatform.Core.Contracts.csproj", "{27B54484-31D4-447E-BDBB-FDFF2576D355}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryBuilder.Tests", "ZenPlatform.QueryBuilderTests\ZenPlatform.QueryBuilder.Tests.csproj", "{94908DC9-077B-4E8F-9CBC-D840B8A51BFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryBuilder.Tests", "src\ZenPlatform.QueryBuilderTests\ZenPlatform.QueryBuilder.Tests.csproj", "{94908DC9-077B-4E8F-9CBC-D840B8A51BFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.SSH", "ZenPlatform.SSH\ZenPlatform.SSH.csproj", "{312510BE-85E3-4016-952A-BF963D71440A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.SSH", "src\ZenPlatform.SSH\ZenPlatform.SSH.csproj", "{312510BE-85E3-4016-952A-BF963D71440A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{22D31880-2328-451D-ABF3-996E033F9CFC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Shell", "ZenPlatform.Shell\ZenPlatform.Shell.csproj", "{90FD0DBE-1C95-4692-AD16-C8DA49808E86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Shell", "src\ZenPlatform.Shell\ZenPlatform.Shell.csproj", "{90FD0DBE-1C95-4692-AD16-C8DA49808E86}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{D3194114-4EF0-406B-BB33-B744BA2CC2AF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Client", "ZenPlatform.Client\ZenPlatform.Client.csproj", "{E7E1D7DC-F6B2-4CF5-9978-5DF04CCC348B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Client", "src\ZenPlatform.Client\ZenPlatform.Client.csproj", "{E7E1D7DC-F6B2-4CF5-9978-5DF04CCC348B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ServerRuntime", "ZenPlatform.ServerRuntime\ZenPlatform.ServerRuntime.csproj", "{47CC079F-6BAB-4036-8273-D6518F1C418D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ServerRuntime", "src\ZenPlatform.ServerRuntime\ZenPlatform.ServerRuntime.csproj", "{47CC079F-6BAB-4036-8273-D6518F1C418D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.UI.Ast", "ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj", "{E66117AC-F925-4642-A243-04A96D2BC1E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.UI.Ast", "src\ZenPlatform.UI.Ast\ZenPlatform.UI.Ast.csproj", "{E66117AC-F925-4642-A243-04A96D2BC1E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Avalonia.Wrapper", "ZenPlatform.Avalonia.Wrapper\ZenPlatform.Avalonia.Wrapper.csproj", "{203577BD-D6E1-4848-957C-E1CEDD9374A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Avalonia.Wrapper", "src\ZenPlatform.Avalonia.Wrapper\ZenPlatform.Avalonia.Wrapper.csproj", "{203577BD-D6E1-4848-957C-E1CEDD9374A1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.WPF", "ZenPlatform.WPF\ZenPlatform.WPF.csproj", "{A90643D3-1711-4DD2-BD68-E23754B56A10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.WPF", "src\ZenPlatform.WPF\ZenPlatform.WPF.csproj", "{A90643D3-1711-4DD2-BD68-E23754B56A10}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Networking", "ZenPlatform.Networking\ZenPlatform.Networking.csproj", "{82A5BD28-92C2-4EFF-A359-7890B8B60E59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Networking", "src\ZenPlatform.Networking\ZenPlatform.Networking.csproj", "{82A5BD28-92C2-4EFF-A359-7890B8B60E59}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Querying", "ZenPlatform.Core.Querying\ZenPlatform.Core.Querying.csproj", "{985BF7A3-2D9F-499B-B84B-FE934672BBD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Querying", "src\ZenPlatform.Core.Querying\ZenPlatform.Core.Querying.csproj", "{985BF7A3-2D9F-499B-B84B-FE934672BBD0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryBuilder", "ZenPlatform.QueryBuilder\ZenPlatform.QueryBuilder.csproj", "{FFDAE447-5C60-4F1A-8E4D-14D33D167BBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.QueryBuilder", "src\ZenPlatform.QueryBuilder\ZenPlatform.QueryBuilder.csproj", "{FFDAE447-5C60-4F1A-8E4D-14D33D167BBA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Querying.Test", "ZenPlatform.Core.Querying.Test\ZenPlatform.Core.Querying.Test.csproj", "{4E098D04-9E75-47DF-9CEF-6AE906994DDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Core.Querying.Test", "src\ZenPlatform.Core.Querying.Test\ZenPlatform.Core.Querying.Test.csproj", "{4E098D04-9E75-47DF-9CEF-6AE906994DDC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Shell.Contracts", "ZenPlatform.Shell.Contracts\ZenPlatform.Shell.Contracts.csproj", "{2395B4CB-D7B2-48BD-9C48-20F7A2AAFDFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Shell.Contracts", "src\ZenPlatform.Shell.Contracts\ZenPlatform.Shell.Contracts.csproj", "{2395B4CB-D7B2-48BD-9C48-20F7A2AAFDFA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration.Contracts", "ZenPlatform.Configuration.Contracts\ZenPlatform.Configuration.Contracts.csproj", "{31E0F383-4DAA-4E6B-A19D-59123C9FD428}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration.Contracts", "src\ZenPlatform.Configuration.Contracts\ZenPlatform.Configuration.Contracts.csproj", "{31E0F383-4DAA-4E6B-A19D-59123C9FD428}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration.Common", "ZenPlatform.Configuration.Common\ZenPlatform.Configuration.Common.csproj", "{F519CB3C-64D0-49A9-AF5D-E84FB0EE6D8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration.Common", "src\ZenPlatform.Configuration.Common\ZenPlatform.Configuration.Common.csproj", "{F519CB3C-64D0-49A9-AF5D-E84FB0EE6D8C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration.Test", "ZenPlatform.Configuration.Test\ZenPlatform.Configuration.Test.csproj", "{F42EFC9E-A4D4-4D01-92E1-8C4818377BDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Configuration.Test", "src\ZenPlatform.Configuration.Test\ZenPlatform.Configuration.Test.csproj", "{F42EFC9E-A4D4-4D01-92E1-8C4818377BDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Roslyn", "ZenPlatform.Compiler.Roslyn\ZenPlatform.Compiler.Roslyn.csproj", "{DA1D08B8-A7CF-4543-9A25-F460C447D26E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Compiler.Roslyn", "src\ZenPlatform.Compiler.Roslyn\ZenPlatform.Compiler.Roslyn.csproj", "{DA1D08B8-A7CF-4543-9A25-F460C447D26E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Test.Tools", "ZenPlatform.Test.Tools\ZenPlatform.Test.Tools.csproj", "{BC5D88EA-5A55-44AC-B3BF-8C5CD7E22969}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Test.Tools", "src\ZenPlatform.Test.Tools\ZenPlatform.Test.Tools.csproj", "{BC5D88EA-5A55-44AC-B3BF-8C5CD7E22969}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.SimpleIde", "ZenPlatform.SimpleIde\ZenPlatform.SimpleIde.csproj", "{5B6EE494-6D4C-48BF-BDA9-BCEA02E2CAA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.SimpleIde", "src\ZenPlatform.SimpleIde\ZenPlatform.SimpleIde.csproj", "{5B6EE494-6D4C-48BF-BDA9-BCEA02E2CAA0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FS", "FS", "{0722AA19-20EC-48FD-88E8-FAF41B140DDE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem", "FS\SharpFileSystem\SharpFileSystem.csproj", "{E17F5A46-3EAC-4E21-9DD3-BE9353068C8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem", "src\FS\SharpFileSystem\SharpFileSystem.csproj", "{E17F5A46-3EAC-4E21-9DD3-BE9353068C8B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.Database", "FS\SharpFileSystem.Database\SharpFileSystem.Database.csproj", "{F832DD4A-4E30-461D-95A0-BE7CF5F7856F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.Database", "src\FS\SharpFileSystem.Database\SharpFileSystem.Database.csproj", "{F832DD4A-4E30-461D-95A0-BE7CF5F7856F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.Resources", "FS\SharpFileSystem.Resources\SharpFileSystem.Resources.csproj", "{6CF246B3-2933-4B36-9EF7-5D54137A5822}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.Resources", "src\FS\SharpFileSystem.Resources\SharpFileSystem.Resources.csproj", "{6CF246B3-2933-4B36-9EF7-5D54137A5822}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.SevenZip", "FS\SharpFileSystem.SevenZip\SharpFileSystem.SevenZip.csproj", "{90158548-AD61-4097-8B0E-AEBA54FB7C93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.SevenZip", "src\FS\SharpFileSystem.SevenZip\SharpFileSystem.SevenZip.csproj", "{90158548-AD61-4097-8B0E-AEBA54FB7C93}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.Tests", "FS\SharpFileSystem.Tests\SharpFileSystem.Tests.csproj", "{0A1D3A34-DEE9-4CDB-A900-C49F763FD066}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.Tests", "src\FS\SharpFileSystem.Tests\SharpFileSystem.Tests.csproj", "{0A1D3A34-DEE9-4CDB-A900-C49F763FD066}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.SharpZipLib", "FS\SharpFileSystem.SharpZipLib\SharpFileSystem.SharpZipLib.csproj", "{299CA985-ACFE-42F3-A267-D0231DBEDC28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpFileSystem.SharpZipLib", "src\FS\SharpFileSystem.SharpZipLib\SharpFileSystem.SharpZipLib.csproj", "{299CA985-ACFE-42F3-A267-D0231DBEDC28}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Ide.Common", "ZenPlatform.Ide.Common\ZenPlatform.Ide.Common.csproj", "{EF8CC67C-B3B0-437D-916D-013FDB77A433}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Ide.Common", "src\ZenPlatform.Ide.Common\ZenPlatform.Ide.Common.csproj", "{EF8CC67C-B3B0-437D-916D-013FDB77A433}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Ide.Contracts", "ZenPlatform.Ide.Contract\ZenPlatform.Ide.Contracts.csproj", "{AA4E5441-5527-422A-8CAE-E66B0BD1BFB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.Ide.Contracts", "src\ZenPlatform.Ide.Contract\ZenPlatform.Ide.Contracts.csproj", "{AA4E5441-5527-422A-8CAE-E66B0BD1BFB8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{600ED7B0-4BED-4D23-B7FA-6B7F25DE64AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BufferedDataReader", "DB\BufferedDataReader\BufferedDataReader.csproj", "{2C0B69DD-09FD-418F-AA76-F5CDA01C5083}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BufferedDataReader", "src\DB\BufferedDataReader\BufferedDataReader.csproj", "{2C0B69DD-09FD-418F-AA76-F5CDA01C5083}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BufferedDataReader.IntegrationTests", "DB\BufferedDataReader.IntegrationTests\BufferedDataReader.IntegrationTests.csproj", "{B1F7658D-AE18-4463-A62A-EE10BEBA127B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BufferedDataReader.IntegrationTests", "src\DB\BufferedDataReader.IntegrationTests\BufferedDataReader.IntegrationTests.csproj", "{B1F7658D-AE18-4463-A62A-EE10BEBA127B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BufferedDataReader.UnitTests", "DB\BufferedDataReader.UnitTests\BufferedDataReader.UnitTests.csproj", "{EEC3F772-76E2-4FB4-A272-10C0B7A671B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BufferedDataReader.UnitTests", "src\DB\BufferedDataReader.UnitTests\BufferedDataReader.UnitTests.csproj", "{EEC3F772-76E2-4FB4-A272-10C0B7A671B0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ThinClient.FakeAssembly", "ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj", "{2423B5C5-3A26-4129-90E7-BD508D98DE92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZenPlatform.ThinClient.FakeAssembly", "src\ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj", "{2423B5C5-3A26-4129-90E7-BD508D98DE92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Serializer", "ZenPlatform.Serializer\ZenPlatform.Serializer.csproj", "{ABF69E77-4DEE-4A74-92BE-B908E1D31E2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Serializer", "src\ZenPlatform.Serializer\ZenPlatform.Serializer.csproj", "{ABF69E77-4DEE-4A74-92BE-B908E1D31E2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Runtime", "ZenPlatform.Runtime\ZenPlatform.Runtime.csproj", "{272AF0BD-1E9A-4AAD-9BDC-7E352B7DF7C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.Runtime", "src\ZenPlatform.Runtime\ZenPlatform.Runtime.csproj", "{272AF0BD-1E9A-4AAD-9BDC-7E352B7DF7C7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{23EFCF51-01CB-4665-A072-86D0C591FD68}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{D90CEFB8-FAF8-4100-8A71-A6B21F28287B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.SharedRuntime", "ZenPlatform.SharedRuntime\ZenPlatform.SharedRuntime.csproj", "{96154A94-F7AE-4A8F-B25D-FE0F7EB4110B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.SharedRuntime", "src\ZenPlatform.SharedRuntime\ZenPlatform.SharedRuntime.csproj", "{96154A94-F7AE-4A8F-B25D-FE0F7EB4110B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

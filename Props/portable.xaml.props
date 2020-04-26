@@ -1,5 +1,0 @@
-<Project>
-    <ItemGroup>
-        <PackageReference Include="Portable.Xaml" Version="0.24.0"/>
-    </ItemGroup>
-</Project>

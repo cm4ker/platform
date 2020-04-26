@@ -1,0 +1,4 @@
+﻿namespace ZenPlatform.DataComponent.Migrations
+{
+
+}

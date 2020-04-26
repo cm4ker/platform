@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Avalonia.Base\Avalonia.Base.csproj" />
+      <ProjectReference Include="..\Avalonia.Styling\Avalonia.Styling.csproj" />
+      <ProjectReference Include="..\WebAssembly.Browser\WebAssembly.Browser.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="WebAssembly.Bindings, Version=0.2.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+        <HintPath>..\mono\framework\WebAssembly.Bindings.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

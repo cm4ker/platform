@@ -1,7 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Configurations>Debug;Release;DebugServer</Configurations>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
-</Project>

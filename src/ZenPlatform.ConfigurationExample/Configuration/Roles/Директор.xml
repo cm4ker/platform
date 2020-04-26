@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Role>
+    <Name>Директор</Name>
+    <Id>8153c296-2dce-4eb2-9338-069d11e99360</Id>
+    <PlatformRules>
+        <!-- Пользователь являлется администратором данных  -->
+        <IsDataAdministrator>true</IsDataAdministrator>
+
+        <!-- Пользователю разрешено обновлять базу данных -->
+        <CanUpdateDataBase>true</CanUpdateDataBase>
+
+        <!-- Монопольный режим управления данными -->
+        <CanMonopolisticMode>true</CanMonopolisticMode>
+
+        <!-- Пользователю разрешено подключаться к приложению (активный пользователь) -->
+        <IsActiveUser>true</IsActiveUser>
+
+        <!-- Пользователю разрешено смотреть за логом регистрации данных -->
+        <CanActionLogView>true</CanActionLogView>
+
+        <!-- Пользователю разрешено пользоваться тонким клиентом -->
+        <CanUseThinClient>true</CanUseThinClient>
+
+        <!-- Пользователю можно заходить через веб -->
+        <CanUseWebClient>true</CanUseWebClient>
+
+        <!-- Пользователю разрешено подключаться через API для доступа к данным -->
+        <CanUseExternalConnection>true</CanUseExternalConnection>
+
+        <!-- Пользователю можно пользоваться внешними обработками -->
+        <CanWhenOpenExternalModules>true</CanWhenOpenExternalModules>
+
+        <!-- Пользователю разрешено открывать консоль данных-->
+        <ConsoleAccess>true</ConsoleAccess>
+    </PlatformRules>
+    <DataRules>
+        <Rule ObjectId="351badbe-7887-4c1e-900c-4907dc0c2905">
+            <Content>
+                <![CDATA[<DocumentRule>
+                      <!-- Позволять роли читать данные -->
+                      <AllowRead>true</AllowRead>
+
+                      <!-- Позволять роли просматривать данные -->
+                      <AllowView>true</AllowView>
+
+                      <!-- Позволять роли добавлять данные -->
+                      <AllowAdd>true</AllowAdd>
+
+                      <!-- Позволять роли удалять данные из программного кода -->
+                      <AllowDelete>true</AllowDelete>
+
+                      <!-- Позволять роли удалять данные только из интерфейса -->
+                      <AllowInteractiveDelete>true</AllowInteractiveDelete>
+
+                      <!-- Позволять роли обновлять данные -->
+                      <AllowUpdate>true</AllowUpdate>
+                    </DocumentRule>]]>
+            </Content>
+        </Rule>
+    </DataRules>
+</Role>

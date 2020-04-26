@@ -1,5 +1,0 @@
-<Project>
-    <ItemGroup>
-        <PackageReference Include="Avalonia.Desktop" Version="0.9.6" />
-    </ItemGroup>
-</Project>

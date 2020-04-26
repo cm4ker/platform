@@ -1,0 +1,63 @@
+﻿using System;
+
+namespace ZenPlatform.Shell
+{
+    /// <summary>
+    /// Represents a terminal size in columns and rows.
+    /// </summary>
+    public struct TerminalSize : IEquatable<TerminalSize>
+    {
+        public uint WidthColumns { get; }
+        public uint HeightRows { get; }
+
+        public uint WidthPixels { get; set; }
+
+        public uint HeightPixels { get; set; }
+
+        public TerminalSize(uint columns, uint rows, uint widthPixels = 0, uint heightPixels = 0)
+        {
+            WidthColumns = columns;
+            HeightRows = rows;
+            WidthPixels = widthPixels;
+            HeightPixels = heightPixels;
+        }
+        
+        public TerminalSize(int columns, int rows, uint widthPixels = 0, uint heightPixels = 0)
+        {
+            WidthColumns = (uint)columns;
+            HeightRows = (uint)rows;
+            WidthPixels = widthPixels;
+            HeightPixels = heightPixels;
+        }
+
+        public bool Equals(TerminalSize other)
+        {
+            return base.Equals(other);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{WidthColumns} x {HeightRows}";
+        }
+
+        public static bool operator ==(TerminalSize a, TerminalSize b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(TerminalSize a, TerminalSize b)
+        {
+            return !a.Equals(b);
+        }
+    }
+}

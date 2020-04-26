@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DefineConstants>TRACE; CLIENT</DefineConstants>
+    </PropertyGroup>
+
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\avalonia.desktop.props" />
+    <Import Project="..\Props\dock.props" />
+    <Import Project="..\Props\portable.xaml.props" />
+
+    <ItemGroup>
+        <EmbeddedResource Include="App.xaml">
+            <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Include="MainWindow.xaml">
+            <SubType>Designer</SubType>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="App.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </None>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\ZenPlatform.Avalonia.Wrapper\ZenPlatform.Avalonia.Wrapper.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Runtime\ZenPlatform.Runtime.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ServerClientShared\ZenPlatform.ServerClientShared.csproj" />
+        <ProjectReference Include="..\ZenPlatform.ThinClient.FakeAssembly\ZenPlatform.ThinClient.FakeAssembly.csproj" />
+        
+    </ItemGroup>
+</Project>

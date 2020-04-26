@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <AssemblyName>ZenPlatform.Cli</AssemblyName>
+        <RootNamespace>ZenPlatform.Cli</RootNamespace>
+        <LangVersion>preview</LangVersion>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.1" />
+        <PackageReference Include="Microsoft.Build" Version="15.7.179" />
+        <PackageReference Include="Microsoft.Build.Framework" Version="15.7.179" />
+        <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.7.179" />
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.7.179" />
+        <PackageReference Include="Microsoft.CodeAnalysis" Version="3.1.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.1.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.1.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.1.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Syntax" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ZenPlatform.Compiler.Cecil\ZenPlatform.Compiler.Cecil.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Compiler.Platform\ZenPlatform.Compiler.Platform.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Initializer\ZenPlatform.Initializer.csproj" />
+        <ProjectReference Include="..\ZenPlatform.Shell.Contracts\ZenPlatform.Shell.Contracts.csproj" />
+    </ItemGroup>
+</Project>

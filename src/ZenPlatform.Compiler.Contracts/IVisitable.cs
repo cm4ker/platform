@@ -1,0 +1,3 @@
+namespace ZenPlatform.Compiler.Visitor
+{
+}

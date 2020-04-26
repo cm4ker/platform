@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Configurations>Debug;Release;DebugServer</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FS\SharpFileSystem\SharpFileSystem.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Compiler.Roslyn\ZenPlatform.Compiler.Roslyn.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Data\ZenPlatform.Data.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Ide.Contract\ZenPlatform.Ide.Contracts.csproj" />
+    <ProjectReference Include="..\ZenPlatform.Shared\ZenPlatform.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

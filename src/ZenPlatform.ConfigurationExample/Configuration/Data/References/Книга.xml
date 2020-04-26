@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Reference>
+    <Id>ce9d527f-87c1-457b-bec1-8c536db20d48</Id>
+    <Name>Книга</Name>
+    <IsAbstract>false</IsAbstract>
+
+    <!--Ссылка на поле для представления объекта-->
+    <DisplayProperty>ce9d527f-87c1-457b-bec1-8c536db20d48</DisplayProperty>
+
+    <!-- Представление объекта может быть с помощью паттерна:
+  <DisplayPattern> 
+    {(НаименованиеPropertyGuid)} Автор: {(АвторPropertyGuid).(НаименованиеPropertyGuid)}
+  </DisplayPattern>
+  Вот так он хранится непосредственно в конфигурации
+  <DisplayPattern> 
+    {(a4df9f47-b2d9-49a9-b237-09220857c051)} Автор: {(fdadada7-b2d9-49a9-b1234-09220857c051).(bfcacda7-b2d9-49a9-b1234-12340857c051)}
+  </DisplayPattern>
+   -->
+
+
+    <Properties>
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Length="30"
+                  Alias="Наименование" />
+        <Property Id="ce9d527f-87c1-457b-bec1-8c536db20d48" TypeId="ce9d527f-87c1-457b-bec1-8c536db20d48" Alias="Автор" />
+    </Properties>
+</Reference>

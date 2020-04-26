@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="WebAssembly.Bindings">
+            <HintPath>..\mono\framework\WebAssembly.Bindings.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Avalonia.Base\Avalonia.Base.csproj" />
+        <ProjectReference Include="..\Avalonia.Markup\Avalonia.Markup.csproj" />
+        <ProjectReference Include="..\Avalonia.Styling\Avalonia.Styling.csproj" />
+        <ProjectReference Include="..\UIModel\UIModel.csproj" />
+        <ProjectReference Include="..\WebAssembly.Browser\WebAssembly.Browser.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="index.html">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>
