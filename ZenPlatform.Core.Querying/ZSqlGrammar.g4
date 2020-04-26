@@ -114,6 +114,11 @@ exprAtom:
     literal
     //| functionCallexpr
     | expr_column
+    | parameter
+;
+
+parameter: 
+    '@' IDENTIFIER
 ;
 
 result_column
@@ -424,6 +429,7 @@ GT_EQ : '>=';
 EQ : '==';
 NOT_EQ1 : '!=';
 NOT_EQ2 : '<>';
+AT : '@';
 
 // http://www.sqlite.org/lang_keywords.html
 ABORT : A B O R T;
@@ -561,10 +567,6 @@ IDENTIFIER
 NUMERIC_LITERAL
  : DIGIT+ ( '.' DIGIT* )? ( E [-+]? DIGIT+ )?
  | '.' DIGIT+ ( E [-+]? DIGIT+ )?
- ;
-
-BIND_PARAMETER
- : [:@$] IDENTIFIER
  ;
 
 STRING_LITERAL

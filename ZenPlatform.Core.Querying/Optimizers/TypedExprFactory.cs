@@ -10,7 +10,8 @@ namespace ZenPlatform.Core.Querying.Optimizers
         {
             if (expr is QField f) return new MultiTypeQFieldExpression(f, walker, qm);
             if (expr is QCase @case) return new MultiTypeCaseExpression(@case, walker, qm);
-
+            if (expr is QParameter o) return new MultiTypeQParameterExpression(o, walker, qm);
+            
             throw new Exception($"Typed expression {expr} not supported");
         }
 

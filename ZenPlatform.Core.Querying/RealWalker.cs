@@ -121,6 +121,11 @@ namespace ZenPlatform.Core.Querying
 
         public QueryMachine QueryMachine => _qm;
 
+        public override object VisitQParameter(QParameter arg)
+        {
+            _qm.ld_param(arg.GetDbName());
+            return null;
+        }
 
         public override object VisitQQuery(QQuery node)
         {
