@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ZenPlatform.Configuration.Contracts.TypeSystem;
 using ZenPlatform.Core.Querying.Model;
 
@@ -14,11 +15,12 @@ namespace ZenPlatform.Core.Querying
         public int _paramCount;
         private Dictionary<string, int> _params;
 
+
         public PhysicalNameWalker()
         {
             _params = new Dictionary<string, int>();
         }
-        
+
         public override object VisitQQuery(QQuery node)
         {
             VisitQFrom(node.From);
@@ -74,7 +76,6 @@ namespace ZenPlatform.Core.Querying
             return null;
         }
 
-
         public override object VisitQParameter(QParameter arg)
         {
             if (_params.TryGetValue(arg.Name, out var index))
@@ -87,6 +88,23 @@ namespace ZenPlatform.Core.Querying
                 arg.SetDbNameIfEmpty($"p{_paramCount++}");
             }
 
+            //Calculate type
+            var binaryExpr = CurrentStackTree.FirstOrDefault(x => x is QOperationExpression) as QOperationExpression;
+
+            if (binaryExpr != null)
+            {
+                QExpression expr;
+
+                if (CurrentStackTree.Contains(binaryExpr.Left))
+                    expr = binaryExpr.Right;
+                else
+                    expr = binaryExpr.Left;
+
+                foreach (var atomType in expr.GetExpressionType())
+                {
+                    arg.AddType(atomType);
+                }
+            }
 
             return null;
         }
