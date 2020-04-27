@@ -32,7 +32,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void Add(T item)
         {
-            Children.Add(item);
+           AddChild(item);
         }
 
         public void Add(object item)
@@ -42,7 +42,7 @@ namespace ZenPlatform.Core.Querying.Model
 
         public void Remove(T item)
         {
-            Children.Add(item);
+            RemoveChild(item);
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)

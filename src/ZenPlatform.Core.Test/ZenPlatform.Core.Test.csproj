@@ -20,7 +20,6 @@
         <ProjectReference Include="..\ZenPlatform.Compiler.Platform\ZenPlatform.Compiler.Platform.csproj" />
         <ProjectReference Include="..\ZenPlatform.Component.Tests\ZenPlatform.Component.Tests.csproj" />
         <ProjectReference Include="..\ZenPlatform.Configuration.Test\ZenPlatform.Configuration.Test.csproj" />
-        <ProjectReference Include="..\ZenPlatform.ConfigurationExample\ZenPlatform.ConfigurationExample.csproj" />
         <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
         <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
         <ProjectReference Include="..\ZenPlatform.EntityComponent\ZenPlatform.EntityComponent.csproj" />

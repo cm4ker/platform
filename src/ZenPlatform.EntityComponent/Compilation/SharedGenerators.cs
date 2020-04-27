@@ -139,7 +139,8 @@ namespace ZenPlatform.EntityComponent.Compilation
                     }
                     else
                     {
-                        dtoPropSchema = prop.GetObjSchema().First(x => Equals(x.PlatformIpType, ctype));
+                        dtoPropSchema = prop.GetObjSchema().First(x =>
+                            Equals(x.PlatformIpType, ctype) && x.SchemaType != ColumnSchemaType.Type);
                     }
 
                     var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
@@ -300,7 +301,7 @@ namespace ZenPlatform.EntityComponent.Compilation
                     .EndBlock()
                     .Nothing()
                     .If();
-            
+
             if (prop.Types.Count() > 1)
             {
                 var typeField = prop.GetObjSchema()
@@ -327,7 +328,6 @@ namespace ZenPlatform.EntityComponent.Compilation
 
                     //var label = getBuilder.DefineLabel();
 
-                 
 
                     //GETTER
                     getBuilder

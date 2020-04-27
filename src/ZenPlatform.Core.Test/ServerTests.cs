@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Entity;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
@@ -76,8 +77,14 @@ namespace ZenPlatform.Core.Test
 
                 ContextHelper.SetContext(new PlatformContext(session));
 
+                var store = StoreManager.Create();
+                store.Property1 = 500;
+                store.Save();
+
                 PlatformQuery q = new PlatformQuery();
-                q.Text = "FROM Entity.Store SELECT A = 1, B = 2 + 1, C = Property1";
+                q.Text = "FROM Entity.Store WHERE Property1 = @Test SELECT A = 1, B = 2 + 1, C = Property1";
+                q.SetParameter("Test", 100);
+
                 var reader = q.ExecuteReader();
                 var reader2 = q.ExecuteReader();
 
@@ -87,7 +94,7 @@ namespace ZenPlatform.Core.Test
                 var c = reader["C"];
 
                 Assert.Equal(1, a);
-                Assert.Equal(2, b);
+                Assert.Equal(3, b);
                 Assert.Equal(100, c);
             }, null);
         }

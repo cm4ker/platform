@@ -543,7 +543,7 @@ namespace Entity
             ;
             if (value is System.Int32)
             {
-                this._dto.__set_Property1_Type(((System.Int32)value));
+                this._dto.__set_Property1_Int(((System.Int32)value));
                 this._dto.__set_Property1_Type(7);
                 return;
             }

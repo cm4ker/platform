@@ -134,7 +134,6 @@ namespace ZenPlatform.EntityComponent.Compilation
 
         private void EmitBody(RoslynTypeBuilder builder, SqlDatabaseType dbType)
         {
-            var type = ObjectType;
             var set = ObjectType;
             var ts = builder.Assembly.TypeSystem;
             var sb = ts.GetSystemBindings();
