@@ -12,6 +12,27 @@ namespace ZenPlatform.Data
         IString String { get; }
 
         IBool Boolean { get; }
+
+        IGuid Guid { get; }
+
+        IBinary Binary { get; }
+
+        INumeric Numeric { get; }
+    }
+
+    public interface INumeric
+    {
+        double DefaultValue { get; }
+    }
+
+    public interface IBinary
+    {
+        byte[] DefaultValue { get; }
+    }
+
+    public interface IGuid
+    {
+        Guid DefaultValue { get; }
     }
 
     public interface IBool
@@ -50,6 +71,9 @@ namespace ZenPlatform.Data
             Int = new SqlServerInt();
             String = new SqlServerString();
             Boolean = new SqlServerBoolean();
+            Numeric = new SqlServerNumeric();
+            Guid = new SqlServerGuid();
+            Binary = new SqlServerBinary();
         }
 
         private class SqlServerDateTime : IDateTime
@@ -61,6 +85,22 @@ namespace ZenPlatform.Data
             public DateTime DefaultValue => SqlDateTime.MinValue.Value;
         }
 
+
+        private class SqlServerGuid : IGuid
+        {
+            public Guid DefaultValue => System.Guid.Empty;
+        }
+
+
+        private class SqlServerBinary : IBinary
+        {
+            public byte[] DefaultValue => new byte[0];
+        }
+
+        private class SqlServerNumeric : INumeric
+        {
+            public double DefaultValue => 0;
+        }
 
         private class SqlServerInt : IInt
         {
@@ -87,5 +127,8 @@ namespace ZenPlatform.Data
 
         public IString String { get; }
         public IBool Boolean { get; }
+        public IGuid Guid { get; }
+        public IBinary Binary { get; }
+        public INumeric Numeric { get; }
     }
 }
