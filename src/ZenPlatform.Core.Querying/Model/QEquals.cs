@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using ZenPlatform.Configuration.Contracts.TypeSystem;
+
 namespace ZenPlatform.Core.Querying.Model
 {
     public partial class QEquals : QOperationExpression

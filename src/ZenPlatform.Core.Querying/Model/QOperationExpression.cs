@@ -11,8 +11,11 @@ namespace ZenPlatform.Core.Querying.Model
     {
         public override IEnumerable<IPType> GetExpressionType()
         {
-            throw new Exception("Return bool type");
+            return Left.GetExpressionType();
+
+            //throw new Exception("Return bool type");
             // yield return new XCBoolean();
+            //yield break;
         }
     }
 }

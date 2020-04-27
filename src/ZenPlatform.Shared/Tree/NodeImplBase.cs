@@ -177,35 +177,4 @@ namespace ZenPlatform.Shared.Tree
             return _children.IndexOf(node);
         }
     }
-
-    public class OneWayNode
-    {
-        public OneWayNode()
-        {
-            Children = new List<OneWayNode>();
-        }
-
-        public List<OneWayNode> Children { get; }
-
-        public void Attach(int index, OneWayNode node)
-        {
-            Children.Insert(index, node);
-        }
-
-
-        /// <summary>
-        /// Получить дочерний элемент по типу
-        /// </summary>
-        /// <typeparam name="T">Тип дочернего элемента</typeparam>
-        /// <returns></returns>
-        public virtual OneWayNode GetChild<T>() where T : OneWayNode
-        {
-            foreach (var child in Children)
-            {
-                if (child is T) return child;
-            }
-
-            return null;
-        }
-    }
 }
