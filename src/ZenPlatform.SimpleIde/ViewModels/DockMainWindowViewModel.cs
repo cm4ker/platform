@@ -15,7 +15,6 @@ using ZenPlatform.Configuration.Structure;
 using ZenPlatform.Ide.Common;
 using ZenPlatform.Ide.Common.Editors;
 using ZenPlatform.Ide.Contracts;
-
 using ZenPlatform.Test.Tools;
 using SharpFileSystem;
 using SharpFileSystem.FileSystems;
@@ -29,7 +28,7 @@ using ZenPlatform.Compiler.Dnlib;
 
 namespace ZenPlatform.SimpleIde.ViewModels
 {
-    public class DockMainWindowViewModel: ViewModelBase
+    public class DockMainWindowViewModel : ViewModelBase
     {
         public ConfigurationTreeViewModel Configuration { get; set; }
 
@@ -52,36 +51,30 @@ namespace ZenPlatform.SimpleIde.ViewModels
             Configuration = new ConfigurationTreeViewModel(_project);
 
             _container = MainDockContainer.Instance;
-            
-
-
 
             Reactive();
             _container.OpenTool(Configuration);
-
-
         }
 
         public void Reactive()
         {
-            Configuration.EditItem.Subscribe(item =>
-            {
-                _container.OpenConfigutaionItem(item);
-            });
+            Configuration.EditItem.Subscribe(item => { _container.OpenConfigutaionItem(item); });
 
 
             SaveProjectCommand = ReactiveCommand.CreateFromObservable(
                 () => Dialogs.OpenDirectory()
-                );
+            );
             SaveProjectCommand.Subscribe(dir =>
             {
                 PhysicalFileSystem fileSystem = new PhysicalFileSystem(dir);
                 _project.Save(fileSystem);
             });
 
+
             OpenProjectCommand = ReactiveCommand.CreateFromObservable(
                 () => Dialogs.OpenDirectory()
-                );
+            );
+
             OpenProjectCommand.Subscribe(dir =>
             {
                 PhysicalFileSystem fileSystem = new PhysicalFileSystem(dir);
@@ -89,9 +82,7 @@ namespace ZenPlatform.SimpleIde.ViewModels
                 var prj = Project.Load(manager, fileSystem);
                 Configuration.Open(prj);
             });
-
         }
-
 
 
         public IDockable Layout => _container.Layout;
