@@ -183,6 +183,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{D90CEF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenPlatform.SharedRuntime", "src\ZenPlatform.SharedRuntime\ZenPlatform.SharedRuntime.csproj", "{96154A94-F7AE-4A8F-B25D-FE0F7EB4110B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcServer", "src\GrpcServer\GrpcServer.csproj", "{19C5A55C-619E-4420-9199-2ED087A4CDCC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -2822,6 +2824,40 @@ Global
 		{96154A94-F7AE-4A8F-B25D-FE0F7EB4110B}.Release|x86.Build.0 = Release|Any CPU
 		{96154A94-F7AE-4A8F-B25D-FE0F7EB4110B}.DebugServer|Any CPU.ActiveCfg = Debug|Any CPU
 		{96154A94-F7AE-4A8F-B25D-FE0F7EB4110B}.DebugServer|Any CPU.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.AppStore|x86.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.AppStore|x86.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Debug|x86.Build.0 = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Release|iPhone.Build.0 = Release|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Release|x86.ActiveCfg = Release|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.Release|x86.Build.0 = Release|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.DebugServer|Any CPU.ActiveCfg = Debug|Any CPU
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC}.DebugServer|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2886,6 +2922,7 @@ Global
 		{2423B5C5-3A26-4129-90E7-BD508D98DE92} = {D3194114-4EF0-406B-BB33-B744BA2CC2AF}
 		{CDB9FAD5-5752-4F3A-8391-A46C8F8A6532} = {D3194114-4EF0-406B-BB33-B744BA2CC2AF}
 		{96154A94-F7AE-4A8F-B25D-FE0F7EB4110B} = {D90CEFB8-FAF8-4100-8A71-A6B21F28287B}
+		{19C5A55C-619E-4420-9199-2ED087A4CDCC} = {A81AD719-77EB-4159-9DE9-8E8C2C0229AA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87366D66-1391-4D90-8999-95A620AD786A}

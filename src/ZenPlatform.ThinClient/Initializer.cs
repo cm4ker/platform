@@ -6,12 +6,10 @@ using ZenPlatform.Core.Assemlies;
 using ZenPlatform.Core.Authentication;
 using ZenPlatform.Core.ClientServices;
 using ZenPlatform.Core.Contracts;
-using ZenPlatform.Core.Contracts.Network;
 using ZenPlatform.Core.Logging;
 using ZenPlatform.Core.Network;
 using ZenPlatform.Core.Network.Contracts;
 using ZenPlatform.Core.Settings;
-using ZenPlatform.ThinClient.FakeAssembly;
 
 namespace ZenPlatform.ThinClient
 {

@@ -18,7 +18,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.ConfigurationExample\ZenPlatform.ConfigurationExample.csproj" />
       <ProjectReference Include="..\ZenPlatform.Configuration\ZenPlatform.Configuration.csproj" />
       <ProjectReference Include="..\ZenPlatform.Test.Tools\ZenPlatform.Test.Tools.csproj" />
     </ItemGroup>
