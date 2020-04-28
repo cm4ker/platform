@@ -1,0 +1,5 @@
+<Project>
+    <ItemGroup>
+        <PackageReference Include="MessageBox.Avalonia" Version="0.9.6.1" />
+    </ItemGroup>
+</Project>
