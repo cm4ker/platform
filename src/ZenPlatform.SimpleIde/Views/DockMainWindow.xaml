@@ -7,7 +7,9 @@
         xmlns:idc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
         mc:Ignorable="d" 
         x:Class="ZenPlatform.SimpleIde.Views.DockMainWindow"
-        Title="DockMainWindow" 
-        id:DockProperties.IsDragEnabled="True" id:DockProperties.IsDropEnabled="True" >
+        Title="Studio" 
+        id:DockProperties.IsDragEnabled="True" 
+        id:DockProperties.IsDropEnabled="True" 
+        BorderThickness="1">
     <views:MainView/>
 </idc:MetroWindow>

@@ -13,7 +13,7 @@ using ZenPlatform.Ide.Contracts;
 namespace ZenPlatform.EntityComponent.IDE
 {
     [View(typeof(CodeEditorView))]
-    public class CommandConfigurationItem: ConfigurationItemBase
+    public class CommandConfigurationItem : ConfigurationItemBase
     {
         private readonly CommandEditor _editor;
         private ObservableAsPropertyHelper<bool> _isChanged;
@@ -23,14 +23,17 @@ namespace ZenPlatform.EntityComponent.IDE
         {
             _editor = editor;
             Document = new TextDocument(_editor.ModuleText);
-
-            //TODO: выбрасывает Exception
-            // _isChanged = Observable.Merge(
-            //      Document.WhenAnyValue(doc => doc.Text).Select(t => true).Skip(1), _changeSubject).ToProperty(this, vm => vm.IsChanged);
-
+            _changeSubject = new Subject<bool>();
+            _isChanged = Observable.Merge(
+                    Document.WhenAnyValue(doc => doc.Text).Select(t => true).Skip(1), _changeSubject)
+                .ToProperty(this, vm => vm.IsChanged);
         }
 
-        public override string Caption { get => $"{_editor.Name}({_editor.DisplayName})"; set { } }
+        public override string Caption
+        {
+            get => $"{_editor.Name}({_editor.DisplayName})";
+            set { }
+        }
 
         public override bool CanEdit => true;
 
