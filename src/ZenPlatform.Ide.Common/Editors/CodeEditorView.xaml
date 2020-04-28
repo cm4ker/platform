@@ -5,18 +5,15 @@
              xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZenPlatform.Ide.Common.CodeEditorView">
-  <Panel DataContext="{Binding Context}">
-    <ae:TextEditor  Name="Editor"
-                                              Background="Transparent"
-                                              Margin="10"
-                                           
-                                              ShowLineNumbers="True"
-                                              HorizontalScrollBarVisibility="Auto"
-                                              VerticalScrollBarVisibility="Auto"
-                                              TextBlock.FontSize="20"
-                    SyntaxHighlighting="C#"
-                                              Document="{Binding Document}">
-
-    </ae:TextEditor>
-  </Panel>
+    <Panel DataContext="{Binding Context}">
+        <ae:TextEditor Name="Editor"
+                       Background="Transparent"
+                       Margin="10"
+                       ShowLineNumbers="True"
+                       HorizontalScrollBarVisibility="Auto"
+                       VerticalScrollBarVisibility="Auto"
+                       TextBlock.FontSize="14"
+                       SyntaxHighlighting="C#"
+                       Document="{Binding Document}" />
+    </Panel>
 </UserControl>
