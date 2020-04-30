@@ -19,22 +19,27 @@ namespace GrpcServer
         double
         complex
         
-     + RootOfTheService
-        + MyNamedService
-            +Method1
-                + ReturnsType
-                    + Type
-                + Arguments
-                    + Arg1
-                        + Type
-                    + Arg2
-                        + Type
-                    + Arg3
-                        + Type
-            +Method2
-                ...
-            +Method3
-                ...
+    + Root
+        + SerializableTypes
+             + MyComplexType
+                    + MyProperty
+
+        + Web-Services
+            + MyNamedService
+                +Method1
+                    + ReturnsType
+                        + MyComplexType
+                    + Arguments
+                        + Arg1
+                            + string
+                        + Arg2
+                            + int
+                        + Arg3
+                            + MyComplexType
+                +Method2
+                    ...
+                +Method3
+                    ...
      */
 
 
@@ -105,14 +110,15 @@ namespace GrpcServer
     }
 
 
+    [ServiceContract]
     public class SampleService : ISampleService
-    {
+    {[OperationContract]
         public string Ping(string s)
         {
             Console.WriteLine("Exec ping method");
             return s;
         }
-
+        [OperationContract]
         public ComplexModelResponse PingComplexModel(ComplexModelInput inputModel)
         {
             Console.WriteLine("Input data. IntProperty: {0}, StringProperty: {1}", inputModel.IntProperty,
@@ -126,22 +132,22 @@ namespace GrpcServer
                 DateTimeOffsetProperty = inputModel.DateTimeOffsetProperty
             };
         }
-
+        [OperationContract]
         public void VoidMethod(out string s)
         {
             s = "Value from server";
         }
-
+        [OperationContract]
         public Task<int> AsyncMethod()
         {
             return Task.Run(() => 42);
         }
-
+        [OperationContract]
         public int? NullableMethod(bool? arg)
         {
             return null;
         }
-
+        [OperationContract]
         public void XmlMethod(XElement xml)
         {
             Console.WriteLine(xml.ToString());

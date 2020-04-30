@@ -53,7 +53,9 @@ namespace GrpcServer
                 .ConfigureServices(x => x.AddRouting())
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .Build();
-            host.Run();
+            host.RunAsync();
+            
+            
         }
     }
 
@@ -72,7 +74,7 @@ namespace GrpcServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddSingleton<ISampleService, SampleService>();
+            services.TryAddSingleton<SampleService>();
             services.AddSoapCore();
         }
 
@@ -91,12 +93,11 @@ namespace GrpcServer
                 });
             });
 
-            app.UseSoapEndpoint<ISampleService>("/Service.svc", new BasicHttpBinding(),
+            app.UseSoapEndpoint<SampleService>("/Service.svc", new BasicHttpBinding(),
                 SoapSerializer.DataContractSerializer);
-            app.UseSoapEndpoint<ISampleService>("/Service.asmx", new BasicHttpBinding(), SoapSerializer.XmlSerializer);
+            app.UseSoapEndpoint<SampleService>("/Service.asmx", new BasicHttpBinding(), SoapSerializer.XmlSerializer);
 
-            app.Run(context =>
-                context.Response.WriteAsync("Default"));
+            app.Run(context => context.Response.WriteAsync("Default"));
         }
     }
 }
