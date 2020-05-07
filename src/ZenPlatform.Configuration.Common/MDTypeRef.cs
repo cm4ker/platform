@@ -1,14 +1,21 @@
+using System;
+
 namespace ZenPlatform.Configuration.Common
 {
-    public class MDPrimitive : MDType
-    {
-    }
-
     /// <summary>
     /// Неопределённый тип, при загрузке конфигурации сначала всё приводится к нему
     /// </summary>
-    public class UnknownType : MDType
+    public sealed class MDTypeRef : MDType
     {
+        public MDTypeRef()
+        {
+        }
+
+        public MDTypeRef(Guid guid)
+        {
+            Guid = guid;
+        }
+
         protected override bool ShouldSerializeDescription()
         {
             return false;

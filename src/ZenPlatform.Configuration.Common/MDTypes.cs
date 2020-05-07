@@ -14,7 +14,7 @@ namespace ZenPlatform.Configuration.Common
 
         public static MDType String(int size) => new MDString(size);
         public static MDType Numeric(int scale, int precision) => new MDNumeric(scale, precision);
-        public static MDType Ref(Guid id) => new TypeRef(id);
+        public static MDType Ref(Guid id) => new MDTypeRef(id);
 
         public static Guid GetTypeId(this MDType mdType, ITypeManager tm)
         {

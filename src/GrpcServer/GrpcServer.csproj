@@ -25,5 +25,10 @@
     <ItemGroup>
         <Protobuf Include="test.proto" Link="test.proto" />
     </ItemGroup>
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\ZenPlatform.Configuration.Common\ZenPlatform.Configuration.Common.csproj" />
+    </ItemGroup>
     
 </Project>

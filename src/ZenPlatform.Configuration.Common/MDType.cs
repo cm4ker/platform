@@ -49,7 +49,7 @@ namespace ZenPlatform.Configuration.Common
                     StringPType st => new MDString(ts.Size),
                     _ => throw new NotSupportedException()
                 },
-                _ => new TypeRef(type.Id)
+                _ => new MDTypeRef(type.Id)
             };
 
         }
