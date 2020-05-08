@@ -106,7 +106,7 @@ namespace ZenPlatform.Compiler
             };
         }
 
-        public (RoslynMethod clrMethod, Function astMethod ) GetMethod(TypeSyntax type, string name, RoslynType[] args)
+        public (RoslynMethod clrMethod, Function astMethod) GetMethod(TypeSyntax type, string name, RoslynType[] args)
         {
             if (type is SingleTypeSyntax sts)
             {

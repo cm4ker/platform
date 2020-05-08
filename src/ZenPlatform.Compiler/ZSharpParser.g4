@@ -213,7 +213,7 @@ expressionPostfix:
     | castExpression 
     | '(' expression ')'
     | expressionAtom '[' indexerExpression=expression ']'
-    | anonimousType
+    | anonimousDeclaration
 ;
 
 expressionAtom:
@@ -229,25 +229,26 @@ variableType:
     
 
 type:
-    structureType | primitiveType | arrayType | multitype;
+    structureType | arrayType;
 
-multitype : 
-    '<' typeList '>';
+//multitype : 
+//    '<' typeList '>';
+//
+//typeList: 
+//    type (',' type)*
+//;
 
-typeList: 
-    type (',' type)*
-;
-
-anonimousType:
+anonimousDeclaration:
    '{' 
     (name '=' expression) (',' name '=' expression)*
     '}'
 ;
 
 structureType:
-   typeName;
+   typeName
+    | aliacedTypes;
     
-primitiveType:
+aliacedTypes:
     BOOL 
     | INT
     | UID
@@ -262,7 +263,7 @@ accessModifier:
     | PRIVATE;
 
 arrayType: 
-    (structureType | primitiveType )'[' ']';
+    (structureType)'[' ']';
 
 name:
     IDENTIFIER;
