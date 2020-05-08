@@ -4,14 +4,14 @@
 <mindmap>
 <meta>
 <guid guid="FFA8D32F6BE84A629F577CB7046083C8"/>
-<title text="ZenPlatform CLI"/>
+<title text="Aquila CLI"/>
 <style key="system.bright-palette"/>
 <auto-numbering style="disabled"/>
 <scrollstate zoom="70" x="23" y="156"/>
 <main-centraltheme id="0"/>
 </meta>
 <topics>
-<topic id="0" parent="-1" guid="yLxdf5Q_vEyB8detx7Edyw" x="1117.00" y="903.00" palette="1" colorinfo="1" text="ZenPlatform CLI"/>
+<topic id="0" parent="-1" guid="yLxdf5Q_vEyB8detx7Edyw" x="1117.00" y="903.00" palette="1" colorinfo="1" text="Aquila CLI"/>
 <topic id="1" parent="0" guid="oocHxbcGbEGPWnf0oIk7Qw" x="856.00" y="898.19" palette="2" colorinfo="2" text="Конфигурация\Nфайловая"/>
 <topic id="2" parent="1" guid="CM0g36ne-UKA7Yy8FALcyg" x="851.88" y="739.32" text="Создание и редактирование"/>
 <topic id="3" parent="0" guid="SZNSMDTyZEyTjMwnaIhp7w" x="1338.00" y="981.19" palette="4" colorinfo="4" text="Сервер\Nприложений"/>

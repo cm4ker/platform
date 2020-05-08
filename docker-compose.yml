@@ -1,11 +1,11 @@
 version: '3.4'
 
 services:
-  zenplatform.tests:
-    image: ${DOCKER_REGISTRY}zenplatformtests
+  Aquila.tests:
+    image: ${DOCKER_REGISTRY}Aquilatests
     build:
       context: .
-      dockerfile: ZenPlatform.Tests/Dockerfile
+      dockerfile: Aquila.Tests/Dockerfile
   db:
     image: postgres:9.6.5-alpine
     restart: always

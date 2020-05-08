@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Aquila.Controls.WPF.ObjectPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Aquila.Controls.WPF"
+             mc:Ignorable="d" d:DesignWidth="200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition x:Name="TypeBtnCol" Width="24" />
+            <ColumnDefinition x:Name="LookupBtnCol" Width="24" />
+            <ColumnDefinition x:Name="SelectBtnCol" Width="24" />
+            <ColumnDefinition x:Name="ClearBtnCol" Width="24" />
+        </Grid.ColumnDefinitions>
+
+        <TextBox Grid.Column="0" IsReadOnly="True" />
+
+        <Button Grid.Column="1" Content="T" />
+        <Button Grid.Column="2" Content="L" />
+        <Button Grid.Column="3" Content="..." />
+        <Button Grid.Column="4" Content="X" />
+    </Grid>
+</UserControl>

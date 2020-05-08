@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Configurations>Debug;Release;DebugServer</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Language\QueryLanguage\QuerySyntax.g4" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+    <PackageReference Include="morelinq" Version="3.0.0" />
+    <PackageReference Include="NLog" Version="4.6.1" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FS\SharpFileSystem.Database\SharpFileSystem.Database.csproj" />
+    <ProjectReference Include="..\Aquila.Core.Querying\Aquila.Core.Querying.csproj" />
+    <ProjectReference Include="..\Aquila.Data\Aquila.Data.csproj" />
+    <ProjectReference Include="..\Aquila.Initializer\Aquila.Initializer.csproj" />
+    <ProjectReference Include="..\Aquila.ServerClientShared\Aquila.ServerClientShared.csproj" />
+  </ItemGroup>
+</Project>

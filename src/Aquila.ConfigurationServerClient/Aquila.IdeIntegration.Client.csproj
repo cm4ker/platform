@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Configurations>Debug;Release;DebugServer</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aquila.ConfigurationServerShared\Aquila.IdeIntegration.Shared.csproj" />
+    <ProjectReference Include="..\Aquila.Shared\Aquila.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="1.7.3.4" />
+    <PackageReference Include="NetMQ" Version="4.0.0.175-pre" />
+    <PackageReference Include="Splat" Version="4.0.0" />
+  </ItemGroup>
+
+</Project>

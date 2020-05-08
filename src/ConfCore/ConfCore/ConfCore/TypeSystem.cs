@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using ZenPlatform.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Configuration.Structure.Data.Types.Primitive;
 
 namespace ConfCore
 {

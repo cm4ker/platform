@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Common\Types\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aquila.Shared\Aquila.Shared.csproj" />
+  </ItemGroup>
+</Project>

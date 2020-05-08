@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 
-namespace ZenPlatform.ServerRPC
+namespace Aquila.ServerRPC
 {
     public static class DbReaderExtensions
     {

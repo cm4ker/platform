@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>../Build/Debug/ExampleConfiguration\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\XCComponent\" />
+    <Folder Include="Configuration\Interface" />
+    <Folder Include="Configuration\Roles" />
+  </ItemGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aquila.EntityComponent\Aquila.EntityComponent.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Configuration\Data\AccumulateRegister\ОстатокНаСкладе.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Documents\ВозвратКниги.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Documents\ВозвратКниги\Книги.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Documents\ВыдачаКниги.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Documents\ВыдачаКниги\Книги.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Documents\ПоступлениеКниги.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Documents\УтеряКниги.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Entity\TestEntity.PickForm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Entity\TestEntity.ListForm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Entity\TestEntity.From.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Entity\TestEntity.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\InfoRegister\ИсторияВыдачиКниг.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\References\Автор.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\References\Читатель.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\References\Книга.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\ProjectStructureExplaining.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Project.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Roles\Директор.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\Entity\Invoice.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

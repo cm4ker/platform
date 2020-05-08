@@ -1,0 +1,55 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:interactivity="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:core="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Aquila.ClientRuntime.Views.ConfigurationTreeView">
+    <DockPanel>
+        <TextBox DockPanel.Dock="Top" Name="SearchBox" Text="{Binding SearchQuery, Mode=TwoWay}" />
+        <!-- <TreeView Grid.Column="0" Items="{Binding Configuration, Mode=TwoWay}" Name="TreeView" -->
+        <!--           SelectedItem="{Binding SelectedItem}"> -->
+        <!--     ~1~ <TreeView.ContextMenu> @1@ -->
+        <!--     ~1~     <ContextMenu> @1@ -->
+        <!--     ~1~         <MenuItem Header="Edit" IsEnabled="{Binding SelectedItem.CanEdit}" Command="{Binding EditItem}" /> @1@ -->
+        <!--     ~1~         <MenuItem Header="Delete" IsEnabled="{Binding SelectedItem.CanDelete}" /> @1@ -->
+        <!--     ~1~         <MenuItem Header="Create new" IsEnabled="{Binding SelectedItem.CanCreate}" @1@ -->
+        <!--     ~1~                   Command="{Binding CreateItem}" /> @1@ -->
+        <!--     ~1~     </ContextMenu> @1@ -->
+        <!--     ~1~ </TreeView.ContextMenu> @1@ -->
+        <!--     ~1~ <TreeView.Styles> @1@ -->
+        <!--     ~1~     <Style Selector="TreeViewItem"> @1@ -->
+        <!--     ~1~         <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" /> @1@ -->
+        <!--     ~1~     </Style> @1@ -->
+        <!--     ~1~ </TreeView.Styles> @1@ -->
+        <!--     ~1~ <TreeView.DataTemplates> @1@ -->
+        <!--     ~1~     <TreeDataTemplate ItemsSource="{Binding Childs, Mode=TwoWay}"> @1@ -->
+        <!--     ~1~         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="18" @1@ -->
+        <!--     ~1~                     IsEnabled="{Binding IsEnable}"> @1@ -->
+        <!--     ~1~ @1@ -->
+        <!--     ~1~             <Image Source="{Binding Image}" /> @1@ -->
+        <!--     ~1~             <TextBlock Text="{Binding Caption}" /> @1@ -->
+        <!--     ~1~         </StackPanel> @1@ -->
+        <!--     ~1~     </TreeDataTemplate> @1@ -->
+        <!--     ~1~ </TreeView.DataTemplates> @1@ -->
+        <!-- </TreeView> -->
+
+        <ListBox Name="MangaBorder" Items="{Binding ListCmd}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border>
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="DoubleTapped">
+                                <core:InvokeCommandAction Command="{Binding Action}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                        <TextBlock Grid.Row="1" Text="{Binding DisplayName}" TextWrapping="Wrap" />
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+        </ListBox>
+
+    </DockPanel>
+</UserControl>
