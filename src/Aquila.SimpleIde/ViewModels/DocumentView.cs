@@ -16,21 +16,22 @@ namespace Aquila.SimpleIde.ViewModels
     {
         private IConfigurationItem _doc;
         private readonly ObservableAsPropertyHelper<string> _title;
+
         public DocumentView(IConfigurationItem doc)
         {
             _doc = doc;
             this.Context = doc;
-            
-
-            _title = _doc.WhenAnyValue(d => d.IsChanged).Select(d=>string.Format("{0}{1}", _doc.Caption, d ? "*" : "")).ToProperty(this, vm => vm.Title);
 
 
-
-           
+            _title = _doc.WhenAnyValue(d => d.IsChanged)
+                .Select(d => string.Format("{0}{1}", _doc.Caption, d ? "*" : "")).ToProperty(this, vm => vm.Title);
         }
-        public new string Title { get => _title.Value; set  { } }
 
-
+        public new string Title
+        {
+            get => _title.Value;
+            set { }
+        }
 
 
         public override bool OnClose()
@@ -38,21 +39,19 @@ namespace Aquila.SimpleIde.ViewModels
             if (_doc.IsChanged)
             {
                 Dialogs.ShowSimpleDialog(_doc.Caption, "Save changed?", ButtonEnum.YesNoCancel).Subscribe(r =>
-                 {
-                     if (r == ButtonResult.Yes)
-                     {
-                         Save();
+                {
+                    if (r == ButtonResult.Yes)
+                    {
+                        Save();
 
-                         Factory.RemoveDockable(this, false);
-                     }
-                     else
-                     if (r == ButtonResult.No)
-                     {
-
-                         _doc.DiscardChange();
-                         Factory.RemoveDockable(this, false);
-                     }
-                 });
+                        Factory.RemoveDockable(this, false);
+                    }
+                    else if (r == ButtonResult.No)
+                    {
+                        _doc.DiscardChange();
+                        Factory.RemoveDockable(this, false);
+                    }
+                });
 
                 return false;
             }

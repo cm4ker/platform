@@ -40,11 +40,6 @@
     <PackageReference Include="DynamicData" Version="6.14.3" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="PropertyGrid.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Views\DockMainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
@@ -73,11 +68,6 @@
     <ProjectReference Include="..\Aquila.Ide.Common\Aquila.Ide.Common.csproj" />
     <ProjectReference Include="..\Aquila.Language.Ast\Aquila.Language.Ast.csproj" />
     <ProjectReference Include="..\Aquila.Test.Tools\Aquila.Test.Tools.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="PropertyGrid.xaml.cs">
-      <DependentUpon>PropertyGrid.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="CSharp-Mode-Dark.xshd">
