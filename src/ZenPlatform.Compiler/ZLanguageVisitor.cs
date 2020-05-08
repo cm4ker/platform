@@ -201,33 +201,35 @@ namespace ZenPlatform.Compiler
 
         public override SyntaxNode VisitStructureType(ZSharpParser.StructureTypeContext context)
         {
-            var result = new SingleTypeSyntax(context.start.ToLineInfo(), context.GetText(), TypeNodeKind.Type);
+            var result =
+                TypeSyntaxHelper.Create(context.start.ToLineInfo(),
+                    context.GetText()); //new SingleTypeSyntax(context.start.ToLineInfo(), context.GetText(), TypeNodeKind.Type);
 
             _syntaxStack.Push(result);
             return result;
         }
 
-        public override SyntaxNode VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
-        {
-            TypeNodeKind t = TypeNodeKind.Unknown;
-
-            if (context.STRING() != null) t = TypeNodeKind.String;
-            else if (context.INT() != null) t = TypeNodeKind.Int;
-            else if (context.UID() != null) t = TypeNodeKind.Uid;
-            else if (context.OBJECT() != null) t = TypeNodeKind.Object;
-            else if (context.BOOL() != null) t = TypeNodeKind.Boolean;
-            else if (context.DOUBLE() != null) t = TypeNodeKind.Double;
-            else if (context.CHAR() != null) t = TypeNodeKind.Char;
-            else if (context.VOID() != null) t = TypeNodeKind.Void;
-
-            if (t == TypeNodeKind.Unknown)
-                throw new Exception("Unknown primitive type");
-            var result = new PrimitiveTypeSyntax(context.start.ToLineInfo(), t);
-
-            _syntaxStack.Push(result);
-
-            return result;
-        }
+        // public override SyntaxNode VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
+        // {
+        //     TypeNodeKind t = TypeNodeKind.Unknown;
+        //
+        //     if (context.STRING() != null) t = TypeNodeKind.String;
+        //     else if (context.INT() != null) t = TypeNodeKind.Int;
+        //     else if (context.UID() != null) t = TypeNodeKind.Uid;
+        //     else if (context.OBJECT() != null) t = TypeNodeKind.Object;
+        //     else if (context.BOOL() != null) t = TypeNodeKind.Boolean;
+        //     else if (context.DOUBLE() != null) t = TypeNodeKind.Double;
+        //     else if (context.CHAR() != null) t = TypeNodeKind.Char;
+        //     else if (context.VOID() != null) t = TypeNodeKind.Void;
+        //
+        //     if (t == TypeNodeKind.Unknown)
+        //         throw new Exception("Unknown primitive type");
+        //     var result = new PrimitiveTypeSyntax(context.start.ToLineInfo(), t);
+        //
+        //     _syntaxStack.Push(result);
+        //
+        //     return result;
+        // }
 
         public override SyntaxNode VisitArrayType(ZSharpParser.ArrayTypeContext context)
         {
@@ -264,7 +266,8 @@ namespace ZenPlatform.Compiler
             }
             else if (context.boolean_literal() != null)
             {
-                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Boolean), false);
+                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Boolean),
+                    false);
                 result.ObjectiveValue = bool.Parse(result.Value);
             }
             else if (context.INTEGER_LITERAL() != null)
@@ -274,7 +277,8 @@ namespace ZenPlatform.Compiler
             }
             else if (context.REAL_LITERAL() != null)
             {
-                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Double), false);
+                result = new Literal(li, context.GetText(), new PrimitiveTypeSyntax(li, TypeNodeKind.Double),
+                    false);
                 result.ObjectiveValue = double.Parse(result.Value);
             }
             else if (context.CHARACTER_LITERAL() != null)
@@ -546,7 +550,8 @@ namespace ZenPlatform.Compiler
             return null;
         }
 
-        public override SyntaxNode VisitExpressionMultiplicative(ZSharpParser.ExpressionMultiplicativeContext context)
+        public override SyntaxNode VisitExpressionMultiplicative(
+            ZSharpParser.ExpressionMultiplicativeContext context)
         {
             base.VisitExpressionMultiplicative(context);
 
