@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Configurations>Debug;Release;DebugServer</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj" />
+    <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
+    <ProjectReference Include="..\Aquila.Data\Aquila.Data.csproj" />
+  </ItemGroup>
+</Project>

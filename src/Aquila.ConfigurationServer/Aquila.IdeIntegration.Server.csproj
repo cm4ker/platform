@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Configurations>Debug;Release;DebugServer</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DryIoc.dll" Version="3.1.0-preview-06" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.0-alpha" />
+    <PackageReference Include="MessagePack" Version="1.7.3.4" />
+    <PackageReference Include="NetMQ" Version="4.0.0.175-pre" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aquila.ConfigurationServerShared\Aquila.IdeIntegration.Shared.csproj" />
+    <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj" />
+  </ItemGroup>
+
+</Project>

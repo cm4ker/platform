@@ -1,0 +1,31 @@
+using System;
+using dnlib.DotNet;
+using Aquila.Compiler.Contracts;
+using IType = Aquila.Compiler.Contracts.IType;
+
+namespace Aquila.Compiler.Dnlib
+{
+    public class DnlibParameter : IParameter
+    {
+        private Parameter _parameter;
+        private DnlibContextResolver _cr;
+
+        public DnlibParameter(DnlibTypeSystem typeSystem, MethodDef methodDef, ModuleDef module, Parameter parameter)
+        {
+            _parameter = parameter;
+            _cr = new DnlibContextResolver(typeSystem, module);
+        }
+
+        public Parameter Parameter => _parameter;
+
+        public bool Equals(IParameter other)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Name => _parameter.Name;
+        public IType Type => _cr.GetType(_parameter.Type);
+        public int Sequence => _parameter.Index;
+        public int ArgIndex => _parameter.Index;
+    }
+}

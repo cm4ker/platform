@@ -3,8 +3,8 @@ using System.Data.Common;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using ZenPlatform.Core.Helpers;
-using ZenPlatform.QueryBuilder;
+using Aquila.Core.Helpers;
+using Aquila.QueryBuilder;
 
 namespace SharpFileSystem.Database
 {

@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 using ConfCore;
 using Type = ConfCore.Type;
 
-namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
+namespace Aquila.Configuration.Structure.Data.Types.Primitive
 {
     /// <summary>
     ///  Тип строки

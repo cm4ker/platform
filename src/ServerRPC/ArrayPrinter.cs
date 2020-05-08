@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace ZenPlatform.ServerRPC
+namespace Aquila.ServerRPC
 {
     class ArrayPrinter
     {
