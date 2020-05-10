@@ -6,7 +6,7 @@ namespace Aquila.SyntaxGenerator
         {
             var result = char.ToLower(str[0]) + str[1..];
 
-            if (result == "else" || result == "when" || result == "base")
+            if (result == "else" || result == "when" || result == "base" || result == "namespace")
                 result = '@' + result;
 
             return result;

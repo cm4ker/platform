@@ -279,6 +279,21 @@ namespace Aquila.Compiler.Generation
             {
                 EmitAssignment(e, asg, symbolTable);
             }
+
+            else if (expression is New wen)
+            {
+                EmitArguments(e, wen.Call.Arguments, symbolTable);
+
+                var className = wen.Namespace ?? "" + wen.Call.Name;
+
+                var type = _map.GetClrType(new SingleTypeSyntax(null, className, TypeNodeKind.Type));
+
+                var constr =
+                    type.FindConstructor(wen.Call.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
+
+                e.Call(constr);
+            }
+
             else if (expression is GlobalVar gv)
             {
                 EmitGlobalVar(e, _varManager.Root, gv.Expression, symbolTable);

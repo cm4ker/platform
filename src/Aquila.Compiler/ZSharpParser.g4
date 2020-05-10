@@ -168,6 +168,9 @@ castExpression:
     '(' type ')' expression
 ;
 
+newExpression: 
+    NEW (namespace '.')? functionCall;
+
 expressionBinary:
     expressionEquality
     | expressionBinary OP_AND expressionEquality
@@ -211,6 +214,7 @@ expressionUnary:
 expressionPostfix: 
     expressionAtom
     | castExpression 
+    | newExpression
     | '(' expression ')'
     | expressionAtom '[' indexerExpression=expression ']'
     | anonimousDeclaration
