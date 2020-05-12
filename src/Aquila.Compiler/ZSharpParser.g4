@@ -231,13 +231,6 @@ variableType:
 type:
     structureType | arrayType;
 
-//multitype : 
-//    '<' typeList '>';
-//
-//typeList: 
-//    type (',' type)*
-//;
-
 anonimousDeclaration:
    '{' 
     (name '=' expression) (',' name '=' expression)*

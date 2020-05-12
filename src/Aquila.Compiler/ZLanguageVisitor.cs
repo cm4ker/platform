@@ -159,10 +159,17 @@ namespace Aquila.Compiler
 
             TypeBody result;
 
+            var usings = new UsingList();
+
+            foreach (var atd in context.usingSection())
+            {
+                usings.Add((UsingBase) Visit(atd));
+            }
+
             if (context.ChildCount == 0)
-                result = new TypeBody(null, null);
+                result = TypeBody.Empty;
             else
-                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), null);
+                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), usings);
 
             _syntaxStack.Push(result);
             return result;
