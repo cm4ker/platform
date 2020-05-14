@@ -212,7 +212,7 @@ namespace Aquila.Compiler.Generation
                 var lna = le.Lookup as Name ?? throw new Exception("Lookup mush be Name node type");
 
                 if (le.Current.Type.Kind == TypeNodeKind.Type &&
-                    TypeFinder.Apply(le.Current.Type, _root)?.Type == QueryCompilerHelper.DataReader)
+                    TypeFinder.FindSymbol(le.Current.Type, _root)?.Type == QueryCompilerHelper.DataReader)
                 {
                     //ugly hack
                     //TODO: introduce redirected dynamic properties

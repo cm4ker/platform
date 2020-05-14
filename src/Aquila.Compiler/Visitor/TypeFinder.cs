@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Roslyn.RoslynBackend;
+using Aquila.Core;
 using Aquila.Core.Annotations;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
@@ -18,10 +20,56 @@ namespace Aquila.Compiler.Visitor
         private Queue<SyntaxNode> _queue;
 
 
-        public static TypeSymbol Apply([NotNull] TypeSyntax typeNode, [NotNull] SyntaxNode node)
+        public static TypeSymbol FindSymbol([NotNull] TypeSyntax typeNode, [NotNull] SyntaxNode node)
         {
             var p = new TypeFinder(typeNode);
             return p.Visit(node);
+        }
+
+        public static RoslynType FindClr(TypeSyntax typeNode, RoslynTypeSystem ts)
+        {
+            if (typeNode is SingleTypeSyntax sts)
+            {
+                var contextNamespaces = typeNode.FirstParent<CompilationUnit>().Usings;
+
+                var result = ts.FindType(sts.TypeName);
+
+                if (result == null)
+                {
+                    foreach (var ns in contextNamespaces)
+                    {
+                        result = ts.FindType($"{ns.Name}.{sts.TypeName}");
+
+                        if (result != null)
+                        {
+                            return result;
+                        }
+                    }
+                }
+            }
+            else if (typeNode is PrimitiveTypeSyntax pts)
+            {
+                var stb = ts.GetSystemBindings();
+
+                return pts.Kind switch
+                {
+                    TypeNodeKind.Boolean => stb.Boolean,
+                    TypeNodeKind.Int => stb.Int,
+                    TypeNodeKind.Uid => stb.Guid,
+                    TypeNodeKind.Char => stb.Char,
+                    TypeNodeKind.Double => stb.Double,
+                    TypeNodeKind.String => stb.String,
+                    TypeNodeKind.Byte => stb.Byte,
+                    TypeNodeKind.Object => stb.Object,
+                    TypeNodeKind.Void => stb.Void,
+                    TypeNodeKind.Session => stb.Session,
+                    TypeNodeKind.Context => ts.Resolve<PlatformContext>(),
+                    _ => throw new Exception($"This type is not primitive {pts.Kind}")
+                };
+            }
+
+
+            return null;
         }
 
         public TypeFinder(TypeSyntax typeNode)

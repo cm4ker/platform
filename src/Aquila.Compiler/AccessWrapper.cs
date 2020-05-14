@@ -61,7 +61,7 @@ namespace Aquila.Compiler
             }
             else if (typeSyntax is PrimitiveTypeSyntax pts)
             {
-                return GetPrimitiveType(pts);
+                return TypeFinder.FindClr(pts, _ts);
             }
 
             else if (typeSyntax is ArrayTypeSyntax atn)
@@ -79,38 +79,25 @@ namespace Aquila.Compiler
 
         public RoslynType GetClrType(SingleTypeSyntax type)
         {
-            var result = TypeFinder.Apply(type, _root);
+            var result = TypeFinder.FindSymbol(type, _root)?.ClrType;
 
             if (result == null)
-                throw new Exception("Type not found");
-
-            return result.ClrType;
-        }
-
-        private RoslynType GetPrimitiveType(PrimitiveTypeSyntax pts)
-        {
-            return pts.Kind switch
             {
-                TypeNodeKind.Boolean => _stb.Boolean,
-                TypeNodeKind.Int => _stb.Int,
-                TypeNodeKind.Uid => _stb.Guid,
-                TypeNodeKind.Char => _stb.Char,
-                TypeNodeKind.Double => _stb.Double,
-                TypeNodeKind.String => _stb.String,
-                TypeNodeKind.Byte => _stb.Byte,
-                TypeNodeKind.Object => _stb.Object,
-                TypeNodeKind.Void => _stb.Void,
-                TypeNodeKind.Session => _stb.Session,
-                TypeNodeKind.Context => _ts.Resolve<PlatformContext>(),
-                _ => throw new Exception($"This type is not primitive {pts.Kind}")
-            };
+                result = TypeFinder.FindClr(type, _ts);
+
+                if (result == null)
+                    throw new Exception("Type not found");
+            }
+
+            return result;
         }
+
 
         public (RoslynMethod clrMethod, Function astMethod) GetMethod(TypeSyntax type, string name, RoslynType[] args)
         {
             if (type is SingleTypeSyntax sts)
             {
-                var symbol = TypeFinder.Apply(sts, _root);
+                var symbol = TypeFinder.FindSymbol(sts, _root);
                 var typeDef = symbol.Type;
 
                 var funcDef = typeDef?.TypeBody.SymbolTable.Find<MethodSymbol>(name, SymbolScopeBySecurity.User);
@@ -124,7 +111,7 @@ namespace Aquila.Compiler
             }
             else if (type is PrimitiveTypeSyntax pts)
             {
-                var pType = GetPrimitiveType(pts);
+                var pType = TypeFinder.FindClr(pts, _ts);
                 var clrMethod = pType.FindMethod(name) ?? throw new Exception("Property not found");
                 return (clrMethod, null);
             }
@@ -136,7 +123,7 @@ namespace Aquila.Compiler
         {
             if (type is SingleTypeSyntax sts)
             {
-                var symbol = TypeFinder.Apply(sts, _root);
+                var symbol = TypeFinder.FindSymbol(sts, _root);
 
                 var typeDef = symbol.Type;
 
@@ -149,7 +136,7 @@ namespace Aquila.Compiler
             }
             else if (type is PrimitiveTypeSyntax pts)
             {
-                var pType = GetPrimitiveType(pts);
+                var pType = TypeFinder.FindClr(pts, _ts);
 
                 return pType.FindProperty(name) ?? throw new Exception("Property not found");
             }
