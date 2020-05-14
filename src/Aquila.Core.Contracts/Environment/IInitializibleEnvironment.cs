@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Aquila.Core.Authentication;
-using Aquila.Core.Network;
+using Aquila.Core.Contracts.Authentication;
+using Aquila.Core.Contracts.Network;
 
 namespace Aquila.Core.Contracts.Environment
 {

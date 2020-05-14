@@ -1,6 +1,6 @@
 using System;
 
-namespace Aquila.Configuration.Contracts
+namespace Aquila.Core.Contracts.Configuration
 {
     /// <summary>
     /// Интерфейс уникального счётчика

@@ -3,7 +3,7 @@ using System.IO;
 using Antlr4.Runtime;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Preprocessor;
-using Aquila.Configuration.Contracts;
+using Aquila.Core.Contracts;
 using Aquila.Language.Ast.Definitions;
 
 

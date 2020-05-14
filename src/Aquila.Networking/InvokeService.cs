@@ -59,12 +59,12 @@ namespace Aquila.Networking
         {
             if (!methods.ContainsKey(route))
             {
-                _logger.Trace("Add method '{0}'", route.ToString());
+                _logger.Trace($"Add method '{route}'");
                 methods.Add(route, method);
             }
             else
             {
-                _logger.Debug("Method '{0}' already exist", route.ToString());
+                _logger.Debug($"Method '{route}' already exist");
             }
         }
 

@@ -52,12 +52,21 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
             Console.Write(sb);
 
-            EmitDemo.GenerateAssembly(sb.ToString(), fileName, _ts.Paths.ToArray());
+            RoslynCompilationHelper.GenerateAssembly(sb.ToString(), fileName, _ts.Paths.ToArray());
         }
 
         public void Write(Stream stream)
         {
-            throw new NotImplementedException();
+            var tmpFile = Path.GetTempFileName();
+
+            Write(tmpFile);
+            
+            using (FileStream fs = new FileStream(tmpFile, FileMode.OpenOrCreate))
+            {
+                fs.CopyTo(stream);
+            }
+
+            File.Delete(tmpFile);
         }
 
         public void Dump(TextWriter textWriter)

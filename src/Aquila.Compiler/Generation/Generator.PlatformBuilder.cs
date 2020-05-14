@@ -3,6 +3,8 @@ using System.Linq;
 using Portable.Xaml;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Visitor;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Data;
 using Aquila.Language.Ast.Definitions;
 using Aquila.ServerRuntime;
 
@@ -16,14 +18,16 @@ namespace Aquila.Compiler.Generation
 
             foreach (var component in _conf.TypeManager.Components)
             {
-                foreach (var type in _conf.TypeManager.Types.Where(x =>
-                    x.ComponentId == component.Id && x.IsAsmAvaliable))
-                {
-                    if (_mode == CompilationMode.Client)
-                        component.ComponentImpl.Generator.StageClient(type, _root);
-                    else
-                        component.ComponentImpl.Generator.StageServer(type, _root);
-                }
+                if (component.TryGetFeature<IBuildingParticipant>(out var comBuild))
+
+                    foreach (var type in _conf.TypeManager.Types.Where(x =>
+                        x.ComponentId == component.Id && x.IsAsmAvaliable))
+                    {
+                        if (_mode == CompilationMode.Client)
+                            comBuild.Generator.StageClient(type, _root);
+                        else
+                            comBuild.Generator.StageServer(type, _root);
+                    }
             }
 
             _cus = _root.Units;
@@ -42,14 +46,15 @@ namespace Aquila.Compiler.Generation
 
             foreach (var component in _conf.TypeManager.Components)
             {
-                foreach (var type in _conf.TypeManager.Types.Where(x =>
-                    x.ComponentId == component.Id && x.IsAsmAvaliable))
-                {
-                    if (_mode == CompilationMode.Client)
-                        component.ComponentImpl.Generator.StageClient(type, root);
-                    else
-                        component.ComponentImpl.Generator.StageServer(type, root);
-                }
+                if (component.TryGetFeature<IBuildingParticipant>(out var bp))
+                    foreach (var type in _conf.TypeManager.Types.Where(x =>
+                        x.ComponentId == component.Id && x.IsAsmAvaliable))
+                    {
+                        if (_mode == CompilationMode.Client)
+                            bp.Generator.StageClient(type, root);
+                        else
+                            bp.Generator.StageServer(type, root);
+                    }
             }
 
             _cus = root.Units;

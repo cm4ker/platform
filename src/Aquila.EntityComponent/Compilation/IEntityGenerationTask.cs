@@ -1,5 +1,5 @@
 using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Contracts;
+using Aquila.Core.Contracts.Configuration;
 using Aquila.QueryBuilder;
 
 namespace Aquila.EntityComponent.Compilation

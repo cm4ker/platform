@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.ServiceModel;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Symbols;
 using Aquila.Compiler.Helpers;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Configuration.Common.TypeSystem;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Data;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
@@ -75,7 +78,8 @@ namespace Aquila.Compiler.Generation
 
                 foreach (var component in _conf.TypeManager.Components)
                 {
-                    component.ComponentImpl.Generator.StageGlobalVar(_varManager);
+                    if (component.TryGetFeature<IBuildingParticipant>(out var bp))
+                        bp.Generator.StageGlobalVar(_varManager);
                 }
             }
         }
@@ -117,10 +121,11 @@ namespace Aquila.Compiler.Generation
         private void BuildInfrastructure()
         {
             if (_conf != null)
-                foreach (var dataComponent in _conf.TypeManager.Components)
+                foreach (var component in _conf.TypeManager.Components)
                 {
-                    dataComponent.ComponentImpl.Generator.StageInfrastructure(_asm, _parameters.TargetDatabaseType,
-                        _mode);
+                    if (component.TryGetFeature<IBuildingParticipant>(out var bp))
+                        bp.Generator.StageInfrastructure(_asm, _parameters.TargetDatabaseType,
+                            _mode);
                 }
         }
 
@@ -284,8 +289,8 @@ namespace Aquila.Compiler.Generation
                             }
                         }
 
-                        cab.Component.ComponentImpl.Generator.Stage1(cab, tcab, _parameters.TargetDatabaseType, _mode,
-                            _epManager);
+                        if (cab.Component.TryGetFeature<IBuildingParticipant>(out var bp))
+                            bp.Generator.Stage1(cab, tcab, _parameters.TargetDatabaseType, _mode, _epManager);
                         break;
 
                     default:
@@ -352,8 +357,8 @@ namespace Aquila.Compiler.Generation
                             EmitConstructor(constructor, tbcab, _stage1constructors[constructor]);
                         }
 
-
-                        cab.Component.ComponentImpl.Generator.Stage2(cab, tbcab, _parameters.TargetDatabaseType, _mode);
+                        if (cab.Component.TryGetFeature<IBuildingParticipant>(out var bp))
+                            bp.Generator.Stage2(cab, tbcab, _parameters.TargetDatabaseType, _mode);
                         break;
 
                     default:
@@ -365,27 +370,16 @@ namespace Aquila.Compiler.Generation
 
         private RoslynMethodBuilder PrebuildFunction(Function function, RoslynTypeBuilder tb, bool isClass)
         {
-            /* 
-             * [Client]
-             * fn A1()
-             * 
-             * [Server]
-             * fn A2()
-             * 
-             * [ServerCall]
-             * fn A3()
-             */
-
-//            //На сервере никогда не может существовать клиентских процедур
-//            if (((int) function.Flags & (int) _mode) == 0 && !isClass)
-//            {
-//                return null;
-//            }
-
             Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
 
             var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
                 .WithReturnType(_map.GetClrType(function.Type));
+
+            if (function.Flags.HasFlag(FunctionFlags.IsOperation))
+            {
+                var dataMemberAttr = _ts.Factory.CreateAttribute(_ts, _ts.FindType<OperationContractAttribute>());
+                method.SetAttribute(dataMemberAttr);
+            }
 
             if (function.Parameters != null)
             {
@@ -553,7 +547,10 @@ namespace Aquila.Compiler.Generation
 
         private RoslynTypeBuilder PreBuildComponentAst(ComponentAstTask astTask)
         {
-            return astTask.Component.ComponentImpl.Generator.Stage0(_asm, astTask);
+            if (astTask.Component.TryGetFeature<IBuildingParticipant>(out var bp))
+                return bp.Generator.Stage0(_asm, astTask);
+
+            throw new Exception("Component not supported building tasks");
         }
     }
 }

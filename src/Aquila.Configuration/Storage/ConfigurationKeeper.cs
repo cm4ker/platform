@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Configuration.Contracts;
+using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Crypto;
 
 namespace Aquila.Configuration.Storage

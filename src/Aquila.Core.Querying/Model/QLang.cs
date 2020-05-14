@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aquila.Configuration.Common;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Core.Contracts.TypeSystem;
 
 
 namespace Aquila.Core.Querying.Model

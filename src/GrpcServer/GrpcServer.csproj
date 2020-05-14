@@ -28,7 +28,7 @@
 
 
     <ItemGroup>
-      <ProjectReference Include="..\ZenPlatform.Configuration.Common\ZenPlatform.Configuration.Common.csproj" />
+      <ProjectReference Include="..\Aquila.Configuration.Common\Aquila.Configuration.Common.csproj" />
     </ItemGroup>
     
 </Project>

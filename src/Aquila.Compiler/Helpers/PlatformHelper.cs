@@ -13,7 +13,6 @@ using Aquila.Core.Contracts.Network;
 using Aquila.Core.Network;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
-using Aquila.Core.Network.Contracts;
 using Aquila.Data;
 using Aquila.Language.Ast.Definitions.Functions;
 using SystemTypeBindings = Aquila.Compiler.Roslyn.SystemTypeBindings;

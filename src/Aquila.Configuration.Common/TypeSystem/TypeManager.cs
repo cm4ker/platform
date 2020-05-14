@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Configuration.Common.TypeSystem
 {
@@ -9,6 +9,7 @@ namespace Aquila.Configuration.Common.TypeSystem
     {
         private List<IPType> _types;
         private List<IPProperty> _properties;
+        private List<IPMethod> _methods;
         private List<IPropertyType> _propertyTypes;
         private List<ITable> _tables;
         private List<IComponent> _components;
@@ -28,6 +29,7 @@ namespace Aquila.Configuration.Common.TypeSystem
         {
             _types = new List<IPType>();
             _properties = new List<IPProperty>();
+            _methods = new List<IPMethod>();
             _propertyTypes = new List<IPropertyType>();
             _tables = new List<ITable>();
             _components = new List<IComponent>();
@@ -65,6 +67,8 @@ namespace Aquila.Configuration.Common.TypeSystem
 
         public IReadOnlyList<IPProperty> Properties => _properties;
 
+        public IReadOnlyList<IPMethod> Methods => _methods;
+
         public IReadOnlyList<IPropertyType> PropertyTypes => _propertyTypes;
 
         public IReadOnlyList<ITable> Tables => _tables;
@@ -74,6 +78,7 @@ namespace Aquila.Configuration.Common.TypeSystem
         public IReadOnlyList<IObjectSetting> Settings => _objectSettings;
 
         public IReadOnlyList<IMetadataRow> Metadatas => _metadatas;
+
 
         public void Register(IPType ipType)
         {
@@ -94,6 +99,13 @@ namespace Aquila.Configuration.Common.TypeSystem
         public void Register(IPropertyType type)
         {
             _propertyTypes.Add(type);
+        }
+
+        public void Register(IPMethod method)
+        {
+            if (_methods.Exists(x => x.Id == method.Id && x.ParentId == method.ParentId))
+                throw new Exception($"Method id {method.Name}:{method.Id} already registered");
+            _methods.Add(method);
         }
 
         public void Register(IComponent component)
@@ -123,12 +135,38 @@ namespace Aquila.Configuration.Common.TypeSystem
 
         public IPTypeSpec Type(IPType ipType)
         {
-            return new PTypeSpec(ipType, this);
+            return new PTypeSpec(ipType.Id, this);
+        }
+
+        public IPTypeSpec Type(Guid typeId)
+        {
+            return new PTypeSpec(typeId, this);
+        }
+
+        public IPTypeSet TypeSet(List<IPType> types)
+        {
+            return new PTypeSet(types, this);
+        }
+
+        public IPTypeSet TypeSet(List<Guid> types)
+        {
+            return new PTypeSet(types, this);
+        }
+
+        public IPTypeSet TypeSet()
+        {
+            return new PTypeSet(this);
         }
 
         public IPProperty Property()
         {
             return new PProperty(this);
+        }
+
+
+        public IPMethod Method()
+        {
+            return new PMethod(this);
         }
 
         public IPropertyType PropertyType()

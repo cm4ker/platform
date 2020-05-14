@@ -1,4 +1,3 @@
-using Aquila.Configuration.Contracts;
 using Aquila.Data;
 
 namespace Aquila.Core.Contracts.Environment

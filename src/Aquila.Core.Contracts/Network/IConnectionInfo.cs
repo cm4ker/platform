@@ -1,4 +1,4 @@
-namespace Aquila.Core.Network.Contracts
+namespace Aquila.Core.Contracts.Network
 {
     public interface IConnectionInfo
     {

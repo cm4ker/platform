@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-
+using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Helpers;
 using Aquila.Core.Logging;
 using Aquila.Initializer;

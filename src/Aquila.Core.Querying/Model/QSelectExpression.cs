@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
 
 namespace Aquila.Core.Querying.Model
@@ -40,7 +39,7 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<IPType> GetExpressionType()
         {
-            return Property.Types;
+            return Property.GetTypes();
         }
 
         public override string ToString()
@@ -60,7 +59,7 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<IPType> GetExpressionType()
         {
-            return GetProperties().SelectMany(x => x.Types);
+            return GetProperties().SelectMany(x => x.GetTypes());
         }
 
         public override string GetName()

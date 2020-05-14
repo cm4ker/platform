@@ -1,10 +1,10 @@
 public abstract class EntryPoint : System.Object
 {
-    static Aquila.Core.Network.IInvokeService _is;
+    static Aquila.Core.Contracts.Network.IInvokeService _is;
     static Aquila.Core.Contracts.ILinkFactory _lf;
     public static void Main(System.Object[] args)
     {
-        EntryPoint._is = ((Aquila.Core.Network.IInvokeService)args[0]);
+        EntryPoint._is = ((Aquila.Core.Contracts.Network.IInvokeService)args[0]);
         EntryPoint._lf = ((Aquila.Core.Contracts.ILinkFactory)args[1]);
         EntryPoint._is.Register(new Aquila.Core.Contracts.Route("__cmd_HelloFromServer.ClientCallProc"), dlgt_ClientCallProc);
         EntryPoint._is.Register(new Aquila.Core.Contracts.Route("__cmd_HelloFromServer.CreateAndSaveStore"), dlgt_CreateAndSaveStore);
@@ -15,33 +15,33 @@ public abstract class EntryPoint : System.Object
         EntryPoint._lf.Register(110, fac_StoreLink);
     }
 
-    public static System.Object dlgt_ClientCallProc(Aquila.Core.Network.InvokeContext context, System.Object[] args)
+    public static System.Object dlgt_ClientCallProc(Aquila.Core.Contracts.Network.InvokeContext context, System.Object[] args)
     {
         return Entity.__cmd_HelloFromServer.ClientCallProc(((System.Int32)args[0]));
     }
 
-    public static System.Object dlgt_CreateAndSaveStore(Aquila.Core.Network.InvokeContext context, System.Object[] args)
+    public static System.Object dlgt_CreateAndSaveStore(Aquila.Core.Contracts.Network.InvokeContext context, System.Object[] args)
     {
         Entity.__cmd_HelloFromServer.CreateAndSaveStore();
         return null;
     }
 
-    public static System.Object dlgt_GetUserNameServer(Aquila.Core.Network.InvokeContext context, System.Object[] args)
+    public static System.Object dlgt_GetUserNameServer(Aquila.Core.Contracts.Network.InvokeContext context, System.Object[] args)
     {
         return Entity.__cmd_HelloFromServer.GetUserNameServer();
     }
 
-    public static System.Object dlgt_GetStore(Aquila.Core.Network.InvokeContext context, System.Object[] args)
+    public static System.Object dlgt_GetStore(Aquila.Core.Contracts.Network.InvokeContext context, System.Object[] args)
     {
         return Entity.__cmd_HelloFromServer.GetStore();
     }
 
-    public static System.Object dlgt_UpdateName(Aquila.Core.Network.InvokeContext context, System.Object[] args)
+    public static System.Object dlgt_UpdateName(Aquila.Core.Contracts.Network.InvokeContext context, System.Object[] args)
     {
         return Entity.__cmd_HelloFromServer.UpdateName(((Entity.Store)args[0]));
     }
 
-    public static System.Object dlgt_Editor(Aquila.Core.Network.InvokeContext context, System.Object[] args)
+    public static System.Object dlgt_Editor(Aquila.Core.Contracts.Network.InvokeContext context, System.Object[] args)
     {
         return Entity.__StoreEditorForm.Get();
     }
@@ -109,18 +109,23 @@ namespace Entity
         {
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_105_Type")]
         public System.Int32 TProp1_Type
         {
             get => __get_TProp1_Type();
             set => __set_TProp1_Type(value);
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_105_String")]
+        [Aquila.EntityComponent.Entity.NeedInitAttribute]
         public System.String TProp1_String
         {
             get => __get_TProp1_String();
             set => __set_TProp1_String(value);
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_105_Ref")]
+        [Aquila.EntityComponent.Entity.NeedInitAttribute]
         public System.Guid TProp1_Ref
         {
             get => __get_TProp1_Ref();
@@ -178,48 +183,62 @@ namespace Entity
             this.ExampleTablek__BackingField = new System.Collections.Generic.List<Entity.RowDto_Store_ExampleTable>();
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_101")]
         public System.Guid Id
         {
             get => __get_Id();
             set => __set_Id(value);
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_102")]
+        [Aquila.EntityComponent.Entity.NeedInitAttribute]
         public System.String Name
         {
             get => __get_Name();
             set => __set_Name(value);
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_103_Type")]
         public System.Int32 Property1_Type
         {
             get => __get_Property1_Type();
             set => __set_Property1_Type(value);
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_103_DateTime")]
+        [Aquila.EntityComponent.Entity.NeedInitAttribute]
         public System.DateTime Property1_DateTime
         {
             get => __get_Property1_DateTime();
             set => __set_Property1_DateTime(value);
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_103_Int")]
+        [Aquila.EntityComponent.Entity.NeedInitAttribute]
         public System.Int32 Property1_Int
         {
             get => __get_Property1_Int();
             set => __set_Property1_Int(value);
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_103_Boolean")]
+        [Aquila.EntityComponent.Entity.NeedInitAttribute]
         public System.Boolean Property1_Boolean
         {
             get => __get_Property1_Boolean();
             set => __set_Property1_Boolean(value);
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_103_Numeric")]
+        [Aquila.EntityComponent.Entity.NeedInitAttribute]
         public System.Double Property1_Numeric
         {
             get => __get_Property1_Numeric();
             set => __set_Property1_Numeric(value);
         }
 
+        [Aquila.EntityComponent.Entity.MapToAttribute("Fld_103_Ref")]
+        [Aquila.EntityComponent.Entity.NeedInitAttribute]
         public System.Guid Property1_Ref
         {
             get => __get_Property1_Ref();
@@ -506,7 +525,7 @@ namespace Entity
             ;
             if (this._dto.__get_Property1_Type() == 7)
             {
-                return this._dto.__get_Property1_Type();
+                return this._dto.__get_Property1_Int();
             }
 
             ;
@@ -607,9 +626,8 @@ namespace Entity
             loc1 = loc0.ExecuteReader();
             while (loc1.Read())
             {
-                System.Int32 loc2;
-                loc2 = 0;
-                loc2 = loc2 + 1;
+                System.Guid loc2;
+                loc2 = ((System.Guid)loc1["Id"]);
             }
 
             ;
@@ -867,5 +885,38 @@ namespace Entity
         {
             this._dto = Entity.StoreManager.GetDto(this.Id);
         }
+    }
+}
+
+namespace SerializableTypes
+{
+    [System.Runtime.Serialization.DataContractAttribute]
+    public class ST1 : System.Object
+    {
+        System.Collections.Generic.List<System.String> Namek__BackingField;
+        [System.Runtime.Serialization.DataMemberAttribute]
+        public System.Collections.Generic.List<System.String> Name
+        {
+            get => __get_Name();
+            set => __set_Name(value);
+        }
+
+        public System.Collections.Generic.List<System.String> __get_Name()
+        {
+            return this.Namek__BackingField;
+        }
+
+        public void __set_Name(System.Collections.Generic.List<System.String> value)
+        {
+            this.Namek__BackingField = value;
+        }
+    }
+}
+
+namespace WebServices
+{
+    [System.ServiceModel.ServiceContractAttribute]
+    public class WebService1 : System.Object
+    {
     }
 }

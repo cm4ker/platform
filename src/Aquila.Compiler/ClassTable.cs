@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MoreLinq;
 using Aquila.Compiler.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Infrastructure;

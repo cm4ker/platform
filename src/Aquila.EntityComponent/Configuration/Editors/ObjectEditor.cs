@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Aquila.Configuration.Common;
-using Aquila.Configuration.Contracts.Store;
-using Aquila.Configuration.Contracts.TypeSystem;
 using System.Linq;
 using Aquila.Configuration.Common.TypeSystem;
+using Aquila.Core.Contracts.Configuration.Store;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.EntityComponent.Configuration.Editors
 {
@@ -182,14 +182,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
                 tProp.Id = prop.Guid;
                 tProp.ParentId = _md.ObjectId;
 
-                foreach (var pType in prop.Types)
-                {
-                    var tPropType = _tm.PropertyType();
-                    tPropType.PropertyParentId = _md.ObjectId;
-                    tPropType.PropertyId = tProp.Id;
-                    tPropType.TypeId = pType.GetTypeId(_tm);
-                    _tm.Register(tPropType);
-                }
+                tProp.SetType(_tm.HandleTypeSet(prop.Types.Select(x => x.GetTypeId(_tm))));
 
                 _tm.Register(tProp);
             }
@@ -216,14 +209,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
                     tProp.Id = prop.Guid;
                     tProp.ParentId = tTable.Id;
 
-                    foreach (var pType in prop.Types)
-                    {
-                        var tPropType = _tm.PropertyType();
-                        tPropType.PropertyParentId = tTable.Id;
-                        tPropType.PropertyId = tProp.Id;
-                        tPropType.TypeId = pType.GetTypeId(_tm);
-                        _tm.Register(tPropType);
-                    }
+                    tProp.SetType(_tm.HandleTypeSet(prop.Types.Select(x => x.GetTypeId(_tm))));
 
                     sysId = _inf.Counter.GetId(tProp.Id);
 
@@ -265,14 +251,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
                 tProp.Id = prop.Guid;
                 tProp.ParentId = _md.DtoId;
 
-                foreach (var pType in prop.Types)
-                {
-                    var tPropType = _tm.PropertyType();
-                    tPropType.PropertyParentId = _md.DtoId;
-                    tPropType.PropertyId = tProp.Id;
-                    tPropType.TypeId = pType.GetTypeId(_tm);
-                    _tm.Register(tPropType);
-                }
+                tProp.SetType(_tm.HandleTypeSet(prop.Types.Select(x => x.GetTypeId(_tm))));
 
                 var sysId = _inf.Counter.GetId(tProp.Id);
 
@@ -304,14 +283,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
                     tProp.Id = prop.Guid;
                     tProp.ParentId = tTable.Id;
 
-                    foreach (var pType in prop.Types)
-                    {
-                        var tPropType = _tm.PropertyType();
-                        tPropType.PropertyParentId = tTable.Id;
-                        tPropType.PropertyId = tProp.Id;
-                        tPropType.TypeId = pType.GetTypeId(_tm);
-                        _tm.Register(tPropType);
-                    }
+                    tProp.SetType(_tm.HandleTypeSet(prop.Types.Select(x => x.GetTypeId(_tm))));
 
                     sysId = _inf.Counter.GetId(tProp.Id);
 
@@ -347,14 +319,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
                 tProp.ParentId = oType.Id;
                 tProp.IsReadOnly = true;
 
-                foreach (var pType in prop.Types)
-                {
-                    var tPropType = _tm.PropertyType();
-                    tPropType.PropertyParentId = oType.Id;
-                    tPropType.PropertyId = tProp.Id;
-                    tPropType.TypeId = pType.GetTypeId(_tm);
-                    _tm.Register(tPropType);
-                }
+                tProp.SetType(_tm.HandleTypeSet(prop.Types.Select(x => x.GetTypeId(_tm))));
 
                 _tm.Register(tProp);
             }
@@ -383,14 +348,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
                     tProp.ParentId = tTable.Id;
                     tProp.IsReadOnly = true;
 
-                    foreach (var pType in prop.Types)
-                    {
-                        var tPropType = _tm.PropertyType();
-                        tPropType.PropertyParentId = tTable.Id;
-                        tPropType.PropertyId = tProp.Id;
-                        tPropType.TypeId = pType.GetTypeId(_tm);
-                        _tm.Register(tPropType);
-                    }
+                    tProp.SetType(_tm.HandleTypeSet(prop.Types.Select(x => x.GetTypeId(_tm))));
 
                     _tm.Register(tProp);
                 }
@@ -427,12 +385,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
             tProp.Id = Guid.Parse("7DB25AF5-1609-4B0E-A99C-60576336167D");
             tProp.ParentId = parentId;
             tProp.IsUnique = true;
-
-            var tPropType = _tm.PropertyType();
-            tPropType.PropertyParentId = parentId;
-            tPropType.PropertyId = tProp.Id;
-            tPropType.TypeId = _tm.Guid.Id;
-            _tm.Register(tPropType);
+            tProp.SetType(_tm.Guid.Id);
 
             var sysId = _inf.Counter.GetId(tProp.Id);
 
@@ -449,16 +402,12 @@ namespace Aquila.EntityComponent.Configuration.Editors
             tProp.Id = Guid.Parse("583C34B4-5B80-4BF5-92BF-FCEBEA60BFC4");
             tProp.ParentId = parentId;
 
-            var tPropType = _tm.PropertyType();
-            tPropType.PropertyParentId = parentId;
-            tPropType.PropertyId = tProp.Id;
 
             var type = _tm.String.GetSpec();
-            type.Size = 300;
-
-            tPropType.TypeId = type.Id;
-            _tm.Register(tPropType);
+            type.SetSize(300);
             _tm.Register(type);
+
+            tProp.SetType(type.Id);
 
             var sysId = _inf.Counter.GetId(tProp.Id);
 

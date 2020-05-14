@@ -77,7 +77,7 @@ namespace Aquila.Compiler.Roslyn
             var sb = new StringBuilder();
             asm.Dump(new StringWriter(sb));
 
-            EmitDemo.GenerateAssembly(sb.ToString(), Path.Combine(Directory.GetCurrentDirectory(), "mylib.bll"));
+            RoslynCompilationHelper.GenerateAssembly(sb.ToString(), Path.Combine(Directory.GetCurrentDirectory(), "mylib.bll"));
 
             asm.Dump(Console.Out);
 

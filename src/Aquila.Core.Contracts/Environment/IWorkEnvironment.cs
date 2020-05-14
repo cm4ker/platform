@@ -1,5 +1,3 @@
-using Aquila.Configuration.Contracts;
-
 namespace Aquila.Core.Contracts.Environment
 {
     /// <summary>

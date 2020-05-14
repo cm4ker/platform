@@ -1,12 +1,13 @@
 ﻿using MoreLinq;
 using System;
 using System.Linq;
-using Aquila.Configuration.Contracts;
 using Aquila.Core.Assemblies;
+using Aquila.Core.Contracts;
 using Aquila.Data;
 using Aquila.QueryBuilder.Builders;
 using Aquila.Core.Logging;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Migration
 {
@@ -258,7 +259,8 @@ namespace Aquila.Migration
             var plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
-                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
+                if (component.actual.TryGetFeature<IMigrateable>(out var mig))
+                    mig.Migrator.MigrationPlan(plan, component.old, component.actual);
             }
 
             if (plan.Count() > 0)

@@ -3,7 +3,7 @@ using System.IO;
 using Antlr4.Runtime;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Core.Querying;
 using Aquila.Core.Querying.Model;
 using Aquila.Language.Ast;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Aquila.Core.Authentication
+namespace Aquila.Core.Contracts.Authentication
 {
     /// <summary>
     /// Презентация пользователя в системе на всех уровнях платформы

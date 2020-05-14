@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Aquila.Configuration.Contracts.TypeSystem
+namespace Aquila.Core.Contracts.TypeSystem
 {
     public interface IPProperty : ITypeManagerProvider
     {
@@ -13,6 +13,9 @@ namespace Aquila.Configuration.Contracts.TypeSystem
         bool IsUnique { get; set; }
 
         bool IsReadOnly { get; set; }
-        IEnumerable<IPType> Types { get; }
+
+        IPType Type { get; }
+
+        void SetType(Guid guid);
     }
 }

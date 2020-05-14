@@ -1,10 +1,10 @@
-using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.QueryBuilder;
 using Aquila.Shared.Tree;
 
-namespace Aquila.Configuration.Contracts.Data
+namespace Aquila.Core.Contracts.Data
 {
     /// <summary>
     /// Последовательный механизм для генерации сборки

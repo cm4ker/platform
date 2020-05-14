@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Aquila.Configuration.Common;
-using Aquila.Configuration.Contracts.Store;
-using Aquila.Configuration.Contracts.TypeSystem;
 
 namespace Aquila.EntityComponent.Configuration
 {

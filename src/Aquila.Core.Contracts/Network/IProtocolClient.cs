@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Net;
-using Aquila.Core.Network.Contracts;
 
 namespace Aquila.Core.Contracts.Network
 {

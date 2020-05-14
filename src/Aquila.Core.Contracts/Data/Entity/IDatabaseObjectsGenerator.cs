@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Configuration.Contracts.Data.Entity
+namespace Aquila.Core.Contracts.Data.Entity
 {
     /// <summary>
     /// Генерация инструкций базы данных для других компоннетов 

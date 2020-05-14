@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Migration;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Configuration.Migration;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Migration
 {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using dnlib.DotNet;
@@ -36,6 +37,41 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public void Dump(TextWriter tw)
         {
+            foreach (var attribute in CustomAttributes)
+            {
+                using (tw.SquareBrace())
+                {
+                    attribute.AttributeType.DumpRef(tw);
+
+                    if (attribute.Parameters.Count > 0)
+                        using (tw.Parenthesis())
+                        {
+                            var wasFirst = false;
+
+                            foreach (var parameter in attribute.Parameters)
+                            {
+                                if (wasFirst)
+                                    tw.W(",");
+
+
+                                Literal l = parameter switch
+                                {
+                                    int i => new Literal(i),
+                                    string s => new Literal(s),
+                                    double d => new Literal(d),
+                                    _ => throw new Exception("Not supported")
+                                };
+
+                                l.Dump(tw);
+
+                                wasFirst = true;
+                            }
+                        }
+                }
+
+                tw.WriteLine();
+            }
+
             tw.W("public ");
             PropertyType.DumpRef(tw);
 

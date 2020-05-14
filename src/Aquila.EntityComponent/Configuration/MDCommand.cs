@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Aquila.Configuration.Contracts;
 using Aquila.Configuration.Structure;
+using Aquila.Core.Contracts.Configuration;
 
 namespace Aquila.EntityComponent.Configuration
 {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Configuration.Contracts.TypeSystem;
+using System.Linq.Expressions;
+using System.Runtime.ConstrainedExecution;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Configuration.Common.TypeSystem
 {
@@ -33,7 +35,7 @@ namespace Aquila.Configuration.Common.TypeSystem
         public virtual bool IsManager { get; set; }
 
         public virtual bool IsDto { get; set; }
-        
+
         public virtual bool IsUX { get; set; }
 
         public bool IsDbAffect { get; set; }
@@ -56,12 +58,18 @@ namespace Aquila.Configuration.Common.TypeSystem
         public bool IsQueryAvaliable { get; set; }
 
         public virtual bool IsTypeSpec => false;
+        public virtual bool IsArray => false;
+
+        public virtual bool IsTypeSet => false;
 
         internal bool IsRegistrated { get; set; }
 
         public object Bag { get; set; }
 
         public IEnumerable<IPProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
+
+        public IEnumerable<IPMethod> Methods => _ts.Methods.Where(x => x.ParentId == Id);
+
         public IEnumerable<ITable> Tables => _ts.Tables.Where(x => x.ParentId == Id);
 
 

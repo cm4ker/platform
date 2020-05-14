@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Core.Querying.Model;
 using Aquila.QueryBuilder;
 
@@ -63,7 +65,11 @@ namespace Aquila.Core.Querying
                 From(x=> x.FromRaw("Select * From Test"))
              */
 
-            ot.ObjectType.GetComponent().ComponentImpl.QueryInjector.InjectTypeSource(_qm, ot.ObjectType, null);
+            if (ot.ObjectType.GetComponent().TryGetFeature<IInternalQueryParticipant>(out var iqp))
+                iqp.QueryInjector.InjectTypeSource(_qm, ot.ObjectType, null);
+            else
+                throw new Exception(
+                    $"This component({ot.ObjectType.GetComponent().Name}) can't participate in query! This should never happen!");
         }
 
         private void GenerateFrom(QFrom from)

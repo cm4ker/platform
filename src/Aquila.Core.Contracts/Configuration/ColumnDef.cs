@@ -1,7 +1,7 @@
 using System;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Configuration.Contracts
+namespace Aquila.Core.Contracts.Configuration
 {
     /// <summary>
     /// Детерминированный тип колонки реквизита конфигурации

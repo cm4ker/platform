@@ -1,10 +1,7 @@
-﻿using SharpFileSystem;
-using Aquila.Configuration.Contracts.Data;
-using Aquila.Configuration.Contracts.Store;
-using Aquila.Configuration.Contracts.TypeSystem;
-using Aquila.Configuration.Structure;
+﻿using Aquila.Core.Contracts.Configuration.Store;
+using SharpFileSystem;
 
-namespace Aquila.Configuration.Contracts
+namespace Aquila.Core.Contracts.Configuration
 {
     /// <summary>
     /// Загрузчик компонента

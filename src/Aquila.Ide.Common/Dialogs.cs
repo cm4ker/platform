@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Ide.Common.Editors;
 using MessageBox.Avalonia;
 using System.Threading.Tasks;
+using Aquila.Core.Contracts.TypeSystem;
 using MessageBox.Avalonia.Enums;
 
 namespace Aquila.Ide.Common

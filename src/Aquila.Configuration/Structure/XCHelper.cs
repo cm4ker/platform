@@ -4,8 +4,8 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using Portable.Xaml;
-using Aquila.Configuration.Contracts;
 using Aquila.Configuration.Structure.Data;
+using Aquila.Core.Contracts;
 using Aquila.Core.Crypto;
 
 namespace Aquila.Configuration.Structure

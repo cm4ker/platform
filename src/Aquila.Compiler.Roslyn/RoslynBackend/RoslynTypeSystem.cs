@@ -33,6 +33,9 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             _resolver.PreSearchPaths.Add(
                 "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Ref\\3.1.0\\ref\\netcoreapp3.1\\");
             _resolver.PreSearchPaths.Add(Directory.GetCurrentDirectory());
+            _resolver.PreSearchPaths.Add(
+                "C:\\Users\\qznc\\.nuget\\packages\\system.servicemodel.primitives\\4.7.0\\ref\\netcoreapp2.1\\");
+            _resolver.PreSearchPaths.Add("C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App\\3.1.1\\");
             _resolver.EnableTypeDefCache = true;
             _resolver.EnableFrameworkRedirect = false;
             _resolver.DefaultModuleContext = new ModuleContext(Resolver);
@@ -54,9 +57,16 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
                 foreach (var path in files)
                 {
-                    var asm = AssemblyDef.Load(path, new ModuleCreationOptions());
-                    RegisterAssembly(asm);
-                    Paths.Add(path);
+                    try
+                    {
+                        var asm = AssemblyDef.Load(path, new ModuleCreationOptions());
+                        RegisterAssembly(asm);
+                        Paths.Add(path);
+                    }
+                    catch (Exception ex)
+                    {
+                        //we are failed but we still can try compile
+                    }
                 }
             }
 

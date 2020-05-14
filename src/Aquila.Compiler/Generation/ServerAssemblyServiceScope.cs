@@ -5,8 +5,9 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Contracts;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Network;
 using Aquila.Core.Network;
 using Aquila.Language.Ast.Definitions.Functions;
 using SystemTypeBindings = Aquila.Compiler.Roslyn.SystemTypeBindings;
@@ -52,6 +53,7 @@ namespace Aquila.Compiler.Generation
     {
         private const string _invokeServiceFieldName = "_is";
         private const string _linkFactoryFieldName = "_lf";
+        private const string _startupServiceFieldName = "_ss";
 
         public static RoslynType InvokeService(this RoslynTypeSystem ts)
         {
@@ -69,6 +71,7 @@ namespace Aquila.Compiler.Generation
             var sb = ep.TypeSystem;
             var field = ep.DefineField(sb.InvokeService(), _invokeServiceFieldName, false, true);
             var lf = ep.DefineField(sb.LinkFactory(), _linkFactoryFieldName, false, true);
+            var ss = ep.DefineField(sb.FindType<IStartupService>(), _startupServiceFieldName, false, true);
 
             am.Main.Body
                 .LdArg_0()
@@ -80,7 +83,12 @@ namespace Aquila.Compiler.Generation
                 .LdLit(1)
                 .LdElem()
                 .Cast(sb.LinkFactory())
-                .StSFld(lf);
+                .StSFld(lf)
+                .LdArg_0()
+                .LdLit(2)
+                .LdElem()
+                .Cast(sb.FindType<IStartupService>())
+                .StSFld(ss);
         }
 
         public static RoslynField GetISField(this IEntryPointManager am)
@@ -92,6 +100,12 @@ namespace Aquila.Compiler.Generation
         public static RoslynField GetLFField(this IEntryPointManager am)
         {
             return am.EntryPoint.FindField(_linkFactoryFieldName) ??
+                   throw new Exception($"Platform not isnitialized you must invoke {nameof(InitService)} method first");
+        }
+
+        public static RoslynField GetSSField(this IEntryPointManager am)
+        {
+            return am.EntryPoint.FindField(_startupServiceFieldName) ??
                    throw new Exception($"Platform not isnitialized you must invoke {nameof(InitService)} method first");
         }
     }

@@ -1,8 +1,7 @@
-﻿using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Roslyn.RoslynBackend;
+﻿using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.QueryBuilder;
 
-namespace Aquila.Configuration.Contracts.Data
+namespace Aquila.Core.Contracts.Data
 {
     public interface IXCCompiller
     {

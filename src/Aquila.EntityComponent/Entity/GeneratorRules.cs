@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Aquila.Configuration.Contracts.Data;
-using Aquila.Configuration.Contracts.Data.Entity;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.Data.Entity;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.EntityComponent.Entity
 {

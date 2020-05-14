@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using SharpFileSystem;
 using Aquila.Configuration;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Store;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure;
 using Aquila.Configuration.Structure.Data;
 using Aquila.EntityComponent.IDE;
@@ -12,6 +9,10 @@ using Aquila.Ide.Common;
 using Aquila.Ide.Contracts;
 using Aquila.EntityComponent.Configuration.Editors;
 using System.IO;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Configuration.Store;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.EntityComponent.Configuration
 {

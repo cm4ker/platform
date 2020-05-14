@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using Aquila.Core.Contracts.Network;
 using Tmds.DBus;
-using Aquila.Core.Network.Contracts;
 
 namespace Aquila.ClientRuntime
 {

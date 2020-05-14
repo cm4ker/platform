@@ -4,9 +4,11 @@ using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Helpers;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
+using Aquila.Component.Shared;
 using Aquila.Configuration.Common.TypeSystem;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Configuration;
 using Aquila.EntityComponent.Entity;
 using Aquila.Language.Ast;
@@ -74,9 +76,9 @@ namespace Aquila.EntityComponent.Compilation
                 {
                     var propName = prop.Name;
 
-                    var propType = (prop.Types.Count() > 1)
+                    var propType = (prop.Type.IsTypeSet)
                         ? sb.Object
-                        : prop.Types.First().ConvertType(sb);
+                        : prop.Type.ConvertType(sb);
 
                     var hasSet = !prop.IsReadOnly;
 

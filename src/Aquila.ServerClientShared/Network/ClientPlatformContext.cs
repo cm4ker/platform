@@ -13,7 +13,8 @@ using Aquila.QueryBuilder;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.Compiler;
 using Aquila.Compiler.Contracts;
-using Aquila.Core.Network.Contracts;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Network;
 
 namespace Aquila.Core.Network
 {

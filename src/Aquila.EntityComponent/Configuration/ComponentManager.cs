@@ -6,12 +6,13 @@ using System.Reflection;
 using dnlib.DotNet;
 using SharpFileSystem;
 using Aquila.Configuration;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data;
-using Aquila.Configuration.Contracts.Store;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure;
 using Aquila.Configuration.Structure.Data;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Configuration.Store;
+using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.EntityComponent.Configuration
 {

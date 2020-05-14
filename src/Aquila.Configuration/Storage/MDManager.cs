@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using SharpFileSystem;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Store;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Configuration.Store;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Configuration.Storage
 {

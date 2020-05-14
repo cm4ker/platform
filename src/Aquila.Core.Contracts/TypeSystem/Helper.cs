@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Configuration.Contracts.Data;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Data;
 
-namespace Aquila.Configuration.Contracts.TypeSystem
+namespace Aquila.Core.Contracts.TypeSystem
 {
     public static class TypeManagerHelper
     {
@@ -47,6 +48,22 @@ namespace Aquila.Configuration.Contracts.TypeSystem
             return tm.Types.FirstOrDefault(x => x.Id == typeId);
         }
 
+        public static Guid HandleTypeSet(this ITypeManager tm, IEnumerable<Guid> typeIds)
+        {
+            var listTypes = typeIds.ToList();
+            if (listTypes.Count == 0)
+                throw new Exception("Unknown type");
+
+            if (listTypes.Count > 1)
+            {
+                var ts = tm.TypeSet(listTypes);
+                tm.Register(ts);
+                return ts.Id;
+            }
+
+            return listTypes.First();
+        }
+
         public static IEnumerable<IPType> GetTypes(this IComponent com)
         {
             return com.TypeManager.Types.Where(x => x.ComponentId == com.Id);
@@ -56,7 +73,7 @@ namespace Aquila.Configuration.Contracts.TypeSystem
         {
             if (ipTypeA.Id == ipTypeB.Id)
                 return true;
-            
+
             if (ipTypeA.BaseId == null)
                 return false;
 
@@ -132,14 +149,32 @@ namespace Aquila.Configuration.Contracts.TypeSystem
             return table.TypeManager.FindType(table.ParentId);
         }
 
+        public static IEnumerable<IPType> GetTypes(this IPProperty prop)
+        {
+            return prop.Type.Unwrap();
+        }
+
+        public static IEnumerable<IPType> Unwrap(this IPType type)
+        {
+            if (type.IsTypeSet)
+            {
+                foreach (var retType in ((IPTypeSet) type).Types)
+                {
+                    yield return retType;
+                }
+            }
+            else
+                yield return type;
+        }
+
         public static IEnumerable<ColumnSchemaDefinition> GetDbSchema(this IPProperty prop)
         {
-            return GetPropertySchemas(prop.TypeManager, prop.GetSettings().DatabaseName, prop.Types.ToList());
+            return GetPropertySchemas(prop.TypeManager, prop.GetSettings().DatabaseName, prop.GetTypes().ToList());
         }
 
         public static IEnumerable<ColumnSchemaDefinition> GetObjSchema(this IPProperty prop)
         {
-            return GetPropertySchemas(prop.TypeManager, prop.Name, prop.Types.ToList());
+            return GetPropertySchemas(prop.TypeManager, prop.Name, prop.GetTypes().ToList());
         }
 
 

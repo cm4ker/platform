@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\avalonia.reactiveui.props" />
+    <Import Project="..\Props\avalonia.avaloniaedit.props" />
+
+    <ItemGroup>
+      <ProjectReference Include="..\Aquila.Component.Shared\Aquila.Component.Shared.csproj" />
+      <ProjectReference Include="..\Aquila.Configuration.Common\Aquila.Configuration.Common.csproj" />
+      <ProjectReference Include="..\Aquila.Ide.Common\Aquila.Ide.Common.csproj" />
+      <ProjectReference Include="..\Aquila.Ide.Contract\Aquila.Ide.Contracts.csproj" />
+      <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="IDE\Editors\UiPropertyEditor.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="IDE\Editors\UIPropertyEditor.xaml.cs">
+        <DependentUpon>UiPropertyEditor.xaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>

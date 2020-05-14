@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data.Entity;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Logging;
@@ -18,7 +16,10 @@ using Aquila.Configuration.Structure;
 using Aquila.Initializer;
 using Aquila.Core.Assemblies;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Authentication;
+using Aquila.Core.Contracts.Data.Entity;
 using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Network;
 
 namespace Aquila.Core.Environment
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Aquila.Core.Contracts.Authentication;
 using Microsoft.Extensions.Logging;
 
 namespace Aquila.Core.Authentication

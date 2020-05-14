@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure.Data;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Core.Querying.Model
 {

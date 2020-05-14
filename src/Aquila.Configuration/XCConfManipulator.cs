@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Aquila.Configuration.Contracts;
 using System.Linq;
 using SharpFileSystem;
 using SharpFileSystem.FileSystems;
 using Aquila.Configuration.Common.TypeSystem;
 using Aquila.Configuration.Storage;
 using Aquila.Configuration.Structure;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Crypto;
 
 namespace Aquila.Configuration

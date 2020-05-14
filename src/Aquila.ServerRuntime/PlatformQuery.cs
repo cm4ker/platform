@@ -7,10 +7,10 @@ using dnlib.DotNet;
 using Microsoft.Win32.SafeHandles;
 using MoreLinq;
 using Aquila.Configuration.Common.TypeSystem;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Core;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Core.Querying;
 using Aquila.Core.Querying.Model;
 

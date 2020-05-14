@@ -1,4 +1,4 @@
-﻿namespace Aquila.Core.Authentication
+﻿namespace Aquila.Core.Contracts.Authentication
 {
     /// <summary>
     /// Менеджер аутентификации

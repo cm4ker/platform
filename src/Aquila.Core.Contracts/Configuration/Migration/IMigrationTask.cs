@@ -1,8 +1,7 @@
 ﻿using System;
-
 using Aquila.QueryBuilder.Builders;
 
-namespace Aquila.Configuration.Contracts.Migration
+namespace Aquila.Core.Contracts.Configuration.Migration
 {
     public interface IMigrationTask
     {

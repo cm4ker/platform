@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Aquila.Compiler;
-using Aquila.Configuration.Contracts;
 using Aquila.Core.Authentication;
 using Aquila.Core.Network;
 using Aquila.Core.Sessions;
@@ -14,7 +13,9 @@ using Aquila.Core.Tools;
 using Aquila.Core.Environment;
 using Aquila.Core.Assemblies;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Network;
 using Aquila.QueryBuilder;
 using Aquila.Test.Tools;
 

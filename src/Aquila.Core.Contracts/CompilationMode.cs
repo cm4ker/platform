@@ -1,6 +1,6 @@
 using System;
 
-namespace Aquila.Compiler.Contracts
+namespace Aquila.Core.Contracts
 {
     [Flags]
     public enum CompilationMode
@@ -24,5 +24,6 @@ namespace Aquila.Compiler.Contracts
         Server = 1 << 1,
         ClientServer = Client | Server,
         ServerClientCall = Client | Server | 1 << 2,
+        IsOperation = 1 << 3
     }
 }

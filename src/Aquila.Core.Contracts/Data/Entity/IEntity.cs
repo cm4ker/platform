@@ -1,4 +1,4 @@
-﻿namespace Aquila.Configuration.Contracts.Data.Entity
+﻿namespace Aquila.Core.Contracts.Data.Entity
 {
     public interface IEntity
     {

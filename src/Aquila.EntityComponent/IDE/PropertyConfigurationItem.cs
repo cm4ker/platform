@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Aquila.Configuration.Common;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Configuration;
 using Aquila.EntityComponent.Configuration.Editors;
 using Aquila.EntityComponent.IDE.Editors;

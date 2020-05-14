@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
 using Aquila.Configuration.Common.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Configuration.Common
 {
@@ -49,7 +49,7 @@ namespace Aquila.Configuration.Common
                     StringPType st => new MDString(ts.Size),
                     _ => throw new NotSupportedException()
                 },
-                _ => new TypeRef(type.Id)
+                _ => new MDTypeRef(type.Id)
             };
 
         }

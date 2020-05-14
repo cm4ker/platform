@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Migration;
-using Aquila.Configuration.Contracts.TypeSystem;
-using Aquila.QueryBuilder.Builders;
-using Aquila.QueryBuilder.Model;
+﻿using Aquila.Core.Contracts.Configuration.Migration;
+using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Configuration.Contracts.Data.Entity
+namespace Aquila.Core.Contracts.Data.Entity
 
 {
     /// <summary>

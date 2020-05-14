@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Aquila.Core.Authentication
+namespace Aquila.Core.Contracts.Authentication
 {
     public interface IUserManager
     {

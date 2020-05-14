@@ -1,4 +1,4 @@
-namespace Aquila.Configuration.Contracts
+namespace Aquila.Core.Contracts.Configuration
 {
     /// <summary>
     /// Тип модуля по отношению к объекту

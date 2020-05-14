@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Environment;
 
 namespace Aquila.Core.Sessions

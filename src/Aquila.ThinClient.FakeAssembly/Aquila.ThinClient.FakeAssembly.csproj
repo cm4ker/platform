@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <Configurations>Debug;Release;DebugServer</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
@@ -13,6 +13,10 @@
       <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
       <ProjectReference Include="..\Aquila.EntityComponent\Aquila.EntityComponent.csproj" />
       <ProjectReference Include="..\Aquila.ServerRuntime\Aquila.ServerRuntime.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
     </ItemGroup>
 
 </Project>

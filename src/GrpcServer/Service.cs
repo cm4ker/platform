@@ -42,7 +42,6 @@ namespace GrpcServer
                     ...
      */
 
-
     [DataContract]
     public class ComplexModelInput
     {
@@ -64,30 +63,6 @@ namespace GrpcServer
 
         [DataMember] public int IntProperty { get; set; }
     }
-
-
-    [ServiceContract]
-    public interface ISampleService
-    {
-        [OperationContract]
-        string Ping(string s);
-
-        [OperationContract]
-        ComplexModelResponse PingComplexModel(ComplexModelInput inputModel);
-
-        [OperationContract]
-        void VoidMethod(out string s);
-
-        [OperationContract]
-        Task<int> AsyncMethod();
-
-        [OperationContract]
-        int? NullableMethod(bool? arg);
-
-        [OperationContract]
-        void XmlMethod(System.Xml.Linq.XElement xml);
-    }
-
 
     [DataContract]
     public class ComplexModelResponse
@@ -111,13 +86,15 @@ namespace GrpcServer
 
 
     [ServiceContract]
-    public class SampleService : ISampleService
-    {[OperationContract]
+    public class SampleService
+    {
+        [OperationContract]
         public string Ping(string s)
         {
             Console.WriteLine("Exec ping method");
             return s;
         }
+
         [OperationContract]
         public ComplexModelResponse PingComplexModel(ComplexModelInput inputModel)
         {
@@ -132,21 +109,25 @@ namespace GrpcServer
                 DateTimeOffsetProperty = inputModel.DateTimeOffsetProperty
             };
         }
+
         [OperationContract]
         public void VoidMethod(out string s)
         {
             s = "Value from server";
         }
+
         [OperationContract]
         public Task<int> AsyncMethod()
         {
             return Task.Run(() => 42);
         }
+
         [OperationContract]
         public int? NullableMethod(bool? arg)
         {
             return null;
         }
+
         [OperationContract]
         public void XmlMethod(XElement xml)
         {

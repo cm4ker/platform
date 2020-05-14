@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.QueryBuilder;
 
-namespace Aquila.Configuration.Contracts.Data.Entity
+namespace Aquila.Core.Contracts.Data.Entity
 {
     /// <summary>
     /// Интерфейс обязательный для реализации, если мы хотим, чтобы компонент учавствовал в запросах

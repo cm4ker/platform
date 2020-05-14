@@ -3,8 +3,8 @@ using System.IO;
 using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure.Data;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Cli
 {
@@ -25,9 +25,7 @@ namespace Aquila.Cli
              * !!!Для версии 0.0.0.1 просто генерируем файлы и ложим их в определённую папку, скажем 'Generated'
              */
 
-            var generator = component.ComponentImpl.Generator;
-
-
+            
             if (!Directory.Exists(folderName))
                 Directory.CreateDirectory(folderName);
             var filesForDelete = Directory.GetFiles(folderName, "*.cs");

@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace Aquila.Configuration.Contracts.Migration
+namespace Aquila.Core.Contracts.Configuration.Migration
 {
     public interface IEntityMigrationPlan
     {

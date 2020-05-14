@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using Aquila.Configuration.Common;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Core.Querying.Model;
 using Aquila.QueryBuilder;
 

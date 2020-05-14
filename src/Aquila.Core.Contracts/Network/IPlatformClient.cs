@@ -1,7 +1,6 @@
-using Aquila.Core.Authentication;
-using Aquila.Core.Contracts.Network;
+using Aquila.Core.Contracts.Authentication;
 
-namespace Aquila.Core.Network.Contracts
+namespace Aquila.Core.Contracts.Network
 {
     /// <summary>
     /// Уровень платформы

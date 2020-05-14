@@ -2,10 +2,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure.Data.Types;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Shared.ParenChildCollection;
 
 namespace Aquila.Configuration.Common.TypeSystem
@@ -16,7 +17,7 @@ namespace Aquila.Configuration.Common.TypeSystem
     public class Component : IComponent
     {
         private IXCComponentInformation _info;
-        private IDataComponent _componentImpl;
+        private object _componentImpl;
 
         private List<MDType> _mdTypes;
 
@@ -68,7 +69,7 @@ namespace Aquila.Configuration.Common.TypeSystem
             set => _parent = value;
         }
 
-        public IDataComponent ComponentImpl
+        public object ComponentImpl
         {
             get => _componentImpl;
             set => _componentImpl = value;

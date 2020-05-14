@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Configuration.Contracts.Migration
+namespace Aquila.Core.Contracts.Configuration.Migration
 {
     public interface IEntityMigrationScope: IEnumerable<IEntityMigrationItem>
     {

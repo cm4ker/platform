@@ -24,6 +24,9 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             if (assembly.Contains("System.Private.CoreLib"))
                 assembly = ts.GetSystemBindings().MSCORLIB;
 
+            if (assembly.Contains("System.Private.ServiceModel"))
+                assembly = ts.GetSystemBindings().SERVICEMODEL;
+            
             return ts.FindType($"{@namespace}.{name}", assembly);
         }
     }

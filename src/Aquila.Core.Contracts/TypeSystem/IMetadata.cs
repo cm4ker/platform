@@ -1,4 +1,4 @@
-namespace Aquila.Configuration.Contracts.TypeSystem
+namespace Aquila.Core.Contracts.TypeSystem
 {
     public interface IMetadata
     {

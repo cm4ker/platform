@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using Aquila.Compiler;
 using Aquila.Core.ClientServices;
+using Aquila.Core.Contracts.Network;
 using Aquila.Core.Crypto;
-using Aquila.Core.Network.Contracts;
 
 namespace Aquila.Core.Assemlies
 {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Aquila.Configuration.Contracts.Data.Entity;
 using Aquila.Core;
+using Aquila.Core.Contracts.Data.Entity;
 using Aquila.Core.Environment;
 using Aquila.Core.Sessions;
 

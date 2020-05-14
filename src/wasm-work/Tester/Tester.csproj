@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <MonoRuntimeDebuggerEnabled>false</MonoRuntimeDebuggerEnabled>
-        <TargetFrameworks>netstandard2.1;netcoreapp3.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.1;netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>

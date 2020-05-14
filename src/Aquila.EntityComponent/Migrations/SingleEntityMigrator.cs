@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Configuration.Migration;
+using Aquila.Core.Contracts.Data.Entity;
 using MoreLinq.Extensions;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data.Entity;
-using Aquila.Configuration.Contracts.Migration;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.EntityComponent.Migrations
 {
@@ -89,7 +89,7 @@ namespace Aquila.EntityComponent.Migrations
         {
             if (oldState == null && actualState != null)
             {
-                var typesToCreate = actualState.GetTypes().Where(x=>x.IsDbAffect);
+                var typesToCreate = actualState.GetTypes().Where(x => x.IsDbAffect);
 
                 typesToCreate.ForEach(e =>
                     plan.AddScope(
@@ -252,7 +252,7 @@ namespace Aquila.EntityComponent.Migrations
         public void ChangeProperty(IEntityMigrationScope plan, IPProperty old, IPProperty actual, string tableName)
         {
             //случай если в свойстве был один тип а стало много 
-            if (old.Types.Count() == 1 && actual.Types.Count() > 1)
+            if (!old.Type.IsTypeSet && actual.Type.IsTypeSet)
             {
                 //ищем колонку для переименования
                 var rename = old.GetDbSchema().Join(actual.GetDbSchema(),
@@ -274,7 +274,7 @@ namespace Aquila.EntityComponent.Migrations
                 plan.UpdateType(actual, tableName, rename.old.PlatformIpType);
             }
             else // было много стал один
-            if (old.Types.Count() > 1 && actual.Types.Count() == 1)
+            if (old.Type.IsTypeSet && !actual.Type.IsTypeSet)
             {
                 //ищем колонку для переименования
                 var rename = old.GetDbSchema().Join(actual.GetDbSchema(),

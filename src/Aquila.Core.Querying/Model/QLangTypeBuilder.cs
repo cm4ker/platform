@@ -1,9 +1,8 @@
 using System;
 using System.Text.RegularExpressions;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Core.Contracts.TypeSystem;
 
 
 namespace Aquila.Core.Querying.Model
@@ -20,15 +19,15 @@ namespace Aquila.Core.Querying.Model
         public IPType String(int size)
         {
             var spec = _conf.String.GetSpec();
-            spec.Size = size;
+            spec.SetSize(size);
             return spec;
         }
 
         public IPType Numeric(int scale, int precision)
         {
             var spec = _conf.Numeric.GetSpec();
-            spec.Scale = scale;
-            spec.Precision = precision;
+            spec.SetScale(scale);
+            spec.SetPrecision(precision);
             return spec;
         }
 

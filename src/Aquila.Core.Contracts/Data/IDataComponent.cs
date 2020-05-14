@@ -1,41 +1,31 @@
-﻿using System;
-using Aquila.Configuration.Contracts.Data.Entity;
+﻿using Aquila.Core.Contracts.Data.Entity;
 
-namespace Aquila.Configuration.Contracts.Data
+namespace Aquila.Core.Contracts.Data
 {
     /// <summary>
     /// Интерфейс комопнента данных
     /// </summary>
-    public interface IDataComponent
+    public interface IDataComponent : IMigrateable, IInternalQueryParticipant, IBuildingParticipant
     {
-        /// <summary>
-        /// Событие, вызываемое перед инициализацией компонента
-        /// </summary>
-        void OnInitializing();
+    }
 
-        /// <summary>
-        /// Менеджер сущностей
-        /// </summary>
-        IEntityManager Manager { get; }
 
-        /// <summary>
-        /// Генератор сущностей необходимо на стадии сборки проекта
-        /// </summary>
-        //IEntityGenerator Generator { get; }
-
+    public interface IBuildingParticipant
+    {
         IPlatformGenerator Generator { get; }
+    }
 
-        /// <summary>
-        /// Генератор объектов базы данных
-        /// </summary>
-        IDatabaseObjectsGenerator DatabaseObjectsGenerator { get; }
-
+    public interface IMigrateable
+    {
         /// <summary>
         /// Мигратор. Позволяет сравнить две сущности одинакового типа и решить, что нужно делать
         /// Миграция происходит после успешной компиляции и готовым блобом с новой сборкой
         /// </summary>
         IEntityMigrator Migrator { get; }
+    }
 
+    public interface IInternalQueryParticipant
+    {
         /// <summary>
         /// Инъектор запросов
         /// </summary>
