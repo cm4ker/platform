@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DB\BufferedDataReader\BufferedDataReader.csproj" />
+      <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
+      <ProjectReference Include="..\Aquila.Language.Ast\Aquila.Language.Ast.csproj" />
+      <ProjectReference Include="..\Aquila.SharedRuntime\Aquila.SharedRuntime.csproj" />
+    </ItemGroup>
+
+</Project>

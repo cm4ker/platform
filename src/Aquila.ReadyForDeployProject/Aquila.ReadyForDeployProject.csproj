@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <PreBuildEvent>dir</PreBuildEvent>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
+    <ProjectReference Include="..\Aquila.DocumentComponent\Aquila.DocumentComponent.csproj" />
+  </ItemGroup>
+
+</Project>

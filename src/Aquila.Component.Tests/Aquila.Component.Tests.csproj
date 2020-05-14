@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+
+        <IsPackable>false</IsPackable>
+
+        <Configurations>Debug;Release;DebugServer</Configurations>
+
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+        <PackageReference Include="xunit" Version="2.4.0" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.Compiler.Cecil\Aquila.Compiler.Cecil.csproj" />
+        <ProjectReference Include="..\Aquila.Compiler.Contracts\Aquila.Compiler.Contracts.csproj" />
+        <ProjectReference Include="..\Aquila.Compiler.Dnlib\Aquila.Compiler.Dnlib.csproj" />
+        <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj" />
+        <ProjectReference Include="..\Aquila.EntityComponent\Aquila.EntityComponent.csproj" />
+        <ProjectReference Include="..\Aquila.Shared\Aquila.Shared.csproj" />
+        <ProjectReference Include="..\Aquila.Test.Tools\Aquila.Test.Tools.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Common" />
+    </ItemGroup>
+
+</Project>

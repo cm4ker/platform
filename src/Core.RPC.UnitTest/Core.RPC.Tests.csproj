@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZenPlatform.Core\ZenPlatform.Core.csproj" />
+    <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
   </ItemGroup>
 
 </Project>

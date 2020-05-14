@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <LangVersion>8</LangVersion>
+    <Configurations>Debug;Release;DebugServer</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aquila.Builder\Aquila.Cli.csproj" />
+    <ProjectReference Include="..\Aquila.Networking\Aquila.Networking.csproj" />
+    <ProjectReference Include="..\Aquila.Shell.Contracts\Aquila.Shell.Contracts.csproj" />
+    <ProjectReference Include="..\Aquila.SSH\Aquila.SSH.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TextCopy" Version="1.7.1" />
+  </ItemGroup>
+
+</Project>

@@ -3,7 +3,7 @@ using System.Data;
 using ConfCore;
 using Type = ConfCore.Type;
 
-namespace ZenPlatform.Configuration.Structure.Data.Types.Primitive
+namespace Aquila.Configuration.Structure.Data.Types.Primitive
 {
     public class NumericType : Type
     {

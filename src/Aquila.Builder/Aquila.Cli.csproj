@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <AssemblyName>Aquila.Cli</AssemblyName>
+        <RootNamespace>Aquila.Cli</RootNamespace>
+        <LangVersion>preview</LangVersion>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.1" />
+        <PackageReference Include="Microsoft.Build" Version="15.7.179" />
+        <PackageReference Include="Microsoft.Build.Framework" Version="15.7.179" />
+        <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.7.179" />
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.7.179" />
+        <PackageReference Include="Microsoft.CodeAnalysis" Version="3.1.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.1.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.1.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.1.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Syntax" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.Compiler.Cecil\Aquila.Compiler.Cecil.csproj" />
+        <ProjectReference Include="..\Aquila.Compiler.Platform\Aquila.Compiler.Platform.csproj" />
+        <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj" />
+        <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
+        <ProjectReference Include="..\Aquila.Data\Aquila.Data.csproj" />
+        <ProjectReference Include="..\Aquila.Initializer\Aquila.Initializer.csproj" />
+        <ProjectReference Include="..\Aquila.Shell.Contracts\Aquila.Shell.Contracts.csproj" />
+    </ItemGroup>
+</Project>

@@ -22,6 +22,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 **/Debug/*
+[Gg]en/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -263,13 +264,13 @@ __pycache__/
 .DS_Store
 
 #MySettings
-ZenPlatform.DataComponent.dll
-ZenPlatform.DocumentComponent.dll
-ZenPlatform.ThinClient/Program.exe
-ZenPlatform.ThinClient/Program.netmodule
-ZenPlatform.ConfigurationExample/tools/*
+Aquila.DataComponent.dll
+Aquila.DocumentComponent.dll
+Aquila.ThinClient/Program.exe
+Aquila.ThinClient/Program.netmodule
+Aquila.ConfigurationExample/tools/*
 /.ionide/symbolCache.db
-/src/ZenPlatform.Compiler/Debug.dll
+/src/Aquila.Compiler/Debug.dll
 /src/PrototypePlatformLanguage/debug.dll
 /git
 netcoreapp[23].[01]/
@@ -281,7 +282,7 @@ netcoreapp[23].[01]/
 /src/wasm-work/AsemblyTester/clientCecil.dll
 /src/wasm-work/Tester/Properties/launchSettings.json
 /src/wasm-work/AsemblyTester/LibraryClient.dll
-/src/wasm-work/AsemblyTester/ZenPlatform.Core.Contracts.dll
-/src/wasm-work/AsemblyTester/ZenPlatform.EntityComponent.dll
+/src/wasm-work/AsemblyTester/Aquila.Core.Contracts.dll
+/src/wasm-work/AsemblyTester/Aquila.EntityComponent.dll
 /src/External/*
 /src/Portable.Xaml/*

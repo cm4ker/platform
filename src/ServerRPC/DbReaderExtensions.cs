@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 
-namespace ZenPlatform.ServerRPC
+namespace Aquila.ServerRPC
 {
     public static class DbReaderExtensions
     {
@@ -11,7 +11,6 @@ namespace ZenPlatform.ServerRPC
 
             int fCount =
                 reader.FieldCount; //i assume every row in the reader has the same number of field of the first row
-
 
             var header = new List<string>();
             for (int i = 0; i < fCount; i++)

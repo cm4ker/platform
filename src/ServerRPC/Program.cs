@@ -1,4 +1,4 @@
-﻿namespace ZenPlatform.ServerRPC
+﻿namespace Aquila.ServerRPC
 {
     class Program
     {

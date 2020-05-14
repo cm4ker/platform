@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace ZenPlatform.ServerRPC
+namespace Aquila.ServerRPC
 {
     public static class Test
     {

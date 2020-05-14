@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Configurations>Debug;Release;DebugServer</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <AvaloniaResource Include="**\*.xaml">
+      <SubType>Designer</SubType>
+    </AvaloniaResource>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Remove="CodeEditorView.xaml" />
+    <AvaloniaResource Remove="PropertyGrid.xaml" />
+    <AvaloniaResource Remove="Views\ConfigurationTreeView.xaml" />
+    <AvaloniaResource Remove="Views\DockMainWindow.xaml" />
+    <AvaloniaResource Remove="Views\MainView.xaml" />
+    <AvaloniaResource Remove="Views\MainWindow.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="CodeEditorView.xaml" />
+    <None Remove="PropertyGrid.xaml" />
+    <None Remove="Views\ConfigurationTreeView.xaml" />
+    <None Remove="Views\DockMainWindow.xaml" />
+    <None Remove="Views\MainView.xaml" />
+    <None Remove="Views\MainWindow.xaml" />
+  </ItemGroup>
+
+  <Import Project="..\Props\avalonia.props" />
+  <Import Project="..\Props\avalonia.desktop.props" />
+  <Import Project="..\Props\dock.props" />
+  <Import Project="..\Props\portable.xaml.props" />
+  
+  <ItemGroup>
+    <PackageReference Include="DynamicData" Version="6.14.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\DockMainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\ConfigurationTreeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aquila.Compiler.Contracts\Aquila.Compiler.Contracts.csproj" />
+    <ProjectReference Include="..\Aquila.Compiler.Platform\Aquila.Compiler.Platform.csproj" />
+    <ProjectReference Include="..\Aquila.Configuration.Common\Aquila.Configuration.Common.csproj" />
+    <ProjectReference Include="..\Aquila.Configuration.Contracts\Aquila.Configuration.Contracts.csproj" />
+    <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj" />
+    <ProjectReference Include="..\Aquila.Ide.Common\Aquila.Ide.Common.csproj" />
+    <ProjectReference Include="..\Aquila.Language.Ast\Aquila.Language.Ast.csproj" />
+    <ProjectReference Include="..\Aquila.Test.Tools\Aquila.Test.Tools.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="CSharp-Mode-Dark.xshd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Editors\" />
+    <Folder Include="Items\" />
+  </ItemGroup>
+</Project>

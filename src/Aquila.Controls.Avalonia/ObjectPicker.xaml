@@ -1,0 +1,23 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Aquila.Controls.Avalonia.ObjectPicker">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="24" />
+            <ColumnDefinition Width="24" />
+            <ColumnDefinition Width="24" />
+            <ColumnDefinition Width="24" />
+        </Grid.ColumnDefinitions>
+
+        <TextBox x:Name="PART_TextBlock" Grid.Column="0" IsReadOnly="True" />
+
+        <Button x:Name="PART_TypeButton" Grid.Column="1" Content="T" />
+
+        <Button x:Name="PART_OpenButton" Grid.Column="2" Content="L" />
+
+        <Button x:Name="PART_SelectButton" Grid.Column="3" Content="..." />
+
+        <Button x:Name="PART_ClearButton" Grid.Column="4" Content="X" />
+    </Grid>
+</UserControl>

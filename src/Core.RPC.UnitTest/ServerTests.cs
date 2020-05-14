@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Xunit;
-using ZenPlatform.Core.Network;
+using Aquila.Core.Network;
 
 namespace Core.RPC.Tests
 {
