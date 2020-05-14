@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using Aquila.Compiler.Contracts.Symbols;
 using Aquila.Compiler.Helpers;
@@ -746,6 +747,21 @@ namespace Aquila.Compiler
 
             return result;
         }
+
+
+        public override SyntaxNode VisitNewExpression(ZSharpParser.NewExpressionContext context)
+        {
+            base.VisitNewExpression(context);
+
+            var ns = context.@namespace()?.GetText();
+
+            var result = new New(context.start.ToLineInfo(), ns, _syntaxStack.Pop<Call>());
+
+            _syntaxStack.Push(result);
+
+            return result;
+        }
+
 
         public override SyntaxNode VisitStatement(ZSharpParser.StatementContext context)
         {

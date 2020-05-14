@@ -1538,6 +1538,41 @@ namespace Aquila.Language.Ast.Definitions
     }
 }
 
+namespace Aquila.Language.Ast.Definitions
+{
+    public partial class New : Expression
+    {
+        public New(ILineInfo lineInfo,  string  @namespace, Call call): base(lineInfo)
+        {
+            Namespace = @namespace;
+            this.Attach(0, (SyntaxNode)call);
+        }
+
+        public string Namespace
+        {
+            get;
+        }
+
+        public Call Call
+        {
+            get
+            {
+                return (Call)this.Children[0];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitNew(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitNew(this);
+        }
+    }
+}
+
 namespace Aquila.Language.Ast.Definitions.Statements
 {
     public partial class Return : Statement
@@ -2538,6 +2573,11 @@ namespace Aquila.Language.Ast
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitNew(New arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitReturn(Return arg)
         {
             return DefaultVisit(arg);
@@ -2857,6 +2897,11 @@ namespace Aquila.Language.Ast
         }
 
         public virtual void VisitCall(Call arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitNew(New arg)
         {
             DefaultVisit(arg);
         }
