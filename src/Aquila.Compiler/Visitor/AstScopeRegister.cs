@@ -100,6 +100,7 @@ namespace Aquila.Compiler.Visitor
                 obj.SymbolTable = new SymbolTable(st);
 
             obj.SymbolTable.Clear();
+
             return base.VisitTypeBody(obj);
         }
 

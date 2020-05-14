@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using Aquila.Compiler.Contracts.Symbols;
 using Aquila.Compiler.Helpers;
@@ -49,7 +50,7 @@ namespace Aquila.Compiler
 
             base.VisitEntryPoint(context);
 
-            var cu = new CompilationUnit(context.start.ToLineInfo(), usings, typeList, null);
+            var cu = new CompilationUnit(context.start.ToLineInfo(), usings, typeList, new NamespaceDeclarationList());
 
             return cu;
         }
@@ -73,7 +74,7 @@ namespace Aquila.Compiler
         public override SyntaxNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
         {
             base.VisitUsingDefinition(context);
-            return new UsingDeclaration(context.start.ToLineInfo(), _syntaxStack.PopString());
+            return new UsingDeclaration(context.start.ToLineInfo(), context.@namespace().GetText());
         }
 
         public override SyntaxNode VisitModuleDefinition(ZSharpParser.ModuleDefinitionContext context)
@@ -108,10 +109,17 @@ namespace Aquila.Compiler
 
             TypeBody result;
 
+            var usings = new UsingList();
+
+            foreach (var atd in context.usingSection())
+            {
+                usings.Add((UsingBase) Visit(atd));
+            }
+
             if (context.ChildCount == 0)
                 result = new TypeBody(null, null);
             else
-                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), null);
+                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), usings);
 
             _syntaxStack.Push(result);
             return result;
@@ -159,10 +167,17 @@ namespace Aquila.Compiler
 
             TypeBody result;
 
+            var usings = new UsingList();
+
+            foreach (var atd in context.usingSection())
+            {
+                usings.Add((UsingBase) Visit(atd));
+            }
+
             if (context.ChildCount == 0)
-                result = new TypeBody(null, null);
+                result = TypeBody.Empty;
             else
-                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), null);
+                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), usings);
 
             _syntaxStack.Push(result);
             return result;
@@ -739,6 +754,21 @@ namespace Aquila.Compiler
 
             return result;
         }
+
+
+        public override SyntaxNode VisitNewExpression(ZSharpParser.NewExpressionContext context)
+        {
+            base.VisitNewExpression(context);
+
+            var ns = context.@namespace()?.GetText();
+
+            var result = new New(context.start.ToLineInfo(), ns, _syntaxStack.Pop<Call>());
+
+            _syntaxStack.Push(result);
+
+            return result;
+        }
+
 
         public override SyntaxNode VisitStatement(ZSharpParser.StatementContext context)
         {

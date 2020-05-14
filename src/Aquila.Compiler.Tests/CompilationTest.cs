@@ -1,3 +1,4 @@
+using System;
 using Xunit;
 using Aquila.Compiler.Contracts;
 
@@ -116,6 +117,27 @@ return 1;
             var result = (int) this.CompileAndRun(script);
 
             Assert.Equal(1, result);
+        }
+
+
+        [Fact]
+        public void UsingTest()
+        {
+            var script =
+                @"
+type Test
+{
+    using System;
+
+    int Main() 
+    {
+        var g = new NullReferenceException();
+        
+        return 1;
+    }
+}";
+
+            this.Compile(script);
         }
     }
 }

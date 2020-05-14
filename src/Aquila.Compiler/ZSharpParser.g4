@@ -34,7 +34,7 @@ namespaceDefinition :
 
 moduleDefinition: MODULE typeName '{' moduleBody '}';
 
-moduleBody: (methodDeclaration)* ;
+moduleBody: (usingSection)* (methodDeclaration)* ;
 /*
 ================END MODULE==================
 */
@@ -168,6 +168,9 @@ castExpression:
     '(' type ')' expression
 ;
 
+newExpression: 
+    NEW (namespace '.')? functionCall;
+
 expressionBinary:
     expressionEquality
     | expressionBinary OP_AND expressionEquality
@@ -211,6 +214,7 @@ expressionUnary:
 expressionPostfix: 
     expressionAtom
     | castExpression 
+    | newExpression
     | '(' expression ')'
     | expressionAtom '[' indexerExpression=expression ']'
     | anonimousDeclaration
@@ -230,13 +234,6 @@ variableType:
 
 type:
     structureType | arrayType;
-
-//multitype : 
-//    '<' typeList '>';
-//
-//typeList: 
-//    type (',' type)*
-//;
 
 anonimousDeclaration:
    '{' 

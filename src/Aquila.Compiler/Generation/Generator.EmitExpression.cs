@@ -212,7 +212,7 @@ namespace Aquila.Compiler.Generation
                 var lna = le.Lookup as Name ?? throw new Exception("Lookup mush be Name node type");
 
                 if (le.Current.Type.Kind == TypeNodeKind.Type &&
-                    TypeFinder.Apply(le.Current.Type, _root)?.Type == QueryCompilerHelper.DataReader)
+                    TypeFinder.FindSymbol(le.Current.Type, _root)?.Type == QueryCompilerHelper.DataReader)
                 {
                     //ugly hack
                     //TODO: introduce redirected dynamic properties
@@ -279,6 +279,19 @@ namespace Aquila.Compiler.Generation
             {
                 EmitAssignment(e, asg, symbolTable);
             }
+
+            else if (expression is New wen)
+            {
+                EmitArguments(e, wen.Call.Arguments, symbolTable);
+
+                var type = _map.GetClrType(wen.Type);
+
+                var constr =
+                    type.FindConstructor(wen.Call.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
+
+                e.NewObj(constr);
+            }
+
             else if (expression is GlobalVar gv)
             {
                 EmitGlobalVar(e, _varManager.Root, gv.Expression, symbolTable);

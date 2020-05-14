@@ -225,6 +225,14 @@
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
+
+    <Syntax Name="New" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Namespace" Type="string" DenyChildrenFill="true"/>
+            <Single Name="Call" Type="Call"/>
+        </Arguments>
+    </Syntax>
+
     <!--Test comment-->
     <Syntax Name="Return" Base="Statement" NS="Statements">
         <Arguments>

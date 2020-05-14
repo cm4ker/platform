@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Aquila.Compiler.Contracts.Symbols;
+using Aquila.Language.Ast.Symbols;
 using Aquila.Shared.Tree;
 
 namespace Aquila.Language.Ast.Definitions
