@@ -50,7 +50,7 @@ namespace Aquila.Compiler
 
             base.VisitEntryPoint(context);
 
-            var cu = new CompilationUnit(context.start.ToLineInfo(), usings, typeList, null);
+            var cu = new CompilationUnit(context.start.ToLineInfo(), usings, typeList, new NamespaceDeclarationList());
 
             return cu;
         }
@@ -74,7 +74,7 @@ namespace Aquila.Compiler
         public override SyntaxNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
         {
             base.VisitUsingDefinition(context);
-            return new UsingDeclaration(context.start.ToLineInfo(), _syntaxStack.PopString());
+            return new UsingDeclaration(context.start.ToLineInfo(), context.@namespace().GetText());
         }
 
         public override SyntaxNode VisitModuleDefinition(ZSharpParser.ModuleDefinitionContext context)
@@ -109,10 +109,17 @@ namespace Aquila.Compiler
 
             TypeBody result;
 
+            var usings = new UsingList();
+
+            foreach (var atd in context.usingSection())
+            {
+                usings.Add((UsingBase) Visit(atd));
+            }
+
             if (context.ChildCount == 0)
                 result = new TypeBody(null, null);
             else
-                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), null);
+                result = new TypeBody(_syntaxStack.PopList<Member>().ToImmutableList(), usings);
 
             _syntaxStack.Push(result);
             return result;
@@ -763,8 +770,6 @@ namespace Aquila.Compiler
         }
 
 
-        
-        
         public override SyntaxNode VisitStatement(ZSharpParser.StatementContext context)
         {
             base.VisitStatement(context);

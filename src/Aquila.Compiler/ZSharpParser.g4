@@ -34,7 +34,7 @@ namespaceDefinition :
 
 moduleDefinition: MODULE typeName '{' moduleBody '}';
 
-moduleBody: (methodDeclaration)* ;
+moduleBody: (usingSection)* (methodDeclaration)* ;
 /*
 ================END MODULE==================
 */

@@ -30,11 +30,11 @@ namespace Aquila.Compiler.Visitor
         {
             if (typeNode is SingleTypeSyntax sts)
             {
-                var contextNamespaces = typeNode.FirstParent<CompilationUnit>().Usings;
+                var contextNamespaces = typeNode.FirstParent<CompilationUnit>()?.Usings.Union(typeNode.FirstParent<TypeBody>()?.Usings);
 
                 var result = ts.FindType(sts.TypeName);
 
-                if (result == null)
+                if (result == null && contextNamespaces != null)
                 {
                     foreach (var ns in contextNamespaces)
                     {
@@ -76,8 +76,8 @@ namespace Aquila.Compiler.Visitor
         {
             _queue = new Queue<SyntaxNode>();
 
-            _bodyUsings = typeNode.FirstParent<TypeBody>().Usings;
-            _cuUsings = typeNode.FirstParent<CompilationUnit>().Usings;
+            _bodyUsings = typeNode.FirstParent<TypeBody>()?.Usings;
+            _cuUsings = typeNode.FirstParent<CompilationUnit>()?.Usings;
             _currentNamespace = typeNode.FirstParent<NamespaceDeclaration>()?.GetNamespace();
 
             var fullTypeName = GetTypeName(typeNode);

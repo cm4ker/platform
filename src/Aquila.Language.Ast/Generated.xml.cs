@@ -1538,7 +1538,7 @@ namespace Aquila.Language.Ast.Definitions
     }
 }
 
-namespace Aquila.Language.Ast.Definitions
+namespace Aquila.Language.Ast.Definitions.Expressions
 {
     public partial class New : Expression
     {

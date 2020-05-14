@@ -284,14 +284,12 @@ namespace Aquila.Compiler.Generation
             {
                 EmitArguments(e, wen.Call.Arguments, symbolTable);
 
-                var className = wen.Namespace ?? "" + wen.Call.Name;
-
-                var type = _map.GetClrType(new SingleTypeSyntax(null, className, TypeNodeKind.Type));
+                var type = _map.GetClrType(wen.Type);
 
                 var constr =
                     type.FindConstructor(wen.Call.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
 
-                e.Call(constr);
+                e.NewObj(constr);
             }
 
             else if (expression is GlobalVar gv)

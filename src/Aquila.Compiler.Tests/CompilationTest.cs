@@ -125,18 +125,19 @@ return 1;
         {
             var script =
                 @"
-//using System;
-
-int Main() 
+type Test
 {
-    Int32 g = new Int32();
-    
-    return g;
-}";
-            
-            var result = (int) this.CompileAndRun(script);
+    using System;
 
-            Assert.Equal(0, result);
+    int Main() 
+    {
+        var g = new NullReferenceException();
+        
+        return 1;
+    }
+}";
+
+            this.Compile(script);
         }
     }
 }

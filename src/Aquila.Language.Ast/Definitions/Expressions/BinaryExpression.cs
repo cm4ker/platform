@@ -4,6 +4,25 @@ using Aquila.Language.Ast.Infrastructure;
 
 namespace Aquila.Language.Ast.Definitions.Expressions
 {
+    public partial class New
+    {
+        private TypeSyntax _type;
+
+        public override TypeSyntax Type
+        {
+            get
+            {
+                if (_type == null)
+                {
+                    _type = new SingleTypeSyntax(null, Namespace ?? "" + Call.Name.Value, TypeNodeKind.Type);
+                    Attach(Type);
+                }
+
+                return _type;
+            }
+        }
+    }
+
     /// <summary>
     /// Binary expression
     /// </summary>

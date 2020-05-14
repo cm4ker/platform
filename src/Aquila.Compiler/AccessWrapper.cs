@@ -86,7 +86,7 @@ namespace Aquila.Compiler
                 result = TypeFinder.FindClr(type, _ts);
 
                 if (result == null)
-                    throw new Exception("Type not found");
+                    throw new Exception($"Type not found {type.TypeName}");
             }
 
             return result;
