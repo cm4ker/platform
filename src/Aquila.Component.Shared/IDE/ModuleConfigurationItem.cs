@@ -1,45 +1,42 @@
-﻿using AvaloniaEdit.Document;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using FluentMigrator.Builders.Create.Table;
-using Aquila.EntityComponent.Configuration;
-using Aquila.EntityComponent.Configuration.Editors;
+using Aquila.Component.Shared.Configuration.Editors;
+using Aquila.EntityComponent.IDE;
 using Aquila.Ide.Common;
 using Aquila.Ide.Contracts;
+using AvaloniaEdit.Document;
+using ReactiveUI;
 
-namespace Aquila.EntityComponent.IDE
+namespace Aquila.Component.Shared.IDE
 {
     [View(typeof(CodeEditorView))]
-    public class CommandConfigurationItem : ConfigurationItemBase
+    public class ModuleConfigurationItem : ConfigurationItemBase
     {
-        private readonly CommandEditor _editor;
+        private readonly ModuleEditor _editor;
         private ObservableAsPropertyHelper<bool> _isChanged;
         private Subject<bool> _changeSubject;
 
-        public CommandConfigurationItem(CommandEditor editor)
+        public ModuleConfigurationItem(ModuleEditor editor)
         {
             _editor = editor;
-            Document = new TextDocument(_editor.ModuleText);
             _changeSubject = new Subject<bool>();
+            Document = new TextDocument(_editor.ModuleText);
+
             _isChanged = Observable.Merge(
                     Document.WhenAnyValue(doc => doc.Text).Select(t => true).Skip(1), _changeSubject)
                 .ToProperty(this, vm => vm.IsChanged);
         }
 
+
         public override string Caption
         {
-            get => $"{_editor.Name}({_editor.DisplayName})";
+            get => _editor.ModuleName;
             set { }
         }
 
         public override bool CanEdit => true;
 
         public override bool CanDelete => true;
-
 
         public override void Save()
         {

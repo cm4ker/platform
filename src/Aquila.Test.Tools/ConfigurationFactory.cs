@@ -179,9 +179,24 @@ public Store UpdateName(Store income)
 
             var ws1 = wse.CreateType();
             ws1.Name = "WebService1";
-            ws1.ModuleText = @"
+            var ws1main = ws1.CreateModule();
+            ws1main.ModuleName = "Main";
+            ws1main.ModuleText = @"
+using Entity;
+
 [Operation]
-public int GetApi(){ return 1;}";
+public string GetApi(int selector)
+{
+     var e = $Entity.Store.Create();
+     e.Name = ""Simple store"";
+     e.Property1 = 10;
+     e.Save();
+
+     if(selector > 0)
+         return ""above zero"";
+     else
+         return ""below zero"";
+}";
             wse.Apply();
 
             #endregion

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Component.Shared.Configuration;
+using Aquila.Component.Shared.Configuration.Editors;
 using Aquila.Configuration.Common;
 using Aquila.Configuration.Common.TypeSystem;
 using Aquila.Core.Contracts.Configuration.Store;
@@ -14,7 +16,7 @@ namespace Aquila.WebServiceComponent.Configuration.Editors
         private readonly ITypeManager _tm;
         private IComponent _com;
         private MDWebService _md;
-        private readonly List<MethodEditor> _methods;
+        private readonly List<ModuleEditor> _modules;
 
         public IInfrastructure Infrastructure => _inf;
 
@@ -24,13 +26,13 @@ namespace Aquila.WebServiceComponent.Configuration.Editors
             _tm = inf.TypeManager;
 
             _md = new MDWebService();
-            _methods = new List<MethodEditor>();
+            _modules = new List<ModuleEditor>();
         }
 
         public WebServiceEditor(IInfrastructure inf, MDWebService md) : this(inf)
         {
             _md = md;
-            _methods.AddRange(md.Methods.Select(m => new MethodEditor(m)));
+            _modules.AddRange(md.Modules.Select(m => new ModuleEditor(m)));
         }
 
         public string Name
@@ -39,21 +41,14 @@ namespace Aquila.WebServiceComponent.Configuration.Editors
             set => _md.Name = value;
         }
 
-        public string ModuleText
+        public IEnumerable<ModuleEditor> ModuleEditors => _modules;
+
+        public ModuleEditor CreateModule()
         {
-            get => _md.Module;
-            set => _md.Module = value;
-        }
-
-        public IEnumerable<MethodEditor> MethodEditors => _methods;
-
-
-        public MethodEditor CreateMethod()
-        {
-            var mp = new MDMethod();
-            var a = new MethodEditor(mp);
-            _md.Methods.Add(mp);
-            _methods.Add(a);
+            var mp = new MDProgramModule();
+            var a = new ModuleEditor(mp);
+            _md.Modules.Add(mp);
+            _modules.Add(a);
             return a;
         }
 
@@ -94,16 +89,6 @@ namespace Aquila.WebServiceComponent.Configuration.Editors
             });
 
             _tm.Register(oType);
-
-            foreach (var prop in _md.Methods)
-            {
-                var tMethod = _tm.Method();
-                tMethod.Name = prop.Name;
-                tMethod.Id = prop.Id;
-                tMethod.ParentId = _md.RefId;
-
-                _tm.Register(tMethod);
-            }
 
             _tm.AddMD(oType.Id, oType.ComponentId, _md);
         }

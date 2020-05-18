@@ -7,6 +7,17 @@
     <ItemGroup>
       <ProjectReference Include="..\Aquila.Compiler.Roslyn\Aquila.Compiler.Roslyn.csproj" />
       <ProjectReference Include="..\Aquila.Core.Contracts\Aquila.Core.Contracts.csproj" />
+      <ProjectReference Include="..\Aquila.Ide.Common\Aquila.Ide.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="IDE\Editors" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Aquila.WebServiceComponent, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\Aquila.Compiler.Tests\bin\Debug\netcoreapp3.1\Aquila.WebServiceComponent.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

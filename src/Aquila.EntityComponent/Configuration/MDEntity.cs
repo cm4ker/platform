@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Aquila.Component.Shared.Configuration;
 using Aquila.Configuration.Common;
 
 namespace Aquila.EntityComponent.Configuration

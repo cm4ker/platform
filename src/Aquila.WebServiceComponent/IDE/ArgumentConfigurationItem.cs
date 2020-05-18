@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Aquila.Configuration.Common;
 using Aquila.Core.Contracts.TypeSystem;
+using Aquila.EntityComponent.IDE;
 using Aquila.Ide.Common;
 using Aquila.Ide.Contracts;
 using Aquila.Language.Ast.Definitions.Functions;

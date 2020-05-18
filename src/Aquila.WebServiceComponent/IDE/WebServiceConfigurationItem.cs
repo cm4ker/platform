@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Aquila.EntityComponent.IDE;
 using Aquila.Ide.Contracts;
 using Aquila.WebServiceComponent.Configuration.Editors;
 
@@ -13,7 +14,7 @@ namespace Aquila.WebServiceComponent.IDE
         {
             _editor = editor;
             _childs = new ObservableCollection<IConfigurationItem>();
-            _childs.Add(new MethodListConfigurationItem(_editor));
+            _childs.Add(new ModuleListConfigurationItem(_editor));
         }
 
         public override string Caption

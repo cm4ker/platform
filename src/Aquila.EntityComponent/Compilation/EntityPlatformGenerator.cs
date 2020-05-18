@@ -219,7 +219,7 @@ namespace Aquila.EntityComponent.Compilation
             foreach (var type in _component.GetTypes().Where(x => x.IsManager))
             {
                 var mrgName = $"{type.GetNamespace()}.{type.Name}";
-
+                var objectName = $"{type.GetNamespace()}.{type.GetObjectType().Name}";
                 var mrg = ts.FindType(mrgName);
 
                 var mrgLeaf = new GlobalVarTreeItem(VarTreeLeafType.Prop, CompilationMode.Shared,
@@ -233,7 +233,7 @@ namespace Aquila.EntityComponent.Compilation
                     {
                         var call = n as Call ?? throw new Exception("Can't emit function if it is not a call");
                         e.Call(TypeExtensions.FindMethod(mrg, "Create"));
-                    });
+                    }, new SingleTypeSyntax(null, objectName, TypeNodeKind.Object));
 
                 mrgLeaf.Attach(createMethod);
             }

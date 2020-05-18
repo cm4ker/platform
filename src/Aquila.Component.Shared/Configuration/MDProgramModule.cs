@@ -1,6 +1,6 @@
 using Aquila.Core.Contracts.Configuration;
 
-namespace Aquila.EntityComponent.Configuration
+namespace Aquila.Component.Shared.Configuration
 {
     /// <summary>
     /// Программный модуль. Если необходимо организовать поддержку программных модулей на языке платформы

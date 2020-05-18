@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Aquila.Component.Shared.Configuration;
 
 namespace Aquila.WebServiceComponent.Configuration
 {
@@ -10,7 +11,7 @@ namespace Aquila.WebServiceComponent.Configuration
     {
         public MDWebService()
         {
-            Methods = new List<MDMethod>();
+            Modules = new List<MDProgramModule>();
             RefId = Guid.NewGuid();
         }
 
@@ -18,8 +19,6 @@ namespace Aquila.WebServiceComponent.Configuration
 
         public string Name { get; set; }
 
-        public string Module { get; set; }
-
-        public List<MDMethod> Methods { get; set; }
+        public List<MDProgramModule> Modules { get; set; }
     }
 }

@@ -49,7 +49,7 @@ namespace Aquila.WebServiceComponent.Compilation
             var dataContractAttr = _ts.Factory.CreateAttribute(_ts, _ts.FindType<ServiceContractAttribute>());
             builder.SetCustomAttribute(dataContractAttr);
 
-            var wsBuilder = sm.EntryPoint.DefineMethod("WebServiceBuilder", false, true, false);
+            var wsBuilder = sm.EntryPoint.DefineMethod($"{_type.Name}Builder", false, true, false);
             var iab = _ts.FindType<IApplicationBuilder>();
             wsBuilder.DefineParameter("appBuilder", iab, false, false);
 
@@ -67,7 +67,7 @@ namespace Aquila.WebServiceComponent.Compilation
 
             wsBuilder.Body
                 .LdArg_0()
-                .LdLit("MyWebservice")
+                .LdLit(_type.Name)
                 .Call(method);
 
             sm.Main.Body
@@ -83,14 +83,17 @@ namespace Aquila.WebServiceComponent.Compilation
         {
             var md = type.GetMD<MDWebService>();
 
-            var typeBody = ParserHelper.ParseTypeBody(md.Module);
-
-            foreach (var func in typeBody.Functions)
+            foreach (var module in md.Modules)
             {
-                func.SymbolScope = SymbolScopeBySecurity.User;
-                func.Attributes.Add(new AttributeSyntax(null, ArgumentList.Empty,
-                    new SingleTypeSyntax(null, "Server", TypeNodeKind.Type)));
-                this.AddFunction(func);
+                var typeBody = ParserHelper.ParseTypeBody(module.ModuleText);
+
+                foreach (var func in typeBody.Functions)
+                {
+                    func.SymbolScope = SymbolScopeBySecurity.User;
+                    func.Attributes.Add(new AttributeSyntax(null, ArgumentList.Empty,
+                        new SingleTypeSyntax(null, "Server", TypeNodeKind.Type)));
+                    this.AddFunction(func);
+                }
             }
         }
 

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Aquila.Configuration.Common;
 using System.Linq;
+using Aquila.Component.Shared.Configuration;
+using Aquila.Component.Shared.Configuration.Editors;
 using Aquila.Configuration.Common.TypeSystem;
 using Aquila.Core.Contracts.Configuration.Store;
 using Aquila.Core.Contracts.TypeSystem;
@@ -15,7 +17,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
         private IComponent _com;
         private MDEntity _md;
         private readonly List<PropertyEditor> _props;
-        private readonly List<ModuelEditor> _modules;
+        private readonly List<ModuleEditor> _modules;
         private readonly List<CommandEditor> _commands;
         private readonly List<TableEditor> _tables;
         private readonly List<InterfaceEditor> _interfaces;
@@ -29,7 +31,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
 
             _md = new MDEntity();
             _props = new List<PropertyEditor>();
-            _modules = new List<ModuelEditor>();
+            _modules = new List<ModuleEditor>();
             _commands = new List<CommandEditor>();
             _tables = new List<TableEditor>();
             _interfaces = new List<InterfaceEditor>();
@@ -39,7 +41,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
         {
             _md = md;
 
-            _modules.AddRange(md.Modules.Select(m => new ModuelEditor(m)));
+            _modules.AddRange(md.Modules.Select(m => new ModuleEditor(m)));
             _props.AddRange(md.Properties.Select(m => new PropertyEditor(m)));
             _commands.AddRange(md.Commands.Select(m => new CommandEditor(m)));
             _tables.AddRange(md.Tables.Select(m => new TableEditor(m)));
@@ -52,15 +54,15 @@ namespace Aquila.EntityComponent.Configuration.Editors
         }
 
         public IEnumerable<PropertyEditor> PropertyEditors => _props;
-        public IEnumerable<ModuelEditor> ModuleEditors => _modules;
+        public IEnumerable<ModuleEditor> ModuleEditors => _modules;
         public IEnumerable<CommandEditor> CommandEditors => _commands;
         public IEnumerable<TableEditor> TableEditors => _tables;
         public IEnumerable<InterfaceEditor> InterfaceEditors => _interfaces;
 
-        public ModuelEditor CreateModule()
+        public ModuleEditor CreateModule()
         {
             var module = new MDProgramModule();
-            var me = new ModuelEditor(module);
+            var me = new ModuleEditor(module);
 
             _md.Modules.Add(module);
             _modules.Add(me);

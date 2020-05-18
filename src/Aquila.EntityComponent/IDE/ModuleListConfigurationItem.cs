@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using Aquila.Component.Shared.IDE;
 using Aquila.EntityComponent.Configuration.Editors;
 using Aquila.Ide.Contracts;
 
