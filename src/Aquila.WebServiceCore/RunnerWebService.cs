@@ -3,7 +3,11 @@ using System.IO;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
+using Aquila.Core;
+using Aquila.Core.Authentication;
+using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Contracts.Network;
+using Aquila.Core.Sessions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +25,16 @@ namespace Aquila.WebServiceCore
         private readonly ILogger<RunnerWebService> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IStartupService _startupService;
+        private readonly IPlatformEnvironmentManager _mrg;
         private IWebHost _host;
 
 
-        public RunnerWebService(IServiceProvider serviceProvider, IStartupService startupService)
+        public RunnerWebService(IServiceProvider serviceProvider, IStartupService startupService,
+            IPlatformEnvironmentManager mrg)
         {
             _serviceProvider = serviceProvider;
             _startupService = startupService;
+            _mrg = mrg;
             _logger = _serviceProvider.GetRequiredService<ILogger<RunnerWebService>>();
         }
 
@@ -46,7 +53,7 @@ namespace Aquila.WebServiceCore
                 .ConfigureServices(services =>
                 {
                     _startupService.ConfigureServices(services);
-                    
+
                     services.TryAddSingleton<SampleService>();
                     services.AddSoapCore();
                 })
@@ -54,7 +61,13 @@ namespace Aquila.WebServiceCore
                 {
                     app.UseRouting();
 
-                    app.ApplicationServices.GetService(typeof(IStartupService));
+                    app.Use(async (context, next) =>
+                    {
+                        var env = _mrg.GetEnvironment("Library");
+                        var plContext = new PlatformContext(env.CreateSession(new Anonymous()));
+                        ContextHelper.SetContext(plContext);
+                        await next.Invoke();
+                    });
 
                     app.UseEndpoints(endpoints =>
                     {
@@ -72,6 +85,7 @@ namespace Aquila.WebServiceCore
                         SoapSerializer.XmlSerializer);
 
                     _startupService.Configure(app);
+
 
                     app.Run(context => context.Response.WriteAsync("Default"));
                 })
