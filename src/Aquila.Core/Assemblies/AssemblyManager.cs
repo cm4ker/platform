@@ -39,9 +39,9 @@ namespace Aquila.Core.Assemblies
 
         public bool CheckConfiguration(IProject configuration)
         {
-            //TODO need rewrite this part because now we usign VFS for store configuration and get MD5 we need from some object. Zip archive? 
+            //TODO need rewrite this part because now we are using VFS for store configuration and get MD5 we need from some object. Zip archive? 
 
-            //Return always create new asssembly
+            //Return always create new assembly
             return true;
 
             var hash = HashHelper.HashMD5(_m.SaveToStream(configuration));
