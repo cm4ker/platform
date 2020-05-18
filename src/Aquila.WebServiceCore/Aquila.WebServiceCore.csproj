@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +18,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Aquila.Core.Contracts\Aquila.Core.Contracts.csproj" />
+      <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
       <ProjectReference Include="..\Aquila.ServerClientShared\Aquila.ServerClientShared.csproj" />
     </ItemGroup>
         
