@@ -6,12 +6,11 @@ using Aquila.Core.Assemlies;
 using Aquila.Core.Authentication;
 using Aquila.Core.ClientServices;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Logging;
 using Aquila.Core.Network;
-using Aquila.Core.Network.Contracts;
 using Aquila.Core.Settings;
-using Aquila.ThinClient.FakeAssembly;
 
 namespace Aquila.ThinClient
 {

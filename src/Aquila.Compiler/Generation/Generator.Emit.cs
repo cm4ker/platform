@@ -6,6 +6,7 @@ using Aquila.Compiler.Contracts.Symbols;
 using Aquila.Compiler.Helpers;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
+using Aquila.Core.Contracts;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.Core.Network;

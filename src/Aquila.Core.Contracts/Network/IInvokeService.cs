@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Aquila.Core.Authentication;
-using Aquila.Core.Contracts;
-using Aquila.Core.Contracts.Network;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Aquila.Core.Network
+namespace Aquila.Core.Contracts.Network
 {
     /// <summary>
     /// Контекст выполнения метода
@@ -66,5 +62,17 @@ namespace Aquila.Core.Network
         object GetRequiredService(Type type);
 
         Task<object> InvokeProxy(ISession session, object instanceObject, string methodName, object[] args);
+    }
+
+
+    public interface IStartupService
+    {
+        void Register(Action<IApplicationBuilder> a);
+
+        void RegisterWebServiceClass<T>() where T : class;
+
+        void Configure(IApplicationBuilder buildedr);
+
+        void ConfigureServices(IServiceCollection sc);
     }
 }

@@ -2,8 +2,8 @@ using Xunit;
 using Aquila.Configuration.Structure;
 using SharpFileSystem.FileSystems;
 using Aquila.Configuration.Common.TypeSystem;
-using Aquila.Configuration.Contracts;
 using Aquila.Configuration.Storage;
+using Aquila.Core.Contracts;
 using Aquila.Test.Tools;
 
 namespace Aquila.Configuration.Test

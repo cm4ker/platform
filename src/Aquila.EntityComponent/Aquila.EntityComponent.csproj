@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <Configurations>Debug;Release;DebugServer</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
@@ -19,6 +19,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Aquila.Avalonia.Wrapper\Aquila.Avalonia.Wrapper.csproj" />
         <ProjectReference Include="..\Aquila.Compiler\Aquila.Compiler.csproj" />
+        <ProjectReference Include="..\Aquila.Component.Shared\Aquila.Component.Shared.csproj" />
         <ProjectReference Include="..\Aquila.ConfigurationDataComponent\Aquila.DataComponent.csproj" />
         <ProjectReference Include="..\Aquila.Ide.Common\Aquila.Ide.Common.csproj" />
         <ProjectReference Include="..\Aquila.Ide.Contract\Aquila.Ide.Contracts.csproj" />

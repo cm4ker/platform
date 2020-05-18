@@ -6,9 +6,9 @@ using Aquila.Compiler.Dnlib;
 using Aquila.Compiler.Generation;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Compiler.Visitor;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data;
 using Aquila.Configuration.Structure;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Data;
 using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 

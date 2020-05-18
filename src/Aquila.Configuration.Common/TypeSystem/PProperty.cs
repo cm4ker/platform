@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Configuration.Contracts.TypeSystem;
-using IPType = Aquila.Configuration.Contracts.TypeSystem.IPType;
+using Aquila.Core.Contracts.TypeSystem;
+using dnlib.DotNet;
+using IPType = Aquila.Core.Contracts.TypeSystem.IPType;
 
 namespace Aquila.Configuration.Common.TypeSystem
 {
     public class PProperty : IPProperty
     {
         private readonly TypeManager _ts;
+
+        private Guid _typeId;
 
         internal PProperty(TypeManager ts)
         {
@@ -29,9 +32,13 @@ namespace Aquila.Configuration.Common.TypeSystem
 
         public bool IsReadOnly { get; set; }
 
-        public IEnumerable<IPType> Types => _ts.PropertyTypes
-            .Where(x => x.PropertyId == Id && x.PropertyParentId == ParentId).Select(x => x.TypeId)
-            .Join(_ts.Types, a => a, b => b.Id, (a, b) => b);
+        public IPType Type => _ts.FindType(_typeId);
+
+
+        public void SetType(Guid guid)
+        {
+            _typeId = guid;
+        }
 
         public ITypeManager TypeManager => _ts;
     }

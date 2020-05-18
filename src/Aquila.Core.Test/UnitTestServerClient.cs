@@ -20,9 +20,9 @@ using Aquila.Compiler;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Configuration;
-using Aquila.Configuration.Contracts;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Network;
 using Aquila.QueryBuilder;
 using Aquila.Core.Test.Logging;
 using Aquila.Test.Tools;
@@ -33,6 +33,9 @@ namespace Aquila.Core.Test
     public delegate void InvokeInClientServerContextDelegate(ServiceProvider clientService,
         ServiceProvider serverSerice, ClientPlatformContext clientContext);
 
+    
+    
+    
     public class UnitTestServerClient : ClientServerTestBase
     {
         private ITestOutputHelper _testOutput;

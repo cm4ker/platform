@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
+﻿using System.Collections.Generic;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.QueryBuilder.Builders;
 
-namespace Aquila.Configuration.Contracts.Migration
+namespace Aquila.Core.Contracts.Configuration.Migration
 {
     public interface IEntityMigrationItem
     {

@@ -1,6 +1,6 @@
 using System;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Configuration.Common
 {
@@ -14,31 +14,45 @@ namespace Aquila.Configuration.Common
 
         public static MDType String(int size) => new MDString(size);
         public static MDType Numeric(int scale, int precision) => new MDNumeric(scale, precision);
-        public static MDType Ref(Guid id) => new TypeRef(id);
+        public static MDType Ref(Guid id) => new MDTypeRef(id);
 
-        public static Guid GetTypeId(this MDType mdType, ITypeManager tm)
+        public static Guid GetTypeId(this MDType mdType, ITypeManager tm, bool isArray = false)
         {
+            Guid result = mdType.Guid;
+
             switch (mdType)
             {
                 case MDString p:
-                    var st = tm.FindType(mdType.Guid).GetSpec();
-                    st.Size = p.Size;
+                    var st = tm.Type(mdType.Guid);
+                    st.SetSize(p.Size);
                     tm.Register(st);
-                    return st.Id;
-                case MDNumeric n:
-                    var nt = tm.FindType(mdType.Guid).GetSpec();
-                    nt.Scale = n.Scale;
-                    nt.Precision = n.Precision;
-                    tm.Register(nt);
-                    return nt.Id;
-                case MDBinary b:
-                    var bt = tm.FindType(mdType.Guid).GetSpec();
-                    bt.Size = b.Size;
-                    tm.Register(bt);
-                    return bt.Id;
+                    result = st.Id;
+                    break;
 
-                default: return mdType.Guid;
+                case MDNumeric n:
+                    var nt = tm.Type(mdType.Guid);
+                    nt.SetScale(n.Scale);
+                    nt.SetPrecision(n.Precision);
+                    tm.Register(nt);
+                    result = nt.Id;
+                    break;
+                case MDBinary b:
+                    var bt = tm.Type(mdType.Guid);
+                    bt.SetSize(b.Size);
+                    tm.Register(bt);
+                    result = bt.Id;
+                    break;
             }
+
+            if (isArray)
+            {
+                var spec = tm.Type(result);
+                spec.SetIsArray(true);
+                tm.Register(spec);
+                result = spec.Id;
+            }
+
+            return result;
         }
     }
 }

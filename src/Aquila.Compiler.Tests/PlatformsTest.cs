@@ -7,7 +7,7 @@ using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Dnlib;
 using Aquila.Compiler.Platform;
 using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Contracts;
+using Aquila.Core.Contracts;
 using Aquila.QueryBuilder;
 using Aquila.Test.Tools;
 
@@ -21,7 +21,7 @@ namespace Aquila.Compiler.Tests
         void CompilationTest()
         {
             var dnlib = new RoslynAssemblyPlatform();
-            ;
+
             XCCompiler cd = new XCCompiler(dnlib);
             var asm = cd.Build(r, CompilationMode.Server, SqlDatabaseType.SqlServer);
 

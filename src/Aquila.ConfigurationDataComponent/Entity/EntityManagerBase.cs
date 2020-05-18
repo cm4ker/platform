@@ -1,4 +1,4 @@
-﻿using Aquila.Configuration.Contracts.Data.Entity;
+﻿using Aquila.Core.Contracts.Data.Entity;
 
 namespace Aquila.DataComponent.Entity
 {

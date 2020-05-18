@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Aquila.Core.Contracts;
 
-namespace Aquila.Core.Network
+namespace Aquila.Core.Contracts.Network
 {
 
     public interface ITaskManager

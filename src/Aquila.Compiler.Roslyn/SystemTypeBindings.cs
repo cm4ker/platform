@@ -12,6 +12,8 @@ namespace Aquila.Compiler.Roslyn
         private readonly RoslynTypeSystem _ts;
 
         public string MSCORLIB { get; } = "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
+        
+        public string SERVICEMODEL { get; } = "System.ServiceModel.Primitives, Version=4.7.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
 
         public string PLATFORM_CORE { get; } =
             "Aquila.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";

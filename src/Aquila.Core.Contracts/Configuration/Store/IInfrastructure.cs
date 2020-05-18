@@ -1,7 +1,6 @@
-﻿using SharpFileSystem;
-using Aquila.Configuration.Contracts.TypeSystem;
+﻿using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Configuration.Contracts.Store
+namespace Aquila.Core.Contracts.Configuration.Store
 {
     public interface IInfrastructure
     {

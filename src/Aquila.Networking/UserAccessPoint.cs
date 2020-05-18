@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.Core;
+using Aquila.Core.Contracts.Network;
 using Aquila.Core.Logging;
 using Aquila.Core.Network;
 using Aquila.Core.Settings;

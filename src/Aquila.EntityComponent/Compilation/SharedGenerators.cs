@@ -3,8 +3,9 @@ using System.Linq;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Component.Shared;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Entity;
 using SystemTypeBindings = Aquila.Compiler.Roslyn.SystemTypeBindings;
 
@@ -24,7 +25,7 @@ namespace Aquila.EntityComponent.Compilation
                     $"Prop: {prop.Name} ObjectType: {"Empty"}. Database column is empty!");
             }
 
-            if (prop.Types.Count() > 1)
+            if (prop.Type.IsTypeSet)
             {
                 var clsSchema = prop.GetObjSchema()
                     .First(x => x.SchemaType == ColumnSchemaType.Type);
@@ -42,19 +43,19 @@ namespace Aquila.EntityComponent.Compilation
             }
 
 
-            foreach (var ctype in prop.Types)
+            foreach (var ctype in prop.GetTypes())
             {
                 if (ctype.IsPrimitive)
                 {
                     var dbColName = prop
                         .GetDbSchema()
-                        .First(x => x.SchemaType == ((prop.Types.Count() > 1)
+                        .First(x => x.SchemaType == ((prop.Type.IsTypeSet)
                             ? ColumnSchemaType.Value
                             : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
                     var propName = prop
                         .GetObjSchema()
-                        .First(x => x.SchemaType == ((prop.Types.Count() > 1)
+                        .First(x => x.SchemaType == ((prop.Type.IsTypeSet)
                             ? ColumnSchemaType.Value
                             : ColumnSchemaType.NoSpecial) && x.PlatformIpType == ctype).FullName;
 
@@ -81,13 +82,13 @@ namespace Aquila.EntityComponent.Compilation
 
                         var dbColName = prop
                             .GetDbSchema()
-                            .First(x => x.SchemaType == ((prop.Types.Count() > 1)
+                            .First(x => x.SchemaType == ((prop.Type.IsTypeSet)
                                 ? ColumnSchemaType.Ref
                                 : ColumnSchemaType.NoSpecial)).FullName;
 
                         var propName = prop
                             .GetObjSchema()
-                            .First(x => x.SchemaType == ((prop.Types.Count() > 1)
+                            .First(x => x.SchemaType == ((prop.Type.IsTypeSet)
                                 ? ColumnSchemaType.Ref
                                 : ColumnSchemaType.NoSpecial)).FullName;
 
@@ -114,21 +115,21 @@ namespace Aquila.EntityComponent.Compilation
         {
             var propName = prop.Name;
 
-            var propType = (prop.Types.Count() > 1)
+            var propType = (prop.Type.IsTypeSet)
                 ? sb.Object
-                : prop.Types.First().ConvertType(sb);
+                : prop.Type.ConvertType(sb);
 
             var propBuilder = (RoslynPropertyBuilder) builder.FindProperty(propName);
             var getBuilder = ((RoslynMethodBuilder) propBuilder.Getter).Body;
             var setBuilder = ((RoslynMethodBuilder) propBuilder.Setter)?.Body;
 
-            if (prop.Types.Count() > 1)
+            if (prop.Type.IsTypeSet)
             {
                 var typeField = prop.GetObjSchema()
                     .First(x => x.SchemaType == ColumnSchemaType.Type);
                 var dtoTypeProp = dtoType.FindProperty(typeField.FullName);
 
-                foreach (var ctype in prop.Types)
+                foreach (var ctype in prop.GetTypes())
                 {
                     ColumnSchemaDefinition dtoPropSchema;
 
@@ -227,7 +228,7 @@ namespace Aquila.EntityComponent.Compilation
 
                     var dtoProp = dtoType.FindProperty(dtoPropSchema.FullName);
 
-                    var ctype = prop.Types.First();
+                    var ctype = prop.Type;
 
                     var compileType = ctype.ConvertType(sb);
 
@@ -280,9 +281,9 @@ namespace Aquila.EntityComponent.Compilation
         {
             var propName = prop.Name;
 
-            var propType = (prop.Types.Count() > 1)
+            var propType = (prop.Type.IsTypeSet)
                 ? sb.Object
-                : prop.Types.First().ConvertType(sb);
+                : prop.Type.ConvertType(sb);
 
             var propBuilder = (RoslynPropertyBuilder) builder.FindProperty(propName);
             var getBuilder = ((RoslynMethodBuilder) propBuilder.Getter).Body;
@@ -302,13 +303,13 @@ namespace Aquila.EntityComponent.Compilation
                     .Nothing()
                     .If();
 
-            if (prop.Types.Count() > 1)
+            if (prop.Type.IsTypeSet)
             {
                 var typeField = prop.GetObjSchema()
                     .First(x => x.SchemaType == ColumnSchemaType.Type);
                 var dtoTypeProp = dtoType.FindProperty(typeField.FullName);
 
-                foreach (var ctype in prop.Types)
+                foreach (var ctype in prop.GetTypes())
                 {
                     ColumnSchemaDefinition dtoPropSchema;
 

@@ -6,10 +6,10 @@ using Aquila.Compiler.Contracts.Extensions;
 using Aquila.Compiler.Generation;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Configuration.Common.TypeSystem;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Compilation.UX;
 using Aquila.EntityComponent.Configuration;
 using Aquila.EntityComponent.Entity;
@@ -205,7 +205,7 @@ namespace Aquila.EntityComponent.Compilation
             r.Units.Add(cu);
         }
 
-        public void StageUI(Aquila.Configuration.Contracts.TypeSystem.IPType ipType, Node node)
+        public void StageUI(IPType ipType, Node node)
         {
             throw new NotImplementedException();
         }

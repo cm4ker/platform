@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Configuration.Store;
+using Aquila.Core.Contracts.TypeSystem;
 using SharpFileSystem;
-using Aquila.Configuration.Contracts.Store;
-using Aquila.Configuration.Contracts.TypeSystem;
-using Aquila.Configuration.Structure;
-using Aquila.Shared.ParenChildCollection;
 
-namespace Aquila.Configuration.Contracts
+namespace Aquila.Core.Contracts
 {
     public interface IConfigurationManipulator
     {

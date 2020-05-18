@@ -1,8 +1,9 @@
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Entity;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;

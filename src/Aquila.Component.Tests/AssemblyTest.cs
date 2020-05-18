@@ -12,6 +12,8 @@ using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Compiler.Visitor;
 using Aquila.Core;
 using Aquila.Core.Authentication;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Test;
 using Aquila.Language.Ast.Definitions;
@@ -47,14 +49,16 @@ namespace Aquila.Component.Tests
             var rootServer = new Root(null, new CompilationUnitList());
             var rootClient = new Root(null, new CompilationUnitList());
 
+
             foreach (var component in conf.TypeManager.Components)
             {
-                foreach (var type in conf.TypeManager.Types.Where(x =>
-                    x.ComponentId == component.Id && x.IsAsmAvaliable))
-                {
-                    component.ComponentImpl.Generator.StageClient(type, rootServer);
-                    component.ComponentImpl.Generator.StageServer(type, rootClient);
-                }
+                if (component.TryGetFeature<IBuildingParticipant>(out var bp))
+                    foreach (var type in conf.TypeManager.Types.Where(x =>
+                        x.ComponentId == component.Id && x.IsAsmAvaliable))
+                    {
+                        bp.Generator.StageClient(type, rootServer);
+                        bp.Generator.StageServer(type, rootClient);
+                    }
             }
 
             AstScopeRegister.Apply(rootServer);

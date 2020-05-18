@@ -18,13 +18,18 @@ using Aquila.Core.Assemblies;
 using Aquila.Core.Configuration;
 using Aquila.Compiler.Platform;
 using Aquila.Configuration;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data;
+using Aquila.Core;
 using Aquila.Core.Assemlies;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Authentication;
+using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Network;
 using Aquila.Core.DI;
 using Aquila.Migration;
 using Aquila.Networking;
+using Aquila.WebServiceCore;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Aquila.Runner
 {
@@ -78,9 +83,11 @@ namespace Aquila.Runner
                     services.AddScoped<IAssemblyManager, AssemblyManager>();
                     services.AddScoped<IConfigurationManager, ConfigurationManager>();
                     services.AddScoped<IXCCompiller, XCCompiler>();
+                    services.AddScoped<ILinkFactory, LinkFactory>();
                     services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
                     services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
                     services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
+                    services.AddSingleton<IStartupService, StartupServiceImpl>();
                     services.AddScoped<IMigrationManager, MigrationManager>();
 
 
@@ -100,6 +107,7 @@ namespace Aquila.Runner
                     services.AddScoped<IUserManager, UserManager>();
 
                     services.AddSingleton<IHostedService, RunnerService>();
+                    services.AddSingleton<IWebHost, RunnerWebService>();
                 });
 
             await builder.RunConsoleAsync();

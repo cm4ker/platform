@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Contracts;
 using Aquila.Configuration.Structure;
+using Aquila.Core.Contracts;
 using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 

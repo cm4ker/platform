@@ -7,7 +7,9 @@ using Aquila.Core.Environment;
 using Aquila.Core.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Network;
 using Aquila.Core.Settings;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Aquila.Runner
 {
@@ -34,11 +36,11 @@ namespace Aquila.Runner
 
             _accessPoint = _serviceProvider.GetRequiredService<IAccessPoint>();
             var envManager = _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>();
-
-            //var route = new Route($"system\\test");
-            //registrator.GetInvokeService(route.GetService()).Register(route, (c,a) => { return (int)a[0] + 1; });
+            var webHost = _serviceProvider.GetRequiredService<IWebHost>();
 
             _accessPoint.Start();
+            webHost.StartAsync(cancellationToken);
+
             return Task.CompletedTask;
         }
 

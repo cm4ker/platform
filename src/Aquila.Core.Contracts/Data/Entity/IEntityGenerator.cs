@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Aquila.Configuration.Contracts.Data.Entity
+namespace Aquila.Core.Contracts.Data.Entity
 {
     /// <summary>
     /// Отвечает за генерацию кода сущности

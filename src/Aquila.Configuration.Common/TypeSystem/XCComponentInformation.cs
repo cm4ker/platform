@@ -1,5 +1,5 @@
 ﻿using System;
-using Aquila.Configuration.Contracts;
+using Aquila.Core.Contracts.Configuration;
 
 namespace Aquila.Configuration.Common.TypeSystem
 {

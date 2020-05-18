@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Aquila.Configuration.Common.TypeSystem;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Migration;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Configuration.Migration;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.QueryBuilder.Builders;
 using Aquila.QueryBuilder.Model;
 

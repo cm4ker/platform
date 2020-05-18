@@ -10,6 +10,8 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
     public abstract class RoslynInvokableBase : RoslynMemberBase
     {
         private ITypeDefOrRef _declaringTR;
+        private List<RoslynParameter> _parameters;
+        private List<RoslynCustomAttribute> _customAttributes;
 
         protected RoslynInvokableBase(RoslynTypeSystem typeSystem, dnlib.DotNet.IMethod method, MethodDef methodDef,
             ITypeDefOrRef declaringType)
@@ -21,17 +23,13 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             _declaringTR = declaringType;
         }
 
-        private void UpdateReferenceInfo()
-        {
-        }
-
         protected RoslynContextResolver ContextResolver { get; }
 
         public RoslynTypeSystem System { get; }
 
         public MethodDef MethodDef { get; }
 
-        public dnlib.DotNet.IMethod MethodRef { get; }
+        public IMethod MethodRef { get; }
 
         public override string Name => MethodDef.Name;
 
@@ -39,15 +37,12 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public RoslynType DeclaringType => ContextResolver.GetType(_declaringTR);
 
-        public RoslynMethod MakeGenericMethod(RoslynType[] typeArguments)
+        public RoslynMethod MakeGenericMethod(params RoslynType[] typeArguments)
         {
             if (MethodRef is IMethodDefOrRef mdr)
             {
                 var sig = new GenericInstMethodSig(typeArguments.Select(x => ((RoslynType) x).TypeRef.ToTypeSig())
                     .ToArray());
-
-                if (sig == null)
-                    throw new Exception("sig is null");
 
                 var generic = new MethodSpecUser(mdr, sig);
 
@@ -114,7 +109,9 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         }
 
 
-        private List<RoslynParameter> _parameters;
+        public IReadOnlyList<RoslynCustomAttribute> CustomAttributes =>
+            _customAttributes ??= new List<RoslynCustomAttribute>();
+
 
         public bool Equals(IMethod other)
         {

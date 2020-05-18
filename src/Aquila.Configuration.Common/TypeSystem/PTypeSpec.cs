@@ -1,24 +1,31 @@
 using System;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Configuration.Common.TypeSystem
 {
     public sealed class PTypeSpec : PType, IPTypeSpec
     {
-        private readonly IPType _ipType;
+        private readonly Guid _baseId;
+
+        private bool _isArray;
         private string _name;
 
 
-        internal PTypeSpec(IPType ipType, TypeManager ts) : base(ts)
+        internal PTypeSpec(Guid baseId, TypeManager ts) : base(ts)
         {
-            _ipType = ipType;
+            _baseId = baseId;
             Id = Guid.NewGuid();
         }
 
-        public IPType BaseType => _ipType;
+        private IPType GetBase()
+        {
+            return TypeManager.FindType(_baseId) ?? throw new Exception("Type not found");
+        }
+
+        public IPType BaseType => GetBase();
         public override string Name => _name ??= CalcName();
 
-        public override Guid? BaseId => _ipType.Id;
+        public override Guid? BaseId => _baseId;
 
         public int Scale { get; set; }
 
@@ -26,19 +33,41 @@ namespace Aquila.Configuration.Common.TypeSystem
 
         public int Size { get; set; }
 
+        public void SetScale(int value)
+        {
+            Scale = value;
+        }
+
+        public void SetPrecision(int value)
+        {
+            Precision = value;
+        }
+
+        public void SetSize(int value)
+        {
+            Size = value;
+        }
+
+        public void SetIsArray(bool value)
+        {
+            _isArray = value;
+        }
+
+        public override bool IsArray => _isArray;
+
         public override bool IsTypeSpec => true;
 
-        public override bool IsPrimitive => _ipType.IsPrimitive;
+        public override bool IsPrimitive => GetBase().IsPrimitive;
 
-        public override PrimitiveKind PrimitiveKind => _ipType.PrimitiveKind;
+        public override PrimitiveKind PrimitiveKind => GetBase().PrimitiveKind;
 
         private string CalcName()
         {
-            var result = _ipType.Name;
+            var result = GetBase().Name;
 
-            if (_ipType.IsSizable)
+            if (GetBase().IsSizable)
                 result += $"({Size})";
-            if (_ipType.IsScalePrecision)
+            if (GetBase().IsScalePrecision)
                 result += $"({Scale},{Precision})";
 
             return result;
@@ -46,8 +75,8 @@ namespace Aquila.Configuration.Common.TypeSystem
 
         private bool Equals(PTypeSpec other)
         {
-            return Equals(_ipType, other._ipType) && _name == other._name && Scale == other.Scale &&
-                   Precision == other.Precision && Size == other.Size;
+            return Equals(_baseId, other._baseId) && _name == other._name && Scale == other.Scale &&
+                   Precision == other.Precision && Size == other.Size && IsArray == other.IsArray;
         }
 
         public bool Equals(IPType other)
@@ -63,7 +92,7 @@ namespace Aquila.Configuration.Common.TypeSystem
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_ipType, _name, Scale, Precision, Size);
+            return HashCode.Combine(_baseId, _name, Scale, Precision, Size);
         }
     }
 }

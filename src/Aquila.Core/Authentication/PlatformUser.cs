@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using Aquila.Core.Contracts.Authentication;
 
 namespace Aquila.Core.Authentication
 {

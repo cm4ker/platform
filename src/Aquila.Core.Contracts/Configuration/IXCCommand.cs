@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Aquila.Configuration.Contracts
+namespace Aquila.Core.Contracts.Configuration
 {
     public interface IXCCommand
     {

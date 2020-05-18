@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
-
-namespace Aquila.Core.Network
+﻿namespace Aquila.Core.Contracts.Network
 {
     public interface IAccessPoint
     {

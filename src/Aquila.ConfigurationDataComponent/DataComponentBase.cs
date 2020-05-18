@@ -1,7 +1,7 @@
-﻿using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data;
-using Aquila.Configuration.Contracts.Data.Entity;
-using Aquila.Configuration.Contracts.TypeSystem;
+﻿using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.Data.Entity;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.DataComponent
 {
@@ -51,7 +51,6 @@ namespace Aquila.DataComponent
 
         public IEntityManager Manager { get; protected set; }
         public IPlatformGenerator Generator { get; protected set; }
-        public IDatabaseObjectsGenerator DatabaseObjectsGenerator { get; protected set; }
         public IEntityMigrator Migrator { get; protected set; }
         public IQueryInjector QueryInjector { get; protected set; }
         public IComponentManager Loader { get; protected set; }

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Aquila.Configuration.Common;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Core.Contracts.Configuration;
+using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Core.Querying.Model;
 using Aquila.Core.Querying.Optimizers;
 using Aquila.QueryBuilder;
@@ -162,7 +163,8 @@ namespace Aquila.Core.Querying
         {
             var ot = node.ObjectType;
 
-            ot.GetComponent().ComponentImpl.QueryInjector.InjectTypeSource(_qm, ot, null);
+            if (ot.GetComponent().TryGetFeature<IInternalQueryParticipant>(out var iqp))
+                iqp.QueryInjector.InjectTypeSource(_qm, ot, null);
 
             if (!_hasAlias)
                 _qm.@as(node.GetDbName());
@@ -172,12 +174,12 @@ namespace Aquila.Core.Querying
             return base.VisitQObjectTable(node);
         }
 
-
         public override object VisitQTable(QTable node)
         {
             var ot = node.Table;
 
-            ot.GetParent().GetComponent().ComponentImpl.QueryInjector.InjectTableSource(_qm, ot, null);
+            if (ot.GetParent().GetComponent().TryGetFeature<IInternalQueryParticipant>(out var iqp))
+                iqp.QueryInjector.InjectTableSource(_qm, ot, null);
 
             if (!_hasAlias)
                 _qm.@as(node.GetDbName());

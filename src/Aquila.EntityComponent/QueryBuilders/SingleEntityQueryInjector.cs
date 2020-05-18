@@ -1,6 +1,6 @@
 ﻿using System;
-using Aquila.Configuration.Contracts.Data.Entity;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.Data.Entity;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.QueryBuilder;
 
 namespace Aquila.EntityComponent.QueryBuilders

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Aquila.Core.Tools
+namespace Aquila.Core.Contracts.Network
 {
     public interface IRemovable: IDisposable
     {

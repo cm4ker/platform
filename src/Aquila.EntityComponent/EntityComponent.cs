@@ -1,5 +1,5 @@
-﻿using Aquila.Configuration.Contracts.Data;
-using Aquila.Configuration.Contracts.TypeSystem;
+﻿using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.DataComponent;
 using Aquila.EntityComponent.Compilation;
 using Aquila.EntityComponent.Configuration;

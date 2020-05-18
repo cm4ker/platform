@@ -1,5 +1,5 @@
-﻿using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Structure;
+﻿using Aquila.Configuration.Structure;
+using Aquila.Core.Contracts;
 using Aquila.QueryBuilder;
 
 namespace Aquila.Core.Configuration

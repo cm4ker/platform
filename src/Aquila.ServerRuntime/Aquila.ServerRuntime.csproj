@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <Configurations>Debug;Release;DebugServer</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
@@ -11,6 +11,10 @@
       <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
       <ProjectReference Include="..\Aquila.Language.Ast\Aquila.Language.Ast.csproj" />
       <ProjectReference Include="..\Aquila.SharedRuntime\Aquila.SharedRuntime.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SoapCore" Version="1.1.0-alpha" />
     </ItemGroup>
 
 </Project>

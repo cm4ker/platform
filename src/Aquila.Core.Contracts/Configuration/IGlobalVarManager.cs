@@ -1,7 +1,7 @@
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Shared.Tree;
 
-namespace Aquila.Configuration.Contracts
+namespace Aquila.Core.Contracts.Configuration
 {
     public interface IGlobalVarManager
     {

@@ -9,6 +9,7 @@ using Aquila.Core.Tools;
 using Aquila.Core.Sessions;
 using Aquila.Core.Authentication;
 using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Network;
 
 namespace Aquila.Core.Network
 {

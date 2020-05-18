@@ -11,6 +11,7 @@ using Aquila.Compiler.Generation;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Compiler.Visitor;
+using Aquila.Core.Contracts;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.QueryBuilder;

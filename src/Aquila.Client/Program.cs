@@ -7,7 +7,6 @@ using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Logging;
 using Aquila.Core.Network;
-using Aquila.Core.Network.Contracts;
 using Aquila.Core.Settings;
 
 namespace Aquila.Client

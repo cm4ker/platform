@@ -18,11 +18,12 @@ using Aquila.Migration;
 using Aquila.Compiler;
 using Aquila.Configuration;
 using Aquila.Configuration.Common.TypeSystem;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data.Entity;
 using Aquila.Configuration.Storage;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Authentication;
+using Aquila.Core.Contracts.Data.Entity;
 using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Network;
 using Aquila.Test.Tools;
 
 namespace Aquila.Core.Environment
@@ -40,7 +41,7 @@ namespace Aquila.Core.Environment
             ILogger<WorkEnvironment> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             IDataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
-            IAssemblyManager assemblyManager, IMigrationManager migrationManager,
+            IAssemblyManager assemblyManager, IMigrationManager migrationManager, IStartupService startupService,
             IConfigurationManipulator manipulator) :
             base(contextManager, cacheService, manipulator)
         {
@@ -53,6 +54,7 @@ namespace Aquila.Core.Environment
             LinkFactory = linkFactory;
 
             _assemblyManager = assemblyManager;
+            _startupService = startupService;
 
             Globals = new Dictionary<string, object>();
 
@@ -140,7 +142,7 @@ namespace Aquila.Core.Environment
 
 
             _logger.Info("Run entry point of server assembly");
-            main.Invoke(null, new[] {new object[] {InvokeService, LinkFactory}});
+            main.Invoke(null, new[] {new object[] {InvokeService, LinkFactory, _startupService}});
 
             InvokeService.Register(new Route("test"), (c, a) => (int) a[0] + 1);
             InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
@@ -159,6 +161,7 @@ namespace Aquila.Core.Environment
         private IUserManager _userManager;
 
         private IAssemblyManager _assemblyManager;
+        private readonly IStartupService _startupService;
 
         public override IInvokeService InvokeService { get; }
 

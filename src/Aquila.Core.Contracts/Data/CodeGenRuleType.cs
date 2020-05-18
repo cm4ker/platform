@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Aquila.Configuration.Contracts.Data
+namespace Aquila.Core.Contracts.Data
 {
     public enum CodeGenRuleType
     {

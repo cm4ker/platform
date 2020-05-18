@@ -3,7 +3,6 @@ using System.Linq;
 using MoreLinq.Extensions;
 using Xunit;
 using Aquila.Configuration.Structure;
-using Aquila.ConfigurationExample;
 using Aquila.Core.Querying.Model;
 using Aquila.QueryBuilder.Model;
 using Aquila.QueryBuilder.Visitor;

@@ -1,5 +1,6 @@
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.TypeSystem;
+using System;
+using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Core.Querying.Model;
 using Aquila.QueryBuilder;
 
@@ -39,10 +40,15 @@ namespace Aquila.Core.Querying
             _qm.m_from();
 
             var source = sfe.PlatformSource;
-            if (source is QObjectTable ot)
-                ot.ObjectType.GetComponent().ComponentImpl.QueryInjector.InjectTypeSource(_qm, ot.ObjectType, null);
-            else if (source is QTable t)
-                t.Table.GetParent().GetComponent().ComponentImpl.QueryInjector.InjectTableSource(_qm, t.Table, null);
+            if (source is QObjectTable ot &&
+                ot.ObjectType.GetComponent().TryGetFeature<IInternalQueryParticipant>(out var iqp))
+                iqp.QueryInjector.InjectTypeSource(_qm, ot.ObjectType, null);
+            else if (source is QTable t &&
+                     t.Table.GetParent().GetComponent().TryGetFeature<IInternalQueryParticipant>(out var iqpt))
+                iqpt.QueryInjector.InjectTableSource(_qm, t.Table, null);
+            else
+                throw new Exception(
+                    "Not supported object in gen source field or field source This should never happen");
 
             foreach (var propType in sfe.GetExpressionType())
             {
@@ -67,7 +73,10 @@ namespace Aquila.Core.Querying
                 {
                     if (type.IsObject)
                     {
-                        type.GetComponent().ComponentImpl.QueryInjector.InjectTypeSource(_qm, type, null);
+                        if (type.GetComponent().TryGetFeature<IInternalQueryParticipant>(out var iqp))
+                            iqp.QueryInjector.InjectTypeSource(_qm, type, null);
+                        else
+                            throw new Exception("Not supported");
 
                         //condition
                         _qm.ld_column("A1");

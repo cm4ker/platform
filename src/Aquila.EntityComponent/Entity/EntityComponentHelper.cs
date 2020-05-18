@@ -1,5 +1,5 @@
 using System.Linq;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.EntityComponent.Entity
 {

@@ -1,20 +1,27 @@
+using System;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data;
-using Aquila.Configuration.Contracts.TypeSystem;
-using Aquila.Configuration.Structure.Data.Types.Primitive;
-using IType = Aquila.Compiler.Contracts.IType;
+using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.EntityComponent.Entity
+namespace Aquila.Component.Shared
 {
     public static class PlatformGenerationHelper
     {
         public static RoslynType ConvertType(this IPType pt,
             SystemTypeBindings sb)
         {
+            if (pt.IsTypeSet)
+                throw new Exception("We can't convert set out types to CLR type");
+
             if (pt.IsTypeSpec)
-                return ConvertType(pt.GetBase(), sb);
+            {
+                if (pt.IsArray)
+                {
+                    return sb.List.MakeGenericType(pt.GetBase().ConvertType(sb));
+                }
+                else
+                    return ConvertType(pt.GetBase(), sb);
+            }
 
             if (pt.IsPrimitive)
                 return pt.PrimitiveKind switch

@@ -7,11 +7,12 @@ using Xunit.Abstractions;
 using Aquila.Configuration;
 using Aquila.Configuration.Common;
 using Aquila.Configuration.Common.TypeSystem;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Migration;
 using Aquila.Configuration.Storage;
 using Aquila.Configuration.Structure;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Configuration.Migration;
+using Aquila.Core.Contracts.Data;
 using Aquila.EntityComponent.Configuration;
 using Aquila.Migration;
 using Aquila.QueryBuilder.Builders;
@@ -79,7 +80,8 @@ namespace Aquila.Component.Tests
             var plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
-                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
+                if (component.actual.TryGetFeature<IMigrateable>(out var m))
+                    m.Migrator.MigrationPlan(plan, component.old, component.actual);
             }
 
             Assert.Equal(2, plan.Count());
@@ -100,7 +102,8 @@ namespace Aquila.Component.Tests
             var plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
-                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
+                if (component.actual.TryGetFeature<IMigrateable>(out var m))
+                    m.Migrator.MigrationPlan(plan, component.old, component.actual);
             }
 
 
@@ -123,7 +126,8 @@ namespace Aquila.Component.Tests
             var plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
-                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
+                if (component.actual.TryGetFeature<IMigrateable>(out var m))
+                    m.Migrator.MigrationPlan(plan, component.old, component.actual);
             }
 
             //Assert.Equal(4, tasks.Count);
@@ -159,7 +163,8 @@ namespace Aquila.Component.Tests
             var plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
-                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
+                if (component.actual.TryGetFeature<IMigrateable>(out var m))
+                    m.Migrator.MigrationPlan(plan, component.old, component.actual);
             }
 
 
@@ -182,7 +187,8 @@ namespace Aquila.Component.Tests
             plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
-                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.actual, component.old);
+                if (component.actual.TryGetFeature<IMigrateable>(out var m))
+                    m.Migrator.MigrationPlan(plan, component.actual, component.old);
             }
 
             query = DDLQuery.New();
@@ -211,7 +217,8 @@ namespace Aquila.Component.Tests
             var plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
-                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
+                if (component.actual.TryGetFeature<IMigrateable>(out var m))
+                    m.Migrator.MigrationPlan(plan, component.old, component.actual);
             }
 
 
@@ -235,7 +242,8 @@ namespace Aquila.Component.Tests
             plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
-                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.actual, component.old);
+                if (component.actual.TryGetFeature<IMigrateable>(out var m))
+                    m.Migrator.MigrationPlan(plan, component.actual, component.old);
             }
 
             query = DDLQuery.New();
@@ -262,7 +270,8 @@ namespace Aquila.Component.Tests
             var plan = new EntityMigrationPlan();
             foreach (var component in components)
             {
-                component.actual.ComponentImpl.Migrator.MigrationPlan(plan, component.old, component.actual);
+                if (component.actual.TryGetFeature<IMigrateable>(out var m))
+                    m.Migrator.MigrationPlan(plan, component.old, component.actual);
             }
 
 

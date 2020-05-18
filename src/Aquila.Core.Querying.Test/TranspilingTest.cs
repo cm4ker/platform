@@ -1,10 +1,4 @@
-using System.Linq;
-using Xunit;
 using Aquila.Configuration.Structure;
-using Aquila.ConfigurationExample;
-using Aquila.Core.Querying.Model;
-using Aquila.QueryBuilder.Model;
-using Aquila.QueryBuilder.Visitor;
 using Aquila.Test.Tools;
 
 namespace Aquila.Core.Querying.Test

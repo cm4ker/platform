@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Aquila.Configuration.Contracts.Migration;
+using Aquila.Core.Contracts.Configuration.Migration;
 using Aquila.QueryBuilder.Builders;
 
 namespace Aquila.Migration

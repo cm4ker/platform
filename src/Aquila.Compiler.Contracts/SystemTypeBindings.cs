@@ -4,7 +4,6 @@ using Aquila.Compiler.Contracts.Extensions;
 using Aquila.Compiler.Infrastructure;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Network;
-using Aquila.Core.Network;
 
 namespace Aquila.Compiler.Contracts
 {

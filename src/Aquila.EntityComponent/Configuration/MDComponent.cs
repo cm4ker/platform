@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Aquila.Configuration.Structure.Data
+namespace Aquila.EntityComponent.Configuration
 {
     /*
        - Root 

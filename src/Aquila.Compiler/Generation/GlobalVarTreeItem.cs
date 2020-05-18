@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn;
+using Aquila.Core.Contracts;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Shared.Tree;
 

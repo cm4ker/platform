@@ -1,6 +1,6 @@
 using System;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.QueryBuilder;
 
 namespace Aquila.Core.Querying.Optimizers

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using Aquila.Configuration.Contracts.Data.Entity;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
+using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Environment;
 using Aquila.Data;

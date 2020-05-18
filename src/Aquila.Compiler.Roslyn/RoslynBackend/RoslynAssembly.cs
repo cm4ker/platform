@@ -13,9 +13,12 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public RoslynAssembly(RoslynTypeSystem ts, AssemblyDef assembly)
         {
+            if (assembly is null)
+                throw new NullReferenceException("Assembly");
             Assembly = assembly;
             _ts = ts;
-            if(string.IsNullOrEmpty(Assembly.Name)) 
+
+            if (string.IsNullOrEmpty(Assembly.Name))
                 throw new NullReferenceException("Name");
         }
 

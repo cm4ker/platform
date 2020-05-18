@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Aquila.Configuration.Contracts
+﻿namespace Aquila.Core.Contracts.Configuration
 {
     public interface IXCSaveable
     {

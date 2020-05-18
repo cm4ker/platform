@@ -17,7 +17,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         private List<RoslynConstructorBuilder> _constructors = new List<RoslynConstructorBuilder>();
         private List<RoslynType> _interfaces = new List<RoslynType>();
         private List<RoslynType> _genericArguments = new List<RoslynType>();
-        private List<ICustomAttribute> _customAttributes = new List<ICustomAttribute>();
+        private List<RoslynCustomAttribute> _customAttributes = new List<RoslynCustomAttribute>();
 
 
         public RoslynTypeBuilder(RoslynTypeSystem typeSystem, TypeDef typeDef, RoslynAssembly assembly)
@@ -36,7 +36,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public override IReadOnlyList<RoslynType> Interfaces => _interfaces;
 
-        public override IReadOnlyList<ICustomAttribute> CustomAttributes => _customAttributes;
+        public override IReadOnlyList<RoslynCustomAttribute> CustomAttributes => _customAttributes;
 
         public override IReadOnlyList<RoslynProperty> Properties => _properties;
 
@@ -46,7 +46,6 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             var dType = (RoslynType) type;
             _interfaces.Add(type);
             this.TypeDef.Interfaces.Add(new InterfaceImplUser(dType.TypeRef));
-            
         }
 
         public void DefineGenericParameters(IReadOnlyList<KeyValuePair<string, GenericParameterConstraint>> names)
@@ -176,9 +175,9 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             throw new NotImplementedException();
         }
 
-        public void SetCustomAttribute(ICustomAttribute attr)
+        public void SetCustomAttribute(RoslynCustomAttribute attr)
         {
-            var dnlibAttr = (RoslynCustomAttribute) attr;
+            var dnlibAttr = attr;
             dnlibAttr.ImportAttribute(TypeDef.Module);
             ((List<RoslynCustomAttribute>) CustomAttributes).Add(dnlibAttr);
             TypeDef.CustomAttributes.Add(dnlibAttr.GetCA());
@@ -194,12 +193,47 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                 cb = sw.CurlyBrace();
             }
 
+
+            foreach (var attribute in _customAttributes)
+            {
+                using (sw.SquareBrace())
+                {
+                    attribute.AttributeType.DumpRef(sw);
+
+                    if (attribute.Parameters.Count > 0)
+                        using (sw.Parenthesis())
+                        {
+                            var wasFirst = false;
+
+                            foreach (var parameter in attribute.Parameters)
+                            {
+                                if (wasFirst)
+                                    sw.W(",");
+
+
+                                Literal l = parameter switch
+                                {
+                                    int i => new Literal(i),
+                                    string s => new Literal(s),
+                                    double d => new Literal(d),
+                                    _ => throw new Exception("Not supported")
+                                };
+
+                                l.Dump(sw);
+
+                                wasFirst = true;
+                            }
+                        }
+                }
+                sw.WriteLine();
+            }
+
             if (IsPublic)
                 sw.Write("public ");
 
             if (IsAbstract)
                 sw.Write("abstract ");
-            
+
             sw.Write("class ");
             sw.Write(Name);
 

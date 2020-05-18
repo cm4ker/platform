@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="IDE\Editors\UIPropertyEditor.xaml.cs">
+        <DependentUpon>UiPropertyEditor.xaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\avalonia.reactiveui.props" />
+    <Import Project="..\Props\avalonia.avaloniaedit.props" />
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Aquila.Compiler.Roslyn\Aquila.Compiler.Roslyn.csproj" />
+      <ProjectReference Include="..\Aquila.Compiler\Aquila.Compiler.csproj" />
+      <ProjectReference Include="..\Aquila.Component.Shared\Aquila.Component.Shared.csproj" />
+      <ProjectReference Include="..\Aquila.Configuration.Common\Aquila.Configuration.Common.csproj" />
+      <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj" />
+      <ProjectReference Include="..\Aquila.Core.Contracts\Aquila.Core.Contracts.csproj" />
+      <ProjectReference Include="..\Aquila.Ide.Common\Aquila.Ide.Common.csproj" />
+      <ProjectReference Include="..\Aquila.Language.Ast\Aquila.Language.Ast.csproj" />
+      <ProjectReference Include="..\Aquila.QueryBuilder\Aquila.QueryBuilder.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="IDE\Editors" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
+    </ItemGroup>
+
+</Project>

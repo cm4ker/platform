@@ -1,7 +1,7 @@
 ﻿using System;
-using Aquila.Core.Authentication;
+using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Environment;
-using Aquila.Core.Tools;
+using Aquila.Core.Contracts.Network;
 using Aquila.Data;
 
 namespace Aquila.Core.Contracts

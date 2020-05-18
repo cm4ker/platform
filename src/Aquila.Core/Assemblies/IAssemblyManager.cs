@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Aquila.Compiler;
-using Aquila.Configuration.Contracts;
 using Aquila.Configuration.Structure;
 using Aquila.Core.Assemlies;
+using Aquila.Core.Contracts;
 using Aquila.QueryBuilder;
 
 namespace Aquila.Core.Assemblies

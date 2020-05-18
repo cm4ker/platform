@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Aquila.Configuration.Contracts.TypeSystem;
 
 namespace Aquila.Core.Querying.Model
 {

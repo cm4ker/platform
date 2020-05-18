@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <Configurations>Debug;Release;DebugServer</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
@@ -12,8 +12,10 @@
       <ProjectReference Include="..\Aquila.EntityComponent\Aquila.EntityComponent.csproj" />
       <ProjectReference Include="..\Aquila.Migration\Aquila.Migration.csproj" />
       <ProjectReference Include="..\Aquila.Networking\Aquila.Networking.csproj" />
+      <ProjectReference Include="..\Aquila.SerializableTypeComponent\Aquila.SerializableTypeComponent.csproj" />
       <ProjectReference Include="..\Aquila.Shell\Aquila.Shell.csproj" />
       <ProjectReference Include="..\Aquila.ThinClient.FakeAssembly\Aquila.ThinClient.FakeAssembly.csproj" />
+      <ProjectReference Include="..\Aquila.WebServiceComponent\Aquila.WebServiceComponent.csproj" />
     </ItemGroup>
 
     <ItemGroup>

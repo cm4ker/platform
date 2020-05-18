@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Authentication;
 
 namespace Aquila.Core.Network
 {

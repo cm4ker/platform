@@ -8,8 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Authentication;
+using Aquila.Core.Contracts.Network;
 using Aquila.Core.Logging;
-using Aquila.Core.Network.Contracts;
 using Aquila.Core.Tools;
 using Aquila.Serializer;
 

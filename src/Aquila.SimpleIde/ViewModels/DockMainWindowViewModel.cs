@@ -10,7 +10,6 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure;
 using Aquila.Ide.Common;
 using Aquila.Ide.Common.Editors;

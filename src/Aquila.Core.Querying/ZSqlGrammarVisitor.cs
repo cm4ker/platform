@@ -1,8 +1,7 @@
 ﻿using System;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Data.Entity;
-using Aquila.Configuration.Contracts.TypeSystem;
 using Aquila.Configuration.Structure;
+using Aquila.Core.Contracts.Data.Entity;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Core.Querying.Model;
 
 namespace Aquila.Core.Querying

@@ -2,8 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Configuration.Contracts;
-using Aquila.Configuration.Contracts.Migration;
+using Aquila.Core.Contracts.Configuration.Migration;
 
 namespace Aquila.Migration
 {

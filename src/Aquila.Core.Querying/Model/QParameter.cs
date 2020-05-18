@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Aquila.Core.Contracts.TypeSystem;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Aquila.Configuration.Contracts.TypeSystem;
 
 namespace Aquila.Core.Querying.Model
 {

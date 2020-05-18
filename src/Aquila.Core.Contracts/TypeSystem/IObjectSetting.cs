@@ -1,6 +1,6 @@
 using System;
 
-namespace Aquila.Configuration.Contracts.TypeSystem
+namespace Aquila.Core.Contracts.TypeSystem
 {
     /// <summary>
     /// Settings for objects (responce for store and sys info)

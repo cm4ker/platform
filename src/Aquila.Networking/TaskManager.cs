@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core.Contracts;
+using Aquila.Core.Contracts.Network;
 using Aquila.Core.Logging;
 using Aquila.Core.Sessions;
 

@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyModel;
 
 namespace Aquila.Compiler.Roslyn
 {
-    public static class EmitDemo
+    public static class RoslynCompilationHelper
     {
         public static void GenerateAssembly(string code, string path, string[] assemblies = null)
         {
@@ -42,22 +42,33 @@ namespace Aquila.Compiler.Roslyn
             // Detect the file location for the library that defines the object type
             var systemRefLocation = typeof(object).GetTypeInfo().Assembly.Location;
 
-            var pathToFw = "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Ref\\3.1.0\\ref\\netcoreapp3.1\\";
+            List<MetadataReference> _ref = new List<MetadataReference>();
 
-            var fwFiles = Directory.GetFiles(pathToFw, "*.dll");
+            var pathToFw = new string[]
+            {
+                "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Ref\\3.1.0\\ref\\netcoreapp3.1\\",
+                //"C:\\Users\\qznc\\.nuget\\packages\\system.servicemodel.primitives\\4.7.0\\ref\\netcoreapp2.1\\"
+                "C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App\\3.1.1\\"
+            };
 
-            MetadataReference[] _ref;
+            foreach (var dllsPath in pathToFw)
+            {
+                var fwFiles = Directory.GetFiles(dllsPath, "*.dll");
 
-            if (assemblies == null)
-                _ref =
-                    fwFiles
-                        .Select(asm => MetadataReference.CreateFromFile(asm))
-                        .ToArray();
-            else
-                _ref =
-                    assemblies
-                        .Select(asm => MetadataReference.CreateFromFile(asm))
-                        .ToArray();
+
+                if (assemblies == null)
+                    _ref.AddRange(
+                        fwFiles
+                            .Where(x=>!x.Contains("System.Private"))
+                            .Select(asm => MetadataReference.CreateFromFile(asm))
+                            .ToArray());
+                else
+                    _ref.AddRange(
+                        assemblies
+                            .Where(x=>!x.Contains("System.Private"))
+                            .Select(asm => MetadataReference.CreateFromFile(asm))
+                            .ToArray());
+            }
 
             // Create a reference to the library
             var systemReference = MetadataReference.CreateFromFile(systemRefLocation,

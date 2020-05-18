@@ -1,6 +1,6 @@
 using System.Data;
 using System.Linq;
-using Aquila.Configuration.Contracts.TypeSystem;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Configuration.Common.TypeSystem
 {
