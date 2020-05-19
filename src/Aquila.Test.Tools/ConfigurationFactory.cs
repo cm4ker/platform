@@ -203,7 +203,7 @@ public string CreateNewStore(int selector)
 public int GetStoreMaxValue()
 {
     var a = $Query();
-    a.Text = ""FROM Entity.Store SELECT A=Property1"";
+    a.Text = ""FROM Entity.Store SELECT A=CAST( Property1 as int) ORDER BY 1 DESC"";
     var r = a.ExecuteReader();
 
     if(r.Read())

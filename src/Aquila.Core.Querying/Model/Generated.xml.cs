@@ -85,6 +85,26 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public class QOrderList : QCollectionItem<QOrderExpression>
+    {
+        public QOrderList()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQOrderList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQOrderList(this);
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public class QWhenList : QCollectionItem<QWhen>
     {
         public QWhenList()
@@ -317,8 +337,17 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QOrderBy : QItem
     {
-        public QOrderBy(): base()
+        public QOrderBy(QOrderList expressions): base()
         {
+            this.Attach(0, (QItem)expressions);
+        }
+
+        public QOrderList Expressions
+        {
+            get
+            {
+                return (QOrderList)this.Children[0];
+            }
         }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
@@ -723,6 +752,41 @@ namespace Aquila.Core.Querying.Model
         public override void Accept(QLangVisitorBase visitor)
         {
             visitor.VisitQSourceFieldExpression(this);
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QOrderExpression : QExpression
+    {
+        public QOrderExpression(QSortDirection sortingDirection, QExpression expression): base()
+        {
+            SortingDirection = sortingDirection;
+            this.Attach(0, (QItem)expression);
+        }
+
+        public QSortDirection SortingDirection
+        {
+            get;
+        }
+
+        public QExpression Expression
+        {
+            get
+            {
+                return (QExpression)this.Children[0];
+            }
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQOrderExpression(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQOrderExpression(this);
         }
     }
 }
@@ -1257,6 +1321,11 @@ namespace Aquila.Core.Querying.Model
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQOrderList(QOrderList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQWhenList(QWhenList arg)
         {
             return DefaultVisit(arg);
@@ -1353,6 +1422,11 @@ namespace Aquila.Core.Querying.Model
         }
 
         public virtual T VisitQSourceFieldExpression(QSourceFieldExpression arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQOrderExpression(QOrderExpression arg)
         {
             return DefaultVisit(arg);
         }
@@ -1475,6 +1549,11 @@ namespace Aquila.Core.Querying.Model
             DefaultVisit(arg);
         }
 
+        public virtual void VisitQOrderList(QOrderList arg)
+        {
+            DefaultVisit(arg);
+        }
+
         public virtual void VisitQWhenList(QWhenList arg)
         {
             DefaultVisit(arg);
@@ -1571,6 +1650,11 @@ namespace Aquila.Core.Querying.Model
         }
 
         public virtual void VisitQSourceFieldExpression(QSourceFieldExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQOrderExpression(QOrderExpression arg)
         {
             DefaultVisit(arg);
         }

@@ -5,9 +5,10 @@
     <Syntax IsList="true" Base="QFromItem" Name="QJoinList"/>
     <Syntax IsList="true" Base="QExpression" Name="QExpressionList"/>
     <Syntax IsList="true" Base="QDataSource" Name="QDataSourceList"/>
+    <Syntax IsList="true" Base="QOrderExpression" Name="QOrderList"/>
     <Syntax IsList="true" Base="QWhen" Name="QWhenList"/>
     <Syntax IsList="true" Base="QQuery" Name="QQueryList"/>
-
+    
     <Syntax Name="QExpression" Base="QItem"/>
 
     <Syntax Name="QQuery" Base="QItem">
@@ -40,7 +41,11 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QOrderBy" Base="QItem"/>
+    <Syntax Name="QOrderBy" Base="QItem">
+        <Arguments>
+            <List Name="Expressions" Type="QOrderList"/>
+        </Arguments>
+    </Syntax>
     <Syntax Name="QWhere" Base="QItem">
         <Arguments>
             <Single Name="Expression" Type="QExpression"/>
@@ -114,6 +119,14 @@
             <Single Name="Property" Type="IPProperty" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
+
+    <Syntax Name="QOrderExpression" Base="QExpression">
+        <Arguments>
+            <Single Name="SortingDirection" Type="QSortDirection" DenyChildrenFill="true"/>
+            <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="QSelectExpression" Base="QField">
         <Arguments>
             <Single Name="Expression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
