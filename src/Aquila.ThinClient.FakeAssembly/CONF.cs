@@ -2,10 +2,12 @@ public abstract class EntryPoint : System.Object
 {
     static Aquila.Core.Contracts.Network.IInvokeService _is;
     static Aquila.Core.Contracts.ILinkFactory _lf;
+    static Aquila.Core.Contracts.Network.IStartupService _ss;
     public static void Main(System.Object[] args)
     {
         EntryPoint._is = ((Aquila.Core.Contracts.Network.IInvokeService)args[0]);
         EntryPoint._lf = ((Aquila.Core.Contracts.ILinkFactory)args[1]);
+        EntryPoint._ss = ((Aquila.Core.Contracts.Network.IStartupService)args[2]);
         EntryPoint._is.Register(new Aquila.Core.Contracts.Route("__cmd_HelloFromServer.ClientCallProc"), dlgt_ClientCallProc);
         EntryPoint._is.Register(new Aquila.Core.Contracts.Route("__cmd_HelloFromServer.CreateAndSaveStore"), dlgt_CreateAndSaveStore);
         EntryPoint._is.Register(new Aquila.Core.Contracts.Route("__cmd_HelloFromServer.GetUserNameServer"), dlgt_GetUserNameServer);
@@ -13,6 +15,8 @@ public abstract class EntryPoint : System.Object
         EntryPoint._is.Register(new Aquila.Core.Contracts.Route("__cmd_HelloFromServer.UpdateName"), dlgt_UpdateName);
         EntryPoint._is.Register(new Aquila.Core.Contracts.Route("UX.Editor"), dlgt_Editor);
         EntryPoint._lf.Register(110, fac_StoreLink);
+        EntryPoint._ss.Register(WebService1Builder);
+        EntryPoint._ss.RegisterWebServiceClass<WebServices.WebService1>();
     }
 
     public static System.Object dlgt_ClientCallProc(Aquila.Core.Contracts.Network.InvokeContext context, System.Object[] args)
@@ -49,6 +53,11 @@ public abstract class EntryPoint : System.Object
     public static Aquila.Core.Contracts.ILink fac_StoreLink(System.Guid p1, System.String p2)
     {
         return new Entity.StoreLink(p1, p2);
+    }
+
+    public static void WebService1Builder(Microsoft.AspNetCore.Builder.IApplicationBuilder appBuilder)
+    {
+        Aquila.ServerRuntime.WebService.CreateWebService<WebServices.WebService1>(appBuilder, "WebService1");
     }
 }
 
@@ -918,5 +927,41 @@ namespace WebServices
     [System.ServiceModel.ServiceContractAttribute]
     public class WebService1 : System.Object
     {
+        [System.ServiceModel.OperationContractAttribute]
+        public System.String CreateNewStore(System.Int32 selector)
+        {
+            Entity.Store loc0;
+            loc0 = Entity.StoreManager.Create();
+            loc0.Name = "Simple store";
+            loc0.Property1 = selector;
+            loc0.Save();
+            if (selector > 0)
+            {
+                return "above zero" + loc0.Id;
+            }
+            else
+            {
+                return "below zero" + loc0.Id;
+            }
+
+            ;
+        }
+
+        [System.ServiceModel.OperationContractAttribute]
+        public System.Int32 GetStoreMaxValue()
+        {
+            Aquila.ServerRuntime.PlatformQuery loc0;
+            Aquila.ServerRuntime.PlatformReader loc1;
+            loc0 = new Aquila.ServerRuntime.PlatformQuery();
+            loc0.Text = "FROM Entity.Store SELECT A=Property1";
+            loc1 = loc0.ExecuteReader();
+            while (loc1.Read())
+            {
+                return ((System.Int32)loc1["A"]);
+            }
+
+            ;
+            return 0;
+        }
     }
 }

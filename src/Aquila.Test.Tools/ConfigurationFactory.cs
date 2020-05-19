@@ -185,18 +185,37 @@ public Store UpdateName(Store income)
 using Entity;
 
 [Operation]
-public string GetApi(int selector)
+public string CreateNewStore(int selector)
 {
      var e = $Entity.Store.Create();
      e.Name = ""Simple store"";
-     e.Property1 = 10;
+     e.Property1 = selector;
      e.Save();
 
      if(selector > 0)
          return ""above zero"" + e.Id;
      else
          return ""below zero"" + e.Id;
-}";
+}
+
+
+[Operation]
+public int GetStoreMaxValue()
+{
+    var a = $Query();
+    a.Text = ""FROM Entity.Store SELECT A=Property1"";
+    var r = a.ExecuteReader();
+
+    if(r.Read())
+    {
+        return (int)r.A;
+    }
+
+    return 0;
+}
+
+
+";
             wse.Apply();
 
             #endregion
