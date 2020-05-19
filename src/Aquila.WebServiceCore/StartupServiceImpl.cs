@@ -56,26 +56,4 @@ namespace Aquila.WebServiceCore
             }
         }
     }
-
-    public class Startup
-    {
-        private static void HandleMapTest1(IApplicationBuilder app)
-        {
-            app.Run(async context => { await context.Response.WriteAsync("Map Test 1"); });
-        }
-
-        private static void HandleMapTest2(IApplicationBuilder app)
-        {
-            app.Run(async context => { await context.Response.WriteAsync("Map Test 2"); });
-        }
-
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-        }
-    }
 }

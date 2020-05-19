@@ -53,8 +53,6 @@ namespace Aquila.WebServiceCore
                 .ConfigureServices(services =>
                 {
                     _startupService.ConfigureServices(services);
-
-                    services.TryAddSingleton<SampleService>();
                     services.AddSoapCore();
                 })
                 .Configure(app =>
@@ -69,28 +67,11 @@ namespace Aquila.WebServiceCore
                         await next.Invoke();
                     });
 
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.MapGet("/hello/{name}/{name2}", async context =>
-                        {
-                            var name = context.Request.RouteValues["name"];
-                            var name2 = context.Request.RouteValues["name2"];
-
-                            await context.Response.WriteAsync($"Hello {name} {name2}!");
-                        });
-                    });
-
-                    app.UseSoapEndpoint<SampleService>("/Service.svc", new BasicHttpBinding());
-                    app.UseSoapEndpoint<SampleService>("/Service.asmx", new BasicHttpBinding(),
-                        SoapSerializer.XmlSerializer);
-
                     _startupService.Configure(app);
-
 
                     app.Run(context => context.Response.WriteAsync("Default"));
                 })
                 .UseKestrel()
-                //.UseStartup<Startup>()
                 .ConfigureServices(x => x.AddRouting())
                 .UseContentRoot(Directory.GetCurrentDirectory());
 
