@@ -28,42 +28,41 @@ namespace Aquila.Core.Querying.Model
 
         public LogicScope CurrentScope => _scope.TryPeek(out var res) ? res : null;
 
-        #region Context modifiers
-
-        public enum ListType
-        {
-            Field,
-            DataSource,
-            When,
-            Expression,
-            Join,
-            Query
-        }
 
         /// <summary>
-        /// Load on the stack list of fields
+        /// Load on the stack list
         /// </summary>
-        public void new_list(ListType type)
+        public void create(QObjectType type)
         {
             switch (type)
             {
-                case ListType.Field:
+                case QObjectType.FieldList:
                     _logicStack.Push(new QFieldList());
                     break;
-                case ListType.DataSource:
+                case QObjectType.DataSourceList:
                     _logicStack.Push(new QDataSourceList());
                     break;
-                case ListType.When:
+                case QObjectType.WhenList:
                     _logicStack.Push(new QWhenList());
                     break;
-                case ListType.Expression:
+                case QObjectType.ExpressionList:
                     _logicStack.Push(new QExpressionList());
                     break;
-                case ListType.Join:
+                case QObjectType.JoinList:
                     _logicStack.Push(new QJoinList());
                     break;
-                case ListType.Query:
+                case QObjectType.QueryList:
                     _logicStack.Push(new QQueryList());
+                    break;
+                case QObjectType.OrderList:
+                    _logicStack.Push(new QOrderList());
+                    break;
+                case QObjectType.OrderExpression:
+                    _logicStack.Push(new QOrderExpression(_logicStack.PopItem<QSortDirection>(),
+                        _logicStack.PopExpression()));
+                    break;
+                case QObjectType.ResultColumn:
+                    new_result_column();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -90,9 +89,9 @@ namespace Aquila.Core.Querying.Model
             coll.Add(element);
         }
 
-        private void order_by()
+        public void order_by()
         {
-            _logicStack.Push(new QOrderBy(_logicStack.PopItems<QExpression>()));
+            _logicStack.Push(new QOrderBy(_logicStack.PopItem<QOrderList>()));
         }
 
         private void having()
@@ -120,10 +119,6 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(new QGroupBy(_logicStack.PopItem<QExpressionList>()));
         }
 
-        #endregion
-
-        #region Load instructions
-
         public void ld_component(string componentName)
         {
             var component = _tm.FindComponentByName(componentName);
@@ -134,7 +129,6 @@ namespace Aquila.Core.Querying.Model
         {
             _logicStack.Push(_tb.Parse(typeName));
         }
-
 
         public void ld_object_type(string typeName)
         {
@@ -197,6 +191,10 @@ namespace Aquila.Core.Querying.Model
             }
         }
 
+        public void ld_sort(QSortDirection direction)
+        {
+            _logicStack.Push(direction);
+        }
 
         public void ld_nothing()
         {
@@ -221,8 +219,6 @@ namespace Aquila.Core.Querying.Model
 
             _logicStack.Push(result.First());
         }
-
-        #endregion
 
         public void @as(string alias)
         {

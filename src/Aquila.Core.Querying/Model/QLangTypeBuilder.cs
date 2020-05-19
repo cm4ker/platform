@@ -36,6 +36,11 @@ namespace Aquila.Core.Querying.Model
             return _conf.DateTime;
         }
 
+        public IPType Int()
+        {
+            return _conf.Int;
+        }
+
         public IPType Parse(string typeName)
         {
             if (typeName.Contains("."))
@@ -68,6 +73,7 @@ namespace Aquila.Core.Querying.Model
                 "string" => String(int.Parse(args[0])),
                 "numeric" => Numeric(int.Parse(args[0]), int.Parse(args[1])),
                 "datetime" => Date(),
+                "int" => Int(),
                 _ => throw new Exception($"Type def: {typeName} can't be resolved")
             };
         }

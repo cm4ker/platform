@@ -32,11 +32,16 @@ having_stmt
     SELECT ( DISTINCT | ALL )? result_column ( ',' result_column )*
  ;
  
+ orderby_stmt:
+    ORDER BY ordered_column (',' ordered_column)*
+ ;
+ 
 query_stmt
  : ( from_stmt )?
    ( where_stmt )?
    ( group_by_stmt having_stmt? )?
    select_stmt
+   ( orderby_stmt )?
  ;
 type_name
  : name+ ( '(' signed_number ')'
@@ -125,6 +130,11 @@ result_column
  : '*'
  | object_name '.' '*'
  | ( column_alias '=')? expr 
+ ;
+
+ordered_column
+ : 
+ | expr (DESC | ASC)? 
  ;
 
 table:

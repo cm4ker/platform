@@ -83,7 +83,7 @@ namespace Aquila.QueryBuilder
             return item;
         }
 
-        private void Push(object obj)
+        public void push(object obj)
         {
             _syntaxStack.Push(obj);
         }
@@ -100,7 +100,7 @@ namespace Aquila.QueryBuilder
 
         public void dup()
         {
-            Push(_syntaxStack.Peek());
+            push(_syntaxStack.Peek());
         }
 
         #endregion
@@ -117,13 +117,13 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine ld_table(string name)
         {
-            Push(new STable(name));
+            push(new STable(name));
             return this;
         }
 
         public QueryMachine ld_column()
         {
-            Push(new SField(Pop<string>(), Pop<string>()));
+            push(new SField(Pop<string>(), Pop<string>()));
             return this;
         }
 
@@ -138,13 +138,13 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine assign()
         {
-            Push(new SAssign(Pop<SExpression>(), Pop<SField>()));
+            push(new SAssign(Pop<SExpression>(), Pop<SField>()));
             return this;
         }
 
         public QueryMachine ld_param(string name)
         {
-            Push(new SParameter(name));
+            push(new SParameter(name));
             return this;
         }
 
@@ -153,10 +153,10 @@ namespace Aquila.QueryBuilder
             switch (pop())
             {
                 case SExpression exp:
-                    Push(new SAliasedExpression(exp, name));
+                    push(new SAliasedExpression(exp, name));
                     break;
                 case SDataSource source:
-                    Push(new SAliasedDataSource(source, name));
+                    push(new SAliasedDataSource(source, name));
                     break;
                 default:
                     throw new InvalidOperationException();
@@ -178,44 +178,44 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine ld_const(object value)
         {
-            Push(new SConstant(value));
+            push(new SConstant(value));
             return this;
         }
 
         public QueryMachine mark()
         {
-            Push(new SMarker());
+            push(new SMarker());
             return this;
         }
 
         public QueryMachine coalese()
         {
-            Push(new SCoalese(PopList<SExpression>()));
+            push(new SCoalese(PopList<SExpression>()));
             return this;
         }
 
         public QueryMachine @case()
         {
-            Push(new SCase(TryPop<SExpression>(), PopList<SWhen>()));
+            push(new SCase(TryPop<SExpression>(), PopList<SWhen>()));
             return this;
         }
 
         public QueryMachine when()
         {
-            Push(new SWhen(Pop<SCondition>(), Pop<SExpression>()));
+            push(new SWhen(Pop<SCondition>(), Pop<SExpression>()));
             return this;
         }
 
         public QueryMachine ld_type(string type)
         {
             SQLTypeBuilder tb = new SQLTypeBuilder();
-            Push(tb.Parse(type));
+            push(tb.Parse(type));
             return this;
         }
 
         public QueryMachine cast()
         {
-            Push(new SCast(Pop<ColumnType>(), Pop<SExpression>()));
+            push(new SCast(Pop<ColumnType>(), Pop<SExpression>()));
             return this;
         }
 
@@ -232,45 +232,45 @@ namespace Aquila.QueryBuilder
             {
                 case MachineContextType.Select:
 
-                    Push(new SSelect(
+                    push(new SSelect(
                         TryPopList<SExpression>(),
+                        TryPop<SOrderBy>(),
                         TryPop<STop>(),
                         TryPop<SHaving>(),
-                        TryPop<SOrderBy>(),
                         TryPop<SGroupBy>(),
                         TryPop<SWhere>(),
                         TryPop<SFrom>()
                     ));
                     break;
                 case MachineContextType.From:
-                    Push(new SFrom(TryPopList<SJoin>(), TryPop<SDataSource>()));
+                    push(new SFrom(TryPopList<SJoin>(), TryPop<SDataSource>()));
                     break;
                 case MachineContextType.Where:
-                    Push(new SWhere(Pop<SCondition>()));
+                    push(new SWhere(Pop<SCondition>()));
                     break;
                 case MachineContextType.Having:
-                    Push(new SHaving(Pop<SCondition>()));
+                    push(new SHaving(Pop<SCondition>()));
                     break;
                 case MachineContextType.GroupBy:
-                    Push(new SGroupBy(PopList<SExpression>()));
+                    push(new SGroupBy(PopList<SExpression>()));
                     break;
                 case MachineContextType.Insert:
-                    Push(new SInsert(TryPopList<SField>(), Pop<STable>(), Pop<SDataSource>()));
+                    push(new SInsert(TryPopList<SField>(), Pop<STable>(), Pop<SDataSource>()));
                     break;
                 case MachineContextType.Values:
-                    Push(new SValuesSource(PopList<SExpression>()));
+                    push(new SValuesSource(PopList<SExpression>()));
                     break;
                 case MachineContextType.Set:
-                    Push(new SSet(PopList<SAssign>()));
+                    push(new SSet(PopList<SAssign>()));
                     break;
                 case MachineContextType.Update:
-                    Push(new SUpdate(Pop<SDataSource>(), Pop<SSet>(), TryPop<SWhere>(), TryPop<SFrom>()));
+                    push(new SUpdate(Pop<SDataSource>(), Pop<SSet>(), TryPop<SWhere>(), TryPop<SFrom>()));
                     break;
                 case MachineContextType.OrderBy:
-                    Push(new SOrderBy(TryPop<OrderDirection>(), PopList<SExpression>()));
+                    push(new SOrderBy(TryPop<OrderDirection>(), PopList<SExpression>()));
                     break;
                 case MachineContextType.Delete:
-                    Push(new SDelete(
+                    push(new SDelete(
                         TryPop<SWhere>(),
                         Pop<SFrom>()));
                     break;
@@ -360,7 +360,7 @@ namespace Aquila.QueryBuilder
             if (_currentContext != null && result is SSelect select)
                 result = new SDataSourceNestedQuery(select);
 
-            Push(result);
+            push(result);
 
             return this;
         }
@@ -368,7 +368,7 @@ namespace Aquila.QueryBuilder
         public QueryMachine bg_query()
         {
             if (_currentContext != null)
-                Push(_currentContext);
+                push(_currentContext);
 
             _currentContext = new MachineContext();
 
@@ -384,7 +384,7 @@ namespace Aquila.QueryBuilder
         /// </summary>
         public QueryMachine gt()
         {
-            Push(new SGreatThen(Pop<SExpression>(), Pop<SExpression>()));
+            push(new SGreatThen(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -393,7 +393,7 @@ namespace Aquila.QueryBuilder
         /// </summary>
         public QueryMachine lt()
         {
-            Push(new SLessThen(Pop<SExpression>(), Pop<SExpression>()));
+            push(new SLessThen(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -402,7 +402,7 @@ namespace Aquila.QueryBuilder
         /// </summary>
         public QueryMachine gte()
         {
-            Push(new SGreatThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
+            push(new SGreatThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -411,7 +411,7 @@ namespace Aquila.QueryBuilder
         /// </summary>
         public QueryMachine lte()
         {
-            Push(new SLessThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
+            push(new SLessThenOrEquals(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -421,7 +421,7 @@ namespace Aquila.QueryBuilder
         /// </summary>
         public QueryMachine ne()
         {
-            Push(new SNotEquals(Pop<SExpression>(), Pop<SExpression>()));
+            push(new SNotEquals(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -430,7 +430,7 @@ namespace Aquila.QueryBuilder
         /// </summary>
         public QueryMachine eq()
         {
-            Push(new SEquals(Pop<SExpression>(), Pop<SExpression>()));
+            push(new SEquals(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
@@ -440,14 +440,14 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine and()
         {
-            Push(new SAnd(PopList<SExpression>()));
+            push(new SAnd(PopList<SExpression>()));
             return this;
         }
 
 
         public void or()
         {
-            Push(new SOr(PopList<SExpression>()));
+            push(new SOr(PopList<SExpression>()));
         }
 
         #endregion
@@ -456,25 +456,25 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine madd()
         {
-            Push(new SAdd(PopList<SExpression>()));
+            push(new SAdd(PopList<SExpression>()));
             return this;
         }
 
         public QueryMachine msub()
         {
-            Push(new SSub(PopList<SExpression>()));
+            push(new SSub(PopList<SExpression>()));
             return this;
         }
 
         public QueryMachine add()
         {
-            Push(new SAdd(PopList<SExpression>(2)));
+            push(new SAdd(PopList<SExpression>(2)));
             return this;
         }
 
         public QueryMachine sub()
         {
-            Push(new SSub(PopList<SExpression>(2)));
+            push(new SSub(PopList<SExpression>(2)));
             return this;
         }
 
@@ -484,7 +484,7 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine sum()
         {
-            Push(new SSum(Pop<SExpression>()));
+            push(new SSum(Pop<SExpression>()));
 
 
             return this;
@@ -492,14 +492,14 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine avg()
         {
-            Push(new SAvg(Pop<SExpression>()));
+            push(new SAvg(Pop<SExpression>()));
 
             return this;
         }
 
         public QueryMachine count()
         {
-            Push(new SCount(Pop<SExpression>()));
+            push(new SCount(Pop<SExpression>()));
 
             return this;
         }
@@ -510,7 +510,7 @@ namespace Aquila.QueryBuilder
 
         private void join_with_type(JoinType joinType)
         {
-            Push(new SJoin(Pop<SCondition>(), Pop<SDataSource>(), joinType));
+            push(new SJoin(Pop<SCondition>(), Pop<SDataSource>(), joinType));
         }
 
         public QueryMachine @join()
@@ -553,25 +553,25 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine ld_str(string arg)
         {
-            Push(arg);
+            push(arg);
             return this;
         }
 
         public QueryMachine ld_null()
         {
-            Push(new SNull());
+            push(new SNull());
             return this;
         }
 
         public QueryMachine desc()
         {
-            Push(OrderDirection.DESC);
+            push(OrderDirection.DESC);
             return this;
         }
 
         public QueryMachine asc()
         {
-            Push(OrderDirection.ASC);
+            push(OrderDirection.ASC);
             return this;
         }
 

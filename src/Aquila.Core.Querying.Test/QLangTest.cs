@@ -1,11 +1,7 @@
-using System;
 using System.Linq;
-using MoreLinq.Extensions;
 using Xunit;
 using Aquila.Configuration.Structure;
 using Aquila.Core.Querying.Model;
-using Aquila.QueryBuilder.Model;
-using Aquila.QueryBuilder.Visitor;
 using Aquila.Test.Tools;
 
 namespace Aquila.Core.Querying.Test
@@ -32,7 +28,7 @@ namespace Aquila.Core.Querying.Test
             _m.@as("A");
             _m.@from();
 
-            _m.new_list(QLang.ListType.Field);
+            _m.create(QObjectType.FieldList);
             _m.ld_name("A");
             _m.ld_field("Id");
             _m.st_elem();
@@ -59,7 +55,7 @@ namespace Aquila.Core.Querying.Test
 
             var ds = _m.top() as QAliasedDataSource;
 
-            _m.new_list(QLang.ListType.Field);
+            _m.create(QObjectType.FieldList);
             Assert.Equal(1, ds.Children.Count);
             _m.ld_name("A");
             Assert.Equal(1, ds.Children.Count);
@@ -286,6 +282,41 @@ namespace Aquila.Core.Querying.Test
             _m.new_query();
         }
 
+        [Fact]
+        public void OrderByTest()
+        {
+            _m.reset();
+            _m.new_scope();
+
+            _m.ld_component("Entity");
+            _m.ld_object_type("Store");
+            _m.@as("A");
+            _m.@from();
+
+            _m.create(QObjectType.FieldList);
+            _m.ld_name("A");
+            _m.ld_field("Id");
+            _m.st_elem();
+            _m.select();
+
+            _m.create(QObjectType.OrderList);
+            _m.dup();
+            
+            
+            _m.ld_const(1);
+            _m.ld_sort(QSortDirection.Ascending);
+            _m.create(QObjectType.OrderExpression);
+            _m.st_elem();
+            _m.order_by();
+
+            _m.new_query();
+
+            var query = (QQuery) _m.top();
+
+            Assert.NotNull(query);
+            Assert.NotNull(query.OrderBy);
+            Assert.NotEmpty(query.OrderBy.Expressions);
+        }
 
         [Fact]
         public void DataRequestTest()
@@ -301,7 +332,7 @@ namespace Aquila.Core.Querying.Test
             _m.reset();
 
             _m.new_scope();
-            _m.new_list(QLang.ListType.Field);
+            _m.create(QObjectType.FieldList);
             _m.dup();
 
             _m.ld_component("Entity");
@@ -315,11 +346,6 @@ namespace Aquila.Core.Querying.Test
             var dr = _m.top() as QDataRequest;
 
             Assert.Single(dr.Source);
-
-
-             // DataRequestGenerator drg = new DataRequestGenerator();
-             //
-             // drg.Gen(dr);
         }
     }
 }

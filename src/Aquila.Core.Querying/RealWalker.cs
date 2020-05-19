@@ -135,7 +135,9 @@ namespace Aquila.Core.Querying
 
             Visit(node.From);
             Visit(node.Where);
+            Visit(node.OrderBy);
             Visit(node.Select);
+
 
             _qm.st_query();
             _l.WriteLine("st_query");
@@ -375,6 +377,27 @@ namespace Aquila.Core.Querying
             return null;
         }
 
+        public override object VisitQOrderBy(QOrderBy arg)
+        {
+            _qm.m_order_by();
+            _l.WriteLine("m_order_by");
+
+            Visit(arg.Expressions);
+
+            return null;
+        }
+
+        public override object VisitQOrderExpression(QOrderExpression arg)
+        {
+            Visit(arg.Expression);
+            if (arg.SortingDirection == QSortDirection.Descending)
+                _qm.desc();
+            else
+                _qm.asc();
+
+            return null;
+        }
+
         public override object VisitQConst(QConst node)
         {
             string alias = "";
@@ -451,6 +474,7 @@ namespace Aquila.Core.Querying
             return null;
         }
 
+
         public override object VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
             var schema = node.Property.GetDbSchema();
@@ -493,6 +517,15 @@ namespace Aquila.Core.Querying
             _qm.ld_str(node.GetDbName());
 
             var res = base.VisitQAliasedSelectExpression(node);
+
+            if (_hasAlias) //alias not handled
+            {
+                var item = _qm.pop(); //item
+                _qm.pop(); //alias
+                _qm.push(item);
+                _qm.@as(node.GetDbName());
+            }
+
 
             return res;
         }

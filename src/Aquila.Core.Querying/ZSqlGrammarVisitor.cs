@@ -3,6 +3,7 @@ using Aquila.Configuration.Structure;
 using Aquila.Core.Contracts.Data.Entity;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Core.Querying.Model;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace Aquila.Core.Querying
 {
@@ -25,7 +26,7 @@ namespace Aquila.Core.Querying
 
         public override object VisitSql_stmt_list(ZSqlGrammarParser.Sql_stmt_listContext context)
         {
-            _stack.new_list(QLang.ListType.Query);
+            _stack.create(QObjectType.QueryList);
 
             return base.VisitSql_stmt_list(context);
         }
@@ -49,6 +50,9 @@ namespace Aquila.Core.Querying
 
             if (context.select_stmt() != null)
                 Visit(context.select_stmt());
+
+            if (context.orderby_stmt() != null)
+                Visit(context.orderby_stmt());
 
             _stack.new_query();
             _stack.st_elem();
@@ -90,11 +94,21 @@ namespace Aquila.Core.Querying
 
         public override object VisitSelect_stmt(ZSqlGrammarParser.Select_stmtContext context)
         {
-            _stack.new_list(QLang.ListType.Field);
+            _stack.create(QObjectType.FieldList);
 
             base.VisitSelect_stmt(context);
 
             _stack.select();
+
+            return null;
+        }
+
+        public override object VisitOrderby_stmt(ZSqlGrammarParser.Orderby_stmtContext context)
+        {
+            _stack.create(QObjectType.OrderList);
+            base.VisitOrderby_stmt(context);
+
+            _stack.order_by();
 
             return null;
         }
@@ -217,12 +231,30 @@ namespace Aquila.Core.Querying
             //duplicate array of fields for load the new result column into it
             _stack.dup();
             base.VisitResult_column(context);
-            _stack.new_result_column();
+            _stack.create(QObjectType.ResultColumn);
 
             if (context.column_alias() != null)
                 _stack.@as(context.column_alias().GetText());
 
             _stack.st_elem();
+            return null;
+        }
+
+        public override object VisitOrdered_column(ZSqlGrammarParser.Ordered_columnContext context)
+        {
+            //duplicate array of fields for load the new result column into it
+            _stack.dup();
+            base.VisitOrdered_column(context);
+
+            if (context.DESC() != null)
+                _stack.ld_sort(QSortDirection.Descending);
+            else
+                _stack.ld_sort(QSortDirection.Ascending);
+
+            _stack.create(QObjectType.OrderExpression);
+            _stack.st_elem();
+            return null;
+
             return null;
         }
     }

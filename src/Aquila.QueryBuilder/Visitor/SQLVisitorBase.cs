@@ -359,7 +359,7 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitColumnTypeNumeric(ColumnTypeNumeric node)
         {
-            return $"NUMERIC({node.Precision},{node.Scale})";
+            return $"NUMERIC({node.Scale},{node.Precision})";
         }
 
         public override string VisitColumnTypeGuid(ColumnTypeGuid node)
@@ -403,7 +403,7 @@ namespace Aquila.QueryBuilder.Visitor
 
             if (node.CheckExists)
                 ct = $"IF (OBJECT_ID('{node.Table.Accept(this)}', N'U') IS NULL) \n" + ct;
-            
+
             return ct;
         }
 

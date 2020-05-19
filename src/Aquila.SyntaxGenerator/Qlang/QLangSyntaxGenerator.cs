@@ -54,7 +54,7 @@ namespace Aquila.SyntaxGenerator.Qlang
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections")),
                         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
                         SyntaxFactory.UsingDirective(
-                            SyntaxFactory.ParseName("Aquila.Configuration.Contracts.TypeSystem"))
+                            SyntaxFactory.ParseName("Aquila.Core.Contracts.TypeSystem"))
                         
                     );
 

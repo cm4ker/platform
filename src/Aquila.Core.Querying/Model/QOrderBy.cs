@@ -4,11 +4,11 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QOrderBy
     {
-        public List<QExpression> Expressions { get; }
-
-        public QOrderBy(List<QExpression> expressions)
-        {
-            Expressions = expressions;
-        }
+        // public QExpressionList Expressions { get; }
+        //
+        // public QOrderBy(QExpressionList expressions)
+        // {
+        //     Expressions = expressions;
+        // }
     }
 }
