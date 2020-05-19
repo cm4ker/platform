@@ -193,9 +193,9 @@ public string GetApi(int selector)
      e.Save();
 
      if(selector > 0)
-         return ""above zero"";
+         return ""above zero"" + e.Id;
      else
-         return ""below zero"";
+         return ""below zero"" + e.Id;
 }";
             wse.Apply();
 

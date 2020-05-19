@@ -665,7 +665,7 @@ namespace Aquila.Compiler
 
                 if (context.GT() != null) opType = BinaryOperatorType.GreaterThen;
                 if (context.LT() != null) opType = BinaryOperatorType.LessThen;
-                if (context.OP_GT() != null) opType = BinaryOperatorType.GraterOrEqualTo;
+                if (context.OP_GE() != null) opType = BinaryOperatorType.GraterOrEqualTo;
                 if (context.OP_LE() != null) opType = BinaryOperatorType.LessOrEqualTo;
 
                 _syntaxStack.Push(new BinaryExpression(context.start.ToLineInfo(), _syntaxStack.PopExpression(),

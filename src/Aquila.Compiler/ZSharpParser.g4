@@ -106,7 +106,8 @@ assigment:
 
 
 functionCall: 
-    functionName=name '(' arguments? ')'
+    functionName=name '('  ')'
+    | functionName=name '('arguments')'
 ;
 
 parameters: parameter (',' parameter)*;
@@ -147,13 +148,7 @@ sql_literal:
 
 expression:
     expressionStructural
-    | lookupExpression
     ;
-
-lookupExpression:
-    lookupExpression '.' (name | functionCall) 
-    | expressionStructural '.' (name | functionCall) 
-;
 
 expressionStructural:
    functionCall
@@ -187,7 +182,7 @@ expressionRelational:
        expressionAdditive 
        | expressionRelational GT expressionAdditive
        | expressionRelational LT expressionAdditive
-       | expressionRelational OP_GT expressionAdditive
+       | expressionRelational OP_GE expressionAdditive
        | expressionRelational OP_LE expressionAdditive 
 ;
 
@@ -212,19 +207,27 @@ expressionUnary:
 ;
 
 expressionPostfix: 
-    expressionAtom
+    | globalVar
+    | lookupExpression 
+    | expressionAtom
     | castExpression 
     | newExpression
     | '(' expression ')'
     | expressionAtom '[' indexerExpression=expression ']'
     | anonimousDeclaration
+    | 
+;
+
+lookupExpression:
+    lookupExpression '.' (name | functionCall) 
+    | expressionAtom '.' (name | functionCall) 
 ;
 
 expressionAtom:
     literal
     | sql_literal
     | name
-    | globalVar
+    
 ;
 
 variableType: 
