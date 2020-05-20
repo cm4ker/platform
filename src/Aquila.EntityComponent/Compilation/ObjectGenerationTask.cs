@@ -105,8 +105,10 @@ namespace Aquila.EntityComponent.Compilation
                         .Ret()
                         ;
 
-                    TypeBody.SymbolTable.AddProperty(new Property(null, table.Name, t.ToAstType()))
-                        .Connect(prop.prop);
+
+                    var ast = new Property(null, table.Name, t.ToAstType());
+                    //TypeBody.Properties.Add(ast);
+                    TypeBody.SymbolTable.AddProperty(ast).Connect(prop.prop);
                 }
 
                 var saveBuilder = builder.DefineMethod("Save", true, false, false);

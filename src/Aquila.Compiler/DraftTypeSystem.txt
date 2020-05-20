@@ -1,0 +1,27 @@
+
+
+   External WORLD                          Internal WORLD                           CODE
+  
+  
+  Common Type System                    Platform Type System                      Consumer
+     Classes             Get internal        ObjectClass           Get by scope
+     Structures       <----------------       (Hidden)          <-----------------
+     Enumerations       Internal type         (Hidden)                 Type
+     Interfaces       ---------------->       (Hidden)          -----------------> 
+     Delegates                                (Hidden)
+                                                
+
+
+
+PlatformType   1) always visible by code 
+               2) has scope(User|System|Shared)
+
+
+Emitter(PlatformType)
+        |
+        V
+     Unwrap(PT)
+        |
+        V
+ EmitUnderlyingType   
+     

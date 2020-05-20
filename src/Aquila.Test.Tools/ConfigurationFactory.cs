@@ -48,7 +48,7 @@ namespace Aquila.Test.Tools
                 table1.Name = "ExampleTable";
 
                 var tableProp1 = table1.CreateProperty();
-                tableProp1.Name = "TProp1";
+                tableProp1.Name = "TableProperty";
                 tableProp1.SetType(MDTypes.String(100));
                 tableProp1.SetType(store.GetRef());
 
@@ -179,15 +179,19 @@ public Store UpdateName(Store income)
 
             var ws1 = wse.CreateType();
             ws1.Name = "WebService1";
-            var ws1main = ws1.CreateModule();
-            ws1main.ModuleName = "Main";
-            ws1main.ModuleText = @"
+            var ws1Main = ws1.CreateModule();
+            ws1Main.ModuleName = "Main";
+            ws1Main.ModuleText = @"
 using Entity;
 
 [Operation]
 public string CreateNewStore(int selector)
 {
      var e = $Entity.Store.Create();
+
+     var row = e.ExampleTable.Add();
+     row.TableProperty = ""String value for this"";
+
      e.Name = ""Simple store"";
      e.Property1 = selector;
      e.Save();

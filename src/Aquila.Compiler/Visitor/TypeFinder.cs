@@ -22,6 +22,9 @@ namespace Aquila.Compiler.Visitor
 
         public static TypeSymbol FindSymbol([NotNull] TypeSyntax typeNode, [NotNull] SyntaxNode node)
         {
+            if (typeNode.Parent == null)
+                throw new Exception("Type has not parent. Can't create context without parent");
+
             var p = new TypeFinder(typeNode);
             return p.Visit(node);
         }
@@ -30,7 +33,8 @@ namespace Aquila.Compiler.Visitor
         {
             if (typeNode is SingleTypeSyntax sts)
             {
-                var contextNamespaces = typeNode.FirstParent<CompilationUnit>()?.Usings.Union(typeNode.FirstParent<TypeBody>()?.Usings);
+                var contextNamespaces = typeNode.FirstParent<CompilationUnit>()?.Usings
+                    .Union(typeNode.FirstParent<TypeBody>()?.Usings);
 
                 var result = ts.FindType(sts.TypeName);
 
