@@ -26,10 +26,10 @@ using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Contracts.Network;
-using Aquila.Core.Test.Assemblies;
 using Aquila.Core.Test.Environment;
 using Aquila.Migration;
 using Aquila.Shell;
+using Aquila.Test.Tools.Assemblies;
 
 namespace Aquila.Core.Test
 {

@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using dnlib.DotNet;
 using Aquila.ClientRuntime;
 using Aquila.Core.Assemlies;
-using Aquila.Core.Test.Assemblies;
 using Aquila.Core.Assemblies;
 using Aquila.Configuration.Structure;
 using Aquila.Core.ClientServices;

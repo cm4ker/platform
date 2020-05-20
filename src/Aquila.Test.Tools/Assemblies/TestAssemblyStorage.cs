@@ -4,7 +4,7 @@ using System.Linq;
 using Aquila.Compiler;
 using Aquila.Core.Assemlies;
 
-namespace Aquila.Core.Test.Assemblies
+namespace Aquila.Test.Tools.Assemblies
 {
     public class TestAssemblyStorage : IAssemblyStorage
     {
@@ -13,6 +13,11 @@ namespace Aquila.Core.Test.Assemblies
         public TestAssemblyStorage()
         {
             _assemblies = new Dictionary<AssemblyDescription, byte[]>();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
         }
 
         public IEnumerable<AssemblyDescription> GetAssemblies(string configurationHash)
@@ -34,6 +39,11 @@ namespace Aquila.Core.Test.Assemblies
         public void SaveAssembly(AssemblyDescription description, byte[] blob)
         {
             _assemblies.Add(description, blob);
+        }
+
+        public void RemoveAssembly(string hash)
+        {
+            throw new NotImplementedException();
         }
     }
 }

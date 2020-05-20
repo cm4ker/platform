@@ -11,6 +11,10 @@ namespace Aquila.Core.Assemlies
     public interface IAssemblyStorage
     {
         void SaveAssembly(AssemblyDescription description, byte[] blob);
+        void RemoveAssembly(string hash);
+
+        void Clear();
+        
         IEnumerable<AssemblyDescription> GetAssemblies(string configurationHash);
         byte[] GetAssembly(AssemblyDescription description);
         byte[] GetAssembly(string configurationHash, string name);
@@ -47,6 +51,12 @@ namespace Aquila.Core.Assemlies
         {
             return GetAssembly(GetAssemblies().First(a => a.ConfigurationHash.Equals(configurationHash) && a.Name.Equals(name)));
         }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<AssemblyDescription> GetAssemblies(string configurationHash)
         {
             return GetAssemblies().Where(a => a.ConfigurationHash.Equals(configurationHash));
@@ -70,6 +80,10 @@ namespace Aquila.Core.Assemlies
 
         }
 
+        public void RemoveAssembly(string hash)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

@@ -94,6 +94,28 @@ namespace Aquila.Core.Assemlies
         }
 
 
+        public void Clear()
+        {
+            void Gen(QueryMachine qm)
+            {
+                qm
+                    .bg_query()
+                    .m_from()
+                    .ld_table("assemblies")
+                    .m_where()
+                    .ld_const("1")
+                    .ld_const("1")
+                    .eq()
+                    .m_delete()
+                    .st_query();
+            }
+
+            using (var cmd = _dataContextManager.GetContext().CreateCommand(Gen))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         public IEnumerable<AssemblyDescription> GetAssemblies(string configurationHash)
         {
             var list = new List<AssemblyDescription>();
@@ -113,11 +135,8 @@ namespace Aquila.Core.Assemlies
                     .m_select()
                     .ld_column("name")
                     .ld_column("type")
-
                     .ld_column("configuration_hash")
                     .ld_column("assembly_hash")
-                    
-                    
                     .st_query();
             }
 
@@ -145,21 +164,20 @@ namespace Aquila.Core.Assemlies
                 qm
                     .bg_query()
                     .m_values()
-                        .ld_param("configuration_hash")
-                        .ld_param("assembly_hash")
-                        .ld_param("type")
-                        .ld_param("name")
-                        .ld_param("data")
+                    .ld_param("configuration_hash")
+                    .ld_param("assembly_hash")
+                    .ld_param("type")
+                    .ld_param("name")
+                    .ld_param("data")
                     .m_insert()
-                        .ld_table("assemblies")
-                        .ld_column("configuration_hash")
-                        .ld_column("assembly_hash")
-                        .ld_column("type")
-                        .ld_column("name")
-                        .ld_column("data")
+                    .ld_table("assemblies")
+                    .ld_column("configuration_hash")
+                    .ld_column("assembly_hash")
+                    .ld_column("type")
+                    .ld_column("name")
+                    .ld_column("data")
                     .st_query();
-
-           }
+            }
 
             using (var cmd = _dataContextManager.GetContext().CreateCommand(Gen))
             {
@@ -173,6 +191,11 @@ namespace Aquila.Core.Assemlies
 
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        public void RemoveAssembly(string hash)
+        {
+            throw new NotImplementedException();
         }
     }
 }

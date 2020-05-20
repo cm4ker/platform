@@ -70,6 +70,11 @@ namespace Aquila.Core.Assemblies
 
         public void BuildConfiguration(IProject configuration, SqlDatabaseType dbType)
         {
+            //TODO: Remove temporary hack.
+            //We force remove all assemblies
+
+            _assemblyStorage.Clear();
+
             _logger.Info("Build configuration.");
             var assembly = _compiller.Build(configuration, CompilationMode.Server, dbType);
 
