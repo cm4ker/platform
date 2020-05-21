@@ -9,7 +9,7 @@ namespace Aquila.Configuration.Common.TypeSystem
     {
         private List<IPType> _types;
         private List<IPProperty> _properties;
-        private List<IPMethod> _methods;
+        private List<IPInvokable> _methods;
         private List<IPropertyType> _propertyTypes;
         private List<ITable> _tables;
         private List<IComponent> _components;
@@ -23,13 +23,14 @@ namespace Aquila.Configuration.Common.TypeSystem
         private BooleanPType _booleanPType;
         private GuidPType _guidPType;
         private NumericPType _numericPType;
+        private UnknownPType _unknownPType;
 
 
         public TypeManager()
         {
             _types = new List<IPType>();
             _properties = new List<IPProperty>();
-            _methods = new List<IPMethod>();
+            _methods = new List<IPInvokable>();
             _propertyTypes = new List<IPropertyType>();
             _tables = new List<ITable>();
             _components = new List<IComponent>();
@@ -44,6 +45,8 @@ namespace Aquila.Configuration.Common.TypeSystem
             _types.Add(Boolean);
             _types.Add(Guid);
             _types.Add(Numeric);
+            _types.Add(Unknown);
+
 
             //register settings
             _objectSettings.Add(new ObjectSetting {ObjectId = _intPType.Id, SystemId = _intPType.SystemId});
@@ -53,6 +56,7 @@ namespace Aquila.Configuration.Common.TypeSystem
             _objectSettings.Add(new ObjectSetting {ObjectId = _booleanPType.Id, SystemId = _booleanPType.SystemId});
             _objectSettings.Add(new ObjectSetting {ObjectId = _guidPType.Id, SystemId = _guidPType.SystemId});
             _objectSettings.Add(new ObjectSetting {ObjectId = _numericPType.Id, SystemId = _numericPType.SystemId});
+            _objectSettings.Add(new ObjectSetting {ObjectId = _unknownPType.Id, SystemId = _unknownPType.SystemId});
         }
 
         public IPType Int => _intPType ??= new IntPType(this);
@@ -63,11 +67,14 @@ namespace Aquila.Configuration.Common.TypeSystem
         public IPType Guid => _guidPType ??= new GuidPType(this);
         public IPType Numeric => _numericPType ??= new NumericPType(this);
 
+        public IPType Unknown => _unknownPType ??= new UnknownPType(this);
+
         public IReadOnlyList<IPType> Types => _types;
+        public IReadOnlyList<IPMember> Members { get; }
 
         public IReadOnlyList<IPProperty> Properties => _properties;
 
-        public IReadOnlyList<IPMethod> Methods => _methods;
+        public IReadOnlyList<IPInvokable> Methods => _methods;
 
         public IReadOnlyList<IPropertyType> PropertyTypes => _propertyTypes;
 
@@ -101,7 +108,7 @@ namespace Aquila.Configuration.Common.TypeSystem
             _propertyTypes.Add(type);
         }
 
-        public void Register(IPMethod method)
+        public void Register(IPInvokable method)
         {
             if (_methods.Exists(x => x.Id == method.Id && x.ParentId == method.ParentId))
                 throw new Exception($"Method id {method.Name}:{method.Id} already registered");
@@ -158,25 +165,24 @@ namespace Aquila.Configuration.Common.TypeSystem
             return new PTypeSet(this);
         }
 
-        public IPProperty Property()
+        public IPProperty Property(Guid id, Guid parentId)
         {
-            return new PProperty(this);
+            return new PProperty(id, parentId, this);
         }
 
-
-        public IPMethod Method()
+        public IPProperty Property(Guid parentId)
         {
-            return new PMethod(this);
+            return new PProperty(parentId, this);
         }
 
-        public IPropertyType PropertyType()
+        public IPInvokable Method(Guid id, Guid parentId)
         {
-            return new PropertyType(this);
+            return new PInvokable(id, parentId, this);
         }
 
-        public ITable Table()
+        public IPType NestedType(Guid parentId)
         {
-            return new Table(this);
+            return new NestedType(parentId, this);
         }
 
         public void AddOrUpdateSetting(IObjectSetting setting)

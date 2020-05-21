@@ -7,22 +7,17 @@ using IPType = Aquila.Core.Contracts.TypeSystem.IPType;
 
 namespace Aquila.Configuration.Common.TypeSystem
 {
-    public class PProperty : IPProperty
+    public class PProperty : PMember, IPProperty
     {
-        private readonly TypeManager _ts;
-
         private Guid _typeId;
 
-        internal PProperty(TypeManager ts)
+        internal PProperty(Guid parentId, TypeManager ts) : base(parentId, ts)
         {
-            _ts = ts;
         }
 
-        public Guid Id { get; set; }
-
-        public Guid ParentId { get; set; }
-
-        public string Name { get; set; }
+        internal PProperty(Guid id, Guid parentId, TypeManager ts) : base(id, parentId, ts)
+        {
+        }
 
         public bool IsSelfLink { get; set; }
 
@@ -32,14 +27,37 @@ namespace Aquila.Configuration.Common.TypeSystem
 
         public bool IsReadOnly { get; set; }
 
-        public IPType Type => _ts.FindType(_typeId);
-
+        public IPType Type => TypeManager.FindType(_typeId);
 
         public void SetType(Guid guid)
         {
             _typeId = guid;
         }
+    }
 
-        public ITypeManager TypeManager => _ts;
+
+    public class PMethod : PInvokable
+    {
+        private Guid _typeId;
+
+        internal PMethod(Guid id, Guid parentId, TypeManager tm) : base(id, parentId, tm)
+        {
+        }
+
+        internal PMethod(Guid parentId, TypeManager tm) : base(parentId, tm)
+        {
+        }
+
+        public IPType ReturnType => TypeManager.FindType(_typeId);
+
+        public void SetReturnType(Guid typeId)
+        {
+            _typeId = typeId;
+        }
+
+        public void SetReturnType(IPType type)
+        {
+            _typeId = type.Id;
+        }
     }
 }

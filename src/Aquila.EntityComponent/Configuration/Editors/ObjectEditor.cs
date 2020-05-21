@@ -191,7 +191,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
 
             foreach (var table in _md.Tables)
             {
-                var tTable = _tm.Table();
+                var tTable = _tm.NestedType();
                 tTable.Name = table.Name;
                 tTable.ParentId = _md.ObjectId;
                 tTable.GroupId = table.Guid;
@@ -265,7 +265,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
 
             foreach (var table in _md.Tables)
             {
-                var tTable = _tm.Table();
+                var tTable = _tm.NestedType();
                 tTable.Name = table.Name;
                 tTable.ParentId = _md.DtoId;
                 tTable.GroupId = table.Guid;
@@ -329,7 +329,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
 
             foreach (var table in _md.Tables)
             {
-                var tTable = _tm.Table();
+                var tTable = _tm.NestedType();
                 tTable.Name = table.Name;
                 tTable.ParentId = _md.LinkId;
                 tTable.GroupId = table.Guid;

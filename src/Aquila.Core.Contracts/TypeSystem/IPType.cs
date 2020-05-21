@@ -42,7 +42,7 @@ namespace Aquila.Core.Contracts.TypeSystem
         bool IsQueryAvaliable { get; set; }
 
         bool IsTypeSpec { get; }
-        
+
         bool IsTypeSet { get; }
 
         bool IsArray { get; }
@@ -50,9 +50,9 @@ namespace Aquila.Core.Contracts.TypeSystem
         object Bag { get; set; }
 
         IEnumerable<IPProperty> Properties { get; }
-        IEnumerable<IPMethod> Methods { get; }
 
-        IEnumerable<ITable> Tables { get; }
+        IEnumerable<IPInvokable> Methods { get; }
+
         Guid ComponentId { get; set; }
 
         IPTypeSpec GetSpec();
@@ -60,7 +60,7 @@ namespace Aquila.Core.Contracts.TypeSystem
 
     public enum PrimitiveKind
     {
-        None,
+        Unknown,
         String,
         Int,
         Binary,

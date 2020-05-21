@@ -45,7 +45,22 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         public static IPType FindType(this ITypeManager tm, Guid typeId)
         {
-            return tm.Types.FirstOrDefault(x => x.Id == typeId);
+            return tm.Types.FirstOrDefault(x => x.Id == typeId) ?? tm.Unknown;
+        }
+
+        public static IPInvokable FindInvokable(this ITypeManager tm, Guid invokableId)
+        {
+            return null;
+        }
+
+        public static IEnumerable<IPArgument> FindArguments(this ITypeManager tm, Guid invokableId)
+        {
+            return null;
+        }
+
+        public static IEnumerable<IPProperty> FindProperties(this ITypeManager tm, Guid ownerId)
+        {
+            return null;
         }
 
         public static Guid HandleTypeSet(this ITypeManager tm, IEnumerable<Guid> typeIds)

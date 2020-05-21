@@ -12,11 +12,16 @@ namespace Aquila.Core.Contracts.TypeSystem
         IPType Boolean { get; }
         IPType Guid { get; }
         IPType Numeric { get; }
+        
+        IPType Unknown { get; }
 
         IReadOnlyList<IPType> Types { get; }
+
+        IReadOnlyList<IPMember> Members { get; }
+
         IReadOnlyList<IPProperty> Properties { get; }
 
-        IReadOnlyList<IPMethod> Methods { get; }
+        IReadOnlyList<IPInvokable> Methods { get; }
 
         IReadOnlyList<ITable> Tables { get; }
         IReadOnlyList<IComponent> Components { get; }
@@ -26,7 +31,7 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         void Register(IPType ipType);
         void Register(IPProperty p);
-        void Register(IPMethod method);
+        void Register(IPInvokable method);
         void Register(IPropertyType type);
         void Register(IComponent component);
         void Register(ITable table);
@@ -43,10 +48,10 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         IPProperty Property();
 
-        IPMethod Method();
+        IPInvokable Method();
 
         //IPropertyType PropertyType();
-        ITable Table();
+        ITable NestedType();
 
         void AddMD(Guid id, Guid parentId, object metadata);
 
