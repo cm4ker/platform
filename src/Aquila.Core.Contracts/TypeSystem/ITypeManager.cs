@@ -28,6 +28,7 @@ namespace Aquila.Core.Contracts.TypeSystem
         IReadOnlyList<IObjectSetting> Settings { get; }
 
         IReadOnlyList<IMetadataRow> Metadatas { get; }
+        IReadOnlyList<IBackendObject> BackendObjects { get; }
 
         void Register(IPType ipType);
         void Register(IPProperty p);
@@ -45,12 +46,7 @@ namespace Aquila.Core.Contracts.TypeSystem
         IPTypeSet TypeSet(List<Guid> types);
 
         IPTypeSet TypeSet();
-
-        IPProperty Property();
-
-        IPInvokable Method();
-
-        //IPropertyType PropertyType();
+        
         ITable NestedType();
 
         void AddMD(Guid id, Guid parentId, object metadata);

@@ -16,6 +16,7 @@ namespace Aquila.Configuration.Common.TypeSystem
         private List<IComponent> _components;
         private List<IObjectSetting> _objectSettings;
         private List<MetadataRow> _metadatas;
+        private List<BackendObject> _backendObjects;
 
         private IntPType _intPType;
         private DateTimePType _dateTimePType;
@@ -76,6 +77,7 @@ namespace Aquila.Configuration.Common.TypeSystem
 
         public IReadOnlyList<IMetadataRow> Metadatas => _metadatas;
 
+        public IReadOnlyList<IBackendObject> BackendObjects => _backendObjects;
 
         public void Register(IPType ipType)
         {
@@ -113,6 +115,11 @@ namespace Aquila.Configuration.Common.TypeSystem
         public void Register(ITable table)
         {
             _tables.Add(table);
+        }
+
+        public ITable NestedType()
+        {
+            throw new NotImplementedException();
         }
 
         public void AddMD(Guid id, Guid parentId, object metadata)
@@ -154,7 +161,6 @@ namespace Aquila.Configuration.Common.TypeSystem
         {
             return new PTypeSet(this);
         }
-
         public IPProperty Property(Guid id, Guid parentId)
         {
             return new PProperty(id, parentId, this);
@@ -179,6 +185,11 @@ namespace Aquila.Configuration.Common.TypeSystem
         {
             _objectSettings.RemoveAll(x => x.ObjectId == setting.ObjectId);
             _objectSettings.Add(setting);
+        }
+
+        public void CreateBackendObject(Guid id, object backendObject)
+        {
+            _backendObjects.Add(new BackendObject(backendObject, id));
         }
 
         public void LoadSettings(IEnumerable<IObjectSetting> settings)

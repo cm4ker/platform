@@ -13,4 +13,11 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         string DatabaseName { get; set; }
     }
+
+
+    public interface IBackendObject
+    {
+        Guid ParentId { get; }
+        object PinnedObject { get; }
+    }
 }

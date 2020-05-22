@@ -11,17 +11,19 @@ namespace Aquila.Compiler
         {
         }
     }
-
-
-    public static class EmitterProvider
+    
+    public class EmitterProvider<T>
     {
-        public static RBlockBuilder NewObj(this RBlockBuilder bb, IPType type)
+        public RBlockBuilder NewObj(RBlockBuilder bb, T type)
         {
-            return bb.NewObj();
+            return bb.NewObj(null);
         }
 
-        public static RoslynType GetClrPrivateType(this IPType type)
+        public static RoslynType GetClrPrivateType(IPType type)
         {
         }
     }
+    
+    
+    
 }
