@@ -1,16 +1,14 @@
 using System;
 using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Configuration.Common.TypeSystem
+namespace Aquila.Configuration.Common.TypeSystem.StandartTypes
 {
-    public class UnknownPType : PType
+    public sealed class UnknownPType : PType
     {
-        internal UnknownPType(ITypeManager ts) : base(ts)
+        internal UnknownPType(TypeManager ts) : base(ts)
         {
+            ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = 0});
         }
-
-
-        public override uint SystemId => 0;
 
         public override Guid Id => Guid.Empty;
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Configuration.Common.TypeSystem.StandartTypes;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Configuration.Common.TypeSystem
@@ -46,17 +47,6 @@ namespace Aquila.Configuration.Common.TypeSystem
             _types.Add(Guid);
             _types.Add(Numeric);
             _types.Add(Unknown);
-
-
-            //register settings
-            _objectSettings.Add(new ObjectSetting {ObjectId = _intPType.Id, SystemId = _intPType.SystemId});
-            _objectSettings.Add(new ObjectSetting {ObjectId = _dateTimePType.Id, SystemId = _dateTimePType.SystemId});
-            _objectSettings.Add(new ObjectSetting {ObjectId = _binaryPType.Id, SystemId = _binaryPType.SystemId});
-            _objectSettings.Add(new ObjectSetting {ObjectId = _stringPType.Id, SystemId = _stringPType.SystemId});
-            _objectSettings.Add(new ObjectSetting {ObjectId = _booleanPType.Id, SystemId = _booleanPType.SystemId});
-            _objectSettings.Add(new ObjectSetting {ObjectId = _guidPType.Id, SystemId = _guidPType.SystemId});
-            _objectSettings.Add(new ObjectSetting {ObjectId = _numericPType.Id, SystemId = _numericPType.SystemId});
-            _objectSettings.Add(new ObjectSetting {ObjectId = _unknownPType.Id, SystemId = _unknownPType.SystemId});
         }
 
         public IPType Int => _intPType ??= new IntPType(this);

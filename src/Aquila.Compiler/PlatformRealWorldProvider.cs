@@ -1,6 +1,7 @@
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Core.Contracts.TypeSystem;
+using Aquila.Core.Network;
 
 namespace Aquila.Compiler
 {
@@ -16,10 +17,10 @@ namespace Aquila.Compiler
     {
         public static RBlockBuilder NewObj(this RBlockBuilder bb, IPType type)
         {
-            bb.NewObj()
+            return bb.NewObj();
         }
 
-        public static RoslynType GetClrPrivateType(IPType type)
+        public static RoslynType GetClrPrivateType(this IPType type)
         {
         }
     }

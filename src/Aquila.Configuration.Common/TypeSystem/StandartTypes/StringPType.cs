@@ -1,18 +1,17 @@
 using System;
 using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Configuration.Common.TypeSystem
+namespace Aquila.Configuration.Common.TypeSystem.StandartTypes
 {
     /// <summary>
     ///  Тип строки
     /// </summary>
-    public class StringPType : PType
+    public sealed class StringPType : PType
     {
-        internal StringPType(ITypeManager ts) : base(ts)
+        internal StringPType(TypeManager ts) : base(ts)
         {
+            ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = 6});
         }
-
-        public override uint SystemId => 6;
 
         public override Guid Id => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 6);
         public override bool IsAbstract => true;

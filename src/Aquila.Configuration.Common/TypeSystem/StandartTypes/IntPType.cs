@@ -1,13 +1,13 @@
 using System;
 using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Configuration.Common.TypeSystem
+namespace Aquila.Configuration.Common.TypeSystem.StandartTypes
 {
-    public class IntPType : PType
+    public sealed class IntPType : PType
     {
         internal IntPType(ITypeManager ts) : base(ts)
         {
-            BaseId = null;
+            ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = 7});
         }
 
         public override uint SystemId => 7;
