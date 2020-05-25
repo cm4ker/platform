@@ -1,10 +1,11 @@
 using System;
 using System.IO;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynParameter
+    public class RoslynParameter : IParameter
     {
         private readonly MethodDef _methodDef;
         private Parameter _parameter;

@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynConstructorBuilder : RoslynConstructor
+    public class RoslynConstructorBuilder : RoslynConstructor, IConstructorBuilder
     {
         private readonly MethodDefUser _methodDef;
         private List<RoslynParameter> _parameters = new List<RoslynParameter>();
@@ -22,9 +24,9 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             Body = new RBlockBuilder(ts, this);
         }
 
-        public override IReadOnlyList<RoslynParameter> Parameters => _parameters;
+        public override IReadOnlyList<IParameter> Parameters => _parameters;
 
-        public RoslynParameter DefineParameter(RoslynType type)
+        public IParameter DefineParameter(IType type)
         {
             var dtype = (RoslynType) type;
 
@@ -74,7 +76,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                 {
                     if (wasFirst)
                         tw.W(",");
-                        
+
                     exp.Dump(tw);
 
                     wasFirst = true;

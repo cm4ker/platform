@@ -161,6 +161,7 @@ namespace Aquila.Configuration.Common.TypeSystem
         {
             return new PTypeSet(this);
         }
+
         public IPProperty Property(Guid id, Guid parentId)
         {
             return new PProperty(id, parentId, this);
@@ -187,7 +188,7 @@ namespace Aquila.Configuration.Common.TypeSystem
             _objectSettings.Add(setting);
         }
 
-        public void CreateBackendObject(Guid id, object backendObject)
+        public void ConnectBackendObject(Guid id, object backendObject)
         {
             _backendObjects.Add(new BackendObject(backendObject, id));
         }

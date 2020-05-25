@@ -6,6 +6,8 @@ namespace Aquila.Compiler.Contracts
     {
         IType FieldType { get; }
 
+        IType DeclaringType { get; }
+
         bool IsPublic { get; }
 
         bool IsStatic { get; }

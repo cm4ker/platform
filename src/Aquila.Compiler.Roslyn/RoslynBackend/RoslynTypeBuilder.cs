@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
+using IField = Aquila.Compiler.Contracts.IField;
+using IMethod = Aquila.Compiler.Contracts.IMethod;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynTypeBuilder : RoslynType
+    public class RoslynTypeBuilder : RoslynType, ITypeBuilder
     {
         private readonly RoslynTypeSystem _ts;
         private RoslynContextResolver _r;
@@ -28,23 +33,23 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         }
 
 
-        public override IReadOnlyList<RoslynField> Fields => _fields;
+        public override IReadOnlyList<IField> Fields => _fields;
 
-        public override IReadOnlyList<RoslynConstructor> Constructors => _constructors;
+        public override IReadOnlyList<IConstructor> Constructors => _constructors;
 
-        public override IReadOnlyList<RoslynMethod> Methods => _methods;
+        public override IReadOnlyList<IMethod> Methods => _methods;
 
-        public override IReadOnlyList<RoslynType> Interfaces => _interfaces;
+        public override IReadOnlyList<IType> Interfaces => _interfaces;
 
-        public override IReadOnlyList<RoslynCustomAttribute> CustomAttributes => _customAttributes;
+        public override IReadOnlyList<ICustomAttribute> CustomAttributes => _customAttributes;
 
-        public override IReadOnlyList<RoslynProperty> Properties => _properties;
+        public override IReadOnlyList<IProperty> Properties => _properties;
 
 
-        public void AddInterfaceImplementation(RoslynType type)
+        public void AddInterfaceImplementation(IType type)
         {
             var dType = (RoslynType) type;
-            _interfaces.Add(type);
+            _interfaces.Add(dType);
             this.TypeDef.Interfaces.Add(new InterfaceImplUser(dType.TypeRef));
         }
 
@@ -53,7 +58,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             throw new NotImplementedException();
         }
 
-        public RoslynField DefineField(RoslynType type, string name, bool isPublic, bool isStatic)
+        public IField DefineField(IType type, string name, bool isPublic, bool isStatic)
         {
             var tref = _r.GetReference(((RoslynType) type).TypeRef);
             var field = new FieldDefUser(name, new FieldSig(tref.ToTypeSig()));
@@ -116,7 +121,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return dm;
         }
 
-        public RoslynPropertyBuilder DefineProperty(RoslynType propertyType, string name, bool isStatic = false)
+        public IPropertyBuilder DefineProperty(IType propertyType, string name, bool isStatic = false)
         {
             var prop = new PropertyDefUser(name);
 
@@ -136,7 +141,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return propertyBuilder;
         }
 
-        public RoslynConstructorBuilder DefineConstructor(bool isStatic, params RoslynType[] args)
+        public IConstructorBuilder DefineConstructor(bool isStatic, params IType[] args)
         {
             MethodSig sig;
 
@@ -170,7 +175,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return dc;
         }
 
-        public RoslynTypeBuilder DefineNastedType(RoslynType baseType, string name, bool isPublic)
+        public ITypeBuilder DefineNastedType(RoslynType baseType, string name, bool isPublic)
         {
             throw new NotImplementedException();
         }
@@ -225,6 +230,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                             }
                         }
                 }
+
                 sw.WriteLine();
             }
 
@@ -238,12 +244,12 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             sw.Write(Name);
 
             sw.W(":");
-            BaseType.DumpRef(sw);
+            ((RoslynType) BaseType).DumpRef(sw);
 
             foreach (var inf in Interfaces)
             {
                 sw.W(",");
-                inf.DumpRef(sw);
+                ((RoslynType) inf).DumpRef(sw);
             }
 
 

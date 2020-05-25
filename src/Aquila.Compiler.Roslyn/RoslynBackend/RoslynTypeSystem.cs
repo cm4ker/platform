@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynTypeSystem
+    public class RoslynTypeSystem : ITypeSystem
     {
         private List<RoslynAssembly> _asms;
 
@@ -128,6 +129,11 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                 return FindAssembly(assembly.FullName);
         }
 
+        /// <summary>
+        /// Iterate all assemblies
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public RoslynType FindType(string name)
         {
             foreach (var asm in _asms)

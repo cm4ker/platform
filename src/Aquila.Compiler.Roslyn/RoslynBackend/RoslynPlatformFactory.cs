@@ -1,14 +1,17 @@
 using System;
+using Aquila.Compiler.Contracts;
+using Aquila.Compiler.Contracts.Extensions;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynPlatformFactory
+    public class RoslynPlatformFactory : IPlatformFactory
     {
-        public RoslynAssemblyBuilder CreateAssembly(RoslynTypeSystem ts, string assemblyName, Version assemblyVersion)
+        public IAssemblyBuilder CreateAssembly(ITypeSystem ts, string assemblyName, Version assemblyVersion)
         {
-            var dnts = ts;
+            var dnts = (RoslynTypeSystem) ts;
 
             var asmDef = new AssemblyDefUser(assemblyName, assemblyVersion);
 
@@ -30,7 +33,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             ;
         }
 
-        public RoslynCustomAttributeBulder CreateAttribute(RoslynTypeSystem ts, RoslynType type, params RoslynType[] args)
+        public ICustomAttributeBuilder CreateAttribute(ITypeSystem ts, IType type, params IType[] args)
         {
             var c = type.FindConstructor(args) as RoslynInvokableBase;
 

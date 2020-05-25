@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace Aquila.Core.Contracts.TypeSystem
 {
-    public interface IPType : ITypeManagerProvider
+    public interface IPType : IPUniqueObject
     {
-        Guid Id { get; set; }
-
         Guid? BaseId { get; set; }
 
         Guid? GroupId { get; set; }

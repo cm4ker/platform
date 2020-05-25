@@ -4,7 +4,7 @@ using dnlib.DotNet;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynCustomAttribute
+    public class RoslynCustomAttribute : Contracts.ICustomAttribute
     {
         private readonly RoslynTypeSystem _ts;
         private CustomAttribute _ca;

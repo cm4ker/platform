@@ -13,12 +13,6 @@ namespace Aquila.Compiler.Contracts
 
         ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes, IType baseType);
 
-        /// <summary>
-        /// Импортировать тип путем копирования его в сборку
-        /// </summary>
-        /// <param name="type"></param>
-        ITypeBuilder ImportWithCopy(IType type);
-
         void SetAttribute(ICustomAttribute attr);
 
         IAssembly EndBuild();

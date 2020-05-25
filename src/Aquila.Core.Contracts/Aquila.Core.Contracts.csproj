@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FS\SharpFileSystem\SharpFileSystem.csproj" />
-    <ProjectReference Include="..\Aquila.Compiler.Roslyn\Aquila.Compiler.Roslyn.csproj" />
     <ProjectReference Include="..\Aquila.Data\Aquila.Data.csproj" />
     <ProjectReference Include="..\Aquila.Ide.Contract\Aquila.Ide.Contracts.csproj" />
     <ProjectReference Include="..\Aquila.Shared\Aquila.Shared.csproj" />

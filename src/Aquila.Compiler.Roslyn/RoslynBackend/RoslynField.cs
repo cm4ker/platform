@@ -1,9 +1,11 @@
 using System;
 using dnlib.DotNet;
+using IField = Aquila.Compiler.Contracts.IField;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynField
+    public class RoslynField : IField
     {
         private readonly RoslynTypeSystem _ts;
         private RoslynContextResolver _cr;
@@ -18,15 +20,15 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             _cr = new RoslynContextResolver(_ts, FieldDef.Module);
         }
 
-        public bool Equals(RoslynField other)
+        protected bool Equals(RoslynField other)
         {
             throw new NotImplementedException();
         }
 
         public string Name => FieldDef.Name;
-        public RoslynType FieldType => _cr.GetType(FieldDef.FieldType);
+        public IType FieldType => _cr.GetType(FieldDef.FieldType);
 
-        public RoslynType DeclaringType => _cr.GetType(FieldDef.DeclaringType);
+        public IType DeclaringType => _cr.GetType(FieldDef.DeclaringType);
 
         public bool IsPublic => FieldDef.IsPublic;
 
@@ -42,6 +44,11 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             }
 
             return null;
+        }
+
+        public bool Equals(IField other)
+        {
+            throw new NotImplementedException();
         }
     }
 }

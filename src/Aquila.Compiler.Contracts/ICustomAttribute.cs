@@ -6,6 +6,8 @@ namespace Aquila.Compiler.Contracts
 {
     public interface ICustomAttribute : IEquatable<ICustomAttribute>
     {
+        IType AttributeType { get; }
+
         List<object> Parameters { get; }
         Dictionary<string, object> Properties { get; }
     }

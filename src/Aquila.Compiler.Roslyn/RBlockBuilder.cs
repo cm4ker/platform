@@ -2,22 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography.X509Certificates;
+using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 
 namespace Aquila.Compiler.Roslyn
 {
-    public class RBlockBuilder
+    public partial class RBlockBuilder
+    {
+    }
+
+    public partial class RBlockBuilder
     {
         private readonly RoslynInvokableBase _method;
-        private RBlockBuilder _parent;
+        private readonly RBlockBuilder _parent;
 
         private int _localIndex = 0;
 
-        private List<RLocal> _locals = new List<RLocal>();
-
-        Stack<object> _stack = new Stack<object>();
+        readonly List<RLocal> _locals = new List<RLocal>();
+        readonly Stack<object> _stack = new Stack<object>();
 
         private int GetNextLocIndex()
         {
@@ -35,14 +37,14 @@ namespace Aquila.Compiler.Roslyn
         {
         }
 
-        public RBlockBuilder(RoslynTypeSystem ts, RoslynInvokableBase method, RBlockBuilder parent)
+        public RBlockBuilder(ITypeSystem ts, RoslynInvokableBase method, RBlockBuilder parent)
         {
             _parent = parent;
             TypeSystem = ts;
             _method = method;
         }
 
-        public RoslynTypeSystem TypeSystem { get; }
+        public ITypeSystem TypeSystem { get; }
 
         private Expression PopExp()
         {
@@ -59,9 +61,9 @@ namespace Aquila.Compiler.Roslyn
             return (RoslynType) Pop();
         }
 
-        public RLocal DefineLocal(RoslynType type)
+        public ILocal DefineLocalInternal(IType type)
         {
-            var loc = new RLocal($"loc{GetNextLocIndex()}", type);
+            var loc = new RLocal(GetNextLocIndex(), type);
             _locals.Add(loc);
             return loc;
         }
@@ -78,26 +80,26 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder StFld(RoslynField field)
+        public RBlockBuilder StFld(IField field)
         {
             _stack.Push(new Assign(PopExp(), new LookUp(new NameExpression(field.Name), PopExp())));
             return this;
         }
 
-        public RBlockBuilder StSFld(RoslynField field)
+        public RBlockBuilder StSFld(IField field)
         {
             _stack.Push(new Assign(PopExp(),
                 new LookUp(new NameExpression(field.Name), new TypeToken(field.DeclaringType))));
             return this;
         }
 
-        public RBlockBuilder LdSFld(RoslynField field)
+        public RBlockBuilder LdSFld(IField field)
         {
             _stack.Push(new LookUp(new NameExpression(field.Name), new TypeToken(field.DeclaringType)));
             return this;
         }
 
-        public RBlockBuilder NewObj(RoslynConstructor c)
+        public RBlockBuilder NewObj(IConstructor c)
         {
             Expression[] args = new Expression[c.Parameters.Count];
             for (int i = c.Parameters.Count - 1; i >= 0; i--)
@@ -109,23 +111,7 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        /*
-         
-         var i = new int[10];
-         i[0] = 1;
-         ..
-         i[1] = 2;
-         ..
-         i[2]
-         ....
-         
-         var i = new int[10] {1,2,3,4,5};
-         
-         new Call(new int[10] {1,2,3,4,5});
-         
-         */
-
-        public RBlockBuilder NewArr(RoslynType c)
+        public RBlockBuilder NewArr(IType c)
         {
             Push(new NewArrayExpression(c, PopExp()));
             return this;
@@ -190,6 +176,12 @@ namespace Aquila.Compiler.Roslyn
         }
 
         public RBlockBuilder LdLit(decimal d)
+        {
+            _stack.Push(new Literal(d));
+            return this;
+        }
+        
+        public RBlockBuilder LdLit(long d)
         {
             _stack.Push(new Literal(d));
             return this;
@@ -415,13 +407,13 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder IsInst(RoslynType type)
+        public RBlockBuilder IsInst(IType type)
         {
             _stack.Push(new Is(type, PopExp()));
             return this;
         }
 
-        public RBlockBuilder Cast(RoslynType type)
+        public RBlockBuilder Cast(IType type)
         {
             _stack.Push(new Cast(type, PopExp()));
             return this;

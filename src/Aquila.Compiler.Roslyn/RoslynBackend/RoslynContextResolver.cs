@@ -1,5 +1,6 @@
 using System;
 using dnlib.DotNet;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
@@ -54,11 +55,11 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                 return _ts.Resolve(tr.ToTypeRef());
         }
 
-        public MethodSig ResolveMethodSig(MethodSig msig, RoslynType[] genericArguments)
+        public MethodSig ResolveMethodSig(MethodSig msig, IType[] genericArguments)
         {
             if (!msig.RetType.ContainsGenericParameter)
             {
-                RoslynType dt = (RoslynType) GetType(msig.RetType);
+                RoslynType dt = GetType(msig.RetType);
 
                 if (dt != null)
                     msig.RetType = dt.TypeRef.ToTypeSig();
@@ -68,7 +69,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             {
                 if (!msig.Params[i].ContainsGenericParameter)
                 {
-                    RoslynType dt = (RoslynType) GetType(msig.Params[i]);
+                    RoslynType dt = GetType(msig.Params[i]);
 
                     if (dt != null)
                         msig.Params[i] = dt.TypeRef.ToTypeSig();

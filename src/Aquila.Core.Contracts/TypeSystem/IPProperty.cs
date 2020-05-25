@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace Aquila.Core.Contracts.TypeSystem
 {
+    public interface IPField : IPMember
+    {
+    }
+
     public interface IPProperty : IPMember
     {
         bool IsSelfLink { get; set; }
@@ -16,18 +20,21 @@ namespace Aquila.Core.Contracts.TypeSystem
     }
 
 
-    public interface IPMember : ITypeManagerProvider
+    public interface IPUniqueObject : ITypeManagerProvider
     {
         Guid Id { get; }
-        
+    }
+
+    public interface IPMember : IPUniqueObject
+    {
         Guid ParentId { get; }
-        
+
         string Name { get; set; }
-        
+
         bool IsProperty { get; }
-        
+
         bool IsMethod { get; }
-        
+
         bool IsConstructor { get; }
     }
 }

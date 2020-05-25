@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using IMethod = dnlib.DotNet.IMethod;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynCustomAttributeBulder : RoslynCustomAttribute
+    public class RoslynCustomAttributeBulder : RoslynCustomAttribute , ICustomAttributeBuilder
     {
         public RoslynCustomAttributeBulder(RoslynTypeSystem ts, IMethod constructor) : base(ts, null)
         {

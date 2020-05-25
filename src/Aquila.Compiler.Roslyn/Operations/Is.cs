@@ -1,14 +1,15 @@
 using System.IO;
+using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 
 namespace Aquila.Compiler.Roslyn
 {
     public class Is : Expression
     {
-        private readonly RoslynType _type;
+        private readonly IType _type;
         private readonly Expression _expression;
 
-        public Is(RoslynType type, Expression expression)
+        public Is(IType type, Expression expression)
         {
             _type = type;
             _expression = expression;

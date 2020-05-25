@@ -7,7 +7,7 @@ namespace Aquila.Compiler.Contracts
     /// <summary>
     /// Сборка
     /// </summary>
-    public interface IAssembly : IEquatable<IAssembly>
+    public interface IAssembly : IEquatable<IAssembly>, ITypeSystemProvider
     {
         /// <summary>
         /// Имя сборки
@@ -37,11 +37,6 @@ namespace Aquila.Compiler.Contracts
         /// </summary>
         /// <param name="stream"></param>
         void Write(Stream stream);
-
-        /// <summary>
-        /// Система типов
-        /// </summary>
-        ITypeSystem TypeSystem { get; }
     }
 
     public static class AssemblyExtension

@@ -1,12 +1,14 @@
 using System;
 using System.IO;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynConstructor : RoslynInvokableBase
+    public class RoslynConstructor : RoslynInvokableBase, IConstructor
     {
-        public RoslynConstructor(RoslynTypeSystem ts, IMethodDefOrRef method, MethodDef methodDef, ITypeDefOrRef declType)
+        public RoslynConstructor(RoslynTypeSystem ts, IMethodDefOrRef method, MethodDef methodDef,
+            ITypeDefOrRef declType)
             : base(ts, method, methodDef,
                 declType)
         {
