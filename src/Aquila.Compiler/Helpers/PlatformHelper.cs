@@ -21,14 +21,14 @@ namespace Aquila.Compiler.Helpers
 {
     public static class PlatformHelper
     {
-        public static RBlockBuilder LdContext(this RBlockBuilder e)
+        public static RoslynEmitter LdContext(this RoslynEmitter e)
         {
             var m = e.TypeSystem.Resolve<ContextHelper>().FindMethod(nameof(ContextHelper.GetContext));
             e.Call(m);
             return e;
         }
 
-        public static RBlockBuilder LdDataContext(this RBlockBuilder e)
+        public static RoslynEmitter LdDataContext(this RoslynEmitter e)
         {
             var p = e.TypeSystem.Resolve<PlatformContext>().FindProperty(nameof(PlatformContext.DataContext));
             e
@@ -37,7 +37,7 @@ namespace Aquila.Compiler.Helpers
             return e;
         }
 
-        public static RBlockBuilder NewDbCmdFromContext(this RBlockBuilder e)
+        public static RoslynEmitter NewDbCmdFromContext(this RoslynEmitter e)
         {
             var o = e.TypeSystem.Resolve<DataContext>().FindMethod(nameof(DataContext.CreateCommand));
             e
@@ -47,7 +47,7 @@ namespace Aquila.Compiler.Helpers
         }
 
 
-        public static RBlockBuilder DbTypes(this RBlockBuilder e)
+        public static RoslynEmitter DbTypes(this RoslynEmitter e)
         {
             var o = e.TypeSystem.Resolve<DataContext>().FindProperty(nameof(DataContext.Types));
             e
@@ -57,7 +57,7 @@ namespace Aquila.Compiler.Helpers
         }
 
 
-        public static RBlockBuilder LdDefaultDateTime(this RBlockBuilder e)
+        public static RoslynEmitter LdDefaultDateTime(this RoslynEmitter e)
         {
             var o = e.TypeSystem.Resolve<IDbTypesContract>().FindProperty(nameof(IDbTypesContract.DateTime));
             var o1 = e.TypeSystem.Resolve<IDateTime>().FindProperty(nameof(IDateTime.MinValue));
@@ -114,10 +114,10 @@ namespace Aquila.Compiler.Helpers
         }
 
 
-        public static RBlockBuilder RemoteCall(this RBlockBuilder e, RoslynType result, string route,
-            Action<RBlockBuilder> paramHandler)
+        public static RoslynEmitter RemoteCall(this RoslynEmitter e, RoslynType result, string route,
+            Action<RoslynEmitter> paramHandler)
         {
-            RBlockBuilder emitter = e;
+            RoslynEmitter emitter = e;
             var ts = e.TypeSystem;
             var sb = ts.GetSystemBindings();
             var type = ts.Client();

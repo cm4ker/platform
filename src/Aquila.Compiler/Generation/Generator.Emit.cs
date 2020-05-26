@@ -60,7 +60,7 @@ namespace Aquila.Compiler.Generation
             // emitter.Ret();
         }
 
-        private void EmitCast(RBlockBuilder e, CastExpression cast, SymbolTable symbolTable)
+        private void EmitCast(RoslynEmitter e, CastExpression cast, SymbolTable symbolTable)
         {
             EmitExpression(e, cast.Expression, symbolTable);
             e.Cast(_map.GetClrType(cast.CastType));

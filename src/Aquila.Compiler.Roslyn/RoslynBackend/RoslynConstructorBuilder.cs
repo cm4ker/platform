@@ -21,7 +21,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             _methodDef.Body = new CilBody();
 
 
-            Body = new RBlockBuilder(ts, this);
+            Body = new RoslynEmitter(ts, this);
         }
 
         public override IReadOnlyList<IParameter> Parameters => _parameters;
@@ -45,7 +45,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return dp;
         }
 
-        public RBlockBuilder Body { get; }
+        public RoslynEmitter Body { get; }
 
         public void Dump(TextWriter tw)
         {

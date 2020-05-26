@@ -13,7 +13,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private Node EmitGlobalVar(RBlockBuilder e, Node currentGv, Expression expr, SymbolTable symbolTable)
+        private Node EmitGlobalVar(RoslynEmitter e, Node currentGv, Expression expr, SymbolTable symbolTable)
         {
             if (expr is Name n)
             {

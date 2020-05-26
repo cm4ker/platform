@@ -16,7 +16,7 @@ namespace Aquila.Compiler.Generation
         {
         }
 
-        private void EmitVariable(RBlockBuilder e, SymbolTable symTable, Variable variable)
+        private void EmitVariable(RoslynEmitter e, SymbolTable symTable, Variable variable)
         {
             //load phase 
 

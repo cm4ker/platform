@@ -1,11 +1,12 @@
 using System;
 using System.Reflection.Emit;
 using Aquila.Compiler.Contracts;
+using Aquila.Compiler.Roslyn.Operations;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 
 namespace Aquila.Compiler.Roslyn
 {
-    public partial class RBlockBuilder : IEmitter
+    public partial class RoslynEmitter : IEmitter
     {
         public IEmitter Emit(OpCode code)
         {
@@ -94,35 +95,66 @@ namespace Aquila.Compiler.Roslyn
 
         public ILabel DefineLabel()
         {
-            throw new NotImplementedException();
+            return new RLabel(GetNextLabelIndex());
         }
 
         public ILabel BeginExceptionBlock()
         {
+            throw new NotImplementedException();
         }
 
         public IEmitter BeginCatchBlock(IType exceptionType)
         {
+            throw new NotImplementedException();
         }
 
         public IEmitter EndExceptionBlock()
         {
+            throw new NotImplementedException();
         }
 
         public IEmitter MarkLabel(ILabel label)
         {
+            return Mark((RLabel) label);
         }
 
         public IEmitter Emit(OpCode code, ILabel label)
         {
+            if (code == OpCodes.Br)
+            {
+                Goto(label);
+            }
+            else if (code == OpCodes.Br_S)
+            {
+                Goto(label);
+            }
+            else if (code == OpCodes.Brfalse)
+            {
+                Neg().Block()
+                    .Goto(label)
+                    .EndBlock();
+            }
+            else if (code == OpCodes.Brtrue)
+            {
+                Neg().Block()
+                    .Goto(label)
+                    .EndBlock();
+            }
+
+            throw new Exception("Operation not supported");
         }
 
         public IEmitter Emit(OpCode code, ILocal local)
         {
+            throw new Exception("Operation not supported");
         }
 
         public IEmitter Emit(OpCode code, IParameter parameter)
         {
+            if (code == OpCodes.Ldarg)
+                return LdArg((RoslynParameter) parameter);
+
+            throw new Exception("Operation not supported");
         }
 
         public bool InitLocals { get; set; }

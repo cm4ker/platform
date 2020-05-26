@@ -1,11 +1,11 @@
-using Aquila.Compiler.Roslyn.RoslynBackend;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Shared.Tree;
 
 namespace Aquila.Core.Contracts.Configuration
 {
     public interface IGlobalVarManager
     {
-        RoslynTypeSystem TypeSystem { get; }
+        ITypeManager TypeSystem { get; }
 
         void Register(Node node);
 

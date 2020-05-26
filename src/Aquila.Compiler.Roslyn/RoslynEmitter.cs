@@ -2,21 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using Aquila.Compiler.Contracts;
+using Aquila.Compiler.Roslyn.Operations;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 
 namespace Aquila.Compiler.Roslyn
 {
-    public partial class RBlockBuilder
-    {
-    }
-
-    public partial class RBlockBuilder
+    public partial class RoslynEmitter
     {
         private readonly RoslynInvokableBase _method;
-        private readonly RBlockBuilder _parent;
+        private readonly RoslynEmitter _parent;
 
         private int _localIndex = 0;
+        private int _labelIndex = 0;
 
         readonly List<RLocal> _locals = new List<RLocal>();
         readonly Stack<object> _stack = new Stack<object>();
@@ -30,14 +29,23 @@ namespace Aquila.Compiler.Roslyn
             else return _parent.GetNextLocIndex();
         }
 
+        private int GetNextLabelIndex()
+        {
+            if (_parent is null)
+            {
+                return _labelIndex++;
+            }
+            else return _parent.GetNextLocIndex();
+        }
+
 
         public List<Expression> BaseCall { get; set; } = new List<Expression>();
 
-        public RBlockBuilder(RoslynTypeSystem ts, RoslynInvokableBase method) : this(ts, method, null)
+        public RoslynEmitter(RoslynTypeSystem ts, RoslynInvokableBase method) : this(ts, method, null)
         {
         }
 
-        public RBlockBuilder(ITypeSystem ts, RoslynInvokableBase method, RBlockBuilder parent)
+        public RoslynEmitter(ITypeSystem ts, RoslynInvokableBase method, RoslynEmitter parent)
         {
             _parent = parent;
             TypeSystem = ts;
@@ -51,9 +59,9 @@ namespace Aquila.Compiler.Roslyn
             return (Expression) Pop();
         }
 
-        private RBlockBuilder PopBlock()
+        private RoslynEmitter PopBlock()
         {
-            return (RBlockBuilder) Pop();
+            return (RoslynEmitter) Pop();
         }
 
         private RoslynType PopType()
@@ -68,38 +76,38 @@ namespace Aquila.Compiler.Roslyn
             return loc;
         }
 
-        public RBlockBuilder Push(object exp)
+        public RoslynEmitter Push(object exp)
         {
             _stack.Push(exp);
             return this;
         }
 
-        public RBlockBuilder StLoc(RLocal loc)
+        public RoslynEmitter StLoc(RLocal loc)
         {
             _stack.Push(new Assign(PopExp(), new NameExpression(loc.Name)));
             return this;
         }
 
-        public RBlockBuilder StFld(IField field)
+        public RoslynEmitter StFld(IField field)
         {
             _stack.Push(new Assign(PopExp(), new LookUp(new NameExpression(field.Name), PopExp())));
             return this;
         }
 
-        public RBlockBuilder StSFld(IField field)
+        public RoslynEmitter StSFld(IField field)
         {
             _stack.Push(new Assign(PopExp(),
                 new LookUp(new NameExpression(field.Name), new TypeToken(field.DeclaringType))));
             return this;
         }
 
-        public RBlockBuilder LdSFld(IField field)
+        public RoslynEmitter LdSFld(IField field)
         {
             _stack.Push(new LookUp(new NameExpression(field.Name), new TypeToken(field.DeclaringType)));
             return this;
         }
 
-        public RBlockBuilder NewObj(IConstructor c)
+        public RoslynEmitter NewObj(IConstructor c)
         {
             Expression[] args = new Expression[c.Parameters.Count];
             for (int i = c.Parameters.Count - 1; i >= 0; i--)
@@ -111,7 +119,7 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder NewArr(IType c)
+        public RoslynEmitter NewArr(IType c)
         {
             Push(new NewArrayExpression(c, PopExp()));
             return this;
@@ -122,13 +130,13 @@ namespace Aquila.Compiler.Roslyn
             return new AdvancedArrayBuilder(PopExp(), c, this);
         }
 
-        public RBlockBuilder LdLoc(RLocal loc)
+        public RoslynEmitter LdLoc(RLocal loc)
         {
             _stack.Push(new NameExpression(loc.Name));
             return this;
         }
 
-        public RBlockBuilder LdArg(int index)
+        public RoslynEmitter LdArg(int index)
         {
             if (!_method.IsStatic && index == 0)
             {
@@ -145,86 +153,85 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-
-        public RBlockBuilder LdFld(RoslynField fld)
+        public RoslynEmitter LdFld(RoslynField fld)
         {
             _stack.Push(new LookUp(new NameExpression(fld.Name), PopExp()));
             return this;
         }
 
-        public RBlockBuilder LdArg(RoslynParameter p)
+        public RoslynEmitter LdArg(RoslynParameter p)
         {
             _stack.Push(new NameExpression(p.Name));
             return this;
         }
 
-        public RBlockBuilder LdArg_0()
+        public RoslynEmitter LdArg_0()
         {
             return LdArg(0);
         }
 
-        public RBlockBuilder LdLit(int i)
+        public RoslynEmitter LdLit(int i)
         {
             _stack.Push(new Literal(i));
             return this;
         }
 
-        public RBlockBuilder LdLit(char i)
+        public RoslynEmitter LdLit(char i)
         {
             _stack.Push(new Literal(i));
             return this;
         }
 
-        public RBlockBuilder LdLit(decimal d)
-        {
-            _stack.Push(new Literal(d));
-            return this;
-        }
-        
-        public RBlockBuilder LdLit(long d)
+        public RoslynEmitter LdLit(decimal d)
         {
             _stack.Push(new Literal(d));
             return this;
         }
 
-        public RBlockBuilder LdLit(uint i)
+        public RoslynEmitter LdLit(long d)
+        {
+            _stack.Push(new Literal(d));
+            return this;
+        }
+
+        public RoslynEmitter LdLit(uint i)
         {
             _stack.Push(new Literal(i));
             return this;
         }
 
-        public RBlockBuilder LdLit(string s)
+        public RoslynEmitter LdLit(string s)
         {
             _stack.Push(new Literal(s));
             return this;
         }
 
-        public RBlockBuilder LdLit(double i)
+        public RoslynEmitter LdLit(double i)
         {
             _stack.Push(new Literal(i));
             return this;
         }
 
 
-        public RBlockBuilder LdFtn(RoslynMethod method)
+        public RoslynEmitter LdFtn(RoslynMethod method)
         {
             _stack.Push(new NameExpression(method.Name));
             return this;
         }
 
-        public RBlockBuilder LdElem()
+        public RoslynEmitter LdElem()
         {
             Push(new IndexerAccess(PopExp(), PopExp()));
             return this;
         }
 
-        public RBlockBuilder StElem()
+        public RoslynEmitter StElem()
         {
             Push(new Assign(PopExp(), new IndexerAccess(PopExp(), PopExp())));
             return this;
         }
 
-        public RBlockBuilder Dup()
+        public RoslynEmitter Dup()
         {
             var dup = Pop();
             Push(dup);
@@ -233,171 +240,172 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder Add()
+        public RoslynEmitter Add()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Plus));
             return this;
         }
 
-        public RBlockBuilder Neg()
+        public RoslynEmitter Neg()
         {
             _stack.Push(new UnaryExpression(PopExp(), UKind.Negative));
             return this;
         }
 
-        public RBlockBuilder Not()
+
+        internal RoslynEmitter Goto(ILabel label)
+        {
+            _stack.Push(new GoTo((RLabel) label));
+            return this;
+        }
+
+        public RoslynEmitter Not()
         {
             _stack.Push(new UnaryExpression(PopExp(), UKind.Not));
             return this;
         }
 
-        public RBlockBuilder Sub()
+        public RoslynEmitter Sub()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Minus));
             return this;
         }
 
-        public RBlockBuilder Mul()
+        public RoslynEmitter Mul()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Multiply));
             return this;
         }
 
-        public RBlockBuilder Div()
+        public RoslynEmitter Div()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Div));
             return this;
         }
 
-        public RBlockBuilder Rem()
+        public RoslynEmitter Rem()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Rem));
             return this;
         }
 
-        public RBlockBuilder StArg(RoslynParameter arg)
+        public RoslynEmitter StArg(RoslynParameter arg)
         {
             _stack.Push(new Assign(PopExp(), new NameExpression(arg.Name)));
             return this;
         }
 
-        public RBlockBuilder Cgt()
+        public RoslynEmitter Cgt()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Gt));
             return this;
         }
 
-        public RBlockBuilder Ceq()
+        public RoslynEmitter Ceq()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Eq));
             return this;
         }
 
-        public RBlockBuilder Clt()
+        public RoslynEmitter Clt()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Lt));
             return this;
         }
 
-        public RBlockBuilder GreaterOrEqual()
+        public RoslynEmitter GreaterOrEqual()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Get));
             return this;
         }
 
-        public RBlockBuilder LessOrEqual()
+        public RoslynEmitter LessOrEqual()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Let));
             return this;
         }
 
-        public RBlockBuilder And()
+        public RoslynEmitter And()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.And));
             return this;
         }
 
-        public RBlockBuilder Or()
+        public RoslynEmitter Or()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Or));
             return this;
         }
 
-        public RBlockBuilder Cneq()
+        public RoslynEmitter Cneq()
         {
             _stack.Push(new BinaryExpression(PopExp(), PopExp(), BKind.Ne));
             return this;
         }
 
-        public RBlockBuilder Nothing()
+        public RoslynEmitter Nothing()
         {
             _stack.Push(null);
             return this;
         }
 
-        public RBlockBuilder Declare()
+        public RoslynEmitter Declare()
         {
             _stack.Push(new Declare(PopExp(), (NameExpression) _stack.Pop(), PopType()));
 
             return this;
         }
 
-        public RBlockBuilder Inline(RLocal loc)
+        public RoslynEmitter Inline(RLocal loc)
         {
             _locals.Remove(loc);
             _stack.Push(new Declare(PopExp(), new NameExpression(loc.Name), loc.Type));
             return this;
         }
 
-        public RBlockBuilder Assign()
+        public RoslynEmitter Assign()
         {
             _stack.Push(new Assign(PopExp(), PopExp()));
             return this;
         }
 
-        public RBlockBuilder For()
+        public RoslynEmitter For()
         {
-            _stack.Push(new For((RBlockBuilder) Pop(), PopExp(), PopExp(), PopExp()));
+            _stack.Push(new RXFor((RoslynEmitter) Pop(), PopExp(), PopExp(), PopExp()));
             return this;
         }
 
-        public RBlockBuilder Block()
+        public RoslynEmitter Block()
         {
-            var b = new RBlockBuilder(TypeSystem, _method, this);
+            var b = new RoslynEmitter(TypeSystem, _method, this);
             Push(b);
             return b;
         }
 
-        public RBlockBuilder EndBlock()
+        public RoslynEmitter EndBlock()
         {
             return _parent;
         }
 
-        public RBlockBuilder If()
+        public RoslynEmitter If()
         {
             _stack.Push(new RXIf(PopBlock(), PopBlock(), PopExp()));
             return this;
         }
 
-        public RBlockBuilder While()
+        public RoslynEmitter While()
         {
             _stack.Push(new RXWhile(PopBlock(), PopExp()));
             return this;
         }
 
-        public RBlockBuilder Try()
+        public RoslynEmitter Try()
         {
             _stack.Push(new RXTry(PopBlock(), PopBlock(), PopBlock()));
             return this;
         }
 
-
-        public RBlockBuilder TryCall()
-        {
-            return this;
-        }
-
-        public RBlockBuilder Ret()
+        public RoslynEmitter Ret()
         {
             if (_method is RoslynConstructor ||
                 _method is RoslynMethod m && m.ReturnType == m.System.GetSystemBindings().Void)
@@ -407,25 +415,32 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder IsInst(IType type)
+        public RoslynEmitter IsInst(IType type)
         {
             _stack.Push(new Is(type, PopExp()));
             return this;
         }
 
-        public RBlockBuilder Cast(IType type)
+        public RoslynEmitter Cast(IType type)
         {
             _stack.Push(new Cast(type, PopExp()));
             return this;
         }
 
-        public RBlockBuilder Throw()
+        public RoslynEmitter Throw()
         {
             Push(new RXThrow(PopExp()));
             return this;
         }
 
-        public RBlockBuilder Throw(RoslynType type)
+        public RoslynEmitter Mark(RLabel label)
+        {
+            Push(label);
+            return this;
+        }
+
+
+        public RoslynEmitter Throw(RoslynType type)
         {
             var con = type.Constructors.FirstOrDefault(x => !x.Parameters.Any());
 
@@ -436,7 +451,7 @@ namespace Aquila.Compiler.Roslyn
             return Throw();
         }
 
-        public RBlockBuilder StProp(RoslynProperty prop)
+        public RoslynEmitter StProp(RoslynProperty prop)
         {
             if (prop.Setter.IsStatic)
                 throw new Exception("This not allowed yet");
@@ -446,7 +461,7 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder LdProp(RoslynProperty prop)
+        public RoslynEmitter LdProp(RoslynProperty prop)
         {
             if (prop.Getter.IsStatic)
             {
@@ -459,7 +474,7 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder Call(RoslynInvokableBase method)
+        public RoslynEmitter Call(RoslynInvokableBase method)
         {
             Expression[] args = new Expression[method.Parameters.Count];
             for (int i = method.Parameters.Count - 1; i >= 0; i--)
@@ -510,30 +525,28 @@ namespace Aquila.Compiler.Roslyn
 
                 foreach (var item in _stack.Reverse())
                 {
-                    try
+                    if (item is Expression exp)
                     {
-                        var stmt = new Statement((Expression) item);
-                        //((Statement) item).Dump(tw);
+                        var stmt = new Statement(exp);
                         stmt.Dump(tw);
                         tw.W("\n");
                     }
-                    catch (Exception ex)
+                    else if (item is RLabel label)
                     {
-                        if (item is Expression)
-                            Console.WriteLine(
-                                $"Founded unwrapped instruction {item} on:\nType: {_method.DeclaringType.Name}\nMethod: {_method.Name}");
+                        label.Dump(tw);
+                        tw.W(":\n");
                     }
                 }
             }
         }
 
-        public RBlockBuilder Null()
+        public RoslynEmitter Null()
         {
             Push(new NameExpression("null"));
             return this;
         }
 
-        public RBlockBuilder LdNull()
+        public RoslynEmitter LdNull()
         {
             return Null();
         }

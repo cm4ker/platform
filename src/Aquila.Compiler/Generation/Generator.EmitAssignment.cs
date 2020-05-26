@@ -21,7 +21,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitAssignment(RBlockBuilder e, Assignment assignment, SymbolTable symbolTable)
+        private void EmitAssignment(RoslynEmitter e, Assignment assignment, SymbolTable symbolTable)
         {
             if (assignment.Assignable is Name name)
             {
@@ -121,7 +121,7 @@ namespace Aquila.Compiler.Generation
         //         e.Box(currenType);
         // }
 
-        private void EmitLoadThis(RBlockBuilder e)
+        private void EmitLoadThis(RoslynEmitter e)
         {
             e.LdArg_0();
         }

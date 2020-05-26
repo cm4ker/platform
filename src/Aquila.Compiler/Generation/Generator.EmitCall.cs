@@ -15,7 +15,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitCall(RBlockBuilder e, Call call, SymbolTable symbolTable)
+        private void EmitCall(RoslynEmitter e, Call call, SymbolTable symbolTable)
         {
             var symbol = symbolTable.Find<MethodSymbol>(call.Name.Value, call.GetScope());
 
@@ -73,7 +73,7 @@ namespace Aquila.Compiler.Generation
             }
         }
 
-        private void EmitArguments(RBlockBuilder e, ArgumentList args, SymbolTable symbolTable)
+        private void EmitArguments(RoslynEmitter e, ArgumentList args, SymbolTable symbolTable)
         {
             foreach (Argument argument in args)
             {

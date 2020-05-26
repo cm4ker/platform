@@ -10,7 +10,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitStatement(RBlockBuilder e, Statement statement, Block context,
+        private void EmitStatement(RoslynEmitter e, Statement statement, Block context,
             ILabel returnLabel, bool inTry = false)
         {
             if (statement is ExpressionStatement es)

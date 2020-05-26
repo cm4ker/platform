@@ -14,7 +14,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         public RoslynMethodBuilder(RoslynTypeSystem typeSystem, MethodDef method, ITypeDefOrRef declaringType) :
             base(typeSystem, method, method, declaringType)
         {
-            Body = new RBlockBuilder(typeSystem, this);
+            Body = new RoslynEmitter(typeSystem, this);
         }
 
         public RoslynParameter DefineParameter(string name, RoslynType type, bool isOut, bool isRef)
@@ -43,7 +43,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return this;
         }
 
-        public RBlockBuilder Body { get; }
+        public RoslynEmitter Body { get; }
 
 
         public void SetAttribute(RoslynCustomAttribute attr)

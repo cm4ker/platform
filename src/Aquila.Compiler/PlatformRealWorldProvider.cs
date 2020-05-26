@@ -72,12 +72,12 @@ namespace Aquila.Compiler
 
     public static class BlockExtensions
     {
-        public static RBlockBuilder IsInst(this RBlockBuilder bb, IPType type)
+        public static RoslynEmitter IsInst(this RoslynEmitter bb, IPType type)
         {
             return bb.IsInst(type.ToBackend());
         }
 
-        public static RBlockBuilder NewObj(this RBlockBuilder bb, IPConstructor constructor)
+        public static RoslynEmitter NewObj(this RoslynEmitter bb, IPConstructor constructor)
         {
             return bb.NewObj(constructor.ToBackend());
         }

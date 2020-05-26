@@ -10,13 +10,13 @@ namespace Aquila.Compiler.Generation
 {
     public class GlobalVarTreeItem : Node
     {
-        private readonly Action<Node, RBlockBuilder> _e;
+        private readonly Action<Node, RoslynEmitter> _e;
         private List<object> _args;
         private object _codeObject;
         private CompilationMode _mode;
         private TypeSyntax _astType;
 
-        public GlobalVarTreeItem(VarTreeLeafType type, CompilationMode mode, string name, Action<Node, RBlockBuilder> e,
+        public GlobalVarTreeItem(VarTreeLeafType type, CompilationMode mode, string name, Action<Node, RoslynEmitter> e,
             TypeSyntax astType = null)
         {
             if (astType == null && type == VarTreeLeafType.Func)
@@ -63,7 +63,7 @@ namespace Aquila.Compiler.Generation
             _args.Add(arg);
         }
 
-        public void Emit(Node node, RBlockBuilder e)
+        public void Emit(Node node, RoslynEmitter e)
         {
             _e(node, e);
         }

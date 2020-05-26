@@ -12,7 +12,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitBody(RBlockBuilder e, Block body, ILabel returnLabel, bool inTry = false)
+        private void EmitBody(RoslynEmitter e, Block body, ILabel returnLabel, bool inTry = false)
         {
             foreach (Statement statement in body.Statements)
             {

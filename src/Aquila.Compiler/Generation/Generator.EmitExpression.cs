@@ -25,7 +25,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitExpression(RBlockBuilder e, Expression expression, SymbolTable symbolTable)
+        private void EmitExpression(RoslynEmitter e, Expression expression, SymbolTable symbolTable)
         {
             if (expression is BinaryExpression be)
             {
@@ -339,7 +339,7 @@ namespace Aquila.Compiler.Generation
             }
         }
 
-        private void EmitPostOperation(RBlockBuilder e, SymbolTable symbolTable, PostOperationExpression pis)
+        private void EmitPostOperation(RoslynEmitter e, SymbolTable symbolTable, PostOperationExpression pis)
         {
             if (pis.Expression is Name)
             {
@@ -397,7 +397,7 @@ namespace Aquila.Compiler.Generation
         }
 
 
-        private void CheckContextVariable(RBlockBuilder e, VariableSymbol symbol)
+        private void CheckContextVariable(RoslynEmitter e, VariableSymbol symbol)
         {
             if (symbol.CompileObject == null)
             {
