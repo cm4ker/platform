@@ -23,5 +23,10 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         {
             DeclaringType.DumpRef(tw);
         }
+
+        public bool Equals(IConstructor other)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

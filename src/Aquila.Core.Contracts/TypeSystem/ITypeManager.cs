@@ -38,8 +38,8 @@ namespace Aquila.Core.Contracts.TypeSystem
         void Register(ITable table);
 
         IPType Type();
-        IPTypeSpec Type(IPType ipType);
-        IPTypeSpec Type(Guid id);
+        IPTypeSpec Type(IPType baseType);
+        IPTypeSpec Type(Guid baseTypeId);
 
         IPTypeSet TypeSet(List<IPType> types);
 

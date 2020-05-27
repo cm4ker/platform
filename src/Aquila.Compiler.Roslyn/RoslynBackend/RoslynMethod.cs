@@ -32,5 +32,10 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                     }
                 }
         }
+
+        public bool Equals(IMethod other)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

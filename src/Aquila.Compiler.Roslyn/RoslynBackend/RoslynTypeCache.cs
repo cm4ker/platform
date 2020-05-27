@@ -38,7 +38,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             //if(defOrRef is TypeDef tda || defOrRef is TypeRef tra)
             var reference = new TypeRefUser(defOrRef.Module, defOrRef.Namespace, defOrRef.Name, scope);
             var na = reference.FullName;
-            var asm = TypeSystem.FindAssembly(definition.Module.Assembly);
+            var asm = (RoslynAssembly)TypeSystem.FindAssembly(definition.Module.Assembly);
 
             if (defOrRef is TypeSpec ts)
             {

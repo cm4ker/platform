@@ -21,7 +21,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             _methodDef.Body = new CilBody();
 
 
-            Body = new RoslynEmitter(ts, this);
+            Generator = new RoslynEmitter(ts, this);
         }
 
         public override IReadOnlyList<IParameter> Parameters => _parameters;
@@ -45,7 +45,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return dp;
         }
 
-        public RoslynEmitter Body { get; }
+        public IEmitter Generator { get; }
 
         public void Dump(TextWriter tw)
         {
@@ -72,7 +72,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             using (tw.Parenthesis())
             {
                 var wasFirst = false;
-                foreach (var exp in Body.BaseCall)
+                foreach (var exp in ((RoslynEmitter) Generator).BaseCall)
                 {
                     if (wasFirst)
                         tw.W(",");
@@ -83,7 +83,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                 }
             }
 
-            Body.Dump(tw);
+            ((RoslynEmitter) Generator).Dump(tw);
         }
     }
 }

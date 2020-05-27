@@ -1,5 +1,3 @@
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using Portable.Xaml.Markup;
 
 [assembly: XmlnsDefinition("http://zplatform.com/conf", "Aquila.Configuration")]

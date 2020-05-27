@@ -135,7 +135,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
 
             var oType = tm.Type();
             oType.IsManager = true;
-            oType.IsAsmAvaliable = true;
+            oType.IsAsmAvailable = true;
 
             oType.Id = Guid.NewGuid();
             oType.Name = $"{_md.Name}Manager";
@@ -159,8 +159,8 @@ namespace Aquila.EntityComponent.Configuration.Editors
 
             oType.Id = _md.ObjectId;
             oType.Name = _md.Name;
-            oType.IsAsmAvaliable = true;
-            oType.IsQueryAvaliable = true;
+            oType.IsAsmAvailable = true;
+            oType.IsQueryAvailable = true;
             oType.IsDbAffect = true;
             oType.GroupId = _md.ObjectId;
 
@@ -233,7 +233,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
             oType.Id = _md.DtoId;
             oType.Name = "_" + _md.Name;
             oType.GroupId = _md.ObjectId;
-            oType.IsAsmAvaliable = true;
+            oType.IsAsmAvailable = true;
             oType.ComponentId = _com.Info.ComponentId;
 
             _tm.AddOrUpdateSetting(new ObjectSetting
@@ -301,8 +301,8 @@ namespace Aquila.EntityComponent.Configuration.Editors
         {
             var oType = _tm.Type();
             oType.IsLink = true;
-            oType.IsQueryAvaliable = false;
-            oType.IsAsmAvaliable = true;
+            oType.IsQueryAvailable = false;
+            oType.IsAsmAvailable = true;
 
             oType.GroupId = _md.ObjectId;
 

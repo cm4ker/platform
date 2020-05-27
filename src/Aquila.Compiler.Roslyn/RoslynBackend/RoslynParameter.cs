@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using Aquila.Compiler.Contracts;
+using Aquila.Core.Contracts.TypeSystem;
 using dnlib.DotNet;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
@@ -27,7 +29,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         }
 
         public string Name => (string.IsNullOrEmpty(_parameter.Name)) ? _parameter.ToString() : _parameter.Name;
-        public RoslynType Type => _cr.GetType(_parameter.Type);
+        public IType Type => _cr.GetType(_parameter.Type);
         public int Sequence => _parameter.Index;
         public int ArgIndex => _parameter.Index;
 
@@ -40,6 +42,11 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         public void DumpRef(TextWriter tw)
         {
             tw.W(Name);
+        }
+
+        public bool Equals(IParameter other)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Aquila.Compiler.Generation
                 if (component.TryGetFeature<IBuildingParticipant>(out var comBuild))
 
                     foreach (var type in _conf.TypeManager.Types.Where(x =>
-                        x.ComponentId == component.Id && x.IsAsmAvaliable))
+                        x.ComponentId == component.Id && x.IsAsmAvailable))
                     {
                         if (_mode == CompilationMode.Client)
                             comBuild.Generator.StageClient(type, _root);
@@ -48,7 +48,7 @@ namespace Aquila.Compiler.Generation
             {
                 if (component.TryGetFeature<IBuildingParticipant>(out var bp))
                     foreach (var type in _conf.TypeManager.Types.Where(x =>
-                        x.ComponentId == component.Id && x.IsAsmAvaliable))
+                        x.ComponentId == component.Id && x.IsAsmAvailable))
                     {
                         if (_mode == CompilationMode.Client)
                             bp.Generator.StageClient(type, root);

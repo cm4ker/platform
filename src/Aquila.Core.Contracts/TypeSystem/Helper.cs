@@ -8,6 +8,19 @@ namespace Aquila.Core.Contracts.TypeSystem
 {
     public static class TypeManagerHelper
     {
+        public static IPType CreateUX(this ITypeManager tm)
+        {
+            var result = tm.Type();
+            result.IsUX = true;
+
+            return result;
+        }
+
+        public static T GetMD<T>(this IPType type)
+        {
+            return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.GroupId)?.Metadata;
+        }
+
         public static IComponent GetComponent(this IPType ipType)
         {
             return FindComponent(ipType.TypeManager, ipType.ComponentId);
@@ -192,6 +205,11 @@ namespace Aquila.Core.Contracts.TypeSystem
             return GetPropertySchemas(prop.TypeManager, prop.Name, prop.GetTypes().ToList());
         }
 
+
+        public static void AddType(this IPTypeSet set, IPType type)
+        {
+            set.AddType(type.Id);
+        }
 
         public static string ConvertToDbType(this IPType ipType)
         {

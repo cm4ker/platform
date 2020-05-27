@@ -56,7 +56,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         private IReadOnlyList<RoslynType> _interfaces;
         private IReadOnlyList<RoslynType> _genericArguments;
         private IReadOnlyList<RoslynCustomAttribute> _customAttributes;
-        
+
 
         public virtual IReadOnlyList<IProperty> Properties =>
             _properties ??= TypeDef.Properties.Select(x => new RoslynProperty(_ts, x, TypeRef)).ToList();
@@ -97,7 +97,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public virtual IReadOnlyList<IType> GenericArguments =>
             _genericArguments ??= (TypeRef as TypeSpec)?.TryGetGenericInstSig()?.GenericArguments?
-                .Select(x => _cr.GetType(x)).ToList();
+                .Select(x => (RoslynType) _cr.GetType(x)).ToList();
 
         public virtual IReadOnlyList<IType> Interfaces =>
             _interfaces ??= TypeDef.Interfaces

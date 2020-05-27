@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>Aquila.Compiler.Aqua</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Aquila.Configuration.Common\Aquila.Configuration.Common.csproj" />
+      <ProjectReference Include="..\Aquila.Core.Contracts\Aquila.Core.Contracts.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -14,7 +14,7 @@ namespace Aquila.Core.Contracts.Configuration
 
     public interface IEntryPointManager
     {
-        RoslynTypeBuilder EntryPoint { get; }
-        RoslynMethodBuilder Main { get; }
+        IPType EntryPoint { get; }
+        IPMethod Main { get; }
     }
 }

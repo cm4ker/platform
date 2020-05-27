@@ -1,5 +1,7 @@
 using System;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using IMethod = dnlib.DotNet.IMethod;
 using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
@@ -59,7 +61,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         {
             if (!msig.RetType.ContainsGenericParameter)
             {
-                RoslynType dt = GetType(msig.RetType);
+                RoslynType dt = (RoslynType) GetType(msig.RetType);
 
                 if (dt != null)
                     msig.RetType = dt.TypeRef.ToTypeSig();
@@ -69,7 +71,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             {
                 if (!msig.Params[i].ContainsGenericParameter)
                 {
-                    RoslynType dt = GetType(msig.Params[i]);
+                    RoslynType dt = (RoslynType) GetType(msig.Params[i]);
 
                     if (dt != null)
                         msig.Params[i] = dt.TypeRef.ToTypeSig();
@@ -79,7 +81,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return msig;
         }
 
-        public RoslynType GetType(TypeSig tsig)
+        public IType GetType(TypeSig tsig)
         {
             if (tsig.AssemblyQualifiedName.Contains("System.Private.CoreLib"))
             {

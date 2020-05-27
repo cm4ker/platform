@@ -75,8 +75,8 @@ namespace Aquila.WebServiceComponent.Configuration.Editors
 
             oType.Id = _md.RefId;
             oType.Name = _md.Name;
-            oType.IsAsmAvaliable = true;
-            oType.IsQueryAvaliable = false;
+            oType.IsAsmAvailable = true;
+            oType.IsQueryAvailable = false;
             oType.IsDbAffect = false;
             oType.GroupId = _md.RefId;
 

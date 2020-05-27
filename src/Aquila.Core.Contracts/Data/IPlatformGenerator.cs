@@ -1,4 +1,3 @@
-using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.QueryBuilder;
@@ -44,7 +43,7 @@ namespace Aquila.Core.Contracts.Data
         /// <param name="asm"></param>
         /// <param name="task"></param>
         /// <returns></returns>
-        RoslynTypeBuilder Stage0(RoslynAssemblyBuilder asm, Node task);
+        void Stage0(Node task);
 
         /// <summary>
         /// Стадия 1 формирование внутреннего каркаса класса (Методы + Свойства + Поля + События)
@@ -53,8 +52,7 @@ namespace Aquila.Core.Contracts.Data
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
         /// <param name="mode"></param>
-        void Stage1(Node astTree, RoslynTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode,
-            IEntryPointManager sm);
+        void Stage1(Node astTree, SqlDatabaseType dbType, CompilationMode mode, IEntryPointManager sm);
 
         /// <summary>
         /// Стадия 2 формирование реализаций методов и свойств
@@ -63,7 +61,7 @@ namespace Aquila.Core.Contracts.Data
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
         /// <param name="mode"></param>
-        void Stage2(Node astTree, RoslynTypeBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
+        void Stage2(Node astTree, SqlDatabaseType dbType, CompilationMode mode);
 
         /// <summary>
         /// Инфраструктурная стадия
@@ -71,6 +69,6 @@ namespace Aquila.Core.Contracts.Data
         /// <param name="builder"></param>
         /// <param name="dbType"></param>
         /// <param name="mode"></param>
-        void StageInfrastructure(RoslynAssemblyBuilder builder, SqlDatabaseType dbType, CompilationMode mode);
+        void StageInfrastructure(SqlDatabaseType dbType, CompilationMode mode);
     }
 }

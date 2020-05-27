@@ -5,23 +5,13 @@ namespace Aquila.Core.Contracts.TypeSystem
 {
     public interface IPType : IPUniqueObject
     {
-        Guid? BaseId { get; set; }
+        Guid? BaseId { get; }
 
-        Guid? GroupId { get; set; }
+        Guid? GroupId { get; }
 
-        string Name { get; set; }
+        string Name { get; }
 
-        bool IsLink { get; set; }
-
-        bool IsObject { get; set; }
-
-        bool IsManager { get; set; }
-
-        bool IsDto { get; set; }
-
-        bool IsUX { get; set; }
-
-        bool IsDbAffect { get; set; }
+        bool IsDbAffect { get; }
 
         bool IsPrimitive { get; }
 
@@ -35,9 +25,9 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         bool IsScalePrecision { get; set; }
 
-        bool IsAsmAvaliable { get; set; }
+        bool IsAsmAvailable { get; set; }
 
-        bool IsQueryAvaliable { get; set; }
+        bool IsQueryAvailable { get; set; }
 
         bool IsTypeSpec { get; }
 

@@ -10,7 +10,7 @@ namespace Aquila.Compiler.Contracts
 
         IReadOnlyList<IMethodBuilder> DefinedMethods { get; }
 
-        IField DefineField(IType type, string name, bool isPublic, bool isStatic);
+        IFieldBuilder DefineField(IType type, string name, bool isPublic, bool isStatic);
 
         IMethodBuilder DefineMethod(string name,
             bool isPublic, bool isStatic,

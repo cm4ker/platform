@@ -32,7 +32,6 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             _r = new RoslynContextResolver(_ts, typeDef.Module);
         }
 
-
         public override IReadOnlyList<IField> Fields => _fields;
 
         public override IReadOnlyList<IConstructor> Constructors => _constructors;
@@ -45,6 +44,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public override IReadOnlyList<IProperty> Properties => _properties;
 
+        public IReadOnlyList<IMethodBuilder> DefinedMethods => _methods;
 
         public void AddInterfaceImplementation(IType type)
         {
@@ -58,7 +58,8 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             throw new NotImplementedException();
         }
 
-        public IField DefineField(IType type, string name, bool isPublic, bool isStatic)
+
+        public IFieldBuilder DefineField(IType type, string name, bool isPublic, bool isStatic)
         {
             var tref = _r.GetReference(((RoslynType) type).TypeRef);
             var field = new FieldDefUser(name, new FieldSig(tref.ToTypeSig()));
@@ -73,8 +74,8 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return dfield;
         }
 
-        public RoslynMethodBuilder DefineMethod(string name, bool isPublic, bool isStatic, bool isInterfaceImpl,
-            RoslynMethod overrideMethod = null, bool isVirtual = false)
+        public IMethodBuilder DefineMethod(string name, bool isPublic, bool isStatic, bool isInterfaceImpl,
+            IMethod overrideMethod = null, bool isVirtual = false)
         {
             MethodSig sig;
 
@@ -95,7 +96,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
             if (overrideMethod != null)
             {
-                var mo = new MethodOverride(method, (IMethodDefOrRef) overrideMethod.MethodRef);
+                var mo = new MethodOverride(method, (IMethodDefOrRef) ((RoslynMethod) overrideMethod).MethodRef);
                 method.Overrides.Add(mo);
                 method.Attributes |= MethodAttributes.Virtual;
             }
@@ -116,7 +117,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             method.Body.InitLocals = true;
             //method.MethodSig = new MethodSig(c);
 
-            method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.ToTypeRef()).ToTypeSig();
+            method.ReturnType = _r.GetReference(_ts.GetSystemBindings().Void.GetRef()).ToTypeSig();
 
             return dm;
         }
@@ -175,17 +176,22 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return dc;
         }
 
-        public ITypeBuilder DefineNastedType(RoslynType baseType, string name, bool isPublic)
+        public ITypeBuilder DefineNastedType(IType baseType, string name, bool isPublic)
         {
             throw new NotImplementedException();
         }
 
-        public void SetCustomAttribute(RoslynCustomAttribute attr)
+        public void SetCustomAttribute(ICustomAttribute attr)
         {
-            var dnlibAttr = attr;
+            var dnlibAttr = (RoslynCustomAttribute) attr;
             dnlibAttr.ImportAttribute(TypeDef.Module);
             ((List<RoslynCustomAttribute>) CustomAttributes).Add(dnlibAttr);
             TypeDef.CustomAttributes.Add(dnlibAttr.GetCA());
+        }
+
+        public IType EndBuild()
+        {
+            throw new NotImplementedException();
         }
 
         public void Dump(TextWriter sw)
