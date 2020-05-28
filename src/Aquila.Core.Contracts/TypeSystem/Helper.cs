@@ -61,12 +61,18 @@ namespace Aquila.Core.Contracts.TypeSystem
             return tm.Types.FirstOrDefault(x => x.Id == typeId) ?? tm.Unknown;
         }
 
+
+        public static IPMethod FindMethod(this ITypeManager tm, Guid methodId)
+        {
+            return (IPMethod) tm.Methods.FirstOrDefault(x => x is IPMethod && x.Id == methodId);
+        }
+
         public static IPInvokable FindInvokable(this ITypeManager tm, Guid invokableId)
         {
             return null;
         }
 
-        public static IEnumerable<IPArgument> FindArguments(this ITypeManager tm, Guid invokableId)
+        public static IEnumerable<IPParameter> FindParameters(this ITypeManager tm, Guid invokableId)
         {
             return null;
         }

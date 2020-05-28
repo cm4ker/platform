@@ -1,11 +1,12 @@
 using System;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
     /// <summary>
     /// Describes type for platform in different parts
     /// </summary>
-    public sealed class PTypeBuilder : PType
+    public sealed class PTypeBuilder : PType, IPTypeBuilder
     {
         private Guid _id;
         private Guid _baseId;

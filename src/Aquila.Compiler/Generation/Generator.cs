@@ -1,17 +1,10 @@
 using System;
-using System.Collections.Generic;
-using MoreLinq.Extensions;
 using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Configuration.Structure;
 using Aquila.Core.Contracts;
-using Aquila.Language.Ast;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Language.Ast.Definitions;
-using Aquila.Language.Ast.Definitions.Statements;
-using Aquila.ServerRuntime;
 using Aquila.UI.Ast;
 using SreTA = System.Reflection.TypeAttributes;
-using SystemTypeBindings = Aquila.Compiler.Roslyn.SystemTypeBindings;
 
 namespace Aquila.Compiler.Generation
 {
@@ -19,9 +12,7 @@ namespace Aquila.Compiler.Generation
     {
         private readonly GeneratorParameters _parameters;
 
-        //private readonly CompilationUnit _cu;
-        private readonly RoslynAssemblyBuilder _asm;
-        private readonly RoslynTypeSystem _ts;
+        private readonly ITypeManager _ts;
         private readonly CompilationMode _mode;
 
         private readonly IProject _conf;
@@ -34,8 +25,6 @@ namespace Aquila.Compiler.Generation
         private SystemTypeBindings _bindings;
         private SyntaxTreeMemberAccessProvider _map;
 
-        //private const string DEFAULT_ASM_NAMESPACE = "CompileNamespace";
-
         public Generator(GeneratorParameters parameters)
         {
             _parameters = parameters;
@@ -46,14 +35,9 @@ namespace Aquila.Compiler.Generation
                 _cus = parameters.Root.Units;
             }
 
-            _asm = parameters.Builder;
-            _ts = _asm.TypeSystem;
-
+            _ts = parameters.Builder;
             _conf = parameters.Configuration;
-
             _mode = parameters.Mode;
-
-            _bindings = _ts.GetSystemBindings();
         }
 
         private void Error(string message)
@@ -64,11 +48,5 @@ namespace Aquila.Compiler.Generation
         private void EmitUI(UINode node)
         {
         }
-
-        // private void CreateBindings()
-        // {
-        //     var b = new ClassTable();
-        //     b.FillStandard(_bindings);
-        // }
     }
 }

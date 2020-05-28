@@ -7,7 +7,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Aquila.Configuration.Common\Aquila.Configuration.Common.csproj" />
-        <ProjectReference Include="..\Aquila.Configuration.Contracts\Aquila.Configuration.Contracts.csproj" />
         <ProjectReference Include="..\Aquila.QueryBuilder\Aquila.QueryBuilder.csproj" />
     </ItemGroup>
 

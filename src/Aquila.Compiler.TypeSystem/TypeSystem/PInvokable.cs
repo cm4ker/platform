@@ -9,7 +9,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
     /// </summary>
     public class PInvokable : PMember, IPInvokable
     {
-        internal PInvokable(Guid parentId, TypeManager tm) : base(parentId, tm)
+        internal PInvokable(Guid parentId, TypeManager tm) : this(Guid.NewGuid(), parentId, tm)
         {
         }
 
@@ -17,6 +17,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         {
         }
 
-        public IEnumerable<IPArgument> Arguments => TypeManager.FindArguments(this.Id);
+        public IEnumerable<IPParameter> Parameters => TypeManager.FindParameters(this.Id);
     }
 }

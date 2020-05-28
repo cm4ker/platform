@@ -12,7 +12,7 @@ namespace Aquila.Core.Contracts.TypeSystem
         IPType Boolean { get; }
         IPType Guid { get; }
         IPType Numeric { get; }
-        
+
         IPType Unknown { get; }
 
         IReadOnlyList<IPType> Types { get; }
@@ -37,8 +37,10 @@ namespace Aquila.Core.Contracts.TypeSystem
         void Register(IComponent component);
         void Register(ITable table);
 
-        IPType Type();
+        IPTypeBuilder Type();
+
         IPTypeSpec Type(IPType baseType);
+
         IPTypeSpec Type(Guid baseTypeId);
 
         IPTypeSet TypeSet(List<IPType> types);
@@ -46,12 +48,10 @@ namespace Aquila.Core.Contracts.TypeSystem
         IPTypeSet TypeSet(List<Guid> types);
 
         IPTypeSet TypeSet();
-        
+
         ITable NestedType();
 
         void AddMD(Guid id, Guid parentId, object metadata);
-
-        void Verify();
 
         IComponent Component();
         void LoadSettings(IEnumerable<IObjectSetting> settings);

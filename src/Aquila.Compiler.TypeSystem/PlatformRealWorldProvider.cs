@@ -1,12 +1,9 @@
 using System;
 using System.Linq;
-using Aquila.Compiler.Roslyn;
-using Aquila.Compiler.Roslyn.RoslynBackend;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
-using Aquila.Core.Network;
-using Microsoft.AspNetCore.Server.IIS.Core;
 
-namespace Aquila.Compiler
+namespace Aquila.Compiler.Aqua
 {
     public class PlatformRealWorldProvider
     {
@@ -23,12 +20,12 @@ namespace Aquila.Compiler
                    throw new Exception("Backend object for this not found");
         }
 
-        public static RoslynType FindType(IPType type)
+        public static IType FindType(IPType type)
         {
-            return (RoslynType) type.GetBackendObject().PinnedObject;
+            return (IType) type.GetBackendObject().PinnedObject;
         }
 
-        public static RoslynType FindType(this ITypeManager tm, string ns, string typeName)
+        public static IType FindType(this ITypeManager tm, string ns, string typeName)
         {
             var result = tm.Types.Where(x => x.Name == typeName && x.GetNamespace() == ns).ToList();
 
@@ -44,29 +41,34 @@ namespace Aquila.Compiler
         }
 
 
-        public static RoslynType ToBackend(this IPType type)
+        public static IType ToBackend(this IPType type)
         {
-            return (RoslynType) type.GetBackendObject().PinnedObject;
+            return (IType) type.GetBackendObject().PinnedObject;
         }
 
-        public static RoslynConstructor ToBackend(this IPConstructor constructor)
+        public static IConstructor ToBackend(this IPConstructor constructor)
         {
-            return (RoslynConstructor) constructor.GetBackendObject().PinnedObject;
+            return (IConstructor) constructor.GetBackendObject().PinnedObject;
         }
 
-        public static RoslynMethod ToBackend(this IPMethod method)
+        public static IMethod ToBackend(this IPMethod method)
         {
-            return (RoslynMethod) method.GetBackendObject().PinnedObject;
+            return (IMethod) method.GetBackendObject().PinnedObject;
         }
 
-        public static RoslynMethod ToBackend(this IPProperty property)
+        public static IProperty ToBackend(this IPProperty property)
         {
-            return (RoslynMethod) property.GetBackendObject().PinnedObject;
+            return (IProperty) property.GetBackendObject().PinnedObject;
         }
 
-        public static RoslynMethod ToBackend(this IPField property)
+        public static IField ToBackend(this IPField property)
         {
-            return (RoslynMethod) property.GetBackendObject().PinnedObject;
+            return (IField) property.GetBackendObject().PinnedObject;
+        }
+
+        public static IParameter ToBackend(this IPParameter property)
+        {
+            return (IParameter) property.GetBackendObject().PinnedObject;
         }
     }
 

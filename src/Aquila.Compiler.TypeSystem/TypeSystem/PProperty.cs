@@ -7,6 +7,8 @@ namespace Aquila.Compiler.Aqua.TypeSystem
     public class PProperty : PMember, IPProperty
     {
         private Guid _typeId;
+        private Guid _getterId;
+        private Guid _setterId;
 
         internal PProperty(Guid parentId, TypeManager ts) : this(Guid.NewGuid(), parentId, ts)
         {
@@ -25,6 +27,20 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public bool IsReadOnly { get; set; }
 
         public IPType Type => TypeManager.FindType(_typeId);
+
+        public IPMethod Getter => TypeManager.FindMethod(_getterId);
+
+        public IPMethod Setter => TypeManager.FindMethod(_setterId);
+
+        public void SetGetter(Guid id)
+        {
+            _getterId = id;
+        }
+
+        public void SetSetter(Guid id)
+        {
+            _setterId = id;
+        }
 
         public void SetType(Guid guid)
         {

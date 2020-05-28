@@ -139,7 +139,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return new Component(this);
         }
 
-        public IPType Type()
+        public IPTypeBuilder Type()
         {
             return new PTypeBuilder(this);
         }
@@ -179,14 +179,29 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return new PProperty(parentId, this);
         }
 
-        public IPInvokable Method(Guid id, Guid parentId)
+        public IPMethod Method(Guid id, Guid parentId)
         {
-            return new PInvokable(id, parentId, this);
+            return new PMethod(id, parentId, this);
+        }
+
+        public IPMethod Method(Guid parentId)
+        {
+            return new PMethod(parentId, this);
+        }
+
+        public IPConstructor Constructor(Guid id, Guid parentId)
+        {
+            return new PConstructor(id, parentId, this);
+        }
+
+        public IPConstructor Constructor(Guid parentId)
+        {
+            return new PConstructor(parentId, this);
         }
 
         public IPType NestedType(Guid parentId)
         {
-            return new NestedType(parentId, this);
+            return new NestedType(System.Guid.NewGuid(), parentId, this);
         }
 
         public void AddOrUpdateSetting(IObjectSetting setting)

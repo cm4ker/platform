@@ -1,6 +1,6 @@
 namespace Aquila.Core.Contracts.TypeSystem
 {
-    public interface IPArgument : ITypeManagerProvider
+    public interface IPParameter : IPUniqueObject
     {
         public string Name { get; set; }
 

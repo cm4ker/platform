@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace Aquila.Core.Contracts.TypeSystem
 {
+    public interface IPTypeBuilder : IPType
+    {
+        void SetBase(Guid baseId);
+        void SetComponent(Guid? componentId);
+        void SetName(string name);
+        void SetNamespace(string @namespace);
+        void SetScope(ScopeAffects scope);
+    }
+
     public interface IPType : IPUniqueObject
     {
         Guid? BaseId { get; }

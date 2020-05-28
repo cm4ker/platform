@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Aquila.Compiler.Roslyn\Aquila.Compiler.Roslyn.csproj" />
       <ProjectReference Include="..\Aquila.Compiler.TypeSystem\Aquila.Compiler.TypeSystem.csproj" />
     </ItemGroup>
 

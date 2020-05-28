@@ -32,10 +32,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.Configuration.Contracts\Aquila.Configuration.Contracts.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Compile Update="Editors\CodeEditorView.xaml.cs">
             <DependentUpon>CodeEditorView.xaml</DependentUpon>
         </Compile>

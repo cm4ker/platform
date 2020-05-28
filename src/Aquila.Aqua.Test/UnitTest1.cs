@@ -1,5 +1,6 @@
 using System;
 using Aquila.Compiler.Aqua.TypeSystem;
+using Aquila.Compiler.Roslyn.RoslynBackend;
 using Xunit;
 using Aquila.Core.Contracts.TypeSystem;
 
@@ -10,7 +11,7 @@ namespace Aquila.Aqua.Test
         [Fact]
         public void TypeSystemCreate()
         {
-            TypeManager tm = new TypeManager();
+            TypeManager tm = new TypeManager(new RoslynTypeSystem(new RoslynPlatformFactory(), null));
 
             var ts = tm.TypeSet();
             ts.AddType(tm.Int);
@@ -20,8 +21,6 @@ namespace Aquila.Aqua.Test
 
 
             var myType = tm.Type();
-
-            myType. = "MyType";
         }
     }
 }
