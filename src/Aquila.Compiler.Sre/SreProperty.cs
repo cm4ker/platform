@@ -117,6 +117,5 @@ namespace Aquila.Compiler.Sre
         {
             throw new NotImplementedException();
         }
-        
     }
 }

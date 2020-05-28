@@ -1,11 +1,12 @@
 using System;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem.StandartTypes
 {
-    public sealed class GuidPType : PType
+    public sealed class GuidPType : PExportType
     {
-        internal GuidPType(TypeManager ts) : base(ts)
+        internal GuidPType(TypeManager ts, IType type) : base(ts, type)
         {
             ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = 4});
         }

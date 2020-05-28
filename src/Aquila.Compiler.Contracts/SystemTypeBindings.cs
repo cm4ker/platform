@@ -47,6 +47,8 @@ namespace Aquila.Compiler.Contracts
 
         public IType Double => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Double)}", MSCORLIB);
 
+        public IType Decimal => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Decimal)}", MSCORLIB);
+
         public IType Guid => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Guid)}", MSCORLIB);
 
         public IType Void => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Void)}", MSCORLIB);

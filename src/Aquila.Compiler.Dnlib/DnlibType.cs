@@ -42,6 +42,7 @@ namespace Aquila.Compiler.Dnlib
 
         public ITypeSystem TypeSystem => _ts;
 
+
         public object Id => TypeDef.FullName;
         public string Name => TypeDef.Name;
         public string Namespace => TypeDef.Namespace;

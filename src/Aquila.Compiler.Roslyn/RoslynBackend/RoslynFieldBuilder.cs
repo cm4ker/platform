@@ -25,7 +25,6 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public void SetAttribute(ICustomAttribute attr)
         {
-            
         }
     }
 }

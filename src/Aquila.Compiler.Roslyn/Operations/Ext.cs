@@ -8,7 +8,7 @@ namespace Aquila.Compiler.Roslyn
         {
             return tw.W(" ");
         }
-        
+
         public static TextWriter Dot(this TextWriter tw)
         {
             return tw.W(".");

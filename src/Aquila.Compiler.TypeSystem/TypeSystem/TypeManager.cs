@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aquila.Compiler.Aqua.TypeSystem.StandartTypes;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
     public class TypeManager : ITypeManager
     {
+        private readonly ITypeSystem _backend;
         private List<IPType> _types;
         private List<IPProperty> _properties;
         private List<IPInvokable> _methods;
@@ -27,9 +29,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         private NumericPType _numericPType;
         private UnknownPType _unknownPType;
 
-
-        public TypeManager()
+        public TypeManager(ITypeSystem backend)
         {
+            _backend = backend;
             _types = new List<IPType>();
             _properties = new List<IPProperty>();
             _methods = new List<IPInvokable>();
@@ -38,7 +40,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _components = new List<IComponent>();
             _objectSettings = new List<IObjectSetting>();
             _metadatas = new List<MetadataRow>();
-
 
             _types.Add(Int);
             _types.Add(DateTime);
@@ -50,13 +51,19 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _types.Add(Unknown);
         }
 
-        public IPType Int => _intPType ??= new IntPType(this);
-        public IPType DateTime => _dateTimePType ??= new DateTimePType(this);
-        public IPType Binary => _binaryPType ??= new BinaryPType(this);
-        public IPType String => _stringPType ??= new StringPType(this);
-        public IPType Boolean => _booleanPType ??= new BooleanPType(this);
-        public IPType Guid => _guidPType ??= new GuidPType(this);
-        public IPType Numeric => _numericPType ??= new NumericPType(this);
+        public IPType Int => _intPType ??= new IntPType(this, _backend.GetSystemBindings().Int);
+        public IPType DateTime => _dateTimePType ??= new DateTimePType(this, _backend.GetSystemBindings().DateTime);
+
+        public IPType Binary =>
+            _binaryPType ??= new BinaryPType(this, _backend.GetSystemBindings().Byte.MakeArrayType());
+
+        public IPType String => _stringPType ??= new StringPType(this, _backend.GetSystemBindings().String);
+
+        public IPType Boolean => _booleanPType ??= new BooleanPType(this, _backend.GetSystemBindings().Boolean);
+
+        public IPType Guid => _guidPType ??= new GuidPType(this, _backend.GetSystemBindings().Guid);
+
+        public IPType Numeric => _numericPType ??= new NumericPType(this, _backend.GetSystemBindings().Decimal);
 
         public IPType Unknown => _unknownPType ??= new UnknownPType(this);
 
@@ -134,7 +141,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public IPType Type()
         {
-            return new PType(this);
+            return new PTypeBuilder(this);
         }
 
         public IPTypeSpec Type(IPType baseType)

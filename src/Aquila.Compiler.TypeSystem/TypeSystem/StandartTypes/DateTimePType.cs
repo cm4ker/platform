@@ -1,11 +1,12 @@
 using System;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem.StandartTypes
 {
-    public sealed class DateTimePType : PType
+    public sealed class DateTimePType : PExportType
     {
-        internal DateTimePType(TypeManager ts) : base(ts)
+        internal DateTimePType(TypeManager ts, IType type) : base(ts, type)
         {
             ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = 3});
         }

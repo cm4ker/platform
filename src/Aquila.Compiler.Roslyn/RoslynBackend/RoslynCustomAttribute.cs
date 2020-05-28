@@ -64,6 +64,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         public List<object> Parameters => _ca.ConstructorArguments.Select(x => x.Value).ToList();
 
         public Dictionary<string, object> Properties => _ca.Properties.ToDictionary(x => x.Name.String, x => x.Value);
+
         public bool Equals(Contracts.ICustomAttribute other)
         {
             throw new System.NotImplementedException();

@@ -84,7 +84,8 @@ namespace Aquila.Compiler.Dnlib
             if (tsig.AssemblyQualifiedName.Contains("System.Private.CoreLib"))
             {
                 if (tsig.IsGenericInstanceType)
-                    return _ts.FindAssembly(_ts.GetSystemBindings().MSCORLIB).FindType(tsig.ToTypeDefOrRef().ScopeType.FullName);
+                    return _ts.FindAssembly(_ts.GetSystemBindings().MSCORLIB)
+                        .FindType(tsig.ToTypeDefOrRef().ScopeType.FullName);
                 else
                     return _ts.FindAssembly(_ts.GetSystemBindings().MSCORLIB).FindType(tsig.FullName);
             }

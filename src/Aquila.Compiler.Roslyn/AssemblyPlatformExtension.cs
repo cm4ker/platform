@@ -6,7 +6,8 @@ namespace Aquila.Compiler.Roslyn
 {
     public static class AssemblyPlatformExtension
     {
-        public static IAssemblyBuilder CreateAssembly(this RoslynAssemblyPlatform ap, string name, Version assemblyVersion)
+        public static IAssemblyBuilder CreateAssembly(this RoslynAssemblyPlatform ap, string name,
+            Version assemblyVersion)
         {
             return ap.AsmFactory.CreateAssembly(ap.TypeSystem, name, assemblyVersion);
         }

@@ -1,11 +1,12 @@
 using System;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem.StandartTypes
 {
-    public sealed class BinaryPType : PType
+    public sealed class BinaryPType : PExportType
     {
-        internal BinaryPType(TypeManager ts) : base(ts)
+        internal BinaryPType(TypeManager ts, IType type) : base(ts, type)
         {
             ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = 1});
         }

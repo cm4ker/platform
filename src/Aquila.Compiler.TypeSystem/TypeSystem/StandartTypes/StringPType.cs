@@ -1,4 +1,5 @@
 using System;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem.StandartTypes
@@ -6,9 +7,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem.StandartTypes
     /// <summary>
     ///  Тип строки
     /// </summary>
-    public sealed class StringPType : PType
+    public sealed class StringPType : PExportType
     {
-        internal StringPType(TypeManager ts) : base(ts)
+        internal StringPType(TypeManager ts, IType type) : base(ts, type)
         {
             ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = 6});
         }

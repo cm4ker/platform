@@ -19,15 +19,11 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         PrimitiveKind PrimitiveKind { get; }
 
-        bool IsValue { get; set; }
+        bool IsValue { get; }
 
-        bool IsSizable { get; set; }
+        bool IsSizable { get; }
 
-        bool IsScalePrecision { get; set; }
-
-        bool IsAsmAvailable { get; set; }
-
-        bool IsQueryAvailable { get; set; }
+        bool IsScalePrecision { get; }
 
         bool IsTypeSpec { get; }
 
@@ -41,7 +37,7 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         IEnumerable<IPInvokable> Methods { get; }
 
-        Guid ComponentId { get; set; }
+        Guid? ComponentId { get; }
 
         IPTypeSpec GetSpec();
     }

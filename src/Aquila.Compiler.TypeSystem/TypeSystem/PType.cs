@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Aquila.Core.Contracts.TypeSystem;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json.Bson;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class PType : IPType
+    public abstract class PType : IPType
     {
         private readonly TypeManager _ts;
 
@@ -14,16 +16,15 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _ts = ts;
         }
 
-
-        public virtual Guid Id { get; }
+        public virtual Guid Id => _ts.Unknown.Id;
 
         public virtual Guid? ParentId => null;
 
-        public virtual Guid? BaseId { get; set; }
+        public virtual Guid? BaseId { get; } = null;
 
-        public virtual Guid? GroupId { get; set; }
+        public virtual Guid? GroupId { get; } = null;
 
-        public virtual Guid ComponentId { get; set; }
+        public virtual Guid? ComponentId { get; } = null;
 
         public virtual string Name { get; set; }
 
@@ -31,9 +32,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public string FullName => $"{Namespace}.{Name}";
 
-        public virtual bool IsUX { get; set; }
+        public virtual bool IsDbAffect => false;
 
-        public bool IsDbAffect { get; set; }
+        public virtual ScopeAffects Scope => ScopeAffects.Unknown;
 
         public virtual bool IsPrimitive => false;
 
@@ -41,16 +42,11 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual PrimitiveKind PrimitiveKind => PrimitiveKind.Unknown;
 
-        public virtual bool IsValue { get; set; }
+        public virtual bool IsValue => false;
 
-        public virtual bool IsSizable { get; set; }
+        public virtual bool IsSizable => false;
 
-        public virtual bool IsScalePrecision { get; set; }
-
-        //TODO: Use scope in main project
-        public bool IsAsmAvailable { get; set; }
-
-        public bool IsQueryAvailable { get; set; }
+        public virtual bool IsScalePrecision => false;
 
         public virtual bool IsTypeSpec => false;
 
@@ -59,8 +55,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public virtual bool IsTypeSet => false;
 
         public virtual bool IsNestedType => false;
-
-        internal bool IsRegistered { get; set; }
 
         public object Bag { get; set; }
 

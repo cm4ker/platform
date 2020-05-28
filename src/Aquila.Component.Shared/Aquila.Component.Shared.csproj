@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Aquila.Compiler.Roslyn\Aquila.Compiler.Roslyn.csproj" />
       <ProjectReference Include="..\Aquila.Core.Contracts\Aquila.Core.Contracts.csproj" />
       <ProjectReference Include="..\Aquila.Ide.Common\Aquila.Ide.Common.csproj" />
     </ItemGroup>

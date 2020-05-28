@@ -144,7 +144,7 @@ namespace Aquila.Compiler.Dnlib
             var c = new MethodDefUser(name, sig);
 
             c.IsStatic = isStatic;
-            
+
             c.Attributes |= MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Public |
                             MethodAttributes.HideBySig;
 

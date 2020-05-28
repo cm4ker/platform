@@ -88,6 +88,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         }
 
         public ITypeSystem TypeSystem => _ts;
+
         public bool Equals(Contracts.IAssembly other)
         {
             throw new NotImplementedException();

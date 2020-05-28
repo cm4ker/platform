@@ -13,7 +13,7 @@ namespace Aquila.Compiler.Roslyn
         Ne,
         Get,
         Let,
-        And, 
+        And,
         Or
     }
 }

@@ -21,7 +21,7 @@ namespace Aquila.Aqua.Test
 
             var myType = tm.Type();
 
-            myType.Name = "MyType";
+            myType. = "MyType";
         }
     }
 }
