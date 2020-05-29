@@ -3,12 +3,12 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class IpParameter : IPParameter
+    public class PParameter : IPParameter
     {
         private Guid _invokableId;
         private Guid _typeId;
 
-        public IpParameter(TypeManager tm, Guid invokableId)
+        public PParameter(TypeManager tm, Guid invokableId)
         {
             TypeManager = tm;
             _invokableId = invokableId;

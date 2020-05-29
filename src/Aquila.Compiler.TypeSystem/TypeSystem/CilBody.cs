@@ -3,78 +3,133 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
+using Avalonia.Controls.Templates;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class PCilLabel
+    public class PLocal
     {
-        public ILabel Label { get; }
+        public PLocal(IPType type, int index)
+        {
+            Type = type;
+            Index = index;
+        }
+
+        public IPType Type { get; }
+
+        public int Index { get; }
     }
 
-    public class PCilLocal
+    public class PLabel
     {
-        public ILocal Local { get; }
-    }
-
-
-    public class Instruction
-    {
-        private Instruction()
-        {
-        }
-
-        private Instruction(OpCode opCode, object argument)
-        {
-            OpCode = opCode;
-            Argument = argument;
-
-            if (opCode.OperandType == OperandType.InlineNone)
-                Delegate = e => e.Emit(opCode);
-            else
-                Delegate =
-                    argument switch
-                    {
-                        int i => e => e.Emit(OpCode, i),
-                        string i => e => e.Emit(OpCode, i),
-                        double i => e => e.Emit(OpCode, i),
-                        float i => e => e.Emit(OpCode, i),
-                        byte i => e => e.Emit(OpCode, i),
-                        long i => e => e.Emit(OpCode, i),
-                        IPType i => e => e.Emit(OpCode, i.ToBackend()),
-                        IPParameter i => e => e.Emit(OpCode, i.ToBackend()),
-                        IPMethod i => e => e.Emit(OpCode, i.ToBackend()),
-                        IPField i => e => e.Emit(OpCode, i.ToBackend()),
-                        IPConstructor i => e => e.Emit(OpCode, i.ToBackend()),
-                        PCilLabel i => e => e.Emit(OpCode, i.Label),
-                        PCilLocal i => e => e.Emit(OpCode, i.Local),
-
-                        _ => throw new Exception("Argument not supported")
-                    };
-        }
-
-        public Action<IEmitter> Delegate { get; }
-
-
-        public static Instruction Create(OpCode code, object argument)
-        {
-            if (code.OperandType != OperandType.InlineNone && argument == null)
-                throw new ArgumentNullException(nameof(argument));
-
-            return new Instruction(code, argument);
-        }
-
-        public OpCode OpCode { get; }
-
-        public object Argument { get; }
+        public PInstruction Instruction { get; } = PInstruction.Create(OpCodes.Nop);
     }
 
     public class CilBody
     {
+        public Guid Id { get; }
+
+        public List<PInstruction> Labels { get; } = new List<PInstruction>();
+
         public CilBody()
         {
-            Instructions = new List<Instruction>();
+            Instructions = new List<PInstruction>();
         }
 
-        public List<Instruction> Instructions { get; }
+        public List<PInstruction> Instructions { get; }
+
+        public CilBody Emit(OpCode code)
+        {
+            Instructions.Add(PInstruction.Create(code));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, IPField field)
+        {
+            Instructions.Add(PInstruction.Create(code, field));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, IPMethod method)
+        {
+            Instructions.Add(PInstruction.Create(code, method));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, IPConstructor ctor)
+        {
+            Instructions.Add(PInstruction.Create(code, ctor));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, string arg)
+        {
+            Instructions.Add(PInstruction.Create(code, arg));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, int arg)
+        {
+            Instructions.Add(PInstruction.Create(code, arg));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, long arg)
+        {
+            Instructions.Add(PInstruction.Create(code, arg));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, IPType type)
+        {
+            Instructions.Add(PInstruction.Create(code, type));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, float arg)
+        {
+            Instructions.Add(PInstruction.Create(code, arg));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, double arg)
+        {
+            Instructions.Add(PInstruction.Create(code, arg));
+            return this;
+        }
+
+        public PLocal DefineLocal(IPType type)
+        {
+            return new PLocal(type, 0);
+        }
+
+        public PLabel DefineLabel()
+        {
+            return new PLabel();
+        }
+
+        public CilBody MarkLabel(PLabel label)
+        {
+            Instructions.Add(label.Instruction);
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, PLabel label)
+        {
+            Instructions.Add(PInstruction.Create(code, label.Instruction));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, PLocal local)
+        {
+            Instructions.Add(PInstruction.Create(code, local));
+            return this;
+        }
+
+        public CilBody Emit(OpCode code, IPParameter parameter)
+        {
+            Instructions.Add(PInstruction.Create(code, parameter));
+            return this;
+        }
     }
 }

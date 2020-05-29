@@ -68,6 +68,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public IPType Unknown => _unknownPType ??= new UnknownPType(this);
 
         public IReadOnlyList<IPType> Types => _types;
+        
         public IReadOnlyList<IPMember> Members { get; }
 
         public IReadOnlyList<IPProperty> Properties => _properties;
