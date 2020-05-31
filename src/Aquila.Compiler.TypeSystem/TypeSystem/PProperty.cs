@@ -4,47 +4,24 @@ using IPType = Aquila.Core.Contracts.TypeSystem.IPType;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class PProperty : PMember, IPProperty
+    public abstract class PProperty : PMember, IPProperty
     {
-        private Guid _typeId;
-        private Guid _getterId;
-        private Guid _setterId;
-
-        internal PProperty(Guid parentId, TypeManager ts) : this(Guid.NewGuid(), parentId, ts)
-        {
-        }
-
         internal PProperty(Guid id, Guid parentId, TypeManager ts) : base(id, parentId, ts)
         {
         }
 
-        public bool IsSelfLink { get; set; }
+        public virtual bool IsSelfLink => false;
 
-        public bool IsSystem { get; set; }
+        public virtual bool IsSystem => false;
 
-        public bool IsUnique { get; set; }
+        public virtual bool IsUnique => false;
 
-        public bool IsReadOnly { get; set; }
+        public virtual bool IsReadOnly => false;
 
-        public IPType Type => TypeManager.FindType(_typeId);
+        public virtual IPType Type => TypeManager.Unknown;
 
-        public IPMethod Getter => TypeManager.FindMethod(_getterId);
+        public virtual IPMethod Getter => null;
 
-        public IPMethod Setter => TypeManager.FindMethod(_setterId);
-
-        public void SetGetter(Guid id)
-        {
-            _getterId = id;
-        }
-
-        public void SetSetter(Guid id)
-        {
-            _setterId = id;
-        }
-
-        public void SetType(Guid guid)
-        {
-            _typeId = guid;
-        }
+        public virtual IPMethod Setter => null;
     }
 }

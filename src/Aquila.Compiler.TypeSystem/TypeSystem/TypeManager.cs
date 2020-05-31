@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Aqua.TypeSystem.Exported;
 using Aquila.Compiler.Aqua.TypeSystem.StandartTypes;
 using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
@@ -68,7 +69,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public IPType Unknown => _unknownPType ??= new UnknownPType(this);
 
         public IReadOnlyList<IPType> Types => _types;
-        
+
         public IReadOnlyList<IPMember> Members { get; }
 
         public IReadOnlyList<IPProperty> Properties => _properties;
@@ -140,6 +141,11 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return new Component(this);
         }
 
+        public IPType ExportType(IType type)
+        {
+            return new PExportType(this, type);
+        }
+
         public IPTypeBuilder Type()
         {
             return new PTypeBuilder(this);
@@ -177,7 +183,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public IPProperty Property(Guid parentId)
         {
-            return new PProperty(parentId, this);
+            return new PProperty(System.Guid.NewGuid(), parentId, this);
         }
 
         public IPMethod Method(Guid id, Guid parentId)

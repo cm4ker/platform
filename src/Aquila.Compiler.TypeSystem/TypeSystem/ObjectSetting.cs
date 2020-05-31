@@ -11,17 +11,4 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public string DatabaseName { get; set; }
     }
-
-    public class BackendObject : IBackendObject
-    {
-        public BackendObject(object cObject, Guid parentId)
-        {
-            PinnedObject = cObject;
-            ParentId = parentId;
-        }
-
-        public Guid ParentId { get; }
-
-        public object PinnedObject { get; }
-    }
 }

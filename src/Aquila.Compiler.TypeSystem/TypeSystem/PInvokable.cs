@@ -7,7 +7,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
     /// <summary>
     /// This is for configuration methods description this is not a CLR method
     /// </summary>
-    public class PInvokable : PMember, IPInvokable
+    public abstract class PInvokable : PMember, IPInvokable
     {
         internal PInvokable(Guid parentId, TypeManager tm) : this(Guid.NewGuid(), parentId, tm)
         {

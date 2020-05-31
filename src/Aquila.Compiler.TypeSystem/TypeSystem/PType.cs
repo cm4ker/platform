@@ -58,13 +58,13 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public object Bag { get; set; }
 
-        public IEnumerable<IPMember> Members => GetMembers();
+        public virtual IEnumerable<IPMember> Members => GetMembers();
 
-        public IEnumerable<IPProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
+        public virtual IEnumerable<IPProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
 
-        public IEnumerable<IPInvokable> Methods => _ts.Methods.Where(x => x.ParentId == Id);
+        public virtual IEnumerable<IPInvokable> Methods => _ts.Methods.Where(x => x.ParentId == Id);
 
-        public IEnumerable<ITable> Tables => _ts.Tables.Where(x => x.ParentId == Id);
+        public virtual IEnumerable<ITable> Tables => _ts.Tables.Where(x => x.ParentId == Id);
 
         private IEnumerable<IPMember> GetMembers()
         {

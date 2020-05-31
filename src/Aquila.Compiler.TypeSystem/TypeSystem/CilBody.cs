@@ -7,29 +7,13 @@ using Avalonia.Controls.Templates;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class PLocal
-    {
-        public PLocal(IPType type, int index)
-        {
-            Type = type;
-            Index = index;
-        }
-
-        public IPType Type { get; }
-
-        public int Index { get; }
-    }
-
-    public class PLabel
-    {
-        public PInstruction Instruction { get; } = PInstruction.Create(OpCodes.Nop);
-    }
-
     public class CilBody
     {
         public Guid Id { get; }
 
         public List<PInstruction> Labels { get; } = new List<PInstruction>();
+
+        public List<PLocal> Locals { get; } = new List<PLocal>();
 
         public CilBody()
         {
@@ -100,7 +84,11 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public PLocal DefineLocal(IPType type)
         {
-            return new PLocal(type, 0);
+            var local = new PLocal(type, 0);
+
+            Locals.Add(local);
+
+            return local;
         }
 
         public PLabel DefineLabel()

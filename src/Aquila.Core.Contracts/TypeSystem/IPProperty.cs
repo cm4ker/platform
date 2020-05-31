@@ -9,14 +9,33 @@ namespace Aquila.Core.Contracts.TypeSystem
 
     public interface IPProperty : IPMember
     {
-        bool IsSelfLink { get; set; }
-        bool IsSystem { get; set; }
-        bool IsUnique { get; set; }
-        bool IsReadOnly { get; set; }
+        bool IsSelfLink { get; }
+        bool IsSystem { get; }
+        bool IsUnique { get; }
+        bool IsReadOnly { get; }
         IPType Type { get; }
 
-        //TODO: We can organize two worlds Mutable and Immutable where we have builders and just ReadOnly objects
+        public IPMethod Getter { get; }
+
+        public IPMethod Setter { get; }
+    }
+
+
+    public interface IPPropertyBuilder : IPProperty
+    {
         void SetType(Guid guid);
+
+        void SetIsSelfLink(bool value);
+
+        void SetIsSystem(bool value);
+
+        void SetIsUnique(bool value);
+
+        void SetIsReadOnly(bool value);
+
+        void SetGetter(Guid id);
+
+        void SetSetter(Guid id);
     }
 
 
