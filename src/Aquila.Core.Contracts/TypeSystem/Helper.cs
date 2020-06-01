@@ -10,7 +10,7 @@ namespace Aquila.Core.Contracts.TypeSystem
     {
         public static IPType CreateUX(this ITypeManager tm)
         {
-            var result = tm.Type();
+            var result = tm.DefineType();
             result.IsUX = true;
 
             return result;
@@ -90,7 +90,7 @@ namespace Aquila.Core.Contracts.TypeSystem
 
             if (listTypes.Count > 1)
             {
-                var ts = tm.TypeSet(listTypes);
+                var ts = tm.DefineTypeSet(listTypes);
                 tm.Register(ts);
                 return ts.Id;
             }

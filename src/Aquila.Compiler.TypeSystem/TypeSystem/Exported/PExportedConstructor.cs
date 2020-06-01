@@ -1,15 +1,15 @@
 using System;
+using Aquila.Compiler.Contracts;
 
 namespace Aquila.Compiler.Aqua.TypeSystem.Exported
 {
     public class PExportedConstructor : PConstructor
     {
-        public PExportedConstructor(Guid parentId, TypeManager tm) : base(parentId, tm)
-        {
-        }
+        private readonly IConstructor _c;
 
-        public PExportedConstructor(Guid id, Guid parentId, TypeManager tm) : base(id, parentId, tm)
+        public PExportedConstructor(IConstructor c, TypeManager tm) : base(Guid.Empty, Guid.Empty, tm)
         {
+            _c = c;
         }
     }
 }

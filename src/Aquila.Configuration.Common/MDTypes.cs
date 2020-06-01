@@ -23,21 +23,21 @@ namespace Aquila.Configuration.Common
             switch (mdType)
             {
                 case MDString p:
-                    var st = tm.Type(mdType.Guid);
+                    var st = tm.DefineType(mdType.Guid);
                     st.SetSize(p.Size);
                     tm.Register(st);
                     result = st.Id;
                     break;
 
                 case MDNumeric n:
-                    var nt = tm.Type(mdType.Guid);
+                    var nt = tm.DefineType(mdType.Guid);
                     nt.SetScale(n.Scale);
                     nt.SetPrecision(n.Precision);
                     tm.Register(nt);
                     result = nt.Id;
                     break;
                 case MDBinary b:
-                    var bt = tm.Type(mdType.Guid);
+                    var bt = tm.DefineType(mdType.Guid);
                     bt.SetSize(b.Size);
                     tm.Register(bt);
                     result = bt.Id;
@@ -46,7 +46,7 @@ namespace Aquila.Configuration.Common
 
             if (isArray)
             {
-                var spec = tm.Type(result);
+                var spec = tm.DefineType(result);
                 spec.SetIsArray(true);
                 tm.Register(spec);
                 result = spec.Id;

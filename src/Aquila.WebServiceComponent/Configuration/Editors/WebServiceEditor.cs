@@ -70,7 +70,7 @@ namespace Aquila.WebServiceComponent.Configuration.Editors
 
         private void Register()
         {
-            var oType = _tm.Type();
+            var oType = _tm.DefineType();
             oType.IsObject = true;
 
             oType.Id = _md.RefId;

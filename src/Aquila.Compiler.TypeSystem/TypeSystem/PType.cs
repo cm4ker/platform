@@ -64,6 +64,10 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual IEnumerable<IPInvokable> Methods => _ts.Methods.Where(x => x.ParentId == Id);
 
+        public virtual IEnumerable<IPConstructor> Constructors => _ts.Constructors.Where(x => x.ParentId == Id);
+
+        public virtual IEnumerable<IPField> Fields => _ts.Fields.Where(x => x.ParentId == Id);
+
         public virtual IEnumerable<ITable> Tables => _ts.Tables.Where(x => x.ParentId == Id);
 
         private IEnumerable<IPMember> GetMembers()
@@ -73,7 +77,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public IPTypeSpec GetSpec()
         {
-            return _ts.Type(this);
+            return _ts.DefineType(this);
         }
 
         public ITypeManager TypeManager => _ts;

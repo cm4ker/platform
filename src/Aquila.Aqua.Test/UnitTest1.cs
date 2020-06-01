@@ -13,14 +13,14 @@ namespace Aquila.Aqua.Test
         {
             TypeManager tm = new TypeManager(new RoslynTypeSystem(new RoslynPlatformFactory(), null));
 
-            var ts = tm.TypeSet();
+            var ts = tm.DefineTypeSet();
             ts.AddType(tm.Int);
             ts.AddType(tm.String);
             ts.AddType(tm.Numeric);
             ts.AddType(tm.Boolean);
 
 
-            var myType = tm.Type();
+            var myType = tm.DefineType();
         }
     }
 }

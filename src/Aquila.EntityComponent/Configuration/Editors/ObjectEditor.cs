@@ -133,7 +133,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
         {
             var tm = _tm;
 
-            var oType = tm.Type();
+            var oType = tm.DefineType();
             oType.IsManager = true;
             oType.IsAsmAvailable = true;
 
@@ -154,7 +154,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
 
         private void RegisterObject()
         {
-            var oType = _tm.Type();
+            var oType = _tm.DefineType();
             oType.IsObject = true;
 
             oType.Id = _md.ObjectId;
@@ -227,7 +227,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
         {
             var tm = _tm;
 
-            var oType = tm.Type();
+            var oType = tm.DefineType();
             oType.IsDto = true;
 
             oType.Id = _md.DtoId;
@@ -299,7 +299,7 @@ namespace Aquila.EntityComponent.Configuration.Editors
 
         private void RegisterLink()
         {
-            var oType = _tm.Type();
+            var oType = _tm.DefineType();
             oType.IsLink = true;
             oType.IsQueryAvailable = false;
             oType.IsAsmAvailable = true;

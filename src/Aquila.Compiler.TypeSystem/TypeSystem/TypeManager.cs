@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Aqua.TypeSystem.Builders;
 using Aquila.Compiler.Aqua.TypeSystem.Exported;
 using Aquila.Compiler.Aqua.TypeSystem.StandartTypes;
 using Aquila.Compiler.Contracts;
@@ -20,6 +21,8 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         private List<IObjectSetting> _objectSettings;
         private List<MetadataRow> _metadatas;
         private List<BackendObject> _backendObjects;
+        private List<IPConstructor> _constructors;
+
 
         private IntPType _intPType;
         private DateTimePType _dateTimePType;
@@ -29,6 +32,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         private GuidPType _guidPType;
         private NumericPType _numericPType;
         private UnknownPType _unknownPType;
+
 
         public TypeManager(ITypeSystem backend)
         {
@@ -76,7 +80,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public IReadOnlyList<IPInvokable> Methods => _methods;
 
-        public IReadOnlyList<IPropertyType> PropertyTypes => _propertyTypes;
+        public IReadOnlyList<IPConstructor> Constructors => _constructors;
+
+        public IReadOnlyList<IPField> Fields => null;
 
         public IReadOnlyList<ITable> Tables => _tables;
 
@@ -88,7 +94,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public IReadOnlyList<IBackendObject> BackendObjects => _backendObjects;
 
-        public void Register(IPType ipType)
+        internal void Register(IPType ipType)
         {
             if (_types.Exists(x => x.Id == ipType.Id))
                 throw new Exception($"Type id {ipType.Name}:{ipType.Id} already registered");
@@ -96,7 +102,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _types.Add(ipType);
         }
 
-        public void Register(IPProperty p)
+        internal void Register(IPProperty p)
         {
             if (_properties.Exists(x => x.Id == p.Id && x.ParentId == p.ParentId))
                 throw new Exception($"Property id {p.Name}:{p.Id} already registered");
@@ -104,31 +110,11 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _properties.Add(p);
         }
 
-        public void Register(IPropertyType type)
-        {
-            _propertyTypes.Add(type);
-        }
-
-        public void Register(IPInvokable method)
+        internal void Register(IPInvokable method)
         {
             if (_methods.Exists(x => x.Id == method.Id && x.ParentId == method.ParentId))
                 throw new Exception($"Method id {method.Name}:{method.Id} already registered");
             _methods.Add(method);
-        }
-
-        public void Register(IComponent component)
-        {
-            _components.Add(component);
-        }
-
-        public void Register(ITable table)
-        {
-            _tables.Add(table);
-        }
-
-        public ITable NestedType()
-        {
-            throw new NotImplementedException();
         }
 
         public void AddMD(Guid id, Guid parentId, object metadata)
@@ -136,9 +122,12 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _metadatas.Add(new MetadataRow {Id = id, ParentId = parentId, Metadata = metadata});
         }
 
+
         public IComponent Component()
         {
-            return new Component(this);
+            var component = new Component(this);
+            _components.Add(component);
+            return component;
         }
 
         public IPType ExportType(IType type)
@@ -146,69 +135,67 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return new PExportType(this, type);
         }
 
-        public IPTypeBuilder Type()
+        public IPTypeBuilder DefineType()
         {
-            return new PTypeBuilder(this);
+            var tb = new PTypeBuilder(this);
+
+            Register(tb);
+
+            return tb;
         }
 
-        public IPTypeSpec Type(IPType baseType)
+        public IPTypeSpec DefineType(IPType baseType)
         {
-            return new PTypeSpec(baseType.Id, this);
+            var ts = new PTypeSpec(baseType.Id, this);
+
+            Register(ts);
+
+            return ts;
         }
 
-        public IPTypeSpec Type(Guid baseTypeId)
+        public IPTypeSpec DefineType(Guid baseTypeId)
         {
-            return new PTypeSpec(baseTypeId, this);
+            var ts = new PTypeSpec(baseTypeId, this);
+
+            Register(ts);
+
+            return ts;
         }
 
-        public IPTypeSet TypeSet(List<IPType> types)
+        public IPTypeSet DefineTypeSet(List<IPType> types)
         {
-            return new PTypeSet(types, this);
+            var ts = new PTypeSet(types, this);
+
+            Register(ts);
+
+            return ts;
         }
 
-        public IPTypeSet TypeSet(List<Guid> types)
+        public IPTypeSet DefineTypeSet(List<Guid> types)
         {
-            return new PTypeSet(types, this);
+            var ts = new PTypeSet(types, this);
+
+            Register(ts);
+
+            return ts;
         }
 
-        public IPTypeSet TypeSet()
+        public IPTypeSet DefineTypeSet()
         {
-            return new PTypeSet(this);
-        }
+            var ts = new PTypeSet(this);
 
-        public IPProperty Property(Guid id, Guid parentId)
-        {
-            return new PProperty(id, parentId, this);
-        }
+            Register(ts);
 
-        public IPProperty Property(Guid parentId)
-        {
-            return new PProperty(System.Guid.NewGuid(), parentId, this);
-        }
-
-        public IPMethod Method(Guid id, Guid parentId)
-        {
-            return new PMethod(id, parentId, this);
-        }
-
-        public IPMethod Method(Guid parentId)
-        {
-            return new PMethod(parentId, this);
-        }
-
-        public IPConstructor Constructor(Guid id, Guid parentId)
-        {
-            return new PConstructor(id, parentId, this);
-        }
-
-        public IPConstructor Constructor(Guid parentId)
-        {
-            return new PConstructor(parentId, this);
+            return ts;
         }
 
         public IPType NestedType(Guid parentId)
         {
-            return new NestedType(System.Guid.NewGuid(), parentId, this);
+            var nt = new NestedType(System.Guid.NewGuid(), parentId, this);
+
+            Register(nt);
+
+            return nt;
         }
 
         public void AddOrUpdateSetting(IObjectSetting setting)

@@ -24,4 +24,14 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual IPMethod Setter => null;
     }
+
+
+    public abstract class PField : PMember, IPField
+    {
+        internal PField(Guid id, Guid parentId, TypeManager ts) : base(id, parentId, ts)
+        {
+        }
+
+        public virtual IPType Type => TypeManager.Unknown;
+    }
 }

@@ -1,9 +1,9 @@
 using System;
 using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Compiler.Aqua.TypeSystem
+namespace Aquila.Compiler.Aqua.TypeSystem.Builders
 {
-    public class PropertyBuilder : PProperty, IPPropertyBuilder
+    public class PPropertyBuilder : PProperty, IPPropertyBuilder
     {
         private Guid _typeId;
         private Guid _getterId;
@@ -13,7 +13,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         private bool _isUnique;
         private bool _isReadOnly;
 
-        internal PropertyBuilder(Guid id, Guid parentId, TypeManager ts) : base(id, parentId, ts)
+        internal PPropertyBuilder(Guid id, Guid parentId, TypeManager ts) : base(id, parentId, ts)
         {
         }
 

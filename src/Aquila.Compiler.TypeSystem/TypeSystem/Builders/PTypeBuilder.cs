@@ -1,13 +1,14 @@
 using System;
 using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Compiler.Aqua.TypeSystem
+namespace Aquila.Compiler.Aqua.TypeSystem.Builders
 {
     /// <summary>
     /// Describes type for platform in different parts
     /// </summary>
     public sealed class PTypeBuilder : PType, IPTypeBuilder
     {
+        private readonly TypeManager _tm;
         private Guid _id;
         private Guid _baseId;
         private Guid? _componentId;
@@ -15,6 +16,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public PTypeBuilder(Guid id, TypeManager tm) : base(tm)
         {
+            _tm = tm;
             _id = Guid.NewGuid();
         }
 
@@ -51,6 +53,13 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public void SetScope(ScopeAffects scope)
         {
             _scope = scope;
+        }
+
+        public IPProperty DefineProperty()
+        {
+            var prop = new PPropertyBuilder(Guid.NewGuid(), Id, _tm);
+            _tm.Register(prop);
+            return prop;
         }
     }
 }

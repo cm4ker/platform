@@ -15,7 +15,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Exported
         private readonly IType _backendType;
         private Guid _id;
 
-        private IList<ExportedProperty> _properties;
+        private List<PExportedProperty> _properties;
+        private List<PExportedMethod> _methods;
+        private List<PExportedConstructor> _constructors;
 
         public PExportType(TypeManager ts, IType backendType) : base(ts)
         {
@@ -28,7 +30,15 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Exported
         public IType BackendType => _backendType;
 
         public override IEnumerable<IPProperty> Properties
-            => _properties ?? _backendType.Properties.Select(x => new ExportedProperty(x, (TypeManager) TypeManager))
+            => _properties ?? _backendType.Properties.Select(x => new PExportedProperty(x, (TypeManager) TypeManager))
+                .ToList();
+
+        public override IEnumerable<IPInvokable> Methods
+            => _methods ?? _backendType.Methods.Select(x => new PExportedMethod(x, (TypeManager) TypeManager)).ToList();
+
+        public override IEnumerable<IPConstructor> Constructors
+            => _constructors ?? _backendType.Constructors
+                .Select(x => new PExportedConstructor(x, (TypeManager) TypeManager))
                 .ToList();
     }
 }
