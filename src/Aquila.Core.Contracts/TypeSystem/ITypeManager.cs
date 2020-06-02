@@ -31,13 +31,6 @@ namespace Aquila.Core.Contracts.TypeSystem
         IReadOnlyList<IBackendObject> BackendObjects { get; }
         IReadOnlyList<IPConstructor> Constructors { get; }
 
-        // void Register(IPType ipType);
-        // void Register(IPProperty p);
-        // void Register(IPInvokable method);
-        // void Register(IPropertyType type);
-        // void Register(IComponent component);
-        // void Register(ITable table);
-
         IPTypeBuilder DefineType();
 
         IPTypeSpec DefineType(IPType baseType);
@@ -50,7 +43,7 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         IPTypeSet DefineTypeSet();
 
-        ITable NestedType();
+        IPTypeBuilder NestedType(Guid parentId);
 
         void AddMD(Guid id, Guid parentId, object metadata);
 

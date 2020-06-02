@@ -42,6 +42,8 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         object Bag { get; set; }
 
+        ScopeAffects Scope { get; }
+
         IEnumerable<IPProperty> Properties { get; }
 
         IEnumerable<IPInvokable> Methods { get; }

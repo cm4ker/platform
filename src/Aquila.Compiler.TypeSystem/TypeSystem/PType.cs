@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Newtonsoft.Json.Bson;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
@@ -54,7 +53,12 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual bool IsTypeSet => false;
 
-        public virtual bool IsNestedType => false;
+        internal IType BackendType { get; set; }
+
+        /// <summary>
+        /// This type is nested?
+        /// </summary>
+        public virtual bool IsNestedType => ParentId != null;
 
         public object Bag { get; set; }
 

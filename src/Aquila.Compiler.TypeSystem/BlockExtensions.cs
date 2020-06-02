@@ -1,20 +1,21 @@
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua
 {
     public static class BlockExtensions
     {
-        public static RoslynEmitter IsInst(this RoslynEmitter bb, IPType type)
+        public static IEmitter IsInst(this IEmitter bb, IPType type)
         {
             return bb.IsInst(type.ToBackend());
         }
 
-        public static RoslynEmitter NewObj(this RoslynEmitter bb, IPConstructor constructor)
+        public static IEmitter NewObj(this IEmitter bb, IPConstructor constructor)
         {
             return bb.NewObj(constructor.ToBackend());
         }
 
-        public static RoslynType GetClrPrivateType(IPType type)
+        public static IEmitter GetClrPrivateType(IPType type)
         {
         }
     }

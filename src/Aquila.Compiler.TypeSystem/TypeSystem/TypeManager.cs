@@ -13,6 +13,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
     {
         private readonly ITypeSystem _backend;
         private List<IPType> _types;
+        private List<IPField> _fields;
         private List<IPProperty> _properties;
         private List<IPInvokable> _methods;
         private List<IPropertyType> _propertyTypes;
@@ -102,6 +103,15 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _types.Add(ipType);
         }
 
+        internal void Register(IPField field)
+        {
+            if (_fields.Exists(x => x.Id == field.Id))
+                throw new Exception($"Field id {field.Name}:{field.Id} already registered");
+
+            _fields.Add(field);
+        }
+
+
         internal void Register(IPProperty p)
         {
             if (_properties.Exists(x => x.Id == p.Id && x.ParentId == p.ParentId))
@@ -189,15 +199,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return ts;
         }
 
-        public IPType NestedType(Guid parentId)
-        {
-            var nt = new NestedType(System.Guid.NewGuid(), parentId, this);
-
-            Register(nt);
-
-            return nt;
-        }
-
         public void AddOrUpdateSetting(IObjectSetting setting)
         {
             _objectSettings.RemoveAll(x => x.ObjectId == setting.ObjectId);
@@ -212,10 +213,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public void LoadSettings(IEnumerable<IObjectSetting> settings)
         {
             _objectSettings = settings.ToList();
-        }
-
-        public void Verify()
-        {
         }
     }
 }

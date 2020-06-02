@@ -9,6 +9,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         private bool _isArray;
         private string _name;
+        private int _dimensions;
 
 
         internal PTypeSpec(Guid baseId, TypeManager ts) : base(ts)
@@ -22,7 +23,10 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return TypeManager.FindType(_baseId) ?? throw new Exception("Type not found");
         }
 
+        public override Guid Id { get; }
+
         public IPType BaseType => GetBase();
+
         public override string Name => _name ??= CalcName();
 
         public override Guid? BaseId => _baseId;
@@ -32,6 +36,8 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public int Precision { get; set; }
 
         public int Size { get; set; }
+
+        public int Dimensions => _dimensions;
 
         public void SetScale(int value)
         {
@@ -48,12 +54,12 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             Size = value;
         }
 
-        public void SetIsArray(bool value)
+        public void SetDimensions(int value)
         {
-            _isArray = value;
+            _dimensions = value;
         }
 
-        public override bool IsArray => _isArray;
+        public override bool IsArray => _dimensions > 0;
 
         public override bool IsTypeSpec => true;
 

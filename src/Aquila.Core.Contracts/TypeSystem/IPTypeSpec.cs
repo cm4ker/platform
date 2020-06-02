@@ -12,7 +12,6 @@ namespace Aquila.Core.Contracts.TypeSystem
         void SetScale(int value);
         void SetPrecision(int value);
         void SetSize(int value);
-        void SetIsArray(bool value);
     }
 
     public interface IPTypeSet : IPType, IEquatable<IPType>

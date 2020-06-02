@@ -3,7 +3,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem.Builders
 {
-    public class PMethodBuilder : PMethod
+    public class PMethodBuilder : PMethod, IPMethodBuilder
     {
         private Guid _typeId;
 

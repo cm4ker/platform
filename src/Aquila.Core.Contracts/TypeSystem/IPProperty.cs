@@ -7,6 +7,12 @@ namespace Aquila.Core.Contracts.TypeSystem
     {
     }
 
+    public interface IPFieldBuilder : IPField
+    {
+        
+    }
+
+
     public interface IPProperty : IPMember
     {
         bool IsSelfLink { get; }
@@ -38,6 +44,10 @@ namespace Aquila.Core.Contracts.TypeSystem
         void SetSetter(Guid id);
     }
 
+
+    public interface IPMethodBuilder : IPMethod
+    {
+    }
 
     public interface IPUniqueObject : ITypeManagerProvider
     {

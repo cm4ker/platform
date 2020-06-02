@@ -1,4 +1,5 @@
 using System;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem.Builders
@@ -13,6 +14,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
         private Guid _baseId;
         private Guid? _componentId;
         private ScopeAffects _scope;
+        private Guid? _parentId;
 
         public PTypeBuilder(Guid id, TypeManager tm) : base(tm)
         {
@@ -32,9 +34,16 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
 
         public override ScopeAffects Scope => _scope;
 
+        public override Guid? ParentId => _parentId;
+
         public void SetBase(Guid baseId)
         {
             _baseId = baseId;
+        }
+
+        public void SetParentId(Guid? parentId)
+        {
+            _parentId = parentId;
         }
 
         public void SetComponent(Guid? componentId)
@@ -55,11 +64,26 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
             _scope = scope;
         }
 
-        public IPProperty DefineProperty()
+        public IPPropertyBuilder DefineProperty()
         {
             var prop = new PPropertyBuilder(Guid.NewGuid(), Id, _tm);
             _tm.Register(prop);
             return prop;
+        }
+
+        public IPMethodBuilder DefineMethod()
+        {
+            var method = new PMethodBuilder(Guid.NewGuid(), Id, _tm);
+            _tm.Register(method);
+            return method;
+        }
+
+        public IPFieldBuilder DefineField()
+        {
+            var field = new PFieldBuilder(Guid.NewGuid(), Id, _tm);
+
+            _tm.Register(field);
+            return field;
         }
     }
 }
