@@ -7,9 +7,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
     {
         internal PConstructorBuilder(Guid id, Guid parentId, TypeManager tm) : base(id, parentId, tm)
         {
-            Body = new CilBody();
+            Body = new PCilBody();
         }
 
-        public CilBody Body { get; }
+        public PCilBody Body { get; }
     }
 }

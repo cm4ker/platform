@@ -7,76 +7,76 @@ using Avalonia.Controls.Templates;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class CilBody
+    public class PCilBody
     {
         public Guid Id { get; }
 
-        public List<PInstruction> Labels { get; } = new List<PInstruction>();
+        public List<PLabel> Labels { get; } = new List<PLabel>();
 
         public List<PLocal> Locals { get; } = new List<PLocal>();
 
-        public CilBody()
+        public PCilBody()
         {
             Instructions = new List<PInstruction>();
         }
 
         public List<PInstruction> Instructions { get; }
 
-        public CilBody Emit(OpCode code)
+        public PCilBody Emit(OpCode code)
         {
             Instructions.Add(PInstruction.Create(code));
             return this;
         }
 
-        public CilBody Emit(OpCode code, IPField field)
+        public PCilBody Emit(OpCode code, IPField field)
         {
             Instructions.Add(PInstruction.Create(code, field));
             return this;
         }
 
-        public CilBody Emit(OpCode code, IPMethod method)
+        public PCilBody Emit(OpCode code, IPMethod method)
         {
             Instructions.Add(PInstruction.Create(code, method));
             return this;
         }
 
-        public CilBody Emit(OpCode code, IPConstructor ctor)
+        public PCilBody Emit(OpCode code, IPConstructor ctor)
         {
             Instructions.Add(PInstruction.Create(code, ctor));
             return this;
         }
 
-        public CilBody Emit(OpCode code, string arg)
+        public PCilBody Emit(OpCode code, string arg)
         {
             Instructions.Add(PInstruction.Create(code, arg));
             return this;
         }
 
-        public CilBody Emit(OpCode code, int arg)
+        public PCilBody Emit(OpCode code, int arg)
         {
             Instructions.Add(PInstruction.Create(code, arg));
             return this;
         }
 
-        public CilBody Emit(OpCode code, long arg)
+        public PCilBody Emit(OpCode code, long arg)
         {
             Instructions.Add(PInstruction.Create(code, arg));
             return this;
         }
 
-        public CilBody Emit(OpCode code, IPType type)
+        public PCilBody Emit(OpCode code, IPType type)
         {
             Instructions.Add(PInstruction.Create(code, type));
             return this;
         }
 
-        public CilBody Emit(OpCode code, float arg)
+        public PCilBody Emit(OpCode code, float arg)
         {
             Instructions.Add(PInstruction.Create(code, arg));
             return this;
         }
 
-        public CilBody Emit(OpCode code, double arg)
+        public PCilBody Emit(OpCode code, double arg)
         {
             Instructions.Add(PInstruction.Create(code, arg));
             return this;
@@ -93,28 +93,30 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public PLabel DefineLabel()
         {
-            return new PLabel();
+            var l = new PLabel();
+            Labels.Add(l);
+            return l;
         }
 
-        public CilBody MarkLabel(PLabel label)
+        public PCilBody MarkLabel(PLabel label)
         {
             Instructions.Add(label.Instruction);
             return this;
         }
 
-        public CilBody Emit(OpCode code, PLabel label)
+        public PCilBody Emit(OpCode code, PLabel label)
         {
             Instructions.Add(PInstruction.Create(code, label.Instruction));
             return this;
         }
 
-        public CilBody Emit(OpCode code, PLocal local)
+        public PCilBody Emit(OpCode code, PLocal local)
         {
             Instructions.Add(PInstruction.Create(code, local));
             return this;
         }
 
-        public CilBody Emit(OpCode code, IPParameter parameter)
+        public PCilBody Emit(OpCode code, IPParameter parameter)
         {
             Instructions.Add(PInstruction.Create(code, parameter));
             return this;

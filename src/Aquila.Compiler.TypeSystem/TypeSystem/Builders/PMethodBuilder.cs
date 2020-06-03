@@ -9,12 +9,12 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
 
         internal PMethodBuilder(Guid id, Guid parentId, TypeManager tm) : base(id, parentId, tm)
         {
-            Body = new CilBody();
+            Body = new PCilBody();
         }
 
         public override IPType ReturnType => TypeManager.FindType(_typeId);
 
-        public CilBody Body { get; }
+        public PCilBody Body { get; }
 
         public void SetReturnType(Guid typeId)
         {

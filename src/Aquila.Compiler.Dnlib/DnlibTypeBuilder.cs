@@ -43,7 +43,7 @@ namespace Aquila.Compiler.Dnlib
 
         public IReadOnlyList<IMethodBuilder> DefinedMethods => Methods.Cast<IMethodBuilder>().ToList();
 
-        public IField DefineField(IType type, string name, bool isPublic, bool isStatic)
+        public IFieldBuilder DefineField(IType type, string name, bool isPublic, bool isStatic)
         {
             var tref = _r.GetReference(((DnlibType) type).TypeRef);
             var field = new FieldDefUser(name, new FieldSig(tref.ToTypeSig()));

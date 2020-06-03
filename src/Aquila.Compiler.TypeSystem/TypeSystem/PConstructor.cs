@@ -1,4 +1,5 @@
 using System;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
@@ -12,5 +13,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         internal PConstructor(Guid id, Guid parentId, TypeManager tm) : base(id, parentId, tm)
         {
         }
+
+        public IConstructor BackendConstructor { get; set; }
     }
 }

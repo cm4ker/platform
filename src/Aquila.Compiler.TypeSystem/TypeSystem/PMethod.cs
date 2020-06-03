@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
@@ -15,5 +16,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         }
 
         public virtual IPType ReturnType => TypeManager.Unknown;
+
+        public IMethod BackendMethod { get; set; }
     }
 }

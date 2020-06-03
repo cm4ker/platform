@@ -288,6 +288,11 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return new PInstruction(opCode, local);
         }
 
+        public static PInstruction Create(OpCode opCode, PLabel label)
+        {
+            return new PInstruction(opCode, label);
+        }
+
         /// <summary>
         /// Creates a <c>ldci4</c> instruction
         /// </summary>

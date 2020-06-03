@@ -51,9 +51,11 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual bool IsArray => false;
 
+        public virtual bool IsGeneric => false;
+
         public virtual bool IsTypeSet => false;
 
-        internal IType BackendType { get; set; }
+        internal virtual IType BackendType { get; set; }
 
         /// <summary>
         /// This type is nested?

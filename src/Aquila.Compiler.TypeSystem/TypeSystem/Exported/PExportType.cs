@@ -27,7 +27,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Exported
 
         public override Guid Id => _id;
 
-        public IType BackendType => _backendType;
+        internal override IType BackendType => _backendType;
 
         public override IEnumerable<IPProperty> Properties
             => _properties ?? _backendType.Properties.Select(x => new PExportedProperty(x, (TypeManager) TypeManager))

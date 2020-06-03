@@ -1,4 +1,5 @@
 using System;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
@@ -13,6 +14,8 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             TypeManager = tm;
             _invokableId = invokableId;
         }
+
+        public Guid Id { get; }
 
         public string Name { get; set; }
 
@@ -31,5 +34,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         {
             _typeId = typeId;
         }
+
+        public IParameter BackendParameter { get; set; }
     }
 }

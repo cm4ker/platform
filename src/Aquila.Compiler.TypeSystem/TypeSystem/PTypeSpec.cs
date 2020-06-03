@@ -39,6 +39,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public int Dimensions => _dimensions;
 
+
         public void SetScale(int value)
         {
             Scale = value;
@@ -59,7 +60,13 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _dimensions = value;
         }
 
+        public void SetGenericSignature(params IPType[] arguments)
+        {
+        }
+
         public override bool IsArray => _dimensions > 0;
+
+        public override bool IsGeneric => true;
 
         public override bool IsTypeSpec => true;
 

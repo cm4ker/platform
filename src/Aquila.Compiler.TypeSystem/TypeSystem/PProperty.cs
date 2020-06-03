@@ -1,4 +1,5 @@
 using System;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 using IPType = Aquila.Core.Contracts.TypeSystem.IPType;
 
@@ -23,8 +24,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public virtual IPMethod Getter => null;
 
         public virtual IPMethod Setter => null;
-    }
 
+        public IProperty BackendProperty { get; set; }
+    }
 
     public abstract class PField : PMember, IPField
     {
@@ -33,5 +35,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         }
 
         public virtual IPType Type => TypeManager.Unknown;
+
+        public IField BackendField { get; set; }
     }
 }
