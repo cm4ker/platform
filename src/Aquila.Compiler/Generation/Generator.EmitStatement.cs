@@ -1,3 +1,4 @@
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn;
 using Aquila.Language.Ast.Definitions;
@@ -10,7 +11,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitStatement(RoslynEmitter e, Statement statement, Block context,
+        private void EmitStatement(PCilBody e, Statement statement, Block context,
             ILabel returnLabel, bool inTry = false)
         {
             if (statement is ExpressionStatement es)

@@ -1,9 +1,10 @@
 using System;
+using System.Runtime.CompilerServices;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class PMember 
+    public class PMember
     {
         internal PMember(Guid id, Guid parentId, TypeManager tm)
         {
@@ -22,8 +23,14 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public Guid ParentId { get; }
 
-        public virtual string Name { get; }
+        public virtual string Name { get; private set; }
 
         public TypeManager TypeManager { get; }
+
+
+        protected void SetNameCore(string name)
+        {
+            Name = name;
+        }
     }
 }

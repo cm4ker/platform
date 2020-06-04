@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Symbols;
 using Aquila.Compiler.Helpers;
@@ -25,7 +26,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitExpression(RoslynEmitter e, Expression expression, SymbolTable symbolTable)
+        private void EmitExpression(PCilBody e, Expression expression, SymbolTable symbolTable)
         {
             if (expression is BinaryExpression be)
             {
@@ -168,7 +169,7 @@ namespace Aquila.Compiler.Generation
                         if (variable.SyntaxObject is ITypedNode tn)
                             name.Type = tn.Type;
 
-                    if (variable.CompileObject is RLocal vd)
+                    if (variable.CompileObject is PLocal vd)
                     {
                         if (name.Type is PrimitiveTypeSyntax pts && (pts.IsBoolean() || pts.IsNumeric()) && false)
                         {
@@ -183,7 +184,7 @@ namespace Aquila.Compiler.Generation
                         // e.LdArg_0();
                         // e.LdFld(fd);
                     }
-                    else if (variable.CompileObject is RoslynParameter pd)
+                    else if (variable.CompileObject is PParameter pd)
                     {
                         e.LdArg(pd);
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Roslyn;
 using Aquila.Core.Contracts;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Shared.Tree;
@@ -10,13 +10,13 @@ namespace Aquila.Compiler.Generation
 {
     public class GlobalVarTreeItem : Node
     {
-        private readonly Action<Node, RoslynEmitter> _e;
+        private readonly Action<Node, PCilBody> _e;
         private List<object> _args;
         private object _codeObject;
         private CompilationMode _mode;
         private TypeSyntax _astType;
 
-        public GlobalVarTreeItem(VarTreeLeafType type, CompilationMode mode, string name, Action<Node, RoslynEmitter> e,
+        public GlobalVarTreeItem(VarTreeLeafType type, CompilationMode mode, string name, Action<Node, PCilBody> e,
             TypeSyntax astType = null)
         {
             if (astType == null && type == VarTreeLeafType.Func)
@@ -63,7 +63,7 @@ namespace Aquila.Compiler.Generation
             _args.Add(arg);
         }
 
-        public void Emit(Node node, RoslynEmitter e)
+        public void Emit(Node node, PCilBody e)
         {
             _e(node, e);
         }

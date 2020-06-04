@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.ServiceModel;
+using Aquila.Compiler.Aqua.TypeSystem;
+using Aquila.Compiler.Aqua.TypeSystem.Builders;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Symbols;
 using Aquila.Compiler.Helpers;
@@ -23,18 +25,18 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private Dictionary<TypeEntity, RoslynTypeBuilder> _stage0 = new Dictionary<TypeEntity, RoslynTypeBuilder>();
+        private Dictionary<TypeEntity, PTypeBuilder> _stage0 = new Dictionary<TypeEntity, PTypeBuilder>();
 
-        private Dictionary<Function, RoslynMethodBuilder> _stage1Methods =
-            new Dictionary<Function, RoslynMethodBuilder>();
+        private Dictionary<Function, PMethodBuilder> _stage1Methods =
+            new Dictionary<Function, PMethodBuilder>();
 
-        private Dictionary<Property, RoslynPropertyBuilder> _stage1Properties =
-            new Dictionary<Property, RoslynPropertyBuilder>();
+        private Dictionary<Property, PPropertyBuilder> _stage1Properties =
+            new Dictionary<Property, PPropertyBuilder>();
 
-        private Dictionary<Field, RoslynField> _stage1Fields = new Dictionary<Field, RoslynField>();
+        private Dictionary<Field, PFieldBuilder> _stage1Fields = new Dictionary<Field, PFieldBuilder>();
 
-        private Dictionary<Constructor, RoslynConstructorBuilder> _stage1constructors =
-            new Dictionary<Constructor, RoslynConstructorBuilder>();
+        private Dictionary<Constructor, PConstructorBuilder> _stage1constructors =
+            new Dictionary<Constructor, PConstructorBuilder>();
 
         private GlobalVarManager _varManager;
 

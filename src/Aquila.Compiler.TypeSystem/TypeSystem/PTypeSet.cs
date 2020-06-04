@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
@@ -32,6 +33,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public override bool IsTypeSpec => true;
 
         public IEnumerable<PType> Types => _types.Select(x => TypeManager.FindType(x));
+
+        internal override IType BackendType => TypeManager.Backend.GetSystemBindings().Object;
+
 
         public void AddType(Guid typeId)
         {

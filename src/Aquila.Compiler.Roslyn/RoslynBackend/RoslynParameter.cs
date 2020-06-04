@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Aquila.Compiler.Contracts;
-using Aquila.Core.Contracts.TypeSystem;
 using dnlib.DotNet;
 using IType = Aquila.Compiler.Contracts.IType;
 

@@ -1,10 +1,7 @@
 using System;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Contracts.Symbols;
-using Aquila.Compiler.Helpers;
-using Aquila.Compiler.Roslyn;
 using Aquila.Language.Ast.Definitions;
-using Aquila.Language.Ast.Infrastructure;
 using Aquila.Language.Ast.Symbols;
 using Expression = Aquila.Language.Ast.Definitions.Expression;
 
@@ -16,7 +13,7 @@ namespace Aquila.Compiler.Generation
         {
         }
 
-        private void EmitVariable(RoslynEmitter e, SymbolTable symTable, Variable variable)
+        private void EmitVariable(PCilBody e, SymbolTable symTable, Variable variable)
         {
             //load phase 
 
@@ -66,7 +63,7 @@ namespace Aquila.Compiler.Generation
                     $"variable L:{variable.Line}P:{variable.Position} {variable.Name} type is unknown");
             }
 
-            RLocal local = e.DefineLocal(_map.GetClrType(variable.Type));
+            PLocal local = e.DefineLocal(_map.GetClrType(variable.Type));
 
             if (variable.Value is Expression ex)
             {

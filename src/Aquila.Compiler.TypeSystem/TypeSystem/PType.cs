@@ -17,7 +17,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual Guid Id => _ts.Unknown.Id;
 
-        public virtual Guid? ParentId => null;
+        public virtual Guid? ParentId { get; private set; }
 
         public virtual Guid? BaseId { get; } = null;
 
@@ -25,9 +25,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual Guid? ComponentId { get; } = null;
 
-        public virtual string Name { get; set; }
+        public virtual string Name { get; private set; }
 
-        public virtual string Namespace { get; set; }
+        public virtual string Namespace { get; }
 
         public string FullName => $"{Namespace}.{Name}";
 
@@ -49,6 +49,10 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual bool IsTypeSpec => false;
 
+        public virtual bool IsStatic => false;
+
+        public virtual bool IsPublic => false;
+
         public virtual bool IsArray => false;
 
         public virtual bool IsGeneric => false;
@@ -64,24 +68,28 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public object Bag { get; set; }
 
-        public virtual IEnumerable<PMember> Members => GetMembers();
 
         public virtual IEnumerable<PProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
 
-        public virtual IEnumerable<PInvokable> Methods => _ts.Methods.Where(x => x.ParentId == Id);
+        public virtual IEnumerable<PMethod> Methods => _ts.Methods.Where(x => x.ParentId == Id);
 
         public virtual IEnumerable<PConstructor> Constructors => _ts.Constructors.Where(x => x.ParentId == Id);
 
         public virtual IEnumerable<PField> Fields => _ts.Fields.Where(x => x.ParentId == Id);
 
-        private IEnumerable<PMember> GetMembers()
-        {
-            return _ts.Members.Where(x => x.ParentId == Id);
-        }
-
         public PTypeSpec GetSpec()
         {
             return _ts.DefineType(this);
+        }
+
+        protected void SetNameCore(string name)
+        {
+            Name = name;
+        }
+
+        protected void SetParentIdCore(Guid? parentId)
+        {
+            ParentId = parentId;
         }
 
         public TypeManager TypeManager => _ts;

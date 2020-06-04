@@ -16,7 +16,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem.StandartTypes
 
         public override bool IsPrimitive => true;
         public override PrimitiveKind PrimitiveKind => PrimitiveKind.Int;
-        
+
         public override string Name
         {
             get { return "Int"; }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Aqua;
 using Portable.Xaml;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Visitor;
@@ -21,7 +22,7 @@ namespace Aquila.Compiler.Generation
                 if (component.TryGetFeature<IBuildingParticipant>(out var comBuild))
 
                     foreach (var type in _conf.TypeManager.Types.Where(x =>
-                        x.ComponentId == component.Id && x.IsAsmAvailable))
+                        x.ComponentId == component.Id && x.Scope.HasFlag(ScopeAffects.Code)))
                     {
                         if (_mode == CompilationMode.Client)
                             comBuild.Generator.StageClient(type, _root);
@@ -35,7 +36,7 @@ namespace Aquila.Compiler.Generation
 
             //Add Querying support to the platform
             if (_mode.HasFlag(CompilationMode.Server))
-                QueryCompilerHelper.Init(_root, _ts);
+                QueryCompilerHelper.Init(_root, _conf.TypeManager);
 
             Build();
         }
@@ -48,7 +49,7 @@ namespace Aquila.Compiler.Generation
             {
                 if (component.TryGetFeature<IBuildingParticipant>(out var bp))
                     foreach (var type in _conf.TypeManager.Types.Where(x =>
-                        x.ComponentId == component.Id && x.IsAsmAvailable))
+                        x.ComponentId == component.Id && x.Scope.HasFlag(ScopeAffects.Code)))
                     {
                         if (_mode == CompilationMode.Client)
                             bp.Generator.StageClient(type, root);

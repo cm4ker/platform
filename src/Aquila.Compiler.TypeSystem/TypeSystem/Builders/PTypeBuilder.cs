@@ -14,7 +14,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
         private Guid _baseId;
         private Guid? _componentId;
         private ScopeAffects _scope;
-        private Guid? _parentId;
+        private string _name;
 
         public PTypeBuilder(Guid id, TypeManager tm) : base(tm)
         {
@@ -34,8 +34,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
 
         public override ScopeAffects Scope => _scope;
 
-        public override Guid? ParentId => _parentId;
-
         public void SetBase(Guid baseId)
         {
             _baseId = baseId;
@@ -43,7 +41,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
 
         public void SetParentId(Guid? parentId)
         {
-            _parentId = parentId;
+            SetParentIdCore(parentId);
         }
 
         public void SetComponent(Guid? componentId)
@@ -53,6 +51,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
 
         public void SetName(string name)
         {
+            SetNameCore(name);
         }
 
         public void SetNamespace(string @namespace)

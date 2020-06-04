@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Aqua.TypeSystem.Builders;
 using Aquila.Compiler.Contracts;
+using Aquila.Compiler.Contracts.Extensions;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua
@@ -33,20 +34,19 @@ namespace Aquila.Compiler.Aqua
             //Step 2. Construct members
             foreach (var pType in typeForConstruct)
             {
-                foreach (var member in pType.Members)
+                foreach (var f in pType.Fields)
                 {
-                    switch (member)
-                    {
-                        case PField f:
-                            ConstructField(pType, f);
-                            break;
-                        case PProperty p:
-                            ConstructProperty(pType, p);
-                            break;
-                        case PMethod m:
-                            ConstructMethod(pType, m);
-                            break;
-                    }
+                    ConstructField(pType, f);
+                }
+
+                foreach (var f in pType.Methods)
+                {
+                    ConstructMethod(pType, f);
+                }
+
+                foreach (var f in pType.Properties)
+                {
+                    ConstructProperty(pType, f);
                 }
             }
 
@@ -54,17 +54,14 @@ namespace Aquila.Compiler.Aqua
 
             foreach (var pType in typeForConstruct)
             {
-                foreach (var member in pType.Members)
+                foreach (var p in pType.Properties)
                 {
-                    switch (member)
-                    {
-                        case PProperty p:
-                            ConstructProperty(pType, p);
-                            break;
-                        case PMethod m:
-                            EmitMethod((PMethodBuilder) m, (IMethodBuilder) m.BackendMethod);
-                            break;
-                    }
+                    ConstructProperty(pType, p);
+                }
+
+                foreach (var m in pType.Methods)
+                {
+                    EmitMethod((PMethodBuilder) m, (IMethodBuilder) m.BackendMethod);
                 }
             }
         }
@@ -109,13 +106,13 @@ namespace Aquila.Compiler.Aqua
         private void ConstructField(PType type, PField field)
         {
             var tb = (ITypeBuilder) type.BackendType;
-            field.BackendField = tb.DefineField(null, field.Name, true, false);
+            field.BackendField = tb.DefineField(field.Type.BackendType, field.Name, true, false);
         }
 
         private void ConstructProperty(PType type, PProperty property)
         {
             var tb = (ITypeBuilder) type.BackendType;
-            var backendProp = tb.DefineProperty(null, property.Name, false);
+            var backendProp = tb.DefineProperty(property.Type.BackendType, property.Name, false);
 
             backendProp.WithGetter(ConstructMethod(type, (PMethod) property.Getter));
             backendProp.WithSetter(ConstructMethod(type, (PMethod) property.Setter));
@@ -127,13 +124,13 @@ namespace Aquila.Compiler.Aqua
         {
             var tb = (ITypeBuilder) type.BackendType;
             var backendMethod = tb.DefineMethod(method.Name, true, false, false);
-            backendMethod.WithReturnType(null);
+            backendMethod.WithReturnType(method.ReturnType.BackendType);
 
             foreach (var pParameter in method.Parameters)
             {
                 var pParam = (PParameter) pParameter;
                 pParam.BackendParameter =
-                    backendMethod.DefineParameter(pParameter.Name, null, false, false);
+                    backendMethod.DefineParameter(pParameter.Name, pParameter.Type.BackendType, false, false);
             }
 
             method.BackendMethod = backendMethod;
@@ -150,12 +147,29 @@ namespace Aquila.Compiler.Aqua
 
                 foreach (var local in builder.Body.Locals)
                 {
-                    local.BackendLocal = g.DefineLocal(null);
+                    local.BackendLocal = g.DefineLocal(local.Type.BackendType);
                 }
 
                 foreach (var label in builder.Body.Labels)
                 {
                     label.BackendLabel = g.DefineLabel();
+                }
+
+                if (inst.Operand == null)
+                {
+                    g.Emit(op);
+                    continue;
+                }
+
+                if (op == OpCodes.Call)
+                {
+                    if (inst.Operand is PMethod m)
+                        g.EmitCall(m.BackendMethod);
+
+                    if (inst.Operand is PConstructor c)
+                        g.EmitCall(c.BackendConstructor);
+
+                    continue;
                 }
 
                 switch (inst.Operand)

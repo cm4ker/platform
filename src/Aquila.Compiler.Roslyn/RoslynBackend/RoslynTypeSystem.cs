@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Aquila.Compiler.Contracts;
-using Aquila.Core.Contracts.TypeSystem;
 using dnlib.DotNet;
 using IAssembly = Aquila.Compiler.Contracts.IAssembly;
 using IType = Aquila.Compiler.Contracts.IType;

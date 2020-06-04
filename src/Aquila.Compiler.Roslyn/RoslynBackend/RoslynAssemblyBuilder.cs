@@ -54,8 +54,6 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             var sb = new StringBuilder();
             Dump(new StringWriter(sb));
 
-            Console.Write(sb);
-
             RoslynCompilationHelper.GenerateAssembly(sb.ToString(), fileName, _ts.Paths.ToArray());
         }
 

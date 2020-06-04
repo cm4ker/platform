@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Configuration.Common;
 using Aquila.Configuration.Structure;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
@@ -14,9 +15,9 @@ namespace Aquila.Core.Querying.Model
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
-        private ITypeManager _tm;
+        private TypeManager _tm;
 
-        public QLang(ITypeManager conf)
+        public QLang(TypeManager conf)
         {
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
@@ -24,7 +25,7 @@ namespace Aquila.Core.Querying.Model
             _tb = new QLangTypeBuilder(_tm);
         }
 
-        public ITypeManager TypeManager => _tm;
+        public TypeManager TypeManager => _tm;
 
         public LogicScope CurrentScope => _scope.TryPeek(out var res) ? res : null;
 

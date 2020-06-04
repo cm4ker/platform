@@ -3,7 +3,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class ObjectSetting 
+    public class ObjectSetting
     {
         public Guid ObjectId { get; set; }
 

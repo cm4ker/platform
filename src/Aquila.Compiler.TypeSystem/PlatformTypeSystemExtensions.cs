@@ -29,13 +29,7 @@ namespace Aquila.Compiler.Aqua
         //     return result.First().ToBackend();
         // }
 
-        //
-        // public static IType ToBackend(this PType type)
-        // {
-        //     if(type is PTypeBuilder tb)
-        //     
-        //     return (IType) type.GetBackendObject().PinnedObject;
-        // }
+
         //
         // public static IConstructor ToBackend(this IPConstructor constructor)
         // {

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Antlr4.Runtime;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Core.Contracts.TypeSystem;
@@ -22,7 +23,7 @@ namespace Aquila.ServerRuntime
 
         public static Class DataReader;
 
-        public static void Init(Root root, RoslynTypeSystem ts)
+        public static void Init(Root root, TypeManager ts)
         {
             var pqType = ts.Resolve<PlatformQuery>();
             var drType = ts.Resolve<PlatformReader>();
@@ -56,7 +57,7 @@ namespace Aquila.ServerRuntime
                 drType.FindMethod(nameof(PlatformReader.Read)));
         }
 
-        public static (string sql, QQueryList logicalTree) Compile(ITypeManager tm, string sql)
+        public static (string sql, QQueryList logicalTree) Compile(TypeManager tm, string sql)
         {
             //need compile sql expression!
             var _m = new QLang(tm);

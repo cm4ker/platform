@@ -1,5 +1,6 @@
 using System;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.Operations;
 using Aquila.Compiler.Roslyn.RoslynBackend;
@@ -10,7 +11,19 @@ namespace Aquila.Compiler.Roslyn
     {
         public IEmitter Emit(OpCode code)
         {
-            throw new Exception("Operation not supported");
+            if (code == OpCodes.Ret)
+                return Ret();
+
+            if (code == OpCodes.Ldarg_0)
+                return LdArg_0();
+            if (code == OpCodes.Ldarg_1)
+                return LdArg(1);
+            if (code == OpCodes.Ldarg_2)
+                return LdArg(2);
+            if (code == OpCodes.Ldarg_3)
+                return LdArg(3);
+
+            throw new Exception("Operation not supported: " + code);
         }
 
         public IEmitter Emit(OpCode code, IField field)

@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Contracts.Symbols;
-using Aquila.Compiler.Roslyn;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Symbols;
 using Aquila.Shared.Tree;
@@ -13,7 +11,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private Node EmitGlobalVar(RoslynEmitter e, Node currentGv, Expression expr, SymbolTable symbolTable)
+        private Node EmitGlobalVar(PCilBody e, Node currentGv, Expression expr, SymbolTable symbolTable)
         {
             if (expr is Name n)
             {
@@ -32,7 +30,7 @@ namespace Aquila.Compiler.Generation
                     n.Type = gv.AstType;
                     n.Attach(n.Type);
                 }
-                
+
                 gv?.Emit(n, e);
 
                 return gv;

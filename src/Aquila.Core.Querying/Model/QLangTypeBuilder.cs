@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Configuration.Structure;
 using Aquila.Configuration.Structure.Data.Types.Primitive;
 using Aquila.Core.Contracts.TypeSystem;
@@ -9,21 +10,21 @@ namespace Aquila.Core.Querying.Model
 {
     public class QLangTypeBuilder
     {
-        private readonly ITypeManager _conf;
+        private readonly TypeManager _conf;
 
-        public QLangTypeBuilder(ITypeManager conf)
+        public QLangTypeBuilder(TypeManager conf)
         {
             _conf = conf;
         }
 
-        public IPType String(int size)
+        public PType String(int size)
         {
             var spec = _conf.String.GetSpec();
             spec.SetSize(size);
             return spec;
         }
 
-        public IPType Numeric(int scale, int precision)
+        public PType Numeric(int scale, int precision)
         {
             var spec = _conf.Numeric.GetSpec();
             spec.SetScale(scale);
@@ -31,17 +32,17 @@ namespace Aquila.Core.Querying.Model
             return spec;
         }
 
-        public IPType Date()
+        public PType Date()
         {
             return _conf.DateTime;
         }
 
-        public IPType Int()
+        public PType Int()
         {
             return _conf.Int;
         }
 
-        public IPType Parse(string typeName)
+        public PType Parse(string typeName)
         {
             if (typeName.Contains("."))
             {

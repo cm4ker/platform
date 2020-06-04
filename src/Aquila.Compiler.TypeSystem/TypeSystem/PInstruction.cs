@@ -257,8 +257,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         /// <returns>A new <see cref="PInstruction"/> instance</returns>
         public static PInstruction Create(OpCode opCode, PMethod methodSig)
         {
-            if (opCode.OperandType != OperandType.InlineSig)
-                throw new ArgumentException("Opcode does not have a method sig operand", nameof(opCode));
             return new PInstruction(opCode, methodSig);
         }
 
@@ -270,8 +268,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         /// <returns>A new <see cref="PInstruction"/> instance</returns>
         public static PInstruction Create(OpCode opCode, PParameter parameter)
         {
-            if (opCode.OperandType != OperandType.ShortInlineVar && opCode.OperandType != OperandType.InlineVar)
-                throw new ArgumentException("Opcode does not have a method parameter operand", nameof(opCode));
             return new PInstruction(opCode, parameter);
         }
 
@@ -283,8 +279,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         /// <returns>A new <see cref="PInstruction"/> instance</returns>
         public static PInstruction Create(OpCode opCode, PLocal local)
         {
-            if (opCode.OperandType != OperandType.ShortInlineVar && opCode.OperandType != OperandType.InlineVar)
-                throw new ArgumentException("Opcode does not have a method local operand", nameof(opCode));
             return new PInstruction(opCode, local);
         }
 

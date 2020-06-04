@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using Aquila.Compiler.Aqua.TypeSystem;
+using Aquila.Compiler.Aqua.TypeSystem.Builders;
 using Mono.CompilerServices.SymbolWriter;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Symbols;
@@ -18,7 +20,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitFunction(Function function, RoslynMethodBuilder method)
+        private void EmitFunction(Function function, PMethodBuilder method)
         {
             if (function == null)
                 throw new ArgumentNullException();
@@ -60,12 +62,12 @@ namespace Aquila.Compiler.Generation
             // emitter.Ret();
         }
 
-        private void EmitCast(RoslynEmitter e, CastExpression cast, SymbolTable symbolTable)
+        private void EmitCast(PCilBody e, CastExpression cast, SymbolTable symbolTable)
         {
             EmitExpression(e, cast.Expression, symbolTable);
             e.Cast(_map.GetClrType(cast.CastType));
-            
-            
+
+
             // if (cast.Expression is Name name)
             // {
             //     var variable = symbolTable.Find<VariableSymbol>(name.Value, name.GetScope());

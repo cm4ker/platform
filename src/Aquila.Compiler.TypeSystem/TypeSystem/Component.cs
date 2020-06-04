@@ -54,6 +54,22 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             set => _componentImpl = value;
         }
 
+        /// <summary>
+        /// Throws exception if component not support feature
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetFeature<T>() where T : class
+        {
+            return ComponentImpl as T ?? throw new Exception("Component not support this feature");
+        }
+
+        public bool TryGetFeature<T>(out T feature) where T : class
+        {
+            feature = ComponentImpl as T;
+            return feature != null;
+        }
+
 
         /// <summary>
         /// Зарегистрировать правило для генерации кода

@@ -12,9 +12,7 @@ namespace Aquila.Compiler.Generation
     {
         private readonly GeneratorParameters _parameters;
 
-        private readonly ITypeManager _ts;
         private readonly CompilationMode _mode;
-
         private readonly IProject _conf;
 
         private Root _root;
@@ -35,7 +33,6 @@ namespace Aquila.Compiler.Generation
                 _cus = parameters.Root.Units;
             }
 
-            _ts = parameters.Builder;
             _conf = parameters.Configuration;
             _mode = parameters.Mode;
         }

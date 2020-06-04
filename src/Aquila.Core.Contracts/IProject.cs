@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.Configuration.Store;
 using Aquila.Core.Contracts.TypeSystem;
@@ -20,7 +21,6 @@ namespace Aquila.Core.Contracts
 
         bool Equals(IProject a, IProject b);
     }
-
 
     public interface IProject
     {
@@ -42,7 +42,7 @@ namespace Aquila.Core.Contracts
         /// <summary>
         /// Менеджер типов платформы
         /// </summary>
-        ITypeManager TypeManager { get; }
+        TypeManager TypeManager { get; }
 
         IInfrastructure Infrastructure { get; }
 

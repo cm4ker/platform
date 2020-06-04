@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn;
@@ -26,7 +27,7 @@ namespace Aquila.Compiler.Generation
 
         private const string _mainMethodName = "Main";
 
-        public EntryPointAssemblyManager(RoslynAssemblyBuilder builder)
+        public EntryPointAssemblyManager(TypeManager builder)
         {
             _builder = builder;
 

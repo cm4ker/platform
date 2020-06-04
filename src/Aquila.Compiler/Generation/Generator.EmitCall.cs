@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Symbols;
 using Aquila.Compiler.Roslyn;
@@ -15,7 +16,7 @@ namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitCall(RoslynEmitter e, Call call, SymbolTable symbolTable)
+        private void EmitCall(PCilBody e, Call call, SymbolTable symbolTable)
         {
             var symbol = symbolTable.Find<MethodSymbol>(call.Name.Value, call.GetScope());
 
@@ -73,7 +74,7 @@ namespace Aquila.Compiler.Generation
             }
         }
 
-        private void EmitArguments(RoslynEmitter e, ArgumentList args, SymbolTable symbolTable)
+        private void EmitArguments(PCilBody e, ArgumentList args, SymbolTable symbolTable)
         {
             foreach (Argument argument in args)
             {
@@ -83,7 +84,7 @@ namespace Aquila.Compiler.Generation
                     if (argument.Expression is Name arg)
                     {
                         var variable = symbolTable.Find<VariableSymbol>(arg.Value, arg.GetScope());
-                        if (variable.CompileObject is RLocal vd)
+                        if (variable.CompileObject is PLocal vd)
                         {
                             e.LdLoc(vd);
                         }
@@ -91,7 +92,7 @@ namespace Aquila.Compiler.Generation
                         {
                             // e.LdsFldA(fd);
                         }
-                        else if (variable.CompileObject is RoslynParameter pb)
+                        else if (variable.CompileObject is PParameter pb)
                         {
                             e.LdArg(pb);
                         }

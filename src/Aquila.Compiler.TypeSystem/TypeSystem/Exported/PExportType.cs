@@ -33,7 +33,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Exported
             => _properties ?? _backendType.Properties.Select(x => new PExportedProperty(x, (TypeManager) TypeManager))
                 .ToList();
 
-        public override IEnumerable<PInvokable> Methods
+        public override IEnumerable<PMethod> Methods
             => _methods ?? _backendType.Methods.Select(x => new PExportedMethod(x, (TypeManager) TypeManager)).ToList();
 
         public override IEnumerable<PConstructor> Constructors

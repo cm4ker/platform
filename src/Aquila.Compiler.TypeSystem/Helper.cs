@@ -75,7 +75,7 @@ namespace Aquila.Core.Contracts.TypeSystem
 
         public static IEnumerable<PParameter> FindParameters(this TypeManager tm, Guid invokableId)
         {
-            return null;
+            return tm.Parameters.Where(x => x.InvokableId == invokableId);
         }
 
         public static IEnumerable<PProperty> FindProperties(this TypeManager tm, Guid ownerId)

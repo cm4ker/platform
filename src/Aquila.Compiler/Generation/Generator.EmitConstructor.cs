@@ -1,21 +1,20 @@
 using System;
+using Aquila.Compiler.Aqua.TypeSystem.Builders;
 using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Language.Ast.Definitions;
 
 namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitConstructor(Constructor constructor, RoslynTypeBuilder type,
-            RoslynConstructorBuilder stage1Constructor)
+        private void EmitConstructor(Constructor constructor, PTypeBuilder type, PConstructorBuilder stage1Constructor)
         {
             constructor.Builder = stage1Constructor.Body;
 
             EmitConstructor(constructor, type);
         }
 
-        private void EmitConstructor(Constructor constructor, RoslynTypeBuilder type)
+        private void EmitConstructor(Constructor constructor, PTypeBuilder type)
         {
             if (constructor == null)
                 throw new ArgumentNullException();

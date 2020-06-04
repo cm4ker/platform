@@ -1,3 +1,4 @@
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.QueryBuilder;
@@ -15,21 +16,21 @@ namespace Aquila.Core.Contracts.Data
         /// </summary>
         /// <param name="ipType">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageServer(IPType ipType, Node root);
+        void StageServer(PType ipType, Node root);
 
         /// <summary>
         /// Генерация клиентского кода
         /// </summary>
         /// <param name="ipType">Тип</param>
         /// <param name="root">Корень проекта</param>
-        void StageClient(IPType ipType, Node root);
+        void StageClient(PType ipType, Node root);
 
         /// <summary>
         /// Стадия генерации UI интерфейса для пользователя на клиенте
         /// </summary>
         /// <param name="ipType"></param>
         /// <param name="uiNode"></param>
-        void StageUI(IPType ipType, Node uiNode);
+        void StageUI(PType ipType, Node uiNode);
 
         /// <summary>
         /// Стадия генерации глобального пространства

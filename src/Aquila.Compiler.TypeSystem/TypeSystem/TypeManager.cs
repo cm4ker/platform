@@ -15,7 +15,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         private List<PType> _types;
         private List<PField> _fields;
         private List<PProperty> _properties;
-        private List<PInvokable> _methods;
+        private List<PMethod> _methods;
+        private List<PParameter> _parameters;
+
         private List<Component> _components;
         private List<ObjectSetting> _objectSettings;
         private List<MetadataRow> _metadatas;
@@ -38,10 +40,12 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _backend = backend;
             _types = new List<PType>();
             _properties = new List<PProperty>();
-            _methods = new List<PInvokable>();
+            _methods = new List<PMethod>();
             _components = new List<Component>();
             _objectSettings = new List<ObjectSetting>();
             _metadatas = new List<MetadataRow>();
+            _fields = new List<PField>();
+            _parameters = new List<PParameter>();
 
             _types.Add(Int);
             _types.Add(DateTime);
@@ -71,15 +75,13 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public IReadOnlyList<PType> Types => _types;
 
-        public IReadOnlyList<PMember> Members { get; }
-
         public IReadOnlyList<PProperty> Properties => _properties;
 
-        public IReadOnlyList<PInvokable> Methods => _methods;
+        public IReadOnlyList<PMethod> Methods => _methods;
 
         public IReadOnlyList<PConstructor> Constructors => _constructors;
 
-        public IReadOnlyList<PField> Fields => null;
+        public IReadOnlyList<PField> Fields => _fields;
 
         public IReadOnlyList<Component> Components => _components;
 
@@ -88,6 +90,11 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public IReadOnlyList<MetadataRow> Metadatas => _metadatas;
 
         public IReadOnlyList<BackendObject> BackendObjects => _backendObjects;
+
+        public IReadOnlyList<PParameter> Parameters => _parameters;
+
+
+        internal ITypeSystem Backend => _backend;
 
         internal void Register(PType ipType)
         {
@@ -114,7 +121,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _properties.Add(p);
         }
 
-        internal void Register(PInvokable method)
+        internal void Register(PMethod method)
         {
             if (_methods.Exists(x => x.Id == method.Id && x.ParentId == method.ParentId))
                 throw new Exception($"Method id {method.Name}:{method.Id} already registered");
