@@ -29,14 +29,14 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Exported
 
         internal override IType BackendType => _backendType;
 
-        public override IEnumerable<IPProperty> Properties
+        public override IEnumerable<PProperty> Properties
             => _properties ?? _backendType.Properties.Select(x => new PExportedProperty(x, (TypeManager) TypeManager))
                 .ToList();
 
-        public override IEnumerable<IPInvokable> Methods
+        public override IEnumerable<PInvokable> Methods
             => _methods ?? _backendType.Methods.Select(x => new PExportedMethod(x, (TypeManager) TypeManager)).ToList();
 
-        public override IEnumerable<IPConstructor> Constructors
+        public override IEnumerable<PConstructor> Constructors
             => _constructors ?? _backendType.Constructors
                 .Select(x => new PExportedConstructor(x, (TypeManager) TypeManager))
                 .ToList();

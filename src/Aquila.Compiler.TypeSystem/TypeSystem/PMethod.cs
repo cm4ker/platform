@@ -5,7 +5,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class PMethod : PInvokable, IPMethod
+    public class PMethod : PInvokable
     {
         internal PMethod(Guid id, Guid parentId, TypeManager tm) : base(id, parentId, tm)
         {
@@ -15,7 +15,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         {
         }
 
-        public virtual IPType ReturnType => TypeManager.Unknown;
+        public virtual PType ReturnType => TypeManager.Unknown;
 
         public IMethod BackendMethod { get; set; }
     }

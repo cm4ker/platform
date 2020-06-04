@@ -1,88 +1,89 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Core.Contracts.Configuration;
-using Aquila.Core.Contracts.Data;
+using Aquila.Compiler.Aqua;
+using Aquila.Compiler.Aqua.TypeSystem;
 
 namespace Aquila.Core.Contracts.TypeSystem
 {
     public static class TypeManagerHelper
     {
-        public static IPType CreateUX(this ITypeManager tm)
+        public static PType CreateUX(this TypeManager tm)
         {
             var result = tm.DefineType();
-            result.IsUX = true;
-
             return result;
         }
 
-        public static T GetMD<T>(this IPType type)
+        public static T GetMD<T>(this PType type)
         {
             return (T) type.TypeManager.Metadatas.FirstOrDefault(x => x.Id == type.GroupId)?.Metadata;
         }
 
-        public static IComponent GetComponent(this IPType ipType)
+        public static Component GetComponent(this PType PType)
         {
-            return FindComponent(ipType.TypeManager, ipType.ComponentId);
+            if (PType.ComponentId != null)
+                return FindComponent(PType.TypeManager, PType.ComponentId.Value);
+
+            return null;
         }
 
-        public static IPType GetBase(this IPType ipType)
+        public static PType GetBase(this PType PType)
         {
-            return FindType(ipType.TypeManager, ipType.BaseId ?? Guid.Empty);
+            return FindType(PType.TypeManager, PType.BaseId ?? Guid.Empty);
         }
 
-        public static string GetNamespace(this IPType ipType)
+        public static string GetNamespace(this PType PType)
         {
-            return ipType.GetComponent().GetCodeRuleExpression(CodeGenRuleType.NamespaceRule);
+            return PType.GetComponent().GetCodeRuleExpression(CodeGenRuleType.NamespaceRule);
         }
 
-        public static IComponent FindComponent(this ITypeManager tm, Guid componentId)
+        public static Component FindComponent(this TypeManager tm, Guid componentId)
         {
             return tm.Components.FirstOrDefault(x => x.Id == componentId);
         }
 
-        public static IComponent FindComponentByName(this ITypeManager tm, string name)
+        public static Component FindComponentByName(this TypeManager tm, string name)
         {
             return tm.Components.FirstOrDefault(x => x.Name == name);
         }
 
-        public static IPType FindTypeByName(this IComponent com, string name)
+        public static PType FindTypeByName(this Component com, string name)
         {
             return com.TypeManager.Types.FirstOrDefault(x => x.ComponentId == com.Id && x.Name == name);
         }
 
-        public static IPProperty FindPropertyByName(this IPType ipType, string name)
+        public static PProperty FindPropertyByName(this PType PType, string name)
         {
-            return ipType.Properties.FirstOrDefault(x => x.Name == name);
+            return PType.Properties.FirstOrDefault(x => x.Name == name);
         }
 
-        public static IPType FindType(this ITypeManager tm, Guid typeId)
+        public static PType FindType(this TypeManager tm, Guid typeId)
         {
             return tm.Types.FirstOrDefault(x => x.Id == typeId) ?? tm.Unknown;
         }
 
 
-        public static IPMethod FindMethod(this ITypeManager tm, Guid methodId)
+        public static PMethod FindMethod(this TypeManager tm, Guid methodId)
         {
-            return (IPMethod) tm.Methods.FirstOrDefault(x => x is IPMethod && x.Id == methodId);
+            return (PMethod) tm.Methods.FirstOrDefault(x => x is PMethod && x.Id == methodId);
         }
 
-        public static IPInvokable FindInvokable(this ITypeManager tm, Guid invokableId)
-        {
-            return null;
-        }
-
-        public static IEnumerable<IPParameter> FindParameters(this ITypeManager tm, Guid invokableId)
+        public static PInvokable FindInvokable(this TypeManager tm, Guid invokableId)
         {
             return null;
         }
 
-        public static IEnumerable<IPProperty> FindProperties(this ITypeManager tm, Guid ownerId)
+        public static IEnumerable<PParameter> FindParameters(this TypeManager tm, Guid invokableId)
         {
             return null;
         }
 
-        public static Guid HandleTypeSet(this ITypeManager tm, IEnumerable<Guid> typeIds)
+        public static IEnumerable<PProperty> FindProperties(this TypeManager tm, Guid ownerId)
+        {
+            return null;
+        }
+
+        public static Guid HandleTypeSet(this TypeManager tm, IEnumerable<Guid> typeIds)
         {
             var listTypes = typeIds.ToList();
             if (listTypes.Count == 0)
@@ -91,35 +92,35 @@ namespace Aquila.Core.Contracts.TypeSystem
             if (listTypes.Count > 1)
             {
                 var ts = tm.DefineTypeSet(listTypes);
-                tm.Register(ts);
+                // tm.Register(ts);
                 return ts.Id;
             }
 
             return listTypes.First();
         }
 
-        public static IEnumerable<IPType> GetTypes(this IComponent com)
+        public static IEnumerable<PType> GetTypes(this Component com)
         {
             return com.TypeManager.Types.Where(x => x.ComponentId == com.Id);
         }
 
-        public static bool IsAssignableFrom(this IPType ipTypeA, IPType ipTypeB)
+        public static bool IsAssignableFrom(this PType PTypeA, PType PTypeB)
         {
-            if (ipTypeA.Id == ipTypeB.Id)
+            if (PTypeA.Id == PTypeB.Id)
                 return true;
 
-            if (ipTypeA.BaseId == null)
+            if (PTypeA.BaseId == null)
                 return false;
 
 
-            if (ipTypeA.BaseId == ipTypeB.Id)
+            if (PTypeA.BaseId == PTypeB.Id)
                 return true;
 
-            return ipTypeA.TypeManager.FindType(ipTypeA.BaseId.Value)?.IsAssignableFrom(ipTypeB) ?? false;
+            return PTypeA.TypeManager.FindType(PTypeA.BaseId.Value)?.IsAssignableFrom(PTypeB) ?? false;
         }
 
-        public static IEnumerable<ColumnSchemaDefinition> GetPropertySchemas(this ITypeManager manager,
-            string propName, IEnumerable<IPType> types)
+        public static IEnumerable<ColumnSchemaDefinition> GetPropertySchemas(this TypeManager manager,
+            string propName, IEnumerable<PType> types)
         {
             if (string.IsNullOrEmpty(propName)) throw new ArgumentNullException(nameof(propName));
 
@@ -141,7 +142,7 @@ namespace Aquila.Core.Contracts.TypeSystem
                     {
                         var typeName = type.Name;
 
-                        if (type is IPTypeSpec)
+                        if (type is PTypeSpec)
                             typeName = type.GetBase().Name;
 
                         yield return new ColumnSchemaDefinition(ColumnSchemaType.Value, type,
@@ -159,40 +160,30 @@ namespace Aquila.Core.Contracts.TypeSystem
             }
         }
 
-        public static IObjectSetting GetSettings(this IPProperty prop)
+        public static ObjectSetting GetSettings(this PProperty prop)
         {
             return prop.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == prop.Id);
         }
 
 
-        public static IObjectSetting GetSettings(this IPType ipType)
+        public static ObjectSetting GetSettings(this PType PType)
         {
-            if (ipType.IsTypeSpec)
-                return ipType.GetBase().GetSettings();
+            if (PType.IsTypeSpec)
+                return PType.GetBase().GetSettings();
 
-            return ipType.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == ipType.Id);
+            return PType.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == PType.Id);
         }
 
-        public static IObjectSetting GetSettings(this ITable table)
-        {
-            return table.TypeManager.Settings.FirstOrDefault(x => x.ObjectId == table.Id);
-        }
-
-        public static IPType GetParent(this ITable table)
-        {
-            return table.TypeManager.FindType(table.ParentId);
-        }
-
-        public static IEnumerable<IPType> GetTypes(this IPProperty prop)
+        public static IEnumerable<PType> GetTypes(this PProperty prop)
         {
             return prop.Type.Unwrap();
         }
 
-        public static IEnumerable<IPType> Unwrap(this IPType type)
+        public static IEnumerable<PType> Unwrap(this PType type)
         {
             if (type.IsTypeSet)
             {
-                foreach (var retType in ((IPTypeSet) type).Types)
+                foreach (var retType in ((PTypeSet) type).Types)
                 {
                     yield return retType;
                 }
@@ -201,42 +192,42 @@ namespace Aquila.Core.Contracts.TypeSystem
                 yield return type;
         }
 
-        public static IEnumerable<ColumnSchemaDefinition> GetDbSchema(this IPProperty prop)
+        public static IEnumerable<ColumnSchemaDefinition> GetDbSchema(this PProperty prop)
         {
             return GetPropertySchemas(prop.TypeManager, prop.GetSettings().DatabaseName, prop.GetTypes().ToList());
         }
 
-        public static IEnumerable<ColumnSchemaDefinition> GetObjSchema(this IPProperty prop)
+        public static IEnumerable<ColumnSchemaDefinition> GetObjSchema(this PProperty prop)
         {
             return GetPropertySchemas(prop.TypeManager, prop.Name, prop.GetTypes().ToList());
         }
 
 
-        public static void AddType(this IPTypeSet set, IPType type)
+        public static void AddType(this PTypeSet set, PType type)
         {
             set.AddType(type.Id);
         }
 
-        public static string ConvertToDbType(this IPType ipType)
+        public static string ConvertToDbType(this PType PType)
         {
-            if (ipType != null)
+            if (PType != null)
             {
-                if (ipType.IsPrimitive)
+                if (PType.IsPrimitive)
                 {
-                    return ipType.PrimitiveKind switch
+                    return PType.PrimitiveKind switch
                     {
-                        PrimitiveKind.Binary => $"varbinary({((IPTypeSpec) ipType).Size})",
+                        PrimitiveKind.Binary => $"varbinary({((PTypeSpec) PType).Size})",
                         PrimitiveKind.Guid => $"guid",
                         PrimitiveKind.Int => $"int",
                         PrimitiveKind.Numeric =>
-                        $"numeric({((IPTypeSpec) ipType).Scale}, {((IPTypeSpec) ipType).Precision})",
+                        $"numeric({((PTypeSpec) PType).Scale}, {((PTypeSpec) PType).Precision})",
                         PrimitiveKind.DateTime => $"datetime",
                         PrimitiveKind.Boolean => $"bool",
-                        PrimitiveKind.String => $"varchar({((IPTypeSpec) ipType).Size})",
+                        PrimitiveKind.String => $"varchar({((PTypeSpec) PType).Size})",
                     };
                 }
 
-                if (ipType.IsObject) return "guid";
+                //  if (PType.IsObject) return "guid";
             }
 
 

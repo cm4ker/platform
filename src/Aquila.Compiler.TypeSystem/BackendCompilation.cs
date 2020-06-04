@@ -92,8 +92,6 @@ namespace Aquila.Compiler.Aqua
                 //TODO: need construct TypeSpec
 
                 var clrType = ab.DefineType(type.Name, type.Name, TypeAttributes.Abstract, baseType);
-                clrType.DefineGenericParameters();
-                
                 type.BackendType = clrType;
             }
             else if (type is PTypeSpec ts)
@@ -111,13 +109,13 @@ namespace Aquila.Compiler.Aqua
         private void ConstructField(PType type, PField field)
         {
             var tb = (ITypeBuilder) type.BackendType;
-            field.BackendField = tb.DefineField(field.Type.ToBackend(), field.Name, true, false);
+            field.BackendField = tb.DefineField(null, field.Name, true, false);
         }
 
         private void ConstructProperty(PType type, PProperty property)
         {
             var tb = (ITypeBuilder) type.BackendType;
-            var backendProp = tb.DefineProperty(property.Type.ToBackend(), property.Name, false);
+            var backendProp = tb.DefineProperty(null, property.Name, false);
 
             backendProp.WithGetter(ConstructMethod(type, (PMethod) property.Getter));
             backendProp.WithSetter(ConstructMethod(type, (PMethod) property.Setter));
@@ -129,13 +127,13 @@ namespace Aquila.Compiler.Aqua
         {
             var tb = (ITypeBuilder) type.BackendType;
             var backendMethod = tb.DefineMethod(method.Name, true, false, false);
-            backendMethod.WithReturnType(method.ReturnType.ToBackend());
+            backendMethod.WithReturnType(null);
 
             foreach (var pParameter in method.Parameters)
             {
                 var pParam = (PParameter) pParameter;
                 pParam.BackendParameter =
-                    backendMethod.DefineParameter(pParameter.Name, pParam.Type.ToBackend(), false, false);
+                    backendMethod.DefineParameter(pParameter.Name, null, false, false);
             }
 
             method.BackendMethod = backendMethod;
@@ -152,7 +150,7 @@ namespace Aquila.Compiler.Aqua
 
                 foreach (var local in builder.Body.Locals)
                 {
-                    local.BackendLocal = g.DefineLocal(local.Type.ToBackend());
+                    local.BackendLocal = g.DefineLocal(null);
                 }
 
                 foreach (var label in builder.Body.Labels)

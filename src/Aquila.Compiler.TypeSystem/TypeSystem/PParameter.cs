@@ -4,7 +4,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class PParameter : IPParameter
+    public class PParameter 
     {
         private Guid _invokableId;
         private Guid _typeId;
@@ -19,13 +19,13 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public string Name { get; set; }
 
-        public IPType Type => TypeManager.FindType(_typeId);
+        public PType Type => TypeManager.FindType(_typeId);
 
-        public IPInvokable Method => TypeManager.FindInvokable(_invokableId);
+        public PInvokable Method => TypeManager.FindInvokable(_invokableId);
 
-        public ITypeManager TypeManager { get; }
+        public TypeManager TypeManager { get; }
 
-        public void SetType(IPType type)
+        public void SetType(PType type)
         {
             SetType(type.Id);
         }

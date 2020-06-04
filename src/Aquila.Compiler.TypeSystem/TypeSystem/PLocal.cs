@@ -5,13 +5,13 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 {
     public class PLocal
     {
-        public PLocal(IPType type, int index)
+        public PLocal(PType type, int index)
         {
             Type = type;
             Index = index;
         }
 
-        public IPType Type { get; }
+        public PType Type { get; }
 
         public int Index { get; }
 

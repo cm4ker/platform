@@ -7,7 +7,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
     /// <summary>
     /// Describes type for platform in different parts
     /// </summary>
-    public sealed class PTypeBuilder : PType, IPTypeBuilder
+    public sealed class PTypeBuilder : PType
     {
         private readonly TypeManager _tm;
         private Guid _id;
@@ -64,21 +64,21 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
             _scope = scope;
         }
 
-        public IPPropertyBuilder DefineProperty()
+        public PPropertyBuilder DefineProperty()
         {
             var prop = new PPropertyBuilder(Guid.NewGuid(), Id, _tm);
             _tm.Register(prop);
             return prop;
         }
 
-        public IPMethodBuilder DefineMethod()
+        public PMethodBuilder DefineMethod()
         {
             var method = new PMethodBuilder(Guid.NewGuid(), Id, _tm);
             _tm.Register(method);
             return method;
         }
 
-        public IPFieldBuilder DefineField()
+        public PFieldBuilder DefineField()
         {
             var field = new PFieldBuilder(Guid.NewGuid(), Id, _tm);
 

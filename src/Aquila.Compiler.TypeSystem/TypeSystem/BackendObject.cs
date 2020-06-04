@@ -3,7 +3,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class BackendObject : IBackendObject
+    public class BackendObject
     {
         public BackendObject(object cObject, Guid parentId)
         {

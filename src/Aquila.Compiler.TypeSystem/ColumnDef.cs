@@ -1,7 +1,7 @@
 using System;
-using Aquila.Core.Contracts.TypeSystem;
+using Aquila.Compiler.Aqua.TypeSystem;
 
-namespace Aquila.Core.Contracts.Configuration
+namespace Aquila.Compiler.Aqua
 {
     /// <summary>
     /// Детерминированный тип колонки реквизита конфигурации
@@ -36,7 +36,7 @@ namespace Aquila.Core.Contracts.Configuration
     /// </summary>
     public class ColumnSchemaDefinition
     {
-        public ColumnSchemaDefinition(ColumnSchemaType schemaType, IPType platformIpType, string name,
+        public ColumnSchemaDefinition(ColumnSchemaType schemaType, PType platformIpType, string name,
             string prefix = "", string postfix = "")
         {
             SchemaType = schemaType;
@@ -71,6 +71,6 @@ namespace Aquila.Core.Contracts.Configuration
         /// <summary>
         /// Тип платформы, закреплённый за схемой
         /// </summary>
-        public IPType PlatformIpType { get; set; }
+        public PType PlatformIpType { get; set; }
     }
 }

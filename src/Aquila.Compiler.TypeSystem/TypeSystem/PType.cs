@@ -6,7 +6,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public abstract class PType : IPType
+    public abstract class PType
     {
         private readonly TypeManager _ts;
 
@@ -64,28 +64,26 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public object Bag { get; set; }
 
-        public virtual IEnumerable<IPMember> Members => GetMembers();
+        public virtual IEnumerable<PMember> Members => GetMembers();
 
-        public virtual IEnumerable<IPProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
+        public virtual IEnumerable<PProperty> Properties => _ts.Properties.Where(x => x.ParentId == Id);
 
-        public virtual IEnumerable<IPInvokable> Methods => _ts.Methods.Where(x => x.ParentId == Id);
+        public virtual IEnumerable<PInvokable> Methods => _ts.Methods.Where(x => x.ParentId == Id);
 
-        public virtual IEnumerable<IPConstructor> Constructors => _ts.Constructors.Where(x => x.ParentId == Id);
+        public virtual IEnumerable<PConstructor> Constructors => _ts.Constructors.Where(x => x.ParentId == Id);
 
-        public virtual IEnumerable<IPField> Fields => _ts.Fields.Where(x => x.ParentId == Id);
+        public virtual IEnumerable<PField> Fields => _ts.Fields.Where(x => x.ParentId == Id);
 
-        public virtual IEnumerable<ITable> Tables => _ts.Tables.Where(x => x.ParentId == Id);
-
-        private IEnumerable<IPMember> GetMembers()
+        private IEnumerable<PMember> GetMembers()
         {
             return _ts.Members.Where(x => x.ParentId == Id);
         }
 
-        public IPTypeSpec GetSpec()
+        public PTypeSpec GetSpec()
         {
             return _ts.DefineType(this);
         }
 
-        public ITypeManager TypeManager => _ts;
+        public TypeManager TypeManager => _ts;
     }
 }

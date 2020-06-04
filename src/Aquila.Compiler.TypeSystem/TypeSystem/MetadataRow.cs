@@ -3,7 +3,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class MetadataRow : IMetadataRow
+    public class MetadataRow
     {
         public Guid Id { get; set; }
 

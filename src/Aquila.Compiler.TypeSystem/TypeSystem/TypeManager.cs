@@ -9,20 +9,18 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class TypeManager : ITypeManager
+    public class TypeManager
     {
         private readonly ITypeSystem _backend;
-        private List<IPType> _types;
-        private List<IPField> _fields;
-        private List<IPProperty> _properties;
-        private List<IPInvokable> _methods;
-        private List<IPropertyType> _propertyTypes;
-        private List<ITable> _tables;
-        private List<IComponent> _components;
-        private List<IObjectSetting> _objectSettings;
+        private List<PType> _types;
+        private List<PField> _fields;
+        private List<PProperty> _properties;
+        private List<PInvokable> _methods;
+        private List<Component> _components;
+        private List<ObjectSetting> _objectSettings;
         private List<MetadataRow> _metadatas;
         private List<BackendObject> _backendObjects;
-        private List<IPConstructor> _constructors;
+        private List<PConstructor> _constructors;
 
 
         private IntPType _intPType;
@@ -38,13 +36,11 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public TypeManager(ITypeSystem backend)
         {
             _backend = backend;
-            _types = new List<IPType>();
-            _properties = new List<IPProperty>();
-            _methods = new List<IPInvokable>();
-            _propertyTypes = new List<IPropertyType>();
-            _tables = new List<ITable>();
-            _components = new List<IComponent>();
-            _objectSettings = new List<IObjectSetting>();
+            _types = new List<PType>();
+            _properties = new List<PProperty>();
+            _methods = new List<PInvokable>();
+            _components = new List<Component>();
+            _objectSettings = new List<ObjectSetting>();
             _metadatas = new List<MetadataRow>();
 
             _types.Add(Int);
@@ -57,45 +53,43 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _types.Add(Unknown);
         }
 
-        public IPType Int => _intPType ??= new IntPType(this, _backend.GetSystemBindings().Int);
-        public IPType DateTime => _dateTimePType ??= new DateTimePType(this, _backend.GetSystemBindings().DateTime);
+        public PType Int => _intPType ??= new IntPType(this, _backend.GetSystemBindings().Int);
+        public PType DateTime => _dateTimePType ??= new DateTimePType(this, _backend.GetSystemBindings().DateTime);
 
-        public IPType Binary =>
+        public PType Binary =>
             _binaryPType ??= new BinaryPType(this, _backend.GetSystemBindings().Byte.MakeArrayType());
 
-        public IPType String => _stringPType ??= new StringPType(this, _backend.GetSystemBindings().String);
+        public PType String => _stringPType ??= new StringPType(this, _backend.GetSystemBindings().String);
 
-        public IPType Boolean => _booleanPType ??= new BooleanPType(this, _backend.GetSystemBindings().Boolean);
+        public PType Boolean => _booleanPType ??= new BooleanPType(this, _backend.GetSystemBindings().Boolean);
 
-        public IPType Guid => _guidPType ??= new GuidPType(this, _backend.GetSystemBindings().Guid);
+        public PType Guid => _guidPType ??= new GuidPType(this, _backend.GetSystemBindings().Guid);
 
-        public IPType Numeric => _numericPType ??= new NumericPType(this, _backend.GetSystemBindings().Decimal);
+        public PType Numeric => _numericPType ??= new NumericPType(this, _backend.GetSystemBindings().Decimal);
 
-        public IPType Unknown => _unknownPType ??= new UnknownPType(this);
+        public PType Unknown => _unknownPType ??= new UnknownPType(this);
 
-        public IReadOnlyList<IPType> Types => _types;
+        public IReadOnlyList<PType> Types => _types;
 
-        public IReadOnlyList<IPMember> Members { get; }
+        public IReadOnlyList<PMember> Members { get; }
 
-        public IReadOnlyList<IPProperty> Properties => _properties;
+        public IReadOnlyList<PProperty> Properties => _properties;
 
-        public IReadOnlyList<IPInvokable> Methods => _methods;
+        public IReadOnlyList<PInvokable> Methods => _methods;
 
-        public IReadOnlyList<IPConstructor> Constructors => _constructors;
+        public IReadOnlyList<PConstructor> Constructors => _constructors;
 
-        public IReadOnlyList<IPField> Fields => null;
+        public IReadOnlyList<PField> Fields => null;
 
-        public IReadOnlyList<ITable> Tables => _tables;
+        public IReadOnlyList<Component> Components => _components;
 
-        public IReadOnlyList<IComponent> Components => _components;
+        public IReadOnlyList<ObjectSetting> Settings => _objectSettings;
 
-        public IReadOnlyList<IObjectSetting> Settings => _objectSettings;
+        public IReadOnlyList<MetadataRow> Metadatas => _metadatas;
 
-        public IReadOnlyList<IMetadataRow> Metadatas => _metadatas;
+        public IReadOnlyList<BackendObject> BackendObjects => _backendObjects;
 
-        public IReadOnlyList<IBackendObject> BackendObjects => _backendObjects;
-
-        internal void Register(IPType ipType)
+        internal void Register(PType ipType)
         {
             if (_types.Exists(x => x.Id == ipType.Id))
                 throw new Exception($"Type id {ipType.Name}:{ipType.Id} already registered");
@@ -103,7 +97,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _types.Add(ipType);
         }
 
-        internal void Register(IPField field)
+        internal void Register(PField field)
         {
             if (_fields.Exists(x => x.Id == field.Id))
                 throw new Exception($"Field id {field.Name}:{field.Id} already registered");
@@ -112,7 +106,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         }
 
 
-        internal void Register(IPProperty p)
+        internal void Register(PProperty p)
         {
             if (_properties.Exists(x => x.Id == p.Id && x.ParentId == p.ParentId))
                 throw new Exception($"Property id {p.Name}:{p.Id} already registered");
@@ -120,7 +114,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _properties.Add(p);
         }
 
-        internal void Register(IPInvokable method)
+        internal void Register(PInvokable method)
         {
             if (_methods.Exists(x => x.Id == method.Id && x.ParentId == method.ParentId))
                 throw new Exception($"Method id {method.Name}:{method.Id} already registered");
@@ -133,19 +127,19 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         }
 
 
-        public IComponent Component()
+        public Component Component()
         {
             var component = new Component(this);
             _components.Add(component);
             return component;
         }
 
-        public IPType ExportType(IType type)
+        public PType ExportType(IType type)
         {
             return new PExportType(this, type);
         }
 
-        public IPTypeBuilder DefineType()
+        public PTypeBuilder DefineType()
         {
             var tb = new PTypeBuilder(this);
 
@@ -154,7 +148,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return tb;
         }
 
-        public IPTypeSpec DefineType(IPType baseType)
+        public PTypeSpec DefineType(PType baseType)
         {
             var ts = new PTypeSpec(baseType.Id, this);
 
@@ -163,7 +157,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return ts;
         }
 
-        public IPTypeSpec DefineType(Guid baseTypeId)
+        public PTypeSpec DefineType(Guid baseTypeId)
         {
             var ts = new PTypeSpec(baseTypeId, this);
 
@@ -172,7 +166,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return ts;
         }
 
-        public IPTypeSet DefineTypeSet(List<IPType> types)
+        public PTypeSet DefineTypeSet(List<PType> types)
         {
             var ts = new PTypeSet(types, this);
 
@@ -181,7 +175,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return ts;
         }
 
-        public IPTypeSet DefineTypeSet(List<Guid> types)
+        public PTypeSet DefineTypeSet(List<Guid> types)
         {
             var ts = new PTypeSet(types, this);
 
@@ -190,7 +184,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return ts;
         }
 
-        public IPTypeSet DefineTypeSet()
+        public PTypeSet DefineTypeSet()
         {
             var ts = new PTypeSet(this);
 
@@ -199,7 +193,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return ts;
         }
 
-        public void AddOrUpdateSetting(IObjectSetting setting)
+        public void AddOrUpdateSetting(ObjectSetting setting)
         {
             _objectSettings.RemoveAll(x => x.ObjectId == setting.ObjectId);
             _objectSettings.Add(setting);
@@ -210,7 +204,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _backendObjects.Add(new BackendObject(backendObject, id));
         }
 
-        public void LoadSettings(IEnumerable<IObjectSetting> settings)
+        public void LoadSettings(IEnumerable<ObjectSetting> settings)
         {
             _objectSettings = settings.ToList();
         }

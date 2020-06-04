@@ -1,9 +1,8 @@
 ﻿using System;
-using Aquila.Core.Contracts.Configuration;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class XCComponentInformation : IXCComponentInformation
+    public class XCComponentInformation
     {
         /// <summary>
         /// Имя компонента, обязано быть одним словом и латинскими буквами

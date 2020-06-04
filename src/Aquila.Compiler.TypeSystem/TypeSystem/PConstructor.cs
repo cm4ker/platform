@@ -4,7 +4,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public abstract class PConstructor : PInvokable, IPConstructor
+    public abstract class PConstructor : PInvokable
     {
         internal PConstructor(Guid parentId, TypeManager tm) : base(parentId, tm)
         {

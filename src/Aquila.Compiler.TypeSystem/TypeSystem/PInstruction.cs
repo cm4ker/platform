@@ -188,7 +188,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         /// <param name="opCode">The opcode</param>
         /// <param name="type">The type</param>
         /// <returns>A new <see cref="PInstruction"/> instance</returns>
-        public static PInstruction Create(OpCode opCode, IPType type)
+        public static PInstruction Create(OpCode opCode, PType type)
         {
             if (opCode.OperandType != OperandType.InlineType && opCode.OperandType != OperandType.InlineTok)
                 throw new ArgumentException("Opcode does not have a type operand", nameof(opCode));
@@ -201,7 +201,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         /// <param name="opCode">The opcode</param>
         /// <param name="mr">The method/field</param>
         /// <returns>A new <see cref="PInstruction"/> instance</returns>
-        public static PInstruction Create(OpCode opCode, IPMember mr)
+        public static PInstruction Create(OpCode opCode, PMember mr)
         {
             if (opCode.OperandType != OperandType.InlineField
                 && opCode.OperandType != OperandType.InlineMethod
@@ -255,7 +255,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         /// <param name="opCode">The opcode</param>
         /// <param name="methodSig">The method signature</param>
         /// <returns>A new <see cref="PInstruction"/> instance</returns>
-        public static PInstruction Create(OpCode opCode, IPMethod methodSig)
+        public static PInstruction Create(OpCode opCode, PMethod methodSig)
         {
             if (opCode.OperandType != OperandType.InlineSig)
                 throw new ArgumentException("Opcode does not have a method sig operand", nameof(opCode));
@@ -268,7 +268,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         /// <param name="opCode">The opcode</param>
         /// <param name="parameter">The method parameter</param>
         /// <returns>A new <see cref="PInstruction"/> instance</returns>
-        public static PInstruction Create(OpCode opCode, IPParameter parameter)
+        public static PInstruction Create(OpCode opCode, PParameter parameter)
         {
             if (opCode.OperandType != OperandType.ShortInlineVar && opCode.OperandType != OperandType.InlineVar)
                 throw new ArgumentException("Opcode does not have a method parameter operand", nameof(opCode));

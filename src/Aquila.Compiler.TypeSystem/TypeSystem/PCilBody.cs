@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using Aquila.Compiler.Contracts;
-using Aquila.Core.Contracts.TypeSystem;
-using Avalonia.Controls.Templates;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
@@ -28,19 +25,19 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return this;
         }
 
-        public PCilBody Emit(OpCode code, IPField field)
+        public PCilBody Emit(OpCode code, PField field)
         {
             Instructions.Add(PInstruction.Create(code, field));
             return this;
         }
 
-        public PCilBody Emit(OpCode code, IPMethod method)
+        public PCilBody Emit(OpCode code, PMethod method)
         {
             Instructions.Add(PInstruction.Create(code, method));
             return this;
         }
 
-        public PCilBody Emit(OpCode code, IPConstructor ctor)
+        public PCilBody Emit(OpCode code, PConstructor ctor)
         {
             Instructions.Add(PInstruction.Create(code, ctor));
             return this;
@@ -64,7 +61,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return this;
         }
 
-        public PCilBody Emit(OpCode code, IPType type)
+        public PCilBody Emit(OpCode code, PType type)
         {
             Instructions.Add(PInstruction.Create(code, type));
             return this;
@@ -82,7 +79,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return this;
         }
 
-        public PLocal DefineLocal(IPType type)
+        public PLocal DefineLocal(PType type)
         {
             var local = new PLocal(type, 0);
 
@@ -116,7 +113,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return this;
         }
 
-        public PCilBody Emit(OpCode code, IPParameter parameter)
+        public PCilBody Emit(OpCode code, PParameter parameter)
         {
             Instructions.Add(PInstruction.Create(code, parameter));
             return this;

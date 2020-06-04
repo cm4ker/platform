@@ -1,6 +1,6 @@
 using System;
 
-namespace Aquila.Core.Contracts.TypeSystem
+namespace Aquila.Compiler.Aqua
 {
     [Flags]
     public enum ScopeAffects

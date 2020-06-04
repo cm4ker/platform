@@ -5,11 +5,11 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public sealed class PTypeSet : PType, IPTypeSet
+    public sealed class PTypeSet : PType
     {
         private readonly List<Guid> _types;
 
-        internal PTypeSet(IEnumerable<IPType> types, TypeManager ts) : this(types.Select(x => x.Id), ts)
+        internal PTypeSet(IEnumerable<PType> types, TypeManager ts) : this(types.Select(x => x.Id), ts)
         {
         }
 
@@ -24,19 +24,21 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _types = new List<Guid>();
         }
 
+        public override Guid Id { get; }
+
         public override bool IsTypeSet =>
             (_types.Count > 1) ? true : throw new Exception("TypeSet must contains two and more types");
 
         public override bool IsTypeSpec => true;
 
-        public IEnumerable<IPType> Types => _types.Select(x => TypeManager.FindType(x));
+        public IEnumerable<PType> Types => _types.Select(x => TypeManager.FindType(x));
 
         public void AddType(Guid typeId)
         {
             _types.Add(typeId);
         }
 
-        public bool Equals(IPType other)
+        public bool Equals(PType other)
         {
             if (other is PTypeSet ts)
                 return Equals(_types, ts._types);

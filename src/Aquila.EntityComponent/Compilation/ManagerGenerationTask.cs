@@ -2,6 +2,7 @@ using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using Aquila.Compiler.Aqua;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Helpers;
 using Aquila.Compiler.Roslyn;

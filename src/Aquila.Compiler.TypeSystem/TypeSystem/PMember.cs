@@ -3,7 +3,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public class PMember : IPMember
+    public class PMember 
     {
         internal PMember(Guid id, Guid parentId, TypeManager tm)
         {
@@ -22,8 +22,8 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public Guid ParentId { get; }
 
-        public string Name { get; set; }
+        public virtual string Name { get; }
 
-        public ITypeManager TypeManager { get; }
+        public TypeManager TypeManager { get; }
     }
 }

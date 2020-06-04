@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Aquila.Compiler.Aqua;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Generation;
 using Aquila.Compiler.Roslyn;

@@ -1,9 +1,10 @@
 using System;
+using System.ComponentModel.Design;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem.Builders
 {
-    public class PPropertyBuilder : PProperty, IPPropertyBuilder
+    public class PPropertyBuilder : PProperty
     {
         private Guid _typeId;
         private Guid _getterId;
@@ -12,16 +13,17 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
         private bool _isSystem;
         private bool _isUnique;
         private bool _isReadOnly;
+        private string _name;
 
         internal PPropertyBuilder(Guid id, Guid parentId, TypeManager ts) : base(id, parentId, ts)
         {
         }
 
-        public override IPType Type => TypeManager.FindType(_typeId);
+        public override PType Type => TypeManager.FindType(_typeId);
 
-        public override IPMethod Getter => TypeManager.FindMethod(_getterId);
+        public override PMethod Getter => TypeManager.FindMethod(_getterId);
 
-        public override IPMethod Setter => TypeManager.FindMethod(_setterId);
+        public override PMethod Setter => TypeManager.FindMethod(_setterId);
 
         public override bool IsReadOnly => _isReadOnly;
 
@@ -30,6 +32,13 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
         public override bool IsSystem => _isSystem;
 
         public override bool IsSelfLink => _isSelfLink;
+
+        public override string Name => _name;
+
+        public void SetName(string name)
+        {
+            _name = name;
+        }
 
         public void SetIsReadOnly(bool value)
         {

@@ -3,7 +3,7 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public sealed class PTypeSpec : PType, IPTypeSpec
+    public sealed class PTypeSpec : PType
     {
         private readonly Guid _baseId;
 
@@ -11,21 +11,20 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         private string _name;
         private int _dimensions;
 
-
         internal PTypeSpec(Guid baseId, TypeManager ts) : base(ts)
         {
             _baseId = baseId;
             Id = Guid.NewGuid();
         }
 
-        private IPType GetBase()
+        private PType GetBase()
         {
             return TypeManager.FindType(_baseId) ?? throw new Exception("Type not found");
         }
 
         public override Guid Id { get; }
 
-        public IPType BaseType => GetBase();
+        public PType BaseType => GetBase();
 
         public override string Name => _name ??= CalcName();
 
@@ -60,7 +59,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _dimensions = value;
         }
 
-        public void SetGenericSignature(params IPType[] arguments)
+        public void SetGenericSignature(params PType[] arguments)
         {
         }
 
@@ -92,7 +91,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
                    Precision == other.Precision && Size == other.Size && IsArray == other.IsArray;
         }
 
-        public bool Equals(IPType other)
+        public bool Equals(PType other)
         {
             if (other is PTypeSpec ts) return Equals(ts);
             return false;

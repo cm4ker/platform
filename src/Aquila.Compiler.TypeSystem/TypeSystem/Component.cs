@@ -2,69 +2,50 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
-using Aquila.Configuration.Common;
-using Aquila.Core.Contracts;
-using Aquila.Core.Contracts.Configuration;
-using Aquila.Core.Contracts.Data;
-using Aquila.Core.Contracts.TypeSystem;
-using Aquila.Shared.ParenChildCollection;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
     /// <summary>
     /// Компонент конфигурации
     /// </summary>
-    public class Component : IComponent
+    public class Component
     {
-        private IXCComponentInformation _info;
+        //private IXCComponentInformation _info;
         private object _componentImpl;
 
-        private List<MDType> _mdTypes;
 
         private readonly IDictionary<CodeGenRuleType, CodeGenRule> _codeGenRules;
         private Assembly _componentAssembly;
-        private IProject _parent;
 
-        private ITypeManager _tm;
+        private TypeManager _tm;
 
-        public Component(ITypeManager tm)
+        public Component(TypeManager tm)
         {
             _codeGenRules = new ConcurrentDictionary<CodeGenRuleType, CodeGenRule>();
-            _mdTypes = new List<MDType>();
+
             _tm = tm;
         }
 
-        public Guid Id => _info?.ComponentId ?? Guid.Empty;
+        public Guid Id => Guid.Empty; //_info?.ComponentId ?? Guid.Empty;
 
-        public string Name => _info?.ComponentName;
+        //
+        public string Name => ""; // _info?.ComponentName;
 
-        public ITypeManager TypeManager => _tm;
+        public TypeManager TypeManager => _tm;
 
-        /// <summary>
-        /// Информация о компоненте
-        /// </summary>
-        public IXCComponentInformation Info
-        {
-            get => _info;
-            set => _info = value;
-        }
+        // /// <summary>
+        // /// Информация о компоненте
+        // /// </summary>
+        // public IXCComponentInformation Info
+        // {
+        //     get => _info;
+        //     set => _info = value;
+        // }
 
         public Assembly ComponentAssembly
         {
             get => _componentAssembly;
-            set
-            {
-                _componentAssembly = value;
-                //LoadComponentInformation();
-            }
-        }
-
-        public IProject Parent => _parent;
-
-        IProject IChildItem<IProject>.Parent
-        {
-            get => _parent;
-            set => _parent = value;
+            set { _componentAssembly = value; }
         }
 
         public object ComponentImpl

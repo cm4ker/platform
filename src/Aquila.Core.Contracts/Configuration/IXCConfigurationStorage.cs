@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Core.Contracts.Configuration
 {
@@ -64,8 +63,8 @@ namespace Aquila.Core.Contracts.Configuration
 
     public interface ISettingsManager
     {
-        IEnumerable<IObjectSetting> GetSettings();
+        IEnumerable<ObjectSetting> GetSettings();
 
-        void AddOrUpdateSetting(IObjectSetting setting);
+        void AddOrUpdateSetting(ObjectSetting setting);
     }
 }

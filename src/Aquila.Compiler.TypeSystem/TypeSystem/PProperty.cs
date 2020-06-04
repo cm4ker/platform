@@ -1,11 +1,9 @@
 using System;
 using Aquila.Compiler.Contracts;
-using Aquila.Core.Contracts.TypeSystem;
-using IPType = Aquila.Core.Contracts.TypeSystem.IPType;
 
 namespace Aquila.Compiler.Aqua.TypeSystem
 {
-    public abstract class PProperty : PMember, IPProperty
+    public abstract class PProperty : PMember
     {
         internal PProperty(Guid id, Guid parentId, TypeManager ts) : base(id, parentId, ts)
         {
@@ -19,22 +17,22 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual bool IsReadOnly => false;
 
-        public virtual IPType Type => TypeManager.Unknown;
+        public virtual PType Type => TypeManager.Unknown;
 
-        public virtual IPMethod Getter => null;
+        public virtual PMethod Getter => null;
 
-        public virtual IPMethod Setter => null;
+        public virtual PMethod Setter => null;
 
         public IProperty BackendProperty { get; set; }
     }
 
-    public abstract class PField : PMember, IPField
+    public abstract class PField : PMember
     {
         internal PField(Guid id, Guid parentId, TypeManager ts) : base(id, parentId, ts)
         {
         }
 
-        public virtual IPType Type => TypeManager.Unknown;
+        public virtual PType Type => TypeManager.Unknown;
 
         public IField BackendField { get; set; }
     }
