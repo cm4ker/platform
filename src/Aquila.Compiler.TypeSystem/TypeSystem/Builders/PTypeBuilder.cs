@@ -49,9 +49,9 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
             _componentId = componentId;
         }
 
-        public void SetName(string name)
+        public void SetFullName(string fullName)
         {
-            SetNameCore(name);
+            SetFullNameCore(fullName);
         }
 
         public void SetNamespace(string @namespace)

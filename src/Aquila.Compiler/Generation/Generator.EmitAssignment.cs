@@ -1,27 +1,18 @@
-using System;
-using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Contracts.Symbols;
-using Aquila.Compiler.Helpers;
-using Aquila.Compiler.Infrastructure;
-using Aquila.Compiler.Roslyn;
-using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Core.Querying;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Expressions;
 using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.Language.Ast.Infrastructure;
 using Aquila.Language.Ast.Symbols;
-using TypeSyntax = Aquila.Language.Ast.Definitions.TypeSyntax;
 
 
 namespace Aquila.Compiler.Generation
 {
     public partial class Generator
     {
-        private void EmitAssignment(RoslynEmitter e, Assignment assignment, SymbolTable symbolTable)
+        private void EmitAssignment(PCilBody e, Assignment assignment, SymbolTable symbolTable)
         {
             if (assignment.Assignable is Name name)
             {
@@ -34,7 +25,7 @@ namespace Aquila.Compiler.Generation
                 {
                     bool mtNode = ((ITypedNode) variable.SyntaxObject).Type is UnionTypeSyntax;
 
-                    if (variable.CompileObject is RoslynParameter pd)
+                    if (variable.CompileObject is PParameter pd)
                     {
                         Parameter p = variable.SyntaxObject as Parameter;
                         if (p.PassMethod == PassMethod.ByReference)
@@ -59,11 +50,11 @@ namespace Aquila.Compiler.Generation
                     //     HandleBox(e, assignment.Value.Type);
 
                     // Store
-                    if (variable.CompileObject is RLocal vd)
+                    if (variable.CompileObject is PLocal vd)
                         e.StLoc(vd);
-                    else if (variable.CompileObject is RoslynField fd)
+                    else if (variable.CompileObject is PField fd)
                         e.StFld(fd);
-                    else if (variable.CompileObject is RoslynParameter ppd)
+                    else if (variable.CompileObject is PParameter ppd)
                     {
                         // Parameter p = variable.SyntaxObject as Parameter;
                         // if (p.PassMethod == PassMethod.ByReference)
@@ -121,7 +112,7 @@ namespace Aquila.Compiler.Generation
         //         e.Box(currenType);
         // }
 
-        private void EmitLoadThis(RoslynEmitter e)
+        private void EmitLoadThis(PCilBody e)
         {
             e.LdArg_0();
         }

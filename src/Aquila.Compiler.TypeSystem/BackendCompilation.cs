@@ -88,7 +88,7 @@ namespace Aquila.Compiler.Aqua
 
                 //TODO: need construct TypeSpec
 
-                var clrType = ab.DefineType(type.Name, type.Name, TypeAttributes.Abstract, baseType);
+                var clrType = ab.DefineType(type.Namespace, type.Name, TypeAttributes.Abstract, baseType);
                 type.BackendType = clrType;
             }
             else if (type is PTypeSpec ts)
@@ -141,19 +141,19 @@ namespace Aquila.Compiler.Aqua
         {
             var g = backendBuilder.Generator;
 
+            foreach (var local in builder.Body.Locals)
+            {
+                local.BackendLocal = g.DefineLocal(local.Type.BackendType);
+            }
+
+            foreach (var label in builder.Body.Labels)
+            {
+                label.BackendLabel = g.DefineLabel();
+            }
+
             foreach (var inst in builder.Body.Instructions)
             {
                 var op = inst.OpCode;
-
-                foreach (var local in builder.Body.Locals)
-                {
-                    local.BackendLocal = g.DefineLocal(local.Type.BackendType);
-                }
-
-                foreach (var label in builder.Body.Labels)
-                {
-                    label.BackendLabel = g.DefineLabel();
-                }
 
                 if (inst.Operand == null)
                 {
@@ -209,6 +209,14 @@ namespace Aquila.Compiler.Aqua
                         break;
                     case PLabel i:
                         g.MarkLabel(i.BackendLabel);
+
+                        foreach (var bodyInstruction in builder.Body.Instructions)
+                        {
+                            if (bodyInstruction.Operand == i)
+                            {
+                            }
+                        }
+
                         break;
                     default:
                         throw new Exception("Not supported");

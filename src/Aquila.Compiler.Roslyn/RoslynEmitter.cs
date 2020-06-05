@@ -82,9 +82,9 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        public RoslynEmitter StLoc(RLocal loc)
+        public RoslynEmitter StLoc(ILocal loc)
         {
-            _stack.Push(new Assign(PopExp(), new NameExpression(loc.Name)));
+            _stack.Push(new Assign(PopExp(), new NameExpression(((RLocal) loc).Name)));
             return this;
         }
 
@@ -130,9 +130,9 @@ namespace Aquila.Compiler.Roslyn
             return new AdvancedArrayBuilder(PopExp(), c, this);
         }
 
-        public RoslynEmitter LdLoc(RLocal loc)
+        public RoslynEmitter LdLoc(ILocal loc)
         {
-            _stack.Push(new NameExpression(loc.Name));
+            _stack.Push(new NameExpression(((RLocal) loc).Name));
             return this;
         }
 

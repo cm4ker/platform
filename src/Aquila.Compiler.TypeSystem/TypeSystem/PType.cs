@@ -27,7 +27,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public virtual string Name { get; private set; }
 
-        public virtual string Namespace { get; }
+        public virtual string Namespace { get; private set; }
 
         public string FullName => $"{Namespace}.{Name}";
 
@@ -82,9 +82,10 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return _ts.DefineType(this);
         }
 
-        protected void SetNameCore(string name)
+        protected void SetFullNameCore(string fullName)
         {
-            Name = name;
+            Name = fullName.Split(".").Last();
+            Namespace = string.Join(".", fullName.Split(".")[..^1]);
         }
 
         protected void SetParentIdCore(Guid? parentId)

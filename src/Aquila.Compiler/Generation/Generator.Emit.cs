@@ -1,18 +1,9 @@
 using System;
-using System.Linq;
 using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Aqua.TypeSystem.Builders;
-using Mono.CompilerServices.SymbolWriter;
-using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Contracts.Symbols;
-using Aquila.Compiler.Helpers;
-using Aquila.Compiler.Roslyn;
-using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Core.Contracts;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
-using Aquila.Core.Network;
-using Aquila.Language.Ast.Infrastructure;
 using Aquila.Language.Ast.Symbols;
 using CastExpression = Aquila.Language.Ast.Definitions.Expressions.CastExpression;
 
@@ -28,12 +19,10 @@ namespace Aquila.Compiler.Generation
             if (method == null)
                 throw new ArgumentNullException();
 
-            function.Builder = method.Body;
-
-            EmitFunction(function);
+            EmitFunction(function, method.Body);
         }
 
-        private void EmitFunction(Function function)
+        private void EmitFunction(Function function, PCilBody body)
         {
             if (function == null)
                 throw new ArgumentNullException();
@@ -44,29 +33,29 @@ namespace Aquila.Compiler.Generation
                 return;
             }
 
-            var emitter = function.Builder;
+            var emitter = body;
             // emitter.InitLocals = true;
 
-            // ILocal resultVar = null;
-            // if (function.Type.Kind != TypeNodeKind.Void)
-            //     resultVar = emitter.DefineLocal(_map.GetClrType(function.Type));
-            //
-            // var returnLabel = emitter.DefineLabel();
+            PLocal resultVar = null;
 
-            EmitBody(emitter, function.Block, null);
-            // emitter.MarkLabel(returnLabel);
-            //
-            // if (resultVar != null)
-            //     emitter.LdLoc(resultVar);
+            if (function.Type.Kind != TypeNodeKind.Void)
+                resultVar = emitter.DefineLocal(_map.GetClrType(function.Type));
 
-            // emitter.Ret();
+            var returnLabel = emitter.DefineLabel();
+
+            EmitBody(emitter, function.Block, returnLabel, ref resultVar);
+            emitter.MarkLabel(returnLabel);
+
+            if (resultVar != null)
+                emitter.LdLoc(resultVar);
+
+            emitter.Ret();
         }
 
         private void EmitCast(PCilBody e, CastExpression cast, SymbolTable symbolTable)
         {
             EmitExpression(e, cast.Expression, symbolTable);
             e.Cast(_map.GetClrType(cast.CastType));
-
 
             // if (cast.Expression is Name name)
             // {

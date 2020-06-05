@@ -369,11 +369,8 @@ namespace Aquila.Compiler.Generation
             }
         }
 
-
-        private RoslynMethodBuilder PrebuildFunction(Function function, RoslynTypeBuilder tb, bool isClass)
+        private PMethodBuilder PrebuildFunction(Function function, PTypeBuilder tb, bool isClass)
         {
-            Console.WriteLine($"F: {function.Name} IsServer: {function.Flags}");
-
             var method = tb.DefineMethod(function.Name, function.IsPublic, !isClass, false)
                 .WithReturnType(_map.GetClrType(function.Type));
 
@@ -395,7 +392,7 @@ namespace Aquila.Compiler.Generation
             return method;
         }
 
-        private RoslynPropertyBuilder PrebuildProperty(Property property, RoslynTypeBuilder tb)
+        private PPropertyBuilder PrebuildProperty(Property property, PTypeBuilder tb)
         {
             var propBuilder = tb.DefineProperty(_map.GetClrType(property.Type), property.Name, false);
 

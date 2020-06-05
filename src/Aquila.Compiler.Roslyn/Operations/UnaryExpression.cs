@@ -36,7 +36,8 @@ namespace Aquila.Compiler.Roslyn
                     break;
                 case UKind.Not:
                     tw.W("!");
-                    _exp.Dump(tw);
+                    using (tw.Parenthesis())
+                        _exp.Dump(tw);
                     break;
                 case UKind.Negative:
                     tw.W("-");

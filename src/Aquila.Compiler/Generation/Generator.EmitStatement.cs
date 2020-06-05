@@ -1,6 +1,5 @@
 using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Roslyn;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Statements;
 using For = Aquila.Language.Ast.Definitions.Statements.For;
@@ -12,7 +11,7 @@ namespace Aquila.Compiler.Generation
     public partial class Generator
     {
         private void EmitStatement(PCilBody e, Statement statement, Block context,
-            ILabel returnLabel, bool inTry = false)
+            PLabel returnLabel, ref PLocal returnVariable, bool inTry = false)
         {
             if (statement is ExpressionStatement es)
             {
@@ -31,73 +30,75 @@ namespace Aquila.Compiler.Generation
                 // Eval condition
                 EmitExpression(e, ifStatement.Condition, context.SymbolTable);
 
-                var @ifBlock = e.Block();
-
-                EmitBody(ifBlock, ifStatement.IfBlock, returnLabel);
-
-                ifBlock.EndBlock();
-
-                if (ifStatement.ElseBlock == null)
-                    e.Nothing();
-                else
+                var exit = e.DefineLabel();
+                if (ifStatement.IfBlock != null && ifStatement.ElseBlock == null)
                 {
-                    var @elseBlock = e.Block();
+                    e.BrFalse(exit);
+                    EmitBody(e, ifStatement.IfBlock, returnLabel, ref returnVariable);
+                }
+                else if (ifStatement.IfBlock != null && ifStatement.ElseBlock != null)
+                {
+                    PLabel elseLabel = e.DefineLabel();
 
-                    EmitBody(elseBlock, ifStatement.ElseBlock, returnLabel);
-
-                    ifBlock.EndBlock();
+                    e.BrFalse(elseLabel);
+                    EmitBody(e, ifStatement.IfBlock, returnLabel, ref returnVariable);
+                    e.Br(exit);
+                    e.MarkLabel(elseLabel);
+                    EmitBody(e, ifStatement.ElseBlock, returnLabel, ref returnVariable);
                 }
 
-                e.If();
+                e.MarkLabel(exit);
             }
 
             else if (statement is While whileStatement)
             {
+                //
+                // Generate while statement.
+                //
+
+                PLabel begin = e.DefineLabel();
+                PLabel exit = e.DefineLabel();
+
+                e.MarkLabel(begin);
+                // Eval condition
                 EmitExpression(e, whileStatement.Condition, context.SymbolTable);
+                e.BrFalse(exit);
+                EmitBody(e, whileStatement.Block, returnLabel, ref returnVariable);
 
-                var whileBlock = e.Block();
-
-                EmitBody(whileBlock, whileStatement.Block, returnLabel);
-
-                whileBlock.EndBlock();
-
-                e.While();
+                e.Br(begin)
+                    .MarkLabel(exit);
             }
             else if (statement is For forStatement)
             {
                 //
                 // Generate for statement.
                 //
+                PLabel loop = e.DefineLabel();
+                PLabel exit = e.DefineLabel();
 
                 // Emit initializer
                 EmitExpression(e, forStatement.Initializer, context.SymbolTable);
+                e.MarkLabel(loop);
                 // Emit condition
                 EmitExpression(e, forStatement.Condition, context.SymbolTable);
+                e.BrFalse(exit);
+                // Emit body
+                EmitBody(e, forStatement.Block, returnLabel, ref returnVariable);
                 // Emit counter
                 EmitExpression(e, forStatement.Counter, context.SymbolTable);
-
-                // Emit body
-
-                var forBlock = e.Block();
-
-                EmitBody(forBlock, forStatement.Block, returnLabel);
-
-                forBlock.EndBlock();
-
-                e.For();
+                //EmitAssignment(il, forStatement.Counter, context.SymbolTable);
+                e.Br(loop);
+                e.MarkLabel(exit);
             }
             else if (statement is Try ts)
             {
-                var tryBlock = e.Block();
-                EmitBody(tryBlock, ts.TryBlock, returnLabel);
-                tryBlock.EndBlock();
-
-                var catchBlock = e.Block();
-                EmitBody(catchBlock, ts.CatchBlock, returnLabel);
-                catchBlock.EndBlock();
-
-                e.Nothing()
-                    .Try();
+                // var exLocal = e.DefineLocal(_ts.FindType("System.Exception"));
+                // e.BeginExceptionBlock();
+                // EmitBody(e, ts.TryBlock, returnLabel, ref returnVariable, true);
+                // e.BeginCatchBlock(_ts.FindType("System.Exception"));
+                // e.StLoc(exLocal);
+                // EmitBody(e, ts.CatchBlock, returnLabel, ref returnVariable, true);
+                // e.EndExceptionBlock();
             }
             else if (statement is Match mt)
             {

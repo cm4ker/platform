@@ -23,6 +23,35 @@ namespace Aquila.Compiler.Roslyn
             if (code == OpCodes.Ldarg_3)
                 return LdArg(3);
 
+            if (code == OpCodes.Ceq)
+                return Ceq();
+
+            if (code == OpCodes.Ldc_I4_0)
+                return LdLit(0);
+            if (code == OpCodes.Ldc_I4_1)
+                return LdLit(1);
+            if (code == OpCodes.Ldc_I4_2)
+                return LdLit(2);
+            if (code == OpCodes.Ldc_I4_3)
+                return LdLit(3);
+            if (code == OpCodes.Ldc_I4_4)
+                return LdLit(4);
+            if (code == OpCodes.Ldc_I4_5)
+                return LdLit(5);
+            if (code == OpCodes.Ldc_I4_6)
+                return LdLit(6);
+            if (code == OpCodes.Ldc_I4_7)
+                return LdLit(7);
+            if (code == OpCodes.Ldc_I4_8)
+                return LdLit(8);
+
+            if (code == OpCodes.Add)
+                return Add();
+
+            if (code == OpCodes.Clt)
+                return Clt();
+
+
             throw new Exception("Operation not supported: " + code);
         }
 
@@ -135,23 +164,30 @@ namespace Aquila.Compiler.Roslyn
         {
             if (code == OpCodes.Br)
             {
-                Goto(label);
+                return Goto(label);
             }
-            else if (code == OpCodes.Br_S)
+
+            if (code == OpCodes.Br_S)
             {
-                Goto(label);
+                return Goto(label);
             }
-            else if (code == OpCodes.Brfalse)
+
+            if (code == OpCodes.Brfalse)
             {
-                Neg().Block()
+                return Not().Block()
                     .Goto(label)
-                    .EndBlock();
+                    .EndBlock()
+                    .Nothing()
+                    .If();
             }
-            else if (code == OpCodes.Brtrue)
+
+            if (code == OpCodes.Brtrue)
             {
-                Neg().Block()
+                return Block()
                     .Goto(label)
-                    .EndBlock();
+                    .EndBlock()
+                    .Nothing()
+                    .If();
             }
 
             throw new Exception("Operation not supported");
@@ -159,6 +195,12 @@ namespace Aquila.Compiler.Roslyn
 
         public IEmitter Emit(OpCode code, ILocal local)
         {
+            if (code == OpCodes.Ldloc)
+                return LdLoc(local);
+
+            if (code == OpCodes.Stloc)
+                return StLoc(local);
+
             throw new Exception("Operation not supported");
         }
 
