@@ -229,6 +229,13 @@ namespace Aquila.Core.Contracts.TypeSystem
             set.AddType(type.Id);
         }
 
+        public static PType MakeArrayType(this PType type)
+        {
+            var arraySpec = type.GetSpec();
+            arraySpec.SetDimensions(1);
+            return arraySpec;
+        }
+
         public static string ConvertToDbType(this PType PType)
         {
             if (PType != null)

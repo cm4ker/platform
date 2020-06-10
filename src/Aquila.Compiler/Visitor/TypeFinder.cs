@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Compiler.Roslyn.RoslynBackend;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Core;
 using Aquila.Core.Annotations;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Symbols;
@@ -29,7 +30,7 @@ namespace Aquila.Compiler.Visitor
             return p.Visit(node);
         }
 
-        public static RoslynType FindClr(TypeSyntax typeNode, RoslynTypeSystem ts)
+        public static PType FindClr(TypeSyntax typeNode, TypeManager ts)
         {
             if (typeNode is SingleTypeSyntax sts)
             {
