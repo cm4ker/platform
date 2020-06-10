@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Aquila.Compiler.Contracts.Extensions;
-using Aquila.Compiler.Infrastructure;
-using Aquila.Core.Contracts;
-using Aquila.Core.Contracts.Network;
 
 namespace Aquila.Compiler.Contracts
 {
@@ -48,6 +45,8 @@ namespace Aquila.Compiler.Contracts
 
         public IType Double => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Double)}", MSCORLIB);
 
+        public IType Decimal => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Decimal)}", MSCORLIB);
+
         public IType Guid => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Guid)}", MSCORLIB);
 
         public IType Void => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Void)}", MSCORLIB);
@@ -69,26 +68,22 @@ namespace Aquila.Compiler.Contracts
 
         public IType DbCommand => _ts.FindType<System.Data.Common.DbCommand>();
 
-        public IType Client => _ts.FindType<IProtocolClient>(); // _ts.FindType<Client>()
-
-        public IType ServerInitializer => _ts.FindType<IServerInitializer>();
-
-        public IType InvokeService => _ts.FindType<IInvokeService>();
-
-        public IType InvokeContext => _ts.FindType<InvokeContext>();
-
-        public IType Route => _ts.FindType<Route>();
+        // public IType Client => _ts.FindType<IProtocolClient>(); // _ts.FindType<Client>()
+        //
+        // public IType ServerInitializer => _ts.FindType<IServerInitializer>();
+        //
+        // public IType InvokeService => _ts.FindType<IInvokeService>();
+        //
+        // public IType InvokeContext => _ts.FindType<InvokeContext>();
+        //
+        // public IType Route => _ts.FindType<Route>();
 
         public IType Session => _ts.FindType($"Aquila.Core.Sessions.Session", PLATFORM_CORE);
 
         public IType Reference =>
             _ts.FindType($"Aquila.DataComponent.Interfaces.IReference", PLATFORM_DATA_COMPONENT);
 
-        public IType MultiType => _ts.FindType<UnionType>();
-
-        public IType UnionTypeStorage => _ts.FindType<UnionTypeStorage>();
-
-        public IType ParametricMethod => _ts.FindType<ParametricMethod>();
+        // public IType ParametricMethod => _ts.FindType<ParametricMethod>();
 
         public IType Action => _ts.FindType<Action>();
 

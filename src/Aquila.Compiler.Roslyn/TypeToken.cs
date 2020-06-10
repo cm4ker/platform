@@ -1,13 +1,14 @@
 using System.IO;
+using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 
 namespace Aquila.Compiler.Roslyn
 {
     public class TypeToken : Expression
     {
-        private readonly RoslynType _name;
+        private readonly IType _name;
 
-        public TypeToken(RoslynType name)
+        public TypeToken(IType name)
         {
             _name = name;
         }

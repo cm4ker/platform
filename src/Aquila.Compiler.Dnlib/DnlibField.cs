@@ -1,11 +1,13 @@
 using System;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
 using IField = Aquila.Compiler.Contracts.IField;
 using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Dnlib
 {
-    public class DnlibField : IField
+    public class DnlibField : IField, IFieldBuilder
     {
         private readonly DnlibTypeSystem _ts;
         private DnlibContextResolver _cr;
@@ -27,6 +29,7 @@ namespace Aquila.Compiler.Dnlib
 
         public string Name => FieldDef.Name;
         public IType FieldType => _cr.GetType(FieldDef.FieldType);
+        public IType DeclaringType { get; }
 
         public bool IsPublic => FieldDef.IsPublic;
 
@@ -42,6 +45,11 @@ namespace Aquila.Compiler.Dnlib
             }
 
             return null;
+        }
+
+        public void SetAttribute(ICustomAttribute attr)
+        {
+            throw new NotImplementedException();
         }
     }
 }

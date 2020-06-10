@@ -59,13 +59,13 @@ namespace Aquila.Compiler.Roslyn
                 if (assemblies == null)
                     _ref.AddRange(
                         fwFiles
-                            .Where(x=>!x.Contains("System.Private"))
+                            .Where(x => !x.Contains("System.Private"))
                             .Select(asm => MetadataReference.CreateFromFile(asm))
                             .ToArray());
                 else
                     _ref.AddRange(
                         assemblies
-                            .Where(x=>!x.Contains("System.Private"))
+                            .Where(x => !x.Contains("System.Private"))
                             .Select(asm => MetadataReference.CreateFromFile(asm))
                             .ToArray());
             }

@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynMethodBuilder : RoslynMethod
+    public class RoslynMethodBuilder : RoslynMethod, IMethodBuilder
     {
         private List<RoslynParameter> _parameters = new List<RoslynParameter>();
 
@@ -14,10 +16,10 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         public RoslynMethodBuilder(RoslynTypeSystem typeSystem, MethodDef method, ITypeDefOrRef declaringType) :
             base(typeSystem, method, method, declaringType)
         {
-            Body = new RBlockBuilder(typeSystem, this);
+            Generator = new RoslynEmitter(typeSystem, this);
         }
 
-        public RoslynParameter DefineParameter(string name, RoslynType type, bool isOut, bool isRef)
+        public IParameter DefineParameter(string name, IType type, bool isOut, bool isRef)
         {
             var dtype = (RoslynType) type;
 
@@ -36,14 +38,14 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return dp;
         }
 
-        public RoslynMethodBuilder WithReturnType(RoslynType type)
+        public IMethodBuilder WithReturnType(IType type)
         {
-            MethodDef.ReturnType = ContextResolver.GetReference(type.ToTypeRef()).ToTypeSig();
+            MethodDef.ReturnType = ContextResolver.GetReference(type.GetRef()).ToTypeSig();
 
             return this;
         }
 
-        public RBlockBuilder Body { get; }
+        public IEmitter Generator { get; }
 
 
         public void SetAttribute(RoslynCustomAttribute attr)
@@ -90,7 +92,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
                 tw.WriteLine();
             }
-            
+
             tw.Write("public ");
 
             if (IsStatic)
@@ -123,7 +125,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             }
 
 
-            Body.Dump(tw);
+            ((RoslynEmitter) Generator).Dump(tw);
         }
     }
 }

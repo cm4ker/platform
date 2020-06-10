@@ -1,6 +1,8 @@
-﻿namespace Aquila.Compiler.Roslyn.RoslynBackend
+﻿using Aquila.Compiler.Contracts;
+
+namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynAssemblyPlatform
+    public class RoslynAssemblyPlatform : IAssemblyPlatform
     {
         public RoslynAssemblyPlatform()
         {
@@ -8,11 +10,11 @@
             TypeSystem = new RoslynTypeSystem(AsmFactory, new string[] { });
         }
 
-        public RoslynPlatformFactory AsmFactory { get; }
+        public IPlatformFactory AsmFactory { get; }
 
-        public RoslynTypeSystem TypeSystem { get; }
+        public ITypeSystem TypeSystem { get; }
 
-        public RoslynTypeSystem CreateTypeSystem()
+        public ITypeSystem CreateTypeSystem()
         {
             return new RoslynTypeSystem(AsmFactory, new string[] { });
         }

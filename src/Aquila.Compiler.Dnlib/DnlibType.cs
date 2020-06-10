@@ -29,6 +29,8 @@ namespace Aquila.Compiler.Dnlib
 
             if (typeDef is null) throw new ArgumentNullException(nameof(typeDef));
             _cr = new DnlibContextResolver(_ts, typeDef.Module);
+
+            Id = TypeConstants.GetIdFromName(FullName);
         }
 
         public TypeDef TypeDef { get; }
@@ -42,7 +44,9 @@ namespace Aquila.Compiler.Dnlib
 
         public ITypeSystem TypeSystem => _ts;
 
-        public object Id => TypeDef.FullName;
+
+        public Guid Id { get; }
+
         public string Name => TypeDef.Name;
         public string Namespace => TypeDef.Namespace;
         public string FullName => TypeDef.FullName;

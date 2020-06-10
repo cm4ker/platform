@@ -2,7 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
+using IMethod = dnlib.DotNet.IMethod;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
@@ -33,11 +37,11 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public override string Name => MethodDef.Name;
 
-        public RoslynType ReturnType => ContextResolver.GetType(MethodDef.ReturnType);
+        public IType ReturnType => ContextResolver.GetType(MethodDef.ReturnType);
 
-        public RoslynType DeclaringType => ContextResolver.GetType(_declaringTR);
+        public IType DeclaringType => ContextResolver.GetType(_declaringTR);
 
-        public RoslynMethod MakeGenericMethod(params RoslynType[] typeArguments)
+        public Contracts.IMethod MakeGenericMethod(params IType[] typeArguments)
         {
             if (MethodRef is IMethodDefOrRef mdr)
             {
@@ -52,7 +56,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             throw new Exception("Can't create generic method");
         }
 
-        public IReadOnlyList<RoslynType> GenericArguments
+        public IReadOnlyList<IType> GenericArguments
         {
             get
             {
@@ -72,10 +76,10 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public bool IsGeneric => (MethodRef is MethodSpec);
 
-        public virtual IReadOnlyList<RoslynParameter> Parameters =>
+        public virtual IReadOnlyList<IParameter> Parameters =>
             _parameters ??= CalculateParameters();
 
-        public List<RoslynParameter> CalculateParameters()
+        private List<RoslynParameter> CalculateParameters()
         {
             void ContextGenericResolver(TypeSig sig, Parameter param)
             {
@@ -109,13 +113,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         }
 
 
-        public IReadOnlyList<RoslynCustomAttribute> CustomAttributes =>
+        public IReadOnlyList<ICustomAttribute> CustomAttributes =>
             _customAttributes ??= new List<RoslynCustomAttribute>();
-
-
-        public bool Equals(IMethod other)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

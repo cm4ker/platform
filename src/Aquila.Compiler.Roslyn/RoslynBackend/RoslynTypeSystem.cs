@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using IAssembly = Aquila.Compiler.Contracts.IAssembly;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynTypeSystem
+    public class RoslynTypeSystem : ITypeSystem
     {
         private List<RoslynAssembly> _asms;
 
@@ -25,7 +28,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         private RoslynTypeCache _typeCache;
 
-        public RoslynTypeSystem(RoslynPlatformFactory factory, IEnumerable<string> paths, string targetPath = null)
+        public RoslynTypeSystem(IPlatformFactory factory, IEnumerable<string> paths, string targetPath = null)
         {
             _asms = new List<RoslynAssembly>();
 
@@ -77,9 +80,9 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         public IAssemblyResolver Resolver => _resolver;
 
         public List<string> Paths { get; } = new List<string>();
-        public RoslynPlatformFactory Factory { get; }
+        public IPlatformFactory Factory { get; }
 
-        public IReadOnlyList<RoslynAssembly> Assemblies => _asms;
+        public IReadOnlyList<IAssembly> Assemblies => _asms;
 
         public Dictionary<string, AssemblyRef> AsmRefsCache = new Dictionary<string, AssemblyRef>();
 
@@ -107,7 +110,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return type;
         }
 
-        public RoslynAssembly FindAssembly(string assembly)
+        public IAssembly FindAssembly(string assembly)
         {
             if (assembly == "System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e")
                 assembly = AssemblyRefUser.CreateMscorlibReferenceCLR40().FullName;
@@ -115,7 +118,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return RegisterAssembly(_resolver.Resolve(assembly, null));
         }
 
-        public RoslynAssembly FindAssembly(dnlib.DotNet.IAssembly assembly)
+        public IAssembly FindAssembly(dnlib.DotNet.IAssembly assembly)
         {
             if (assembly.IsCorLib())
             {
@@ -128,7 +131,12 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                 return FindAssembly(assembly.FullName);
         }
 
-        public RoslynType FindType(string name)
+        /// <summary>
+        /// Iterate all assemblies
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public IType FindType(string name)
         {
             foreach (var asm in _asms)
             {
@@ -140,22 +148,22 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return null;
         }
 
-        public RoslynType Resolve(Type type)
+        public IType Resolve(Type type)
         {
             return FindType(type.FullName, type.Assembly.FullName);
         }
 
-        public RoslynType Resolve<T>()
+        public IType Resolve<T>()
         {
             return Resolve(typeof(T));
         }
 
-        public RoslynType ResolveType(Type type)
+        public IType ResolveType(Type type)
         {
             return Resolve(type);
         }
 
-        public RoslynType FindType(string name, string assembly) =>
+        public IType FindType(string name, string assembly) =>
             FindAssembly(assembly)?.FindType(name);
 
         public RoslynType Resolve(ITypeDefOrRef reference)

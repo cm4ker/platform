@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Aquila.Compiler.Contracts\Aquila.Compiler.Contracts.csproj" />
+    <ProjectReference Include="..\Aquila.Core.Contracts\Aquila.Core.Contracts.csproj" />
     <ProjectReference Include="..\Aquila.Serializer\Aquila.Serializer.csproj" />
     <ProjectReference Include="..\Aquila.SSH\Aquila.SSH.csproj" />
   </ItemGroup>

@@ -1,15 +1,16 @@
 using System;
 using System.IO;
+using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 
 namespace Aquila.Compiler.Roslyn
 {
     public class NewObjectExpression : Expression
     {
-        private readonly RoslynConstructor _c;
+        private readonly IConstructor _c;
         private readonly Expression[] _args;
 
-        public NewObjectExpression(RoslynConstructor c, params Expression[] args)
+        public NewObjectExpression(IConstructor c, params Expression[] args)
         {
             _c = c;
             _args = args;

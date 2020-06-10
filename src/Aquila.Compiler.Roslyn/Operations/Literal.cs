@@ -22,6 +22,12 @@ namespace Aquila.Compiler.Roslyn
             _type = LiteralType.Numeric;
         }
 
+        public Literal(long literal)
+        {
+            _literal = literal.ToString(CultureInfo.InvariantCulture);
+            _type = LiteralType.Numeric;
+        }
+
         public Literal(uint literal)
         {
             _literal = literal.ToString();

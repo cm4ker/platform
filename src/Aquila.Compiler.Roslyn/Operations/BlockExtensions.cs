@@ -2,7 +2,7 @@ namespace Aquila.Compiler.Roslyn
 {
     public static class BlockExtensions
     {
-        public static RBlockBuilder Inc(this RBlockBuilder block, RLocal loc)
+        public static RoslynEmitter Inc(this RoslynEmitter block, RLocal loc)
         {
             return block
                 .LdLoc(loc)

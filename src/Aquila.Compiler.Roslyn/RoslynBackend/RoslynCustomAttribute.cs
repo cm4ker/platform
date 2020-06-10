@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using dnlib.DotNet;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynCustomAttribute
+    public class RoslynCustomAttribute : Contracts.ICustomAttribute
     {
         private readonly RoslynTypeSystem _ts;
         private CustomAttribute _ca;
@@ -31,7 +32,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             }
         }
 
-        public RoslynType AttributeType => (_ca != null) ? _ts.Resolve(_ca.AttributeType) : null;
+        public IType AttributeType => (_ca != null) ? _ts.Resolve(_ca.AttributeType) : null;
 
         public CustomAttribute GetCA() => _ca;
 
@@ -63,5 +64,10 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         public List<object> Parameters => _ca.ConstructorArguments.Select(x => x.Value).ToList();
 
         public Dictionary<string, object> Properties => _ca.Properties.ToDictionary(x => x.Name.String, x => x.Value);
+
+        public bool Equals(Contracts.ICustomAttribute other)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -1,29 +1,39 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
+using IMethod = Aquila.Compiler.Contracts.IMethod;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynPropertyBuilder : RoslynProperty
+    public class RoslynPropertyBuilder : RoslynProperty, IPropertyBuilder
     {
-        public RoslynPropertyBuilder WithSetter(RoslynMethod method)
+        private RoslynMethod _getter;
+        private RoslynMethod _setter;
+
+        public override IMethod Getter => _getter;
+        public override IMethod Setter => _setter;
+
+
+        public IPropertyBuilder WithSetter(IMethod method)
         {
-            _setter = method;
-            PropertyDef.SetMethod = ((RoslynInvokableBase) method).MethodDef;
+            _setter = (RoslynMethod) method;
+            PropertyDef.SetMethod = _setter.MethodDef;
             return this;
         }
 
-        public RoslynPropertyBuilder WithGetter(RoslynMethod method)
+        public IPropertyBuilder WithGetter(IMethod method)
         {
-            _getter = method;
-            PropertyDef.GetMethod = ((RoslynInvokableBase) method).MethodDef;
+            _getter = (RoslynMethod) method;
+            PropertyDef.GetMethod = _getter.MethodDef;
             return this;
         }
 
-        public void SetAttribute(RoslynCustomAttribute attr)
+        public void SetAttribute(ICustomAttribute attr)
         {
-            var dnlibAttr = attr;
+            var dnlibAttr = (RoslynCustomAttribute) attr;
             dnlibAttr.ImportAttribute(PropertyDef.Module);
             PropertyDef.CustomAttributes.Add(dnlibAttr.GetCA());
             ((List<RoslynCustomAttribute>) CustomAttributes).Add(dnlibAttr);

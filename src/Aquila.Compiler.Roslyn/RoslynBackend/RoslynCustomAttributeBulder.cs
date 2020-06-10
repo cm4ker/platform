@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using IMethod = dnlib.DotNet.IMethod;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynCustomAttributeBulder : RoslynCustomAttribute
+    public class RoslynCustomAttributeBulder : RoslynCustomAttribute, ICustomAttributeBuilder
     {
         public RoslynCustomAttributeBulder(RoslynTypeSystem ts, IMethod constructor) : base(ts, null)
         {
@@ -26,7 +28,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         {
             foreach (var arg in _args)
             {
-                var dnlibType = TypeSystem.Resolve(arg.GetType());
+                var dnlibType = (RoslynType) TypeSystem.Resolve(arg.GetType());
                 var caArg = new CAArgument(dnlibType.TypeRef.ToTypeSig(), arg);
                 CustomAttribute.ConstructorArguments.Add(caArg);
             }

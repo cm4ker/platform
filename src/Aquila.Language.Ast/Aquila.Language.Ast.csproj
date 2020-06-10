@@ -11,6 +11,7 @@
         <ProjectReference Include="..\Aquila.Compiler.Contracts\Aquila.Compiler.Contracts.csproj" />
         <ProjectReference Include="..\Aquila.Compiler.Roslyn\Aquila.Compiler.Roslyn.csproj" />
         <ProjectReference Include="..\Aquila.Configuration.Contracts\Aquila.Configuration.Contracts.csproj" />
+        <ProjectReference Include="..\Aquila.Core.Contracts\Aquila.Core.Contracts.csproj" />
         <ProjectReference Include="..\Aquila.Shared\Aquila.Shared.csproj" />
     </ItemGroup>
 

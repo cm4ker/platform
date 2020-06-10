@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using IAssembly = Aquila.Compiler.Contracts.IAssembly;
+using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
+using IField = Aquila.Compiler.Contracts.IField;
+using IMethod = Aquila.Compiler.Contracts.IMethod;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public class RoslynType
+    public class RoslynType : IType
     {
         private readonly RoslynTypeSystem _ts;
         private readonly RoslynAssembly _assembly;
@@ -35,13 +41,12 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return new SigComparer().Equals(TypeRef, ((RoslynType) other)?.TypeRef);
         }
 
-        public RoslynTypeSystem TypeSystem => _ts;
+        public ITypeSystem TypeSystem => _ts;
 
-        public object Id => TypeDef.FullName;
         public string Name => TypeRef.Name;
         public string Namespace => TypeRef.Namespace;
         public string FullName => TypeRef.FullName;
-        public RoslynAssembly Assembly => _assembly;
+        public IAssembly Assembly => _assembly;
 
         private IReadOnlyList<RoslynProperty> _properties;
         private IReadOnlyList<RoslynField> _fields;
@@ -51,15 +56,18 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         private IReadOnlyList<RoslynType> _genericArguments;
         private IReadOnlyList<RoslynCustomAttribute> _customAttributes;
 
-        public virtual IReadOnlyList<RoslynProperty> Properties =>
+
+        public virtual IReadOnlyList<IProperty> Properties =>
             _properties ??= TypeDef.Properties.Select(x => new RoslynProperty(_ts, x, TypeRef)).ToList();
 
-        public virtual IReadOnlyList<RoslynField> Fields =>
+        public IReadOnlyList<IEventInfo> Events { get; } = null;
+
+        public virtual IReadOnlyList<IField> Fields =>
             _fields ??= TypeDef.Fields.Select(x => new RoslynField(_ts, x)).ToList();
 
-        public virtual IReadOnlyList<RoslynMethod> Methods => _methods ??= CalculateMethods();
+        public virtual IReadOnlyList<IMethod> Methods => _methods ??= CalculateMethods();
 
-        public virtual IReadOnlyList<RoslynConstructor> Constructors =>
+        public virtual IReadOnlyList<IConstructor> Constructors =>
             _constructors ??= TypeDef.FindConstructors().Select(x =>
             {
                 return (RoslynConstructor) new RoslynConstructor(_ts,
@@ -83,14 +91,14 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                 .ToList();
         }
 
-        public virtual IReadOnlyList<RoslynCustomAttribute> CustomAttributes =>
+        public virtual IReadOnlyList<ICustomAttribute> CustomAttributes =>
             _customAttributes ??= new List<RoslynCustomAttribute>();
 
-        public virtual IReadOnlyList<RoslynType> GenericArguments =>
+        public virtual IReadOnlyList<IType> GenericArguments =>
             _genericArguments ??= (TypeRef as TypeSpec)?.TryGetGenericInstSig()?.GenericArguments?
-                .Select(x => _cr.GetType(x)).ToList();
+                .Select(x => (RoslynType) _cr.GetType(x)).ToList();
 
-        public virtual IReadOnlyList<RoslynType> Interfaces =>
+        public virtual IReadOnlyList<IType> Interfaces =>
             _interfaces ??= TypeDef.Interfaces
                 .Where(x => x.Interface.ResolveTypeDef() != null).Select(x =>
                 {
@@ -100,7 +108,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                 })
                 .ToList();
 
-        public RoslynType MakeGenericType(IReadOnlyList<RoslynType> typeArguments)
+        public IType MakeGenericType(IReadOnlyList<IType> typeArguments)
         {
             if (TypeRef is TypeDef || TypeRef is TypeRef)
             {
@@ -118,24 +126,24 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             throw new Exception("Can't create generic Type");
         }
 
-        public RoslynType GenericTypeDefinition { get; }
+        public IType GenericTypeDefinition { get; }
 
         public bool IsArray => TypeRef.ToTypeSig().IsSingleOrMultiDimensionalArray;
 
-        public RoslynType ArrayElementType => _ts.Resolve(TypeRef.ScopeType);
+        public IType ArrayElementType => _ts.Resolve(TypeRef.ScopeType);
 
-        public RoslynType MakeArrayType()
+        public IType MakeArrayType()
         {
             return new RoslynType(_ts, TypeDef, new TypeSpecUser(new SZArraySig(TypeRef.ToTypeSig())), _assembly);
         }
 
-        public RoslynType MakeArrayType(int dimensions)
+        public IType MakeArrayType(int dimensions)
         {
             return new RoslynType(_ts, TypeDef, new TypeSpecUser(new ArraySig(TypeRef.ToTypeSig(), dimensions)),
                 _assembly);
         }
 
-        public RoslynType BaseType => (TypeDef.BaseType != null) ? _ts.Resolve(TypeDef.BaseType) : null;
+        public IType BaseType => (TypeDef.BaseType != null) ? _ts.Resolve(TypeDef.BaseType) : null;
 
         public bool IsValueType => TypeDef.IsValueType;
 
@@ -147,14 +155,13 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public bool IsPrimitive => TypeDef.IsPrimitive;
 
-
         public bool IsPublic => TypeDef.IsPublic;
 
         public bool IsAbstract => TypeDef.IsAbstract;
 
         public bool IsGeneric => TypeRef.ToTypeSig() is GenericInstSig;
 
-        public RoslynType GetEnumUnderlyingType()
+        public IType GetEnumUnderlyingType()
         {
             throw new NotImplementedException();
         }
@@ -169,7 +176,6 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
             if (IsArray)
             {
-                
             }
 
             if (IsGeneric)
@@ -183,7 +189,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                         if (wasFirst)
                             tw.W(",");
 
-                        arg.DumpRef(tw);
+                        ((RoslynType) arg).DumpRef(tw);
 
                         wasFirst = true;
                     }
@@ -197,6 +203,11 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         {
             int index = name.IndexOf('`');
             return index == -1 ? name : name.Substring(0, index);
+        }
+
+        public bool Equals(IType other)
+        {
+            throw new NotImplementedException();
         }
     }
 }

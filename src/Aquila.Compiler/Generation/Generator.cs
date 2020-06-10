@@ -11,7 +11,6 @@ using Aquila.Language.Ast.Definitions.Statements;
 using Aquila.ServerRuntime;
 using Aquila.UI.Ast;
 using SreTA = System.Reflection.TypeAttributes;
-using SystemTypeBindings = Aquila.Compiler.Roslyn.SystemTypeBindings;
 
 namespace Aquila.Compiler.Generation
 {

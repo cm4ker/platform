@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using IAssembly = Aquila.Compiler.Contracts.IAssembly;
+using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
+using IType = Aquila.Compiler.Contracts.IType;
 using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynAssemblyBuilder : RoslynAssembly
+    public class RoslynAssemblyBuilder : RoslynAssembly, IAssemblyBuilder
     {
         private readonly RoslynTypeSystem _ts;
         private readonly AssemblyDefUser _assembly;
@@ -20,12 +24,12 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             _definedTypes = new List<RoslynTypeBuilder>();
         }
 
-        public IReadOnlyList<RoslynTypeBuilder> DefinedTypes => _definedTypes;
+        public IReadOnlyList<ITypeBuilder> DefinedTypes => _definedTypes;
 
-        public RoslynTypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes,
-            RoslynType baseType)
+        public ITypeBuilder DefineType(string @namespace, string name, TypeAttributes typeAttributes,
+            IType baseType)
         {
-            ITypeDefOrRef bType = baseType.TypeRef;
+            ITypeDefOrRef bType = ((RoslynType) baseType).TypeRef;
 
             if (bType is TypeRef || bType is TypeDef && bType.Module != this._assembly.ManifestModule)
                 bType = (ITypeDefOrRef) _assembly.ManifestModule.Import(bType);
@@ -50,8 +54,6 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             var sb = new StringBuilder();
             Dump(new StringWriter(sb));
 
-            Console.Write(sb);
-
             RoslynCompilationHelper.GenerateAssembly(sb.ToString(), fileName, _ts.Paths.ToArray());
         }
 
@@ -60,7 +62,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             var tmpFile = Path.GetTempFileName();
 
             Write(tmpFile);
-            
+
             using (FileStream fs = new FileStream(tmpFile, FileMode.OpenOrCreate))
             {
                 fs.CopyTo(stream);
@@ -78,17 +80,12 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         }
 
 
-        public RoslynTypeBuilder ImportWithCopy(RoslynType type)
-        {
-            throw new NotImplementedException();
-        }
-
         public void SetAttribute(ICustomAttribute attr)
         {
             throw new NotImplementedException();
         }
 
-        public RoslynAssembly EndBuild()
+        public IAssembly EndBuild()
         {
             return this;
         }

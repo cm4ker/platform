@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aquila.Compiler.Contracts;
+using Aquila.Compiler.Contracts.Extensions;
 using Aquila.Compiler.Contracts.Symbols;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
@@ -55,7 +56,7 @@ namespace Aquila.Language.Ast.Symbols
 
     public class MethodSymbol : Symbol
     {
-        private RoslynType declaringType;
+        private IType declaringType;
 
         private readonly Dictionary<Function, RoslynMethod> _overloads;
 

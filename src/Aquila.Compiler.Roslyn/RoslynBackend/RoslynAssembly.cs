@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using IAssembly = dnlib.DotNet.IAssembly;
+using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynAssembly
+    public class RoslynAssembly : Contracts.IAssembly
     {
         private RoslynTypeSystem _ts;
 
@@ -15,6 +20,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         {
             if (assembly is null)
                 throw new NullReferenceException("Assembly");
+
             Assembly = assembly;
             _ts = ts;
 
@@ -31,12 +37,11 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         private IReadOnlyList<RoslynCustomAttribute> _attributes;
 
-        public IReadOnlyList<RoslynCustomAttribute> CustomAttributes =>
+        public IReadOnlyList<ICustomAttribute> CustomAttributes =>
             _attributes ??= Assembly.CustomAttributes.Select(ca => new RoslynCustomAttribute(_ts, ca))
                 .ToList();
 
-
-        public RoslynType FindType(string fullName)
+        public IType FindType(string fullName)
         {
             if (TypeCache.TryGetValue(fullName, out var rv))
                 return rv;
@@ -72,6 +77,21 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return null;
         }
 
-        public RoslynTypeSystem TypeSystem => _ts;
+        public void Write(string fileName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Write(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITypeSystem TypeSystem => _ts;
+
+        public bool Equals(Contracts.IAssembly other)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

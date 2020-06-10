@@ -3,14 +3,17 @@ using System.Collections.Generic;
 
 namespace Aquila.Compiler.Contracts
 {
-    public interface IType : IEquatable<IType>
+    public interface ITypeSystemProvider
     {
         ITypeSystem TypeSystem { get; }
+    }
 
+    public interface IType : ITypeSystemProvider, IEquatable<IType>
+    {
         /// <summary>
         /// Identifier of the type 
         /// </summary>
-        object Id { get; }
+        Guid Id => TypeConstants.GetIdFromName(FullName);
 
         /// <summary>
         /// Name of the type

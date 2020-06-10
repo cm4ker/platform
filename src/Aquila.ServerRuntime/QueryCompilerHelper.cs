@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Antlr4.Runtime;
+using Aquila.Compiler.Contracts.Extensions;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Core.Contracts.TypeSystem;

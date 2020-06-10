@@ -34,7 +34,7 @@ namespace Aquila.Language.Ast.Definitions.Functions
         /// <summary>
         /// Билдер IL кода
         /// </summary>
-        public RBlockBuilder Builder;
+        public RoslynEmitter Builder;
 
         private readonly Block _block;
 

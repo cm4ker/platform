@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
+using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
+using IMethod = Aquila.Compiler.Contracts.IMethod;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public class RoslynProperty
+    public class RoslynProperty : IProperty
     {
         private readonly RoslynTypeSystem _ts;
         protected readonly PropertyDef PropertyDef;
@@ -16,8 +20,8 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
         public RoslynType DeclaringType => _cr.GetType(DeclaringTypeInternal);
 
         private RoslynContextResolver _cr;
-        protected RoslynMethod _getter;
-        protected RoslynMethod _setter;
+        private RoslynMethod _getter;
+        private RoslynMethod _setter;
         private List<RoslynCustomAttribute> _customAttributes;
 
         public RoslynProperty(RoslynTypeSystem typeSystem, PropertyDef property, ITypeDefOrRef declaringTypeInternal)
@@ -29,14 +33,14 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             _cr = new RoslynContextResolver(_ts, PropertyDef.Module);
         }
 
-        public bool Equals(RoslynProperty other)
+        protected bool Equals(RoslynProperty other)
         {
             throw new NotImplementedException();
         }
 
         public string Name => PropertyDef.Name;
 
-        public RoslynType PropertyType => _cr.GetType(PropertyDef.PropertySig.RetType);
+        public IType PropertyType => _cr.GetType(PropertyDef.PropertySig.RetType);
 
         public RoslynMethod CalculateMethod(MethodDef x)
         {
@@ -46,20 +50,25 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                 x, DeclaringTypeInternal);
         }
 
-        public virtual RoslynMethod Getter => _getter ??=
+        public virtual IMethod Getter => _getter ??=
             (PropertyDef.GetMethod == null) ? null : CalculateMethod(PropertyDef.GetMethod);
 
-        public virtual RoslynMethod Setter => _setter ??=
+        public virtual IMethod Setter => _setter ??=
             (PropertyDef.SetMethod == null)
                 ? null
                 : new RoslynMethod(_ts, PropertyDef.SetMethod, PropertyDef.SetMethod, PropertyDef.DeclaringType);
 
-        public IReadOnlyList<RoslynCustomAttribute> CustomAttributes =>
+        public IReadOnlyList<ICustomAttribute> CustomAttributes =>
             _customAttributes ??= new List<RoslynCustomAttribute>();
 
-        public RoslynCustomAttribute FindCustomAttribute(RoslynType type)
+        public ICustomAttribute FindCustomAttribute(IType type)
         {
             return _customAttributes?.FirstOrDefault(x => x.AttributeType == type);
+        }
+
+        public bool Equals(IProperty other)
+        {
+            throw new NotImplementedException();
         }
     }
 }

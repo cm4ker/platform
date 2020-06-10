@@ -2,7 +2,7 @@ using System.IO;
 
 namespace Aquila.Compiler.Roslyn
 {
-    public class Statement
+    internal class Statement
     {
         private readonly Expression _exp;
 

@@ -1,14 +1,15 @@
 using System.IO;
+using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 
 namespace Aquila.Compiler.Roslyn
 {
     public class NewArrayExpression : Expression
     {
-        private readonly RoslynType _c;
+        private readonly IType _c;
         private readonly Expression _capacity;
 
-        public NewArrayExpression(RoslynType c, Expression capacity)
+        public NewArrayExpression(IType c, Expression capacity)
         {
             _c = c;
             _capacity = capacity;

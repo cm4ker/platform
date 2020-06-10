@@ -5,7 +5,6 @@ using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using Aquila.Compiler.Contracts;
 using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
-using IField = Aquila.Compiler.Contracts.IField;
 using IMethod = Aquila.Compiler.Contracts.IMethod;
 using IType = Aquila.Compiler.Contracts.IType;
 
@@ -20,13 +19,6 @@ namespace Aquila.Compiler.Dnlib
             : base(typeSystem, typeDef, typeDef, assembly)
         {
             _ts = typeSystem;
-
-            Methods.Any();
-            Properties.Any();
-            Constructors.Any();
-            CustomAttributes.Any();
-            //GenericParameters.Any();
-
             _r = new DnlibContextResolver(_ts, typeDef.Module);
         }
 
@@ -43,7 +35,7 @@ namespace Aquila.Compiler.Dnlib
 
         public IReadOnlyList<IMethodBuilder> DefinedMethods => Methods.Cast<IMethodBuilder>().ToList();
 
-        public IField DefineField(IType type, string name, bool isPublic, bool isStatic)
+        public IFieldBuilder DefineField(IType type, string name, bool isPublic, bool isStatic)
         {
             var tref = _r.GetReference(((DnlibType) type).TypeRef);
             var field = new FieldDefUser(name, new FieldSig(tref.ToTypeSig()));
@@ -144,7 +136,7 @@ namespace Aquila.Compiler.Dnlib
             var c = new MethodDefUser(name, sig);
 
             c.IsStatic = isStatic;
-            
+
             c.Attributes |= MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Public |
                             MethodAttributes.HideBySig;
 

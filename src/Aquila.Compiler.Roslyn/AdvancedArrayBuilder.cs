@@ -8,18 +8,18 @@ namespace Aquila.Compiler.Roslyn
     {
         private readonly Expression _capacity;
         private readonly RoslynType _type;
-        private readonly RBlockBuilder _parentBlock;
+        private readonly RoslynEmitter _parentBlock;
 
         private readonly List<Expression> _args = new List<Expression>();
 
-        public AdvancedArrayBuilder(Expression capacity, RoslynType type, RBlockBuilder parentBlock)
+        public AdvancedArrayBuilder(Expression capacity, RoslynType type, RoslynEmitter parentBlock)
         {
             _capacity = capacity;
             _type = type;
             _parentBlock = parentBlock;
         }
 
-        public RBlockBuilder Block => _parentBlock;
+        public RoslynEmitter Block => _parentBlock;
 
         public AdvancedArrayBuilder PopArg()
         {
@@ -27,7 +27,7 @@ namespace Aquila.Compiler.Roslyn
             return this;
         }
 
-        public RBlockBuilder EndBuild()
+        public RoslynEmitter EndBuild()
         {
             _parentBlock.Push(this);
             return _parentBlock;

@@ -204,7 +204,12 @@ namespace Aquila.Compiler.Dnlib
 
         class DnlibLabel : ILabel
         {
-            public Instruction Instruction { get; set; } = Instruction.Create(OpCodes.Nop);
+            public DnlibLabel()
+            {
+                Instruction = Instruction.Create(OpCodes.Nop);
+            }
+
+            public Instruction Instruction { get; set; }
         }
 
         public ILocal DefineLocal(IType type)
@@ -244,6 +249,7 @@ namespace Aquila.Compiler.Dnlib
         public IEmitter MarkLabel(ILabel label)
         {
             var dl = (DnlibLabel) label;
+
             Emit(dl.Instruction);
             _markedLabels.Add(dl);
             return this;

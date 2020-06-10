@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Aquila.Compiler.Contracts;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynConstructorBuilder : RoslynConstructor
+    public class RoslynConstructorBuilder : RoslynConstructor, IConstructorBuilder
     {
         private readonly MethodDefUser _methodDef;
         private List<RoslynParameter> _parameters = new List<RoslynParameter>();
@@ -19,12 +21,12 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             _methodDef.Body = new CilBody();
 
 
-            Body = new RBlockBuilder(ts, this);
+            Generator = new RoslynEmitter(ts, this);
         }
 
-        public override IReadOnlyList<RoslynParameter> Parameters => _parameters;
+        public override IReadOnlyList<IParameter> Parameters => _parameters;
 
-        public RoslynParameter DefineParameter(RoslynType type)
+        public IParameter DefineParameter(IType type)
         {
             var dtype = (RoslynType) type;
 
@@ -43,7 +45,7 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             return dp;
         }
 
-        public RBlockBuilder Body { get; }
+        public IEmitter Generator { get; }
 
         public void Dump(TextWriter tw)
         {
@@ -70,18 +72,18 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
             using (tw.Parenthesis())
             {
                 var wasFirst = false;
-                foreach (var exp in Body.BaseCall)
+                foreach (var exp in ((RoslynEmitter) Generator).BaseCall)
                 {
                     if (wasFirst)
                         tw.W(",");
-                        
+
                     exp.Dump(tw);
 
                     wasFirst = true;
                 }
             }
 
-            Body.Dump(tw);
+            ((RoslynEmitter) Generator).Dump(tw);
         }
     }
 }

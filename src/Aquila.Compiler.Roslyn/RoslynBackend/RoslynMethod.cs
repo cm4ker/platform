@@ -1,9 +1,10 @@
 using System.IO;
 using dnlib.DotNet;
+using IMethod = Aquila.Compiler.Contracts.IMethod;
 
 namespace Aquila.Compiler.Roslyn.RoslynBackend
 {
-    public class RoslynMethod : RoslynInvokableBase
+    public class RoslynMethod : RoslynInvokableBase, IMethod
     {
         public RoslynMethod(RoslynTypeSystem ts, dnlib.DotNet.IMethod method, MethodDef methodDef,
             ITypeDefOrRef declaringType) : base(ts, method, methodDef,
@@ -30,6 +31,11 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
                         wasFirst = true;
                     }
                 }
+        }
+
+        public bool Equals(IMethod other)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
