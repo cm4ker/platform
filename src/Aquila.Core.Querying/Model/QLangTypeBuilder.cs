@@ -2,7 +2,6 @@ using System;
 using System.Text.RegularExpressions;
 using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Configuration.Structure;
-using Aquila.Configuration.Structure.Data.Types.Primitive;
 using Aquila.Core.Contracts.TypeSystem;
 
 

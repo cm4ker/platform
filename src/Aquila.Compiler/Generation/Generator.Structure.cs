@@ -14,6 +14,7 @@ using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Configuration.Common.TypeSystem;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Data;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
@@ -61,7 +62,7 @@ namespace Aquila.Compiler.Generation
         private void InitGlobalVar(GlobalVarManager mrg)
         {
             var item = new GlobalVarTreeItem(VarTreeLeafType.Func, CompilationMode.Server, "Query",
-                (node, builder) => { builder.NewObj(_ts.Resolve<PlatformQuery>().FindConstructor()); },
+                (node, builder) => { builder.NewObj(_tm.FindType<PlatformQuery>().FindConstructor()); },
                 new SingleTypeSyntax(null, "Query", TypeNodeKind.Type));
 
             mrg.Register(item);

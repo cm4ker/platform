@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection.Metadata;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Aquila.Configuration.Structure.Data.Types.Primitive;
 using Aquila.EntityComponent.Configuration;
 
 

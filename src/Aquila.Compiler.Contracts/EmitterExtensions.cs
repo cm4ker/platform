@@ -206,7 +206,7 @@ namespace Aquila.Compiler.Contracts
         public static IEmitter Neg(this IEmitter emitter) => emitter.Emit(OpCodes.Neg);
         public static IEmitter Not(this IEmitter emitter) => emitter.Emit(OpCodes.Not);
 
-        public static IEmitter NotEqual(this IEmitter e) => e.Ceq().LdcI4(0).Ceq();
+        public static IEmitter Cneq(this IEmitter e) => e.Ceq().LdcI4(0).Ceq();
 
         public static IEmitter Rem(this IEmitter emitter) => emitter.Emit(OpCodes.Rem);
         public static IEmitter Clt(this IEmitter emitter) => emitter.Emit(OpCodes.Clt);

@@ -1,12 +1,5 @@
-using System;
-using System.Linq;
 using Aquila.Compiler.Aqua.TypeSystem;
-using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Contracts.Symbols;
-using Aquila.Compiler.Helpers;
-using Aquila.Compiler.Roslyn;
 using Aquila.Language.Ast.Definitions;
-using Aquila.Language.Ast.Definitions.Functions;
 using Statement = Aquila.Language.Ast.Definitions.Statements.Statement;
 
 namespace Aquila.Compiler.Generation

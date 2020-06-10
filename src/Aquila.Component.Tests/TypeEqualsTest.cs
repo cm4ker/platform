@@ -1,7 +1,6 @@
 ﻿using System;
 using Xunit;
 using Aquila.Configuration.Structure;
-using Aquila.Configuration.Structure.Data.Types.Primitive;
 
 namespace Aquila.Component.Tests
 {

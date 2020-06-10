@@ -13,7 +13,7 @@ namespace Aquila.Compiler.Contracts
         /// <summary>
         /// Identifier of the type 
         /// </summary>
-        object Id { get; }
+        Guid Id => TypeConstants.GetIdFromName(FullName);
 
         /// <summary>
         /// Name of the type

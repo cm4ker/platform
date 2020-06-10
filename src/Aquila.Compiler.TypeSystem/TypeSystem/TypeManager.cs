@@ -33,6 +33,8 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         private GuidPType _guidPType;
         private NumericPType _numericPType;
         private UnknownPType _unknownPType;
+        private ObjectPType _objectPType;
+        private VoidPType _voidPType;
 
 
         public TypeManager(ITypeSystem backend)
@@ -54,6 +56,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _types.Add(Boolean);
             _types.Add(Guid);
             _types.Add(Numeric);
+            _types.Add(Object);
             _types.Add(Unknown);
         }
 
@@ -70,6 +73,10 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public PType Guid => _guidPType ??= new GuidPType(this, _backend.GetSystemBindings().Guid);
 
         public PType Numeric => _numericPType ??= new NumericPType(this, _backend.GetSystemBindings().Decimal);
+
+        public PType Object => _objectPType ??= new ObjectPType(this, _backend.GetSystemBindings().Object);
+
+        public PType Void => _voidPType ??= new VoidPType(this, _backend.GetSystemBindings().Void);
 
         public PType Unknown => _unknownPType ??= new UnknownPType(this);
 
@@ -128,6 +135,13 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             _methods.Add(method);
         }
 
+        internal void Register(PParameter parameter)
+        {
+            if (_methods.Exists(x => x.Id == parameter.Id))
+                throw new Exception($"Parameter id {parameter.Name}:{parameter.Id} already registered");
+            _parameters.Add(parameter);
+        }
+
         public void AddMD(Guid id, Guid parentId, object metadata)
         {
             _metadatas.Add(new MetadataRow {Id = id, ParentId = parentId, Metadata = metadata});
@@ -141,9 +155,11 @@ namespace Aquila.Compiler.Aqua.TypeSystem
             return component;
         }
 
-        public PType ExportType(IType type)
+        public PType ExportedType(IType type)
         {
-            return new PExportType(this, type);
+            var exportType = new PExportedType(this, type);
+            Register(exportType);
+            return exportType;
         }
 
         public PTypeBuilder DefineType()

@@ -1,5 +1,4 @@
 using System;
-using Aquila.Configuration.Structure.Data.Types.Primitive;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.QueryBuilder;
 

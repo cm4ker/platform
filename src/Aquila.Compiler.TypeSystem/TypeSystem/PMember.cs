@@ -23,6 +23,8 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public Guid ParentId { get; }
 
+        public PType DeclaringType => TypeManager.FindType(ParentId);
+
         public virtual string Name { get; private set; }
 
         public TypeManager TypeManager { get; }

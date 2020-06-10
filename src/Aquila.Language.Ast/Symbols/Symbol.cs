@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Symbols;
-using Aquila.Compiler.Roslyn;
-using Aquila.Compiler.Roslyn.RoslynBackend;
+using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
 
@@ -55,13 +55,13 @@ namespace Aquila.Language.Ast.Symbols
 
     public class MethodSymbol : Symbol
     {
-        private RoslynType declaringType;
+        private PType declaringType;
 
-        private readonly Dictionary<Function, RoslynMethod> _overloads;
+        private readonly Dictionary<Function, PMethod> _overloads;
 
         public MethodSymbol(Function f) : base(f.Name, SymbolType.Method)
         {
-            _overloads = new Dictionary<Function, RoslynMethod>();
+            _overloads = new Dictionary<Function, PMethod>();
 
             DeclareOverload(f);
         }
@@ -79,7 +79,7 @@ namespace Aquila.Language.Ast.Symbols
             _overloads.Add(f, null);
         }
 
-        public void ConnectOverload(Function f, RoslynMethod method)
+        public void ConnectOverload(Function f, PMethod method)
         {
             if (!_overloads.ContainsKey(f))
             {
@@ -91,7 +91,7 @@ namespace Aquila.Language.Ast.Symbols
             _overloads[f] = method;
         }
 
-        public (Function method, RoslynMethod clrMethod) SelectOverload(RoslynType[] args)
+        public (Function method, PMethod clrMethod) SelectOverload(PType[] args)
         {
             if (_overloads.Count == 0)
                 throw new Exception(
@@ -166,11 +166,11 @@ namespace Aquila.Language.Ast.Symbols
             Type = type;
         }
 
-        public RoslynType ClrType { get; private set; }
+        public PType ClrType { get; private set; }
 
         public TypeEntity Type { get; }
 
-        public void Connect(RoslynType type)
+        public void Connect(PType type)
         {
             ClrType = type;
         }
@@ -185,9 +185,9 @@ namespace Aquila.Language.Ast.Symbols
 
         public Property Property { get; }
 
-        public RoslynProperty ClrProperty { get; private set; }
+        public PProperty ClrProperty { get; private set; }
 
-        public void Connect(RoslynProperty prop)
+        public void Connect(PProperty prop)
         {
             ClrProperty = prop;
         }

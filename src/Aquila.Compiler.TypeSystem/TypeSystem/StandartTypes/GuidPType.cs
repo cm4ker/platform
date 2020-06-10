@@ -5,14 +5,14 @@ using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Aqua.TypeSystem.StandartTypes
 {
-    public sealed class GuidPType : PExportType
+    public sealed class GuidPType : PExportedType
     {
         internal GuidPType(TypeManager ts, IType type) : base(ts, type)
         {
-            ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = 4});
+            ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = TypeConstants.Guid.sysId});
         }
 
-        public override Guid Id => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 4);
+        public override Guid Id => TypeConstants.Guid.guid;
 
         public override string Name
         {

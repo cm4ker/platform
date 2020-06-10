@@ -43,7 +43,6 @@ namespace Aquila.Compiler.Roslyn.RoslynBackend
 
         public ITypeSystem TypeSystem => _ts;
 
-        public object Id => TypeDef.FullName;
         public string Name => TypeRef.Name;
         public string Namespace => TypeRef.Namespace;
         public string FullName => TypeRef.FullName;

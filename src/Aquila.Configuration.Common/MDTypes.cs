@@ -1,5 +1,5 @@
 using System;
-using Aquila.Configuration.Structure.Data.Types.Primitive;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Configuration.Common
@@ -16,7 +16,7 @@ namespace Aquila.Configuration.Common
         public static MDType Numeric(int scale, int precision) => new MDNumeric(scale, precision);
         public static MDType Ref(Guid id) => new MDTypeRef(id);
 
-        public static Guid GetTypeId(this MDType mdType, ITypeManager tm, bool isArray = false)
+        public static Guid GetTypeId(this MDType mdType, TypeManager tm, bool isArray = false)
         {
             Guid result = mdType.Guid;
 

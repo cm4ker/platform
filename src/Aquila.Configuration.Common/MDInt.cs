@@ -1,10 +1,11 @@
 using System;
+using Aquila.Compiler.Contracts;
 
 namespace Aquila.Configuration.Common
 {
     public class MDInt : MDPrimitive, IEquatable<MDInt>
     {
-        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 7);
+        public override Guid Guid => TypeConstants.Int;
 
         public override string Name
         {

@@ -10,16 +10,13 @@ using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
 
 namespace Aquila.Compiler.Cecil
 {
-    // TODO: Make generic type definitions have Reference set to GenericTypeInstance with parameters for
-    // consistency with CecilTypeBuilder
-
     [DebuggerDisplay("{" + nameof(Reference) + "}")]
     class CecilType : IType, ITypeReference
     {
+        private CecilTypeSystem _ts;
+
         private readonly CecilAssembly _assembly;
-        public CecilTypeSystem TypeSystem { get; }
-        public TypeReference Reference { get; }
-        public TypeDefinition Definition { get; }
+
 
         public CecilType(CecilTypeSystem typeSystem, CecilAssembly assembly, TypeDefinition definition)
             : this(typeSystem, assembly, definition, definition)
@@ -30,12 +27,14 @@ namespace Aquila.Compiler.Cecil
             TypeReference reference)
         {
             _assembly = assembly ?? throw new NullReferenceException(nameof(assembly));
-            TypeSystem = typeSystem;
+            _ts = typeSystem;
             Reference = reference;
             Definition = definition;
-            if (reference.IsArray)
-                Definition = ((CecilType) typeSystem.GetType("System.Array")).Definition;
         }
+
+        public ITypeSystem TypeSystem => _ts;
+        public TypeReference Reference { get; }
+        public TypeDefinition Definition { get; }
 
         public bool Equals(IType other)
         {
@@ -46,9 +45,7 @@ namespace Aquila.Compiler.Cecil
             return CecilHelpers.Equals(Reference, o.Reference);
         }
 
-        ITypeSystem IType.TypeSystem => TypeSystem;
-
-        public object Id => Reference.FullName;
+        public Guid Id => Reference.FullName;
         public string Name => Reference.Name;
         public string FullName => Reference.FullName;
         public string Namespace => Reference.Namespace;
@@ -56,53 +53,52 @@ namespace Aquila.Compiler.Cecil
         protected IReadOnlyList<IMethod> _methods;
 
         public IReadOnlyList<IMethod> Methods =>
-            _methods ??= Definition.GetMethods().Select(m => (IMethod) new CecilMethod(TypeSystem,
+            _methods ??= Definition.GetMethods().Select(m => (IMethod) new CecilMethod(_ts,
                 m, Reference, _assembly.Assembly.MainModule)).ToList();
 
         protected IReadOnlyList<IConstructor> _constructors;
 
         public IReadOnlyList<IConstructor> Constructors =>
             _constructors ??= Definition.GetConstructors().Select(c =>
-                    new CecilConstructor(TypeSystem, c,
-                        new MethodReference(c.Name, TypeSystem.GetTypeReference(c.ReturnType.FullName), Reference),
+                    new CecilConstructor(_ts, c,
+                        new MethodReference(c.Name, _ts.GetTypeReference(c.ReturnType.FullName), Reference),
                         Reference))
                 .ToList();
 
         protected IReadOnlyList<IField> _fields;
 
         public IReadOnlyList<IField> Fields =>
-            _fields ??= Definition.Fields.Select(f => new CecilField(TypeSystem, f, Reference)).ToList();
+            _fields ??= Definition.Fields.Select(f => new CecilField(_ts, f, Reference)).ToList();
 
         protected IReadOnlyList<IProperty> _properties;
 
         public IReadOnlyList<IProperty> Properties =>
-            _properties ??= Definition.Properties.Select(p => new CecilProperty(TypeSystem, p, Reference)).ToList();
+            _properties ??= Definition.Properties.Select(p => new CecilProperty(_ts, p, Reference)).ToList();
 
         protected IReadOnlyList<IEventInfo> _events;
 
         public IReadOnlyList<IEventInfo> Events =>
-            _events ??= Definition.Events.Select(p => new CecilEvent(TypeSystem, p, Reference)).ToList();
+            _events ??= Definition.Events.Select(p => new CecilEvent(_ts, p, Reference)).ToList();
 
         private IReadOnlyList<IType> _genericArguments;
 
         public IReadOnlyList<IType> GenericArguments =>
             _genericArguments ??= Reference is GenericInstanceType gi
-                ? gi.GenericArguments.Select(ga => TypeSystem.Resolve(ga)).ToList()
+                ? gi.GenericArguments.Select(ga => _ts.Resolve(ga)).ToList()
                 : null;
 
         private IReadOnlyList<IType> _genericParameters;
 
         public IReadOnlyList<IType> GenericParameters =>
-            _genericParameters ?? (_genericParameters = Reference is TypeDefinition td && td.HasGenericParameters
-                ? td.GenericParameters.Select(gp => TypeSystem.Resolve(gp)).ToList()
-                : null);
+            _genericParameters ??= Reference is TypeDefinition td && td.HasGenericParameters
+                ? td.GenericParameters.Select(gp => _ts.Resolve(gp)).ToList()
+                : null;
 
 
         protected IReadOnlyList<ICustomAttribute> _attributes;
 
         public IReadOnlyList<ICustomAttribute> CustomAttributes =>
-            _attributes ?? (_attributes =
-                Definition.CustomAttributes.Select(ca => new CecilCustomAttribute(TypeSystem, ca)).ToList());
+            _attributes ??= Definition.CustomAttributes.Select(ca => new CecilCustomAttribute(_ts, ca)).ToList();
 
         public bool IsAssignableFrom(IType type)
         {
@@ -132,7 +128,7 @@ namespace Aquila.Compiler.Cecil
                 var i = Definition.MakeGenericInstanceType(typeArguments.Cast<ITypeReference>()
                     .Select(r => r.Reference)
                     .ToArray());
-                return TypeSystem.GetTypeFor(i);
+                return _ts.GetTypeFor(i);
             }
 
             throw new InvalidOperationException();
@@ -142,34 +138,33 @@ namespace Aquila.Compiler.Cecil
 
         public IType GenericTypeDefinition =>
             _genericTypeDefinition ?? (_genericTypeDefinition =
-                (Reference is GenericInstanceType) ? TypeSystem.Resolve(Definition) : null);
+                (Reference is GenericInstanceType) ? _ts.Resolve(Definition) : null);
 
         public bool IsArray => Reference.IsArray;
 
         private IType _arrayType;
 
         public IType ArrayElementType =>
-            _arrayType ??= IsArray ? TypeSystem.Resolve(Reference.GetElementType()) : null;
+            _arrayType ??= IsArray ? _ts.Resolve(Reference.GetElementType()) : null;
 
-        public IType MakeArrayType() => TypeSystem.Resolve(Reference.MakeArrayType());
+        public IType MakeArrayType() => _ts.Resolve(Reference.MakeArrayType());
 
-        public IType MakeArrayType(int dimensions) => TypeSystem.Resolve(Reference.MakeArrayType(dimensions));
+        public IType MakeArrayType(int dimensions) => _ts.Resolve(Reference.MakeArrayType(dimensions));
 
         private IType _baseType;
 
         public IType BaseType => Definition.BaseType == null
             ? null
-            : _baseType ?? (_baseType = TypeSystem.Resolve(
-                Definition.BaseType.TransformGeneric(Reference)));
+            : _baseType ??= _ts.Resolve(
+                Definition.BaseType.TransformGeneric(Reference));
 
         public bool IsValueType => Definition.IsValueType;
         public bool IsEnum => Definition.IsEnum;
         protected IReadOnlyList<IType> _interfaces;
 
         public IReadOnlyList<IType> Interfaces =>
-            _interfaces ?? (_interfaces =
-                Definition.Interfaces.Select(i => TypeSystem.Resolve(i.InterfaceType
-                    .TransformGeneric(Reference))).ToList());
+            _interfaces ??= Definition.Interfaces.Select(i => _ts.Resolve(i.InterfaceType
+                .TransformGeneric(Reference))).ToList();
 
         public bool IsInterface => Definition.IsInterface;
 
@@ -181,7 +176,7 @@ namespace Aquila.Compiler.Cecil
         {
             if (!IsEnum)
                 return null;
-            return TypeSystem.Resolve(Definition.GetEnumUnderlyingType());
+            return _ts.Resolve(Definition.GetEnumUnderlyingType());
         }
     }
 }

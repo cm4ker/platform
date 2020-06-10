@@ -1,4 +1,5 @@
 using System;
+using Aquila.Compiler.Contracts;
 
 namespace Aquila.Configuration.Common
 {
@@ -7,7 +8,7 @@ namespace Aquila.Configuration.Common
     /// </summary>
     public sealed class MDString : MDPrimitive, IEquatable<MDString>
     {
-        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 6);
+        public override Guid Guid => TypeConstants.String;
 
         public MDString()
         {

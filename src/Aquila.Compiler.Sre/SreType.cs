@@ -29,7 +29,6 @@ namespace Aquila.Compiler.Sre
         public bool Equals(IType other) => Type == (other as SreType)?.Type;
         public override int GetHashCode() => Type.GetHashCode();
         public ITypeSystem TypeSystem { get; }
-        public object Id => Type;
 
         public string FullName => Type.FullName;
         public string Namespace => Type.Namespace;

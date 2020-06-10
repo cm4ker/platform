@@ -8,8 +8,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 {
     public class PCilBody
     {
-        public Guid Id { get; }
-
         public List<PLabel> Labels { get; } = new List<PLabel>();
 
         public List<PLocal> Locals { get; } = new List<PLocal>();
@@ -323,7 +321,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         public static PCilBody Neg(this PCilBody emitter) => emitter.Emit(OpCodes.Neg);
         public static PCilBody Not(this PCilBody emitter) => emitter.Emit(OpCodes.Not);
 
-        public static PCilBody NotEqual(this PCilBody e) => e.Ceq().LdcI4(0).Ceq();
+        public static PCilBody Cneq(this PCilBody e) => e.Ceq().LdcI4(0).Ceq();
 
         public static PCilBody Rem(this PCilBody emitter) => emitter.Emit(OpCodes.Rem);
         public static PCilBody Clt(this PCilBody emitter) => emitter.Emit(OpCodes.Clt);

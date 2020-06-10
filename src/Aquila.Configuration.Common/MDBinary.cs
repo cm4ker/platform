@@ -1,14 +1,14 @@
 using System;
+using Aquila.Compiler.Contracts;
 
 namespace Aquila.Configuration.Common
 {
     public class MDBinary : MDPrimitive, IEquatable<MDBinary>
     {
-        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 1);
+        public override Guid Guid => TypeConstants.Binary;
 
         public MDBinary()
         {
-
         }
 
         public MDBinary(int size)
@@ -39,7 +39,7 @@ namespace Aquila.Configuration.Common
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Guid,  Size);
+            return HashCode.Combine(Guid, Size);
         }
     }
 }

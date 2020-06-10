@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Aquila.Configuration.Common;
-using Aquila.Configuration.Structure.Data.Types.Primitive;
 using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.TypeSystem;

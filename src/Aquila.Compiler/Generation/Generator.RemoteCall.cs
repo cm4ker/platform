@@ -1,4 +1,5 @@
 using System.Linq;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Helpers;
 using Aquila.Language.Ast.Definitions;
@@ -17,7 +18,7 @@ namespace Aquila.Compiler.Generation
                 e =>
                 {
                     e.LdLit(function.Parameters.Count);
-                    var b = e.NewArrAdv(_bindings.Object);
+                    var b = e.NewArrAdv(_tm.Object);
                     foreach (var p in function.Parameters)
                     {
                         var iArg = function.Parameters.IndexOf(p);
@@ -28,7 +29,7 @@ namespace Aquila.Compiler.Generation
                     b.EndBuild();
                 });
 
-            if (!_map.GetClrType(function.Type).Equals(_bindings.Void))
+            if (!_map.GetClrType(function.Type).Equals(_tm.Void))
                 function.Builder.Ret();
         }
     }

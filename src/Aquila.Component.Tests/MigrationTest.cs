@@ -9,7 +9,6 @@ using Aquila.Configuration.Common;
 using Aquila.Configuration.Common.TypeSystem;
 using Aquila.Configuration.Storage;
 using Aquila.Configuration.Structure;
-using Aquila.Configuration.Structure.Data.Types.Primitive;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Configuration.Migration;
 using Aquila.Core.Contracts.Data;

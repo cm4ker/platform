@@ -17,6 +17,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
         {
         }
 
+
         public IEnumerable<PParameter> Parameters => TypeManager.FindParameters(this.Id);
     }
 }

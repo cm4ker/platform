@@ -1,9 +1,7 @@
 using System;
-using System.Reflection.Emit;
 using Aquila.Compiler.Aqua;
 using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Dnlib;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Xunit;
 using Aquila.Core.Contracts.TypeSystem;
@@ -42,13 +40,10 @@ namespace Aquila.Aqua.Test
             var aloc = body.DefineLocal(tm.Int);
 
             body
-                
                 .LdcI4(0)
                 .StLoc(aloc)
-                
                 .LdcI4(0)
                 .StLoc(iloc)
-                
                 .Br(condition)
 
                 //loop start
@@ -61,17 +56,14 @@ namespace Aquila.Aqua.Test
                 .LdLoc(iloc)
                 .LdcI4(1)
                 .Add()
-                
                 .StLoc(iloc)
-                
                 .MarkLabel(condition)
                 //compare
                 .LdLoc(iloc)
                 .LdcI4(10)
                 .Clt()
-                
                 .BrTrue(cyclestart)
-                
+
                 //loop end
                 .LdLoc(aloc)
                 .Ret();

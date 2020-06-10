@@ -5,7 +5,6 @@ using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using Aquila.Compiler.Contracts;
 using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
-using IField = Aquila.Compiler.Contracts.IField;
 using IMethod = Aquila.Compiler.Contracts.IMethod;
 using IType = Aquila.Compiler.Contracts.IType;
 
@@ -20,13 +19,6 @@ namespace Aquila.Compiler.Dnlib
             : base(typeSystem, typeDef, typeDef, assembly)
         {
             _ts = typeSystem;
-
-            Methods.Any();
-            Properties.Any();
-            Constructors.Any();
-            CustomAttributes.Any();
-            //GenericParameters.Any();
-
             _r = new DnlibContextResolver(_ts, typeDef.Module);
         }
 

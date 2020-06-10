@@ -1,3 +1,5 @@
+using Aquila.Compiler.Aqua.TypeSystem;
+using Aquila.Compiler.Aqua.TypeSystem.Builders;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Shared.Tree;
 
@@ -5,7 +7,7 @@ namespace Aquila.Core.Contracts.Configuration
 {
     public interface IGlobalVarManager
     {
-        ITypeManager TypeSystem { get; }
+        TypeManager TypeSystem { get; }
 
         void Register(Node node);
 
@@ -14,7 +16,7 @@ namespace Aquila.Core.Contracts.Configuration
 
     public interface IEntryPointManager
     {
-        IPType EntryPoint { get; }
-        IPMethod Main { get; }
+        PTypeBuilder EntryPoint { get; }
+        PMethodBuilder Main { get; }
     }
 }

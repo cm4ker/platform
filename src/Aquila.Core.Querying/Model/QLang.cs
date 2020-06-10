@@ -4,7 +4,6 @@ using System.Linq;
 using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Configuration.Common;
 using Aquila.Configuration.Structure;
-using Aquila.Configuration.Structure.Data.Types.Primitive;
 using Aquila.Core.Contracts.TypeSystem;
 
 

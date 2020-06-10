@@ -1,11 +1,12 @@
 using System;
 using System.Xml.Serialization;
+using Aquila.Compiler.Contracts;
 
 namespace Aquila.Configuration.Common
 {
     public class MDDateTime : MDPrimitive, IEquatable<MDDateTime>
     {
-        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 3);
+        public override Guid Guid => TypeConstants.DateTime;
 
         public override string Name
         {

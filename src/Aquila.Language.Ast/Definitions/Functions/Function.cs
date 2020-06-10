@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Aquila.Compiler;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Symbols;
 using Aquila.Compiler.Roslyn;
@@ -23,8 +24,7 @@ namespace Aquila.Language.Ast.Definitions.Functions
         public FunctionFlags Flags => ((IsClient) ? FunctionFlags.Client : 0)
                                       | ((IsServer) ? FunctionFlags.Server : 0)
                                       | ((IsClientCall) ? FunctionFlags.ServerClientCall : 0)
-                                      | ((IsOperation) ? FunctionFlags.IsOperation : 0)
-        ;
+                                      | ((IsOperation) ? FunctionFlags.IsOperation : 0);
 
         private bool IsServer => Attributes.Any(x => x.Type.TypeName == "Server") || !Attributes.Any();
         private bool IsClient => Attributes.Any(x => x.Type.TypeName == "Client");
@@ -34,7 +34,7 @@ namespace Aquila.Language.Ast.Definitions.Functions
         /// <summary>
         /// Билдер IL кода
         /// </summary>
-        public RoslynEmitter Builder;
+        public PCilBody Builder;
 
         private readonly Block _block;
 

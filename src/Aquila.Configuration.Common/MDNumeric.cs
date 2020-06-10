@@ -1,4 +1,5 @@
 using System;
+using Aquila.Compiler.Contracts;
 
 namespace Aquila.Configuration.Common
 {
@@ -6,7 +7,6 @@ namespace Aquila.Configuration.Common
     {
         public MDNumeric()
         {
-            
         }
 
         public MDNumeric(int scale, int precision)
@@ -14,10 +14,9 @@ namespace Aquila.Configuration.Common
             Scale = scale;
             Precision = precision;
         }
-        
-        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 5);
 
-        
+        public override Guid Guid => TypeConstants.Numeric;
+
 
         public override string Name
         {
@@ -32,8 +31,8 @@ namespace Aquila.Configuration.Common
         {
             if (other == null) return false;
 
-            return this.Guid == other.Guid  &&
-                this.Scale == other.Scale && this.Precision == other.Precision;
+            return this.Guid == other.Guid &&
+                   this.Scale == other.Scale && this.Precision == other.Precision;
         }
 
         public override bool Equals(object obj)

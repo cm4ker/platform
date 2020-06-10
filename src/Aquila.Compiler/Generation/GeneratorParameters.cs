@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Configuration.Structure;
@@ -26,7 +27,7 @@ namespace Aquila.Compiler.Generation
         /// <summary>
         /// Построитель сборки
         /// </summary>
-        public ITypeManager Builder { get; }
+        public TypeManager Builder { get; }
 
         /// <summary>
         /// Аттрибуты компиляции
@@ -34,13 +35,12 @@ namespace Aquila.Compiler.Generation
         public CompilationMode Mode { get; }
 
 
-        public GeneratorParameters(Root root, ITypeManager builder, CompilationMode mode,
+        public GeneratorParameters(Root root, CompilationMode mode,
             SqlDatabaseType targetDatabaseType, IProject configuration)
         {
             TargetDatabaseType = targetDatabaseType;
             Configuration = configuration;
             Root = root;
-            Builder = builder;
             Mode = mode;
         }
     }

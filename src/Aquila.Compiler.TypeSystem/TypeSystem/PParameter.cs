@@ -7,7 +7,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
     public class PParameter
     {
         private Guid _invokableId;
-        private Guid _typeId;
+
 
         public PParameter(TypeManager tm, Guid invokableId)
         {
@@ -19,7 +19,7 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public string Name { get; set; }
 
-        public PType Type => TypeManager.FindType(_typeId);
+        public virtual PType Type => TypeManager.Unknown;
 
         public PInvokable Method => TypeManager.FindInvokable(_invokableId);
 
@@ -27,15 +27,6 @@ namespace Aquila.Compiler.Aqua.TypeSystem
 
         public TypeManager TypeManager { get; }
 
-        public void SetType(PType type)
-        {
-            SetType(type.Id);
-        }
-
-        public void SetType(Guid typeId)
-        {
-            _typeId = typeId;
-        }
 
         public IParameter BackendParameter { get; set; }
     }

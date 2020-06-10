@@ -1,4 +1,5 @@
 using System;
+using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.TypeSystem;
@@ -16,12 +17,13 @@ namespace Aquila.Compiler.Generation
         private readonly IProject _conf;
 
         private Root _root;
+        private TypeManager _tm;
         private CompilationUnitList _cus;
 
         private EntryPointAssemblyManager _epManager;
 
-        private SystemTypeBindings _bindings;
-        private SyntaxTreeMemberAccessProvider _map;
+
+        //private SyntaxTreeMemberAccessProvider _map;
 
         public Generator(GeneratorParameters parameters)
         {
@@ -35,6 +37,7 @@ namespace Aquila.Compiler.Generation
 
             _conf = parameters.Configuration;
             _mode = parameters.Mode;
+            _tm = _conf.TypeManager;
         }
 
         private void Error(string message)

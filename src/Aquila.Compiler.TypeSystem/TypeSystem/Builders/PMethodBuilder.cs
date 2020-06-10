@@ -30,5 +30,12 @@ namespace Aquila.Compiler.Aqua.TypeSystem.Builders
         {
             SetNameCore(name);
         }
+
+        public PParameterBuilder DefineParameter()
+        {
+            var pb = new PParameterBuilder(TypeManager, Id);
+            TypeManager.Register(pb);
+            return pb;
+        }
     }
 }

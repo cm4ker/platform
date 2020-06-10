@@ -16,8 +16,10 @@ namespace Aquila.Compiler.Contracts
 
         public bool Equals(IType other) => other == this;
 
-        public ITypeSystem TypeSystem { get; }
+        public ITypeSystem TypeSystem => _ts;
+
         public object Id { get; } = Guid.NewGuid();
+
         public string Name { get; protected set; }
         public string Namespace { get; } = "";
         public string FullName => Name;

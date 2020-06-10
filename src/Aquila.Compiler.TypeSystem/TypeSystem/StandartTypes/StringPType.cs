@@ -8,16 +8,18 @@ namespace Aquila.Compiler.Aqua.TypeSystem.StandartTypes
     /// <summary>
     ///  Тип строки
     /// </summary>
-    public sealed class StringPType : PExportType
+    public sealed class StringPType : PExportedType
     {
         internal StringPType(TypeManager ts, IType type) : base(ts, type)
         {
-            ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = 6});
+            ts.AddOrUpdateSetting(new ObjectSetting {ObjectId = Id, SystemId = TypeConstants.String.sysId});
         }
 
-        public override Guid Id => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 6);
+        public override Guid Id => TypeConstants.String.guid;
+
         public override bool IsAbstract => true;
         public override bool IsPrimitive => true;
+
         public override PrimitiveKind PrimitiveKind => PrimitiveKind.String;
 
         public override string Name

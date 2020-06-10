@@ -1,17 +1,17 @@
 using System;
-using System.Data;
-using Aquila.Configuration.Common;
+using Aquila.Compiler.Contracts;
 
-namespace Aquila.Configuration.Structure.Data.Types.Primitive
+namespace Aquila.Configuration.Common
 {
     public class MDGuid : MDPrimitive, IEquatable<MDGuid>
     {
-        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 4);
+        public override Guid Guid => TypeConstants.Guid;
 
         public override string Name
         {
             get { return "Guid"; }
         }
+
         public bool Equals(MDGuid other)
         {
             if (other == null) return false;

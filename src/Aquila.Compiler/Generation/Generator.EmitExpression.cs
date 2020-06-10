@@ -1,14 +1,9 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using Aquila.Compiler.Aqua.TypeSystem;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Symbols;
-using Aquila.Compiler.Helpers;
-using Aquila.Compiler.Roslyn;
-using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Compiler.Visitor;
-using Aquila.Core;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Expressions;
@@ -231,22 +226,21 @@ namespace Aquila.Compiler.Generation
             }
             else if (expression is MethodLookupExpression mle)
             {
-                var lca = mle.Lookup as Call;
-
-                EmitExpression(e, mle.Current, symbolTable);
-
-                var method = _map.GetMethod(mle.Current.Type, lca.Name.Value,
-                    lca.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
-
-                var resultType = (TypeSyntax) method.astMethod.Type.Clone();
-
-                lca.Type = resultType;
-                lca.Attach(resultType);
-
-                EmitArguments(e, lca.Arguments, symbolTable);
-                e.Call(method.clrMethod);
+                // var lca = mle.Lookup as Call;
+                //
+                // EmitExpression(e, mle.Current, symbolTable);
+                //
+                // var method = _map.GetMethod(mle.Current.Type, lca.Name.Value,
+                //     lca.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
+                //
+                // var resultType = (TypeSyntax) method.astMethod.Type.Clone();
+                //
+                // lca.Type = resultType;
+                // lca.Attach(resultType);
+                //
+                // EmitArguments(e, lca.Arguments, symbolTable);
+                // e.Call(method.clrMethod);
             }
-
             else if (expression is PostIncrementExpression pis)
             {
                 EmitPostOperation(e, symbolTable, pis);
@@ -261,38 +255,36 @@ namespace Aquila.Compiler.Generation
             }
             else if (expression is Throw th)
             {
-                EmitExpression(e, th.Exception, symbolTable);
-
-                if (th.Exception != null)
-                {
-                    var constructor = _ts.GetSystemBindings().Exception.FindConstructor(_bindings.String);
-                    e.NewObj(constructor);
-                }
-                else
-                {
-                    var constructor = _ts.GetSystemBindings().Exception.FindConstructor();
-                    e.NewObj(constructor);
-                }
-
-                e.Throw();
+                // EmitExpression(e, th.Exception, symbolTable);
+                //
+                // if (th.Exception != null)
+                // {
+                //     var constructor = _ts.GetSystemBindings().Exception.FindConstructor(_bindings.String);
+                //     e.NewObj(constructor);
+                // }
+                // else
+                // {
+                //     var constructor = _ts.GetSystemBindings().Exception.FindConstructor();
+                //     e.NewObj(constructor);
+                // }
+                //
+                // e.Throw();
             }
             else if (expression is Assignment asg)
             {
                 EmitAssignment(e, asg, symbolTable);
             }
-
             else if (expression is New wen)
             {
                 EmitArguments(e, wen.Call.Arguments, symbolTable);
 
                 var type = _map.GetClrType(wen.Type);
 
-                var constr =
-                    type.FindConstructor(wen.Call.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
-
-                e.NewObj(constr);
+                // var constr =
+                //     type.FindConstructor(wen.Call.Arguments.Select(x => _map.GetClrType(x.Expression.Type)).ToArray());
+                //
+                // e.NewObj(constr);
             }
-
             else if (expression is GlobalVar gv)
             {
                 EmitGlobalVar(e, _varManager.Root, gv.Expression, symbolTable);
@@ -340,15 +332,14 @@ namespace Aquila.Compiler.Generation
             }
         }
 
-        private void EmitPostOperation(RoslynEmitter e, SymbolTable symbolTable, PostOperationExpression pis)
+        private void EmitPostOperation(PCilBody e, SymbolTable symbolTable, PostOperationExpression pis)
         {
-            if (pis.Expression is Name)
-            {
-                EmitExpression(e, pis.Expression, symbolTable);
-                EmitExpression(e, pis.Expression, symbolTable);
-                e.LdLit(1).Add().Assign();
-            }
-
+            // if (pis.Expression is Name)
+            // {
+            //     EmitExpression(e, pis.Expression, symbolTable);
+            //     EmitExpression(e, pis.Expression, symbolTable);
+            //     e.LdLit(1).Add().Assign();
+            // }
 
             // IType opType = _map.GetClrType(pis.Type);
             //
@@ -398,16 +389,16 @@ namespace Aquila.Compiler.Generation
         }
 
 
-        private void CheckContextVariable(RoslynEmitter e, VariableSymbol symbol)
+        private void CheckContextVariable(PCilBody e, VariableSymbol symbol)
         {
             if (symbol.CompileObject == null)
             {
-                var loc = e.DefineLocal(_ts.Resolve<PlatformContext>());
-
-                e.LdContext()
-                    .StLoc(loc);
-
-                symbol.Connect(loc);
+                // var loc = e.DefineLocal(_ts.Resolve<PlatformContext>());
+                //
+                // e.LdContext()
+                //     .StLoc(loc);
+                //
+                // symbol.Connect(loc);
             }
         }
     }

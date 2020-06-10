@@ -1,10 +1,11 @@
 using System;
+using Aquila.Compiler.Contracts;
 
 namespace Aquila.Configuration.Common
 {
     public class MDBoolean : MDPrimitive, IEquatable<MDBoolean>
     {
-        public override Guid Guid => new Guid(1, 2, 4, 56, 72, 234, 234, 23, 123, 12, 2);
+        public override Guid Guid => TypeConstants.Boolean;
 
         public override string Name
         {
@@ -20,7 +21,7 @@ namespace Aquila.Configuration.Common
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false; 
+            if (obj == null) return false;
             return Equals(obj as MDBoolean);
         }
 
@@ -28,7 +29,5 @@ namespace Aquila.Configuration.Common
         {
             return HashCode.Combine(Guid);
         }
-
-
     }
 }

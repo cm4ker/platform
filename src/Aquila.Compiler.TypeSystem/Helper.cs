@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Aquila.Compiler.Aqua;
 using Aquila.Compiler.Aqua.TypeSystem;
+using Aquila.Compiler.Aqua.TypeSystem.Builders;
+using Aquila.Compiler.Contracts;
 
 namespace Aquila.Core.Contracts.TypeSystem
 {
@@ -62,6 +64,25 @@ namespace Aquila.Core.Contracts.TypeSystem
             return tm.Types.FirstOrDefault(x => x.Id == typeId) ?? tm.Unknown;
         }
 
+        public static PType FindType<T>(this TypeManager tm)
+        {
+            var backendType = tm.Backend.FindType<T>();
+            return tm.FindType(backendType.Id) ?? tm.ExportedType(backendType);
+        }
+
+        public static PField FindField(this PType type, string fieldName)
+        {
+            return type.Fields.FirstOrDefault(x => x.Name == fieldName);
+        }
+
+        public static PMethod FindMethod(this PType type, string methodName, params PType[] args)
+        {
+            return type.Methods.FirstOrDefault(x =>
+            {
+                return x.Name == methodName
+                       && x.Parameters.Select(p => p.Type).SequenceEqual(args);
+            });
+        }
 
         public static PMethod FindMethod(this TypeManager tm, Guid methodId)
         {

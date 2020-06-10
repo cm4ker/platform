@@ -1,26 +1,20 @@
 using System;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using Aquila.Compiler.Aqua.TypeSystem;
-using Microsoft.CodeAnalysis.Diagnostics;
+using Aquila.Compiler.Aqua.TypeSystem.Builders;
 using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Roslyn;
-using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.Network;
-using Aquila.Core.Network;
-using Aquila.Language.Ast.Definitions.Functions;
-using SystemTypeBindings = Aquila.Compiler.Roslyn.SystemTypeBindings;
+using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Compiler.Generation
 {
     public class EntryPointAssemblyManager : IEntryPointManager
     {
-        private readonly RoslynAssemblyBuilder _builder;
+        private readonly TypeManager _builder;
         private SystemTypeBindings _sb;
-        private RoslynTypeBuilder _ep;
-        private RoslynMethodBuilder _main;
+        private PTypeBuilder _ep;
+        private PMethodBuilder _main;
 
         private const string _classNamespace = "";
         private const string _className = "EntryPoint";
@@ -31,17 +25,18 @@ namespace Aquila.Compiler.Generation
         {
             _builder = builder;
 
-            _sb = _builder.TypeSystem.GetSystemBindings();
             _ep = builder.DefineStaticType(_classNamespace, _className);
 
             _main = _ep.DefineMethod(_mainMethodName, true, true, false);
+            _main.SetName(_mainMethodName);
+
             _main.DefineParameter("args", _sb.Object.MakeArrayType(), false, false);
         }
 
 
-        public RoslynTypeBuilder EntryPoint => _ep;
+        public PTypeBuilder EntryPoint => _ep;
 
-        public RoslynMethodBuilder Main => _main;
+        public PMethodBuilder Main => _main;
 
         public void EndBuild()
         {
@@ -56,12 +51,12 @@ namespace Aquila.Compiler.Generation
         private const string _linkFactoryFieldName = "_lf";
         private const string _startupServiceFieldName = "_ss";
 
-        public static RoslynType InvokeService(this RoslynTypeSystem ts)
+        public static PType InvokeService(this TypeManager ts)
         {
             return ts.FindType<IInvokeService>();
         }
 
-        public static RoslynType LinkFactory(this RoslynTypeSystem ts)
+        public static PType LinkFactory(this TypeManager ts)
         {
             return ts.FindType<ILinkFactory>();
         }
@@ -69,7 +64,8 @@ namespace Aquila.Compiler.Generation
         public static void InitService(this IEntryPointManager am)
         {
             var ep = am.EntryPoint;
-            var sb = ep.TypeSystem;
+            var sb = ep.TypeManager;
+
             var field = ep.DefineField(sb.InvokeService(), _invokeServiceFieldName, false, true);
             var lf = ep.DefineField(sb.LinkFactory(), _linkFactoryFieldName, false, true);
             var ss = ep.DefineField(sb.FindType<IStartupService>(), _startupServiceFieldName, false, true);
@@ -92,22 +88,25 @@ namespace Aquila.Compiler.Generation
                 .StSFld(ss);
         }
 
-        public static RoslynField GetISField(this IEntryPointManager am)
+        public static PField GetISField(this IEntryPointManager am)
         {
             return am.EntryPoint.FindField(_invokeServiceFieldName) ??
-                   throw new Exception($"Platform not isnitialized you must invoke {nameof(InitService)} method first");
+                   throw new Exception(
+                       $"Platform isn't initialized you must invoke {nameof(InitService)} method first");
         }
 
-        public static RoslynField GetLFField(this IEntryPointManager am)
+        public static PField GetLFField(this IEntryPointManager am)
         {
             return am.EntryPoint.FindField(_linkFactoryFieldName) ??
-                   throw new Exception($"Platform not isnitialized you must invoke {nameof(InitService)} method first");
+                   throw new Exception(
+                       $"Platform isn't initialized you must invoke {nameof(InitService)} method first");
         }
 
-        public static RoslynField GetSSField(this IEntryPointManager am)
+        public static PField GetSSField(this IEntryPointManager am)
         {
             return am.EntryPoint.FindField(_startupServiceFieldName) ??
-                   throw new Exception($"Platform not isnitialized you must invoke {nameof(InitService)} method first");
+                   throw new Exception(
+                       $"Platform isn't initialized you must invoke {nameof(InitService)} method first");
         }
     }
 }
